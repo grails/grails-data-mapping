@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import javax.naming.NameNotFoundException;
+import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,6 +71,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
 /**
@@ -93,6 +95,18 @@ public class ConfigurableLocalSessionFactoryBean extends
     protected String sessionFactoryBeanName = "sessionFactory";
     protected String dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
 
+    /**
+     * unwraps the dataSource if it's a TransactionAwareDataSourceProxy
+     * Hibernate's Isolater.JdbcDelegate requires that the dataSource returns new connections for each getConnection call
+     * 
+     * @see org.hibernate.engine.transaction.Isolater.JdbcDelegate#delegateWork(org.hibernate.engine.transaction.IsolatedWork, boolean)
+     * @see org.springframework.orm.hibernate3.AbstractSessionFactoryBean#setDataSource(javax.sql.DataSource)
+     */
+    @Override
+    public void setDataSource(DataSource dataSource) {
+        super.setDataSource((dataSource instanceof TransactionAwareDataSourceProxy) ? ((TransactionAwareDataSourceProxy) dataSource).getTargetDataSource() : dataSource);
+    }
+    
     /**
      * @param proxyIfReloadEnabled Sets whether a proxy should be created if reload is enabled
      */
