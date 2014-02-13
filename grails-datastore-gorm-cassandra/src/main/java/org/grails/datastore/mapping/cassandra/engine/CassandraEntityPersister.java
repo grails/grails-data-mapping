@@ -207,6 +207,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 
 	@Override
 	public Query createQuery() {
+		System.out.println("Call to Unimplemented createQuery");
 		return null; //TODO implement createQuery
 	}
 

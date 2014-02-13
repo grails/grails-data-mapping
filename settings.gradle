@@ -11,7 +11,7 @@ include ("grails-datastore-core",
         'grails-datastore-rest-client',
 /*
         "grails-datastore-jcr",*/
-        "grails-datastore-cassandra",
+        "grails-datastore-gorm-cassandra",
 
 
         // Documentation

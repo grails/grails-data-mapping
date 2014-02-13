@@ -39,7 +39,7 @@ public class CassandraDatastore extends AbstractDatastore {
 		super(mappingContext);
 
 		this.cluster = Cluster.builder()
-			.addContactPoints("127.0.0.1")
+			.addContactPoints("10.125.12.32")
 			.withRetryPolicy(DowngradingConsistencyRetryPolicy.INSTANCE)
 			.withReconnectionPolicy(new ConstantReconnectionPolicy(100L))
 			.withSocketOptions(new SocketOptions().setKeepAlive(true))
