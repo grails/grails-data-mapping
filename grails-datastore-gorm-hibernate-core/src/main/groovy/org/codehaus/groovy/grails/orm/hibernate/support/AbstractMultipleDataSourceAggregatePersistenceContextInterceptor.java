@@ -56,8 +56,12 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
 
     public void destroy() {
         for (PersistenceContextInterceptor interceptor : interceptors) {
-            if (interceptor.isOpen()) {
-                interceptor.destroy();
+            try {
+                if (interceptor.isOpen()) {
+                    interceptor.destroy();
+                }
+            } catch (Exception e) {
+                // ignore exception
             }
         }
     }

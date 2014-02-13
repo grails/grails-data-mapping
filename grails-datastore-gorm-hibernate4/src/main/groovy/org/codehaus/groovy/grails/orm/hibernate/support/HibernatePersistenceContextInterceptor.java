@@ -142,7 +142,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
         try {
             return getSession(false).isOpen();
         }
-        catch (IllegalStateException e) {
+        catch (Exception e) {
             return false;
         }
     }
