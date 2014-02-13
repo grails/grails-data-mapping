@@ -103,6 +103,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
     }
 
     public void disconnect() {
+        if (getSessionFactory() == null) return;
         try {
             getSession(false).disconnect();
         } catch (IllegalStateException e) {
@@ -112,26 +113,32 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
 
     @SuppressWarnings("deprecation")
     public void reconnect() {
+        if (getSessionFactory() == null) return;
         getSession().reconnect();
     }
 
     public void flush() {
+        if (getSessionFactory() == null) return;
         getSession().flush();
     }
 
     public void clear() {
+        if (getSessionFactory() == null) return;
         getSession().clear();
     }
 
     public void setReadOnly() {
+        if (getSessionFactory() == null) return;        
         getSession().setFlushMode(FlushMode.MANUAL);
     }
 
     public void setReadWrite() {
+        if (getSessionFactory() == null) return;        
         getSession().setFlushMode(FlushMode.AUTO);
     }
 
     public boolean isOpen() {
+        if (getSessionFactory() == null) return false;
         try {
             return getSession(false).isOpen();
         } catch (Exception e) {
