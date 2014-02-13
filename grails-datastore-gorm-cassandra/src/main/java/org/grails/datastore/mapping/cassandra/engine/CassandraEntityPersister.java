@@ -103,8 +103,12 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 			for (ColumnDefinitions.Definition definition : columns) {
 				String columnName = definition.getName();
 				DataType dt = definition.getType();
-				Object o = dt.deserialize(row.getBytesUnsafe(columnName));
-				System.out.println(columnName+">"+dt.getName()+": "+dt.getName().equals(DataType.Name.BLOB));
+				ByteBuffer columnUnsafeBytes = row.getBytesUnsafe(columnName);
+				Object o = null;
+				if (columnUnsafeBytes != null) {
+					o = dt.deserialize(columnUnsafeBytes);
+				}
+				System.out.println(columnName + ">" + dt.getName() + ": " + dt.getName().equals(DataType.Name.BLOB));
 				if (dt.getName().equals(DataType.Name.BLOB)) {
 
 					try {
@@ -114,7 +118,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 						ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(result);
 						ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream);
 						o = ois.readObject();
-						System.out.println(o.getClass()+":"+o);
+						System.out.println(o.getClass() + ":" + o);
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (ClassNotFoundException e) {

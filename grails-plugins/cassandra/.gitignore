@@ -1,2 +1,3 @@
 /plugin.xml
-/grails-mongodb*.zip
+/grails-cassandra*.zip
+/grails-cassandra*.zip.sha1

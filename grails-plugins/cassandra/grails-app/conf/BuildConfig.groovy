@@ -25,14 +25,14 @@ grails.project.dependency.resolution = {
             excludes group:"org.grails", name:'grails-test'
             excludes group:'xml-apis', name:'xml-apis'
             excludes 'ehcache-core'
-            transitive = false
+            transitive = true
         }
 
         compile("org.springframework.data:spring-data-commons-core:1.4.1.RELEASE", excludes)
         runtime 'org.springframework.data:spring-data-commons:1.5.1.RELEASE'
 
         def datastoreVersion = "2.0.3.RELEASE"
-        def cassandraDatastoreVersion = "1.3.0.RELEASE"
+        def cassandraDatastoreVersion = "0.1.BUILD-SNAPSHOT"
 
         compile ("org.grails:grails-datastore-gorm-cassandra:$cassandraDatastoreVersion",excludes)
 

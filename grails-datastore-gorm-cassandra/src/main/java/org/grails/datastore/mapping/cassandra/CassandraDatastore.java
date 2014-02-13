@@ -21,6 +21,7 @@ import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.policies.ConstantReconnectionPolicy;
 import com.datastax.driver.core.policies.DowngradingConsistencyRetryPolicy;
 
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
@@ -35,8 +36,9 @@ public class CassandraDatastore extends AbstractDatastore {
 	public static final String DEFAULT_KEYSPACE = "CassandraKeySpace"; //TODO make onse keyspace for each session somehow, maybe just do a different datastore instance?
 	private Cluster cluster;
 
-	public CassandraDatastore(MappingContext mappingContext) {
+	public CassandraDatastore(MappingContext mappingContext, ConfigurableApplicationContext ctx) {
 		super(mappingContext);
+		this.setApplicationContext(ctx);
 
 		this.cluster = Cluster.builder()
 			.addContactPoints("10.125.12.32")
@@ -47,7 +49,7 @@ public class CassandraDatastore extends AbstractDatastore {
 	}
 
 	public CassandraDatastore() {
-		this(new KeyValueMappingContext(DEFAULT_KEYSPACE));
+		this(new KeyValueMappingContext(DEFAULT_KEYSPACE),null);
 	}
 
 	@Override

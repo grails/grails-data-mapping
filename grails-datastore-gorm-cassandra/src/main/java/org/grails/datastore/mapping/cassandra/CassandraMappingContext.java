@@ -35,7 +35,7 @@ public class CassandraMappingContext extends AbstractMappingContext {
 
 	public CassandraMappingContext(){
 
-		mappingFactory = new GormKeyValueMappingFactory("testkeyspace");
+		mappingFactory = new GormKeyValueMappingFactory("CassandraKeySpace");
 		syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
 	}
 
