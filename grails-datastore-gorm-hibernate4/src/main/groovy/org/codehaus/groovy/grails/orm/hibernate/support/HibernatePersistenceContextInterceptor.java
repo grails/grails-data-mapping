@@ -88,7 +88,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
      */
     public void destroy() {
         DeferredBindingActions.clear();
-        if (decNestingCount() > 0 || getParticipate()) {
+        if (getSessionFactory() == null || decNestingCount() > 0 || getParticipate()) {
             return;
         }
 
@@ -155,6 +155,9 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
             return;
         }
         SessionFactory sf = getSessionFactory();
+        if (sf == null) {
+            return;
+        }        
         if (TransactionSynchronizationManager.hasResource(sf)) {
             // Do not modify the Session: just set the participate flag.
             setParticipate(true);
