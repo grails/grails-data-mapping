@@ -119,8 +119,8 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
             String beanName = "sessionFactory" + suffix;
             if (applicationContext.containsBean(beanName)) {
                 interceptor.setSessionFactory((SessionFactory) applicationContext.getBean(beanName));
+                interceptors.add(interceptor);
             }
-            interceptors.add(interceptor);
         }
     }
 
