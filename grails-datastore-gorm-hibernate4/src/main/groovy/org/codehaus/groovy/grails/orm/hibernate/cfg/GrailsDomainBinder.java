@@ -25,6 +25,7 @@ import org.codehaus.groovy.grails.orm.hibernate.validation.UniqueConstraint;
 import org.codehaus.groovy.grails.validation.ConstrainedProperty;
 import org.codehaus.groovy.grails.validation.Constraint;
 import org.hibernate.mapping.Column;
+import org.hibernate.mapping.OneToOne;
 import org.hibernate.mapping.Table;
 
 /**
@@ -92,5 +93,10 @@ public class GrailsDomainBinder extends AbstractGrailsDomainBinder {
 
     protected String unqualify(String qualifiedName) {
         return GrailsHibernateUtil.unqualify(qualifiedName);
+    }
+
+    @Override
+    protected void bindOneToOneInternal(GrailsDomainClassProperty property, OneToOne oneToOne, String path) {
+        oneToOne.setReferenceToPrimaryKey(false);
     }
 }

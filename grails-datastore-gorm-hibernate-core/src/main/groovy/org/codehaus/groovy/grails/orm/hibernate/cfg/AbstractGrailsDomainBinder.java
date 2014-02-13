@@ -2338,6 +2338,8 @@ public abstract class AbstractGrailsDomainBinder {
         oneToOne.setReferencedEntityName(otherSide.getDomainClass().getFullName());
         oneToOne.setPropertyName(property.getName());
 
+        bindOneToOneInternal(property, oneToOne, path);
+
         if (otherSide.isHasOne()) {
             PropertyConfig pc = getPropertyConfig(property);
             bindSimpleValue(property, oneToOne, path, pc, sessionFactoryBeanName);
@@ -2345,6 +2347,10 @@ public abstract class AbstractGrailsDomainBinder {
         else {
             oneToOne.setReferencedPropertyName(otherSide.getName());
         }
+    }
+
+    protected void bindOneToOneInternal(GrailsDomainClassProperty property, OneToOne oneToOne, String path) {
+        //no-op, for subclasses to extend
     }
 
     /**
