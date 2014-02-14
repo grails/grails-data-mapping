@@ -24,8 +24,6 @@ class CassandraGormGrailsPlugin {
 
 
 	def doWithDynamicMethods = { ctx ->
-		println "doWithDynamicMethods"
-		println ctx
 		def datastore = ctx.cassandraDatastore
 		def transactionManager = ctx.TransactionManager
 		def methodsConfigurer = new CassandraMethodsConfigurer(datastore, transactionManager)
