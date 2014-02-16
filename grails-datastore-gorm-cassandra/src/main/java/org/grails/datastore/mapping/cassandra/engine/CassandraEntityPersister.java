@@ -18,7 +18,6 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
 import java.util.*;
 
 import com.datastax.driver.core.*;
@@ -33,7 +32,6 @@ import org.grails.datastore.mapping.query.Query;
 import org.springframework.context.ApplicationEventPublisher;
 import org.grails.datastore.mapping.cassandra.CassandraDatastore;
 import org.grails.datastore.mapping.cassandra.CassandraSession;
-import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.PropertyValueIndexer;
 import org.grails.datastore.mapping.keyvalue.engine.KeyValueEntry;
@@ -41,8 +39,6 @@ import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-
-import javax.persistence.Column;
 
 /**
  * @author Graeme Rocher
@@ -57,6 +53,13 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		super(context, entity, conn, applicationEventPublisher);
 		this.session = session;
 	}
+
+	@Override
+	protected String getNativePropertyKey(PersistentProperty prop) {
+		//To C* all column names are lowercase
+		return super.getNativePropertyKey(prop).toLowerCase();
+	}
+
 
 	@Override
 	public AssociationIndexer getAssociationIndexer(KeyValueEntry nativeEntry, Association association) {
@@ -99,38 +102,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		KeyValueEntry entry = new KeyValueEntry(family);
 		if (rs.getAvailableWithoutFetching() == 1) {
 			Row row = rs.one();
-			ColumnDefinitions columns = row.getColumnDefinitions();
-			for (ColumnDefinitions.Definition definition : columns) {
-				String columnName = definition.getName();
-				DataType dt = definition.getType();
-				ByteBuffer columnUnsafeBytes = row.getBytesUnsafe(columnName);
-				Object o = null;
-				if (columnUnsafeBytes != null) {
-					o = dt.deserialize(columnUnsafeBytes);
-				}
-				System.out.println(columnName + ">" + dt.getName() + ": " + dt.getName().equals(DataType.Name.BLOB));
-				if (dt.getName().equals(DataType.Name.BLOB)) {
-
-					try {
-						ByteBuffer bb = row.getBytes(columnName);
-						byte[] result = new byte[bb.remaining()];
-						bb.get(result);
-						ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(result);
-						ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream);
-						o = ois.readObject();
-						System.out.println(o.getClass() + ":" + o);
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-					}
-				}
-				entry.put(columnName, o);
-			}
-		}
-
-		if (entry.isEmpty()) {
-			return null;
+			entry = rowToKeyValueEntry(row,family);
 		}
 
 		return entry;
@@ -211,8 +183,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 
 	@Override
 	public Query createQuery() {
-		System.out.println("Call to Unimplemented createQuery");
-		return null; //TODO implement createQuery
+		return new CassandraQuery((CassandraSession)getSession(), getPersistentEntity());
 	}
 
 	protected String getFamily(PersistentEntity persistentEntity, ClassMapping<Family> cm) {
@@ -285,6 +256,48 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		}
 
 		return !cassandraType.equalsIgnoreCase("blob");
+	}
+
+	public KeyValueEntry rowToKeyValueEntry(Row row, String family) {
+
+		KeyValueEntry entry = new KeyValueEntry(family);
+		ColumnDefinitions columns = row.getColumnDefinitions();
+		for (ColumnDefinitions.Definition definition : columns) {
+			String columnName = definition.getName();
+			DataType dt = definition.getType();
+			ByteBuffer columnUnsafeBytes = row.getBytesUnsafe(columnName);
+			Object o = null;
+			if (columnUnsafeBytes != null) {
+				o = dt.deserialize(columnUnsafeBytes);
+			}
+
+			System.out.println(columnName + ">" + dt.getName() + ": " + dt.getName().equals(DataType.Name.BLOB));
+
+			if (dt.getName().equals(DataType.Name.BLOB)) {
+
+				try {
+					ByteBuffer bb = row.getBytes(columnName);
+					byte[] result = new byte[bb.remaining()];
+					bb.get(result);
+					ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(result);
+					ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream);
+					o = ois.readObject();
+
+					System.out.println(o.getClass() + ":" + o);
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+			entry.put(columnName, o);
+		}
+
+		if (entry.isEmpty()) {
+			entry = null;
+		}
+		return entry;
 	}
 
 }

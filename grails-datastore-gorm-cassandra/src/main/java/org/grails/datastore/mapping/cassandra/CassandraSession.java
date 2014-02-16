@@ -71,7 +71,7 @@ public class CassandraSession extends AbstractSession<Session> {
 		throw new TransactionSystemException("Transactions are not supported by Cassandra");
 	}
 
-	public Cluster getNativeInterface() {
-		return cluster;
+	public Session getNativeInterface() {
+		return session;
 	}
 }
