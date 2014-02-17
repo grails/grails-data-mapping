@@ -32,9 +32,6 @@ class CassandraSpringConfigurer extends SpringConfigurer {
 	@Override
 	Closure getSpringCustomizer() {
 		return {
-
-			println "getSpringCustomizer Closure run"
-
 			def cassandraConfig = application.config?.grails?.cassandra?.clone()
 
 			cassandraMappingContext(CassandraMappingContextFactoryBean) {

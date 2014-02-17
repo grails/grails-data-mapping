@@ -29,6 +29,8 @@ import org.grails.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPersis
 import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.grails.datastore.mapping.cassandra.CassandraDatastore;
 import org.grails.datastore.mapping.cassandra.CassandraSession;
@@ -46,6 +48,8 @@ import org.grails.datastore.mapping.model.PersistentProperty;
  */
 public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<KeyValueEntry, Object> {
 
+	private static Logger log = LoggerFactory.getLogger(CassandraEntityPersister.class);
+
 	private Session session;
 	private static final byte[] ZERO_LENGTH_BYTE_ARRAY = new byte[0];
 
@@ -59,7 +63,6 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		//To C* all column names are lowercase
 		return super.getNativePropertyKey(prop).toLowerCase();
 	}
-
 
 	@Override
 	public AssociationIndexer getAssociationIndexer(KeyValueEntry nativeEntry, Association association) {
@@ -91,7 +94,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 
 	@Override
 	protected KeyValueEntry retrieveEntry(PersistentEntity persistentEntity, String family, Serializable nativeKey) {
-		System.out.println("retrieveEntry");
+		log.debug("retrieveEntry");
 		final ClassMapping cm = getPersistentEntity().getMapping();
 		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 
@@ -102,7 +105,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		KeyValueEntry entry = new KeyValueEntry(family);
 		if (rs.getAvailableWithoutFetching() == 1) {
 			Row row = rs.one();
-			entry = rowToKeyValueEntry(row,family);
+			entry = rowToKeyValueEntry(row, family);
 		}
 
 		return entry;
@@ -110,30 +113,30 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 
 	@Override
 	protected Object storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object storeId, KeyValueEntry entry) {
-		System.out.println("StoreEntry");
+		log.debug("StoreEntry");
 		UUID uuid = (UUID)storeId;
 		final ClassMapping cm = getPersistentEntity().getMapping();
 		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 		String family = getFamily(persistentEntity, getPersistentEntity().getMapping());
-		System.out.println(family);
+		log.debug(family);
 		Insert insert = QueryBuilder.insertInto(keyspaceName, family);
 
 		//Include id
 		insert = insert.value("id", uuid);
 
-		System.out.println(byte[].class);
+		log.debug(byte[].class.toString());
 
 		for (String prop : entry.keySet()) {
-			System.out.println(prop + "->" + entry.get(prop) + ":" + entry.get(prop).getClass());
+			log.debug(prop + "->" + entry.get(prop) + ":" + entry.get(prop).getClass());
 
 			insert = insert.value(prop, convertToCassandraType(entry.get(prop)));
 		}
 
-		System.out.println("After session execute insert " + insert.toString());
+		log.debug("After session execute insert " + insert.toString());
 
 		ResultSet rs = session.execute(insert);
 
-		System.out.println(rs.getExecutionInfo());
+		log.debug(rs.getExecutionInfo().toString());
 		return uuid;
 	}
 
@@ -192,10 +195,10 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		if (cm.getMappedForm() != null) {
 			table = cm.getMappedForm().getFamily();
 		}
-		System.out.println(table);
+		log.debug(table);
 		//if (table == null)
 		table = persistentEntity.getJavaClass().getSimpleName();
-		System.out.println("in getFamily: " + table);
+		log.debug("in getFamily: " + table);
 		return table;
 	}
 
@@ -259,7 +262,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 	}
 
 	public KeyValueEntry rowToKeyValueEntry(Row row, String family) {
-
+		log.debug("rowToKeyValueEntry: " + row);
 		KeyValueEntry entry = new KeyValueEntry(family);
 		ColumnDefinitions columns = row.getColumnDefinitions();
 		for (ColumnDefinitions.Definition definition : columns) {
@@ -271,7 +274,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 				o = dt.deserialize(columnUnsafeBytes);
 			}
 
-			System.out.println(columnName + ">" + dt.getName() + ": " + dt.getName().equals(DataType.Name.BLOB));
+			log.debug(columnName + ">" + dt.getName() + ": " + dt.getName().equals(DataType.Name.BLOB));
 
 			if (dt.getName().equals(DataType.Name.BLOB)) {
 
@@ -282,9 +285,6 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 					ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(result);
 					ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream);
 					o = ois.readObject();
-
-					System.out.println(o.getClass() + ":" + o);
-
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {

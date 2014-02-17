@@ -16,10 +16,14 @@ import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class CassandraQuery extends Query implements QueryArgumentsAware {
+
+	private static Logger log = LoggerFactory.getLogger(CassandraQuery.class);
 
 	private Map queryArguments = Collections.emptyMap();
 	private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
@@ -32,36 +36,42 @@ public class CassandraQuery extends Query implements QueryArgumentsAware {
 
 	@Override
 	protected List executeQuery(PersistentEntity entity, Junction criteria) {
-		System.out.println(criteria.getCriteria().size());
+
 
 		List<Object> out = new LinkedList<Object>();
 		if (criteria instanceof Disjunction) {
-			System.out.println("Disjunction");
-			//TODO Can Not actually support Disjunction
-
+			log.error("Cassandra GORM doesn't support Disjuntion, nothing will be returned");
 		} else if (criteria instanceof Conjunction) {
-			System.out.println("Conjunction");
+			log.debug("Executing Conjunction Query");
 
 			final ClassMapping cm = entity.getMapping();
 			final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 			String family = entity.getDecapitalizedName(); //FIXME This is not correct just a hack
-			System.out.println(cm.getMappedForm().toString());
 
 			Select select = QueryBuilder.select().all().from(keyspaceName, family);
 
 			Select.Where where = select.where();
 
-			for (Criterion c : criteria.getCriteria()) {
-				System.out.println(c);
+			List<Criterion> criterions = criteria.getCriteria();
+
+			for (Criterion c : criterions) {
+				log.debug("Working on Criterion: " + c);
 				if (c instanceof Equals) {
 					Equals eq = (Equals)c;
 					Clause clause = QueryBuilder.eq(eq.getProperty(), eq.getValue());
 					where.and(clause);
 				} else {
 					//TODO
+					log.warn("Got Non Equals Criterion not supported yet");
 				}
 			}
 
+			if (criterions.size() > 1) {
+				//TODO make this a config option?
+				log.debug("Criterions size:"+criterions.size());
+				log.warn("Allowing filtering in CQL Query this can cause performance issues");
+				select = select.allowFiltering();
+			}
 
 			ResultSet rs = cassandraSession.getNativeInterface().execute(select);
 			CassandraEntityPersister cassandraEntityPersister = (CassandraEntityPersister)session.getPersister(entity);

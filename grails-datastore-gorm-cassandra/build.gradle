@@ -12,10 +12,9 @@ dependencies {
 		transitive = false
 	}
 
-	compile project(":grails-datastore-core")
 
 	compile project(':grails-datastore-gorm'),
-		project(':grails-datastore-web'),
+		project(':grails-datastore-core'),
 		project(':grails-datastore-gorm-plugin-support')
 
 	testCompile project(':grails-datastore-gorm-test'),

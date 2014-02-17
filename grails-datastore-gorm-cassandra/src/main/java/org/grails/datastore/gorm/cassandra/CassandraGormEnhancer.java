@@ -13,13 +13,11 @@ public class CassandraGormEnhancer extends GormEnhancer {
 
 	@Override
 	protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
-		System.out.println("Instacne API");
 		return super.getInstanceApi(cls);
 	}
 
 	@Override
 	protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-		System.out.println("Static API");
 		return super.getStaticApi(cls);
 	}
 

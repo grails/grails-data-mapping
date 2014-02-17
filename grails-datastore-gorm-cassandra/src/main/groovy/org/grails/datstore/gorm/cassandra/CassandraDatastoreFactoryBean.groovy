@@ -20,7 +20,6 @@ class CassandraDatastoreFactoryBean implements FactoryBean<CassandraDatastore>, 
 
 	@Override
 	CassandraDatastore getObject() throws Exception {
-		println "getObject"
 		CassandraDatastore datastore = new CassandraDatastore(mappingContext, applicationContext)
 
 		applicationContext.addApplicationListener new DomainEventListener(datastore)
