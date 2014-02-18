@@ -14,6 +14,9 @@
  */
 package org.grails.datastore.mapping.cassandra;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import com.datastax.driver.core.Cluster;
@@ -21,6 +24,9 @@ import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.policies.ConstantReconnectionPolicy;
 import com.datastax.driver.core.policies.DowngradingConsistencyRetryPolicy;
 
+import groovy.util.ConfigObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.grails.datastore.mapping.core.AbstractDatastore;
@@ -28,28 +34,53 @@ import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.grails.datastore.mapping.model.MappingContext;
 
-/**
- * @author Graeme Rocher
- * @since 1.0
- */
 public class CassandraDatastore extends AbstractDatastore {
-	public static final String DEFAULT_KEYSPACE = "CassandraKeySpace"; //TODO make onse keyspace for each session somehow, maybe just do a different datastore instance?
+
+	private static Logger log = LoggerFactory.getLogger(CassandraDatastore.class);
+
+	public static final String DEFAULT_KEYSPACE = "CassandraKeySpace"; //TODO make one keyspace for each session somehow, maybe just do a different datastore instance?
 	private Cluster cluster;
 
-	public CassandraDatastore(MappingContext mappingContext, ConfigurableApplicationContext ctx) {
+	public CassandraDatastore(MappingContext mappingContext, ConfigurableApplicationContext ctx, ConfigObject config) {
 		super(mappingContext);
+
+		List<String> contactPoints = Collections.<String>emptyList();
+		Object configContactPoints = config.get("contactPoints");
+		if (configContactPoints instanceof List) {
+			List configContactPointsList = (List)configContactPoints;
+			contactPoints = new ArrayList<String>(configContactPointsList.size());
+			for (Object point : (List)configContactPoints) {
+				if (point instanceof String) {
+					contactPoints.add((String)point);
+				} else {
+					log.warn("Rejecting non-string contact point: " + point.toString());
+				}
+			}
+		} else if (configContactPoints instanceof String) {
+			contactPoints = new ArrayList<String>(1);
+			contactPoints.add((String)configContactPoints);
+		} else {
+			log.error("Could not convert contactPoints to needed format. Should be a List of Strings or a String.");
+		}
+
 		this.setApplicationContext(ctx);
 
-		this.cluster = Cluster.builder()
-			.addContactPoints("10.125.12.32")
-			.withRetryPolicy(DowngradingConsistencyRetryPolicy.INSTANCE)
+		Cluster.Builder builder = Cluster.builder();
+
+		for (String contactPoint : contactPoints) {
+			builder = builder.addContactPoint(contactPoint);
+		}
+
+		builder = builder.withRetryPolicy(DowngradingConsistencyRetryPolicy.INSTANCE)
 			.withReconnectionPolicy(new ConstantReconnectionPolicy(100L))
-			.withSocketOptions(new SocketOptions().setKeepAlive(true))
-			.build();
+			.withSocketOptions(new SocketOptions().setKeepAlive(true));
+
+		this.cluster = builder.build();
 	}
 
 	public CassandraDatastore() {
-		this(new KeyValueMappingContext(DEFAULT_KEYSPACE),null);
+		//TODO default config for testing?
+		this(new KeyValueMappingContext(DEFAULT_KEYSPACE), null, null);
 	}
 
 	@Override

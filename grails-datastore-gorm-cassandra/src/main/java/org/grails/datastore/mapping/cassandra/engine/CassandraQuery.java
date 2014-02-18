@@ -5,11 +5,8 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.querybuilder.Clause;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
-import org.grails.datastore.gorm.finders.MethodExpression;
 import org.grails.datastore.mapping.cassandra.CassandraDatastore;
 import org.grails.datastore.mapping.cassandra.CassandraSession;
-import org.grails.datastore.mapping.cassandra.engine.CassandraEntityPersister;
-import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.keyvalue.engine.KeyValueEntry;
 import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
 import org.grails.datastore.mapping.model.ClassMapping;
@@ -44,9 +41,9 @@ public class CassandraQuery extends Query implements QueryArgumentsAware {
 		} else if (criteria instanceof Conjunction) {
 			log.debug("Executing Conjunction Query");
 
-			final ClassMapping cm = entity.getMapping();
+			final ClassMapping<Family> cm = entity.getMapping();
 			final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
-			String family = entity.getDecapitalizedName(); //FIXME This is not correct just a hack
+			String family = cm.getMappedForm().getFamily();
 
 			Select select = QueryBuilder.select().all().from(keyspaceName, family);
 

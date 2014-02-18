@@ -25,11 +25,11 @@ import org.grails.datastore.mapping.model.MappingContext
  * Forked from Mongo version
  */
 class CassandraMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
-
+	ConfigObject config = [:]
 
 	@Override
 	protected MappingContext createMappingContext() {
-		return new CassandraMappingContext();
+		return new CassandraMappingContext(config);
 	}
 }
 

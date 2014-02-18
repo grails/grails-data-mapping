@@ -148,9 +148,11 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 
 		UUID uuid = (UUID)id;
 
+
 		Update.Assignments updateAssignments = QueryBuilder.update(keyspaceName, family).with();
-		for (String prop : entry.keySet()) {
-			updateAssignments = updateAssignments.and(QueryBuilder.set(prop, convertToCassandraType(entry.get(prop))));
+		for (PersistentProperty prop :persistentEntity.getPersistentProperties()) {
+			log.info("Update set: " + prop.getName() + " to " + entry.get(prop.getName()));
+			updateAssignments = updateAssignments.and(QueryBuilder.set(prop.getName(), convertToCassandraType(entry.get(prop.getName()))));
 		}
 
 		Statement update = updateAssignments.where(QueryBuilder.eq("id", UUID.fromString(uuid.toString())));
@@ -190,14 +192,12 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 	}
 
 	protected String getFamily(PersistentEntity persistentEntity, ClassMapping<Family> cm) {
-		//TODO make this something good
 		String table = null;
 		if (cm.getMappedForm() != null) {
 			table = cm.getMappedForm().getFamily();
 		}
 		log.debug(table);
-		//if (table == null)
-		table = persistentEntity.getJavaClass().getSimpleName();
+		if (table == null) { table = persistentEntity.getJavaClass().getSimpleName(); }
 		log.debug("in getFamily: " + table);
 		return table;
 	}

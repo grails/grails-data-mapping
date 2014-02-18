@@ -14,13 +14,13 @@ import org.springframework.context.ApplicationContextAware
  */
 class CassandraDatastoreFactoryBean implements FactoryBean<CassandraDatastore>, ApplicationContextAware {
 
-	Map<String, String> config = [:]
+	ConfigObject config = [:]
 	MappingContext mappingContext
 	ApplicationContext applicationContext
 
 	@Override
 	CassandraDatastore getObject() throws Exception {
-		CassandraDatastore datastore = new CassandraDatastore(mappingContext, applicationContext)
+		CassandraDatastore datastore = new CassandraDatastore(mappingContext, applicationContext, config)
 
 		applicationContext.addApplicationListener new DomainEventListener(datastore)
 		applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
