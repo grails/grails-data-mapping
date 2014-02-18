@@ -86,8 +86,7 @@ public abstract class AbstractDynamicPersistentMethod extends AbstractDynamicMet
     /**
      * Initializes the Errors property on target.  The target will be assigned a new
      * Errors property.  If the target contains any binding errors, those binding
-     * errors will be copied in to the new Errors property.  Note that the binding errors
-     * will no longer be flagged as binding errors
+     * errors will be copied in to the new Errors property.
      *
      * @param target object to initialize
      * @return the new Errors object
