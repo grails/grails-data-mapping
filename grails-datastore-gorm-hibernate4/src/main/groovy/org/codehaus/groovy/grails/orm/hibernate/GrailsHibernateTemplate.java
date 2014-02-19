@@ -73,6 +73,9 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
         Assert.notNull(sessionFactory, "Property 'sessionFactory' is required");
         this.sessionFactory = sessionFactory;
 
+        if(sessionFactory instanceof SessionFactoryProxy) {
+            sessionFactory = ((SessionFactoryProxy)sessionFactory).getCurrentSessionFactory();
+        }
         ConnectionProvider connectionProvider = ((SessionFactoryImpl) sessionFactory).getServiceRegistry().getService(ConnectionProvider.class);
         if(connectionProvider instanceof DatasourceConnectionProviderImpl) {
             jdbcExceptionTranslator = new SQLErrorCodeSQLExceptionTranslator(((DatasourceConnectionProviderImpl) connectionProvider).getDataSource());

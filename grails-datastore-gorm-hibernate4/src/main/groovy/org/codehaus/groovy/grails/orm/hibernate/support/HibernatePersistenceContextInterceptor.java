@@ -24,6 +24,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractSavePersistentMethod;
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
 import org.hibernate.FlushMode;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.internal.SessionImpl;
@@ -121,7 +122,15 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
     public void reconnect() {
         if (getSessionFactory() == null) return;
         Connection connection = ((SessionImpl) getSession()).connection();
-        getSession().reconnect(connection);
+        Session session = getSession();
+        if(!session.isConnected()) {
+            try {
+                getSession().reconnect(connection);
+            } catch (IllegalStateException e) {
+                // cannot reconnect on different exception. ignore
+                LOG.debug(e.getMessage(),e);
+            }
+        }
     }
 
     public void flush() {
