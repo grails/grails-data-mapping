@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.cassandra.engine;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -148,9 +149,8 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 
 		UUID uuid = (UUID)id;
 
-
 		Update.Assignments updateAssignments = QueryBuilder.update(keyspaceName, family).with();
-		for (PersistentProperty prop :persistentEntity.getPersistentProperties()) {
+		for (PersistentProperty prop : persistentEntity.getPersistentProperties()) {
 			log.info("Update set: " + prop.getName() + " to " + entry.get(prop.getName()));
 			updateAssignments = updateAssignments.and(QueryBuilder.set(prop.getName(), convertToCassandraType(entry.get(prop.getName()))));
 		}
@@ -203,6 +203,10 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 	}
 
 	private Object convertToCassandraType(Object object) {
+		//TODO refactor into extensible approach with custom types ala hibernate
+		if (object == null) {
+			return null;
+		}
 		Class clazz = object.getClass();
 
 		Object o = object;
@@ -210,7 +214,11 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 			o = ByteBuffer.wrap((byte[])object);
 		}
 
-		if (!cassandraNativeSupport(object.getClass())) {
+		if (clazz.isEnum()) {
+			o = object.toString();
+		} else if (clazz.equals(URI.class)) {
+			o = object.toString();
+		} else if (!cassandraNativeSupport(clazz)) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			try {
 				ObjectOutputStream oos = new ObjectOutputStream(baos);
