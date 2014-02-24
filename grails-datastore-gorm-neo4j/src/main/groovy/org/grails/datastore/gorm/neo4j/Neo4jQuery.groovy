@@ -16,12 +16,12 @@ package org.grails.datastore.gorm.neo4j
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.grails.datastore.gorm.neo4j.engine.CypherEngine
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
 import org.neo4j.cypher.javacompat.ExecutionResult
-import org.neo4j.cypher.javacompat.ExecutionEngine
 import static org.grails.datastore.mapping.query.Query.*
 
 /**
@@ -33,6 +33,9 @@ import static org.grails.datastore.mapping.query.Query.*
 @Slf4j
 class Neo4jQuery extends Query {
 
+    public static TYPE = "type"
+    public static END = "end"
+
     final Neo4jEntityPersister neo4jEntityPersister
 
     protected Neo4jQuery(Session session, PersistentEntity entity, Neo4jEntityPersister neo4jEntityPersister) {
@@ -40,55 +43,75 @@ class Neo4jQuery extends Query {
         this.neo4jEntityPersister = neo4jEntityPersister
     }
 
-    @Override
-    protected List executeQuery(PersistentEntity persistentEntity, Junction criteria) {
-
-        def returnColumns = buildReturnColumns(persistentEntity)
-        def params = [:] as Map<String,Object>
-        def conditions = buildConditions(criteria, params)
-        def cypher = """MATCH (n:$persistentEntity.discriminator) ${conditions ? "WHERE " + conditions : " "}
-RETURN $returnColumns"""
-
+    private String applyOrderAndLimits(Map params) {
+        def cypher = ""
         if (!orderBy.empty) {
             cypher += " ORDER BY "
             cypher += orderBy.collect { Order order -> "n.${order.property} $order.direction" }.join(", ")
         }
 
-        if (offset!=0) {
+        if (offset != 0) {
             cypher += " SKIP {__skip__}"
             params["__skip__"] = offset
         }
 
-        if (max!=-1) {
+        if (max != -1) {
             cypher += " LIMIT {__limit__}"
             params["__limit__"] = max
         }
 
-        log.info "running cypher : $cypher"
-        log.info "   with params : $params"
+        cypher
+    }
 
-        ExecutionResult executionResult = executionEngine.execute(cypher, params)
+    @Override
+    protected List executeQuery(PersistentEntity persistentEntity, Junction criteria) {
+
+        def params = [:] as Map<String,Object>
+        def conditions = buildConditions(criteria, params)
+        def cypher = """MATCH (n:$persistentEntity.discriminator) ${conditions ? "WHERE " + conditions : " "}"""
+
+        if (projections.projectionList.empty) {
+            cypher += """WITH id(n) as id, labels(n) as labels, n as data
+${applyOrderAndLimits(params)}
+OPTIONAL MATCH (n)-[r]->()
+WITH id, labels, data, type(r) as t, collect(id(endnode(r))) as endNodeIds
+RETURN id, labels, data, collect( {$TYPE: t, $END: endNodeIds}) as relationships"""
+
+        } else {
+            def returnColumns = projections.projectionList
+                                .collect { Projection projection -> buildProjection(projection) }
+                                .join(", ")
+            cypher += "RETURN $returnColumns ${applyOrderAndLimits(params)}"
+        }
+
+
+        def executionResult = cypherEngine.execute(cypher, params)
         if (projections.projectionList.empty) {
             return executionResult.collect { Map<String,Object> map ->
-                neo4jEntityPersister.retrieveEntityAccess(persistentEntity, map["n"] as org.neo4j.graphdb.Node).entity
+
+                Long id = map.id as Long
+                Collection<String> labels = map.labels as Collection<String>
+                Map<String,Object> data = map.data as Map<String, Object>
+
+                Map<String, Collection<Long>> relationships = new HashMap<String, Collection<Long>>()
+                for (m in map.relationships) {
+                    def relTypeMap = m as Map
+                    String relType = relTypeMap[TYPE]
+                    Collection<Long> ids = relTypeMap[END] as Collection<Long>
+                    relationships[relType] = ids
+                }
+
+                log.debug "relationships = $relationships"
+
+                neo4jEntityPersister.retrieveEntityAccess(persistentEntity, id, labels, data, relationships).entity
             }
         } else {
 
             executionResult.collect { Map<String, Object> row ->
-                executionResult.columns().collect {
+                executionResult.columns.collect {
                     row[it]
                 }
             }.flatten() as List
-        }
-    }
-
-    def buildReturnColumns(PersistentEntity entity) {
-        if (projections.projectionList.empty) {
-            Neo4jUtils.cypherReturnColumnsForType(entity)
-        } else {
-            projections.projectionList
-                    .collect { Projection projection -> buildProjection(projection) }
-                    .join(", ")
         }
     }
 
@@ -250,8 +273,8 @@ RETURN $returnColumns"""
         return "$lhs$operator$rhs"
     }
 
-    ExecutionEngine getExecutionEngine() {
-        session.nativeInterface as ExecutionEngine
+    CypherEngine getCypherEngine() {
+        session.nativeInterface as CypherEngine
     }
 }
 

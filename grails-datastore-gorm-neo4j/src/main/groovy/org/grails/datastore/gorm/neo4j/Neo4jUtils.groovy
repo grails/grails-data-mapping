@@ -54,11 +54,7 @@ abstract class Neo4jUtils {
         }
     }
 
-    static def cypherReturnColumnsForType(PersistentEntity entity) {
-        "n"
-    }
-
-    static def mapToAllowedNeo4jType(Object value, MappingContext mappingContext) {
+ static def mapToAllowedNeo4jType(Object value, MappingContext mappingContext) {
         switch (value.class) {
             case String:
             case Long:

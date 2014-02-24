@@ -12,4 +12,20 @@ class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
         super(javaClass, context)
     }
 
+    /**
+     * recursively join all discriminators up the class hierarchy
+     * @return
+     */
+    public String getLabelsWithInheritance() {
+        StringBuilder sb = new StringBuilder()
+        appendRecursive(sb)
+        sb.toString()
+    }
+
+    private void appendRecursive(StringBuilder sb){
+        sb.append(":").append(discriminator)
+        if (parentEntity!=null) {
+            ((GraphPersistentEntity)parentEntity).appendRecursive(sb)
+        }
+    }
 }
