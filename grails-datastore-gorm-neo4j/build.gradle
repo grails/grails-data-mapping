@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     compile "org.neo4j:neo4j-community:$neo4jVersion"
+    compile "com.fasterxml.uuid:java-uuid-generator:3.1.3"
 
     // during development (aka snapshot version), use project dependencies
     // during release, use 'regular' dependencies
