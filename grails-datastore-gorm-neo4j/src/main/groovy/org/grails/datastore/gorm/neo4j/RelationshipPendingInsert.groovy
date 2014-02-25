@@ -17,7 +17,6 @@ class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long> {
 
     CypherEngine cypherEngine
     MappingContext mappingContext
-    EntityAccess target
     Association association
     Neo4jSession session
 
@@ -31,16 +30,30 @@ class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long> {
 
     @Override
     void run() {
-        def id = entityAccess.identifier
+        Long id = entityAccess.identifier as Long
         def relType = association.name.toUpperCase()
 
-        def e = entityAccess.entity
-        def rels = session.getPersistentRelationships(id as Long)?.get(relType)
+        Map<String, Collection<Long>> relationshipsMap = session.getPersistentRelationships(id)
+        if (relationshipsMap == null) {
+            relationshipsMap = [:]
+            session.setPersistentRelationships(id, relationshipsMap)
+        }
+
+        Collection<Long> rels = relationshipsMap.get(relType)
+        if (!(rels instanceof ArrayList)) { // cypher might return scala immutable collections here
+            Collection<Long> existingRels = rels
+            rels = new ArrayList<>()
+            if (existingRels!=null) {
+                rels.addAll(existingRels)
+            }
+            relationshipsMap.put(relType, rels)
+        }
 
         for (target in entityAccess.getProperty(association.name)) {
             Long targetId = target["id"] as Long
-            if ((rels==null) || (!(targetId in rels))) {
+            if (!(targetId in rels)) {
                 cypherEngine.execute("MATCH (from), (to) WHERE id(from)={fromId} AND id(to)={toId} CREATE (from)-[:$relType]->(to)", [fromId: id, toId: targetId])
+                rels.add(targetId)
             } else {
                 log.debug "skip creating relationship ($id)-[:$relType]->($targetId), already exisiting"
             }

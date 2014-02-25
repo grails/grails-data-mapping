@@ -9,13 +9,13 @@ import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.impl.PendingInsert
 import org.grails.datastore.mapping.core.impl.PendingOperation
 import org.grails.datastore.mapping.core.impl.PendingOperationExecution
-import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.Persister
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.transactions.Transaction
 import org.neo4j.cypher.javacompat.ExecutionEngine
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.dao.InvalidDataAccessResourceUsageException
 
 import javax.persistence.FlushModeType
 
@@ -73,8 +73,7 @@ class Neo4jSession extends AbstractSession<ExecutionEngine> {
                 PendingOperationExecution.executePendingOperation(pendingOperation);
             } catch (RuntimeException e) {
                 setFlushMode(FlushModeType.COMMIT);
-                exceptionOccurred = true;
-                throw e;
+                throw new InvalidDataAccessResourceUsageException("Do not flush() the Session after an exception occurs", e);
             }
         }
     }
