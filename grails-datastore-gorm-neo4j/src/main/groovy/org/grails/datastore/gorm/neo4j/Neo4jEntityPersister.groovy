@@ -16,7 +16,7 @@ import org.grails.datastore.mapping.model.types.Simple
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.proxy.EntityProxy
 import org.grails.datastore.mapping.query.Query
-
+import org.neo4j.helpers.collection.IteratorUtil
 import org.springframework.context.ApplicationEventPublisher
 
 import static org.grails.datastore.mapping.query.Query.*
@@ -65,25 +65,8 @@ class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected Object retrieveEntity(PersistentEntity pe, Serializable key) {
-
-//        try {
-
         List<Criterion> criteria = [new IdEquals(key)] as List<Criterion>
-        new Neo4jQuery(session, pe, this).executeQuery(pe, new Conjunction(criteria))
-
-/*
-            Map<String,Object> map = IteratorUtil.first(cypherEngine.execute("match (n:${pe.discriminator}) where id(n)={key} return ${"id(n) as id, labels(n) as labels, n as data, collect({type: type(r), endNodeIds: id(endnode(r))}) as endNodeId"}", [key: key] as Map<String,Object>))
-
-            EntityAccess entityAccess = retrieveEntityAccess(pe, map["n"] as org.neo4j.graphdb.Node)
-            if (cancelLoad(pe, entityAccess)) {
-                return null
-            }
-            entityAccess.entity
-*/
-
-//        } catch (EntityNotFoundException  | NoSuchElementException e) {
-//            null
-//        }
+        IteratorUtil.single(new Neo4jQuery(session, pe, this).executeQuery(pe, new Conjunction(criteria)).iterator())
     }
 
     public EntityAccess retrieveEntityAccess(PersistentEntity defaultPersistentEntity, Long id, Collection<String> labels,
@@ -144,7 +127,9 @@ class Neo4jEntityPersister extends EntityPersister {
                     log.error "property $property.name is of type ${property.class.superclass}"
                     break
                 case ManyToOne:
-                    log.error "property $property.name is of type ${property.class.superclass}"
+                    ManyToOne mto = property as ManyToOne
+                    Long otherId = IteratorUtil.single(relationships[property.name.toUpperCase()])
+                    entityAccess.setProperty(property.name, mappingContext.proxyFactory.createProxy(session, mto.associatedEntity.javaClass, otherId))
                     break
                 case OneToMany:
                     OneToMany otm = property as OneToMany
@@ -208,14 +193,18 @@ class Neo4jEntityPersister extends EntityPersister {
                     break
                 case OneToMany:
                     def otm = pp as OneToMany
+
                     persistEntities(otm.associatedEntity, propertyValue as Iterable)
                     session.addPendingInsert(new RelationshipPendingInsert(entityAccess, otm, cypherEngine, mappingContext, session))
+
                     break
                 case ToOne:
                     def to = pp as ToOne
+
                     if (propertyValue != null) {
                         persistEntity(to.associatedEntity, propertyValue)
                         session.addPendingInsert(new RelationshipPendingInsert(entityAccess, to, cypherEngine, mappingContext, session))
+
                     }
                     break
                 default:
