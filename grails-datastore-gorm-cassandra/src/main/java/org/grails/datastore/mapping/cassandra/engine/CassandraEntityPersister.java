@@ -103,8 +103,9 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		Statement stmt = QueryBuilder.select().all().from(keyspaceName, family).where(QueryBuilder.eq("id", UUID.fromString(nativeKey.toString())));
 		ResultSet rs = session.execute(stmt);
 
-		KeyValueEntry entry = new KeyValueEntry(family);
+		KeyValueEntry entry = null;
 		if (rs.getAvailableWithoutFetching() == 1) {
+			entry = new KeyValueEntry(family);
 			Row row = rs.one();
 			entry = rowToKeyValueEntry(row, family);
 		}
