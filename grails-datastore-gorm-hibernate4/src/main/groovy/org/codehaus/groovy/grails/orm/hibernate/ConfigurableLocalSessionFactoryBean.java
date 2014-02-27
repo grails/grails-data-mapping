@@ -17,15 +17,6 @@ package org.codehaus.groovy.grails.orm.hibernate;
 
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.naming.NameNotFoundException;
-import javax.sql.DataSource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
@@ -45,6 +36,7 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ResourceLoaderAware;
@@ -54,9 +46,15 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternUtils;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
 import org.springframework.util.Assert;
+
+import javax.naming.NameNotFoundException;
+import javax.sql.DataSource;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * A SessionFactory bean that allows the configuration class to
@@ -103,15 +101,9 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
      * If set, this will override corresponding settings in Hibernate properties.
      * <p>If this is set, the Hibernate settings should not define
      * a connection provider to avoid meaningless double configuration.
-     * 
-     * unwraps the dataSource if it's a TransactionAwareDataSourceProxy
-     * Hibernate's Isolater.JdbcDelegate requires that the dataSource returns new connections for each getConnection call
-     * 
-     * @see org.hibernate.engine.transaction.Isolater.JdbcDelegate#delegateWork(org.hibernate.engine.transaction.IsolatedWork, boolean)
-     * @see org.springframework.orm.hibernate3.AbstractSessionFactoryBean#setDataSource(javax.sql.DataSource)
      */
     public void setDataSource(DataSource dataSource) {
-        this.dataSource = (dataSource instanceof TransactionAwareDataSourceProxy) ? ((TransactionAwareDataSourceProxy) dataSource).getTargetDataSource() : dataSource;
+        this.dataSource = dataSource;
     }
     public DataSource getDataSource() {
         return dataSource;
