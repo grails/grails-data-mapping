@@ -47,14 +47,11 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.TypeFilter;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.util.ClassUtils;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
-import javax.sql.DataSource;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -364,7 +361,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         }
 
         String dsName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE.equals(dataSourceName) ? "dataSource" : "dataSource_" + dataSourceName;
-        getProperties().put(Environment.DATASOURCE, unwrapDataSourceProxy(applicationContext.getBean(dsName, DataSource.class)));
+        getProperties().put(Environment.DATASOURCE, applicationContext.getBean(dsName));
         getProperties().put(Environment.CURRENT_SESSION_CONTEXT_CLASS, GrailsSessionContext.class.getName());
         getProperties().put(AvailableSettings.CLASSLOADERS, grailsApplication.getClassLoader());
         resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(applicationContext);
@@ -394,10 +391,6 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
                 // impossible condition
             }
         }
-    }
-
-    protected DataSource unwrapDataSourceProxy(DataSource dataSource) {
-        return (dataSource instanceof TransactionAwareDataSourceProxy) ? ((TransactionAwareDataSourceProxy) dataSource).getTargetDataSource() : dataSource;
     }
 
     @Override
