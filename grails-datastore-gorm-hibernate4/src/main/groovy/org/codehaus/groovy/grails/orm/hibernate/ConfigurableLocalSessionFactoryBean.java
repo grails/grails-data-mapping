@@ -17,11 +17,21 @@ package org.codehaus.groovy.grails.orm.hibernate;
 
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.naming.NameNotFoundException;
+import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration;
+import org.codehaus.groovy.grails.orm.hibernate.transaction.GrailsJdbcTransactionFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
 import org.hibernate.SessionFactory;
@@ -36,7 +46,6 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ResourceLoaderAware;
@@ -48,13 +57,6 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
 import org.springframework.util.Assert;
-
-import javax.naming.NameNotFoundException;
-import javax.sql.DataSource;
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * A SessionFactory bean that allows the configuration class to
@@ -567,11 +569,18 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
         if (currentSessionContextClass != null) {
             config.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, currentSessionContextClass.getName());
         }
+        configureGrailsJdbcTransactionFactory(config);
         config.afterPropertiesSet();
-
         return config;
     }
 
+    protected void configureGrailsJdbcTransactionFactory(Configuration config) {
+        String configuredStrategy = config.getProperty(Environment.TRANSACTION_STRATEGY);
+        if(configuredStrategy == null || "jdbc".equals(configuredStrategy)) {
+            config.setProperty(Environment.TRANSACTION_STRATEGY, GrailsJdbcTransactionFactory.class.getName());
+        }
+    }
+    
     public void setBeanClassLoader(ClassLoader beanClassLoader) {
         classLoader = beanClassLoader;
     }

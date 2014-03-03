@@ -18,10 +18,12 @@ import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import javax.naming.NameNotFoundException;
+import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +32,7 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.DefaultGrailsDomainConfiguration;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainConfiguration;
 import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor;
+import org.codehaus.groovy.grails.orm.hibernate.transaction.HibernateJtaTransactionManagerAdapter;
 import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -70,7 +73,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
+import org.springframework.orm.hibernate3.LocalTransactionManagerLookup;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * A SessionFactory bean that allows the configuration class to
@@ -92,6 +99,15 @@ public class ConfigurableLocalSessionFactoryBean extends
     protected boolean proxyIfReloadEnabled = true;
     protected String sessionFactoryBeanName = "sessionFactory";
     protected String dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+    protected PlatformTransactionManager transactionManager;
+
+    public PlatformTransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
 
     /**
      * @param proxyIfReloadEnabled Sets whether a proxy should be created if reload is enabled
@@ -160,6 +176,49 @@ public class ConfigurableLocalSessionFactoryBean extends
         }
         return (Configuration)config;
     }
+     
+    @Override
+    protected void postProcessMappings(Configuration config) throws HibernateException {
+        super.postProcessMappings(config);
+        if(requiresJtaTransactionManagerAdapter()) {
+            configureJtaTransactionManagerAdapter(config);
+        }        
+    }
+
+    @Override
+    protected SessionFactory buildSessionFactory() throws Exception {
+        try {
+            return super.buildSessionFactory();
+        } finally {
+            getConfigTimeTransactionManagerHolder().remove();
+        }
+    }
+
+    protected boolean requiresJtaTransactionManagerAdapter() {
+        return getConfigTimeTransactionManager()==null && getTransactionManager() != null;
+    }
+
+    /**
+     * Configures adapter for adding transaction controlling hooks for supporting
+     * Hibernate's org.hibernate.engine.transaction.Isolater class's interaction with transactions
+     * 
+     * This is required when there is no real JTA transaction manager in use and Spring's
+     * {@link TransactionAwareDataSourceProxy} is used.
+     * 
+     * @param config
+     */
+    protected void configureJtaTransactionManagerAdapter(Configuration config) {
+        getConfigTimeTransactionManagerHolder().set(new HibernateJtaTransactionManagerAdapter(getTransactionManager()));        
+        config.setProperty(Environment.TRANSACTION_MANAGER_STRATEGY, LocalTransactionManagerLookup.class.getName());
+    }
+
+    protected ThreadLocal<TransactionManager> getConfigTimeTransactionManagerHolder() {
+        Field configTimeTransactionManagerHolderField = ReflectionUtils.findField(LocalSessionFactoryBean.class, "configTimeTransactionManagerHolder");
+        ReflectionUtils.makeAccessible(configTimeTransactionManagerHolderField);
+        @SuppressWarnings("unchecked")
+        ThreadLocal<TransactionManager> configTimeTransactionManagerHolder=(ThreadLocal<TransactionManager>)ReflectionUtils.getField(configTimeTransactionManagerHolderField, null);
+        return configTimeTransactionManagerHolder;
+    }
 
     @Override
     public void setBeanClassLoader(ClassLoader beanClassLoader) {
@@ -178,7 +237,7 @@ public class ConfigurableLocalSessionFactoryBean extends
             thread.setContextClassLoader(cl);
         }
     }
-
+    
     @Override
     protected SessionFactory newSessionFactory(Configuration configuration) throws HibernateException {
         try {
