@@ -18,6 +18,8 @@ package org.codehaus.groovy.grails.orm.hibernate
 import grails.orm.HibernateCriteriaBuilder
 import groovy.transform.CompileStatic
 
+import java.sql.Connection
+
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
@@ -25,12 +27,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.CompositeIdentity
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateUtils
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.ExecuteQueryPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.ExecuteUpdatePersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindAllPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
+import org.codehaus.groovy.grails.orm.hibernate.metaclass.*
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.query.api.Criteria as GrailsCriteria
@@ -456,11 +453,12 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         template.setExposeNativeSession(false)
         SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(sessionFactory)
         Session previousSession = sessionHolder?.session
+        Connection previousConnection = previousSession && previousSession.isConnected() ? previousSession.connection() : null
         Session newSession
         boolean newBind = false
         try {
             template.allowCreate = true
-            newSession = sessionFactory.openSession()
+            newSession = previousConnection ? sessionFactory.openSession(previousConnection) : sessionFactory.openSession() 
             if (sessionHolder == null) {
                 sessionHolder = new SessionHolder(newSession)
                 TransactionSynchronizationManager.bindResource(sessionFactory, sessionHolder)
