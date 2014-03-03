@@ -52,11 +52,13 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 	private static Logger log = LoggerFactory.getLogger(CassandraEntityPersister.class);
 
 	private Session session;
+	private CassandraSession cassandraSession;
 	private static final byte[] ZERO_LENGTH_BYTE_ARRAY = new byte[0];
 
 	public CassandraEntityPersister(MappingContext context, PersistentEntity entity, CassandraSession conn, Session session, ApplicationEventPublisher applicationEventPublisher) {
 		super(context, entity, conn, applicationEventPublisher);
 		this.session = session;
+		this.cassandraSession = conn;
 	}
 
 	@Override
@@ -189,7 +191,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 
 	@Override
 	public Query createQuery() {
-		return new CassandraQuery((CassandraSession)getSession(), getPersistentEntity());
+		return new CassandraQuery(cassandraSession, getPersistentEntity());
 	}
 
 	protected String getFamily(PersistentEntity persistentEntity, ClassMapping<Family> cm) {

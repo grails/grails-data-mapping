@@ -23,7 +23,7 @@ dependencies {
 	testRuntime "javax.servlet:servlet-api:2.5"
 	testRuntime "org.grails:grails-web:$grailsVersion"
 
-	compile "com.datastax.cassandra:cassandra-driver-core:2.0.0-rc2"
+	compile "com.datastax.cassandra:cassandra-driver-core:2.0.0"
 }
 
 sourceSets {

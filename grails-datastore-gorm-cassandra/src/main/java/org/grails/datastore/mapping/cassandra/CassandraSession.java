@@ -16,6 +16,8 @@ package org.grails.datastore.mapping.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.grails.datastore.mapping.cassandra.engine.CassandraEntityPersister;
@@ -33,16 +35,14 @@ import org.springframework.transaction.TransactionSystemException;
  */
 public class CassandraSession extends AbstractSession<Session> {
 
-	private Cluster cluster;
+	Logger log = LoggerFactory.getLogger(CassandraSession.class);
 	private Session session;
 	private ApplicationEventPublisher applicationEventPublisher;
 
-	public CassandraSession(Datastore ds, MappingContext context, Cluster cluster, ApplicationEventPublisher applicationEventPublisher, boolean stateless) {
+	public CassandraSession(Datastore ds, MappingContext context, Session session, ApplicationEventPublisher applicationEventPublisher, boolean stateless) {
 		super(ds, context, applicationEventPublisher, stateless);
-
-		this.cluster = cluster;
 		this.applicationEventPublisher = applicationEventPublisher;
-		this.session = cluster.connect(); //TODO review need of session
+		this.session = session;
 	}
 
 	@Override
@@ -56,14 +56,7 @@ public class CassandraSession extends AbstractSession<Session> {
 
 	@Override
 	public void disconnect() {
-		try {
-			session.shutdown();
-		} catch (Exception e) {
-			throw new DataAccessResourceFailureException(
-				"Failed to release Cassandra client session: " + e.getMessage(), e);
-		} finally {
-			super.disconnect();
-		}
+		super.disconnect();
 	}
 
 	@Override

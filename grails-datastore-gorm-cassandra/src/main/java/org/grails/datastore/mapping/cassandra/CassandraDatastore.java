@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.policies.ConstantReconnectionPolicy;
 import com.datastax.driver.core.policies.DowngradingConsistencyRetryPolicy;
@@ -27,19 +28,20 @@ import com.datastax.driver.core.policies.DowngradingConsistencyRetryPolicy;
 import groovy.util.ConfigObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.grails.datastore.mapping.core.AbstractDatastore;
-import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.grails.datastore.mapping.model.MappingContext;
 
-public class CassandraDatastore extends AbstractDatastore {
+public class CassandraDatastore extends AbstractDatastore implements DisposableBean {
 
 	private static Logger log = LoggerFactory.getLogger(CassandraDatastore.class);
 
 	public static final String DEFAULT_KEYSPACE = "CassandraKeySpace"; //TODO make one keyspace for each session somehow, maybe just do a different datastore instance?
 	private Cluster cluster;
+	private Session session;
 
 	public CassandraDatastore(MappingContext mappingContext, ConfigurableApplicationContext ctx, ConfigObject config) {
 		super(mappingContext);
@@ -76,18 +78,20 @@ public class CassandraDatastore extends AbstractDatastore {
 			.withSocketOptions(new SocketOptions().setKeepAlive(true));
 
 		this.cluster = builder.build();
-	}
-
-	public CassandraDatastore() {
-		//TODO default config for testing?
-		this(new KeyValueMappingContext(DEFAULT_KEYSPACE), null, null);
+		this.session = cluster.connect();
 	}
 
 	@Override
-	protected Session createSession(Map<String, String> connectionDetails) {
+	public void destroy() throws Exception {
+		super.destroy();
+		session.close();
+	}
+
+	@Override
+	protected org.grails.datastore.mapping.core.Session createSession(Map<String, String> connectionDetails) {
 
 		try {
-			return new CassandraSession(this, getMappingContext(), cluster, getApplicationEventPublisher(), false);
+			return new CassandraSession(this, getMappingContext(), this.session, getApplicationEventPublisher(), false);
 		} catch (Exception e) {
 			throw new DataAccessResourceFailureException("Failed to obtain Cassandra client session: " + e.getMessage(), e);
 		}

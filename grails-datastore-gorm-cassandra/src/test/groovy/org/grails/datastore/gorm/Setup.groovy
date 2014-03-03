@@ -1,6 +1,8 @@
 package org.grails.datastore.gorm
 
 import com.datastax.driver.core.Cluster
+import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
+
 import java.nio.ByteBuffer
 import org.grails.datastore.gorm.cassandra.CassandraGormEnhancer
 import org.grails.datastore.gorm.cassandra.CassandraMethodsConfigurer
@@ -26,13 +28,15 @@ class Setup {
 		def ctx = new GenericApplicationContext()
 		ctx.refresh()
 
-		def ds = new CassandraDatastore()
-		ds.applicationContext = ctx
+		def conf = new ConfigObject()
+		conf.setProperty('contactPoints',['jeff-cassandra.dev.wh.reachlocal.com'])
+		def ds = new CassandraDatastore(new KeyValueMappingContext(CassandraDatastore.DEFAULT_KEYSPACE), ctx, conf)
+//		ds.applicationContext = ctx
 
 
 		for (cls in classes) {
 			ds.mappingContext.addPersistentEntity(cls)
-//			createOrCleanTable(cls, ds)
+			createOrCleanTable(cls, ds)
 		}
 
 		def txMgr = new DatastoreTransactionManager(datastore: ds)
@@ -62,9 +66,8 @@ class Setup {
 
 		//TODO check if table is there if it is clear if not create
 
-		Cluster cluster = ds.connect().getNativeInterface()
+		com.datastax.driver.core.Session session = ds.connect().getNativeInterface()
 
-		def session = cluster.connect()
 		String dropTable = "DROP TABLE IF EXISTS ${ds.DEFAULT_KEYSPACE}.${tableName};"
 
 
