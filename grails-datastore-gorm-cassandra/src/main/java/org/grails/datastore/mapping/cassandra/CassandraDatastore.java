@@ -85,6 +85,7 @@ public class CassandraDatastore extends AbstractDatastore implements DisposableB
 	public void destroy() throws Exception {
 		super.destroy();
 		session.close();
+		cluster.close();
 	}
 
 	@Override

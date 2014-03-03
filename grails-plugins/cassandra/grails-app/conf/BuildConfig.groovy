@@ -10,7 +10,7 @@ grails.project.dependency.resolution = {
     log 'warn'
 
     repositories {
-        mavenCentral()        
+        mavenCentral()
         grailsCentral()
         mavenLocal()
 
@@ -32,15 +32,15 @@ grails.project.dependency.resolution = {
         runtime 'org.springframework.data:spring-data-commons:1.5.1.RELEASE'
 
         def datastoreVersion = "2.0.3.RELEASE"
-        def cassandraDatastoreVersion = "0.1.BUILD-SNAPSHOT"
+        def cassandraDatastoreVersion = "0.2.BUILD-SNAPSHOT"
 
         compile ("org.grails:grails-datastore-gorm-cassandra:$cassandraDatastoreVersion",excludes)
 
         compile("org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
                 "org.grails:grails-datastore-gorm:$datastoreVersion",
-                "org.grails:grails-datastore-core:$datastoreVersion",                
+                "org.grails:grails-datastore-core:$datastoreVersion",
                 "org.grails:grails-datastore-web:$datastoreVersion",excludes)
-        
+
         runtime 'org.javassist:javassist:3.16.1-GA'
 
         test("org.grails:grails-datastore-gorm-test:$datastoreVersion",

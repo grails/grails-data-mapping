@@ -9,7 +9,7 @@ class CassandraGormGrailsPlugin {
 	def issueManagement = [system: "todo", url: "todo"]
 	def scm = [url: "https://github.com/grails/grails-data-mapping"]
 
-	def version = "0.1-SNAPSHOT"
+	def version = "0.2-SNAPSHOT"
 	def grailsVersion = "2.1.4 > *"
 	def observe = ['services', 'domainClass']
 	def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
