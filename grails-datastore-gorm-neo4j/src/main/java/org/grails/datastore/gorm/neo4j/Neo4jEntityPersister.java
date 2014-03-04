@@ -227,19 +227,23 @@ public class Neo4jEntityPersister extends EntityPersister {
             } else if (pp instanceof OneToMany) {
                 OneToMany otm = (OneToMany) pp;
 
-                if (otm.isBidirectional()) {  // Populate other side of bidi
-                    for (Object associatedObject: (Iterable)propertyValue) {
-                        EntityAccess assocEntityAccess = createEntityAccess(otm.getAssociatedEntity(), associatedObject);
-                        assocEntityAccess.setProperty(otm.getReferencedPropertyName(), obj);
+                if (propertyValue!= null) {
+
+                    if (otm.isBidirectional()) {  // Populate other side of bidi
+                        for (Object associatedObject: (Iterable)propertyValue) {
+                            EntityAccess assocEntityAccess = createEntityAccess(otm.getAssociatedEntity(), associatedObject);
+                            assocEntityAccess.setProperty(otm.getReferencedPropertyName(), obj);
+                        }
                     }
+
+                    persistEntities(otm.getAssociatedEntity(), (Iterable) propertyValue);
+                    getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, otm, getCypherEngine(), getMappingContext(), getSession()));
                 }
 
-                persistEntities(otm.getAssociatedEntity(), (Iterable) propertyValue);
-                getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, otm, getCypherEngine(), getMappingContext(), getSession()));
 
             } else if (pp instanceof ToOne) {
-                ToOne to = (ToOne) pp;
                 if (propertyValue != null) {
+                    ToOne to = (ToOne) pp;
 
                     if (to.isBidirectional()) {  // Populate other side of bidi
                         EntityAccess assocEntityAccess = createEntityAccess(to.getAssociatedEntity(), propertyValue);
