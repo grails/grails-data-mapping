@@ -19,6 +19,7 @@ import org.grails.datastore.gorm.neo4j.engine.CypherEngine
 import org.grails.datastore.mapping.core.AbstractDatastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
+import org.neo4j.graphdb.GraphDatabaseService
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ConfigurableApplicationContext
@@ -33,16 +34,18 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
     MappingContext mappingContext
     CypherEngine cypherEngine
+    GraphDatabaseService graphDatabaseService
 
-    public Neo4jDatastore(MappingContext mappingContext, ApplicationContext applicationContext, CypherEngine cypherEngine) {
+    public Neo4jDatastore(MappingContext mappingContext, ApplicationContext applicationContext, CypherEngine cypherEngine, GraphDatabaseService graphDatabaseService) {
         this.mappingContext = mappingContext
         this.applicationContext = applicationContext as ConfigurableApplicationContext
         this.cypherEngine = cypherEngine
+        this.graphDatabaseService = graphDatabaseService
     }
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        new Neo4jSession(this, mappingContext, applicationContext, false, cypherEngine)
+        new Neo4jSession(this, mappingContext, applicationContext, false, cypherEngine, graphDatabaseService)
     }
 
     @Override

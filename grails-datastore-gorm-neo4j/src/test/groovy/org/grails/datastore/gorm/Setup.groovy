@@ -56,7 +56,9 @@ class Setup {
         datastore = new Neo4jDatastore(
                 mappingContext,
                 ctx,
-                new EmbeddedCypherEngine(executionEngine: new ExecutionEngine(graphDb)))
+                new EmbeddedCypherEngine(executionEngine: new ExecutionEngine(graphDb)),
+                graphDb
+        )
 //        datastore.mappingContext.proxyFactory = new GroovyProxyFactory()
 
         for (Class cls in classes) {

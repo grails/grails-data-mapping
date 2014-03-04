@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.neo4j
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine
+import org.grails.datastore.gorm.neo4j.simplegraph.Relationship
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -35,6 +36,7 @@ class Neo4jQuery extends Query {
 
     public static TYPE = "type"
     public static END = "end"
+    public static START = "start"
 
     final Neo4jEntityPersister neo4jEntityPersister
 
@@ -73,9 +75,9 @@ class Neo4jQuery extends Query {
         if (projections.projectionList.empty) {
             cypher += """WITH id(n) as id, labels(n) as labels, n as data
 ${applyOrderAndLimits(params)}
-OPTIONAL MATCH (n)-[r]->()
-WITH id, labels, data, type(r) as t, collect(id(endnode(r))) as endNodeIds
-RETURN id, labels, data, collect( {$TYPE: t, $END: endNodeIds}) as relationships"""
+OPTIONAL MATCH (n)-[r]-()
+WITH id, labels, data, type(r) as t, collect(id(endnode(r))) as endNodeIds, collect(id(startnode(r))) as startNodeIds
+RETURN id, labels, data, collect( {$TYPE: t, $END: endNodeIds, $START: startNodeIds}) as relationships"""
 
         } else {
             def returnColumns = projections.projectionList
@@ -83,7 +85,6 @@ RETURN id, labels, data, collect( {$TYPE: t, $END: endNodeIds}) as relationships
                                 .join(", ")
             cypher += "RETURN $returnColumns ${applyOrderAndLimits(params)}"
         }
-
 
         def executionResult = cypherEngine.execute(cypher, params)
         if (projections.projectionList.empty) {
@@ -93,12 +94,17 @@ RETURN id, labels, data, collect( {$TYPE: t, $END: endNodeIds}) as relationships
                 Collection<String> labels = map.labels as Collection<String>
                 Map<String,Object> data = map.data as Map<String, Object>
 
-                Map<String, Collection<Long>> relationships = new HashMap<String, Collection<Long>>()
+                Collection<Relationship> relationships = new HashSet<>()
                 for (m in map.relationships) {
                     def relTypeMap = m as Map
                     String relType = relTypeMap[TYPE]
-                    Collection<Long> ids = relTypeMap[END] as Collection<Long>
-                    relationships[relType] = ids
+                    Collection<Long> startIds = relTypeMap[START] as Collection<Long>
+                    Collection<Long> endIds = relTypeMap[END] as Collection<Long>
+                    assert endIds.size() == startIds.size()
+                    [startIds, endIds].transpose().each { List it ->
+                        assert it.size()==2
+                        relationships << new Relationship(it[0] as Long, it[1] as Long, relType)
+                    }
                 }
 
                 log.debug "relationships = $relationships"
