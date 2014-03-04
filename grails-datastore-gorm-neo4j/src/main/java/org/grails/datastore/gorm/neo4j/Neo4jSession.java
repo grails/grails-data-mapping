@@ -120,6 +120,8 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     public void flush() {
         super.flush();
 
+
+        // TODO: remove debugging stuff here
         StringWriter writer = new StringWriter();
         PrintWriter printWriter = new PrintWriter(writer);
         new SubGraphExporter(new DatabaseSubGraph(graphDatabaseService)).export(printWriter);
@@ -128,7 +130,6 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
         log.warn("svg: " + Neo4jUtils.dumpGraphToSvg(graphDatabaseService));
 
     }
-
 
     public boolean containsOrAddPersistentRelationship(long startNode, long endNode, String type) {
         Relationship r = new Relationship(startNode, endNode, type);
@@ -140,7 +141,6 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     public void addPersistentRelationships(Collection<Relationship> toAdd) {
         persistentRelationships.addAll(toAdd);
     }
-
 
     public void addPersistingInstance(Object obj) {
         persistingInstances.add(obj);
