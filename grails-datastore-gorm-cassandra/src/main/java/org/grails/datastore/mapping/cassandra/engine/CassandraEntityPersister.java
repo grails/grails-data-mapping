@@ -18,6 +18,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -59,7 +60,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		super(context, entity, conn, applicationEventPublisher);
 		this.session = session;
 		this.cassandraSession = conn;
-	}
+  }
 
 	@Override
 	protected String getNativePropertyKey(PersistentProperty prop) {
@@ -90,15 +91,13 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 
 	@Override
 	protected void setEntryValue(KeyValueEntry nativeEntry, String key, Object value) {
-		if (value != null) {
 			nativeEntry.put(key, value);
-		}
 	}
 
 	@Override
 	protected KeyValueEntry retrieveEntry(PersistentEntity persistentEntity, String family, Serializable nativeKey) {
 		log.debug("retrieveEntry");
-		final ClassMapping cm = getPersistentEntity().getMapping();
+		final ClassMapping cm = persistentEntity.getMapping();
 		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 
 		//TODO review Native Key string conversion
@@ -111,6 +110,13 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 			Row row = rs.one();
 			entry = rowToKeyValueEntry(row, family);
 		}
+/*
+Possible other way
+		KeyValueEntry entry;
+        Row row = rs.one(); //This doesn't make sure we got only one result
+        if (row != null) { entry = rowToKeyValueEntry(row, family); }
+        else { entry = new KeyValueEntry(family); } //Don't want to return anything if nothing was found
+*/
 
 		return entry;
 	}
@@ -119,21 +125,22 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 	protected Object storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object storeId, KeyValueEntry entry) {
 		log.debug("StoreEntry");
 		UUID uuid = (UUID)storeId;
-		final ClassMapping cm = getPersistentEntity().getMapping();
+		final ClassMapping cm = persistentEntity.getMapping();
 		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
-		String family = getFamily(persistentEntity, getPersistentEntity().getMapping());
-		log.debug(family);
+		String family = getFamily(persistentEntity, persistentEntity.getMapping());
+		log.debug("storeEntry: family={}", family);
 		Insert insert = QueryBuilder.insertInto(keyspaceName, family);
 
 		//Include id
-		insert = insert.value("id", uuid);
+		insert.value("id", uuid);
 
-		log.debug(byte[].class.toString());
+        log.debug("storeEntry: id->UUID:{}", uuid.toString());
 
 		for (String prop : entry.keySet()) {
-			log.debug(prop + "->" + entry.get(prop) + ":" + entry.get(prop).getClass());
+            //log.debug("storeEntry: {}->{}:{}", prop, entry.get(prop), entry.get(prop).getClass());
+            log.debug("storeEntry: {}->{}", prop, entry.get(prop));
 
-			insert = insert.value(prop, convertToCassandraType(entry.get(prop)));
+			insert.value(prop, convertToCassandraType(entry.get(prop)));
 		}
 
 		log.debug("After session execute insert " + insert.toString());
@@ -145,12 +152,12 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 	}
 
 	@Override
-	protected void updateEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object id, KeyValueEntry entry) {
+	protected void updateEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object key, KeyValueEntry entry) {
 		final ClassMapping cm = getPersistentEntity().getMapping();
 		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 		final String family = getFamily(persistentEntity, persistentEntity.getMapping());
 
-		UUID uuid = (UUID)id;
+		UUID uuid = (UUID)key;
 
 		Update.Assignments updateAssignments = QueryBuilder.update(keyspaceName, family).with();
 		for (PersistentProperty prop : persistentEntity.getPersistentProperties()) {
@@ -199,9 +206,8 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		if (cm.getMappedForm() != null) {
 			table = cm.getMappedForm().getFamily();
 		}
-		log.debug(table);
 		if (table == null) { table = persistentEntity.getJavaClass().getSimpleName(); }
-		log.debug("in getFamily: " + table);
+		log.trace("getFamily: " + table);
 		return table;
 	}
 
@@ -214,15 +220,42 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 
 		Object o = object;
 		if (clazz == byte[].class) {
-			o = ByteBuffer.wrap((byte[])object);
+	        o = ByteBuffer.wrap((byte[])object);
 		}
-
-		if (clazz.isEnum()) {
-			o = object.toString();
-		} else if (clazz.equals(URI.class)) {
-			o = object.toString();
-		} else if (!cassandraNativeSupport(clazz)) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		else if (clazz.isEnum()) {
+	        o = object.toString();
+		}
+        else if (clazz.equals(Long.class)) {
+            o = Long.class.cast(object).longValue();
+        }
+        else if (clazz.equals(Float.class)) {
+            o = Float.class.cast(object).floatValue();
+        }
+        else if (clazz.equals(Double.class)) {
+            o = Double.class.cast(object).doubleValue();
+        }
+        else if (clazz.equals(Byte.class)) {
+            o = Byte.class.cast(object).intValue();
+        }
+        else if (clazz.equals(Short.class)) {
+            o = Short.class.cast(object).intValue();
+        }
+        else if (clazz.equals(Boolean.class)) {
+            o = Boolean.class.cast(object).booleanValue();
+        }
+        else if (clazz.equals(URI.class) ||
+                 clazz.equals(URL.class) ||
+                 TimeZone.class.isAssignableFrom(clazz) ||
+                 clazz.equals(Currency.class) ||
+                 clazz.equals(Locale.class)
+                 ) {
+            o = object.toString();
+        }
+        else if (Calendar.class.isAssignableFrom(clazz)) {
+            o = ((Calendar)object).getTime();
+        }
+		else if (!cassandraNativeSupport(clazz)) {
+		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			try {
 				ObjectOutputStream oos = new ObjectOutputStream(baos);
 				oos.writeObject(object);
@@ -243,15 +276,15 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 			cassandraType = "bigint";
 		} else if (c.equals(ByteBuffer.class)) {
 			cassandraType = "blob";
-		} else if (c.equals(boolean.class)) {
-			cassandraType = "boolean";
+        } else if (c.equals(boolean.class) || c.equals(Boolean.class)) {
+            cassandraType = "boolean";
 		} else if (c.equals(BigDecimal.class)) {
 			cassandraType = "decimal";
 		} else if (c.equals(double.class)) {
 			cassandraType = "double";
 		} else if (c.equals(float.class)) {
 			cassandraType = "float";
-		} else if (c.equals(int.class) || c.equals(Integer.class)) {
+		} else if (c.equals(int.class) || c.equals(Integer.class) || c.equals(short.class) || c.equals(Short.class) || c.equals(byte.class) || c.equals(Byte.class)) {
 			cassandraType = "int";
 		} else if (c.equals(List.class)) {
 			cassandraType = "list<text>";
@@ -261,7 +294,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 			cassandraType = "set<text>";
 		} else if (c.equals(String.class)) {
 			cassandraType = "text";
-		} else if (c.equals(Date.class)) {
+		} else if (c.equals(Date.class) ) {
 			cassandraType = "timestamp";
 		} else if (c.equals(UUID.class)) {
 			cassandraType = "uuid";

@@ -29,7 +29,7 @@ class CassandraMappingContextFactoryBean extends AbstractMappingContextFactoryBe
 
 	@Override
 	protected MappingContext createMappingContext() {
-		return new CassandraMappingContext(config);
+		return new CassandraMappingContext(config.get("keyspace"));
 	}
 }
 

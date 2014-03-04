@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.cassandra
 
+//import grails.gorm.tests.Book;
 import grails.persistence.Entity
 
 import org.junit.Test

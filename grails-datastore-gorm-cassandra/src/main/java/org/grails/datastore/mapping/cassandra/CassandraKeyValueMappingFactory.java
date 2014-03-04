@@ -7,12 +7,15 @@ import org.grails.datastore.mapping.keyvalue.mapping.config.GormKeyValueMappingF
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 
 public class CassandraKeyValueMappingFactory extends GormKeyValueMappingFactory {
 
+    private static Logger log = LoggerFactory.getLogger(CassandraKeyValueMappingFactory.class);
 	private String keyspace;
 	private Closure defaultMapping;
 
@@ -46,8 +49,10 @@ public class CassandraKeyValueMappingFactory extends GormKeyValueMappingFactory 
 		if (family.getKeyspace() == null) {
 			family.setKeyspace(keyspace);
 		}
+		log.trace("family is {}", family.getFamily());
 		if (family.getFamily() == null) {
 			family.setFamily(entity.getDecapitalizedName());
+	        log.trace("family set to {}", family.getFamily());
 		}
 		return family;
 	}

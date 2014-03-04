@@ -1,19 +1,18 @@
 package org.grails.datastore.mapping.cassandra;
 
-import groovy.util.ConfigObject;
-import org.grails.datastore.mapping.document.config.Attribute;
-import org.grails.datastore.mapping.document.config.Collection;
+import org.grails.datastore.mapping.keyvalue.mapping.config.AnnotationKeyValueMappingFactory;
 import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
-import org.grails.datastore.mapping.keyvalue.mapping.config.GormKeyValueMappingFactory;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue;
+import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValuePersistentEntity;
 import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.config.DefaultMappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Started by Jeff Beck(@beckje01) on 1/23/14.
@@ -21,52 +20,70 @@ import org.slf4j.LoggerFactory;
  * Just building out Mapping for Cassandra stating model with keyvalue? hacking honestly
  */
 public class CassandraMappingContext extends AbstractMappingContext {
+    protected MappingFactory<Family, KeyValue> mappingFactory;
+    protected MappingConfigurationStrategy syntaxStrategy;
+    protected String keyspace;
+    public static final String GROOVY_OBJECT_CLASS = "groovy.lang.GroovyObject";
 
-	private static Logger log = LoggerFactory.getLogger(CassandraMappingContext.class);
-
-	MappingFactory<Family, KeyValue> mappingFactory;
-	MappingConfigurationStrategy syntaxStrategy;
-
-	/*
-			Neo4jMappingContext() {
-        mappingFactory = new GraphGormMappingFactory()
-        syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory)
-        //addTypeConverter(new StringToNumberConverterFactory().getConverter(BigDecimal))
-        addTypeConverter(new StringToShortConverter())
-        addTypeConverter(new StringToBigIntegerConverter())
-         …
+    @Override
+    public void setCanInitializeEntities(boolean canInitializeEntities) {
+        super.setCanInitializeEntities(canInitializeEntities);
+        syntaxStrategy.setCanExpandMappingContext(false);
     }
-	 */
 
-	public CassandraMappingContext(ConfigObject configObject) {
+    /**
+     * Constructs a context using the given keyspace
+     *
+     * @param keyspace The keyspace, this is typically the application name
+     */
+    public CassandraMappingContext(String keyspace) {
+        Assert.notNull(keyspace, "Argument [keyspace] cannot be null");
+        this.keyspace = keyspace;
+        initializeDefaultMappingFactory(keyspace);
 
-		String defaultKeySpace;
-		if (configObject.get("keyspace") instanceof String) {
-			defaultKeySpace = (String)configObject.get("keyspace");
-		} else {
-			log.warn("No default keyspace configured using " + CassandraDatastore.DEFAULT_KEYSPACE);
-			defaultKeySpace = CassandraDatastore.DEFAULT_KEYSPACE;
-		}
+        if (ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader())) {
+            syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
+        }
+        else {
+            syntaxStrategy = new DefaultMappingConfigurationStrategy(mappingFactory);
+        }
+        
+    }
+    
+    public String getKeyspace() {
+        return keyspace;
+    }
 
-		mappingFactory = new CassandraKeyValueMappingFactory(defaultKeySpace);
-		syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
-	}
+    protected void initializeDefaultMappingFactory(String keyspace) {
+        // TODO: Need to abstract the construction of these to support JPA syntax etc.
+        if (ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader())) {
+            mappingFactory = new CassandraKeyValueMappingFactory(keyspace);
+        }
+        else {
+            mappingFactory = new AnnotationKeyValueMappingFactory(keyspace);
+        }
+    }
 
-	@Override
-	public MappingConfigurationStrategy getMappingSyntaxStrategy() {
-		return syntaxStrategy;
-	}
+    public void setMappingFactory(MappingFactory<Family, KeyValue> mappingFactory) {
+        this.mappingFactory = mappingFactory;
+    }
 
-	@Override
-	public MappingFactory getMappingFactory() {
-		return mappingFactory;
-	}
+    public void setSyntaxStrategy(MappingConfigurationStrategy syntaxStrategy) {
+        this.syntaxStrategy = syntaxStrategy;
+    }
 
-	@Override
-	protected PersistentEntity createPersistentEntity(Class javaClass) {
-		KeyValuePersistentEntity persistentEntity = new KeyValuePersistentEntity(javaClass, this);
-		mappingFactory.createMappedForm(persistentEntity); //TODO: ? populates mappingFactory.entityToPropertyMap as a side effect ?
+    @Override
+    public MappingConfigurationStrategy getMappingSyntaxStrategy() {
+        return syntaxStrategy;
+    }
 
-		return persistentEntity;
-	}
+    @Override
+    public MappingFactory<Family, KeyValue> getMappingFactory() {
+        return mappingFactory;
+    }
+
+    @Override
+    protected PersistentEntity createPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass) {
+        return new KeyValuePersistentEntity(javaClass, this);
+    }
 }
