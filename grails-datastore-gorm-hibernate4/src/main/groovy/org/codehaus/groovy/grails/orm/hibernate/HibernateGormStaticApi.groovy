@@ -19,8 +19,6 @@ import grails.orm.HibernateCriteriaBuilder
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 
-import java.sql.Connection
-
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
@@ -28,15 +26,22 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.CompositeIdentity
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateUtils
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.*
+import org.codehaus.groovy.grails.orm.hibernate.metaclass.ExecuteQueryPersistentMethod
+import org.codehaus.groovy.grails.orm.hibernate.metaclass.ExecuteUpdatePersistentMethod
+import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindAllPersistentMethod
+import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindPersistentMethod
+import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListPersistentMethod
+import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.query.api.Criteria as GrailsCriteria
-import org.hibernate.*
+import org.hibernate.Criteria
+import org.hibernate.LockMode
+import org.hibernate.Session
+import org.hibernate.SessionFactory
 import org.hibernate.criterion.CriteriaSpecification
 import org.hibernate.criterion.Projections
 import org.hibernate.criterion.Restrictions
-import org.hibernate.internal.SessionImpl
 import org.springframework.core.convert.ConversionService
 import org.springframework.orm.hibernate4.SessionFactoryUtils
 import org.springframework.orm.hibernate4.SessionHolder
@@ -473,16 +478,11 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         template.setExposeNativeSession(false)
         SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(sessionFactory)
         Session previousSession = sessionHolder?.session
-        Connection previousConnection = (previousSession instanceof SessionImpl && ((SessionImpl)previousSession).isConnected()) ? ((SessionImpl)previousSession).connection() : null
         Session newSession
         boolean newBind = false
         try {
             template.allowCreate = true
-            SessionBuilder sessionBuilder = sessionFactory.withOptions()
-            if (previousConnection) {
-                sessionBuilder.connection(previousConnection)
-            }
-            newSession = sessionBuilder.openSession()
+            newSession = sessionFactory.openSession()
             if (sessionHolder == null) {
                 sessionHolder = new SessionHolder(newSession)
                 TransactionSynchronizationManager.bindResource(sessionFactory, sessionHolder)
