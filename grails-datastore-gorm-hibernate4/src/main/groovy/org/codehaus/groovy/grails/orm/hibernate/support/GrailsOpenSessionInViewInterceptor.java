@@ -57,8 +57,10 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
             super.preHandle(request);
             SessionFactory sessionFactory = getSessionFactory();
             SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(sessionFactory);
-            Session session = sessionHolder.getSession();
-            GrailsHibernateUtil.enableDynamicFilterEnablerIfPresent(sessionFactory, session);
+            if (sessionHolder != null) {
+                Session session = sessionHolder.getSession();
+                GrailsHibernateUtil.enableDynamicFilterEnablerIfPresent(sessionFactory, session);
+            }
         }
     }
 
@@ -70,7 +72,7 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
         }
 
         SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(getSessionFactory());
-        Session session = sessionHolder.getSession();
+        Session session = sessionHolder != null ? sessionHolder.getSession() : null;
         try {
             super.postHandle(request, model);
             if (session != null && getFlushMode() != GrailsHibernateTemplate.FLUSH_NEVER && !FlushMode.isManualFlushMode(session.getFlushMode())) {
@@ -79,7 +81,9 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
             }
         }
         finally {
-            session.setFlushMode(FlushMode.MANUAL);
+            if (session != null) {
+                session.setFlushMode(FlushMode.MANUAL);
+            }
         }
     }
 
