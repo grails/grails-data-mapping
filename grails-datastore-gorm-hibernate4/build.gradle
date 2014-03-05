@@ -52,7 +52,7 @@ dependencies {
         exclude group: 'xml-apis', module:'xml-apis'
     }
 
-    optional ("net.sf.ehcache:ehcache-core:2.4.6") {
+    optional ("net.sf.ehcache:ehcache-core:2.4.8") {
         exclude group: 'commons-logging', module:'commons-logging'
     }
 
