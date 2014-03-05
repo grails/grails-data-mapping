@@ -42,7 +42,7 @@ dependencies {
         exclude group: 'org.slf4j', module:'slf4j-api'
         exclude group: 'commons-logging', module:'commons-logging'
     }
-    compile('org.hibernate:hibernate-validator:5.0.1.Final') {
+    compile('org.hibernate:hibernate-validator:5.0.3.Final') {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'org.slf4j', module:'slf4j-api'
