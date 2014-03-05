@@ -25,7 +25,7 @@ dependencies {
     optional 'javax.servlet:servlet-api:2.5'
     optional(project(":grails-datastore-web"))
 
-    String hibernateVersion = '4.3.1.Final'
+    String hibernateVersion = '4.3.4.Final'
 
     compile("org.hibernate:hibernate-core:$hibernateVersion") {
         exclude group: 'antlr', module: 'antlr'
