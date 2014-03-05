@@ -52,6 +52,7 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
     private static final Log LOG = LogFactory.getLog(GrailsHibernateTemplate.class);
 
     private boolean osivReadOnly;
+    private boolean passReadOnlyToHibernate = false;
     protected boolean exposeNativeSession = true;
     protected boolean cacheQueries = false;
 
@@ -85,6 +86,7 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
         this(sessionFactory);
         cacheQueries = GrailsHibernateUtil.isCacheQueriesByDefault(application);
         this.osivReadOnly = GrailsHibernateUtil.isOsivReadonly(application);
+        this.passReadOnlyToHibernate = GrailsHibernateUtil.isPassReadOnlyToHibernate(application);
     }
 
     public SessionFactory getSessionFactory() {
@@ -123,15 +125,16 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
         return (List<?>) result;
     }
 
-    protected boolean isCurrentTransactionReadOnly() {
-        if (!TransactionSynchronizationManager.hasResource(sessionFactory)) {
+    protected boolean shouldPassReadOnlyToHibernate() {
+        if((passReadOnlyToHibernate || osivReadOnly) && TransactionSynchronizationManager.hasResource(getSessionFactory())) {
+            if(TransactionSynchronizationManager.isActualTransactionActive()) {
+                return passReadOnlyToHibernate && TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+            } else {
+                return osivReadOnly;
+            }
+        } else {
             return false;
         }
-
-        if (TransactionSynchronizationManager.isActualTransactionActive()) {
-            return TransactionSynchronizationManager.isCurrentTransactionReadOnly();
-        }
-        return osivReadOnly;
     }
 
     public boolean isOsivReadOnly() {
@@ -163,7 +166,7 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
         FlushMode previousFlushMode = null;
         try {
             previousFlushMode = applyFlushMode(session, existingTransaction);
-            if (isCurrentTransactionReadOnly()) {
+            if (shouldPassReadOnlyToHibernate()) {
                 session.setDefaultReadOnly(true);
             }
             Session sessionToExpose = (enforceNativeSession || exposeNativeSession ? session : createSessionProxy(session));
@@ -348,7 +351,7 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
         if (cacheQueries) {
             query.setCacheable(true);
         }
-        if (isCurrentTransactionReadOnly()) {
+        if (shouldPassReadOnlyToHibernate()) {
             query.setReadOnly(true);
         }
         SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(sessionFactory);
@@ -367,7 +370,7 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
         if (cacheQueries) {
             criteria.setCacheable(true);
         }
-        if (isCurrentTransactionReadOnly()) {
+        if (shouldPassReadOnlyToHibernate()) {
             criteria.setReadOnly(true);
         }
         SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(sessionFactory);

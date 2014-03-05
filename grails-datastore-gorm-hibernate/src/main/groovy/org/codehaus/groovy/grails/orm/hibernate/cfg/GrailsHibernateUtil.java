@@ -78,7 +78,9 @@ public class GrailsHibernateUtil {
     public static final String ARGUMENT_LOCK = "lock";
     public static final String CONFIG_PROPERTY_CACHE_QUERIES = "grails.hibernate.cache.queries";
     public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";
+    public static final String CONFIG_PROPERTY_PASS_READONLY_TO_HIBERNATE = "grails.hibernate.pass.readonly";
     public static final Class<?>[] EMPTY_CLASS_ARRAY = {};
+
 
     private static HibernateProxyHandler proxyHandler = new HibernateProxyHandler();
 
@@ -478,7 +480,10 @@ public class GrailsHibernateUtil {
     public static boolean isOsivReadonly(GrailsApplication grailsApplication) {
         return isConfigTrue(grailsApplication, CONFIG_PROPERTY_OSIV_READONLY);
     }
-
+    
+    public static boolean isPassReadOnlyToHibernate(GrailsApplication grailsApplication) {
+        return isConfigTrue(grailsApplication, CONFIG_PROPERTY_PASS_READONLY_TO_HIBERNATE);
+    }    
 
     /**
      * Checks if a Config parameter is true or a System property with the same name is true
@@ -622,4 +627,6 @@ public class GrailsHibernateUtil {
     public static String unqualify(final String qualifiedName) {
         return StringHelper.unqualify(qualifiedName);
     }
+
+
 }

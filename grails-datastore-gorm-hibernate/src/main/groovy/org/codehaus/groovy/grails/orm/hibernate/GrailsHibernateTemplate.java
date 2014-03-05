@@ -26,6 +26,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 public class GrailsHibernateTemplate extends HibernateTemplate implements IHibernateTemplate {
     private boolean osivReadOnly;
+    private boolean passReadOnlyToHibernate = false;
 
     public GrailsHibernateTemplate() {
         initialize(null);
@@ -51,13 +52,14 @@ public class GrailsHibernateTemplate extends HibernateTemplate implements IHiber
         if (application != null) {
             setCacheQueries(GrailsHibernateUtil.isCacheQueriesByDefault(application));
             this.osivReadOnly = GrailsHibernateUtil.isOsivReadonly(application);
+            this.passReadOnlyToHibernate = GrailsHibernateUtil.isPassReadOnlyToHibernate(application);
         }
     }
 
     @Override
     protected void prepareQuery(Query queryObject) {
         super.prepareQuery(queryObject);
-        if(isCurrentTransactionReadOnly()) {
+        if(shouldPassReadOnlyToHibernate()) {
             queryObject.setReadOnly(true);
         }
     }
@@ -71,15 +73,15 @@ public class GrailsHibernateTemplate extends HibernateTemplate implements IHiber
     @Override
     protected void prepareCriteria(Criteria criteria) {
         super.prepareCriteria(criteria);
-        if(isCurrentTransactionReadOnly()) {
+        if(shouldPassReadOnlyToHibernate()) {
             criteria.setReadOnly(true);
         }
     }
 
-    protected boolean isCurrentTransactionReadOnly() {
-        if(TransactionSynchronizationManager.hasResource(getSessionFactory())) {
+    protected boolean shouldPassReadOnlyToHibernate() {
+        if((passReadOnlyToHibernate || osivReadOnly) && TransactionSynchronizationManager.hasResource(getSessionFactory())) {
             if(TransactionSynchronizationManager.isActualTransactionActive()) {
-                return TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+                return passReadOnlyToHibernate && TransactionSynchronizationManager.isCurrentTransactionReadOnly();
             } else {
                 return osivReadOnly;
             }
@@ -96,7 +98,7 @@ public class GrailsHibernateTemplate extends HibernateTemplate implements IHiber
 
     @Override
     protected void enableFilters(Session session) {
-        if(isCurrentTransactionReadOnly()) {
+        if(shouldPassReadOnlyToHibernate()) {
             session.setDefaultReadOnly(true);
         }
         super.enableFilters(session);

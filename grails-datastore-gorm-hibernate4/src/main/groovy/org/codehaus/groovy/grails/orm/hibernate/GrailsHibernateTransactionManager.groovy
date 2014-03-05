@@ -32,12 +32,8 @@ class GrailsHibernateTransactionManager extends HibernateTransactionManager {
 
         if (definition.isReadOnly()) {
             // transaction is HibernateTransactionManager.HibernateTransactionObject private class instance
-            transaction.sessionHolder?.session?.with {
-                // always set to manual; the base class doesn't because the OSIVI has already registered a session
-                flushMode = FlushMode.MANUAL
-                // set session to load entities in read-only mode
-                defaultReadOnly = true
-            }
+            // always set to manual; the base class doesn't because the OSIVI has already registered a session
+            transaction.sessionHolder?.session?.flushMode = FlushMode.MANUAL
         }
     }
 }
