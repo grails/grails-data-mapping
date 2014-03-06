@@ -49,7 +49,7 @@ class Neo4jQuery extends Query {
         def cypher = ""
         if (!orderBy.empty) {
             cypher += " ORDER BY "
-            cypher += orderBy.collect { Order order -> "n.${order.property} $order.direction" }.join(", ")
+            cypher += orderBy.collect { Order order -> "data.${order.property} $order.direction" }.join(", ")
         }
 
         if (offset != 0) {
@@ -74,10 +74,10 @@ class Neo4jQuery extends Query {
 
         if (projections.projectionList.empty) {
             cypher += """WITH id(n) as id, labels(n) as labels, n as data
-${applyOrderAndLimits(params)}
 OPTIONAL MATCH (n)-[r]-()
 WITH id, labels, data, type(r) as t, collect(id(endnode(r))) as endNodeIds, collect(id(startnode(r))) as startNodeIds
-RETURN id, labels, data, collect( {$TYPE: t, $END: endNodeIds, $START: startNodeIds}) as relationships"""
+RETURN id, labels, data, collect( {$TYPE: t, $END: endNodeIds, $START: startNodeIds}) as relationships
+${applyOrderAndLimits(params)}"""
 
         } else {
             def returnColumns = projections.projectionList
