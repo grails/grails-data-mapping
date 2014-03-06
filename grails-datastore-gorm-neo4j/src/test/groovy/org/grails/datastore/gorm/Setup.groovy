@@ -24,7 +24,7 @@ import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 //import org.neo4j.rest.graphdb.LocalTestServer
-import org.neo4j.rest.graphdb.util.Config
+//import org.neo4j.rest.graphdb.util.Config
 
 class Setup {
 
@@ -111,7 +111,7 @@ class Setup {
 
     private static initializeGraphDatabaseSerivce() {
         if (System.properties.get("gorm_neo4j_test_use_rest")) {
-            System.setProperty(Config.CONFIG_BATCH_TRANSACTION, "false") // TODO: remove when support for batch has been finished
+//            System.setProperty(Config.CONFIG_BATCH_TRANSACTION, "false") // TODO: remove when support for batch has been finished
             //System.setProperty(Config.CONFIG_LOG_REQUESTS,"true") // enable for verbose request/response logging
             //server = new LocalTestServer(HOST, PORT).withPropertiesFile("neo4j-server.properties");
             //server.start()
