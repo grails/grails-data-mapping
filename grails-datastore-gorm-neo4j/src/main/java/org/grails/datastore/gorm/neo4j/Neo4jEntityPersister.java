@@ -75,7 +75,7 @@ public class Neo4jEntityPersister extends EntityPersister {
     protected Object retrieveEntity(PersistentEntity pe, Serializable key) {
         List<Criterion> criteria = new ArrayList<Criterion>(1);
         criteria.add(new IdEquals(key));
-        return IteratorUtil.single(new Neo4jQuery(session, pe, this).executeQuery(pe, new Conjunction(criteria)).iterator());
+        return IteratorUtil.singleOrNull(new Neo4jQuery(session, pe, this).executeQuery(pe, new Conjunction(criteria)).iterator());
     }
 
     public EntityAccess retrieveEntityAccess(PersistentEntity defaultPersistentEntity,
