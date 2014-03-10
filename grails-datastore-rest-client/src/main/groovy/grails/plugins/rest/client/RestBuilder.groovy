@@ -49,11 +49,7 @@ class RestBuilder {
 
     RestTemplate restTemplate = new RestTemplate()
 
-    RestBuilder() {
-        this(Collections.emptyMap())
-    }
-
-    RestBuilder(Map settings) {
+    RestBuilder(Map settings = [:]) {
 
         if(ConvertersConfigurationHolder.getConverterConfiguration(JSON) instanceof DefaultConverterConfiguration) {
             // init manually
