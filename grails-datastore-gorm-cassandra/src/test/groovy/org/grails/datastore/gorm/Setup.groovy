@@ -1,13 +1,5 @@
 package org.grails.datastore.gorm
 
-import com.datastax.driver.core.Cluster
-<<<<<<< HEAD
-import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
-=======
-
-import groovy.util.ConfigObject;
->>>>>>> dbd7a8c... Initial attempt to get the plugin running and passing the TCK Specs
-
 import java.nio.ByteBuffer
 import org.grails.datastore.gorm.cassandra.CassandraGormEnhancer
 import org.grails.datastore.gorm.cassandra.CassandraMethodsConfigurer
@@ -16,10 +8,8 @@ import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.mapping.cassandra.CassandraDatastore
 import org.grails.datastore.mapping.cassandra.CassandraMappingContext
 import org.grails.datastore.mapping.core.Session
-import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.PropertyMapping
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.model.types.ManyToMany
@@ -27,45 +17,40 @@ import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.grails.datstore.gorm.cassandra.CassandraMethodsConfigurer
 import org.springframework.context.support.GenericApplicationContext
 
-import java.lang.reflect.Modifier
 
 class Setup {
-    
-    static Session session
-    static CassandraDatastore ds
+
+	static Session session
+	static CassandraDatastore ds
 
 	static destroy() {
-		//session.disconnect()
-        ds.destroy()
+		ds.destroy()
 	}
-    
-    
-    static boolean catchException(def block) {
-        boolean caught=false;
-        try {
-            block()
-        }
-        catch (Exception e) {
-            caught = true
-        }
-        return caught
-    }
+
+	static boolean catchException(def block) {
+		boolean caught = false;
+		try {
+			block()
+		}
+		catch (Exception e) {
+			caught = true
+		}
+		return caught
+	}
 
 	static Session setup(List<Class> classes) {
 		def ctx = new GenericApplicationContext()
 		ctx.refresh()
 
-        ConfigObject config = new ConfigObject()
-        config.put("contactPoints", "127.0.0.1")
-		ds = new CassandraDatastore(new CassandraMappingContext(CassandraDatastore.DEFAULT_KEYSPACE),ctx,config)
-//		ds.applicationContext = ctx
+		ConfigObject config = new ConfigObject()
+		config.put("contactPoints", "jeff-cassandra.dev.wh.reachlocal.com")
+		ds = new CassandraDatastore(new CassandraMappingContext(CassandraDatastore.DEFAULT_KEYSPACE), ctx, config)
+		//		ds.applicationContext = ctx
 
-
-
-        def entities = []
-        for (cls in classes) {
-            entities << ds.mappingContext.addPersistentEntity(cls)
-        }
+		def entities = []
+		for (cls in classes) {
+			entities << ds.mappingContext.addPersistentEntity(cls)
+		}
 
 
 		def txMgr = new DatastoreTransactionManager(datastore: ds)
@@ -83,69 +68,69 @@ class Setup {
 		ds.applicationContext.addApplicationListener new DomainEventListener(ds)
 		ds.applicationContext.addApplicationListener new AutoTimestampEventListener(ds)
 
-        session = ds.connect()
-        
-        
-        def nativeSession = session.getNativeInterface()
-        catchException {
-            nativeSession.execute("""
+		session = ds.connect()
+
+
+		def nativeSession = session.getNativeInterface()
+		catchException {
+			nativeSession.execute("""
                 CREATE KEYSPACE ${ds.DEFAULT_KEYSPACE} WITH replication = {
                     'class': 'SimpleStrategy',
                     'replication_factor': '1'
                 };
                 """)
-        }
-        // Get persistent entities again after they have been enhanced
-        entities.each { entity ->
-            createOrCleanTable(entity, ds)
-        }
-        
+		}
+		// Get persistent entities again after they have been enhanced
+		entities.each { entity ->
+			createOrCleanTable(entity, ds)
+		}
+
 		return session
 	}
 
 	private static void createOrCleanTable(PersistentEntity entity, CassandraDatastore ds) {
 		println "Configuring $entity"
-        def nativeSession = session.getNativeInterface()
-        def tableName = entity.getDecapitalizedName()
-        def keyspace = ds.getMappingContext().getKeyspace()
-        
-        //String dropTable = "DROP TABLE IF EXISTS ${ds.DEFAULT_KEYSPACE}.${tableName};"
-        String dropTable = "DROP TABLE ${keyspace}.${tableName};"
-        String truncateTable = "TRUNCATE ${keyspace}.${tableName};"
+		def nativeSession = session.getNativeInterface()
+		def tableName = entity.getDecapitalizedName()
+		def keyspace = ds.getMappingContext().getKeyspace()
 
-        //String createTable = "CREATE TABLE IF NOT EXISTS ${ds.DEFAULT_KEYSPACE}.${tableName} ("
-        String createTable = "CREATE TABLE ${keyspace}.${tableName} ("
-        def createIndices = []
-        def id = entity.identity
-        createTable += id.getMapping().getMappedForm().getTargetName() + " " + getCassandraType(id.getType()) + " PRIMARY KEY,"
-        entity.getPersistentProperties()
-        List props = entity.persistentProperties.collect { prop ->
-            String propName = prop.getMapping().getMappedForm().getTargetName()
-            String propDef = null
-            if (prop instanceof ToOne) {
-                ToOne toOne = (ToOne)prop
-                propDef = "${propName} ${getCassandraType(toOne.associatedEntity.identity.getType())}"
-            }
-            else if (prop instanceof OneToMany || prop instanceof ManyToMany)  { }
-            else { 
-                propDef = "${propName} ${getCassandraType(prop.getType())}"
-            }
-            if (prop.mapping.mappedForm.isIndex()) { createIndices << "CREATE INDEX on ${keyspace}.${tableName} (${propName});"}
-            return propDef
-        }
-        createTable += props.findAll().join(",") + ");"
+		//String dropTable = "DROP TABLE IF EXISTS ${ds.DEFAULT_KEYSPACE}.${tableName};"
+		String dropTable = "DROP TABLE ${keyspace}.${tableName};"
+		String truncateTable = "TRUNCATE ${keyspace}.${tableName};"
 
-        catchException { nativeSession.execute(truncateTable); println truncateTable; }
-        //catchException { nativeSession.execute(dropTable); println dropTable }
+		//String createTable = "CREATE TABLE IF NOT EXISTS ${ds.DEFAULT_KEYSPACE}.${tableName} ("
+		String createTable = "CREATE TABLE ${keyspace}.${tableName} ("
+		def createIndices = []
+		def id = entity.identity
+		createTable += id.getMapping().getMappedForm().getTargetName() + " " + getCassandraType(id.getType()) + " PRIMARY KEY,"
+		entity.getPersistentProperties()
+		List props = entity.persistentProperties.collect { prop ->
+			String propName = prop.getMapping().getMappedForm().getTargetName()
+			String propDef = null
+			if (prop instanceof ToOne) {
+				ToOne toOne = (ToOne)prop
+				propDef = "${propName} ${getCassandraType(toOne.associatedEntity.identity.getType())}"
+			} else if (prop instanceof OneToMany || prop instanceof ManyToMany) {} else {
+				propDef = "${propName} ${getCassandraType(prop.getType())}"
+			}
+			if (prop.mapping.mappedForm.isIndex()) {
+				createIndices << "CREATE INDEX on ${keyspace}.${tableName} (${propName});"
+			}
+			return propDef
+		}
+		createTable += props.findAll().join(",") + ");"
+
+		catchException { nativeSession.execute(truncateTable); println truncateTable; }
+		//catchException { nativeSession.execute(dropTable); println dropTable }
 		catchException { nativeSession.execute(createTable); println createTable }
-        createIndices.each { createIndex -> catchException { nativeSession.execute(createIndex); println createIndex;} }
-        
+		createIndices.each { createIndex -> catchException { nativeSession.execute(createIndex); println createIndex; } }
+
 	}
 
 	private static String getCassandraType(Class c) {
 
 		String cassandraType = "blob"
-        
+
 		if (c.is(String.class)) {
 			cassandraType = "text"
 		} else if (c.equals(long.class) || c.equals(Long.class)) {
@@ -158,9 +143,9 @@ class Setup {
 			cassandraType = "decimal"
 		} else if (c.equals(double.class)) {
 			cassandraType = "double"
-		} else if (c.equals(float.class) || c.equals(Float.class) ) {
+		} else if (c.equals(float.class) || c.equals(Float.class)) {
 			cassandraType = "float"
-		} else if (c.equals(int.class) || c.equals(Integer.class) || c.equals(short.class) || c.equals(Short.class) || c.equals(byte.class) || c.equals(Byte.class) ) {
+		} else if (c.equals(int.class) || c.equals(Integer.class) || c.equals(short.class) || c.equals(Short.class) || c.equals(byte.class) || c.equals(Byte.class)) {
 			cassandraType = "int"
 		} else if (c.equals(List.class)) {
 			cassandraType = "list<text>"

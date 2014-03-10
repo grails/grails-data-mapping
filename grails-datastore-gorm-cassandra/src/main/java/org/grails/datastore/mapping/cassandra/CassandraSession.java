@@ -49,7 +49,7 @@ public class CassandraSession extends AbstractSession<Session> {
 	protected Persister createPersister(Class cls, MappingContext mappingContext) {
 		PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
 		if (entity != null) {
-			return new CassandraEntityPersister(mappingContext, entity, this,applicationEventPublisher);
+			return new CassandraEntityPersister(mappingContext,entity,this,session,applicationEventPublisher);
 		}
 		return null;
 	}
