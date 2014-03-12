@@ -211,12 +211,14 @@ public class Neo4jEntityPersister extends EntityPersister {
                 entityAccess.setProperty("version", version);
             }
             getSession().addPendingUpdate(new NodePendingUpdate(entityAccess, getCypherEngine(), getMappingContext()));
+            firePostUpdateEvent(pe, entityAccess);
 
         } else {
             if (cancelInsert(pe, entityAccess)) {
                 return null;
             }
-            getSession().addPendingInsert(new NodePendingInsert(0l, entityAccess, getCypherEngine(), getMappingContext()));
+            getSession().addPendingInsert(new NodePendingInsert(getSession().createIdentifierForNotYetPersistedInstance(), entityAccess, getCypherEngine(), getMappingContext()));
+            firePostInsertEvent(pe, entityAccess);
         }
 
         for (PersistentProperty pp: pe.getPersistentProperties()) {
@@ -267,28 +269,6 @@ public class Neo4jEntityPersister extends EntityPersister {
 
         }
         return (Serializable) entityAccess.getIdentifier();
-
-/*
-        try {
-            Map<String, Object> params = [
-                    props: simpleProperties,
-                    id: obj["id"]
-            ] as Map<String, Object>
-            Map<String, Object> firstRow = IteratorUtil.first(cypherEngine.execute(cypher,
-                    params))
-
-            if (isUpdate) {
-                firePostUpdateEvent(pe, entityAccess)
-            } else {
-                firePostInsertEvent(pe, entityAccess)
-                entityAccess.setProperty("id", firstRow["id"])
-            }
-            return entityAccess.getProperty("id") as Long
-        } catch (Exception e) {
-            throw e
-//            null
-        }
-*/
     }
 
     @Override

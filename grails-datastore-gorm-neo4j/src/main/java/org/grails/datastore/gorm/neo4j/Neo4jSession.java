@@ -41,7 +41,7 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     /**
      * provides the number for variable identifier to be used in cypher create statements
      */
-    private int cypherReferenceNumber = 0;
+    private int nonPersistedCount= 0;
 
     /** map node id -> hashmap of relationship types showing startNode id and endNode id */
     private Collection<Relationship> persistentRelationships = new HashSet<Relationship>();
@@ -181,6 +181,10 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
             }
             return false;
         }
+    }
+
+    public long createIdentifierForNotYetPersistedInstance() {
+        return --nonPersistedCount;
     }
 }
 

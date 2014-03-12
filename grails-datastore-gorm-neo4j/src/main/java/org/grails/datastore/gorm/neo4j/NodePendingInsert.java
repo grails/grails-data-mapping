@@ -24,6 +24,7 @@ class NodePendingInsert extends PendingInsertAdapter<Object, Long> {
         super(ea.getPersistentEntity(), nativeKey, ea.getEntity(), ea);
         this.cypherEngine = cypherEngine;
         this.mappingContext = mappingContext;
+        ea.setIdentifier(nativeKey);
     }
 
     @Override
