@@ -17,6 +17,9 @@ package org.grails.datastore.gorm.mongo.bean.factory;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import com.gmongo.GMongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.MongoURI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.model.DatastoreConfigurationException;
@@ -47,6 +50,7 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
     private Integer port;
     private List<ServerAddress> replicaSetSeeds;
     private List<ServerAddress> replicaPair;
+    private String connectionString;
 
     public void setReplicaPair(List<ServerAddress> replicaPair) {
         this.replicaPair = replicaPair;
@@ -66,6 +70,10 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public void setConnectionString(String connectionString) {
+        this.connectionString = connectionString;
     }
 
     public GMongo getObject() throws Exception {
@@ -98,6 +106,9 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
         }
         else if (replicaSetSeeds != null) {
             mongo = new GMongo(replicaSetSeeds, mongoOptions);
+        }
+        else if(connectionString != null) {
+            mongo = new GMongoClient(new MongoClientURI(connectionString));
         }
         else {
             String mongoHost = host != null ? host : defaultOptions.getHost();

@@ -39,7 +39,8 @@ class MongoSpringConfigurer extends SpringConfigurer {
     @Override
     Closure getSpringCustomizer() {
         return {
-            def mongoConfig = application.config?.grails?.mongo.clone()
+            def mongoConfig = application.config?.grails?.mongo?.clone() ?: application.config?.grails?.mongodb?.clone()
+            if(mongoConfig == null) mongoConfig = new ConfigObject()
             def databaseName = mongoConfig?.remove("databaseName") ?: application.metadata.getApplicationName()
             "${databaseName}DB"(MethodInvokingFactoryBean) { bean ->
                 bean.scope = "request"
@@ -83,6 +84,9 @@ class MongoSpringConfigurer extends SpringConfigurer {
                         pair << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
                     }
                     replicaPair = pair
+                }
+                else if(mongoConfig?.connectionString) {
+                    connectionString = mongoConfig.connectionString.toString()
                 }
                 else if (mongoHost) {
                     host = mongoHost
