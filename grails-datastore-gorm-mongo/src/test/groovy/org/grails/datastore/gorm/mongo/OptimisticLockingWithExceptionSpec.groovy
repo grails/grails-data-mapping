@@ -17,6 +17,11 @@ class OptimisticLockingWithExceptionSpec extends GormDatastoreSpec{
         when:"An optimistic locking session is thrown"
             Counter c = new Counter(counter: 0).save(flush:true)
             session.clear()
+
+        then:"The version is 1"
+            c.version == 0
+
+        when:"The object is concurrently updated"
             c = Counter.get(c.id)
             Thread.start {
                 Counter.withNewSession {
@@ -29,6 +34,7 @@ class OptimisticLockingWithExceptionSpec extends GormDatastoreSpec{
             c.save(flush: true)
 
         then:"An optimistic locking exception was thrown"
+            c.version == 0
             thrown(OptimisticLockingException)
             session.flushMode == FlushModeType.COMMIT
 

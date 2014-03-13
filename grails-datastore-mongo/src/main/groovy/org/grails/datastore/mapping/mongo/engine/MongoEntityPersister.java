@@ -41,6 +41,7 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.PropertyMapping;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.EmbeddedCollection;
 import org.grails.datastore.mapping.model.types.Identity;
@@ -626,12 +627,13 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 DBObject dbo = createDBObjectWithKey(key);
 
                 boolean versioned = isVersioned(ea);
+                Object currentVersion = null;
                 if (versioned) {
-                    Object currentVersion = getCurrentVersion(ea);
+                    currentVersion = getCurrentVersion(ea);
                     incrementVersion(ea);
                     // query for old version to ensure atomicity
                     if (currentVersion != null) {
-                        dbo.put("version", currentVersion);
+                        dbo.put(GormProperties.VERSION, currentVersion);
                     }
                 }
 
@@ -654,6 +656,9 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     error.throwOnError();
                     // if the document count "n" of the update was 0, the versioning check must have failed:
                     if (error.getInt("n") == 0) {
+                        if(currentVersion != null) {
+                            ea.setProperty(GormProperties.VERSION, currentVersion);
+                        }
                         throw new OptimisticLockingException(persistentEntity, key);
                     }
                 }
@@ -692,8 +697,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     protected Object getCurrentVersion(final EntityAccess ea) {
-        Object currentVersion = ea.getProperty("version");
-        if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
+        Object currentVersion = ea.getProperty(GormProperties.VERSION);
+        if (Number.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
             currentVersion = currentVersion != null ? ((Number)currentVersion).longValue() : currentVersion;
         }
         return currentVersion;

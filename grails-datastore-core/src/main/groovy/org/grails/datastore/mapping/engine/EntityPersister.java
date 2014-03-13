@@ -30,6 +30,7 @@ import org.grails.datastore.mapping.engine.event.PreLoadEvent;
 import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -320,17 +321,17 @@ public abstract class EntityPersister implements Persister {
             return false;
         }
 
-        Class<?> type = ea.getPropertyType("version");
+        Class<?> type = ea.getPropertyType(GormProperties.VERSION);
         return Number.class.isAssignableFrom(type) || Date.class.isAssignableFrom(type);
     }
 
     protected void incrementVersion(final EntityAccess ea) {
-        if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
-            Number currentVersion = (Number) ea.getProperty("version");
+        if (Number.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
+            Number currentVersion = (Number) ea.getProperty(GormProperties.VERSION);
             if (currentVersion == null) {
                 currentVersion = 0L;
             }
-            ea.setProperty("version", currentVersion.longValue() + 1);
+            ea.setProperty(GormProperties.VERSION, currentVersion.longValue() + 1);
         }
         else {
             setDateVersion(ea);
@@ -338,8 +339,8 @@ public abstract class EntityPersister implements Persister {
     }
 
     protected void setVersion(final EntityAccess ea) {
-        if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
-            ea.setProperty("version", 0);
+        if (Number.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
+            ea.setProperty(GormProperties.VERSION, 0);
         }
         else {
             setDateVersion(ea);
@@ -347,11 +348,11 @@ public abstract class EntityPersister implements Persister {
     }
 
     protected void setDateVersion(final EntityAccess ea) {
-        if (Timestamp.class.isAssignableFrom(ea.getPropertyType("version"))) {
-            ea.setProperty("version", new Timestamp(System.currentTimeMillis()));
+        if (Timestamp.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
+            ea.setProperty(GormProperties.VERSION, new Timestamp(System.currentTimeMillis()));
         }
         else {
-            ea.setProperty("version", new Date());
+            ea.setProperty(GormProperties.VERSION, new Date());
         }
     }
 }
