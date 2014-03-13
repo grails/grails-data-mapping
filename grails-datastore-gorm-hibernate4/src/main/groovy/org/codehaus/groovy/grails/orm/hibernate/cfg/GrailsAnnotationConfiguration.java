@@ -32,6 +32,9 @@ import org.hibernate.cfg.*;
 import org.hibernate.engine.spi.FilterDefinition;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.internal.util.config.ConfigurationHelper;
+import org.hibernate.mapping.JoinedSubclass;
+import org.hibernate.mapping.PersistentClass;
+import org.hibernate.mapping.RootClass;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.type.Type;
@@ -53,10 +56,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Allows configuring Grails' hibernate support to work in conjuntion with Hibernate's annotation
@@ -91,6 +91,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
 
     protected GrailsDomainBinder binder = new GrailsDomainBinder();
     protected ApplicationContext applicationContext;
+    private boolean subclassForeignKeysCreated = false;
 
     /* (non-Javadoc)
      * @see org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainConfiguration#addDomainClass(org.codehaus.groovy.grails.commons.GrailsDomainClass)
@@ -170,6 +171,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         try {
             currentThread.setContextClassLoader(grailsApplication.getClassLoader());
             super.secondPassCompile();
+            createSubclassForeignKeys();
         } finally {
             currentThread.setContextClassLoader(originalContextLoader);
         }
@@ -177,6 +179,39 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         configLocked = true;
     }
 
+    /**
+     * Creates foreign keys for subclass tables that are mapped using table per subclass. Further information is
+     * available in the <a href="http://jira.grails.org/browse/GRAILS-7729">JIRA ticket</a>
+     */
+    private void createSubclassForeignKeys() {
+        if (subclassForeignKeysCreated) {
+            return;
+        }
+
+        for (PersistentClass persistentClass : classes.values()) {
+            if (persistentClass instanceof RootClass) {
+                RootClass rootClass = (RootClass) persistentClass;
+
+                if (rootClass.hasSubclasses()) {
+                    Iterator subclasses = rootClass.getSubclassIterator();
+
+                    while (subclasses.hasNext()) {
+
+                        Object subclass = subclasses.next();
+
+                        // This test ensures that foreign keys will only be created for subclasses that are
+                        // mapped using "table per subclass"
+                        if (subclass instanceof JoinedSubclass) {
+                            JoinedSubclass joinedSubclass = (JoinedSubclass) subclass;
+                            joinedSubclass.createForeignKey();
+                        }
+                    }
+                }
+            }
+        }
+
+        subclassForeignKeysCreated = true;
+    }
     /**
      * Sets custom naming strategy specified in configuration or the default {@link ImprovedNamingStrategy}.
      */
