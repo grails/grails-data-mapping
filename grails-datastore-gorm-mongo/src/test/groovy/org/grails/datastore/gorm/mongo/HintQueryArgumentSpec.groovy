@@ -4,6 +4,7 @@ import com.mongodb.MongoException
 import grails.gorm.CriteriaBuilder
 import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.tests.Person
+import org.springframework.data.mongodb.UncategorizedMongoDbException
 
 
 class HintQueryArgumentSpec extends GormDatastoreSpec {
@@ -24,8 +25,8 @@ class HintQueryArgumentSpec extends GormDatastoreSpec {
             for(e in results) {} // just to trigger the query
 
         then:"The hint is used"
-            MongoException exception = thrown()
-            exception.message == 'bad hint'
+            UncategorizedMongoDbException exception = thrown()
+            exception.message == 'bad hint; nested exception is com.mongodb.MongoException: bad hint'
 
         when:"A dynamic finder uses a hint"
             results = Person.findAllByFirstName("Bob", [hint:["firstName":1]])
