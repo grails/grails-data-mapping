@@ -39,7 +39,7 @@ class DirtyCheckingSpec extends RestClientDatastoreSpec{
 
         when:"The entity is saved then no PUT is issued because it isn't dirty"
             mockServer = MockRestServiceServer.createServer(rt)
-            author.save(flush:true)
+            session.flush()
 
         then:'Verify no requests were sent'
             mockServer.verify()
@@ -56,15 +56,6 @@ class DirtyCheckingSpec extends RestClientDatastoreSpec{
         then:"a PUT request should be issued for the dirty instance"
             mockServer.verify()
 
-        when:"The entity is saved then no PUT is issued because it isn't dirty"
-            mockServer = MockRestServiceServer.createServer(rt)
-            author.save(flush:true)
-
-        then:'Verify no requests were sent'
-            mockServer.verify()
-
-
-
 
     }
     @Override
@@ -77,6 +68,7 @@ class DirtyCheckingSpec extends RestClientDatastoreSpec{
 @Entity
 class Author {
     Long id
+    Long version
     String name
 
     static mapping = {
