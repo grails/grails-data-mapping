@@ -13,7 +13,7 @@
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-hibernate-core/grails-datastore-gorm-hibernate-core.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-hibernate-core/grails-datastore-gorm-hibernate-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-hibernate4/grails-datastore-gorm-hibernate4.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-hibernate4/grails-datastore-gorm-hibernate4.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-jpa/grails-datastore-gorm-jpa.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-jpa/grails-datastore-gorm-jpa.iml" />
-      <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-mongo/grails-datastore-gorm-mongo.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-mongo/grails-datastore-gorm-mongo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-mongodb/grails-datastore-gorm-mongo.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-mongodb/grails-datastore-gorm-mongo.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-neo4j/grails-datastore-gorm-neo4j.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-neo4j/grails-datastore-gorm-neo4j.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-plugin-support/grails-datastore-gorm-plugin-support.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-plugin-support/grails-datastore-gorm-plugin-support.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-redis/grails-datastore-gorm-redis.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-redis/grails-datastore-gorm-redis.iml" />
