@@ -2,7 +2,8 @@
 import org.grails.datastore.gorm.mongo.plugin.support.MongoMethodsConfigurer
 import org.grails.datastore.gorm.mongo.plugin.support.MongoOnChangeHandler
 import org.grails.datastore.gorm.mongo.plugin.support.MongoSpringConfigurer
-
+import grails.converters.*
+import com.mongodb.DBObject
 class MongodbGrailsPlugin {
     def license = "Apache 2.0 License"
     def organization = [name: "SpringSource", url: "http://www.springsource.org/"]
@@ -11,7 +12,7 @@ class MongodbGrailsPlugin {
     def issueManagement = [system: "JIRA", url: "http://jira.grails.org/browse/GPMONGODB"]
     def scm = [url: "https://github.com/grails/grails-data-mapping"]
 
-    def version = "1.3.1"
+    def version = "1.4.0"
     def grailsVersion = "2.1.4 > *"
     def observe = ['services', 'domainClass']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
@@ -23,6 +24,10 @@ class MongodbGrailsPlugin {
     def documentation = "http://projects.spring.io/grails-data-mapping/mongo/manual/index.html"
 
     def doWithSpring = new MongoSpringConfigurer().getConfiguration()
+
+    def doWithApplicationContext = { 
+        JSON.registerObjectMarshaller DBObject, { it.toMap() }
+    }
 
     def doWithDynamicMethods = { ctx ->
         def datastore = ctx.mongoDatastore

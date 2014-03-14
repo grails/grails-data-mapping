@@ -25,26 +25,19 @@ grails.project.dependency.resolution = {
             excludes group:"org.grails", name:'grails-test'
             excludes group:'xml-apis', name:'xml-apis'
             excludes 'ehcache-core'
-            transitive = false
         }
 
-        compile("org.mongodb:mongo-java-driver:2.11.3", excludes)
-        compile("org.springframework.data:spring-data-mongodb:1.2.1.RELEASE", excludes)
-        compile("org.springframework.data:spring-data-commons-core:1.4.1.RELEASE", excludes)
-        runtime 'org.springframework.data:spring-data-commons:1.5.1.RELEASE'
-        runtime("com.gmongo:gmongo:1.2", excludes)
 
-        def datastoreVersion = "2.0.3.RELEASE"
-        def mongoDatastoreVersion = "1.3.0.RELEASE"
+
+        def datastoreVersion = "3.0.2.RELEASE"
+        def mongoDatastoreVersion = "1.4.0.BUILD-SNAPSHOT"
 
         compile ("org.grails:grails-datastore-mongo:$mongoDatastoreVersion",
                  "org.grails:grails-datastore-gorm-mongo:$mongoDatastoreVersion",excludes)
         compile("org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
                 "org.grails:grails-datastore-gorm:$datastoreVersion",
                 "org.grails:grails-datastore-core:$datastoreVersion",                
-                "org.grails:grails-datastore-web:$datastoreVersion",excludes)
-        
-        runtime 'org.javassist:javassist:3.16.1-GA'
+                "org.grails:grails-datastore-web:$datastoreVersion",excludes)        
 
         test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
              "org.grails:grails-datastore-simple:$datastoreVersion", excludes)
@@ -53,6 +46,7 @@ grails.project.dependency.resolution = {
     plugins {
         build(':release:3.0.1', ':rest-client-builder:2.0.0') {
             export = false
+            excludes 'grails-core', 'grails-web'
         }
     }
 }

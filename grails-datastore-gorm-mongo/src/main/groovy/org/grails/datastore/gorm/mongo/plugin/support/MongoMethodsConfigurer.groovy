@@ -66,7 +66,12 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
                 }
             }
             else {
-                throw new IllegalArgumentException("Cannot convert DBOject [$delegate] to target type $cls. Type is not a persistent entity")
+                if((delegate instanceof DBObject) && cls.name == 'grails.converters.JSON') {
+                    return cls.newInstance( delegate.toMap() )
+                }
+                else {
+                    throw new IllegalArgumentException("Cannot convert DBOject [$delegate] to target type $cls. Type is not a persistent entity")
+                }
             }
         }
         DBObject.metaClass.asType = asTypeHook
