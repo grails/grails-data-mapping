@@ -187,6 +187,10 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
             session.insert(instance)
         }
         else {
+            if(instance instanceof DirtyCheckable) {
+                // since this is an explicit call to save() we mark the instance as dirty to ensure it happens
+                instance.markDirty()
+            }
             session.persist(instance)
         }
         if (params?.flush) {
