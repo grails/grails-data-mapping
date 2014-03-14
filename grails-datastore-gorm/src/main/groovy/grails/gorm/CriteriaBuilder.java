@@ -281,6 +281,9 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         orderEntries = new ArrayList<Query.Order>();
         invokeClosureNode(callable);
         populateArgumentsForCriteria(targetClass, query, paginateParams);
+        for (Query.Order orderEntry : orderEntries) {
+            query.order(orderEntry);
+        }
         return new PagedResultList(query);
     }
 

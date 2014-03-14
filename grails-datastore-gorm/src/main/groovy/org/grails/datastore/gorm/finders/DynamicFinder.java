@@ -395,7 +395,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             q.offset(offset);
         }
         if (sort != null) {
-            if (ORDER_DESC.equals(order)) {
+            if (ORDER_DESC.equalsIgnoreCase(order)) {
                 q.order(Query.Order.desc(sort));
             }
             else {
