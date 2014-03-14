@@ -6,7 +6,7 @@ As mentioned the GORM for Mongo plugin will configure all the defaults for you, 
 grails {
     mongo {
         host = "localhost"
-        port = 27107
+        port = 27017
         username = "blah"
         password = "blah"
         databaseName = "foo"
