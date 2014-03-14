@@ -47,6 +47,7 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
     @Override
     void configure() {
         super.configure()
+
         def asTypeHook = { Class cls ->
             MongoEntityPersister p = datastore.currentSession.getPersister(cls)
             if (p != null) {

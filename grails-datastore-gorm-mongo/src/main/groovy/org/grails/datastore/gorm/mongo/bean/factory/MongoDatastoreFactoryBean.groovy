@@ -17,6 +17,10 @@ package org.grails.datastore.gorm.mongo.bean.factory
 
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
+import org.grails.datastore.gorm.mongo.geo.LineStringType
+import org.grails.datastore.gorm.mongo.geo.PointType
+import org.grails.datastore.gorm.mongo.geo.PolygonType
+import org.grails.datastore.mapping.model.MappingFactory
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -38,6 +42,9 @@ class MongoDatastoreFactoryBean implements FactoryBean<MongoDatastore>, Applicat
     ApplicationContext applicationContext
 
     MongoDatastore getObject() {
+        MappingFactory.registerCustomType(new PointType())
+        MappingFactory.registerCustomType(new PolygonType())
+        MappingFactory.registerCustomType(new LineStringType())
 
         MongoDatastore datastore
         if (mongo) {
@@ -46,6 +53,7 @@ class MongoDatastoreFactoryBean implements FactoryBean<MongoDatastore>, Applicat
         else {
             datastore = new MongoDatastore(mappingContext, config, applicationContext)
         }
+
 
         applicationContext.addApplicationListener new DomainEventListener(datastore)
         applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)

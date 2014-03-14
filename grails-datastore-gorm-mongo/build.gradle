@@ -4,6 +4,9 @@ configurations {
 }
 
 dependencies {
+    compile "org.mongodb:mongo-java-driver:2.11.4"
+    compile("org.springframework.data:spring-data-mongodb:1.4.0.RELEASE")
+
     compile("com.gmongo:gmongo:1.2") {
         exclude group:'org.mongodb',module:'mongo-java-driver'
     }
@@ -50,7 +53,6 @@ dependencies {
 
     compile project(":grails-datastore-gorm"),
             project(":grails-datastore-gorm-plugin-support"),
-            project(":grails-datastore-mongo"),
             project(":grails-datastore-core")
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")

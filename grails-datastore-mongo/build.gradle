@@ -1,7 +1,0 @@
-version = "1.4.0.BUILD-SNAPSHOT"
-dependencies {
-    compile project(":grails-datastore-core")
-
-    compile "org.mongodb:mongo-java-driver:2.11.4"
-    compile("org.springframework.data:spring-data-mongodb:1.4.0.RELEASE")
-}
