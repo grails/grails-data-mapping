@@ -36,9 +36,9 @@ class PolygonType extends GeoJSONType<Polygon> {
     Polygon createFromCoords(List coords) {
         if(coords.size() < 4) throw new DataAccessResourceFailureException("Invalid polygon data returned: $coords")
 
-        def x = Point.fromList((List)coords.get(0))
-        def y = Point.fromList((List)coords.get(1))
-        def z = Point.fromList((List)coords.get(2))
+        def x = Point.valueOf((List)coords.get(0))
+        def y = Point.valueOf((List)coords.get(1))
+        def z = Point.valueOf((List)coords.get(2))
         def remaining = coords.subList(3, coords.size())
         return new Polygon(x,y,z, remaining as Point[])
     }

@@ -18,11 +18,15 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import grails.mongodb.geo.*;
+import org.bson.BasicBSONObject;
+import org.grails.datastore.gorm.mongo.geo.GeoJSONType;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
+import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
@@ -91,6 +95,12 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     public static final String WITHIN_OPERATOR = "$within";
 
     public static final String CENTER_OPERATOR = "$center";
+
+    public static final String GEO_WITHIN_OPERATOR = "$geoWithin";
+
+    public static final String GEOMETRY_OPERATOR = "$geometry";
+
+    public static final String CENTER_SPHERE_OPERATOR = "$centerSphere";
 
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
@@ -269,6 +279,34 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 nearQuery.put(WITHIN_OPERATOR, center);
                 String propertyName = getPropertyName(entity, withinCentre);
                 query.put(propertyName, nearQuery);
+            }
+        });
+
+        queryHandlers.put(GeoWithin.class, new QueryHandler<GeoWithin>() {
+            public void handle(PersistentEntity entity, GeoWithin geoWithin, DBObject query) {
+                DBObject queryRoot = new BasicDBObject();
+                BasicDBObject queryGeoWithin = new BasicDBObject();
+                queryRoot.put(GEO_WITHIN_OPERATOR, queryGeoWithin);
+                Shape shape = geoWithin.getShape();
+                String targetProperty = getPropertyName(entity, geoWithin);
+
+
+                if(shape instanceof Polygon) {
+                    Polygon p = (Polygon) shape;
+                    BasicBSONObject geoJson = GeoJSONType.convertToGeoJSON(p);
+                    queryGeoWithin.put(GEOMETRY_OPERATOR, geoJson);
+                }
+                else if(shape instanceof Box) {
+                    queryGeoWithin.put(BOX_OPERATOR, shape.asList());
+                }
+                else if(shape instanceof Circle) {
+                    queryGeoWithin.put(CENTER_OPERATOR, shape.asList());
+                }
+                else if(shape instanceof Sphere) {
+                    queryGeoWithin.put(CENTER_SPHERE_OPERATOR, shape.asList());
+                }
+
+                query.put(targetProperty, queryRoot);
             }
         });
 
@@ -733,7 +771,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     subList.add(dbo);
                 }
 
-                if (criterion instanceof PropertyCriterion) {
+                if (criterion instanceof PropertyCriterion && !(criterion instanceof GeoCriterion)) {
                     PropertyCriterion pc = (PropertyCriterion) criterion;
                     PersistentProperty property = entity.getPropertyByName(pc.getProperty());
                     if (property instanceof Custom) {
@@ -821,6 +859,18 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
      */
     public Query withinBox(String property, List value) {
         add(new WithinBox(property, value));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values within the given shape
+     *
+     * @param property The property
+     * @param shape The shape
+     * @return The query instance
+     */
+    public Query geoWithin(String property, Shape shape) {
+        add(new GeoWithin(property, shape));
         return this;
     }
 
@@ -937,6 +987,30 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         public void setValue(List matrix) {
             this.value = matrix;
+        }
+    }
+
+    /**
+     * Used for all GeoSpacial queries using 2dsphere indexes
+     */
+    public static class GeoCriterion extends PropertyCriterion {
+
+        public GeoCriterion(String name, Shape value) {
+            super(name, value);
+        }
+
+        public void setValue(Shape matrix) {
+            this.value = matrix;
+        }
+
+        public Shape getShape() {
+            return (Shape) getValue();
+        }
+    }
+
+    public static class GeoWithin extends GeoCriterion {
+        public GeoWithin(String name, Shape value) {
+            super(name, value);
         }
     }
 

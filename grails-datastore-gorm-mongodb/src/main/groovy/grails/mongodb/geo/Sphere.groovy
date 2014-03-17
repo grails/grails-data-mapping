@@ -14,15 +14,30 @@
  */
 package grails.mongodb.geo
 
+import groovy.transform.CompileStatic
+import groovy.transform.EqualsAndHashCode
+
 /**
  * Represents a Sphere with the radius calculated in radians
+ *
  *
  * @author Graeme Rocher
  * @since 1.4
  */
-class Sphere extends Circle{
+@EqualsAndHashCode
+@CompileStatic
+class Sphere implements Shape{
 
-    Sphere(Point center, double radius) {
-        super(center, radius)
+    Point center
+    Distance distance
+
+    Sphere(Point center, Distance distance) {
+        this.center = center
+        this.distance = distance
+    }
+
+    @Override
+    List<? extends Object> asList() {
+        [ center.asList(), distance.inRadians() ]
     }
 }

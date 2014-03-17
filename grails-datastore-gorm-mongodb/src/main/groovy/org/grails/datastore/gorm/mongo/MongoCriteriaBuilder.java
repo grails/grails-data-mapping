@@ -20,7 +20,9 @@ import grails.gorm.CriteriaBuilder;
 import java.util.List;
 import java.util.Map;
 
+import grails.mongodb.geo.Shape;
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.mongo.query.MongoQuery.Near;
 import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinBox;
 import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinPolygon;
@@ -96,11 +98,24 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      *
      * @param property The property
      * @param value A multi-dimensional list of values
-     * @return this Criterion
+     * @return The criteria insstance
      */
     public Criteria withinCircle(String property, List<?> value) {
         validatePropertyName(property, "withinBox");
         addToCriteria(new WithinCircle(property, value));
+        return this;
+    }
+
+    /**
+     * Geospacial query for the given shape returning records that are found within the given shape
+     *
+     * @param property The property
+     * @param shape The shape
+     * @return The criteria insstance
+     */
+    public Criteria geoWithin(String property, Shape shape) {
+        validatePropertyName(property, "geoWithin");
+        addToCriteria(new MongoQuery.GeoWithin(property, shape));
         return this;
     }
 

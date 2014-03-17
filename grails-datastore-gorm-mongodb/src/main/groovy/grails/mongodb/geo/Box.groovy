@@ -16,6 +16,7 @@ package grails.mongodb.geo
 
 import groovy.transform.Canonical
 import groovy.transform.CompileStatic
+import groovy.transform.EqualsAndHashCode
 
 /**
  * Represents a box for use in Geo data models
@@ -23,12 +24,28 @@ import groovy.transform.CompileStatic
  * @author Graeme Rocher
  * @since 1.4
  */
-@Canonical
+@EqualsAndHashCode
 @CompileStatic
 class Box implements Shape{
+
     Point lowerLeft, upperRight
 
-    Point[] asArray() { [ lowerLeft, upperRight] as Point[] }
+    /**
+     * Construct a box from 2 points representing the lower left corner and the uppper right corner
+     *
+     * @param lowerLeft The lower left point
+     * @param upperRight The upper right point
+     */
+    Box(Point lowerLeft, Point upperRight) {
+        this.lowerLeft = lowerLeft
+        this.upperRight = upperRight
+    }
 
-    List<Point> asList() { [ lowerLeft, upperRight] }
+    /**
+     * Converts the Polygon to a multi-dimensional list of coordinates.
+     * Example: [ [100.0, 0.0], [101.0, 0.0]]
+     *
+     * @return The list
+     */
+    List<List<Double>> asList() { [ lowerLeft.asList(), upperRight.asList() ] }
 }

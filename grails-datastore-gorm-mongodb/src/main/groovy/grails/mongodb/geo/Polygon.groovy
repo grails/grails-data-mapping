@@ -19,7 +19,8 @@ import groovy.transform.EqualsAndHashCode
 import org.springframework.util.Assert
 
 /**
- * Represents a polygon for use in Geo data models
+ * Represents a GeoJSON polygon for use in Geo data models.
+ * See http://geojson.org/geojson-spec.html#polygon
  */
 @CompileStatic
 @EqualsAndHashCode
@@ -27,6 +28,14 @@ class Polygon implements Shape{
 
     final List<Point> points
 
+    /**
+     * Constructs a Polygon for the given {@link Point} instances
+     *
+     * @param x The x {@link Point}
+     * @param y The y {@link Point}
+     * @param z The z {@link Point}
+     * @param others The remaining {@link Point} instances
+     */
     Polygon(Point x, Point y, Point z, Point...others) {
         Assert.notNull(x, "Point x is required")
         Assert.notNull(y, "Point y is required")
@@ -39,10 +48,22 @@ class Polygon implements Shape{
         this.points = list
     }
 
-    public List<List<Double>> asList() {
-        points.collect() { Point p -> p.asList() }
+    /**
+     * Converts the Polygon to a multi-dimensional list of coordinates.
+     * Example: [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ]
+     *
+     * @return The list
+     */
+    public List<List<double[]>> asList() {
+         [ points.collect() { Point p -> p.asArray() } ]
     }
 
+    /**
+     * The inverse of {@link Polygon#asList()}, constructs a Polygon from a coordinate list
+     *
+     * @param coords The coordinate list
+     * @return A Polygon
+     */
     public static Polygon valueOf(List coords) {
         if(coords.size() < 4) throw new IllegalArgumentException("Coordinates should contain at least 4 entries for a Polygon")
 

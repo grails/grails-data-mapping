@@ -14,12 +14,11 @@
  */
 package grails.mongodb.geo
 
-import groovy.transform.Canonical
 import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
 
 /**
- * Represents a point for use in Geo data models
+ * Represents a GeoJSON point for use in GeoJSON data models. See http://geojson.org/geojson-spec.html#point
  *
  * @author Graeme Rocher
  * @since 1.4
@@ -27,26 +26,48 @@ import groovy.transform.EqualsAndHashCode
 @EqualsAndHashCode
 @CompileStatic
 class Point implements Shape{
+    /**
+     * The x and y values that indicate the location of the point
+     */
     double x, y
 
+    /**
+     * Construct a point for the given x and y coordinates
+     * @param x The x position
+     * @param y The y position
+     */
     Point(double x, double y) {
         this.x = x
         this.y = y
     }
 
+    /**
+     * @return An array representation of the point
+     */
     double[] asArray() { [x,y] as double[] }
 
+    /**
+     * @return A list representation of the point
+     */
     List<Double> asList() { [ x, y] }
 
-    static Point fromList(List<Double> list) {
-        if(list.size() != 2) throw new IllegalArgumentException("Invalid point data: $list")
-        return new Point(list.get(0), list.get(1))
-    }
-
+    /**
+     * Construct a point for the given x and y values
+     *
+     * @param x The x value
+     * @param y The y value
+     * @return The Point
+     */
     static Point valueOf(double x, double y) {
         new Point(x, y)
     }
 
+    /**
+     * Construct a point for the given coordinates supplied in the list
+     *
+     * @param coords A list containing 2 entries for the x and y positions
+     * @return A Point
+     */
     static Point valueOf(List<Double> coords) {
         if(coords.size() == 2) {
             def x = coords.get(0)
@@ -58,6 +79,13 @@ class Point implements Shape{
         throw new IllegalArgumentException("Invalid coordinates: $coords")
     }
 
+    /**
+     * Gets a point from the given list of coordinate lists
+     *
+     * @param coords The multi dimensional coordinate list
+     * @param index The index of the point
+     * @return A Point
+     */
     static Point getPointAtIndex( List coords, int index ) {
         def coord = coords.get(index)
         if(coord instanceof Point) {

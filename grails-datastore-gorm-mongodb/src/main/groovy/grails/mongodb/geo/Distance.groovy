@@ -43,4 +43,11 @@ class Distance {
     static Distance valueOf(double value, Metric metric = Metric.NEUTRAL) {
         new Distance(value, metric)
     }
+
+    /**
+     * @return The value of the distance in Radians
+     */
+    double inRadians() {
+        value / metric.multiplier
+    }
 }

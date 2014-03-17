@@ -31,6 +31,21 @@ class GeoJSONTypePersistenceSpec extends GormDatastoreSpec {
             p.lineString == line
     }
 
+    void "Test geoWithin dynamic finder"() {
+        given:"A domain with GeoJSON types"
+            def point = new Point(2, 1)
+            // Order: bottom left, top left, top right, bottom right, bottom left
+            def poly1 = Polygon.valueOf([ [0.0, 0.0], [3.0, 0.0], [3.0, 3.0], [0.0, 3.0], [0.0, 0.0] ])
+            def poly2 = Polygon.valueOf([ [5.0, 5.0], [7.0, 5.0], [7.0, 7.0], [5.0, 7.0], [5.0, 5.0] ])
+            def p = new Place(point: point)
+            p.save(flush:true)
+
+        expect:"A geoWithin query is executed to find a point within"
+            Place.findByPointGeoWithin(poly1)
+            !Place.findByPointGeoWithin(poly2)
+
+    }
+
     @Override
     List getDomainClasses() {
         [Place]
@@ -43,4 +58,8 @@ class Place {
     Point point
     Polygon polygon
     LineString lineString
+
+    static mapping = {
+        point geoIndex:'2dsphere'
+    }
 }

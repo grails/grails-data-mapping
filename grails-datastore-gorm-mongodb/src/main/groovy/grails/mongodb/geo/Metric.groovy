@@ -20,15 +20,15 @@ package grails.mongodb.geo
  * @author Graeme Rocher
  * @since 1.4
  */
-public enum Metric {
+public class Metric {
     // the radius of the earth in kilometers
-    KILOMETERS(6378.137d),
+    static Metric KILOMETERS = new Metric(6378.137d)
     // the radius of the earth in miles
-    MILES(3963.191d),
+    static Metric MILES = new Metric(3963.191d)
     // a neutral radius
-    NEUTRAL(1d)
+    static Metric NEUTRAL = new Metric(1d)
 
-    private double multiplier
+    final double multiplier
 
     Metric(double multiplier) {
         this.multiplier = multiplier

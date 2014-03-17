@@ -21,6 +21,8 @@ import org.bson.BSONObject
 import org.bson.BasicBSONObject
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.mongo.query.MongoQuery
+import org.grails.datastore.mapping.query.Query
 
 /**
  * Abstract class for persisting {@link Shape} instances in GeoJSON format
@@ -41,12 +43,18 @@ abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTy
 
     @Override
     protected Object writeInternal(PersistentProperty property, String key, T value, DBObject nativeTarget) {
+        if(value != null) {
+            BasicBSONObject pointData = convertToGeoJSON((Shape)value)
+            nativeTarget.put(key, pointData)
+            return pointData
+        }
+    }
 
-        def pointData = new BasicBSONObject()
-        pointData.put(GEO_TYPE, targetType.simpleName)
-        pointData.put(COORDINATES, value.asList())
-        nativeTarget.put(key, pointData)
-        return pointData
+    static BasicBSONObject convertToGeoJSON(Shape value) {
+        def geoJson = new BasicBSONObject()
+        geoJson.put(GEO_TYPE, value.getClass().simpleName)
+        geoJson.put(COORDINATES, value.asList())
+        return geoJson
     }
 
     @Override
@@ -64,4 +72,14 @@ abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTy
     }
 
     abstract T createFromCoords(List coords)
+
+    @Override
+    protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion value, DBObject nativeQuery) {
+        if(value instanceof MongoQuery.GeoWithin) {
+            return // do nothing
+        }
+        else {
+            super.queryInternal(property, key, value, nativeQuery)
+        }
+    }
 }
