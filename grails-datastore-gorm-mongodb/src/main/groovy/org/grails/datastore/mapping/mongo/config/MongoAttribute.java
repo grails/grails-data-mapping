@@ -33,6 +33,7 @@ public class MongoAttribute extends Attribute {
     private Map indexAttributes;
     private boolean reference = false;
 
+
     public boolean isReference() {
         return reference;
     }
@@ -70,6 +71,15 @@ public class MongoAttribute extends Attribute {
             setIndex(true);
             initIndexAttributes();
             indexAttributes.put(INDEX_TYPE, "2d");
+        }
+    }
+
+
+    public void setGeoIndex(String indexType) {
+        if ("2d".equals(indexType) || "2dsphere".equals(indexType)) {
+            setIndex(true);
+            initIndexAttributes();
+            indexAttributes.put(INDEX_TYPE, indexType);
         }
     }
 

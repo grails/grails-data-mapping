@@ -43,7 +43,7 @@ include ("grails-datastore-core",
         'grails-datastore-gorm-rest-client',
         
 /*        'grails-datastore-gorm-riak',*/
-        'grails-datastore-gorm-mongo',
+        'grails-datastore-gorm-mongodb',
         'grails-datastore-gorm-gemfire',
         'grails-datastore-gorm-simpledb',
         'grails-datastore-gorm-dynamodb',

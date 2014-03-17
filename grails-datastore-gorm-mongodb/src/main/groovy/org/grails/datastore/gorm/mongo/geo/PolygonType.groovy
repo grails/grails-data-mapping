@@ -26,7 +26,7 @@ import org.springframework.dao.DataAccessResourceFailureException
  * @since 1.4
  */
 @CompileStatic
-class PolygonType extends GeoType<Polygon> {
+class PolygonType extends GeoJSONType<Polygon> {
 
     PolygonType() {
         super(Polygon)

@@ -14,27 +14,33 @@
  */
 package grails.mongodb.geo
 
-import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
-import org.springframework.util.Assert
 
 /**
- * Represents a circle with the radius specified in the unit of the coordinate system
+ * Represents the distance from one {@link Point} to another
  *
  * @author Graeme Rocher
  * @since 1.4
  */
 @EqualsAndHashCode
-@CompileStatic
-class Circle implements Shape{
-    Point center
-    double radius
+class Distance {
 
-    Circle(Point center, double radius) {
-        Assert.notNull(center, "Argument center cannot be null")
-        this.center = center
-        this.radius = radius
+    double value
+    Metric metric
+
+    Distance(double value, Metric metric = Metric.NEUTRAL) {
+        this.value = value
+        this.metric = metric
     }
 
-    List<Object> asList() { [ center.asList(), radius] }
+    /**
+     * Create a Distance instance for the given value
+     *
+     * @param value The value
+     * @param metric The metric
+     * @return The distance
+     */
+    static Distance valueOf(double value, Metric metric = Metric.NEUTRAL) {
+        new Distance(value, metric)
+    }
 }

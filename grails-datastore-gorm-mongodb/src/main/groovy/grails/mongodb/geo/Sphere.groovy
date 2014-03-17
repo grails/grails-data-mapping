@@ -14,27 +14,15 @@
  */
 package grails.mongodb.geo
 
-import groovy.transform.CompileStatic
-import groovy.transform.EqualsAndHashCode
-import org.springframework.util.Assert
-
 /**
- * Represents a circle with the radius specified in the unit of the coordinate system
+ * Represents a Sphere with the radius calculated in radians
  *
  * @author Graeme Rocher
  * @since 1.4
  */
-@EqualsAndHashCode
-@CompileStatic
-class Circle implements Shape{
-    Point center
-    double radius
+class Sphere extends Circle{
 
-    Circle(Point center, double radius) {
-        Assert.notNull(center, "Argument center cannot be null")
-        this.center = center
-        this.radius = radius
+    Sphere(Point center, double radius) {
+        super(center, radius)
     }
-
-    List<Object> asList() { [ center.asList(), radius] }
 }

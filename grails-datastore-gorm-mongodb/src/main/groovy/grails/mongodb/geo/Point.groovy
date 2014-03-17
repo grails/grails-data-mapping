@@ -16,6 +16,7 @@ package grails.mongodb.geo
 
 import groovy.transform.Canonical
 import groovy.transform.CompileStatic
+import groovy.transform.EqualsAndHashCode
 
 /**
  * Represents a point for use in Geo data models
@@ -23,10 +24,15 @@ import groovy.transform.CompileStatic
  * @author Graeme Rocher
  * @since 1.4
  */
-@Canonical
+@EqualsAndHashCode
 @CompileStatic
 class Point implements Shape{
     double x, y
+
+    Point(double x, double y) {
+        this.x = x
+        this.y = y
+    }
 
     double[] asArray() { [x,y] as double[] }
 
@@ -36,4 +42,31 @@ class Point implements Shape{
         if(list.size() != 2) throw new IllegalArgumentException("Invalid point data: $list")
         return new Point(list.get(0), list.get(1))
     }
+
+    static Point valueOf(double x, double y) {
+        new Point(x, y)
+    }
+
+    static Point valueOf(List<Double> coords) {
+        if(coords.size() == 2) {
+            def x = coords.get(0)
+            def y = coords.get(1)
+            if((x instanceof Double) && (y instanceof Double)) {
+                return new Point(x, y)
+            }
+        }
+        throw new IllegalArgumentException("Invalid coordinates: $coords")
+    }
+
+    static Point getPointAtIndex( List coords, int index ) {
+        def coord = coords.get(index)
+        if(coord instanceof Point) {
+            return (Point)coord
+        }
+        else if(coord instanceof List) {
+            return valueOf( (List<Double>) coord )
+        }
+        throw new IllegalArgumentException("Invalid coordinates: $coords")
+    }
+
 }

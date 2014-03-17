@@ -14,27 +14,23 @@
  */
 package grails.mongodb.geo
 
-import groovy.transform.CompileStatic
-import groovy.transform.EqualsAndHashCode
-import org.springframework.util.Assert
-
 /**
- * Represents a circle with the radius specified in the unit of the coordinate system
+ * Defines a metric for calculating {@link Distance}
  *
  * @author Graeme Rocher
  * @since 1.4
  */
-@EqualsAndHashCode
-@CompileStatic
-class Circle implements Shape{
-    Point center
-    double radius
+public enum Metric {
+    // the radius of the earth in kilometers
+    KILOMETERS(6378.137d),
+    // the radius of the earth in miles
+    MILES(3963.191d),
+    // a neutral radius
+    NEUTRAL(1d)
 
-    Circle(Point center, double radius) {
-        Assert.notNull(center, "Argument center cannot be null")
-        this.center = center
-        this.radius = radius
+    private double multiplier
+
+    Metric(double multiplier) {
+        this.multiplier = multiplier
     }
-
-    List<Object> asList() { [ center.asList(), radius] }
 }

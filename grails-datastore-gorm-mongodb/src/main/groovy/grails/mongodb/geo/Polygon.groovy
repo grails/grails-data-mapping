@@ -33,7 +33,8 @@ class Polygon implements Shape{
         Assert.notNull(z, "Point z is required")
         Assert.notNull(others, "Point others is required")
 
-        def list = Arrays.asList(x, y, z)
+        def list = []
+        list.addAll Arrays.asList(x, y, z)
         list.addAll others
         this.points = list
     }
@@ -41,4 +42,25 @@ class Polygon implements Shape{
     public List<List<Double>> asList() {
         points.collect() { Point p -> p.asList() }
     }
+
+    public static Polygon valueOf(List coords) {
+        if(coords.size() < 4) throw new IllegalArgumentException("Coordinates should contain at least 4 entries for a Polygon")
+
+        Point x = Point.getPointAtIndex(coords, 0)
+        Point y = Point.getPointAtIndex(coords, 1)
+        Point z = Point.getPointAtIndex(coords, 2)
+
+        List<Point> remaining = (List<Point>)coords.subList(3, coords.size()).collect() {
+            if(it instanceof Point) {
+                return it
+            }
+            else if(it instanceof List) {
+                return Point.valueOf((List<Double>)it)
+            }
+            throw new IllegalArgumentException("Invalid coordinates: $coords")
+        }
+
+        return new Polygon(x, y, z, remaining as Point[])
+    }
+
 }

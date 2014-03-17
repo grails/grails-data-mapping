@@ -24,7 +24,7 @@ import groovy.transform.CompileStatic
  * @since 2.4
  */
 @CompileStatic
-class PointType extends GeoType<Point>{
+class PointType extends GeoJSONType<Point>{
 
     PointType() {
         super(Point)

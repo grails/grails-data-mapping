@@ -12,7 +12,7 @@ import org.springframework.dao.DataAccessResourceFailureException
  * @since 1.4
  */
 @CompileStatic
-class LineStringType extends GeoType<LineString> {
+class LineStringType extends GeoJSONType<LineString> {
     LineStringType() {
         super(LineString)
     }
