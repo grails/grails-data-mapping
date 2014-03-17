@@ -79,7 +79,9 @@ public abstract class MethodExpression {
                         // skip converting argument to collection/array type if argument is correct instance of element type
                         break;
                     }
-                    arguments[i] = conversionService.convert(arg, type);
+                    if(arg != null && conversionService.canConvert(arg.getClass(), type)) {
+                        arguments[i] = conversionService.convert(arg, type);
+                    }
                 }
             }
         }
