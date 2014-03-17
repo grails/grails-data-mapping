@@ -637,6 +637,9 @@ public abstract class Query implements Cloneable{
         }
     }
 
+    /**
+     * Represents a criterion to be used in a criteria query
+     */
     public static interface Criterion {}
 
     /**
