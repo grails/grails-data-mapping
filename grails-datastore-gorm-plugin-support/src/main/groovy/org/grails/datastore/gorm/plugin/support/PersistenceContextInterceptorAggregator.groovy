@@ -91,7 +91,7 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
         }
     }
 
-    void setApplicationContext(org.springframework.context.ApplicationContext ctx) {
+    void setApplicationContext(ApplicationContext ctx) {
         applicationContext = ctx
     }
 
