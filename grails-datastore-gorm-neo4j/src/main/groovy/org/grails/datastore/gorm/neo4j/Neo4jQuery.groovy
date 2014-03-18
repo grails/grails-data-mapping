@@ -21,6 +21,7 @@ import org.grails.datastore.gorm.neo4j.simplegraph.Relationship
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.query.Query
 import org.neo4j.cypher.javacompat.ExecutionResult
 import static org.grails.datastore.mapping.query.Query.*
@@ -44,6 +45,7 @@ class Neo4jQuery extends Query {
         super(session, entity)
         this.neo4jEntityPersister = neo4jEntityPersister
     }
+
 
     private String applyOrderAndLimits(Map params) {
         def cypher = ""
@@ -69,8 +71,9 @@ class Neo4jQuery extends Query {
     protected List executeQuery(PersistentEntity persistentEntity, Junction criteria) {
 
         def params = [:] as Map<String,Object>
-        def conditions = buildConditions(criteria, params)
-        def cypher = """MATCH (n:$persistentEntity.discriminator) ${conditions ? "WHERE " + conditions : " "}"""
+        def matches = ["(n:$persistentEntity.discriminator)"]
+        def conditions = buildConditions(criteria, params, matches)
+        def cypher = """MATCH ${matches.join(",")} ${conditions ? "WHERE " + conditions : " "}"""
 
         if (projections.projectionList.empty) {
             cypher += """WITH id(n) as id, labels(n) as labels, n as data
@@ -148,23 +151,21 @@ ${applyOrderAndLimits(params)}"""
         }
     }
 
-    def buildConditions(Criterion criterion, Map params) {
-
+    def buildConditions(Criterion criterion, Map params, List matches) {
         switch (criterion) {
-
             case PropertyCriterion:
-                return buildConditionsPropertyCriterion(params, (PropertyCriterion)criterion)
+                return buildConditionsPropertyCriterion(params, (PropertyCriterion)criterion, matches)
                 break
             case Conjunction:
             case Disjunction:
                 def inner = ((Junction)criterion).criteria
-                        .collect { Criterion it -> buildConditions(it, params)}
+                        .collect { Criterion it -> buildConditions(it, params, matches)}
                         .join( criterion instanceof Conjunction ? ' AND ' : ' OR ')
                 return inner ? "( $inner )" : inner
                 break
             case Negation:
                 List<Criterion> criteria = ((Negation) criterion).criteria
-                return "NOT (${buildConditions(new Conjunction(criteria), params)})"
+                return "NOT (${buildConditions(new Conjunction(criteria), params, matches)})"
                 break
             case PropertyComparisonCriterion:
                 return buildConditionsPropertyComparisonCriterion(criterion as PropertyComparisonCriterion)
@@ -211,7 +212,7 @@ ${applyOrderAndLimits(params)}"""
         return "n.${pcc.property}${operator}n.${pcc.otherProperty}"
     }
 
-    def buildConditionsPropertyCriterion(Map params, PropertyCriterion pnc) {
+    def buildConditionsPropertyCriterion(Map params, PropertyCriterion pnc, List matches) {
         def paramName = "param_${params.size()}" as String
         params[paramName] = Neo4jUtils.mapToAllowedNeo4jType(pnc.value, entity.mappingContext)
         def rhs
@@ -220,7 +221,16 @@ ${applyOrderAndLimits(params)}"""
 
         switch (pnc) {
             case Equals:
-                lhs = "n.$pnc.property"
+                def association = entity.getPropertyByName(pnc.property)
+                if (association instanceof Association) {
+                    def targetNodeName = "m_${matches.size()}"
+                    def relationshipType = RelationshipUtils.relationshipTypeUsedFor(association)
+                    def reversed = RelationshipUtils.useReversedMappingFor(association)
+                    matches << "(n)${reversed?'<':''}-[:$relationshipType]-${reversed?'':'>'}($targetNodeName)"
+                    lhs = "id(${targetNodeName})"
+                } else {
+                    lhs = "n.$pnc.property"
+                }
                 operator = "="
                 rhs = "{$paramName}"
                 break
