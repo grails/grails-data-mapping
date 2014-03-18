@@ -22,7 +22,7 @@ import groovy.transform.EqualsAndHashCode
  * See http://geojson.org/geojson-spec.html#linestring
  *
  * @author Graeme Rocher
- * @since 1.4
+ * @since 2.0
  */
 @CompileStatic
 @EqualsAndHashCode

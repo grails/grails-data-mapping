@@ -5,6 +5,7 @@ import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.mongo.Birthday
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
+import org.grails.datastore.gorm.mongo.geo.BoxType
 import org.grails.datastore.gorm.mongo.geo.LineStringType
 import org.grails.datastore.gorm.mongo.geo.PointType
 import org.grails.datastore.gorm.mongo.geo.PolygonType
@@ -45,10 +46,6 @@ class Setup {
     }
 
     static Session setup(classes) {
-        MappingFactory.registerCustomType(new ShapeType())
-        MappingFactory.registerCustomType(new PolygonType())
-        MappingFactory.registerCustomType(new PointType())
-        MappingFactory.registerCustomType(new LineStringType())
         mongo = new MongoDatastore()
         def ctx = new GenericApplicationContext()
         ctx.refresh()

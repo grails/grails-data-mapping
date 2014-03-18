@@ -25,10 +25,10 @@ import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.query.Query
 
 /**
- * Abstract class for persisting {@link Shape} instances in GeoJSON format
+ * Abstract class for persisting {@link Shape} instances in GeoJSON format. See http://geojson.org/geojson-spec.html
  *
  * @author Graeme Rocher
- * @since 1.4
+ * @since 2.0
  */
 @CompileStatic
 abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTypeMarshaller<T, DBObject, DBObject> {

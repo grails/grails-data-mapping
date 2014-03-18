@@ -21,7 +21,7 @@ import groovy.transform.EqualsAndHashCode
  * Represents a GeoJSON point for use in GeoJSON data models. See http://geojson.org/geojson-spec.html#point
  *
  * @author Graeme Rocher
- * @since 1.4
+ * @since 2.0
  */
 @EqualsAndHashCode
 @CompileStatic

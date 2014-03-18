@@ -9,7 +9,7 @@ import org.springframework.dao.DataAccessResourceFailureException
  * Adds support for the {@link LineStringType} type to GORM for MongoDB
  *
  * @author Graeme Rocher
- * @since 1.4
+ * @since 2.0
  */
 @CompileStatic
 class LineStringType extends GeoJSONType<LineString> {

@@ -22,7 +22,7 @@ import org.grails.datastore.mapping.query.Query;
  * nearSphere query support
  *
  * @author Graeme Rocher
- * @since 1.4
+ * @since 2.0
  */
 public class NearSphere extends Near{
     public NearSphere(Class<?> targetClass, String propertyName) {

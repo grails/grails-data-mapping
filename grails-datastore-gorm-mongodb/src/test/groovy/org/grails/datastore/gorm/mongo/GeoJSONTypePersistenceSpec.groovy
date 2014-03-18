@@ -23,17 +23,26 @@ class GeoJSONTypePersistenceSpec extends GormDatastoreSpec {
             def point = new Point(5, 10)
             def poly = Polygon.valueOf([ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ])
             def line = LineString.valueOf([ [100.0, 0.0], [101.0, 1.0] ])
-            def p = new Place(point: point, polygon: poly, lineString: line)
+            def box = Box.valueOf([[0, 0], [10, 10]])
+            def circle = Circle.valueOf([[5,5], 3])
+
+            def p = new Place(point: point,
+                              polygon: poly,
+                              lineString: line,
+                              box: box,
+                              circle: circle)
 
         when:"the entity is persisted and retrieved"
             p.save(flush:true)
             session.clear()
-            p == Place.get(p.id)
+            p = Place.get(p.id)
 
         then:"The GeoJSON types are correctly loaded"
             p.point == point
             p.polygon == poly
             p.lineString == line
+            p.box == box
+            p.circle == circle
     }
 
     void "Test geoWithin dynamic finder"() {
@@ -175,6 +184,9 @@ class Place {
     Point point
     Polygon polygon
     LineString lineString
+    Box box
+    Circle circle
+    Sphere sphere
 
     static mapping = {
         point geoIndex:'2dsphere'

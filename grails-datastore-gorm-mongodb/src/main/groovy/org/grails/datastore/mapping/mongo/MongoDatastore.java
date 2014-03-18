@@ -24,15 +24,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
+import org.grails.datastore.gorm.mongo.geo.*;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.StatelessDatastore;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
-import org.grails.datastore.mapping.model.ClassMapping;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.PropertyMapping;
+import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext;
@@ -110,6 +107,13 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     public MongoDatastore(MongoMappingContext mappingContext,
             Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         super(mappingContext, connectionDetails, ctx);
+
+        MappingFactory.registerCustomType(new PointType());
+        MappingFactory.registerCustomType(new PolygonType());
+        MappingFactory.registerCustomType(new LineStringType());
+        MappingFactory.registerCustomType(new ShapeType());
+        MappingFactory.registerCustomType(new BoxType());
+        MappingFactory.registerCustomType(new CircleType());
 
         if (mappingContext != null) {
             mappingContext.addMappingContextListener(this);

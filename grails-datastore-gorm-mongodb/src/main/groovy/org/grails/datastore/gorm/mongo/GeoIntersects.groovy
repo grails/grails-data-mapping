@@ -27,7 +27,7 @@ import org.springframework.util.Assert
  * Dynamic finder extension for GeoIntersects style queries
  *
  * @author Graeme Rocher
- * @since 1.4
+ * @since 2.0
  */
 class GeoIntersects extends MethodExpression{
     GeoIntersects(Class<?> targetClass, String propertyName) {

@@ -12,15 +12,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package grails.mongodb.geo
+package org.grails.datastore.gorm.mongo.geo
+
+import com.mongodb.DBObject
+import grails.mongodb.geo.Circle
+import org.grails.datastore.mapping.model.PersistentProperty
 
 /**
- * Marker interface for shapes that are GeoJSON shapes
+ * A custom type for persisting {@link grails.mongodb.geo.Circle} instances
  *
  * @author Graeme Rocher
  * @since 2.0
  */
-public interface GeoJSON {
+class CircleType extends AbstractShapeCoordsType<Circle>{
+    CircleType() {
+        super(Circle)
+    }
 
-    abstract List<? extends Object> asList();
+    @Override
+    protected Circle readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+        def coords = nativeSource.get(key)
+        if(coords instanceof List) {
+            return Circle.valueOf(coords)
+        }
+    }
 }

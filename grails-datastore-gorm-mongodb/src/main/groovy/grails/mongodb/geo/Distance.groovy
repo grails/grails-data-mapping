@@ -20,7 +20,7 @@ import groovy.transform.EqualsAndHashCode
  * Represents the distance from one {@link Point} to another
  *
  * @author Graeme Rocher
- * @since 1.4
+ * @since 2.0
  */
 @EqualsAndHashCode
 class Distance {

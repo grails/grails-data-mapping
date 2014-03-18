@@ -20,7 +20,6 @@ import grails.mongodb.geo.LineString
 import grails.mongodb.geo.Point
 import grails.mongodb.geo.Polygon
 import grails.mongodb.geo.Shape
-import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.springframework.dao.DataAccessResourceFailureException
 import org.springframework.dao.InvalidDataAccessResourceUsageException
@@ -30,7 +29,7 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException
  * Custom type for persisting the {@link Shape} type
  *
  * @author Graeme Rocher
- * @since 1.4
+ * @since 2.0
  */
 class ShapeType extends GeoJSONType<Shape>{
 

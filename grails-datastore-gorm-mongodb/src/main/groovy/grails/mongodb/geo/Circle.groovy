@@ -22,7 +22,7 @@ import org.springframework.util.Assert
  * Represents a circle with the radius specified in the unit of the coordinate system
  *
  * @author Graeme Rocher
- * @since 1.4
+ * @since 2.0
  */
 @EqualsAndHashCode
 @CompileStatic
@@ -57,12 +57,12 @@ class Circle extends Shape{
 
         Point center = Point.getPointAtIndex(coords, 0)
         def ro = coords.get(1)
-        Double radius = null
-        if(ro instanceof Double)
-            radius = (Double) ro
+        Number radius = null
+        if(ro instanceof Number)
+            radius = (Number) ro
 
         if(center && radius != null) {
-            return new Circle(center, radius)
+            return new Circle(center, radius.doubleValue())
         }
         else {
             throw new IllegalArgumentException("Invalid Circle coordinates: $coords")

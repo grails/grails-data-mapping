@@ -27,7 +27,7 @@ import org.springframework.util.Assert
  * Dynamic finder extension for GeoWithin style queries
  *
  * @author Graeme Rocher
- * @since 1.4
+ * @since 2.0
  */
 @CompileStatic
 class GeoWithin extends MethodExpression {
