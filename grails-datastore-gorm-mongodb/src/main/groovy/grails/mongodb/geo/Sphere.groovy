@@ -31,6 +31,12 @@ class Sphere implements Shape{
     Point center
     Distance distance
 
+    /**
+     * Construct a circle for the given center {@link Point} and distance
+     * @param center The center {@link Point}
+     * @param distance The distance
+     */
+
     Sphere(Point center, Distance distance) {
         this.center = center
         this.distance = distance
@@ -39,5 +45,22 @@ class Sphere implements Shape{
     @Override
     List<? extends Object> asList() {
         [ center.asList(), distance.inRadians() ]
+    }
+
+    static Sphere valueOf( List coords, Metric metric = Metric.NEUTRAL) {
+        if(coords.size() < 2) throw new IllegalArgumentException("Coordinates should contain at least 2 entries for a Sphere: The center point and the distance")
+
+        Point center = Point.getPointAtIndex(coords, 0)
+        def ro = coords.get(1)
+        Double distance = null
+        if(ro instanceof Number)
+            distance = ((Number) ro).doubleValue()
+
+        if(center && distance != null) {
+            return new Sphere(center, Distance.valueOf(distance, metric) )
+        }
+        else {
+            throw new IllegalArgumentException("Invalid Sphere coordinates: $coords")
+        }
     }
 }

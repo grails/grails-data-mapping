@@ -75,8 +75,12 @@ abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTy
 
     @Override
     protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion value, DBObject nativeQuery) {
-        if(value instanceof MongoQuery.GeoWithin) {
-            return // do nothing
+        def v = value.getValue()
+        if(v instanceof Shape) {
+            Shape shape = (Shape) v
+
+            def geoJson = convertToGeoJSON(shape)
+            nativeQuery.put(key, geoJson)
         }
         else {
             super.queryInternal(property, key, value, nativeQuery)

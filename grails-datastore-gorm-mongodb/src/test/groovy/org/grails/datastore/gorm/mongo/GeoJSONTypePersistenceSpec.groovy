@@ -1,9 +1,13 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
+import grails.mongodb.geo.Box
+import grails.mongodb.geo.Circle
 import grails.mongodb.geo.LineString
+import grails.mongodb.geo.Metric
 import grails.mongodb.geo.Point
 import grails.mongodb.geo.Polygon
+import grails.mongodb.geo.Sphere
 import grails.persistence.Entity
 
 /**
@@ -43,6 +47,13 @@ class GeoJSONTypePersistenceSpec extends GormDatastoreSpec {
         expect:"A geoWithin query is executed to find a point within"
             Place.findByPointGeoWithin(poly1)
             !Place.findByPointGeoWithin(poly2)
+            Place.findByPointGeoWithin( Box.valueOf( [[0.0d, 0.0d], [5.0d, 5.0d]] ) )
+            !Place.findByPointGeoWithin( Box.valueOf( [[5.0d, 5.0d], [10.0d, 10.0d]] ) )
+            Place.findByPointGeoWithin( Circle.valueOf( [[1.0d, 1.0d], 3.0d] ) )
+            !Place.findByPointGeoWithin( Circle.valueOf( [[10.0d, 10.0d], 3.0d] ) )
+            Place.findByPointGeoWithin( Sphere.valueOf( [[1.0d, 1.0d], 0.06]) )
+            !Place.findByPointGeoWithin( Sphere.valueOf( [[10.0d, 10.0d], 0.06] ) )
+            Place.findByPoint(point)
 
     }
 

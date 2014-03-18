@@ -54,8 +54,8 @@ class Polygon implements Shape{
      *
      * @return The list
      */
-    public List<List<double[]>> asList() {
-         [ points.collect() { Point p -> p.asArray() } ]
+    public List<List<List<Double>>> asList() {
+         [ points.collect() { Point p -> p.asList() } ]
     }
 
     /**
@@ -64,7 +64,17 @@ class Polygon implements Shape{
      * @param coords The coordinate list
      * @return A Polygon
      */
-    public static Polygon valueOf(List coords) {
+    static Polygon valueOf(List coords) {
+        Assert.notNull(coords, "Argument coords cannot be null")
+
+        if(coords.size() == 1) {
+            // possible subcoordinates
+            def o = coords.get(0)
+            if(o instanceof List) {
+                List subCoords = (List)o
+                coords = subCoords
+            }
+        }
         if(coords.size() < 4) throw new IllegalArgumentException("Coordinates should contain at least 4 entries for a Polygon")
 
         Point x = Point.getPointAtIndex(coords, 0)

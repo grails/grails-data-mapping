@@ -14,10 +14,8 @@
 */
 package org.grails.datastore.gorm.mongo
 
-import grails.mongodb.geo.Box
 import grails.mongodb.geo.LineString
 import grails.mongodb.geo.Point
-import grails.mongodb.geo.Polygon
 import grails.mongodb.geo.Shape
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.finders.MethodExpression

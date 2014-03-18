@@ -48,4 +48,15 @@ class Box implements Shape{
      * @return The list
      */
     List<List<Double>> asList() { [ lowerLeft.asList(), upperRight.asList() ] }
+
+    /**
+     * Constructs a Box from the given coordinates
+     * @param coords The coordinates
+     * @return A box
+     */
+    static Box valueOf(List<List<Double>> coords) {
+        if(coords.size() != null) throw new IllegalArgumentException("Coordinates should contain at least 2 entries for a Box")
+
+        new Box( Point.getPointAtIndex(coords, 0), Point.getPointAtIndex(coords, 1) )
+    }
 }
