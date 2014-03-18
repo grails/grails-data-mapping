@@ -89,14 +89,18 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
             }
         }
         flushPendingOperations(nodes);
+
         flushPendingOperations(relationships);
     }
 
+
     /**
      * TODO: find clean solution instead of copying from base class
+
      * @param operations
      */
     private void flushPendingOperations(Collection operations) {
+
         for (Object o : operations) {
             PendingOperation pendingOperation = (PendingOperation) o;
             try {
