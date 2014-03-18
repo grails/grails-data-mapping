@@ -70,6 +70,8 @@ class GeoJSONTypePersistenceSpec extends GormDatastoreSpec {
             Loc.findByName("P2").shape instanceof Point
             Loc.findByName("Poly1").shape instanceof Polygon
             Loc.findByName("LS1").shape instanceof LineString
+            Loc.findByShape(Point.valueOf(2, 2))
+            !Loc.findByShape(Point.valueOf(20, 10))
     }
 
 
@@ -83,6 +85,34 @@ class GeoJSONTypePersistenceSpec extends GormDatastoreSpec {
             !Loc.findByShapeGeoIntersects( LineString.valueOf( [[1,7], [8,7]] ) )
             Loc.findByShapeGeoIntersects( ['$geometry':[type:'Polygon', coordinates: [[ [0,0], [3,0], [3,3], [0,3], [0,0] ]]]] )
             !Loc.findByShapeGeoIntersects( ['$geometry':[type:'LineString', coordinates: [[1,7], [8,7]] ]] )
+    }
+
+    void "Test near queries with GeoJSON types"() {
+        given:"A geo data model"
+            createGeoDataModel()
+
+        when:"We find points near a given point"
+            def results = Loc.findAllByShapeNear( Point.valueOf(1,7) )
+
+        then:"The results are correct"
+            results.size() == 4
+            results*.name == ['P2', 'Poly1', 'P1', 'LS1']
+
+        when:"We find points near a given point"
+            results = Loc.findAllByShapeNear( [$geometry: [type:'Point', coordinates: [1,7]]] )
+
+        then:"The results are correct"
+            results.size() == 4
+            results*.name == ['P2', 'Poly1', 'P1', 'LS1']
+
+        when:"We find points near a given point"
+            results = Loc.withCriteria {
+                near 'shape', Point.valueOf(1,7), 300000
+            }
+
+        then:"The results are correct"
+            results.size() == 1
+            results*.name == ['P2']
     }
 
     /**
@@ -129,5 +159,10 @@ class Loc {
 
     static mapping = {
         shape geoIndex:'2dsphere'
+    }
+
+    @Override
+    String toString() {
+        name
     }
 }

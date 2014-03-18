@@ -104,6 +104,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     public static final String GEO_INTERSECTS_OPERATOR = "$geoIntersects";
 
+    public static final String MAX_DISTANCE_OPERATOR = "$maxDistance";
+
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
             public void handle(PersistentEntity entity, IdEquals criterion, DBObject query) {
@@ -242,14 +244,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             }
         });
 
-        queryHandlers.put(Near.class, new QueryHandler<Near>() {
-            public void handle(PersistentEntity entity, Near near, DBObject query) {
-                DBObject nearQuery = new BasicDBObject();
-                MongoEntityPersister.setDBObjectValue(nearQuery, NEAR_OEPRATOR, near.getValues(), entity.getMappingContext());
-                String propertyName = getPropertyName(entity, near);
-                query.put(propertyName, nearQuery);
-            }
-        });
+
 
         queryHandlers.put(WithinBox.class, new QueryHandler<WithinBox>() {
             public void handle(PersistentEntity entity, WithinBox withinBox, DBObject query) {
@@ -280,6 +275,28 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 MongoEntityPersister.setDBObjectValue(center, CENTER_OPERATOR, withinCentre.getValues(), entity.getMappingContext());
                 nearQuery.put(WITHIN_OPERATOR, center);
                 String propertyName = getPropertyName(entity, withinCentre);
+                query.put(propertyName, nearQuery);
+            }
+        });
+
+        queryHandlers.put(Near.class, new QueryHandler<Near>() {
+            public void handle(PersistentEntity entity, Near near, DBObject query) {
+                DBObject nearQuery = new BasicDBObject();
+                Object value = near.getValue();
+                if((value instanceof List) || (value instanceof Map)) {
+                    MongoEntityPersister.setDBObjectValue(nearQuery, NEAR_OEPRATOR, value, entity.getMappingContext());
+                }
+                else if(value instanceof Point) {
+                    BasicBSONObject geoJson = GeoJSONType.convertToGeoJSON((Point)value);
+                    BasicDBObject geometry = new BasicDBObject();
+                    geometry.put(GEOMETRY_OPERATOR, geoJson);
+                    nearQuery.put(NEAR_OEPRATOR, geometry);
+                }
+                if(near.maxDistance != null) {
+                    nearQuery.put(MAX_DISTANCE_OPERATOR, near.maxDistance.getValue());
+                }
+
+                String propertyName = getPropertyName(entity, near);
                 query.put(propertyName, nearQuery);
             }
         });
@@ -875,6 +892,68 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
     /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this
+     */
+    public Query near(String property, Point value) {
+        add(new Near(property, value));
+        return this;
+    }
+
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this
+     */
+    public Query near(String property, List value, Distance maxDistance) {
+        add(new Near(property, value, maxDistance));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this
+     */
+    public Query near(String property, Point value, Distance maxDistance) {
+        add(new Near(property, value, maxDistance));
+        return this;
+    }
+
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this
+     */
+    public Query near(String property, List value, Number maxDistance) {
+        add(new Near(property, value, maxDistance));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this
+     */
+    public Query near(String property, Point value, Number maxDistance) {
+        add(new Near(property, value, maxDistance));
+        return this;
+    }
+
+    /**
      * Geospacial query for values within a given box. A box is defined as a multi-dimensional list in the form
      *
      * [[40.73083, -73.99756], [40.741404,  -73.988135]]
@@ -953,18 +1032,26 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
      * @author Graeme Rocher
      * @since 1.0
      */
-    public static class Near extends PropertyCriterion {
+    public static class Near extends GeoCriterion {
 
-        public Near(String name, List value) {
+        Distance maxDistance = null;
+
+        public Near(String name, Object value) {
             super(name, value);
         }
 
-        public List getValues() {
-            return (List) getValue();
+        public Near(String name, Object value, Distance maxDistance) {
+            super(name, value);
+            this.maxDistance = maxDistance;
         }
 
-        public void setValue(List value) {
-            this.value = value;
+        public Near(String name, Object value, Number maxDistance) {
+            super(name, value);
+            this.maxDistance = Distance.valueOf(maxDistance.doubleValue());
+        }
+
+        public void setMaxDistance(Distance maxDistance) {
+            this.maxDistance = maxDistance;
         }
     }
 

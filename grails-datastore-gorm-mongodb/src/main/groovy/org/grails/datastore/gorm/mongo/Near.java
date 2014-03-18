@@ -16,7 +16,10 @@ package org.grails.datastore.gorm.mongo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
+import grails.mongodb.geo.Distance;
+import grails.mongodb.geo.Point;
 import org.grails.datastore.gorm.finders.MethodExpression;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query.Criterion;
@@ -30,17 +33,35 @@ public class Near extends MethodExpression {
 
     @Override
     public Criterion createCriterion() {
-        return new MongoQuery.Near(propertyName, (List<?>) arguments[0]);
+        MongoQuery.Near near = new MongoQuery.Near(propertyName, arguments[0]);
+
+        if(arguments.length > 1) {
+            Object o = arguments[1];
+            if(o instanceof Number) {
+                near.setMaxDistance(Distance.valueOf(((Number) o).doubleValue()));
+            }
+            else {
+                near.setMaxDistance((Distance)o);
+            }
+        }
+        return near;
     }
 
     @Override
     public void setArguments(Object[] arguments) {
-        Assert.isTrue(arguments.length > 0 && arguments[0] instanceof List,
-            "Only a list of elements is supported in an 'near' query");
+        Assert.isTrue(arguments.length > 0 ,
+            "Missing required arguments to findBy*Near query");
 
-        Collection<?> argument = (Collection<?>) arguments[0];
-        Assert.isTrue(argument.size() == 2,
-            "A 'near' query requires a two dimensional list of values");
+        Object arg1 = arguments[0];
+
+        Assert.isTrue(((arg1 instanceof Point) || (arg1 instanceof Map) || (arg1 instanceof List)) ,
+                "Argument to findBy*Near should either be a Point, coordinate List or a Map");
+
+        if(arguments.length>1) {
+            Object arg2 = arguments[1];
+            Assert.isTrue(((arg2 instanceof Number) || (arg2 instanceof Distance)),
+                    "Second argument to findBy*Near should either the distance: either a number or an instanceof Distance");
+        }
 
         super.setArguments(arguments);
     }
