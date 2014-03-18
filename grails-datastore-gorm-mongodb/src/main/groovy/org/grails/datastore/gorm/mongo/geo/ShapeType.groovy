@@ -20,6 +20,7 @@ import grails.mongodb.geo.LineString
 import grails.mongodb.geo.Point
 import grails.mongodb.geo.Polygon
 import grails.mongodb.geo.Shape
+import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.springframework.dao.DataAccessResourceFailureException
 import org.springframework.dao.InvalidDataAccessResourceUsageException
@@ -44,7 +45,7 @@ class ShapeType extends GeoJSONType<Shape>{
             return super.writeInternal(property, key, value, nativeTarget)
         }
         else {
-            throw new InvalidDataAccessResourceUsageException("Only GeoJSON shapes can be persisted with ")
+            throw new InvalidDataAccessResourceUsageException("Only GeoJSON shapes can be persisted using Shape inheritance.")
         }
     }
 

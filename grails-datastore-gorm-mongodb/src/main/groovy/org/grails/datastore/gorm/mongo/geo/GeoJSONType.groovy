@@ -15,13 +15,13 @@
 package org.grails.datastore.gorm.mongo.geo
 
 import com.mongodb.DBObject
+import grails.mongodb.geo.GeoJSON
 import grails.mongodb.geo.Shape
 import groovy.transform.CompileStatic
 import org.bson.BSONObject
 import org.bson.BasicBSONObject
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
 import org.grails.datastore.mapping.model.PersistentProperty
-import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query
 
 /**
@@ -32,7 +32,6 @@ import org.grails.datastore.mapping.query.Query
  */
 @CompileStatic
 abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTypeMarshaller<T, DBObject, DBObject> {
-
 
     public static final String COORDINATES = "coordinates"
     public static final String GEO_TYPE = "type"
@@ -75,12 +74,20 @@ abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTy
 
     @Override
     protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion value, DBObject nativeQuery) {
-        def v = value.getValue()
-        if(v instanceof Shape) {
-            Shape shape = (Shape) v
+        if(value instanceof Query.Equals) {
+            def v = value.getValue()
+            if(v instanceof GeoJSON) {
+                Shape shape = (Shape) v
 
-            def geoJson = convertToGeoJSON(shape)
-            nativeQuery.put(key, geoJson)
+                def geoJson = convertToGeoJSON(shape)
+                nativeQuery.put(key, geoJson)
+            }
+            else if( v instanceof Shape) {
+                nativeQuery.put(key, v.asList())
+            }
+            else {
+                super.queryInternal(property, key, value, nativeQuery)
+            }
         }
         else {
             super.queryInternal(property, key, value, nativeQuery)
