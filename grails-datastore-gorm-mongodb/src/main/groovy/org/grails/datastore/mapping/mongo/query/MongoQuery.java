@@ -287,23 +287,27 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 DBObject queryRoot = new BasicDBObject();
                 BasicDBObject queryGeoWithin = new BasicDBObject();
                 queryRoot.put(GEO_WITHIN_OPERATOR, queryGeoWithin);
-                Shape shape = geoWithin.getShape();
                 String targetProperty = getPropertyName(entity, geoWithin);
-
-
-                if(shape instanceof Polygon) {
-                    Polygon p = (Polygon) shape;
-                    BasicBSONObject geoJson = GeoJSONType.convertToGeoJSON(p);
-                    queryGeoWithin.put(GEOMETRY_OPERATOR, geoJson);
+                Object value = geoWithin.getValue();
+                if(value instanceof Shape) {
+                    Shape shape = (Shape)value;
+                    if(shape instanceof Polygon) {
+                        Polygon p = (Polygon) shape;
+                        BasicBSONObject geoJson = GeoJSONType.convertToGeoJSON(p);
+                        queryGeoWithin.put(GEOMETRY_OPERATOR, geoJson);
+                    }
+                    else if(shape instanceof Box) {
+                        queryGeoWithin.put(BOX_OPERATOR, shape.asList());
+                    }
+                    else if(shape instanceof Circle) {
+                        queryGeoWithin.put(CENTER_OPERATOR, shape.asList());
+                    }
+                    else if(shape instanceof Sphere) {
+                        queryGeoWithin.put(CENTER_SPHERE_OPERATOR, shape.asList());
+                    }
                 }
-                else if(shape instanceof Box) {
-                    queryGeoWithin.put(BOX_OPERATOR, shape.asList());
-                }
-                else if(shape instanceof Circle) {
-                    queryGeoWithin.put(CENTER_OPERATOR, shape.asList());
-                }
-                else if(shape instanceof Sphere) {
-                    queryGeoWithin.put(CENTER_SPHERE_OPERATOR, shape.asList());
+                else if(value instanceof Map) {
+                    queryGeoWithin.putAll((Map)value);
                 }
 
                 query.put(targetProperty, queryRoot);
@@ -995,21 +999,13 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
      */
     public static class GeoCriterion extends PropertyCriterion {
 
-        public GeoCriterion(String name, Shape value) {
+        public GeoCriterion(String name, Object value) {
             super(name, value);
-        }
-
-        public void setValue(Shape matrix) {
-            this.value = matrix;
-        }
-
-        public Shape getShape() {
-            return (Shape) getValue();
         }
     }
 
     public static class GeoWithin extends GeoCriterion {
-        public GeoWithin(String name, Shape value) {
+        public GeoWithin(String name, Object value) {
             super(name, value);
         }
     }

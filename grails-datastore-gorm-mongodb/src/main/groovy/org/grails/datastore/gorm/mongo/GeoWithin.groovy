@@ -33,7 +33,7 @@ import org.springframework.util.Assert
 class GeoWithin extends MethodExpression {
     @Override
     Query.Criterion createCriterion() {
-        return new MongoQuery.GeoWithin(propertyName, (Shape) arguments[0]);
+        return new MongoQuery.GeoWithin(propertyName, arguments[0]);
     }
 
     @Override
@@ -43,7 +43,7 @@ class GeoWithin extends MethodExpression {
 
         def value = arguments[0]
 
-        Assert.isTrue( ( value instanceof Shape) && !((value instanceof LineString) || (value instanceof Point)),
+        Assert.isTrue( (value instanceof Map) || (( value instanceof Shape) && !((value instanceof LineString) || (value instanceof Point))),
                         "Argument must be either a Box, Circle, Polygon or Sphere")
 
         super.setArguments(arguments)
