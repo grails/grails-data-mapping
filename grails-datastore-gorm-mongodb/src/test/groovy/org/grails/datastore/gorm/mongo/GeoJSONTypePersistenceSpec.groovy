@@ -115,6 +115,36 @@ class GeoJSONTypePersistenceSpec extends GormDatastoreSpec {
             results*.name == ['P2']
     }
 
+
+    void "Test nearSphere queries with GeoJSON types"() {
+        given:"A geo data model"
+            createGeoDataModel()
+
+        when:"We find points near a given point"
+            def results = Loc.findAllByShapeNearSphere( Point.valueOf(1,7) )
+
+        then:"The results are correct"
+            results.size() == 4
+            results*.name == ['P2', 'Poly1', 'P1', 'LS1']
+
+        when:"We find points near a given point"
+            results = Loc.findAllByShapeNearSphere( [$geometry: [type:'Point', coordinates: [1,7]]] )
+
+        then:"The results are correct"
+            results.size() == 4
+            results*.name == ['P2', 'Poly1', 'P1', 'LS1']
+
+        when:"We find points near a given point"
+            results = Loc.withCriteria {
+                nearSphere 'shape', Point.valueOf(1,7), 300000
+            }
+
+        then:"The results are correct"
+            results.size() == 1
+            results*.name == ['P2']
+    }
+
+
     /**
      * Creates a data model based on A data model based on
      * https://blog.codecentric.de/en/2013/03/mongodb-geospatial-indexing-search-geojson-point-linestring-polygon

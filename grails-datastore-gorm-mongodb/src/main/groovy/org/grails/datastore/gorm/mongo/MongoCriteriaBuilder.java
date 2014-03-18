@@ -20,7 +20,9 @@ import grails.gorm.CriteriaBuilder;
 import java.util.List;
 import java.util.Map;
 
+import grails.mongodb.geo.Distance;
 import grails.mongodb.geo.GeoJSON;
+import grails.mongodb.geo.Point;
 import grails.mongodb.geo.Shape;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
@@ -62,6 +64,148 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
         return this;
     }
 
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this Criterion
+     */
+    public Criteria near(String property, List<?> value, Number maxDistance) {
+        validatePropertyName(property, "near");
+        addToCriteria(new Near(property, value, maxDistance));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this Criterion
+     */
+    public Criteria near(String property, List<?> value, Distance maxDistance) {
+        validatePropertyName(property, "near");
+        addToCriteria(new Near(property, value, maxDistance));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this Criterion
+     */
+    public Criteria near(String property, Point value) {
+        validatePropertyName(property, "near");
+        addToCriteria(new Near(property, value));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this Criterion
+     */
+    public Criteria near(String property, Point value, Number maxDistance) {
+        validatePropertyName(property, "near");
+        addToCriteria(new Near(property, value, maxDistance));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this Criterion
+     */
+    public Criteria near(String property, Point value, Distance maxDistance) {
+        validatePropertyName(property, "near");
+        addToCriteria(new Near(property, value, maxDistance));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this Criterion
+     */
+    public Criteria nearSphere(String property, List<?> value) {
+        validatePropertyName(property, "nearSphere");
+        addToCriteria(new MongoQuery.NearSphere(property, value));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this Criterion
+     */
+    public Criteria nearSphere(String property, List<?> value, Number maxDistance) {
+        validatePropertyName(property, "nearSphere");
+        addToCriteria(new MongoQuery.NearSphere(property, value, maxDistance));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this Criterion
+     */
+    public Criteria nearSphere(String property, List<?> value, Distance maxDistance) {
+        validatePropertyName(property, "nearSphere");
+        addToCriteria(new MongoQuery.NearSphere(property, value, maxDistance));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this Criterion
+     */
+    public Criteria nearSphere(String property, Point value) {
+        validatePropertyName(property, "nearSphere");
+        addToCriteria(new MongoQuery.NearSphere(property, value));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this Criterion
+     */
+    public Criteria nearSphere(String property, Point value, Number maxDistance) {
+        validatePropertyName(property, "nearSphere");
+        addToCriteria(new MongoQuery.NearSphere(property, value, maxDistance));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values near the given two dimensional list
+     *
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return this Criterion
+     */
+    public Criteria nearSphere(String property, Point value, Distance maxDistance) {
+        validatePropertyName(property, "nearSphere");
+        addToCriteria(new MongoQuery.NearSphere(property, value, maxDistance));
+        return this;
+    }
     /**
      * Geospacial query for values within a given box. A box is defined as a multi-dimensional list in the form
      *

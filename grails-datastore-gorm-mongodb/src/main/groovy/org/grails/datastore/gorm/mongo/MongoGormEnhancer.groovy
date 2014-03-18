@@ -44,6 +44,7 @@ class MongoGormEnhancer extends GormEnhancer {
     MongoGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
         super(datastore, transactionManager)
 
+        DynamicFinder.registerNewMethodExpression(NearSphere)
         DynamicFinder.registerNewMethodExpression(Near)
         DynamicFinder.registerNewMethodExpression(WithinBox)
         DynamicFinder.registerNewMethodExpression(WithinPolygon)
