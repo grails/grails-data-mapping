@@ -22,4 +22,5 @@ package grails.mongodb.geo
  */
 public interface GeoJSON {
 
+    abstract List<? extends Object> asList();
 }

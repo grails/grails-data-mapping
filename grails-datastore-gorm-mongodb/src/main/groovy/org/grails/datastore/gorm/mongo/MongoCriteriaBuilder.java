@@ -20,6 +20,7 @@ import grails.gorm.CriteriaBuilder;
 import java.util.List;
 import java.util.Map;
 
+import grails.mongodb.geo.GeoJSON;
 import grails.mongodb.geo.Shape;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
@@ -116,6 +117,19 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
     public Criteria geoWithin(String property, Shape shape) {
         validatePropertyName(property, "geoWithin");
         addToCriteria(new MongoQuery.GeoWithin(property, shape));
+        return this;
+    }
+
+    /**
+     * Geospacial query for the given shape returning records that are found to intersect the given shape
+     *
+     * @param property The property
+     * @param shape The shape
+     * @return The criteria insstance
+     */
+    public Criteria geoIntersects(String property, GeoJSON shape) {
+        validatePropertyName(property, "geoIntersects");
+        addToCriteria(new MongoQuery.GeoIntersects(property, shape));
         return this;
     }
 

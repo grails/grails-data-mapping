@@ -31,6 +31,10 @@ import org.springframework.util.Assert
  */
 @CompileStatic
 class GeoWithin extends MethodExpression {
+    GeoWithin(Class<?> targetClass, String propertyName) {
+        super(targetClass, propertyName)
+    }
+
     @Override
     Query.Criterion createCriterion() {
         return new MongoQuery.GeoWithin(propertyName, arguments[0]);
@@ -49,7 +53,4 @@ class GeoWithin extends MethodExpression {
         super.setArguments(arguments)
     }
 
-    GeoWithin(Class<?> targetClass, String propertyName) {
-        super(targetClass, propertyName)
-    }
 }

@@ -61,16 +61,7 @@ class GeoJSONTypePersistenceSpec extends GormDatastoreSpec {
 
     void "Test persist abstract shape type"() {
         given:"A data model based on https://blog.codecentric.de/en/2013/03/mongodb-geospatial-indexing-search-geojson-point-linestring-polygon/"
-            def p1 = Point.valueOf(2, 2)
-            def p2 = Point.valueOf(3, 6)
-            def poly1 = Polygon.valueOf([[ [3,1], [1,2], [5,6], [9,2], [4,3], [3,1] ]])
-            def line1 = LineString.valueOf([ [5,2], [7,3], [7,5], [9,4] ])
-
-            new Loc(name:'P1', shape: p1).save(flush:true)
-            new Loc(name:'P2', shape: p2).save(flush:true)
-            new Loc(name:'Poly1', shape: poly1).save(flush:true)
-            new Loc(name:'LS1', shape: line1).save(flush:true)
-            session.clear()
+            createGeoDataModel()
 
 
         expect:
@@ -79,6 +70,36 @@ class GeoJSONTypePersistenceSpec extends GormDatastoreSpec {
             Loc.findByName("P2").shape instanceof Point
             Loc.findByName("Poly1").shape instanceof Polygon
             Loc.findByName("LS1").shape instanceof LineString
+    }
+
+
+    void "Test geoIntersects dynamic finder"() {
+        given:"A geo data model"
+            createGeoDataModel()
+
+        expect:
+            Loc.findByShapeGeoIntersects( Polygon.valueOf( [[ [0,0], [3,0], [3,3], [0,3], [0,0] ]] ) )
+            Loc.findByShapeGeoIntersects( LineString.valueOf( [[1,4], [8,4]] ) )
+            !Loc.findByShapeGeoIntersects( LineString.valueOf( [[1,7], [8,7]] ) )
+            Loc.findByShapeGeoIntersects( ['$geometry':[type:'Polygon', coordinates: [[ [0,0], [3,0], [3,3], [0,3], [0,0] ]]]] )
+            !Loc.findByShapeGeoIntersects( ['$geometry':[type:'LineString', coordinates: [[1,7], [8,7]] ]] )
+    }
+
+    /**
+     * Creates a data model based on A data model based on
+     * https://blog.codecentric.de/en/2013/03/mongodb-geospatial-indexing-search-geojson-point-linestring-polygon
+     */
+    protected void createGeoDataModel() {
+        def p1 = Point.valueOf(2, 2)
+        def p2 = Point.valueOf(3, 6)
+        def poly1 = Polygon.valueOf([[[3, 1], [1, 2], [5, 6], [9, 2], [4, 3], [3, 1]]])
+        def line1 = LineString.valueOf([[5, 2], [7, 3], [7, 5], [9, 4]])
+
+        new Loc(name: 'P1', shape: p1).save(flush: true)
+        new Loc(name: 'P2', shape: p2).save(flush: true)
+        new Loc(name: 'Poly1', shape: poly1).save(flush: true)
+        new Loc(name: 'LS1', shape: line1).save(flush: true)
+        session.clear()
     }
 
     @Override

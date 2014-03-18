@@ -102,6 +102,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     public static final String CENTER_SPHERE_OPERATOR = "$centerSphere";
 
+    public static final String GEO_INTERSECTS_OPERATOR = "$geoIntersects";
+
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
             public void handle(PersistentEntity entity, IdEquals criterion, DBObject query) {
@@ -305,6 +307,26 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     else if(shape instanceof Sphere) {
                         queryGeoWithin.put(CENTER_SPHERE_OPERATOR, shape.asList());
                     }
+                }
+                else if(value instanceof Map) {
+                    queryGeoWithin.putAll((Map)value);
+                }
+
+                query.put(targetProperty, queryRoot);
+            }
+        });
+
+        queryHandlers.put(GeoIntersects.class, new QueryHandler<GeoIntersects>() {
+            public void handle(PersistentEntity entity, GeoIntersects geoIntersects, DBObject query) {
+                DBObject queryRoot = new BasicDBObject();
+                BasicDBObject queryGeoWithin = new BasicDBObject();
+                queryRoot.put(GEO_INTERSECTS_OPERATOR, queryGeoWithin);
+                String targetProperty = getPropertyName(entity, geoIntersects);
+                Object value = geoIntersects.getValue();
+                if(value instanceof GeoJSON) {
+                    Shape shape = (Shape)value;
+                    BasicBSONObject geoJson = GeoJSONType.convertToGeoJSON(shape);
+                    queryGeoWithin.put(GEOMETRY_OPERATOR, geoJson);
                 }
                 else if(value instanceof Map) {
                     queryGeoWithin.putAll((Map)value);
@@ -879,6 +901,18 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
     /**
+     * Geospacial query for values within the given shape
+     *
+     * @param property The property
+     * @param shape The shape
+     * @return The query instance
+     */
+    public Query geoIntersects(String property, GeoJSON shape) {
+        add(new GeoIntersects(property, shape));
+        return this;
+    }
+
+    /**
      * Geospacial query for values within a given polygon. A polygon is defined as a multi-dimensional list in the form
      *
      * [[0, 0], [3, 6], [6, 0]]
@@ -1006,6 +1040,12 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     public static class GeoWithin extends GeoCriterion {
         public GeoWithin(String name, Object value) {
+            super(name, value);
+        }
+    }
+
+    public static class GeoIntersects extends GeoCriterion {
+        public GeoIntersects(String name, Object value) {
             super(name, value);
         }
     }
