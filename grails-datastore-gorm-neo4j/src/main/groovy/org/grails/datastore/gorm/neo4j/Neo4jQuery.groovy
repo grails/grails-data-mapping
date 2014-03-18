@@ -71,7 +71,7 @@ class Neo4jQuery extends Query {
     protected List executeQuery(PersistentEntity persistentEntity, Junction criteria) {
 
         def params = [:] as Map<String,Object>
-        def matches = ["(n:$persistentEntity.discriminator)"]
+        def matches = ["(n:$persistentEntity.discriminator)"] as Set
         def conditions = buildConditions(criteria, params, matches)
         def cypher = """MATCH ${matches.join(",")} ${conditions ? "WHERE " + conditions : " "}"""
 
@@ -151,7 +151,7 @@ ${applyOrderAndLimits(params)}"""
         }
     }
 
-    def buildConditions(Criterion criterion, Map params, List matches) {
+    def buildConditions(Criterion criterion, Map params, Collection matches) {
         switch (criterion) {
             case PropertyCriterion:
                 return buildConditionsPropertyCriterion(params, (PropertyCriterion)criterion, matches)
@@ -212,7 +212,7 @@ ${applyOrderAndLimits(params)}"""
         return "n.${pcc.property}${operator}n.${pcc.otherProperty}"
     }
 
-    def buildConditionsPropertyCriterion(Map params, PropertyCriterion pnc, List matches) {
+    def buildConditionsPropertyCriterion(Map params, PropertyCriterion pnc, Collection matches) {
         def paramName = "param_${params.size()}" as String
         params[paramName] = Neo4jUtils.mapToAllowedNeo4jType(pnc.value, entity.mappingContext)
         def rhs
@@ -224,9 +224,7 @@ ${applyOrderAndLimits(params)}"""
                 def association = entity.getPropertyByName(pnc.property)
                 if (association instanceof Association) {
                     def targetNodeName = "m_${matches.size()}"
-                    def relationshipType = RelationshipUtils.relationshipTypeUsedFor(association)
-                    def reversed = RelationshipUtils.useReversedMappingFor(association)
-                    matches << "(n)${reversed?'<':''}-[:$relationshipType]-${reversed?'':'>'}($targetNodeName)"
+                    matches << "(n)${matchForAssociation(association)}(${targetNodeName})"
                     lhs = "id(${targetNodeName})"
                 } else {
                     lhs = "n.$pnc.property"
@@ -282,11 +280,67 @@ ${applyOrderAndLimits(params)}"""
                 params["${paramName}_to".toString()] = Neo4jUtils.mapToAllowedNeo4jType(b.to, entity.mappingContext)
                 return "{${paramName}_from}<=n.$pnc.property and n.$pnc.property<={${paramName}_to}"
                 break
+            case SizeLessThanEquals:
+                Association association = entity.getPropertyByName(pnc.property) as Association
+                matches << "(n)${matchForAssociation(association)}() WITH n,count(*) as count"
+                lhs = "count"
+                operator = "<="
+                rhs = "{$paramName}"
+                break
+            case SizeLessThan:
+                Association association = entity.getPropertyByName(pnc.property) as Association
+                matches << "(n)${matchForAssociation(association)}() WITH n,count(*) as count"
+                lhs = "count"
+                operator = "<"
+                rhs = "{$paramName}"
+                break
+            case SizeGreaterThan:
+                Association association = entity.getPropertyByName(pnc.property) as Association
+                matches << "(n)${matchForAssociation(association)}() WITH n,count(*) as count"
+                lhs = "count"
+                operator = ">"
+                rhs = "{$paramName}"
+                break
+            case SizeGreaterThanEquals:
+                Association association = entity.getPropertyByName(pnc.property) as Association
+                matches << "(n)${matchForAssociation(association)}() WITH n,count(*) as count"
+                lhs = "count"
+                operator = ">="
+                rhs = "{$paramName}"
+                break
+            case SizeEquals:
+                Association association = entity.getPropertyByName(pnc.property) as Association
+                matches << "(n)${matchForAssociation(association)}() WITH n,count(*) as count"
+                lhs = "count"
+                operator = "="
+                rhs = "{$paramName}"
+                break
+            case SizeNotEquals:   // occurs multiple times
+                Association association = entity.getPropertyByName(pnc.property) as Association
+                matches << "(n)${matchForAssociation(association)}() WITH n,count(*) as count"
+                lhs = "count"
+                operator = "<>"
+                rhs = "{$paramName}"
+                break
             default:
                 throw new UnsupportedOperationException("propertycriterion ${pnc.class}")
         }
 
         return "$lhs$operator$rhs"
+    }
+
+    private def matchForAssociation(Association association) {
+        def relationshipType = RelationshipUtils.relationshipTypeUsedFor(association)
+        def reversed = RelationshipUtils.useReversedMappingFor(association)
+        StringBuilder sb = new StringBuilder();
+        if (reversed) {
+            sb.append("<")
+        }
+        sb.append("-[:").append(relationshipType).append("]-")
+        if (!reversed) {
+            sb.append(">")
+        }
+        sb.toString()
     }
 
     CypherEngine getCypherEngine() {
