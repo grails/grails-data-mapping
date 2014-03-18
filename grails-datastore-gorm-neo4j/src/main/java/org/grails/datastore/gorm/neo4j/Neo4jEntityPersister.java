@@ -180,11 +180,6 @@ public class Neo4jEntityPersister extends EntityPersister {
         return entityAccess.getEntity();
     }
 
-
-    private boolean isProxy(Object object) {
-        return object instanceof EntityProxy;
-    }
-
     @Override
     protected Serializable persistEntity(PersistentEntity pe, Object obj) {
         if ((obj == null) || (getSession().containsPersistingInstance(obj))) {
@@ -192,7 +187,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
         EntityAccess entityAccess = createEntityAccess(pe, obj);
 
-        if (isProxy(obj)) {
+        if (getMappingContext().getProxyFactory().isProxy(obj)) {
             return (Serializable) entityAccess.getIdentifier();
         }
 
