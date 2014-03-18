@@ -15,12 +15,11 @@
 package grails.mongodb.geo
 
 /**
- * An interface for all geo shapes to implement
+ * Marker interface for shapes that are GeoJSON shapes
  *
  * @author Graeme Rocher
  * @since 1.4
  */
-public abstract class Shape {
+public interface GeoJSON {
 
-    abstract List<? extends Object> asList();
 }

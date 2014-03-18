@@ -8,6 +8,7 @@ import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.gorm.mongo.geo.LineStringType
 import org.grails.datastore.gorm.mongo.geo.PointType
 import org.grails.datastore.gorm.mongo.geo.PolygonType
+import org.grails.datastore.gorm.mongo.geo.ShapeType
 import org.grails.datastore.gorm.mongo.plugin.support.MongoMethodsConfigurer
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
@@ -44,6 +45,7 @@ class Setup {
     }
 
     static Session setup(classes) {
+        MappingFactory.registerCustomType(new ShapeType())
         MappingFactory.registerCustomType(new PolygonType())
         MappingFactory.registerCustomType(new PointType())
         MappingFactory.registerCustomType(new LineStringType())

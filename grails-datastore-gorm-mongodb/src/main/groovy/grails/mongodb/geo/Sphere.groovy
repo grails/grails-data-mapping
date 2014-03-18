@@ -26,7 +26,7 @@ import groovy.transform.EqualsAndHashCode
  */
 @EqualsAndHashCode
 @CompileStatic
-class Sphere implements Shape{
+class Sphere extends Shape{
 
     Point center
     Distance distance

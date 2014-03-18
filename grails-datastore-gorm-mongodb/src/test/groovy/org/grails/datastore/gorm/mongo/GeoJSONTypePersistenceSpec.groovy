@@ -7,6 +7,7 @@ import grails.mongodb.geo.LineString
 import grails.mongodb.geo.Metric
 import grails.mongodb.geo.Point
 import grails.mongodb.geo.Polygon
+import grails.mongodb.geo.Shape
 import grails.mongodb.geo.Sphere
 import grails.persistence.Entity
 
@@ -58,20 +59,54 @@ class GeoJSONTypePersistenceSpec extends GormDatastoreSpec {
 
     }
 
+    void "Test persist abstract shape type"() {
+        given:"A data model based on https://blog.codecentric.de/en/2013/03/mongodb-geospatial-indexing-search-geojson-point-linestring-polygon/"
+            def p1 = Point.valueOf(2, 2)
+            def p2 = Point.valueOf(3, 6)
+            def poly1 = Polygon.valueOf([[ [3,1], [1,2], [5,6], [9,2], [4,3], [3,1] ]])
+            def line1 = LineString.valueOf([ [5,2], [7,3], [7,5], [9,4] ])
+
+            new Loc(name:'P1', shape: p1).save(flush:true)
+            new Loc(name:'P2', shape: p2).save(flush:true)
+            new Loc(name:'Poly1', shape: poly1).save(flush:true)
+            new Loc(name:'LS1', shape: line1).save(flush:true)
+            session.clear()
+
+
+        expect:
+            Loc.count() == 4
+            Loc.findByName("P1").shape instanceof Point
+            Loc.findByName("P2").shape instanceof Point
+            Loc.findByName("Poly1").shape instanceof Polygon
+            Loc.findByName("LS1").shape instanceof LineString
+    }
+
     @Override
     List getDomainClasses() {
-        [Place]
+        [Place, Loc]
     }
 }
 
 @Entity
 class Place {
     Long id
+    String name
     Point point
     Polygon polygon
     LineString lineString
 
     static mapping = {
         point geoIndex:'2dsphere'
+    }
+}
+
+@Entity
+class Loc {
+    Long id
+    String name
+    Shape shape
+
+    static mapping = {
+        shape geoIndex:'2dsphere'
     }
 }

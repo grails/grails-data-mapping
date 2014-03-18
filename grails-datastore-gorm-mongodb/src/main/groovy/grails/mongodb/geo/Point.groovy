@@ -25,7 +25,7 @@ import groovy.transform.EqualsAndHashCode
  */
 @EqualsAndHashCode
 @CompileStatic
-class Point implements Shape{
+class Point extends Shape implements GeoJSON{
     /**
      * The x and y values that indicate the location of the point
      */

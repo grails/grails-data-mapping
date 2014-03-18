@@ -26,7 +26,7 @@ import org.springframework.util.Assert
  */
 @EqualsAndHashCode
 @CompileStatic
-class Circle implements Shape{
+class Circle extends Shape{
     Point center
     double radius
 

@@ -26,7 +26,7 @@ import groovy.transform.EqualsAndHashCode
  */
 @EqualsAndHashCode
 @CompileStatic
-class Box implements Shape{
+class Box extends Shape{
 
     Point lowerLeft, upperRight
 
