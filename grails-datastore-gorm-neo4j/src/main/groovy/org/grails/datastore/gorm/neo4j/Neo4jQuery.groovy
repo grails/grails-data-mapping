@@ -35,9 +35,6 @@ import static org.grails.datastore.mapping.query.Query.*
 @Slf4j
 class Neo4jQuery extends Query {
 
-    public static TYPE = "type"
-    public static END = "end"
-    public static START = "start"
 
     final Neo4jEntityPersister neo4jEntityPersister
 
@@ -47,7 +44,7 @@ class Neo4jQuery extends Query {
     }
 
 
-    private String applyOrderAndLimits(Map params) {
+    private String applyOrderAndLimits(CypherBuilder cypherBuilder) {
         def cypher = ""
         if (!orderBy.empty) {
             cypher += " ORDER BY "
@@ -56,40 +53,28 @@ class Neo4jQuery extends Query {
 
         if (offset != 0) {
             cypher += " SKIP {__skip__}"
-            params["__skip__"] = offset
+            cypherBuilder.putParam("__skip__", offset)
         }
 
         if (max != -1) {
             cypher += " LIMIT {__limit__}"
-            params["__limit__"] = max
+            cypherBuilder.putParam("__limit__", max)
         }
-
         cypher
     }
 
     @Override
     protected List executeQuery(PersistentEntity persistentEntity, Junction criteria) {
 
-        def params = [:] as Map<String,Object>
-        def matches = ["(n:$persistentEntity.discriminator)"] as Set
-        def conditions = buildConditions(criteria, params, matches)
-        def cypher = """MATCH ${matches.join(",")} ${conditions ? "WHERE " + conditions : " "}"""
-
-        if (projections.projectionList.empty) {
-            cypher += """WITH id(n) as id, labels(n) as labels, n as data
-OPTIONAL MATCH (n)-[r]-()
-WITH id, labels, data, type(r) as t, collect(id(endnode(r))) as endNodeIds, collect(id(startnode(r))) as startNodeIds
-RETURN id, labels, data, collect( {$TYPE: t, $END: endNodeIds, $START: startNodeIds}) as relationships
-${applyOrderAndLimits(params)}"""
-
-        } else {
-            def returnColumns = projections.projectionList
-                                .collect { Projection projection -> buildProjection(projection) }
-                                .join(", ")
-            cypher += "RETURN $returnColumns ${applyOrderAndLimits(params)}"
+        CypherBuilder cypherBuilder = new CypherBuilder(persistentEntity.discriminator);
+        def conditions = buildConditions(criteria, cypherBuilder)
+        cypherBuilder.setConditions(conditions)
+        cypherBuilder.setOrderAndLimits(applyOrderAndLimits(cypherBuilder))
+        for (projection in projections.projectionList) {
+            cypherBuilder.addReturnColumn(buildProjection(projection, cypherBuilder))
         }
 
-        def executionResult = cypherEngine.execute(cypher, params)
+        def executionResult = cypherEngine.execute(cypherBuilder.build(), cypherBuilder.getParams())
         if (projections.projectionList.empty) {
             return executionResult.collect { Map<String,Object> map ->
 
@@ -100,9 +85,9 @@ ${applyOrderAndLimits(params)}"""
                 Collection<Relationship> relationships = new HashSet<>()
                 for (m in map.relationships) {
                     def relTypeMap = m as Map
-                    String relType = relTypeMap[TYPE]
-                    Collection<Long> startIds = relTypeMap[START] as Collection<Long>
-                    Collection<Long> endIds = relTypeMap[END] as Collection<Long>
+                    String relType = relTypeMap[CypherBuilder.TYPE]
+                    Collection<Long> startIds = relTypeMap[CypherBuilder.START] as Collection<Long>
+                    Collection<Long> endIds = relTypeMap[CypherBuilder.END] as Collection<Long>
                     assert endIds.size() == startIds.size()
                     [startIds, endIds].transpose().each { List it ->
                         assert it.size()==2
@@ -124,7 +109,7 @@ ${applyOrderAndLimits(params)}"""
         }
     }
 
-    def buildProjection(Projection projection) {
+    String buildProjection(Projection projection, CypherBuilder cypherBuilder) {
         switch (projection) {
             case CountProjection:
                 return "count(*)"
@@ -143,7 +128,14 @@ ${applyOrderAndLimits(params)}"""
                 break
             case PropertyProjection:
                 def propertyName = ((PropertyProjection) projection).propertyName
-                return "n.${propertyName}"
+                def association = entity.getPropertyByName(propertyName)
+                if (association instanceof Association) {
+                    def targetNodeName = "m_${cypherBuilder.getNextMatchNumber()}"
+                    cypherBuilder.addMatch("(n)${matchForAssociation(association)}(${targetNodeName})")
+                    return targetNodeName
+                } else {
+                    return "n.${propertyName}"
+                }
                 break
 
             default:
@@ -151,21 +143,21 @@ ${applyOrderAndLimits(params)}"""
         }
     }
 
-    def buildConditions(Criterion criterion, Map params, Collection matches) {
+    String buildConditions(Criterion criterion, CypherBuilder builder) {
         switch (criterion) {
             case PropertyCriterion:
-                return buildConditionsPropertyCriterion(params, (PropertyCriterion)criterion, matches)
+                return buildConditionsPropertyCriterion( (PropertyCriterion)criterion, builder)
                 break
             case Conjunction:
             case Disjunction:
                 def inner = ((Junction)criterion).criteria
-                        .collect { Criterion it -> buildConditions(it, params, matches)}
+                        .collect { Criterion it -> buildConditions(it, builder)}
                         .join( criterion instanceof Conjunction ? ' AND ' : ' OR ')
                 return inner ? "( $inner )" : inner
                 break
             case Negation:
                 List<Criterion> criteria = ((Negation) criterion).criteria
-                return "NOT (${buildConditions(new Conjunction(criteria), params, matches)})"
+                return "NOT (${buildConditions(new Conjunction(criteria), builder)})"
                 break
             case PropertyComparisonCriterion:
                 return buildConditionsPropertyComparisonCriterion(criterion as PropertyComparisonCriterion)
@@ -212,9 +204,9 @@ ${applyOrderAndLimits(params)}"""
         return "n.${pcc.property}${operator}n.${pcc.otherProperty}"
     }
 
-    def buildConditionsPropertyCriterion(Map params, PropertyCriterion pnc, Collection matches) {
-        def paramName = "param_${params.size()}" as String
-        params[paramName] = Neo4jUtils.mapToAllowedNeo4jType(pnc.value, entity.mappingContext)
+    def buildConditionsPropertyCriterion( PropertyCriterion pnc, CypherBuilder builder) {
+        def paramName = "param_${builder.getNextParamNumber()}" as String
+        builder.putParam(paramName, Neo4jUtils.mapToAllowedNeo4jType(pnc.value, entity.mappingContext))
         def rhs
         def lhs
         def operator
@@ -223,8 +215,8 @@ ${applyOrderAndLimits(params)}"""
             case Equals:
                 def association = entity.getPropertyByName(pnc.property)
                 if (association instanceof Association) {
-                    def targetNodeName = "m_${matches.size()}"
-                    matches << "(n)${matchForAssociation(association)}(${targetNodeName})"
+                    def targetNodeName = "m_${builder.getNextMatchNumber()}"
+                    builder.addMatch("(n)${matchForAssociation(association)}(${targetNodeName})")
                     lhs = "id(${targetNodeName})"
                 } else {
                     lhs = "n.$pnc.property"
@@ -241,13 +233,13 @@ ${applyOrderAndLimits(params)}"""
                 lhs = "n.$pnc.property"
                 operator = "=~"
                 rhs = "{$paramName}"
-                params[paramName] = pnc.value.toString().replaceAll("%", ".*")
+                builder.putParam(paramName, pnc.value.toString().replaceAll("%", ".*"))
                 break
             case In:
                 lhs = pnc.property == "id" ? "ID(n)" : "n.$pnc.property"
                 operator = " IN "
                 rhs = "{$paramName}"
-                params[paramName] = ((In) pnc).values
+                builder.putParam(paramName, ((In) pnc).values)
                 break
             case GreaterThan:
                 lhs = "n.$pnc.property"
@@ -276,48 +268,48 @@ ${applyOrderAndLimits(params)}"""
                 break
             case Between:
                 Between b = (Between) pnc
-                params["${paramName}_from".toString()] = Neo4jUtils.mapToAllowedNeo4jType(b.from, entity.mappingContext)
-                params["${paramName}_to".toString()] = Neo4jUtils.mapToAllowedNeo4jType(b.to, entity.mappingContext)
+                builder.putParam("${paramName}_from".toString(), Neo4jUtils.mapToAllowedNeo4jType(b.from, entity.mappingContext))
+                builder.putParam("${paramName}_to".toString(), Neo4jUtils.mapToAllowedNeo4jType(b.to, entity.mappingContext))
                 return "{${paramName}_from}<=n.$pnc.property and n.$pnc.property<={${paramName}_to}"
                 break
             case SizeLessThanEquals:
                 Association association = entity.getPropertyByName(pnc.property) as Association
-                matches << "(n)${matchForAssociation(association)}() WITH n,count(*) as count"
+                builder.addMatch("(n)${matchForAssociation(association)}() WITH n,count(*) as count")
                 lhs = "count"
                 operator = "<="
                 rhs = "{$paramName}"
                 break
             case SizeLessThan:
                 Association association = entity.getPropertyByName(pnc.property) as Association
-                matches << "(n)${matchForAssociation(association)}() WITH n,count(*) as count"
+                builder.addMatch("(n)${matchForAssociation(association)}() WITH n,count(*) as count")
                 lhs = "count"
                 operator = "<"
                 rhs = "{$paramName}"
                 break
             case SizeGreaterThan:
                 Association association = entity.getPropertyByName(pnc.property) as Association
-                matches << "(n)${matchForAssociation(association)}() WITH n,count(*) as count"
+                builder.addMatch("(n)${matchForAssociation(association)}() WITH n,count(*) as count")
                 lhs = "count"
                 operator = ">"
                 rhs = "{$paramName}"
                 break
             case SizeGreaterThanEquals:
                 Association association = entity.getPropertyByName(pnc.property) as Association
-                matches << "(n)${matchForAssociation(association)}() WITH n,count(*) as count"
+                builder.addMatch("(n)${matchForAssociation(association)}() WITH n,count(*) as count")
                 lhs = "count"
                 operator = ">="
                 rhs = "{$paramName}"
                 break
             case SizeEquals:
                 Association association = entity.getPropertyByName(pnc.property) as Association
-                matches << "(n)${matchForAssociation(association)}() WITH n,count(*) as count"
+                builder.addMatch("(n)${matchForAssociation(association)}() WITH n,count(*) as count")
                 lhs = "count"
                 operator = "="
                 rhs = "{$paramName}"
                 break
             case SizeNotEquals:   // occurs multiple times
                 Association association = entity.getPropertyByName(pnc.property) as Association
-                matches << "(n)${matchForAssociation(association)}() WITH n,count(*) as count"
+                builder.addMatch("(n)${matchForAssociation(association)}() WITH n,count(*) as count")
                 lhs = "count"
                 operator = "<>"
                 rhs = "{$paramName}"
