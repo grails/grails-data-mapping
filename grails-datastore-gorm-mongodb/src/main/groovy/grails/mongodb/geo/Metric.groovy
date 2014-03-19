@@ -14,22 +14,31 @@
  */
 package grails.mongodb.geo
 
+import groovy.transform.CompileStatic
+import groovy.transform.EqualsAndHashCode
+
 /**
- * Defines a metric for calculating {@link Distance}
+ * Defines a metric for calculating {@link Distance} in radians. See {@link Distance#inRadians()} }
  *
  * @author Graeme Rocher
  * @since 2.0
  */
+@EqualsAndHashCode
+@CompileStatic
 public class Metric {
-    // the radius of the earth in kilometers
+    /** the radius of the earth in kilometers **/
     static Metric KILOMETERS = new Metric(6378.137d)
-    // the radius of the earth in miles
+    /** the radius of the earth in miles **/
     static Metric MILES = new Metric(3963.191d)
-    // a neutral radius
+    /**  a neutral radius **/
     static Metric NEUTRAL = new Metric(1d)
 
     final double multiplier
 
+    /**
+     * Constructs a metric for the given multiplier
+     * @param multiplier The multiplier
+     */
     Metric(double multiplier) {
         this.multiplier = multiplier
     }

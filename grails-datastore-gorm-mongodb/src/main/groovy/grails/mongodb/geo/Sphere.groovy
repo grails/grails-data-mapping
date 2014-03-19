@@ -28,7 +28,14 @@ import groovy.transform.EqualsAndHashCode
 @CompileStatic
 class Sphere extends Shape{
 
+    /**
+     * The center of there sphere
+     */
     Point center
+
+    /**
+     * The distance used to calculate the radius in radians
+     */
     Distance distance
 
     /**
@@ -36,17 +43,29 @@ class Sphere extends Shape{
      * @param center The center {@link Point}
      * @param distance The distance
      */
-
     Sphere(Point center, Distance distance) {
         this.center = center
         this.distance = distance
     }
 
+    /**
+     * The sphere coordinate list with the radius in radians
+     *
+     * @return A coordinate list
+     */
     @Override
     List<? extends Object> asList() {
         [ center.asList(), distance.inRadians() ]
     }
 
+    /**
+     * Constructs a Sphere for the given coordinate list and optional metric
+     *
+     * @param coords The coordinate list
+     * @param metric The metric to use to calculate radians (defaults to {@link Metric#NEUTRAL}
+     *
+     * @return A Sphere
+     */
     static Sphere valueOf( List coords, Metric metric = Metric.NEUTRAL) {
         if(coords.size() < 2) throw new IllegalArgumentException("Coordinates should contain at least 2 entries for a Sphere: The center point and the distance")
 

@@ -22,5 +22,10 @@ package grails.mongodb.geo
  */
 public interface GeoJSON {
 
+    /**
+     * Converts the GeoJSON shape into a coordinate list
+     *
+     * @return The coordinate list
+     */
     abstract List<? extends Object> asList();
 }

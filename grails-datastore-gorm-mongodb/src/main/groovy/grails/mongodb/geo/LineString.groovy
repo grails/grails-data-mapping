@@ -29,12 +29,22 @@ import groovy.transform.EqualsAndHashCode
 class LineString extends Shape implements GeoJSON{
     List<Point>  coordinates
 
+    /**
+     * Constructs a LineString for the given {@link Point} instances
+     *
+     * @param points The {@link Point} instances. Must be at least 2 points.
+     */
     LineString(Point...points) {
         if(points.size() < 2)
             throw new IllegalArgumentException("At least 2 points required for a LineString")
         this.coordinates = points.toList()
     }
 
+    /**
+     * Converts the line string to a multi dimensional coordinate list.
+     * Example: [ [1.0d, 4.0d], [8.0d, 4.0d] ]
+     * @return
+     */
     @Override
     List<List<Double>> asList() {
         coordinates.collect() { Point p -> p.asList()}

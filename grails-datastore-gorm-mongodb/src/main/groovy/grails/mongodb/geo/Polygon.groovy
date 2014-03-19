@@ -26,6 +26,9 @@ import org.springframework.util.Assert
 @EqualsAndHashCode
 class Polygon extends Shape implements GeoJSON{
 
+    /**
+     * The {@link Point} instances that constitute the Polygon
+     */
     final List<Point> points
 
     /**

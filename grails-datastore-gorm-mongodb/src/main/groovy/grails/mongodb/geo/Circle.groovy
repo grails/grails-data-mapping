@@ -27,7 +27,13 @@ import org.springframework.util.Assert
 @EqualsAndHashCode
 @CompileStatic
 class Circle extends Shape{
+    /**
+     * The center of the circle
+     */
     Point center
+    /**
+     * The radius of the circle
+     */
     double radius
 
     /**

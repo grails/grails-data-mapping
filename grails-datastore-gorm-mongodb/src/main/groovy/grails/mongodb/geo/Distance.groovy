@@ -25,9 +25,21 @@ import groovy.transform.EqualsAndHashCode
 @EqualsAndHashCode
 class Distance {
 
+    /**
+     * The value representing the distance
+     */
     double value
+    /**
+     * The metric used to calculate radians. See {@link Distance#inRadians()}
+     */
     Metric metric
 
+    /**
+     * Constructs a distance for the given value and optional metric
+     *
+     * @param value The value
+     * @param metric The metric
+     */
     Distance(double value, Metric metric = Metric.NEUTRAL) {
         this.value = value
         this.metric = metric
