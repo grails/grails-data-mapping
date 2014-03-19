@@ -23,20 +23,22 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
 import org.springframework.core.Ordered
-
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 /**
  * Works around the issue where Grails only finds the first PersistenceContextInterceptor by
  * replacing all discovered interceptors with a single aggregating instance.
  *
  * @author Burt Beckwith
  */
-class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryPostProcessor, Ordered {
+class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryPostProcessor, Ordered, ApplicationContextAware {
 
     private boolean hibernate
     private boolean mongo
     private boolean redis
     private boolean aggregate
     private boolean neo4j
+    private  ApplicationContext applicationContext
     private List<PersistenceContextInterceptor> interceptors = []
 
     protected Log log = LogFactory.getLog(PersistenceContextInterceptorAggregator)
@@ -89,6 +91,10 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
         }
     }
 
+    void setApplicationContext(ApplicationContext ctx) {
+        applicationContext = ctx
+    }
+
     void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
         if (!aggregate) {
             return
@@ -97,11 +103,12 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
         log.info 'postProcessBeanFactory start'
 
         if (hibernate) {
-            def HibernatePersistenceContextInterceptor = Class.forName(
-                'org.codehaus.groovy.grails.orm.hibernate.support.HibernatePersistenceContextInterceptor',
+            def hibernateAggregatePersistenceContextInterceptor = Class.forName(
+                'org.codehaus.groovy.grails.orm.hibernate.support.AggregatePersistenceContextInterceptor',
                 true, Thread.currentThread().contextClassLoader)
-            def interceptor = HibernatePersistenceContextInterceptor.newInstance()
-            interceptor.sessionFactory = beanFactory.getBean('sessionFactory')
+            def interceptor = hibernateAggregatePersistenceContextInterceptor.newInstance()
+            interceptor.applicationContext = applicationContext
+            interceptor.afterPropertiesSet()
             interceptors << interceptor
         }
 
