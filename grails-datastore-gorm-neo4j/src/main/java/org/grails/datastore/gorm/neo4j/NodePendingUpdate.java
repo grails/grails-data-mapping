@@ -27,6 +27,7 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
     @Override
     public void run() {
         Map<String, Object> simpleProps = new HashMap<String, Object>();
+        simpleProps.put("__id__", getEntityAccess().getIdentifier());
 
         for (PersistentProperty pp : getEntityAccess().getPersistentEntity().getPersistentProperties()) {
             if (pp instanceof Simple) {
@@ -40,7 +41,7 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
 
         String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance();
         //TODO: set n={props} might remove dynamic properties
-        String cypher = String.format("MATCH (n%s) WHERE id(n)={id} SET n={props} return id(n) as id", labels);
+        String cypher = String.format("MATCH (n%s) WHERE n.__id__={id} SET n={props}", labels);
 
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("props", simpleProps);

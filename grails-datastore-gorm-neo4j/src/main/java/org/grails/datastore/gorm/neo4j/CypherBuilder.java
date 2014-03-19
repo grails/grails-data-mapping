@@ -70,9 +70,9 @@ public class CypherBuilder {
 
         if (returnColumns.isEmpty()) {
             cypher
-                    .append("WITH id(n) as id, labels(n) as labels, n as data\n")
+                    .append("WITH n.__id__ as id, labels(n) as labels, n as data\n")
                     .append("OPTIONAL MATCH (n)-[r]-()\n")
-                    .append("WITH id, labels, data, type(r) as t, collect(id(endnode(r))) as endNodeIds, collect(id(startnode(r))) as startNodeIds\n")
+                    .append("WITH id, labels, data, type(r) as t, collect(endnode(r).__id__) as endNodeIds, collect(startnode(r).__id__) as startNodeIds\n")
                     .append("RETURN id, labels, data, collect( {")
                     .append(TYPE).append(": t, ")
                     .append(END).append(": endNodeIds, ")

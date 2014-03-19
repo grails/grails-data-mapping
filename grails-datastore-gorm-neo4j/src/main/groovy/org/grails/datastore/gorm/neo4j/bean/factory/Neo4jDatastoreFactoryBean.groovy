@@ -19,6 +19,7 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
+import org.grails.datastore.gorm.neo4j.engine.CypherEngine
 import org.neo4j.graphdb.GraphDatabaseService
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
@@ -38,10 +39,11 @@ class Neo4jDatastoreFactoryBean implements FactoryBean<Neo4jDatastore>, Applicat
     MappingContext mappingContext
     Map<String,String> config = [:]
     ApplicationContext applicationContext
+    CypherEngine cypherEngine
 
     Neo4jDatastore getObject() {
 
-        Neo4jDatastore datastore = new Neo4jDatastore(mappingContext, applicationContext, graphDatabaseService)
+        Neo4jDatastore datastore = new Neo4jDatastore(mappingContext, applicationContext, cypherEngine, graphDatabaseService)
 
         ((ConfigurableApplicationContext) applicationContext).addApplicationListener new DomainEventListener(datastore)
         ((ConfigurableApplicationContext) applicationContext).addApplicationListener new AutoTimestampEventListener(datastore)

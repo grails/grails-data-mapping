@@ -166,7 +166,7 @@ public class Neo4jEntityPersister extends EntityPersister {
 
                 String relType = RelationshipUtils.relationshipTypeUsedFor(otm);
                 boolean reversed = RelationshipUtils.useReversedMappingFor(otm);
-                Collection proxies = new HashSet();
+                Collection proxies = new HashSet(); // TODO: support list as will depending on type
 
                 for (Relationship r : getSession().findPersistentRelationshipsByType(relType, id, reversed)) {
                     proxies.add(getMappingContext().getProxyFactory().createProxy(session, otm.getAssociatedEntity().getJavaClass(), r.getOtherId(id) ));
@@ -212,7 +212,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             if (cancelInsert(pe, entityAccess)) {
                 return null;
             }
-            getSession().addPendingInsert(new NodePendingInsert(getSession().createIdentifierForNotYetPersistedInstance(), entityAccess, getCypherEngine(), getMappingContext()));
+            getSession().addPendingInsert(new NodePendingInsert(getSession().getDatastore().nextIdForType(pe), entityAccess, getCypherEngine(), getMappingContext()));
             firePostInsertEvent(pe, entityAccess);
         }
 
@@ -273,7 +273,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             return;
         }
         getCypherEngine().execute(
-                String.format("MATCH (n:%s) WHERE id(n)={id} OPTIONAL MATCH (n)-[r]-() DELETE r,n", pe.getDiscriminator()),
+                String.format("MATCH (n:%s) WHERE n.__id__={id} OPTIONAL MATCH (n)-[r]-() DELETE r,n", pe.getDiscriminator()),
                 Collections.singletonMap("id", entityAccess.getIdentifier()));
         firePostDeleteEvent(pe, entityAccess);
     }

@@ -9,6 +9,7 @@ import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
 import org.grails.datastore.gorm.neo4j.engine.EmbeddedCypherEngine
+import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -59,7 +60,8 @@ class Setup {
                 new EmbeddedCypherEngine(executionEngine: new ExecutionEngine(graphDb)),
                 graphDb
         )
-//        datastore.mappingContext.proxyFactory = new GroovyProxyFactory()
+        datastore.skipIndexSetup = true
+        //datastore.mappingContext.proxyFactory = new GroovyProxyFactory()
 
         for (Class cls in classes) {
             mappingContext.addPersistentEntity(cls)

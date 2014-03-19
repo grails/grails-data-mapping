@@ -60,7 +60,7 @@ class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long> {
 
             if (!session.containsOrAddPersistentRelationship(fromId, toId, relType)) {
                 Map<String,Object> params = MapUtil.map("fromId", fromId, "toId", toId);
-                String cypher = String.format("MATCH (from), (to) WHERE id(from)={fromId} AND id(to)={toId} CREATE (from)-[:%s]->(to)", relType);
+                String cypher = String.format("MATCH (from), (to) WHERE from.__id__={fromId} AND to.__id__={toId} CREATE (from)-[:%s]->(to)", relType);
                 cypherEngine.execute(cypher, params);
             } else {
                 log.debug(String.format("skip creating relationship (%d)-[:%s]->(%d), already exisiting", fromId, relType, toId));

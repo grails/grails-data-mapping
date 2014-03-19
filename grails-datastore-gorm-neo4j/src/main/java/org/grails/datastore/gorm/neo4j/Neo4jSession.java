@@ -38,11 +38,6 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     private CypherEngine cypherEngine;
 
-    /**
-     * provides the number for variable identifier to be used in cypher create statements
-     */
-    private int nonPersistedCount= 0;
-
     /** map node id -> hashmap of relationship types showing startNode id and endNode id */
     private Collection<Relationship> persistentRelationships = new HashSet<Relationship>();
     private Collection<Object> persistingInstances = new HashSet<Object>();
@@ -65,6 +60,11 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
         // TODO: think about transaction handling
         return new Neo4jTransaction(null);
 //        new Neo4jTransaction(((Neo4jDatastore)datastore).graphDatabaseService)
+    }
+
+    @Override
+    public Neo4jDatastore getDatastore() {
+        return (Neo4jDatastore) super.getDatastore();
     }
 
     @Override
@@ -123,16 +123,15 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     @Override
     public void flush() {
         super.flush();
+//        if (log.isDebugEnabled()) {
+            // TODO: remove debugging stuff here
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(writer);
+            new SubGraphExporter(new DatabaseSubGraph(graphDatabaseService)).export(printWriter);
 
-
-        // TODO: remove debugging stuff here
-        StringWriter writer = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(writer);
-        new SubGraphExporter(new DatabaseSubGraph(graphDatabaseService)).export(printWriter);
-
-        log.warn(writer.toString());
-        log.warn("svg: " + Neo4jUtils.dumpGraphToSvg(graphDatabaseService));
-
+            log.info(writer.toString());
+            log.info("svg: " + Neo4jUtils.dumpGraphToSvg(graphDatabaseService));
+//        }
     }
 
     public boolean containsOrAddPersistentRelationship(long startNode, long endNode, String type) {
@@ -187,9 +186,6 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
         }
     }
 
-    public long createIdentifierForNotYetPersistedInstance() {
-        return --nonPersistedCount;
-    }
 }
 
 

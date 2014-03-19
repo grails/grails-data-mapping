@@ -35,14 +35,12 @@ import static org.grails.datastore.mapping.query.Query.*
 @Slf4j
 class Neo4jQuery extends Query {
 
-
     final Neo4jEntityPersister neo4jEntityPersister
 
     protected Neo4jQuery(Session session, PersistentEntity entity, Neo4jEntityPersister neo4jEntityPersister) {
         super(session, entity)
         this.neo4jEntityPersister = neo4jEntityPersister
     }
-
 
     private String applyOrderAndLimits(CypherBuilder cypherBuilder) {
         def cypher = ""
@@ -96,7 +94,6 @@ class Neo4jQuery extends Query {
                 }
 
                 log.debug "relationships = $relationships"
-
                 neo4jEntityPersister.retrieveEntityAccess(persistentEntity, id, labels, data, relationships).entity
             }
         } else {
@@ -178,7 +175,7 @@ class Neo4jQuery extends Query {
     }
 
     def buildConditionsPropertyComparisonCriterion(PropertyComparisonCriterion pcc) {
-        def operator = ""
+        def operator
         switch (pcc) {
             case GreaterThanEqualsProperty:
                 operator = ">="
@@ -217,15 +214,15 @@ class Neo4jQuery extends Query {
                 if (association instanceof Association) {
                     def targetNodeName = "m_${builder.getNextMatchNumber()}"
                     builder.addMatch("(n)${matchForAssociation(association)}(${targetNodeName})")
-                    lhs = "id(${targetNodeName})"
+                    lhs = "${targetNodeName}.__id__"
                 } else {
-                    lhs = "n.$pnc.property"
+                    lhs = pnc.property == "id" ? "n.__id__" : "n.${pnc.property}"
                 }
                 operator = "="
                 rhs = "{$paramName}"
                 break
             case IdEquals:
-                lhs = "id(n)"
+                lhs = "n.__id__"
                 operator = "="
                 rhs = "{$paramName}"
                 break
@@ -236,7 +233,7 @@ class Neo4jQuery extends Query {
                 builder.putParam(paramName, pnc.value.toString().replaceAll("%", ".*"))
                 break
             case In:
-                lhs = pnc.property == "id" ? "ID(n)" : "n.$pnc.property"
+                lhs = pnc.property == "id" ? "n.__id__" : "n.$pnc.property"
                 operator = " IN "
                 rhs = "{$paramName}"
                 builder.putParam(paramName, ((In) pnc).values)
