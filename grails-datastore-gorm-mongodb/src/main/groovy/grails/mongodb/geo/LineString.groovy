@@ -53,7 +53,7 @@ class LineString extends Shape implements GeoJSON{
                 return it
             }
             else if(it instanceof List) {
-                return Point.valueOf((List<Double>)it)
+                return Point.valueOf((List<Number>)it)
             }
             throw new IllegalArgumentException("Invalid coordinates: $coords")
         }
