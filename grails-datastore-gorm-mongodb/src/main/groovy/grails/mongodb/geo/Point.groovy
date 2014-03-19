@@ -68,12 +68,12 @@ class Point extends Shape implements GeoJSON{
      * @param coords A list containing 2 entries for the x and y positions
      * @return A Point
      */
-    static Point valueOf(List<Double> coords) {
+    static Point valueOf(List<Number> coords) {
         if(coords.size() == 2) {
             def x = coords.get(0)
             def y = coords.get(1)
-            if((x instanceof Double) && (y instanceof Double)) {
-                return new Point(x, y)
+            if((x instanceof Number) && (y instanceof Number)) {
+                return new Point(x.doubleValue(), y.doubleValue())
             }
         }
         throw new IllegalArgumentException("Invalid coordinates: $coords")
@@ -92,7 +92,7 @@ class Point extends Shape implements GeoJSON{
             return (Point)coord
         }
         else if(coord instanceof List) {
-            return valueOf( (List<Double>) coord )
+            return valueOf( (List<Number>) coord )
         }
         throw new IllegalArgumentException("Invalid coordinates: $coords")
     }
