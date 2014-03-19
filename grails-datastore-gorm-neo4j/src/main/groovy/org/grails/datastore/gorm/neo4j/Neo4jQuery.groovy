@@ -236,7 +236,7 @@ class Neo4jQuery extends Query {
                 lhs = pnc.property == "id" ? "n.__id__" : "n.$pnc.property"
                 operator = " IN "
                 rhs = "{$paramName}"
-                builder.putParam(paramName, ((In) pnc).values)
+                builder.putParam(paramName, convertEnumsInList(((In) pnc).values))
                 break
             case GreaterThan:
                 lhs = "n.$pnc.property"
@@ -316,6 +316,12 @@ class Neo4jQuery extends Query {
         }
 
         return "$lhs$operator$rhs"
+    }
+
+    Collection convertEnumsInList(Collection collection) {
+        collection.collect {
+            it.getClass().isEnum() ? it.toString() : it
+        }
     }
 
     private def matchForAssociation(Association association) {
