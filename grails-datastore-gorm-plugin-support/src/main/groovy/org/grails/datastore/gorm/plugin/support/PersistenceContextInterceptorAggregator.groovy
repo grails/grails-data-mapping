@@ -109,7 +109,6 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
             def interceptor = hibernateAggregatePersistenceContextInterceptor.newInstance()
             interceptor.applicationContext = applicationContext
             interceptor.afterPropertiesSet()
-            // interceptor.sessionFactory = beanFactory.getBean('sessionFactory')
             interceptors << interceptor
         }
 
