@@ -88,6 +88,25 @@ class PersistenceContextInterceptorAggregatorSpec extends Specification {
         }
         bb.createApplicationContext()
     }
+    
+    void "Test that PersistenceContextInterceptorAggregator doesn't do changes when there is only one interceptor"() {
+        when:
+            def ctx = new BeanBuilder().beans {
+                persistenceContextInterceptorAggregator(PersistenceContextInterceptorAggregator)
+                singlePersistenceInterceptor(DummyPersistenceContextInterceptor) {
+                    name = 'single'
+                }
+            }.createApplicationContext()
+        then:"The context contains the necessary beans"
+            !ctx.containsBean("persistenceInterceptor")
+            ctx.containsBean("singlePersistenceInterceptor")
+        then:"The persistenceInterceptor is type of DummyPersistenceContextInterceptor and can be found by getBean(Class) method from context"
+            def persistenceInterceptor = ctx.getBean(PersistenceContextInterceptor)
+            persistenceInterceptor.class == DummyPersistenceContextInterceptor
+        then:"getBeansOfType(PersistenceContextInterceptor) returns one interceptor"
+            ctx.getBeansOfType(PersistenceContextInterceptor).size() == 1
+
+    }
 }
 
 class DummyPersistenceContextInterceptor implements PersistenceContextInterceptor {
