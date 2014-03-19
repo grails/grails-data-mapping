@@ -331,7 +331,7 @@ task allDocs(dependsOn: getTasksByName("docs", true)) << {
     for(task in docTasks) {
         def dir = task.destinationDir
         def projectName = task.project.name
-        if (projectName.endsWith("core")) {
+        if (projectName.endsWith("datastore-core")) {
             mkdir "$allDocsDir/manual"
             fileTree { from dir }.copy { into "$allDocsDir/manual" }
             def groovydocTask = groovydocTasks.find { it.project.name.endsWith "core" }
