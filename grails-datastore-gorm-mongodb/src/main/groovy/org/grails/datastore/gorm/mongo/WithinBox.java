@@ -18,6 +18,7 @@ package org.grails.datastore.gorm.mongo;
 import java.util.Collection;
 import java.util.List;
 
+import grails.mongodb.geo.Box;
 import org.grails.datastore.gorm.finders.MethodExpression;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query.Criterion;
@@ -37,18 +38,32 @@ public class WithinBox extends MethodExpression {
 
     @Override
     public Criterion createCriterion() {
-        return new MongoQuery.WithinBox(propertyName, (List<?>) arguments[0]);
+        Object argument = arguments[0];
+        if(argument instanceof Box) {
+            return new MongoQuery.WithinBox(propertyName, ((Box)argument).asList());
+        }
+        else {
+            return new MongoQuery.WithinBox(propertyName, (List<?>) argument);
+        }
     }
 
     @Override
     public void setArguments(Object[] arguments) {
-        Assert.isTrue(arguments.length > 0 && arguments[0] instanceof List,
+        Assert.isTrue(arguments.length > 0,
             "Only a list of elements is supported in a 'withinBox' query");
 
-        Collection<?> argument = (Collection<?>) arguments[0];
-        Assert.isTrue(argument.size() == 2,
-            "A 'withinBox' query requires a two dimensional list of values");
+        Object arg = arguments[0];
 
+        boolean isList = arg instanceof List;
+        Assert.isTrue((isList || (arg instanceof Box)),
+                "Only a list of elements is supported in a 'withinBox' query");
+
+        if(isList) {
+            Collection<?> argument = (Collection<?>) arg;
+            Assert.isTrue(argument.size() == 2,
+                    "A 'withinBox' query requires a two dimensional list of values");
+
+        }
         super.setArguments(arguments);
     }
 }
