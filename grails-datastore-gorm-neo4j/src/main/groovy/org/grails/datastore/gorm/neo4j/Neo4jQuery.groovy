@@ -19,11 +19,10 @@ import groovy.util.logging.Slf4j
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine
 import org.grails.datastore.gorm.neo4j.simplegraph.Relationship
 import org.grails.datastore.mapping.core.Session
-import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.query.AssociationQuery
 import org.grails.datastore.mapping.query.Query
-import org.neo4j.cypher.javacompat.ExecutionResult
 import static org.grails.datastore.mapping.query.Query.*
 
 /**
@@ -65,7 +64,7 @@ class Neo4jQuery extends Query {
     protected List executeQuery(PersistentEntity persistentEntity, Junction criteria) {
 
         CypherBuilder cypherBuilder = new CypherBuilder(persistentEntity.discriminator);
-        def conditions = buildConditions(criteria, cypherBuilder)
+        def conditions = buildConditions(criteria, cypherBuilder, "n")
         cypherBuilder.setConditions(conditions)
         cypherBuilder.setOrderAndLimits(applyOrderAndLimits(cypherBuilder))
         for (projection in projections.projectionList) {
@@ -140,41 +139,47 @@ class Neo4jQuery extends Query {
         }
     }
 
-    String buildConditions(Criterion criterion, CypherBuilder builder) {
+    String buildConditions(Criterion criterion, CypherBuilder builder, String prefix) {
         switch (criterion) {
             case PropertyCriterion:
-                return buildConditionsPropertyCriterion( (PropertyCriterion)criterion, builder)
+                return buildConditionsPropertyCriterion( (PropertyCriterion)criterion, builder, prefix)
                 break
             case Conjunction:
             case Disjunction:
                 def inner = ((Junction)criterion).criteria
-                        .collect { Criterion it -> buildConditions(it, builder)}
+                        .collect { Criterion it -> buildConditions(it, builder, prefix)}
                         .join( criterion instanceof Conjunction ? ' AND ' : ' OR ')
                 return inner ? "( $inner )" : inner
                 break
             case Negation:
                 List<Criterion> criteria = ((Negation) criterion).criteria
-                return "NOT (${buildConditions(new Conjunction(criteria), builder)})"
+                return "NOT (${buildConditions(new Conjunction(criteria), builder, prefix)})"
                 break
             case PropertyComparisonCriterion:
-                return buildConditionsPropertyComparisonCriterion(criterion as PropertyComparisonCriterion)
+                return buildConditionsPropertyComparisonCriterion(criterion as PropertyComparisonCriterion, prefix)
                 break
             case PropertyNameCriterion:
                 PropertyNameCriterion pnc = criterion as PropertyNameCriterion
                 switch (pnc) {
                     case IsNull:
-                        return "has(n.${pnc.property})"
+                        return "has($prefix.${pnc.property})"
                         break
                     default:
                         throw new UnsupportedOperationException("${criterion}")
                 }
-
+            case AssociationQuery:
+                AssociationQuery aq = criterion as AssociationQuery
+                def targetNodeName = "m_${builder.getNextMatchNumber()}"
+                builder.addMatch("(n)${matchForAssociation(aq.association)}(${targetNodeName})")
+                def s = buildConditions(aq.criteria, builder, targetNodeName)
+                return s
+                break
             default:
                 throw new UnsupportedOperationException("${criterion}")
         }
     }
 
-    def buildConditionsPropertyComparisonCriterion(PropertyComparisonCriterion pcc) {
+    def buildConditionsPropertyComparisonCriterion(PropertyComparisonCriterion pcc, String prefix) {
         def operator
         switch (pcc) {
             case GreaterThanEqualsProperty:
@@ -198,10 +203,10 @@ class Neo4jQuery extends Query {
             default:
                 throw new UnsupportedOperationException("${pcc}")
         }
-        return "n.${pcc.property}${operator}n.${pcc.otherProperty}"
+        return "$prefix.${pcc.property}${operator}n.${pcc.otherProperty}"
     }
 
-    def buildConditionsPropertyCriterion( PropertyCriterion pnc, CypherBuilder builder) {
+    def buildConditionsPropertyCriterion( PropertyCriterion pnc, CypherBuilder builder, String prefix) {
         def paramName = "param_${builder.getNextParamNumber()}" as String
         builder.putParam(paramName, Neo4jUtils.mapToAllowedNeo4jType(pnc.value, entity.mappingContext))
         def rhs
@@ -213,53 +218,53 @@ class Neo4jQuery extends Query {
                 def association = entity.getPropertyByName(pnc.property)
                 if (association instanceof Association) {
                     def targetNodeName = "m_${builder.getNextMatchNumber()}"
-                    builder.addMatch("(n)${matchForAssociation(association)}(${targetNodeName})")
+                    builder.addMatch("(${prefix})${matchForAssociation(association)}(${targetNodeName})")
                     lhs = "${targetNodeName}.__id__"
                 } else {
-                    lhs = pnc.property == "id" ? "n.__id__" : "n.${pnc.property}"
+                    lhs = pnc.property == "id" ? "${prefix}.__id__" : "${prefix}.${pnc.property}"
                 }
                 operator = "="
                 rhs = "{$paramName}"
                 break
             case IdEquals:
-                lhs = "n.__id__"
+                lhs = "${prefix}.__id__"
                 operator = "="
                 rhs = "{$paramName}"
                 break
             case Like:
-                lhs = "n.$pnc.property"
+                lhs = "${prefix}.$pnc.property"
                 operator = "=~"
                 rhs = "{$paramName}"
                 builder.putParam(paramName, pnc.value.toString().replaceAll("%", ".*"))
                 break
             case In:
-                lhs = pnc.property == "id" ? "n.__id__" : "n.$pnc.property"
+                lhs = pnc.property == "id" ? "${prefix}.__id__" : "${prefix}.$pnc.property"
                 operator = " IN "
                 rhs = "{$paramName}"
                 builder.putParam(paramName, convertEnumsInList(((In) pnc).values))
                 break
             case GreaterThan:
-                lhs = "n.$pnc.property"
+                lhs = "${prefix}.${pnc.property}"
                 operator = ">"
                 rhs = "{$paramName}"
                 break
             case GreaterThanEquals:
-                lhs = "n.$pnc.property"
+                lhs = "${prefix}.${pnc.property}"
                 operator = ">="
                 rhs = "{$paramName}"
                 break
             case LessThan:
-                lhs = "n.$pnc.property"
+                lhs = "${prefix}.${pnc.property}"
                 operator = "<"
                 rhs = "{$paramName}"
                 break
             case LessThanEquals:
-                lhs = "n.$pnc.property"
+                lhs = "${prefix}.${pnc.property}"
                 operator = "<="
                 rhs = "{$paramName}"
                 break
             case NotEquals:
-                lhs = "n.$pnc.property"
+                lhs = "${prefix}.${pnc.property}"
                 operator = "<>"
                 rhs = "{$paramName}"
                 break
@@ -267,46 +272,46 @@ class Neo4jQuery extends Query {
                 Between b = (Between) pnc
                 builder.putParam("${paramName}_from".toString(), Neo4jUtils.mapToAllowedNeo4jType(b.from, entity.mappingContext))
                 builder.putParam("${paramName}_to".toString(), Neo4jUtils.mapToAllowedNeo4jType(b.to, entity.mappingContext))
-                return "{${paramName}_from}<=n.$pnc.property and n.$pnc.property<={${paramName}_to}"
+                return "{${paramName}_from}<=${prefix}.$pnc.property and ${prefix}.$pnc.property<={${paramName}_to}"
                 break
             case SizeLessThanEquals:
                 Association association = entity.getPropertyByName(pnc.property) as Association
-                builder.addMatch("(n)${matchForAssociation(association)}() WITH n,count(*) as count")
+                builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
                 lhs = "count"
                 operator = "<="
                 rhs = "{$paramName}"
                 break
             case SizeLessThan:
                 Association association = entity.getPropertyByName(pnc.property) as Association
-                builder.addMatch("(n)${matchForAssociation(association)}() WITH n,count(*) as count")
+                builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
                 lhs = "count"
                 operator = "<"
                 rhs = "{$paramName}"
                 break
             case SizeGreaterThan:
                 Association association = entity.getPropertyByName(pnc.property) as Association
-                builder.addMatch("(n)${matchForAssociation(association)}() WITH n,count(*) as count")
+                builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
                 lhs = "count"
                 operator = ">"
                 rhs = "{$paramName}"
                 break
             case SizeGreaterThanEquals:
                 Association association = entity.getPropertyByName(pnc.property) as Association
-                builder.addMatch("(n)${matchForAssociation(association)}() WITH n,count(*) as count")
+                builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
                 lhs = "count"
                 operator = ">="
                 rhs = "{$paramName}"
                 break
             case SizeEquals:
                 Association association = entity.getPropertyByName(pnc.property) as Association
-                builder.addMatch("(n)${matchForAssociation(association)}() WITH n,count(*) as count")
+                builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
                 lhs = "count"
                 operator = "="
                 rhs = "{$paramName}"
                 break
             case SizeNotEquals:   // occurs multiple times
                 Association association = entity.getPropertyByName(pnc.property) as Association
-                builder.addMatch("(n)${matchForAssociation(association)}() WITH n,count(*) as count")
+                builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
                 lhs = "count"
                 operator = "<>"
                 rhs = "{$paramName}"
