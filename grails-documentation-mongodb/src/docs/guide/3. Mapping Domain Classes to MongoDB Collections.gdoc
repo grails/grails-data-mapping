@@ -81,7 +81,7 @@ class Person {
 }
 {code}
 
-For non-embedded associations by default GORM for MongoDB will map links between documents using MongoDB [database references|http://www.mongodb.org/display/DOCS/Database+References] also known as @DBRefs@.
+For non-embedded associations by default GORM for MongoDB will map links between documents using MongoDB [database references|http://docs.mongodb.org/manual/reference/database-references/] also known as @DBRefs@.
 
 If you prefer not to use DBRefs then you tell GORM to use direct links by using the @reference:false@ mapping:
 

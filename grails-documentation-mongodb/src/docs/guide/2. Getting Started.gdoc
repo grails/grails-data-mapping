@@ -2,7 +2,7 @@ To get started with GORM for Mongo you need configure it as a dependency in @Bui
 
 {code}
 plugins {
-	compile ':mongodb:1.2.0' // or whatever is the latest vesrion
+	compile ':mongodb:2.0.0' // or whatever is the latest vesrion
 }
 {code}
 
@@ -15,12 +15,15 @@ MONGO_HOME/bin/mongod
 With the above commands executed in a terminal window you should see output like the following appear:
 
 {code}
-Thu Nov 11 16:54:08 MongoDB starting : pid=4600 port=27017 dbpath=/data/db/ 64-bit
-Thu Nov 11 16:54:08 db version v1.6.3, pdfile version 4.5
-Thu Nov 11 16:54:08 git version: 278bd2ac2f2efbee556f32c13c1b6803224d1c01
-Thu Nov 11 16:54:08 sys info: Darwin erh2.10gen.cc 9.6.0 Darwin Kernel Version 9.6.0: Mon Nov 24 17:37:00 PST 2008; root:xnu-1228.9.59~1/RELEASE_I386 i386 BOOST_LIB_VERSION=1_40
-Thu Nov 11 16:54:08 [initandlisten] waiting for connections on port 27017
-Thu Nov 11 16:54:08 [websvr] web admin interface listening on port 28017
+Tue Mar 18 14:16:35.267 [initandlisten] db version v2.4.9
+Tue Mar 18 14:16:35.267 [initandlisten] git version: 52fe0d21959e32a5bdbecdc62057db386e4e029c
+Tue Mar 18 14:16:35.267 [initandlisten] build info: Darwin bs-osx-106-x86-64-2.10gen.cc 10.8.0 Darwin Kernel Version 10.8.0: Tue Jun  7 16:32:41 PDT 2011; root:xnu-1504.15.3~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
+Tue Mar 18 14:16:35.267 [initandlisten] allocator: system
+Tue Mar 18 14:16:35.267 [initandlisten] options: {}
+Tue Mar 18 14:16:35.268 [initandlisten] journal dir=/data/db/journal
+Tue Mar 18 14:16:35.268 [initandlisten] recover : no journal files present, no recovery needed
+Tue Mar 18 14:16:35.297 [websvr] admin web console waiting for connections on port 28017
+Tue Mar 18 14:16:35.297 [initandlisten] waiting for connections on port 27017
 {code}
 
 As you can see the server is running on port 27017, but don't worry the Mongodb plugin for Grails will automatically configure itself to look for Mongodb on that port by default.

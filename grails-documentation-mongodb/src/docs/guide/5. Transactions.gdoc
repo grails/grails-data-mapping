@@ -1,6 +1,6 @@
-Mongo doesn't support transactions directly, however GORM for Mongo does batch up inserts and updates until the session is flushed. This makes it possible to support some rollback options.
+MongoDB doesn't support transactions directly, however GORM for MongoDB does batch up inserts and updates until the session is flushed. This makes it possible to support some rollback options.
 
-You can use either transactional services or the static @withTransaction@ method. To mark a service as using the Mongo transaction manager, use the static @transactional@ property with the value @'mongo'@:
+You can use either transactional services or the static @withTransaction@ method. To mark a service as using the MongoDB transaction manager, use the static @transactional@ property with the value @'mongo'@:
 
 {code}
 static transactional = 'mongo'
@@ -18,4 +18,4 @@ Person.withTransaction { status ->
 
 For example in this case neither @Person@ object will be persisted to the database, because underneath the surface a persistence session is being used to batch up both insert operations into a single insert. When the exception is thrown neither insert is ever executed, hence we allow for some transactional semantics are the GORM-level.
 
-Using the lower level API you can of course also take advantage of Mongo's support for [Atomic operations|http://www.mongodb.org/display/DOCS/Atomic+Operations].
+Using the lower level API you can of course also take advantage of Mongo's support for [Atomic operations|http://docs.mongodb.org/manual/tutorial/isolate-sequence-of-operations].

@@ -1,0 +1,17 @@
+h1. findByWithinCircle
+
+h2. Purpose
+
+Executes a MongoDB @$within@ query on legacy coordinate pairs
+
+{warning}
+The $within operator is considered legacy and replaced by $geoWithin. Hence this method is deprecated and @findByGeoWithin@ should be used instead
+{warning}
+
+h2. Examples
+
+{code}
+Hotel.findByLocationWithinCircle([[40, 30],40])
+Hotel.findByLocationWithinCircle( Circle.valueOf( [[40, 30],40] ) )
+{code}
+

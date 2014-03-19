@@ -1,4 +1,6 @@
-GORM for MongoDB will persist all common known Java types like String, Integer, URL etc., however if you want to persist one of your own classes that is not a domain class you can implement a custom user type. For example consider the following class:
+GORM for MongoDB will persist all common known Java types like String, Integer, URL etc., however if you want to persist one of your own classes that is not a domain class you can implement a custom user type.
+
+For example consider the following class:
 
 {code}
 class Birthday implements Comparable{

@@ -31,17 +31,7 @@ grails {
 
 Available options and their descriptions are defined in the [MongoOptions|http://api.mongodb.org/java/current/com/mongodb/MongoOptions.html] javadoc.
 
-In production scenarios you will typically use more than one Mongo server in either [master/slave|http://www.mongodb.org/display/DOCS/Master+Slave] or [replication|http://www.mongodb.org/display/DOCS/Replication] scenarios. The plugin allows you to configure [replica pairs|http://www.mongodb.org/display/DOCS/Replica+Pairs]:
-
-{code}
-grails {
-    mongo {
-        replicaPair = [ "localhost:27017", "localhost:27018"]
-    }
-}
-{code}
-
-Or [replica sets|http://www.mongodb.org/display/DOCS/Replica+Sets]:
+In production scenarios you will typically use more than one MongoDB server in either [master/slave|http://docs.mongodb.org/manual/core/master-slave/] or [replication|http://docs.mongodb.org/manual/replication/] scenarios. The plugin allows you to configure [replica sets|http://docs.mongodb.org/manual/tutorial/deploy-replica-set/]:
 
 {code}
 grails {
@@ -51,7 +41,39 @@ grails {
 }
 {code}
 
-The replica sets are defined using a list of strings that conform to the Mongo [DBAddress|http://api.mongodb.org/java/current/com/mongodb/DBAddress.html] specification.
+The replica sets are defined using a list of strings that conform to the MongoDB [DBAddress|http://api.mongodb.org/java/current/com/mongodb/DBAddress.html] specification.
+
+h4. MongoDB Connection Strings
+
+Since 2.0, you can also use MongoDB [connection strings|http://docs.mongodb.org/manual/reference/connection-string/] to configure the connection:
+
+{code}
+grails {
+    mongo {
+        connectionString = "mongodb://localhost/mydb"
+    }
+}
+{code}
+
+h4. SSL Connections
+
+You can configure SSL connections by setting @ssl@ to true in the @options@ block:
+
+{code}
+grails {
+    mongo {
+        ...
+        options {
+            ssl = true
+            ...
+        }
+    }
+}
+{code}
+
+{note}
+Note you can also configure the @SSLSocketFactory@ manually if necessary. All settings within the @options@ block are propagated to the underlying [MongoOptionsFactoryBean|http://docs.spring.io/spring-data/mongodb/docs/1.4.0.RELEASE/api/org/springframework/data/mongodb/core/MongoOptionsFactoryBean.html]
+{note}
 
 h4. Global Mapping Configuration
 
