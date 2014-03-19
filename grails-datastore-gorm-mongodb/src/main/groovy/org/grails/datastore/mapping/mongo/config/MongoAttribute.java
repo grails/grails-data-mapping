@@ -65,18 +65,14 @@ public class MongoAttribute extends Attribute {
         return getTargetName();
     }
 
-    @SuppressWarnings("unchecked")
-    public void setGeoIndex(boolean geoIndex) {
-        if (geoIndex) {
+
+    public void setGeoIndex(String indexType) {
+        if(Boolean.valueOf(indexType)) {
             setIndex(true);
             initIndexAttributes();
             indexAttributes.put(INDEX_TYPE, "2d");
         }
-    }
-
-
-    public void setGeoIndex(String indexType) {
-        if ("2d".equals(indexType) || "2dsphere".equals(indexType)) {
+        else if ("2d".equals(indexType) || "2dsphere".equals(indexType)) {
             setIndex(true);
             initIndexAttributes();
             indexAttributes.put(INDEX_TYPE, indexType);
