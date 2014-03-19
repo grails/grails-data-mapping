@@ -39,7 +39,7 @@ class MongoDatastoreConfigurer {
      * @param configuration The configuration
      * @return The MongoDatastore instance
      */
-    static MongoDatastore configure(String databaseName, Class... classes, Map configuration = Collections.emptyMap() ) {
+    static MongoDatastore configure(String databaseName, Class[] classes, Map configuration = Collections.emptyMap() ) {
         ExpandoMetaClass.enableGlobally()
 
         def ctx = new GenericApplicationContext()
@@ -47,7 +47,7 @@ class MongoDatastoreConfigurer {
         return configure(ctx, databaseName, classes, configuration)
     }
 
-    static MongoDatastore configure(ConfigurableApplicationContext ctx, String databaseName, Class... classes, Map configuration) {
+    static MongoDatastore configure(ConfigurableApplicationContext ctx, String databaseName, Class[] classes, Map configuration) {
         final context = new MongoMappingContext(databaseName)
         def grailsApplication = new DefaultGrailsApplication(classes, Thread.currentThread().getContextClassLoader())
         grailsApplication.initialise()

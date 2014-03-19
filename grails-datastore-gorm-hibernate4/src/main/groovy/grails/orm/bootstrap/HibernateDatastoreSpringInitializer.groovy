@@ -1,35 +1,26 @@
 package grails.orm.bootstrap
 
-import grails.spring.BeanBuilder
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.compiler.gorm.GormTransformer
 import org.codehaus.groovy.grails.orm.hibernate.*
 import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
 import org.codehaus.groovy.grails.orm.hibernate.support.HibernateDialectDetectorFactoryBean
 import org.codehaus.groovy.grails.orm.hibernate.validation.HibernateDomainClassValidator
+import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.hibernate.EmptyInterceptor
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.config.PropertiesFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
-import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.support.GenericApplicationContext
-import org.springframework.core.io.Resource
-import org.springframework.core.io.ResourceLoader
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver
-import org.springframework.core.io.support.ResourcePatternResolver
-import org.springframework.core.type.classreading.CachingMetadataReaderFactory
 import org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor
-import org.springframework.util.ClassUtils
 
 import javax.sql.DataSource
 
@@ -39,50 +30,36 @@ import javax.sql.DataSource
  * @author Graeme Rocher
  * @since 3.0
  */
-class HibernateDatastoreSpringInitializer implements ResourceLoaderAware {
-    private static final String ENTITY_CLASS_RESOURCE_PATTERN = "/**/*.class"
+class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory"
 
-    Properties hibernateProperties = new Properties()
-    Collection<Class> persistentClasses = []
-    Collection<String> packages = []
-
-    private ClassLoader classLoader = Thread.currentThread().contextClassLoader
     private String dataSourceBeanName = "dataSource"
     private String sessionFactoryBeanName = "sessionFactory"
-    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver()
-
-    @Override
-    void setResourceLoader(ResourceLoader resourceLoader) {
-        resourcePatternResolver = new PathMatchingResourcePatternResolver(resourceLoader)
-    }
 
     HibernateDatastoreSpringInitializer() {
     }
 
     HibernateDatastoreSpringInitializer(ClassLoader classLoader, String... packages) {
-        this(packages)
-        this.classLoader = classLoader
+        super(classLoader, packages)
     }
     HibernateDatastoreSpringInitializer(String... packages) {
-        this.packages = packages.toList()
+        super(packages)
     }
 
     HibernateDatastoreSpringInitializer(Collection<Class> persistentClasses) {
-        this.persistentClasses = persistentClasses
+        super(persistentClasses)
     }
 
     HibernateDatastoreSpringInitializer(Class... persistentClasses) {
-        this(persistentClasses.toList())
+        super(persistentClasses.toList())
     }
 
     HibernateDatastoreSpringInitializer(Properties hibernateProperties, Collection<Class> persistentClasses) {
-        this.hibernateProperties = hibernateProperties
-        this.persistentClasses = persistentClasses
+        super(hibernateProperties, persistentClasses)
     }
 
     HibernateDatastoreSpringInitializer(Properties hibernateProperties, Class... persistentClasses) {
-        this(hibernateProperties, persistentClasses.toList())
+        super(hibernateProperties, persistentClasses.toList())
     }
 
     public setDataSourceBeanName(String dataSourceBeanName) {
@@ -99,44 +76,6 @@ class HibernateDatastoreSpringInitializer implements ResourceLoaderAware {
         return applicationContext
     }
 
-    @CompileStatic
-    void configureForBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {
-        for(pkg in packages) {
-            String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
-                    ClassUtils.convertClassNameToResourcePath(pkg) + ENTITY_CLASS_RESOURCE_PATTERN;
-
-            def readerFactory = new CachingMetadataReaderFactory(resourcePatternResolver)
-            def resources = this.resourcePatternResolver.getResources(pattern)
-            for(Resource res in resources) {
-                def reader = readerFactory.getMetadataReader(res)
-                if( reader.annotationMetadata.hasAnnotation( "grails.persistence.Entity" ) ) {
-                    persistentClasses << classLoader.loadClass( reader.classMetadata.className )
-                }
-            }
-
-            def entityNames = GormTransformer.getKnownEntityNames()
-            for(entityName in entityNames) {
-                try {
-                    persistentClasses << classLoader.loadClass( entityName )
-                } catch (ClassNotFoundException e) {
-                    // ignore
-                }
-            }
-
-        }
-
-        ExpandoMetaClass.enableGlobally()
-
-        if( GroovyBeanReaderInit.isAvailable() ) {
-            GroovyBeanReaderInit.registerBeans(beanDefinitionRegistry, getBeanDefinitions(beanDefinitionRegistry))
-        }
-        else if (GrailsBeanBuilderInit.isAvailable() ) {
-            GrailsBeanBuilderInit.registerBeans(beanDefinitionRegistry, getBeanDefinitions(beanDefinitionRegistry))
-        }
-        else {
-            throw new IllegalStateException("Neither Spring 4.0 nor grails-spring dependency found on classpath to enable GORM configuration. If you are using an earlier version of Spring please add the grails-spring dependency to your classpath.")
-        }
-    }
 
     public Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         Closure beanDefinitions = {
@@ -149,17 +88,17 @@ class HibernateDatastoreSpringInitializer implements ResourceLoaderAware {
                 vendorNameDialectMappings = vendorToDialect
             }
 
-            if (!hibernateProperties['hibernate.hbm2ddl.auto']) {
-                hibernateProperties['hibernate.hbm2ddl.auto'] = 'update'
+            if (!configuration['hibernate.hbm2ddl.auto']) {
+                configuration['hibernate.hbm2ddl.auto'] = 'update'
             }
-            if (!hibernateProperties['hibernate.dialect']) {
-                hibernateProperties['hibernate.dialect'] = ref("dialectDetector")
+            if (!configuration['hibernate.dialect']) {
+                configuration['hibernate.dialect'] = ref("dialectDetector")
             }
 
 
             "hibernateProperties"(PropertiesFactoryBean) { bean ->
                 bean.scope = "prototype"
-                properties = this.hibernateProperties
+                properties = this.configuration
             }
 
             if (!beanDefinitionRegistry.containsBeanDefinition(GrailsApplication.APPLICATION_ID)) {
@@ -231,7 +170,7 @@ class HibernateDatastoreSpringInitializer implements ResourceLoaderAware {
                 bean.lazyInit = false
             }
 
-            "org.grails.gorm.hibernate.internal.POST_INIT_BEAN-${dataSourceBeanName}"(PostInializationHandling) { bean ->
+            "org.grails.gorm.hibernate.internal.POST_INIT_BEAN-${dataSourceBeanName}"(PostInitializationHandling) { bean ->
                 grailsApplication = ref(GrailsApplication.APPLICATION_ID)
                 bean.lazyInit = false
             }
@@ -256,7 +195,7 @@ class HibernateDatastoreSpringInitializer implements ResourceLoaderAware {
     }
 
     @CompileStatic
-    static class PostInializationHandling implements InitializingBean, ApplicationContextAware {
+    static class PostInitializationHandling implements InitializingBean, ApplicationContextAware {
 
         @Autowired
         GrailsApplication grailsApplication
@@ -276,36 +215,4 @@ class HibernateDatastoreSpringInitializer implements ResourceLoaderAware {
         }
     }
 
-    static class GroovyBeanReaderInit {
-        static boolean isAvailable() {
-            try {
-                Thread.currentThread().contextClassLoader.loadClass('org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader')
-                return true
-            } catch (e) {
-                return false
-            }
-        }
-        static void registerBeans(BeanDefinitionRegistry registry, Closure beanDefinitions) {
-            def classLoader = Thread.currentThread().contextClassLoader
-            def beanReader = classLoader.loadClass('org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader').newInstance(registry)
-            beanReader.beans beanDefinitions
-        }
-    }
-    static class GrailsBeanBuilderInit {
-        static boolean isAvailable() {
-            try {
-                Thread.currentThread().contextClassLoader.loadClass('grails.spring.BeanBuilder')
-                return true
-            } catch (e) {
-                return false
-            }
-        }
-
-        static void registerBeans(BeanDefinitionRegistry registry, Closure beanDefinitions) {
-            def classLoader = Thread.currentThread().contextClassLoader
-            def beanBuilder = classLoader.loadClass('grails.spring.BeanBuilder').newInstance()
-            beanBuilder.beans beanDefinitions
-            beanBuilder.registerBeans registry
-        }
-    }
 }
