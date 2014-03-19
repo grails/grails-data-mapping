@@ -13,7 +13,7 @@ class MongodbGrailsPlugin {
     def scm = [url: "https://github.com/grails/grails-data-mapping"]
 
     def version = "1.4.0"
-    def grailsVersion = "2.1.4 > *"
+    def grailsVersion = "2.3.2 > *"
     def observe = ['services', 'domainClass']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
     def author = "Graeme Rocher"
