@@ -8,6 +8,7 @@ class SchemalessSpec extends GormDatastoreSpec{
     def "Test attach additional data"() {
         given:
             def p = new Plant(name:"Pineapple")
+            p.save(flush:true)
             p.dbo.color = "Yellow"
             p.save(flush:true)
             session.clear()

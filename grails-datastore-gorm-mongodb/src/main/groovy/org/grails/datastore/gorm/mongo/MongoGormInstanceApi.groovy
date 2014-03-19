@@ -141,7 +141,7 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
         execute (new SessionCallback<DBObject>() {
             DBObject doInSession(Session session) {
 
-                if (!session.contains(instance) && !saveInstance()) {
+                if (!session.contains(instance)) {
                     throw new IllegalStateException(
                             "Cannot obtain DBObject for transient instance, save a valid instance first")
                 }
