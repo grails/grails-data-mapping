@@ -67,6 +67,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     public static final String MONGO_PORT = "port";
     public static final String MONGO_HOST = "host";
     public static final String MONGO_STATELESS = "stateless";
+    public static final String INDEX_ATTRIBUTES = "indexAttributes";
 
     protected Mongo mongo;
     protected MongoOptions mongoOptions = new MongoOptions();
@@ -298,7 +299,19 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                     if (mappedForm != null) {
                         for (Map compoundIndex : mappedForm.getCompoundIndices()) {
                             DBObject indexDef = new BasicDBObject(compoundIndex);
-                            collection.ensureIndex(indexDef);
+                            Map indexAttributes = null;
+                            if(compoundIndex.containsKey(INDEX_ATTRIBUTES)) {
+                                Object o = compoundIndex.get(INDEX_ATTRIBUTES);
+                                if(o instanceof Map) {
+                                    indexAttributes = (Map) o;
+                                }
+                            }
+                            if(indexAttributes != null) {
+                                collection.ensureIndex(indexDef, new BasicDBObject(indexAttributes));
+                            }
+                            else {
+                                collection.ensureIndex(indexDef);
+                            }
                         }
                     }
                 }
