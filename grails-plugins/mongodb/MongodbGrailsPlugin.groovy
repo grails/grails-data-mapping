@@ -13,9 +13,9 @@ class MongodbGrailsPlugin {
     def scm = [url: "https://github.com/grails/grails-data-mapping"]
 
     def version = "1.4.0"
-    def grailsVersion = "2.1.4 > *"
+    def grailsVersion = "2.3.2 > *"
     def observe = ['services', 'domainClass']
-    def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
+    def loadAfter = ['domainClass', 'hibernate', 'hibernate4', 'services', 'cloudFoundry']
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
     def title = "MongoDB GORM"
@@ -33,7 +33,7 @@ class MongodbGrailsPlugin {
         def datastore = ctx.mongoDatastore
         def transactionManager = ctx.mongoTransactionManager
         def methodsConfigurer = new MongoMethodsConfigurer(datastore, transactionManager)    
-        methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")        
+        methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")
         def foe = application?.config?.grails?.gorm?.failOnError
         methodsConfigurer.failOnError = foe instanceof Boolean ? foe : false
         methodsConfigurer.configure()

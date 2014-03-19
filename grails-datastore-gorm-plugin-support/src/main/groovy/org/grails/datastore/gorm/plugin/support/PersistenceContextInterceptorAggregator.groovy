@@ -15,109 +15,74 @@
  */
 package org.grails.datastore.gorm.plugin.support
 
+import groovy.transform.CompileStatic
+
+import java.util.regex.Pattern
+
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.support.PersistenceContextInterceptor
-import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
-import org.springframework.beans.factory.support.BeanDefinitionRegistry
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
+import org.springframework.beans.factory.config.ConstructorArgumentValues
+import org.springframework.beans.factory.support.*
 import org.springframework.core.Ordered
-
 /**
- * Works around the issue where Grails only finds the first PersistenceContextInterceptor by
- * replacing all discovered interceptors with a single aggregating instance.
+ * BeanDefinitionRegistryPostProcessor that replaces multiple discovered PersistenceContextInterceptor beans with
+ * a single aggregating instance. The previous multiple PersistenceContextInterceptor beans will be removed from
+ * the context and re-added as inner beans of the new AggregatePersistenceContextInterceptor bean.
+ * 
+ * PersistenceContextInterceptor beans are discovered by the bean name. The default pattern used for matching
+ * the beans is ^.*[pP]ersistenceInterceptor$
  *
  * @author Burt Beckwith
+ * @author Lari Hotari
  */
+@CompileStatic
 class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryPostProcessor, Ordered {
-
-    private boolean hibernate
-    private boolean mongo
-    private boolean redis
-    private boolean aggregate
-    private boolean neo4j
-    private List<PersistenceContextInterceptor> interceptors = []
-
-    protected Log log = LogFactory.getLog(PersistenceContextInterceptorAggregator)
-
-    int getOrder() { 500 }
+    Pattern persistenceInterceptorBeanNamePattern = ~/^.*[pP]ersistenceInterceptor$/
+    String aggregatorBeanName = 'persistenceInterceptor'
+    Class aggregatorBeanClass = AggregatePersistenceContextInterceptor
+    int order = 500
 
     void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
+        createAggregatePersistenceContextInterceptorOnDemand(registry)
+    }
 
-        log.info 'postProcessBeanDefinitionRegistry start'
+    protected createAggregatePersistenceContextInterceptorOnDemand(BeanDefinitionRegistry registry) {
+        Collection<String> persistenceInterceptorBeanNames = findPersistenceInterceptorBeanNames(registry)
+        if(persistenceInterceptorBeanNames.size() > 1) {
+            ManagedList interceptorBeans = moveInterceptorBeansToManagedList(registry, persistenceInterceptorBeanNames)
+            registry.registerBeanDefinition(aggregatorBeanName, createAggregateBeanDefinition(interceptorBeans))
+        }
+    }
+    
+    protected Collection<String> findPersistenceInterceptorBeanNames(BeanDefinitionRegistry registry) {
+        // assume that all persistenceInterceptor beans match the defined pattern
+        // checking for type (class) would require instantiating classes
+        registry.getBeanDefinitionNames().findAll { String beanName -> beanName ==~ persistenceInterceptorBeanNamePattern }
+    }
 
-        int count = 0
-        if (registry.containsBeanDefinition('persistenceInterceptor')) {
-            count++
-            hibernate = true
+    protected ManagedList moveInterceptorBeansToManagedList(BeanDefinitionRegistry registry, Collection persistenceInterceptorBeanNames) {
+        ManagedList list = new ManagedList()
+        persistenceInterceptorBeanNames.each { String beanName ->
+            list.add registry.getBeanDefinition(beanName)
+            registry.removeBeanDefinition(beanName)
         }
-        if (registry.containsBeanDefinition('mongoPersistenceInterceptor')) {
-            count++
-            mongo = true
-        }
-        if (registry.containsBeanDefinition('redisDatastorePersistenceInterceptor')) {
-            count++
-            redis = true
-        }
-        if (registry.containsBeanDefinition('neo4jPersistenceInterceptor')) {
-            count++
-            neo4j = true
-        }
+        return list
+    }
 
-        if (count < 2) {
-            log.info "Not processing, there are $count interceptors"
-            return
-        }
-
-        aggregate = true
-
-        if (registry.containsBeanDefinition('persistenceInterceptor')) {
-            registry.removeBeanDefinition 'persistenceInterceptor'
-        }
-
-        if (registry.containsBeanDefinition('mongoPersistenceInterceptor')) {
-            registry.removeBeanDefinition 'mongoPersistenceInterceptor'
-        }
-
-        if (registry.containsBeanDefinition('redisDatastorePersistenceInterceptor')) {
-            registry.removeBeanDefinition 'redisDatastorePersistenceInterceptor'
-        }
-
-        if (registry.containsBeanDefinition('neo4jPersistenceInterceptor')) {
-            registry.removeBeanDefinition 'neo4jPersistenceInterceptor'
-        }
+    protected BeanDefinition createAggregateBeanDefinition(ManagedList interceptorBeans) {
+        GenericBeanDefinition beanDefinition = new GenericBeanDefinition()
+        beanDefinition.beanClass = aggregatorBeanClass
+        beanDefinition.singleton = true
+        beanDefinition.primary = true
+        ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues()
+        constructorArgumentValues.addIndexedArgumentValue(0, interceptorBeans)
+        beanDefinition.constructorArgumentValues = constructorArgumentValues
+        beanDefinition
     }
 
     void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-        if (!aggregate) {
-            return
-        }
-
-        log.info 'postProcessBeanFactory start'
-
-        if (hibernate) {
-            def HibernatePersistenceContextInterceptor = Class.forName(
-                'org.codehaus.groovy.grails.orm.hibernate.support.HibernatePersistenceContextInterceptor',
-                true, Thread.currentThread().contextClassLoader)
-            def interceptor = HibernatePersistenceContextInterceptor.newInstance()
-            interceptor.sessionFactory = beanFactory.getBean('sessionFactory')
-            interceptors << interceptor
-        }
-
-        if (mongo) {
-            interceptors << new DatastorePersistenceContextInterceptor(beanFactory.getBean('mongoDatastore'))
-        }
-
-        if (redis) {
-            interceptors << new DatastorePersistenceContextInterceptor(beanFactory.getBean('redisDatastore'))
-        }
-
-        if (neo4j) {
-            interceptors << new DatastorePersistenceContextInterceptor(beanFactory.getBean('neo4jDatastore'))
-        }
-
-        beanFactory.registerSingleton('persistenceInterceptor',
-                new AggregatePersistenceContextInterceptor(interceptors))
+        
     }
 }
