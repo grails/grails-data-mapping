@@ -392,11 +392,17 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     }
 
     protected void cacheNativeEntry(PersistentEntity persistentEntity,
-            Serializable nativeKey, T nativeEntry) {
+                                         Serializable nativeKey, T nativeEntry) {
         SessionImplementor<Object> si = (SessionImplementor<Object>) session;
         Serializable key = (Serializable) getMappingContext().getConversionService().convert(
                 nativeKey, persistentEntity.getIdentity().getType());
         si.cacheEntry(persistentEntity, key, nativeEntry);
+    }
+
+    protected void cacheEmbeddedEntry(PersistentEntity persistentEntity,
+                                    Serializable nativeKey, T nativeEntry) {
+        SessionImplementor<Object> si = (SessionImplementor<Object>) session;
+        si.cacheEntry(persistentEntity, "embedded:"+nativeEntry, nativeEntry);
     }
 
     protected void refreshObjectStateFromNativeEntry(PersistentEntity persistentEntity, Object obj,
@@ -440,7 +446,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                     createObjectFromEmbeddedNativeEntry(embedded.getAssociatedEntity(), embeddedEntry);
 
                             ea.setProperty(propKey, embeddedInstance);
-                            cacheNativeEntry(embedded.getAssociatedEntity(), createEmbeddedKey(embeddedInstance),embeddedEntry);
+                            cacheEmbeddedEntry(embedded.getAssociatedEntity(), createEmbeddedKey(embeddedInstance), embeddedEntry);
                             Association inverseSide = embedded.getInverseSide();
                             if (embedded.isBidirectional() && inverseSide != null) {
                                 // fix up the owner link
