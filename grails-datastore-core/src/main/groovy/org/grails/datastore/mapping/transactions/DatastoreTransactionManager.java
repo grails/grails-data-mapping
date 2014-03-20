@@ -186,7 +186,7 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
 
         // Un-bind the session holder from the thread.
         if (txObject.isNewSessionHolder()) {
-            TransactionSynchronizationManager.unbindResource(getDatastore());
+            DatastoreUtils.closeSession(txObject.getSessionHolder().getSession());
         }
         txObject.getSessionHolder().setSynchronizedWithTransaction(false);
 

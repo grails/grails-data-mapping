@@ -87,6 +87,11 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         }
     }
 
+    /**
+     * Configures an existing BeanDefinitionRegistry
+     *
+     * @param beanDefinitionRegistry The BeanDefinitionRegistry to configure
+     */
     @CompileStatic
     void configureForBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {
         scanForPersistentClasses()

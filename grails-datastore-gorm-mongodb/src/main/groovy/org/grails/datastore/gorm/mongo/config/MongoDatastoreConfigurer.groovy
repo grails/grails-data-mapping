@@ -28,7 +28,10 @@ import org.springframework.context.support.GenericApplicationContext
 
 /**
  * Support class for easing configuration of MongoDB
+ *
+ * @deprecated Use {@link grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer} instead
  */
+@Deprecated
 class MongoDatastoreConfigurer {
 
     /**
