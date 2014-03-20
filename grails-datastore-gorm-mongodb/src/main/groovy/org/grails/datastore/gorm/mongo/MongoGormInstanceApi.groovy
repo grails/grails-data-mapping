@@ -141,6 +141,11 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
         execute (new SessionCallback<DBObject>() {
             DBObject doInSession(Session session) {
 
+                // check first for embedded cached entries
+                SessionImplementor<DBObject> si = (SessionImplementor<DBObject>) session;
+                def dbo = si.getCachedEntry(persistentEntity, "embedded:${System.identityHashCode(instance)}".toString())
+                if(dbo != null) return dbo
+                // otherwise check if instance is contained within session
                 if (!session.contains(instance)) {
                     throw new IllegalStateException(
                             "Cannot obtain DBObject for transient instance, save a valid instance first")
@@ -148,7 +153,7 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
 
                 MongoEntityPersister persister = session.getPersister(instance)
                 def id = persister.getObjectIdentifier(instance)
-                def dbo = ((SessionImplementor)session).getCachedEntry(persister.getPersistentEntity(), id)
+                dbo = ((SessionImplementor)session).getCachedEntry(persister.getPersistentEntity(), id)
                 if (dbo == null) {
                     MongoDatastore ms = (MongoDatastore)datastore
                     def template = ms.getMongoTemplate(persistentEntity)

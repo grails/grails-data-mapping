@@ -208,6 +208,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     BasicDBObject nativeEntry = (BasicDBObject)dbo;
                     Object instance =
                             createObjectFromEmbeddedNativeEntry(embeddedCollection.getAssociatedEntity(), nativeEntry);
+                    SessionImplementor<DBObject> si = (SessionImplementor<DBObject>)getSession();
+                    si.cacheEntry(embeddedCollection.getAssociatedEntity(), createEmbeddedKey(instance), nativeEntry);
                     instances.add(instance);
                 }
             }

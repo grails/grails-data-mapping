@@ -434,10 +434,13 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
                         T embeddedEntry = getEmbedded(nativeEntry, propKey);
 
+
                         if (embeddedEntry != null) {
                             Object embeddedInstance =
                                     createObjectFromEmbeddedNativeEntry(embedded.getAssociatedEntity(), embeddedEntry);
+
                             ea.setProperty(propKey, embeddedInstance);
+                            cacheNativeEntry(embedded.getAssociatedEntity(), createEmbeddedKey(embeddedInstance),embeddedEntry);
                             Association inverseSide = embedded.getInverseSide();
                             if (embedded.isBidirectional() && inverseSide != null) {
                                 // fix up the owner link
@@ -619,6 +622,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         }
         // entity is now fully loaded.
         firePostLoadEvent(persistentEntity, ea);
+    }
+
+    protected String createEmbeddedKey(Object instance) {
+        return "embedded:" + System.identityHashCode(instance);
     }
 
     /**
