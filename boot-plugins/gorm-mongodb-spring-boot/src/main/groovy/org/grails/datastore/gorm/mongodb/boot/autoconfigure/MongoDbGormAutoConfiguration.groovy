@@ -18,17 +18,23 @@ import com.mongodb.Mongo
 import com.mongodb.MongoOptions
 import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.mapping.mongo.MongoDatastore
+import org.springframework.beans.BeansException
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.factory.support.RootBeanDefinition
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import org.springframework.boot.autoconfigure.mongo.MongoProperties
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
@@ -79,5 +85,26 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
             initializer.setDatabaseName(properties.database)
         }
         initializer.configureForBeanDefinitionRegistry(registry)
+
+        registry.registerBeanDefinition("org.grails.internal.gorm.mongodb.EAGER_INT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))
+    }
+
+    static class EagerInitProcessor implements BeanPostProcessor, ApplicationContextAware {
+
+        ApplicationContext applicationContext
+
+        @Override
+        Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+            if("org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration" == beanName) {
+                // force MongoDB enhancer initialisation
+                applicationContext.getBean(MongoGormEnhancer)
+            }
+            return bean
+        }
+
+        @Override
+        Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+            return bean
+        }
     }
 }
