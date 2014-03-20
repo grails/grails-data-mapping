@@ -4,6 +4,8 @@ import org.grails.datastore.gorm.mongo.plugin.support.MongoOnChangeHandler
 import org.grails.datastore.gorm.mongo.plugin.support.MongoSpringConfigurer
 import grails.converters.*
 import com.mongodb.DBObject
+
+
 class MongodbGrailsPlugin {
     def license = "Apache 2.0 License"
     def organization = [name: "SpringSource", url: "http://www.springsource.org/"]
