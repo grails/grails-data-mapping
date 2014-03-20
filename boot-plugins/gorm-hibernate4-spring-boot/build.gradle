@@ -1,0 +1,28 @@
+apply from:'../gradle/maven-central-build.gradle'
+
+group = 'org.grails'
+version = "1.0.0.M1"
+
+repositories {
+
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-milestone" }
+    mavenLocal()
+}
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot-cli:1.0.0.RC2', {
+        exclude group:'org.codehaus.groovy', module:'groovy'
+    }
+    compile 'org.codehaus.groovy:groovy-all:2.2.1'
+    compile "org.springframework.boot:spring-boot-autoconfigure:1.0.0.RC2"
+    compile "org.grails:grails-datastore-gorm-hibernate4:3.0.0.RELEASE"
+
+    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+    testRuntime "com.h2database:h2:1.3.173"
+}
+
+
+
+
+
