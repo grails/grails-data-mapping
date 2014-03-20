@@ -205,7 +205,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
      * Sets a pre-existing Mongo instance to configure for
      * @param mongo The Mongo instance
      */
-    void setMongo(Mongo mongo) {d
+    void setMongo(Mongo mongo) {
         this.mongo = mongo
     }
     /**
