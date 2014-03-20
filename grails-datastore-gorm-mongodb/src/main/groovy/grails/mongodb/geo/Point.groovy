@@ -58,8 +58,8 @@ class Point extends Shape implements GeoJSON{
      * @param y The y value
      * @return The Point
      */
-    static Point valueOf(double x, double y) {
-        new Point(x, y)
+    static Point valueOf(Number x, Number y) {
+        new Point(x.doubleValue(), y.doubleValue())
     }
 
     /**
