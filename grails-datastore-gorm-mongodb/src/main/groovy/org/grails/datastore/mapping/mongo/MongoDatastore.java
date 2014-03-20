@@ -109,13 +109,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         super(mappingContext, connectionDetails, ctx);
 
-        MappingFactory.registerCustomType(new PointType());
-        MappingFactory.registerCustomType(new PolygonType());
-        MappingFactory.registerCustomType(new LineStringType());
-        MappingFactory.registerCustomType(new ShapeType());
-        MappingFactory.registerCustomType(new BoxType());
-        MappingFactory.registerCustomType(new CircleType());
-
         if (mappingContext != null) {
             mappingContext.addMappingContextListener(this);
         }

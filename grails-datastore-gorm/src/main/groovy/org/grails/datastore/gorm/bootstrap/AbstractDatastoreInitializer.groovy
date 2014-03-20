@@ -1,7 +1,11 @@
 package org.grails.datastore.gorm.bootstrap
 
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.compiler.gorm.GormTransformer
+import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
+import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.core.io.Resource
@@ -106,6 +110,32 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         }
         else {
             throw new IllegalStateException("Neither Spring 4.0 nor grails-spring dependency found on classpath to enable GORM configuration. If you are using an earlier version of Spring please add the grails-spring dependency to your classpath.")
+        }
+    }
+
+    Closure getCommonConfiguration() {
+        return {
+            xmlns context: "http://www.springframework.org/schema/context"
+            context.'annotation-config'()
+
+
+            grailsApplication(DefaultGrailsApplication, persistentClasses as Class[], Thread.currentThread().contextClassLoader) { bean ->
+                bean.initMethod = 'initialise'
+            }
+
+            for(cls in persistentClasses) {
+                "${cls.name}DomainClass"(MethodInvokingFactoryBean) { bean ->
+                    targetObject = ref("grailsApplication")
+                    targetMethod = "getArtefact"
+                    bean.lazyInit = true
+                    arguments = [DomainClassArtefactHandler.TYPE, cls.name]
+                }
+                "${cls.name}Validator"(GrailsDomainClassValidator) {
+                    grailsApplication = ref("grailsApplication")
+                    messageSource = ref("messageSource")
+                    domainClass = ref("${cls.name}DomainClass")
+                }
+            }
         }
     }
 

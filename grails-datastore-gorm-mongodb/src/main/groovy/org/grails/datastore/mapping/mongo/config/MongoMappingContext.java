@@ -30,6 +30,7 @@ import org.bson.types.BSONTimestamp;
 import org.bson.types.Code;
 import org.bson.types.CodeWScope;
 import org.bson.types.Symbol;
+import org.grails.datastore.gorm.mongo.geo.*;
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.document.config.Collection;
@@ -133,10 +134,21 @@ public class MongoMappingContext extends DocumentMappingContext {
 
     public MongoMappingContext(String defaultDatabaseName) {
         super(defaultDatabaseName);
+        registerMongoTypes();
     }
 
     public MongoMappingContext(String defaultDatabaseName, Closure defaultMapping) {
         super(defaultDatabaseName, defaultMapping);
+        registerMongoTypes();
+    }
+
+    protected void registerMongoTypes() {
+        MappingFactory.registerCustomType(new PointType());
+        MappingFactory.registerCustomType(new PolygonType());
+        MappingFactory.registerCustomType(new LineStringType());
+        MappingFactory.registerCustomType(new ShapeType());
+        MappingFactory.registerCustomType(new BoxType());
+        MappingFactory.registerCustomType(new CircleType());
     }
 
     @Override

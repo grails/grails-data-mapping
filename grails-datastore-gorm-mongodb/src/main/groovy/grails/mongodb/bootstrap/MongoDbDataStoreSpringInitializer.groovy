@@ -19,7 +19,10 @@ import com.mongodb.Mongo
 import com.mongodb.MongoOptions
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.InstanceFactoryBean
+import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.gorm.mongo.bean.factory.DefaultMappingHolder
@@ -27,6 +30,7 @@ import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoDatastoreFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoMappingContextFactoryBean
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.GenericApplicationContext
@@ -98,16 +102,13 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             def mongoConfig = config?.grails?.mongo?.clone() ?: config?.grails?.mongodb?.clone()
             if(mongoConfig == null) mongoConfig = new ConfigObject()
 
-            xmlns context: "http://www.springframework.org/schema/context"
-            context.'annotation-config'()
-
-            grailsApplication(DefaultGrailsApplication, persistentClasses as Class[], Thread.currentThread().contextClassLoader) { bean ->
-                bean.initMethod = 'initialise'
-            }
+            def callable = commonConfiguration
+            callable.delegate = delegate
+            callable.call()
 
             mongoMappingContext(MongoMappingContextFactoryBean) {
                 defaultDatabaseName = databaseName
-                grailsApplication = ref('grailsApplication')
+                grailsApplication = ref(GrailsApplication.APPLICATION_ID)
                 if (mongoConfig.default.mapping instanceof Closure) {
                     delegate.defaultMapping = this.defaultMapping
                 }
