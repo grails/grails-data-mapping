@@ -33,7 +33,6 @@ class RedisSpringConfigurer extends SpringConfigurer{
 
             redisDatastoreMappingContext(RedisMappingContextFactoryBean) {
                 grailsApplication = ref('grailsApplication')
-                pluginManager = ref('pluginManager')
                 defaultExternal = false // manager.hasGrailsPlugin("hibernate")
             }
 

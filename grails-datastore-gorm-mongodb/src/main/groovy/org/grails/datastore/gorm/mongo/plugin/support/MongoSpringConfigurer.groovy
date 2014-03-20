@@ -52,7 +52,6 @@ class MongoSpringConfigurer extends SpringConfigurer {
             mongoMappingContext(MongoMappingContextFactoryBean) {
                 defaultDatabaseName = databaseName
                 grailsApplication = ref('grailsApplication')
-                pluginManager = ref('pluginManager')
                 if (mongoConfig.default.mapping instanceof Closure) {
                     defaultMapping = new DefaultMappingHolder((Closure)mongoConfig.default.mapping)
                 }

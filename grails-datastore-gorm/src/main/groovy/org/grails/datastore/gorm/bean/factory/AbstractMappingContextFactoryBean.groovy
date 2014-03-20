@@ -39,7 +39,6 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
     private static final Log LOG = LogFactory.getLog(AbstractMappingContextFactoryBean)
 
     GrailsApplication grailsApplication
-    GrailsPluginManager pluginManager
     ApplicationContext applicationContext
     String mappingStrategy
     boolean defaultExternal

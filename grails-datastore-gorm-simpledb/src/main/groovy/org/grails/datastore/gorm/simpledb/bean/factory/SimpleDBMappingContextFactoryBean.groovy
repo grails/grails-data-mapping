@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.simpledb.bean.factory
 
+import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.simpledb.config.SimpleDBMappingContext
@@ -11,6 +12,9 @@ import org.grails.datastore.mapping.simpledb.config.SimpleDBMappingContext
  * @since 0.1
  */
 class SimpleDBMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
+
+    GrailsPluginManager pluginManager
+
     @Override
     protected MappingContext createMappingContext() {
         return new SimpleDBMappingContext()
