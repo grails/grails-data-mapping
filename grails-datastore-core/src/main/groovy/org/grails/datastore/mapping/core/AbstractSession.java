@@ -371,7 +371,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     private boolean hasUpdates() {
-        return !pendingInserts.isEmpty() || !pendingUpdates.isEmpty() || !pendingDeletes.isEmpty();
+        return !pendingInserts.isEmpty() || !pendingUpdates.isEmpty() || !pendingDeletes.isEmpty() || !postFlushOperations.isEmpty();
     }
 
     protected void postFlush(boolean hasUpdates) {

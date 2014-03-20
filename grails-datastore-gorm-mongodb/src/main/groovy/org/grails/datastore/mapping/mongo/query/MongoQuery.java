@@ -107,6 +107,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     public static final String NEAR_SPHERE_OPERATOR = "$nearSphere";
 
+    public static final String MONGO_REGEX_OPERATOR = "$regex";
+
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
             public void handle(PersistentEntity entity, IdEquals criterion, DBObject query) {
@@ -143,7 +145,13 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
                 String propertyName = getPropertyName(entity, criterion);
                 Object value = criterion.getValue();
-                MongoEntityPersister.setDBObjectValue(query, propertyName, value, entity.getMappingContext());
+                if(value instanceof Pattern) {
+                    Pattern pattern = (Pattern) value;
+                    query.put(propertyName, new BasicDBObject(MONGO_REGEX_OPERATOR, pattern.toString()));
+                }
+                else {
+                    MongoEntityPersister.setDBObjectValue(query, propertyName, value, entity.getMappingContext());
+                }
             }
         });
 

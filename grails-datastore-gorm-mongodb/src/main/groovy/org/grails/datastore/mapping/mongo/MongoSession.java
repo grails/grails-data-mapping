@@ -16,15 +16,13 @@
 package org.grails.datastore.mapping.mongo;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.impl.PendingInsert;
 import org.grails.datastore.mapping.core.impl.PendingOperation;
+import org.grails.datastore.mapping.core.impl.PendingUpdate;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -32,6 +30,8 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
+import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.transactions.SessionOnlyTransaction;
 import org.grails.datastore.mapping.transactions.Transaction;
 import org.springframework.context.ApplicationEventPublisher;
@@ -259,6 +259,90 @@ public class MongoSession extends AbstractSession<DB> {
         return currentDatabase;
     }
 
+    @Override
+    public int deleteAll(QueryableCriteria criteria) {
+
+        final PersistentEntity entity = criteria.getPersistentEntity();
+        final DBObject nativeQuery = buildNativeQueryFromCriteria(criteria, entity);
+
+        pendingDeletes.add(new Runnable() {
+            @Override
+            public void run() {
+                String collectionName = getCollectionName(entity);
+                getNativeInterface().getCollection(collectionName).remove(nativeQuery);
+            }
+        });
+
+        // not possible to return number of deleted items with MongoDB API
+        return -1;
+    }
+
+    @Override
+    public void delete(final Iterable objects) {
+        // sort the objects into sets by Persister, in case the objects are of different types.
+        Map<PersistentEntity, List> toDelete = new HashMap<PersistentEntity, List>();
+        for (Object object : objects) {
+            if (object == null) {
+                continue;
+            }
+            final PersistentEntity p = getMappingContext().getPersistentEntity(object.getClass().getName());
+            if (p == null) {
+                continue;
+            }
+            List listForPersister = toDelete.get(p);
+            if (listForPersister == null) {
+                toDelete.put(p, listForPersister = new ArrayList());
+            }
+            Serializable id = getObjectIdentifier(object);
+            if(id != null) {
+                listForPersister.add(id);
+            }
+        }
+
+        Set<PersistentEntity> persistentEntities = toDelete.keySet();
+        for (final PersistentEntity persistentEntity : persistentEntities) {
+            final List identifiers = toDelete.get(persistentEntity);
+            if(identifiers != null && !identifiers.isEmpty()) {
+                pendingDeletes.add(new Runnable() {
+                    @Override
+                    public void run() {
+                        String collectionName = getCollectionName(persistentEntity);
+                        DBObject nativeQuery = new BasicDBObject();
+                        nativeQuery.put(MongoQuery.MONGO_IN_OPERATOR, identifiers);
+                        getNativeInterface().getCollection(collectionName).remove(nativeQuery, getWriteConcern());
+                    }
+                });
+
+            }
+        }
+    }
+
+
+    @Override
+    public int updateAll(QueryableCriteria criteria, final Map<String, Object> properties) {
+        final PersistentEntity entity = criteria.getPersistentEntity();
+        final DBObject nativeQuery = buildNativeQueryFromCriteria(criteria, entity);
+
+
+        postFlushOperations.add(new Runnable() {
+            @Override
+            public void run() {
+                String collectionName = getCollectionName(entity);
+                WriteConcern writeConcern = getWriteConcern();
+                if(writeConcern != null) {
+                    getNativeInterface()
+                            .getCollection(collectionName)
+                            .update(nativeQuery, new BasicDBObject("$set", properties), false, true, writeConcern);
+                }
+                else {
+                    getNativeInterface()
+                            .getCollection(collectionName)
+                            .update(nativeQuery, new BasicDBObject("$set", properties), false, true);
+                }
+            }
+        });
+        return -1;
+    }
 
     @Override
     protected void cacheEntry(Serializable key, Object entry, Map<Serializable, Object> entryCache, boolean forDirtyCheck) {
@@ -268,5 +352,17 @@ public class MongoSession extends AbstractSession<DB> {
         else {
             entryCache.put(key, entry);
         }
+    }
+
+
+    private DBObject buildNativeQueryFromCriteria(QueryableCriteria criteria, PersistentEntity entity) {
+        MongoQuery mongoQuery = new MongoQuery(this, entity);
+        List<Query.Criterion> criteriaList = criteria.getCriteria();
+
+        for(Query.Criterion c : criteriaList) {
+            mongoQuery.add(c);
+        }
+
+        return mongoQuery.getMongoQuery();
     }
 }
