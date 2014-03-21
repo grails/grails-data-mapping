@@ -36,6 +36,10 @@ include ("grails-datastore-core",
         'grails-plugins:riak',
 */
 
+        // Boot Extensions
+//        'boot-plugins/gorm-hibernate4-spring-boot',
+//        'boot-plugins/gorm-mongodb-spring-boot',
+
         // GORM Implementations
         'grails-datastore-gorm-jpa',
         'grails-datastore-gorm-neo4j',

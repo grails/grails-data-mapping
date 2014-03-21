@@ -52,6 +52,7 @@ task wrapper(type: Wrapper) {
 }
 
 subprojects {
+    if(project.name.endsWith("spring-boot")) return
     ext {
         releaseType = "RELEASE"
         // releaseType = "BUILD-SNAPSHOT"
