@@ -18,19 +18,14 @@ import com.mongodb.DBAddress
 import com.mongodb.Mongo
 import com.mongodb.MongoOptions
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.InstanceFactoryBean
-import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
-import org.grails.datastore.gorm.mongo.bean.factory.DefaultMappingHolder
 import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoDatastoreFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoMappingContextFactoryBean
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
-import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.GenericApplicationContext
@@ -133,12 +128,12 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             else if(!beanDefinitionRegistry.containsBeanDefinition(mongoOptionsBeanName)) {
 
                 "gmongo"(GMongoFactoryBean) {
-                    delegate.mongoOptions = mongoOptions
-                    def mongoHost = mongoConfig?.remove("host")
+                    delegate.mongoOptions = ref("$mongoOptionsBeanName")
+                    def mongoHost = mongoConfig?.get("host")
 
                     if (mongoConfig?.replicaSet) {
                         def set = []
-                        for (server in mongoConfig.remove("replicaSet")) {
+                        for (server in mongoConfig.get("replicaSet")) {
                             set << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
                         }
 
@@ -146,7 +141,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
                     }
                     else if (mongoConfig?.replicaPair) {
                         def pair = []
-                        for (server in mongoConfig.remove("replicaPair")) {
+                        for (server in mongoConfig.get("replicaPair")) {
                             pair << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
                         }
                         replicaPair = pair
@@ -156,7 +151,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
                     }
                     else if (mongoHost) {
                         host = mongoHost
-                        def mongoPort = mongoConfig?.remove("port")
+                        def mongoPort = mongoConfig?.get("port")
                         if (mongoPort) port = mongoPort
                     }
                     else {

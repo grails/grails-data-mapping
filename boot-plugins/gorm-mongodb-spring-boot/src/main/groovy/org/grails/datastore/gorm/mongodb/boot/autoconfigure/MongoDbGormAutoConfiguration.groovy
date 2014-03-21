@@ -88,6 +88,15 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
         if(properties != null) {
             initializer.setDatabaseName(properties.database)
         }
+        else if(environment != null){
+            def config = environment.getSubProperties("mongodb.")
+            if(config.containsKey('database')) {
+                initializer.setDatabaseName(config.get("database").toString())
+            }
+            else if(config.containsKey('databaseName')) {
+                initializer.setDatabaseName(config.get("databaseName").toString())
+            }
+        }
         initializer.configureForBeanDefinitionRegistry(registry)
 
         registry.registerBeanDefinition("org.grails.internal.gorm.mongodb.EAGER_INIT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))
