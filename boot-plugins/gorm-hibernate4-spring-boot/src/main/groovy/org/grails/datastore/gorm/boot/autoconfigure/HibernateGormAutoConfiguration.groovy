@@ -74,7 +74,7 @@ class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoader
 
         initializer = new HibernateDatastoreSpringInitializer(classLoader, packages as String[])
         initializer.resourceLoader = resourceLoader
-        initializer.setHibernateProperties(hibernateProperties)
+        initializer.setConfiguration(hibernateProperties)
         initializer.configureForBeanDefinitionRegistry(registry)
 
         registry.registerBeanDefinition("org.grails.internal.gorm.hibernate4.EAGER_INIT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))
