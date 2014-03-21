@@ -42,7 +42,6 @@ public class LazyEnititySet<T> implements Set<T> {
 
     @Override
     public int size() {
-
         return initialized ? delegate.size() : relationships.size();
     }
 

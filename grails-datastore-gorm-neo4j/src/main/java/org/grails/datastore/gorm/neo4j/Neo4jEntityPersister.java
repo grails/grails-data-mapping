@@ -171,12 +171,6 @@ public class Neo4jEntityPersister extends EntityPersister {
                 );
                 entityAccess.setProperty(property.getName(), lazyEnititySet);
 
-                /*Collection proxies = new ArrayList(); // TODO: support list as will depending on type
-
-                for (Relationship r : getSession().findPersistentRelationshipsByType(relType, id, reversed)) {
-                    proxies.add(getMappingContext().getProxyFactory().createProxy(session, association.getAssociatedEntity().getJavaClass(), r.getOtherId(id)));
-                }
-                entityAccess.setProperty(property.getName(), proxies);*/
             } else {
                     throw new IllegalArgumentException("property $property.name is of type ${property.class.superclass}");
             }
@@ -190,6 +184,12 @@ public class Neo4jEntityPersister extends EntityPersister {
         if ((obj == null) || (getSession().containsPersistingInstance(obj))) {
             return null;
         }
+
+        /* dirtychecking seems not tracking collections
+        if ((obj instanceof DirtyCheckable) && (!((DirtyCheckable)obj).hasChanged())) {
+            log.error("skip it " + obj);
+        }  */
+
         EntityAccess entityAccess = createEntityAccess(pe, obj);
 
         if (getMappingContext().getProxyFactory().isProxy(obj)) {

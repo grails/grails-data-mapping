@@ -10,6 +10,8 @@ import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.impl.PendingInsert;
 import org.grails.datastore.mapping.core.impl.PendingOperation;
 import org.grails.datastore.mapping.core.impl.PendingOperationExecution;
+import org.grails.datastore.mapping.core.impl.PendingUpdate;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -26,6 +28,7 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException;
 
 import javax.persistence.FlushModeType;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.*;
 
@@ -122,7 +125,10 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     @Override
     public void flush() {
+        persistDirtyButUnsavedInstances();
         super.flush();
+        persistingInstances.clear();
+
 //        if (log.isDebugEnabled()) {
             // TODO: remove debugging stuff here
             StringWriter writer = new StringWriter();
@@ -132,6 +138,37 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
             log.info(writer.toString());
             log.info("svg: " + Neo4jUtils.dumpGraphToSvg(graphDatabaseService));
 //        }
+    }
+
+    /**
+     * in case a known instance is modified and not explicitly saved, we track dirty state here and spool them for persisting
+     */
+    private void persistDirtyButUnsavedInstances() {
+        Set pendingObjects = new HashSet();
+        for ( Collection<PendingInsert> coll : getPendingInserts().values()) {
+            for (PendingInsert pi: coll) {
+                pendingObjects.add(pi.getEntityAccess().getEntity());
+            }
+        }
+        for ( Collection<PendingUpdate> coll : getPendingUpdates().values()) {
+            for (PendingUpdate pendingUpdate: coll) {
+                pendingObjects.add(pendingUpdate.getEntityAccess().getEntity());
+            }
+        }
+
+        for (Map<Serializable, Object> cache : firstLevelCache.values()) {
+            for (Object obj: cache.values()) {
+                if (obj instanceof DirtyCheckable) {
+                    boolean isDirty = ((DirtyCheckable)obj).hasChanged();
+                    if (isDirty && (!pendingObjects.contains(obj))) {
+                        persist(obj);
+                    }
+                } else {
+                    throw new IllegalStateException(obj + " is not DirtyCheckable");
+                }
+
+            }
+        }
     }
 
     public boolean containsOrAddPersistentRelationship(long startNode, long endNode, String type) {
