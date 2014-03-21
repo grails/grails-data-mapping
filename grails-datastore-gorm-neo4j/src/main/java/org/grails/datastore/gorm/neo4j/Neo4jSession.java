@@ -163,10 +163,7 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
                     if (isDirty && (!pendingObjects.contains(obj))) {
                         persist(obj);
                     }
-                } else {
-                    throw new IllegalStateException(obj + " is not DirtyCheckable");
                 }
-
             }
         }
     }
