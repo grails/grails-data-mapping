@@ -18,6 +18,7 @@ import com.mongodb.Mongo
 import com.mongodb.MongoOptions
 import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.springframework.beans.BeansException
@@ -33,11 +34,15 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import org.springframework.boot.autoconfigure.mongo.MongoProperties
+import org.springframework.boot.bind.RelaxedPropertyResolver
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
+import org.springframework.context.EnvironmentAware
+import org.springframework.context.MessageSource
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
+import org.springframework.core.env.Environment
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
 
@@ -52,13 +57,10 @@ import org.springframework.core.type.AnnotationMetadata
 @Configuration
 @ConditionalOnMissingBean(MongoDatastore)
 @AutoConfigureAfter(MongoAutoConfiguration)
-class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAware, ImportBeanDefinitionRegistrar{
+class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAware, ImportBeanDefinitionRegistrar, EnvironmentAware{
 
     @Autowired
     private MongoProperties properties;
-
-    @Autowired(required = false)
-    Properties mongoProperties = new Properties()
 
     @Autowired(required = false)
     Mongo mongo
@@ -70,6 +72,8 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
 
     ResourceLoader resourceLoader
 
+    RelaxedPropertyResolver environment
+
     @Override
     void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         MongoDbDataStoreSpringInitializer initializer
@@ -78,7 +82,7 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
 
         initializer = new MongoDbDataStoreSpringInitializer(classLoader, packages as String[])
         initializer.resourceLoader = resourceLoader
-        initializer.setConfiguration(mongoProperties)
+        initializer.setConfiguration(getDatastoreConfiguration())
         initializer.setMongo(mongo)
         initializer.setMongoOptions(mongoOptions)
         if(properties != null) {
@@ -89,21 +93,42 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
         registry.registerBeanDefinition("org.grails.internal.gorm.mongodb.EAGER_INIT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))
     }
 
+    protected Properties getDatastoreConfiguration() {
+        if(environment != null) {
+            def config = environment.getSubProperties("mongodb.")
+            def properties = new Properties()
+            for(entry in config.entrySet()) {
+                properties.put("grails.mongodb.${entry.key}".toString(), entry.value)
+            }
+            return properties
+        }
+    }
+
+    @Override
+    void setEnvironment(Environment environment) {
+        this.environment = new RelaxedPropertyResolver(environment, "spring.");
+    }
+
     static class EagerInitProcessor implements BeanPostProcessor, ApplicationContextAware {
 
         ApplicationContext applicationContext
+        private MessageSource messageSource
+        private Map enhancers
 
         @Override
         Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-            if("org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration" == beanName) {
+            if(messageSource != null && enhancers == null) {
                 // force MongoDB enhancer initialisation
-                applicationContext.getBean(MongoGormEnhancer)
+                enhancers = applicationContext.getBeansOfType(GormEnhancer)
             }
             return bean
         }
 
         @Override
         Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+            if(bean instanceof MessageSource) {
+                messageSource = (MessageSource)bean
+            }
             return bean
         }
     }
