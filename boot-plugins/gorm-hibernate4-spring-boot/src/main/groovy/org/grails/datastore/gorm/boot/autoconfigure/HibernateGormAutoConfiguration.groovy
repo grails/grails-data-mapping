@@ -87,7 +87,8 @@ class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoader
         @Override
         Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
             if("org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration" == beanName) {
-                // force MongoDB enhancer initialisation
+                // force Hibernate enhancer initialisation
+                applicationContext.getBean(HibernateDatastoreSpringInitializer.PostInitializationHandling)
                 applicationContext.getBean(HibernateGormEnhancer)
             }
             return bean
