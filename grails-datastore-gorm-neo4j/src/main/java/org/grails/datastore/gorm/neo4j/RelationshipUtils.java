@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.neo4j;
 
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.ManyToMany;
 import org.grails.datastore.mapping.model.types.OneToMany;
 
 /**
@@ -9,7 +10,9 @@ import org.grails.datastore.mapping.model.types.OneToMany;
 public abstract class RelationshipUtils {
 
     public static boolean useReversedMappingFor(Association association) {
-        return association.isBidirectional() && (association instanceof OneToMany);
+        return association.isBidirectional() &&
+                ((association instanceof OneToMany) ||
+                        ((association instanceof ManyToMany) && (association.isOwningSide())));
     }
 
     public static String relationshipTypeUsedFor(Association association) {

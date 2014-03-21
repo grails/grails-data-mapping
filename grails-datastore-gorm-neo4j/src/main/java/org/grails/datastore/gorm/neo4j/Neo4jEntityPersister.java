@@ -8,12 +8,7 @@ import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.types.ManyToOne;
-import org.grails.datastore.mapping.model.types.OneToMany;
-import org.grails.datastore.mapping.model.types.OneToOne;
-import org.grails.datastore.mapping.model.types.Simple;
-import org.grails.datastore.mapping.model.types.ToOne;
-import org.grails.datastore.mapping.proxy.EntityProxy;
+import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.query.Query;
 import org.neo4j.helpers.collection.IteratorUtil;
 import org.slf4j.Logger;
@@ -161,17 +156,27 @@ public class Neo4jEntityPersister extends EntityPersister {
                             )
                     );
                 }
-            } else if (property instanceof OneToMany) {
-                OneToMany otm = (OneToMany) property;
+            } else if ((property instanceof OneToMany) || (property instanceof ManyToMany)) {
+                Association association = (Association) property;
 
-                String relType = RelationshipUtils.relationshipTypeUsedFor(otm);
-                boolean reversed = RelationshipUtils.useReversedMappingFor(otm);
-                Collection proxies = new HashSet(); // TODO: support list as will depending on type
+                String relType = RelationshipUtils.relationshipTypeUsedFor(association);
+                boolean reversed = RelationshipUtils.useReversedMappingFor(association);
+
+                LazyEnititySet lazyEnititySet = new LazyEnititySet(
+                        getSession().findPersistentRelationshipsByType(relType, id, reversed),
+                        getMappingContext().getProxyFactory(),
+                        session,
+                        association.getAssociatedEntity().getJavaClass(),
+                        id
+                );
+                entityAccess.setProperty(property.getName(), lazyEnititySet);
+
+                /*Collection proxies = new ArrayList(); // TODO: support list as will depending on type
 
                 for (Relationship r : getSession().findPersistentRelationshipsByType(relType, id, reversed)) {
-                    proxies.add(getMappingContext().getProxyFactory().createProxy(session, otm.getAssociatedEntity().getJavaClass(), r.getOtherId(id) ));
+                    proxies.add(getMappingContext().getProxyFactory().createProxy(session, association.getAssociatedEntity().getJavaClass(), r.getOtherId(id)));
                 }
-                entityAccess.setProperty(property.getName(), proxies);
+                entityAccess.setProperty(property.getName(), proxies);*/
             } else {
                     throw new IllegalArgumentException("property $property.name is of type ${property.class.superclass}");
             }
@@ -221,23 +226,21 @@ public class Neo4jEntityPersister extends EntityPersister {
 
             if ( pp instanceof Simple) {
                 // nothing
-            } else if (pp instanceof OneToMany) {
-                OneToMany otm = (OneToMany) pp;
+            } else if ((pp instanceof OneToMany) || (pp instanceof ManyToMany)) {
+                Association association = (Association) pp;
 
                 if (propertyValue!= null) {
 
-                    if (otm.isBidirectional()) {  // Populate other side of bidi
+                    if (association.isBidirectional()) {  // Populate other side of bidi
                         for (Object associatedObject: (Iterable)propertyValue) {
-                            EntityAccess assocEntityAccess = createEntityAccess(otm.getAssociatedEntity(), associatedObject);
-                            assocEntityAccess.setProperty(otm.getReferencedPropertyName(), obj);
+                            EntityAccess assocEntityAccess = createEntityAccess(association.getAssociatedEntity(), associatedObject);
+                            assocEntityAccess.setProperty(association.getReferencedPropertyName(), obj);
                         }
                     }
 
-                    persistEntities(otm.getAssociatedEntity(), (Iterable) propertyValue);
-                    getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, otm, getCypherEngine(), getMappingContext(), getSession()));
+                    persistEntities(association.getAssociatedEntity(), (Iterable) propertyValue);
+                    getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, association, getCypherEngine(), getMappingContext(), getSession()));
                 }
-
-
             } else if (pp instanceof ToOne) {
                 if (propertyValue != null) {
                     ToOne to = (ToOne) pp;
@@ -256,9 +259,8 @@ public class Neo4jEntityPersister extends EntityPersister {
                     getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, to, getCypherEngine(), getMappingContext(), getSession()));
 
                 }
-
             } else {
-                throw new IllegalArgumentException("wtf don't know how to handle $pp (${pp.getClass()}");
+                throw new IllegalArgumentException("wtf don't know how to handle " + pp + "(" + pp.getClass() +")" );
 
             }
 
