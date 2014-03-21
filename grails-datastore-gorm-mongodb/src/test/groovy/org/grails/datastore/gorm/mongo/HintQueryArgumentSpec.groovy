@@ -25,8 +25,8 @@ class HintQueryArgumentSpec extends GormDatastoreSpec {
             for(e in results) {} // just to trigger the query
 
         then:"The hint is used"
-            UncategorizedMongoDbException exception = thrown()
-            exception.message == 'bad hint; nested exception is com.mongodb.MongoException: bad hint'
+            MongoException exception = thrown()
+            exception.message == 'bad hint'
 
         when:"A dynamic finder uses a hint"
             results = Person.findAllByFirstName("Bob", [hint:["firstName":1]])
