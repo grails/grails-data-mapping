@@ -269,7 +269,13 @@ public class MongoSession extends AbstractSession<DB> {
             @Override
             public void run() {
                 String collectionName = getCollectionName(entity);
-                getNativeInterface().getCollection(collectionName).remove(nativeQuery);
+                WriteConcern writeConcern = getDeclaredWriteConcern(entity);
+                if(writeConcern != null) {
+                    getNativeInterface().getCollection(collectionName).remove(nativeQuery, writeConcern);
+                }
+                else {
+                    getNativeInterface().getCollection(collectionName).remove(nativeQuery);
+                }
             }
         });
 
@@ -309,7 +315,13 @@ public class MongoSession extends AbstractSession<DB> {
                         String collectionName = getCollectionName(persistentEntity);
                         DBObject nativeQuery = new BasicDBObject();
                         nativeQuery.put(MongoQuery.MONGO_IN_OPERATOR, identifiers);
-                        getNativeInterface().getCollection(collectionName).remove(nativeQuery, getWriteConcern());
+                        WriteConcern writeConcern = getDeclaredWriteConcern(persistentEntity);
+                        if(writeConcern != null) {
+                            getNativeInterface().getCollection(collectionName).remove(nativeQuery, writeConcern);
+                        }
+                        else {
+                            getNativeInterface().getCollection(collectionName).remove(nativeQuery);
+                        }
                     }
                 });
 
@@ -328,7 +340,7 @@ public class MongoSession extends AbstractSession<DB> {
             @Override
             public void run() {
                 String collectionName = getCollectionName(entity);
-                WriteConcern writeConcern = getWriteConcern();
+                WriteConcern writeConcern = getDeclaredWriteConcern(entity);
                 if(writeConcern != null) {
                     getNativeInterface()
                             .getCollection(collectionName)
