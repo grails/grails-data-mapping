@@ -314,7 +314,7 @@ public class MongoSession extends AbstractSession<DB> {
                     public void run() {
                         String collectionName = getCollectionName(persistentEntity);
                         DBObject nativeQuery = new BasicDBObject();
-                        nativeQuery.put(MongoQuery.MONGO_IN_OPERATOR, identifiers);
+                        nativeQuery.put( MongoEntityPersister.MONGO_ID_FIELD, new BasicDBObject(MongoQuery.MONGO_IN_OPERATOR, identifiers));
                         WriteConcern writeConcern = getDeclaredWriteConcern(persistentEntity);
                         if(writeConcern != null) {
                             getNativeInterface().getCollection(collectionName).remove(nativeQuery, writeConcern);
