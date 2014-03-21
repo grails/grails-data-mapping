@@ -16,12 +16,16 @@ package org.grails.datastore.gorm.boot.autoconfigure
 
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
+import org.springframework.beans.BeansException
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.factory.support.RootBeanDefinition
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.AutoConfigureBefore
@@ -30,6 +34,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
@@ -70,5 +76,26 @@ class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoader
         initializer.resourceLoader = resourceLoader
         initializer.setHibernateProperties(hibernateProperties)
         initializer.configureForBeanDefinitionRegistry(registry)
+
+        registry.registerBeanDefinition("org.grails.internal.gorm.hibernate4.EAGER_INIT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))
+    }
+
+    static class EagerInitProcessor implements BeanPostProcessor, ApplicationContextAware {
+
+        ApplicationContext applicationContext
+
+        @Override
+        Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+            if("org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration" == beanName) {
+                // force MongoDB enhancer initialisation
+                applicationContext.getBean(HibernateGormEnhancer)
+            }
+            return bean
+        }
+
+        @Override
+        Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+            return bean
+        }
     }
 }

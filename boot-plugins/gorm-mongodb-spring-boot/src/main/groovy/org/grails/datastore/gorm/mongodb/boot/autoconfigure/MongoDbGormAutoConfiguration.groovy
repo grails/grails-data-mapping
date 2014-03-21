@@ -86,7 +86,7 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
         }
         initializer.configureForBeanDefinitionRegistry(registry)
 
-        registry.registerBeanDefinition("org.grails.internal.gorm.mongodb.EAGER_INT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))
+        registry.registerBeanDefinition("org.grails.internal.gorm.mongodb.EAGER_INIT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))
     }
 
     static class EagerInitProcessor implements BeanPostProcessor, ApplicationContextAware {
