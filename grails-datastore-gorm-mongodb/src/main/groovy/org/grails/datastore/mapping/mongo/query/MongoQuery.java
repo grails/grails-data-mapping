@@ -1249,7 +1249,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     @SuppressWarnings("serial")
     public static class MongoResultList extends AbstractList {
 
-        private final boolean isEmpty;
         private MongoEntityPersister mongoEntityPersister;
         private DBCursor cursor;
         private int offset = 0;
@@ -1262,12 +1261,11 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             this.cursor = cursor;
             this.mongoEntityPersister = mongoEntityPersister;
             this.offset = offset;
-            this.isEmpty = !cursor.hasNext();
         }
 
         @Override
         public boolean isEmpty() {
-            return isEmpty;
+            return initializedObjects.isEmpty() && !cursor.hasNext();
         }
 
         @SuppressWarnings("unchecked")
