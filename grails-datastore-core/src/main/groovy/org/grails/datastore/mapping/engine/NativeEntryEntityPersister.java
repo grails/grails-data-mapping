@@ -83,6 +83,7 @@ import org.springframework.dao.CannotAcquireLockException;
  */
 @SuppressWarnings({"unused", "rawtypes", "unchecked"})
 public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPersister {
+    public static final String EMBEDDED_PREFIX = "embedded:";
     protected ClassMapping classMapping;
     protected TPCacheAdapterRepository<T> cacheAdapterRepository;
 
@@ -446,7 +447,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                     createObjectFromEmbeddedNativeEntry(embedded.getAssociatedEntity(), embeddedEntry);
 
                             ea.setProperty(propKey, embeddedInstance);
-                            cacheEmbeddedEntry(embedded.getAssociatedEntity(), createEmbeddedKey(embeddedInstance), embeddedEntry);
+                            cacheEmbeddedEntry(embedded.getAssociatedEntity(), createEmbeddedCacheEntryKey(embeddedInstance), embeddedEntry);
                             Association inverseSide = embedded.getInverseSide();
                             if (embedded.isBidirectional() && inverseSide != null) {
                                 // fix up the owner link
@@ -630,8 +631,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         firePostLoadEvent(persistentEntity, ea);
     }
 
-    protected String createEmbeddedKey(Object instance) {
-        return "embedded:" + System.identityHashCode(instance);
+    public static String createEmbeddedCacheEntryKey(Object instance) {
+        return EMBEDDED_PREFIX + System.identityHashCode(instance);
     }
 
     /**
@@ -823,7 +824,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         String family = getEntityFamily();
 
         if (!isUpdate) {
-            tmp = createNewEntry(family);
+            tmp = createNewEntry(family, obj);
 
             if (!assignedId) {
                 k = generateIdentifier(persistentEntity, tmp);
@@ -1477,6 +1478,16 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      * @return An entry such as a BigTable Entity, ColumnFamily etc.
      */
     protected abstract T createNewEntry(String family);
+
+    /**
+     * Creates a new entry for the given family.
+     *
+     * @param family The family
+     * @return An entry such as a BigTable Entity, ColumnFamily etc.
+     */
+    protected T createNewEntry(String family, Object instance) {
+        return createNewEntry(family);
+    }
 
     /**
      * Reads a value for the given key from the native entry

@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bson.BSONObject;
 import org.bson.types.ObjectId;
 import org.grails.datastore.mapping.core.IdentityGenerationException;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
@@ -61,12 +60,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
 import com.mongodb.MongoException;
@@ -82,6 +79,7 @@ import com.mongodb.WriteResult;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, Object> {
 
+    public static final String INSTANCE_PREFIX = "instance:";
     static Logger log = LoggerFactory.getLogger(MongoEntityPersister.class);
 
     private static final String NEXT_ID_SUFFIX = ".next_id";
@@ -209,7 +207,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     Object instance =
                             createObjectFromEmbeddedNativeEntry(embeddedCollection.getAssociatedEntity(), nativeEntry);
                     SessionImplementor<DBObject> si = (SessionImplementor<DBObject>)getSession();
-                    si.cacheEntry(embeddedCollection.getAssociatedEntity(), createEmbeddedKey(instance), nativeEntry);
+                    si.cacheEntry(embeddedCollection.getAssociatedEntity(), createEmbeddedCacheEntryKey(instance), nativeEntry);
                     instances.add(instance);
                 }
             }
@@ -380,6 +378,23 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
     public AssociationIndexer getAssociationIndexer(DBObject nativeEntry, Association association) {
         return new MongoAssociationIndexer(nativeEntry, association, (MongoSession) session);
+    }
+
+    @Override
+    protected DBObject createNewEntry(String family, Object instance) {
+        SessionImplementor<DBObject> si = (SessionImplementor<DBObject>)getSession();
+
+        DBObject dbo = si.getCachedEntry(getPersistentEntity(), createInstanceCacheEntryKey(instance));
+        if(dbo != null) {
+            return dbo;
+        }
+        else {
+            return super.createNewEntry(family, instance);
+        }
+    }
+
+    public static String createInstanceCacheEntryKey(Object instance) {
+        return INSTANCE_PREFIX + System.identityHashCode(instance);
     }
 
     @Override
