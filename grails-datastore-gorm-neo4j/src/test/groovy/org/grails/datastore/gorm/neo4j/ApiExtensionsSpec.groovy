@@ -10,6 +10,7 @@ import org.neo4j.graphdb.StopEvaluator
 import org.neo4j.graphdb.TraversalPosition
 import org.neo4j.graphdb.Traverser
 import org.neo4j.graphdb.Node
+import spock.lang.Ignore
 import spock.lang.IgnoreRest
 import grails.gorm.tests.PetType
 import org.neo4j.graphdb.GraphDatabaseService
@@ -24,6 +25,7 @@ import org.neo4j.graphdb.Path
  */
 class ApiExtensionsSpec extends GormDatastoreSpec {
 
+    @Ignore("traverse methods will not be supported in upcoming releases")
     def "test static traversing"() {
         given:
         new Person(lastName: "person1").save()
@@ -80,6 +82,7 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         ).size()
     }
 
+    @Ignore("traverse methods will not be supported in upcoming releases")
     def "test instance based traversing"() {
         given:
         def person = new Person(lastName: "person1")
@@ -119,6 +122,7 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
                         { TraversalPosition p -> true } ).size()
     }
 
+    @Ignore
     def "test createInstanceForNode"() {
         given:
         def person = new Person(lastName: 'person1')
@@ -140,6 +144,7 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         instance == null
     }
 
+    @Ignore("handling of non delared props implemented later")
     def "test handling of non-declared properties"() {
         when:
         def person = new Person(lastName:'person1').save()
@@ -160,6 +165,7 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         person['someDoubleArray'] == [0.9, 1.0, 1.1]
     }
 
+    @Ignore("handling of non delared props implemented later")
     def "test handling of non-declared properties using dot notation"() {
         setup:
         def person = new Person(lastName:'person1').save(flush:true)
@@ -184,6 +190,7 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         person.someDoubleArray == [0.9, 1.0, 1.1]
     }
 
+    @Ignore("handling of non delared props implemented later")
     def "test null values on dynamic properties"() {
         setup:
         def person = new Person(lastName: 'person1').save(flush: true)
@@ -246,11 +253,16 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         session.clear()
 
         when:
-        def result = Person.cypherStatic("start n=node({this}) match n-[:SUBSUBREFERENCE]->subRef-[:INSTANCE]->m where m.lastName='person1' return m")
+        def result = Person.cypherStatic("MATCH (p:Person) RETURN p")
+
+        then:
+        result.iterator().size()==2
+
+        when: "test with parameters"
+        result = Person.cypherStatic("MATCH (p:Person) WHERE p.lastName={name} RETURN p", [name:'person1'])
 
         then:
         result.iterator().size()==1
-
     }
 
     def "test instance based cypher query"() {
@@ -263,7 +275,7 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         session.clear()
 
         when:
-        def result = person.cypher("start n=node({this}) match n-[:pets]->m return m")
+        def result = person.cypher("MATCH (p:Person)<-[:OWNER]->m WHERE p.__id__={this} return m")
 
         then:
         result.iterator().size() == 1
