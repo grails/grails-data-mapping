@@ -3,8 +3,10 @@ package grails.gorm.tests
 import grails.persistence.Entity
 import groovy.beans.Bindable
 import groovyx.gpars.GParsPool
+import org.grails.datastore.gorm.Setup
 import org.grails.datastore.gorm.neo4j.GrailsRelationshipTypes
 import org.neo4j.graphdb.Direction
+import org.neo4j.graphdb.DynamicLabel
 import org.neo4j.graphdb.Node
 import org.neo4j.helpers.collection.IteratorUtil
 import spock.lang.Ignore
@@ -49,7 +51,8 @@ class MiscSpec extends GormDatastoreSpec {
             def role = Role.findByRole('role1')
 
         then:
-            role in user.roles
+            user.roles.every { session.getMappingContext().getProxyFactory().isProxy(it)}
+            role in user.roles*.target
     }
 
     def "test unique constraint"() {
@@ -144,20 +147,30 @@ class MiscSpec extends GormDatastoreSpec {
         tournament.teams[0].club.name == 'club'
     }
 
-    // TODO: more tests for indexing are required, add a IndexSearchSpec.groovy
     void "test indexing"() {
-        setup:
+        setup: "by default test suite runs without indexes, so we need to build them"
+        Thread.start {
+            def tx = Setup.graphDb.beginTx()
+            try {
+                session.datastore.setupIndexing()
+                tx.success()
+            } finally {
+                tx.close()
+            }
+
+        }.join()
         def task1 = new Task(name: 'task1')
         task1.save()
         new Task(name: 'task2').save(flush: true)
         session.clear()
-        def index = session.datastore.indexManager.nodeAutoIndexer.autoIndex
 
-        expect: "run native neo4j index query"
-        index.get('name', 'task1').single == task1.node
+        when:
+        def indexedProperties = Setup.graphDb.schema().getIndexes(DynamicLabel.label("Task")).collect {
+            IteratorUtil.single(it.propertyKeys)
+        }
 
-        and: "a dynamic finder works"
-        Task.findAllByName('task1')*.id == [task1.id]
+        then:
+        indexedProperties.containsAll(["__id__", "name"])
 
     }
 
@@ -299,18 +312,6 @@ class MiscSpec extends GormDatastoreSpec {
         then:
         value.class == byte[].class
         value == 'abc'.bytes
-    }
-
-    @Issue("https://github.com/SpringSource/grails-data-mapping/issues/34")
-    def "domain classes use propertyChangeListener when possible"() {
-        expect: "Team is @Bindable, so propertyChangeListeners are used"
-            new Team().respondsTo("addPropertyChangeListener")
-        and: "User does not use @Bindable"
-            !new User().respondsTo("addPropertyChangeListener")
-        when: "force evaluation if class supports propertyChangeListeners"
-            new Team(name: 'team1').save()
-        then:
-            session.memoizePropertyChangeListener[Team.class] == true
     }
 
     def "serialization should work with proxies"() {
