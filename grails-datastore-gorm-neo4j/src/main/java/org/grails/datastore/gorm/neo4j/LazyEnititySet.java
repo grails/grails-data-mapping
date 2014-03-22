@@ -52,8 +52,8 @@ public class LazyEnititySet<T> implements Set<T> {
 
     @Override
     public boolean contains(Object o) {
-        throw new UnsupportedOperationException();
-//        return false;
+        initialize();
+        return delegate.contains(o);
     }
 
     @Override
@@ -64,8 +64,8 @@ public class LazyEnititySet<T> implements Set<T> {
 
     @Override
     public Object[] toArray() {
-        throw new UnsupportedOperationException();
-//        return new Object[0];
+        initialize();
+        return delegate.toArray();
     }
 
     @Override

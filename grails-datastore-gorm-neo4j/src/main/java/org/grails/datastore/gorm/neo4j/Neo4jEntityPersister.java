@@ -73,15 +73,20 @@ public class Neo4jEntityPersister extends EntityPersister {
         return IteratorUtil.singleOrNull(new Neo4jQuery(session, pe, this).executeQuery(pe, new Conjunction(criteria)).iterator());
     }
 
-    public EntityAccess retrieveEntityAccess(PersistentEntity defaultPersistentEntity,
-             Long id, Collection<String> labels,
-             Map<String, Object> data, Collection<Relationship> relationships) {
-        getSession().addPersistentRelationships(relationships);
-        PersistentEntity p = mostSpecificPersistentEntity(defaultPersistentEntity, labels);
-        EntityAccess entityAccess = new EntityAccess(p, p.newInstance());
-        entityAccess.setConversionService(p.getMappingContext().getConversionService());
-        unmarshall(entityAccess, id, labels, data, relationships);
-        return entityAccess;
+    public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity,
+                                        Long id, Collection<String> labels,
+                                        Map<String, Object> data, Collection<Relationship> relationships) {
+
+        PersistentEntity persistentEntity = mostSpecificPersistentEntity(defaultPersistentEntity, labels);
+        Object instance = getSession().getCachedEntry(persistentEntity, id);
+
+        if (instance == null) {
+            getSession().addPersistentRelationships(relationships);
+            instance = unmarshall(persistentEntity, id, labels, data, relationships);
+
+            getSession().cacheEntry(persistentEntity, id, instance);
+        }
+        return instance;
     }
 
     private PersistentEntity mostSpecificPersistentEntity(PersistentEntity pe, Collection<String> labels) {
@@ -120,10 +125,13 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
     }
 
-    private Object unmarshall(EntityAccess entityAccess, Long id, Collection<String> labels,
+    private Object unmarshall(PersistentEntity persistentEntity, Long id, Collection<String> labels,
                    Map<String, Object> data, Collection<Relationship> relationships) {
 
         log.warn( "unmarshalling entity {}, props {}, {}", id, data, relationships);
+        EntityAccess entityAccess = new EntityAccess(persistentEntity, persistentEntity.newInstance());
+        entityAccess.setConversionService(persistentEntity.getMappingContext().getConversionService());
+
         if (entityAccess.getPersistentEntity().hasProperty("version", Long.class)) {
             Object version = data.get("version");
             if (version==null) {
@@ -251,7 +259,9 @@ public class Neo4jEntityPersister extends EntityPersister {
                             assocEntityAccess.setProperty(to.getReferencedPropertyName(), obj);
                         } else {
                             Collection collection = (Collection) assocEntityAccess.getProperty(to.getReferencedPropertyName());
-                            collection.add(obj);
+                            if (!collection.contains(obj)) {
+                                collection.add(obj);
+                            }
                         }
                     }
 

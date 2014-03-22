@@ -93,7 +93,7 @@ class Neo4jQuery extends Query {
                 }
 
                 log.debug "relationships = $relationships"
-                neo4jEntityPersister.retrieveEntityAccess(persistentEntity, id, labels, data, relationships).entity
+                neo4jEntityPersister.unmarshallOrFromCache(persistentEntity, id, labels, data, relationships)
             }
         } else {
 
