@@ -7,7 +7,7 @@ ext.gdmVersion = "2.0.1.RELEASE"
 sourceSets.main.java.srcDirs = []
 sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
-repositories {
+/*repositories {
     //mavenLocal()
     //mavenCentral()
 
@@ -15,7 +15,7 @@ repositories {
     maven { url "http://m2.neo4j.org/content/repositories/releases/" }
 //    maven { url "http://m2.neo4j.org/content/repositories/snapshots/" }
 //    maven { url "http://repo.grails.org/grails/core" }
-}
+}*/
 
 dependencies {
     compile "org.neo4j:neo4j-community:$neo4jVersion",
