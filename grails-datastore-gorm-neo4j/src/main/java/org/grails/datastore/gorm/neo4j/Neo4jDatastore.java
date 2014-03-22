@@ -15,7 +15,7 @@
 package org.grails.datastore.gorm.neo4j;
 
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
-import org.grails.datastore.mapping.config.Entity;
+import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -25,6 +25,8 @@ import org.grails.datastore.mapping.model.types.Simple;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.helpers.collection.IteratorUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 
@@ -37,6 +39,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
 public class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
+
+    private static Logger log = LoggerFactory.getLogger(Neo4jDatastore.class);
 
     protected MappingContext mappingContext;
     protected CypherEngine cypherEngine;
@@ -85,15 +89,19 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
         return atomicIdCounter.incrementAndGet();
     }
 
-    private void setupIndexing() {
+    public void setupIndexing() {
         for (PersistentEntity persistentEntity:  mappingContext.getPersistentEntities()) {
             StringBuilder sb = new StringBuilder();
-            sb.append("CREATE INDEX ON :").append(persistentEntity.getDiscriminator()).append("(__id__)");
+            String label = persistentEntity.getDiscriminator();
+            sb.append("CREATE INDEX ON :").append(label).append("(__id__)");
             cypherEngine.execute(sb.toString());
             for (PersistentProperty persistentProperty: persistentEntity.getPersistentProperties()) {
-                Entity mappedForm = persistentEntity.getMapping().getMappedForm();
-                if ((persistentProperty instanceof Simple) && (mappedForm !=null)) {
-
+                Property mappedForm = persistentProperty.getMapping().getMappedForm();
+                if ((persistentProperty instanceof Simple) && (mappedForm !=null) && (mappedForm.isIndex())) {
+                    sb = new StringBuilder();
+                    sb.append("CREATE INDEX ON :").append(label).append("(").append(persistentProperty.getName()).append(")");
+                    cypherEngine.execute(sb.toString());
+                    log.debug("setting up indexing for " + label + " property " + persistentProperty.getName());
                 }
             }
         }
