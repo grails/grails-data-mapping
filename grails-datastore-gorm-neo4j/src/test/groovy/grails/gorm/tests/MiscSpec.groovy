@@ -284,21 +284,20 @@ class MiscSpec extends GormDatastoreSpec {
     @Issue("https://github.com/SpringSource/grails-data-mapping/issues/52")
     def "check that date properties are stored natively as longs"() {
         when:
-            def pet = new Pet(birthDate: new Date()).save(flush: true)
+            def pet = new Pet(birthDate: new Date(), name: 'Cosima').save(flush: true)
         then:
-            pet.node.getProperty("birthDate") instanceof Long
+            IteratorUtil.single(session.nativeInterface.execute("MATCH (p:Pet {name:{name}}) RETURN p.birthDate as birthDate", [name: 'Cosima'])).birthDate instanceof Long
     }
 
     @Issue("https://github.com/SpringSource/grails-data-mapping/issues/52")
     def "verify backward compatibility, check that date properties stored as string can be read"() {
-        when: "create a instance with a date property and manually assign a string to it"
+        setup: "create a instance with a date property and manually assign a string to it"
             def date = new Date()
-            def pet = new Pet(birthDate: date).save(flush: true)
-        then:
-        pet.node.getProperty("birthDate") instanceof Long
+            def pet = new Pet(birthDate: date, name:'Cosima').save(flush: true)
 
-        when:
-            pet.node.setProperty("birthDate", date.time.toString())
+        when: "write birthDate as a String"
+            session.nativeInterface.execute("MATCH (p:Pet {name:{name}}) SET p.birthDate={birthDate}",
+                [name: 'Cosima', birthDate: date.time.toString()])
             pet = Pet.get(pet.id)
         then: "the string stored date gets parsed correctly"
             pet.birthDate == date
@@ -308,7 +307,9 @@ class MiscSpec extends GormDatastoreSpec {
         when:
         def team = new Team(name: 'name', binaryData: 'abc'.bytes)
         team.save(flush: true)
-        def value = team.node.getProperty('binaryData')
+        def value = IteratorUtil.single(session.nativeInterface.execute("MATCH (p:Team {name:{name}}) RETURN p.binaryData as binaryData",
+            [name: 'name'])).binaryData
+
         then:
         value.class == byte[].class
         value == 'abc'.bytes
