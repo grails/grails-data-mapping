@@ -259,6 +259,10 @@ public class Neo4jEntityPersister extends EntityPersister {
                             assocEntityAccess.setProperty(to.getReferencedPropertyName(), obj);
                         } else {
                             Collection collection = (Collection) assocEntityAccess.getProperty(to.getReferencedPropertyName());
+                            if (collection == null ) {
+                                collection = new ArrayList();
+                                assocEntityAccess.setProperty(to.getReferencedPropertyName(), collection);
+                            }
                             if (!collection.contains(obj)) {
                                 collection.add(obj);
                             }
