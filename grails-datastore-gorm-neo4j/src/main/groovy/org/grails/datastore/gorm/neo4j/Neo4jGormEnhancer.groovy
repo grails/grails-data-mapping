@@ -38,6 +38,11 @@ class Neo4jGormEnhancer extends GormEnhancer {
         super(datastore, transactionManager)
     }
 
+    @Override
+    Neo4jDatastore getDatastore() {
+        return super.getDatastore() as Neo4jDatastore
+    }
+
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
         return new Neo4jGormStaticApi<D>(cls, datastore, finders, transactionManager)
     }
@@ -55,7 +60,7 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
         super(persistentClass, datastore)
     }
 
-    def traverse(instance, Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args ) {
+    /*def traverse(instance, Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args ) {
 
         execute new SessionCallback() {
             def doInSession(Session session) {
@@ -98,7 +103,7 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
 
     def traverse(instance, Traverser.Order order, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
         traverse(instance, order, stopEvaluator as StopEvaluator, returnableEvaluator as ReturnableEvaluator, args)
-    }
+    } */
 
     /**
      * Allows accessing to dynamic properties with the dot operator
@@ -196,7 +201,7 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      */
     def cypher(instance, String queryString, Map params = [:]) {
         params['this'] = instance.id
-        datastore.executionEngine.execute(queryString, params)
+        ((Neo4jDatastore)datastore).cypherEngine.execute(queryString, params)
     }
 
 }
@@ -211,7 +216,7 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
         super(persistentClass, datastore, finders, transactionManager)
     }
 
-    def traverseStatic(Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args ) {
+    /*def traverseStatic(Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args ) {
 
         execute new SessionCallback() {
             def doInSession(Session session) {
@@ -249,7 +254,7 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
 
     def traverseStatic(Traverser.Order order, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
         traverseStatic(order, stopEvaluator as StopEvaluator, returnableEvaluator as ReturnableEvaluator, args)
-    }
+    }*/
 
     def createInstanceForNode(nodeOrId) {
         execute new SessionCallback() {
@@ -260,8 +265,7 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     def cypherStatic(String queryString, Map params = [:]) {
-        params['this'] = datastore.subReferenceNodes[persistentEntity.name]
-        datastore.executionEngine.execute(queryString, params)
+        ((Neo4jDatastore)datastore).cypherEngine.execute(queryString, params)
     }
 
 }
