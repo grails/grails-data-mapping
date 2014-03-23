@@ -43,6 +43,7 @@ class SizeQuerySpec extends GormDatastoreSpec {
         when:"We query for countries with 2 resident"
             results = Country.withCriteria {
                 sizeLe "residents", 2
+                order "name"
             }
 
         then:"We get the correct result back"
