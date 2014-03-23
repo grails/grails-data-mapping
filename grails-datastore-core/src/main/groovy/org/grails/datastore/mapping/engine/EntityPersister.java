@@ -290,7 +290,7 @@ public abstract class EntityPersister implements Persister {
      * @return true if the operation should be cancelled
      */
     public boolean cancelLoad( final PersistentEntity persistentEntity, final EntityAccess entityAccess) {
-        PreDeleteEvent event = new PreDeleteEvent(session.getDatastore(), persistentEntity, entityAccess);
+        PreLoadEvent event = new PreLoadEvent(session.getDatastore(), persistentEntity, entityAccess);
         publisher.publishEvent(event);
         return event.isCancelled();
     }
