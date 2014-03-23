@@ -14,7 +14,7 @@
  */
 package org.grails.datastore.gorm.neo4j
 
-import org.neo4j.graphdb.GraphDatabaseService
+import org.grails.datastore.gorm.neo4j.engine.CypherEngine
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.grails.datastore.mapping.transactions.Transaction
@@ -27,13 +27,13 @@ class Neo4jTransaction implements Transaction {
 
     protected final Logger log = LoggerFactory.getLogger(getClass())
 
-    GraphDatabaseService graphDatabaseService
+    CypherEngine cypherEngine
     org.neo4j.graphdb.Transaction nativeTransaction
     boolean active = true
 
-    Neo4jTransaction(GraphDatabaseService graphDatabaseService) {
-        this.graphDatabaseService = graphDatabaseService
-        nativeTransaction = graphDatabaseService.beginTx()
+    Neo4jTransaction(CypherEngine cypherEngine) {
+        this.cypherEngine = cypherEngine
+        // nativeTransaction = cypherEngine.beginTx()
         if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
             log.debug "new: $nativeTransaction"
         }
@@ -43,8 +43,8 @@ class Neo4jTransaction implements Transaction {
         if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
             log.debug "commit $nativeTransaction"
         }
-        nativeTransaction.success()
-        nativeTransaction.finish()
+        /*nativeTransaction.success()
+        nativeTransaction.finish()*/
         active = false
     }
 
@@ -52,13 +52,16 @@ class Neo4jTransaction implements Transaction {
         if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
             log.debug "rollback $nativeTransaction"
         }
+/*
         nativeTransaction.failure()
         nativeTransaction.finish()
+*/
         active = false
     }
 
     Object getNativeTransaction() {
-        nativeTransaction
+        // TODO: consider returing cypherEngine
+        throw new UnsupportedOperationException();
     }
 
     boolean isActive() {

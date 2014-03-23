@@ -60,9 +60,7 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     @Override
     protected Transaction beginTransactionInternal() {
-        // TODO: think about transaction handling
-        return new Neo4jTransaction(null);
-//        new Neo4jTransaction(((Neo4jDatastore)datastore).graphDatabaseService)
+        return new Neo4jTransaction(cypherEngine);
     }
 
     @Override

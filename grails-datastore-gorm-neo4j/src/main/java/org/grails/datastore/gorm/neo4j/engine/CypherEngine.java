@@ -10,4 +10,7 @@ public interface CypherEngine {
     public CypherResult execute(String cypher, Map params);
     public CypherResult execute(String cypher);
 
+    public void beginTx();
+    public void commit();
+    public void rollback();
 }

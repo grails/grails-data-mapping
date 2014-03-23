@@ -18,4 +18,19 @@ public class RemoteCypherEngine implements CypherEngine {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void beginTx() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void commit() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void rollback() {
+        throw new UnsupportedOperationException();
+    }
+
 }
