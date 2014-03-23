@@ -5,6 +5,7 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
+import org.grails.datastore.gorm.neo4j.DumpGraphOnSessionFlushListener
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
@@ -14,7 +15,6 @@ import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
-import org.neo4j.cypher.javacompat.ExecutionEngine
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Transaction
 import org.neo4j.test.TestGraphDatabaseFactory
@@ -24,8 +24,6 @@ import org.springframework.context.support.GenericApplicationContext
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
-//import org.neo4j.rest.graphdb.LocalTestServer
-//import org.neo4j.rest.graphdb.util.Config
 
 class Setup {
 
@@ -57,7 +55,7 @@ class Setup {
         datastore = new Neo4jDatastore(
                 mappingContext,
                 ctx,
-                new EmbeddedCypherEngine(executionEngine: new ExecutionEngine(graphDb)),
+                new EmbeddedCypherEngine(graphDb),
                 graphDb
         )
         datastore.skipIndexSetup = true
@@ -106,6 +104,7 @@ class Setup {
 
         ctx.addApplicationListener new DomainEventListener(datastore)
         ctx.addApplicationListener new AutoTimestampEventListener(datastore)
+        ctx.addApplicationListener new DumpGraphOnSessionFlushListener(graphDb)
 
         transaction = graphDb.beginTx()
         datastore.connect()

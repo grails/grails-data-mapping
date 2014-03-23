@@ -62,7 +62,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        return new Neo4jSession(this, mappingContext, getApplicationContext(), false, cypherEngine, graphDatabaseService);
+        return new Neo4jSession(this, mappingContext, getApplicationContext(), false, cypherEngine);
     }
 
     @Override

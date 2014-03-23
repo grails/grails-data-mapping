@@ -44,12 +44,10 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     /** map node id -> hashmap of relationship types showing startNode id and endNode id */
     private Collection<Relationship> persistentRelationships = new HashSet<Relationship>();
     private Collection<Object> persistingInstances = new HashSet<Object>();
-    private GraphDatabaseService graphDatabaseService;
 
-    public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, CypherEngine cypherEngine, GraphDatabaseService graphDatabaseService) {
+    public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, CypherEngine cypherEngine) {
         super(datastore, mappingContext, publisher, stateless);
         this.cypherEngine = cypherEngine;
-        this.graphDatabaseService = graphDatabaseService;
     }
 
     @Override
@@ -125,17 +123,15 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     public void flush() {
         persistDirtyButUnsavedInstances();
         super.flush();
+    }
+
+    @Override
+    protected void postFlush(boolean hasUpdates) {
         persistingInstances.clear();
-
-//        if (log.isDebugEnabled()) {
-            // TODO: remove debugging stuff here
-            StringWriter writer = new StringWriter();
-            PrintWriter printWriter = new PrintWriter(writer);
-            new SubGraphExporter(new DatabaseSubGraph(graphDatabaseService)).export(printWriter);
-
-            log.info(writer.toString());
-            log.info("svg: " + Neo4jUtils.dumpGraphToSvg(graphDatabaseService));
-//        }
+        super.postFlush(hasUpdates);
+        if (publisher!=null) {
+            publisher.publishEvent(new SessionFlushedEvent(this));
+        }
     }
 
     /**
