@@ -33,7 +33,6 @@ import javax.activation.DataSource
  */
 class HibernateTestMixin extends GrailsUnitTestMixin{
 
-
     /**
      * Sets up a GORM for Hibernate domain for the given domain classes
      *
@@ -71,7 +70,7 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
     }
 
     /**
-     * Sets up a GORM for Hibernate domain for the given configuration and domain classes
+     * Sets up a GORM for MongoDB domain for the given configuration and domain classes
      *
      * @param persistentClasses
      */
