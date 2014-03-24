@@ -17,7 +17,8 @@ package org.grails.datastore.gorm.finders;
 import org.grails.datastore.mapping.core.Datastore;
 
 /**
- * <p>The "find<booleanProperty>By*" static persistent method. This method allows querying for
+ * 
+ * <p>The "find&lt;booleanProperty&gt;By*" static persistent method. This method allows querying for
  * instances of grails domain classes based on a boolean property and any other arbitrary
  * properties. This method returns the first result of the query.</p>
  *
