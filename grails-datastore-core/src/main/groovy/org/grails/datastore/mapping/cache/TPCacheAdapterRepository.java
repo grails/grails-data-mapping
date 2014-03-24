@@ -34,7 +34,7 @@ public interface TPCacheAdapterRepository<T> {
     /**
      * Sets {@link TPCacheAdapter} for the specified FQN java class of {@link PersistentEntity}.
      * If the specified entity had another cache adapter before, the old one is ignored after this call.
-     * @param entityJavaClassFQN equivalent to {@link PersistentEntity#getJavaClass().getName()}
+     * @param entityJavaClassFQN equivalent to {@link PersistentEntity#getJavaClass()}.getName()
      * @param cacheAdapter the adapter
      */
     void setTPCacheAdapter(String entityJavaClassFQN, TPCacheAdapter<T> cacheAdapter);
