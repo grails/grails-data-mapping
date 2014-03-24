@@ -26,7 +26,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 /**
  * Javassist MethodHandler for handling GroovyObject methods
  *
- * delegates getProperty, setProperty & invokeMethod to super class's MetaClass
+ * delegates getProperty, setProperty &amp; invokeMethod to super class's MetaClass
  *
  * @author Lari Hotari
  */

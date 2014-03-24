@@ -59,7 +59,7 @@ import org.grails.datastore.mapping.model.types.ToOne;
  *
  * <pre>
  *  <code>
- *      class RelationalPropertyFactory<Column> extends PropertyFactory {
+ *      class RelationalPropertyFactory&lt;Column&gt; extends PropertyFactory {
  *            public Column createMappedForm(PersistentProperty mpp) {
  *                return new Column(mpp)
  *            }
