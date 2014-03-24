@@ -1,40 +1,52 @@
-If you are using Grails 1.3.x then the MongoDB plugin provides a Groovy mixin called [DatastoreUnitTestMixin|testing] for testing purposes. For Grails 2.0.x and above you can use the normal @TestFor support and Grails' built in testing mechanism.
+For many simple cases you can use the built in [GORM unit testing|http://grails.org/doc/latest/guide/testing.html#unitTestingDomains] provided by Grails.
 
-{note}
-The below documentation applies to Grails 1.3.x only. Grails 2.0.x users can use the built in GORM testing support that ships with Grails 2.0.
-{note}
+For more complex cases a @grails.test.mixin.mongodb.MongoDbTestMixin@ class is provided which can run tests against a running MongoDB instance or a mock instance (such as one provided by the [Fongo|https://github.com/fakemongo/fongo] project).
 
-This mixin sets up a datastore implementation that operates against an in-memory @ConcurrentHashMap@. The datastore implementation that operates against an in-memory map is as complete as the one for MongoDB and provides support for:
-
-* Simple persistence methods
-* Dynamic finders
-* Criteria
-* Named queries
-* Inheritance
-
-You can easily write tests that use the mixin using Groovy's @Mixin@ annotation on any existing unit test:
+Example against a running MongoDB instance:
 
 {code}
-import grails.datastore.test.DatastoreUnitTestMixin
+@Entity
+class Person {
+    Object id
+    Long version
+    String name
+}
 
-@Mixin(DatastoreUnitTestMixin)
-class PersonTests extends GroovyTestCase {
-    void testPersist() {
-        mockDomain(Person)
-        def s = new Person(name:"Bob")
-        s.save()
+...
 
-        assert s.id != null
+import grails.test.mixin.mongodb.*
 
-        s = Person.get(s.id)
+@TestMixin(MongoDbTestMixin)
+class PersonSpec extends Specification{
 
-        assert s != null
-    }
+    void "Test count people"() {
+        given:"A mongo domain model"
+            mongoDomain([Person])
 
-    void tearDown() {
-        disconnect()
+        expect:"Count the number of people"
+            Person.count() == 0
     }
 }
 {code}
 
-You should call the @mockDomain()@ method to mock a domain instance and then the remainder of the API is the same. Note that you should call @disconnect()@ in @tearDown()@ otherwise your tests will share data.
+
+Example against using [Fongo|https://github.com/fakemongo/fongo]:
+
+{code}
+import com.github.fakemongo.Fongo
+import grails.test.mixin.mongodb.*
+
+@TestMixin(MongoDbTestMixin)
+class PersonSpec extends Specification{
+
+    void "Test count people"() {
+        given:"A mongo domain model"
+            Fongo fongo = new Fongo("mongo server 1");
+            mongoDomain(fongo, [Person])
+
+        expect:"Count the number of people"
+            Person.count() == 0
+    }
+}
+{code}
+

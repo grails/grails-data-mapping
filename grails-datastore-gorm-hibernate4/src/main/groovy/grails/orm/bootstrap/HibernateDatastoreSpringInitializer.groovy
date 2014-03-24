@@ -93,8 +93,9 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
     public Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         Closure beanDefinitions = {
-            xmlns context: "http://www.springframework.org/schema/context"
-            context.'annotation-config'()
+            def common = getCommonConfiguration(beanDefinitionRegistry)
+            common.delegate = delegate
+            common.call()
 
             Object vendorToDialect = getVenderToDialectMappings()
             "dialectDetector"(HibernateDialectDetectorFactoryBean) {
@@ -109,37 +110,11 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 configuration['hibernate.dialect'] = ref("dialectDetector")
             }
 
-
             "hibernateProperties"(PropertiesFactoryBean) { bean ->
                 bean.scope = "prototype"
                 properties = this.configuration
             }
 
-            if (!beanDefinitionRegistry.containsBeanDefinition(GrailsApplication.APPLICATION_ID)) {
-                grailsApplication(DefaultGrailsApplication, persistentClasses as Class[], Thread.currentThread().contextClassLoader) { bean ->
-                    bean.initMethod = 'initialise'
-                }
-            } else {
-                // TODO: add bean to register for pre-existing GrailsApplication
-            }
-
-            for (Class dc in persistentClasses) {
-                "${dc.name}"(dc) { bean ->
-                    bean.singleton = false
-                    bean.autowire = "byName"
-                }
-                "${dc.name}DomainClass"(MethodInvokingFactoryBean) { bean ->
-                    targetObject = ref(GrailsApplication.APPLICATION_ID)
-                    targetMethod = "getArtefact"
-                    bean.lazyInit = true
-                    arguments = [DomainClassArtefactHandler.TYPE, dc.name]
-                }
-                "${dc.name}Validator"(HibernateDomainClassValidator) {
-                    domainClass = ref("${dc.name}DomainClass")
-                    grailsApplication = ref(GrailsApplication.APPLICATION_ID)
-                    sessionFactory = ref(sessionFactoryBeanName)
-                }
-            }
             eventTriggeringInterceptor(ClosureEventTriggeringInterceptor)
             nativeJdbcExtractor(CommonsDbcpNativeJdbcExtractor)
             hibernateEventListeners(HibernateEventListeners)

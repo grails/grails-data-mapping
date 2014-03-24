@@ -97,7 +97,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             def mongoConfig = config?.grails?.mongo?.clone() ?: config?.grails?.mongodb?.clone()
             if(mongoConfig == null) mongoConfig = new ConfigObject()
 
-            def callable = commonConfiguration
+            def callable = getCommonConfiguration(beanDefinitionRegistry)
             callable.delegate = delegate
             callable.call()
 

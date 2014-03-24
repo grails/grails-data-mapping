@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.bootstrap
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.compiler.gorm.GormTransformer
 import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
@@ -113,17 +114,23 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         }
     }
 
-    Closure getCommonConfiguration() {
+    Closure getCommonConfiguration(BeanDefinitionRegistry registry) {
         return {
             xmlns context: "http://www.springframework.org/schema/context"
             context.'annotation-config'()
 
 
-            grailsApplication(DefaultGrailsApplication, persistentClasses as Class[], Thread.currentThread().contextClassLoader) { bean ->
-                bean.initMethod = 'initialise'
+            if(!registry.containsBeanDefinition(GrailsApplication.APPLICATION_ID)) {
+                grailsApplication(DefaultGrailsApplication, persistentClasses as Class[], Thread.currentThread().contextClassLoader) { bean ->
+                    bean.initMethod = 'initialise'
+                }
             }
 
             for(cls in persistentClasses) {
+                "${cls.name}"(cls) { bean ->
+                    bean.singleton = false
+                    bean.autowire = "byName"
+                }
                 "${cls.name}DomainClass"(MethodInvokingFactoryBean) { bean ->
                     targetObject = ref("grailsApplication")
                     targetMethod = "getArtefact"
