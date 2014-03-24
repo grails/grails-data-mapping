@@ -96,6 +96,8 @@ subprojects {
                                 !project.name.endsWith("plugin-support") &&
                                 project.name != 'grails-datastore-gorm-hibernate-core'&&
                                 project.name != 'grails-datastore-gorm-rest-client'
+
+                                                
     def isDocumentationProject = project.name.startsWith("grails-documentation")
 
     dependencies {

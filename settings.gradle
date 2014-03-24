@@ -10,9 +10,8 @@ include ("grails-datastore-core",
         "grails-datastore-dynamodb",
         'grails-datastore-rest-client',
 /*
-        "grails-datastore-jcr",
-        "grails-datastore-cassandra",
-*/
+        "grails-datastore-jcr",*/
+
 
         // Documentation
         'grails-documentation-core',
@@ -41,6 +40,7 @@ include ("grails-datastore-core",
 //        'boot-plugins/gorm-mongodb-spring-boot',
 
         // GORM Implementations
+        'grails-datastore-gorm-cassandra',
         'grails-datastore-gorm-jpa',
         'grails-datastore-gorm-neo4j',
         'grails-datastore-gorm-redis',
