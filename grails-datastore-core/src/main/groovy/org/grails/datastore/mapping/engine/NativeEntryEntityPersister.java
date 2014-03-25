@@ -637,7 +637,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
     /**
      * Convert a Basic (collection-style) property native entry value taken from an entity into the target property
-     * type. This takes into account any generic parameter types specified on the property (e.g. Collection&lt;Locale>
+     * type. This takes into account any generic parameter types specified on the property (e.g. Collection&lt;Locale&gt;
      * tells us to convert elements into Locale objects). If you don't specify generic properties, collection elements
      * are not modified.
      *

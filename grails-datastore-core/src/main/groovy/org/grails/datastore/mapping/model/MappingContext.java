@@ -29,7 +29,7 @@ import org.springframework.validation.Validator;
  * <p>This interface is used internally to establish associations
  * between entities and also at runtime to obtain entities by name</p>
  *
- * <p>The generic type parameters T & R are used to specify the
+ * <p>The generic type parameters T &amp; R are used to specify the
  * mapped form of a class (example Table) and property (example Column) respectively.</p>
  *
  * <p>Uses instances of the {@link org.grails.datastore.mapping.core.Datastore} interface to
