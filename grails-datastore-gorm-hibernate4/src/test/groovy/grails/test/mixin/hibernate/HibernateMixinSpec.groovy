@@ -16,6 +16,8 @@ class HibernateMixinSpec extends Specification{
 
         expect:"Dynamic finders to work"
             Person.count() == 0
+            sessionFactory != null
+            transactionManager != null
     }
 }
 

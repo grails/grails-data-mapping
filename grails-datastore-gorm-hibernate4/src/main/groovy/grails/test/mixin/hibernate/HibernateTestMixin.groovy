@@ -22,6 +22,7 @@ import org.codehaus.groovy.grails.commons.InstanceFactoryBean
 import org.grails.datastore.gorm.GormEnhancer
 import org.hibernate.SessionFactory
 import org.springframework.jdbc.datasource.DriverManagerDataSource
+import org.springframework.transaction.PlatformTransactionManager
 
 import javax.activation.DataSource
 
@@ -32,6 +33,16 @@ import javax.activation.DataSource
  * @since 3.0.4
  */
 class HibernateTestMixin extends GrailsUnitTestMixin{
+
+    /**
+     * The current transaction manager
+     */
+    PlatformTransactionManager transactionManager
+
+    /**
+     * The current session factory. Will be closed with by the ApplicationContext
+     */
+    SessionFactory sessionFactory
 
     /**
      * Sets up a GORM for Hibernate domain for the given domain classes
@@ -91,6 +102,8 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
         }
         initializer.configureForBeanDefinitionRegistry(applicationContext)
         applicationContext.getBeansOfType(GormEnhancer)
-        applicationContext.getBean(SessionFactory)
+        transactionManager = applicationContext.getBean(PlatformTransactionManager)
+        sessionFactory = applicationContext.getBean(SessionFactory)
+        return sessionFactory
     }
 }
