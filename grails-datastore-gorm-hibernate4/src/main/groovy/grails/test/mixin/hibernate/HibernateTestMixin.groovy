@@ -139,13 +139,16 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
 
     @CompileStatic
     protected static SessionFactory completeConfiguration(Collection<Class> persistentClasses, HibernateDatastoreSpringInitializer initializer) {
+        def application = getGrailsApplication()
         for(cls in persistentClasses) {
-            grailsApplication.addArtefact(DomainClassArtefactHandler.TYPE, cls)
+            application.addArtefact(DomainClassArtefactHandler.TYPE, cls)
         }
-        initializer.configureForBeanDefinitionRegistry(applicationContext)
-        applicationContext.getBeansOfType(GormEnhancer)
-        transactionManager = applicationContext.getBean(PlatformTransactionManager)
-        sessionFactory = applicationContext.getBean(SessionFactory)
+
+        def context = getApplicationContext()
+        initializer.configureForBeanDefinitionRegistry(context)
+        context.getBeansOfType(GormEnhancer)
+        transactionManager = context.getBean(PlatformTransactionManager)
+        sessionFactory = context.getBean(SessionFactory)
         return sessionFactory
     }
 }
