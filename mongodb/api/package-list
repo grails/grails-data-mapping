@@ -1,5 +1,6 @@
 grails.mongodb.bootstrap
 grails.mongodb.geo
+grails.test.mixin.mongodb
 org.grails.datastore.gorm.mongo
 org.grails.datastore.gorm.mongo.bean.factory
 org.grails.datastore.gorm.mongo.config

@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>GORM for Mongo 2.0.0.GA</title>
+        <title>GORM for Mongo 2.0.1.GA</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
@@ -62,7 +62,7 @@ function addJsClass(el) {
                         <div class="project">
                             <h1>GORM for Mongo - Reference Documentation</h1>
                             <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
-                            <p><strong>Version:</strong> 2.0.0.GA</p>
+                            <p><strong>Version:</strong> 2.0.1.GA</p>
                             
                         </div>
 
@@ -586,26 +586,27 @@ MongoDB doesn't support transactions directly, however GORM for MongoDB does bat
 
 
 <h1 id="6. Unit Testing">6 Unit Testing</h1>
-If you are using Grails 1.3.x then the MongoDB plugin provides a Groovy mixin called <a href="../ref/Testing/DatastoreUnitTestMixin.html" class="testing">DatastoreUnitTestMixin</a> for testing purposes. For Grails 2.0.x and above you can use the normal @TestFor support and Grails' built in testing mechanism.<p class="paragraph"/><blockquote class="note">
-The below documentation applies to Grails 1.3.x only. Grails 2.0.x users can use the built in GORM testing support that ships with Grails 2.0.
-</blockquote><p class="paragraph"/>This mixin sets up a datastore implementation that operates against an in-memory <code>ConcurrentHashMap</code>. The datastore implementation that operates against an in-memory map is as complete as the one for MongoDB and provides support for:
-<ul class="star">
-<li>Simple persistence methods</li>
-<li>Dynamic finders</li>
-<li>Criteria</li>
-<li>Named queries</li>
-<li>Inheritance</li>
-</ul><p class="paragraph"/>You can easily write tests that use the mixin using Groovy's <code>Mixin</code> annotation on any existing unit test:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.datastore.test.DatastoreUnitTestMixin<p class="paragraph"/>@Mixin(DatastoreUnitTestMixin)
-class PersonTests <span class="java&#45;keyword">extends</span> GroovyTestCase &#123;
-    void testPersist() &#123;
-        mockDomain(Person)
-        def s = <span class="java&#45;keyword">new</span> Person(name:<span class="java&#45;quote">"Bob"</span>)
-        s.save()<p class="paragraph"/>        assert s.id != <span class="java&#45;keyword">null</span><p class="paragraph"/>        s = Person.get(s.id)<p class="paragraph"/>        assert s != <span class="java&#45;keyword">null</span>
-    &#125;<p class="paragraph"/>    void tearDown() &#123;
-        disconnect()
+For many simple cases you can use the built in <a href="http://grails.org/doc/latest/guide/testing.html#unitTestingDomains" target="blank">GORM unit testing</a> provided by Grails.<p class="paragraph"/>For more complex cases a <code>grails.test.mixin.mongodb.MongoDbTestMixin</code> class is provided which can run tests against a running MongoDB instance or a mock instance (such as one provided by the <a href="../ref/Httpsgithubcomfakemongofongo/Fongo.html" class="https://github.com/fakemongo/fongo">Fongo</a> project).<p class="paragraph"/>Example against a running MongoDB instance:<p class="paragraph"/><div class="code"><pre>@Entity
+class Person &#123;
+    <span class="java&#45;object">Object</span> id
+    <span class="java&#45;object">Long</span> version
+    <span class="java&#45;object">String</span> name
+&#125;<p class="paragraph"/>...<p class="paragraph"/><span class="java&#45;keyword">import</span> grails.test.mixin.mongodb.&#42;<p class="paragraph"/>@TestMixin(MongoDbTestMixin)
+class PersonSpec <span class="java&#45;keyword">extends</span> Specification&#123;<p class="paragraph"/>    void <span class="java&#45;quote">"Test count people"</span>() &#123;
+        given:<span class="java&#45;quote">"A mongo domain model"</span>
+            mongoDomain(&#91;Person&#93;)<p class="paragraph"/>        expect:<span class="java&#45;quote">"Count the number of people"</span>
+            Person.count() == 0
     &#125;
-&#125;</pre></div><p class="paragraph"/>You should call the <code>mockDomain()</code> method to mock a domain instance and then the remainder of the API is the same. Note that you should call <code>disconnect()</code> in <code>tearDown()</code> otherwise your tests will share data.
-
+&#125;</pre></div><p class="paragraph"/>
+Example against using <a href="../ref/Httpsgithubcomfakemongofongo/Fongo.html" class="https://github.com/fakemongo/fongo">Fongo</a>:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> com.github.fakemongo.Fongo
+<span class="java&#45;keyword">import</span> grails.test.mixin.mongodb.&#42;<p class="paragraph"/>@TestMixin(MongoDbTestMixin)
+class PersonSpec <span class="java&#45;keyword">extends</span> Specification&#123;<p class="paragraph"/>    void <span class="java&#45;quote">"Test count people"</span>() &#123;
+        given:<span class="java&#45;quote">"A mongo domain model"</span>
+            Fongo fongo = <span class="java&#45;keyword">new</span> Fongo(<span class="java&#45;quote">"mongo server 1"</span>);
+            mongoDomain(fongo, &#91;Person&#93;)<p class="paragraph"/>        expect:<span class="java&#45;quote">"Count the number of people"</span>
+            Person.count() == 0
+    &#125;
+&#125;</pre></div><p class="paragraph"/>
 
                     </div>
                 </td>
