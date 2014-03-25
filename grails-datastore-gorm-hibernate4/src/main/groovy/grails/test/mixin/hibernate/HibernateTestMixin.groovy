@@ -19,10 +19,17 @@ import grails.test.mixin.support.GrailsUnitTestMixin
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.InstanceFactoryBean
+import org.codehaus.groovy.grails.orm.hibernate.support.HibernatePersistenceContextInterceptor
 import org.grails.datastore.gorm.GormEnhancer
+import org.hibernate.Session
 import org.hibernate.SessionFactory
+import org.junit.After
+import org.junit.AfterClass
+import org.junit.Before
 import org.springframework.jdbc.datasource.DriverManagerDataSource
+import org.springframework.orm.hibernate4.SessionHolder
 import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import javax.activation.DataSource
 
@@ -37,12 +44,22 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
     /**
      * The current transaction manager
      */
-    PlatformTransactionManager transactionManager
+    static PlatformTransactionManager transactionManager
 
     /**
      * The current session factory. Will be closed with by the ApplicationContext
      */
-    SessionFactory sessionFactory
+    static SessionFactory sessionFactory
+
+    /**
+     * Used to setup session handling
+     */
+    HibernatePersistenceContextInterceptor hibernateInterceptor
+
+    /**
+     * Current hibernate session
+     */
+    Session session
 
     /**
      * Sets up a GORM for Hibernate domain for the given domain classes
@@ -54,6 +71,31 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
         def initializer = new HibernateDatastoreSpringInitializer(persistentClasses)
         configureDefaultDataSource()
         completeConfiguration(persistentClasses,initializer)
+    }
+
+    @Before
+    void connectionSession() {
+        if(sessionFactory) {
+            hibernateInterceptor = new HibernatePersistenceContextInterceptor(sessionFactory: sessionFactory)
+            hibernateInterceptor.init()
+            SessionHolder holder = TransactionSynchronizationManager.getResource(sessionFactory)
+            session = holder.getSession()
+        }
+    }
+
+    @After
+    void destroySession() {
+        if(hibernateInterceptor) {
+            hibernateInterceptor.destroy()
+            session = null
+            hibernateInterceptor = null
+        }
+    }
+
+    @AfterClass
+    static void cleanupHibernate() {
+        transactionManager = null
+        sessionFactory = null
     }
 
     protected void configureDefaultDataSource() {
@@ -96,7 +138,7 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
     }
 
     @CompileStatic
-    protected SessionFactory  completeConfiguration(Collection<Class> persistentClasses, HibernateDatastoreSpringInitializer initializer) {
+    protected SessionFactory completeConfiguration(Collection<Class> persistentClasses, HibernateDatastoreSpringInitializer initializer) {
         for(cls in persistentClasses) {
             grailsApplication.addArtefact(DomainClassArtefactHandler.TYPE, cls)
         }
@@ -104,6 +146,7 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
         applicationContext.getBeansOfType(GormEnhancer)
         transactionManager = applicationContext.getBean(PlatformTransactionManager)
         sessionFactory = applicationContext.getBean(SessionFactory)
+        hibernateInterceptor = new HibernatePersistenceContextInterceptor(sessionFactory: sessionFactory)
         return sessionFactory
     }
 }
