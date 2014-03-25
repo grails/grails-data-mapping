@@ -39,7 +39,8 @@ class SimpleHasManySpec extends GormDatastoreSpec{
             }
 
             then:"The retrieved data is correct"
-                chapters == [[title: "first"],[title: "second"]]
+                chapters.find { it.title == 'first'}
+                chapters.find { it.title == 'second'}
 
     }
 
