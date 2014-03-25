@@ -630,7 +630,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         execute({ Session session ->
             Query q = session.createQuery(persistentClass)
             if (queryMap) {
-                q.allEq(queryMap.collectEntries{ key, value -> [key.toString(), value] })
+                Map<String, Object> processedQueryMap = [:]
+                queryMap.each{ key, value -> processedQueryMap[key.toString()] = value }
+                q.allEq(processedQueryMap)
             }
             DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
             q.singleResult()
