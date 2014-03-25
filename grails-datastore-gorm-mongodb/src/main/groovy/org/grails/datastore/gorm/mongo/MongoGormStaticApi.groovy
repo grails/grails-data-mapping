@@ -21,11 +21,13 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.mongo.MongoSession
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
- * Mongo GORM static level API
+ * MongoDB GORM static level API
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -50,16 +52,20 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return The database for this domain class
      */
     DB getDB() {
-        MongoSession ms = (MongoSession)datastore.currentSession
-        ms.getMongoTemplate(persistentEntity).getDb()
+        execute( { Session session ->
+            MongoSession ms = (MongoSession)session
+            ms.getMongoTemplate(persistentEntity).getDb()
+        } as SessionCallback<DB>)
     }
 
     /**
      * @return The name of the Mongo collection that entity maps to
      */
     String getCollectionName() {
-        MongoSession ms = (MongoSession)datastore.currentSession
-        ms.getCollectionName(persistentEntity)
+        execute( { Session session ->
+            MongoSession ms = (MongoSession)session
+            ms.getCollectionName(persistentEntity)
+        } as SessionCallback<String>)
     }
 
     /**
@@ -68,12 +74,14 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return The actual collection
      */
     DBCollection getCollection() {
-        MongoSession ms = (MongoSession)datastore.currentSession
-        def template = ms.getMongoTemplate(persistentEntity)
+        execute( { Session session ->
+            MongoSession ms = (MongoSession)session
+            def template = ms.getMongoTemplate(persistentEntity)
 
-        def coll = template.getCollection(ms.getCollectionName(persistentEntity))
-        DBCollectionPatcher.patch(coll)
-        return coll
+            def coll = template.getCollection(ms.getCollectionName(persistentEntity))
+            DBCollectionPatcher.patch(coll)
+            return coll
+        } as SessionCallback<DBCollection>)
     }
 
     /**
@@ -83,14 +91,17 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return The result of the closure
      */
     def withCollection(String collectionName, Closure callable) {
-        MongoSession ms = (MongoSession)datastore.currentSession
-        final previous = ms.useCollection(persistentEntity, collectionName)
-        try {
-            callable.call(ms)
-        }
-        finally {
-            ms.useCollection(persistentEntity, previous)
-        }
+        execute( { Session session ->
+            MongoSession ms = (MongoSession)session
+            final previous = ms.useCollection(persistentEntity, collectionName)
+            try {
+                callable.call(ms)
+            }
+            finally {
+                ms.useCollection(persistentEntity, previous)
+            }
+
+        } as SessionCallback)
     }
 
     /**
@@ -100,8 +111,10 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return The previous collection name
      */
     String useCollection(String collectionName) {
-        MongoSession ms = (MongoSession)datastore.currentSession
-        ms.useCollection(persistentEntity, collectionName)
+        execute( { Session session ->
+            MongoSession ms = (MongoSession)session
+            ms.useCollection(persistentEntity, collectionName)
+        } as SessionCallback<String>)
     }
 
     /**
@@ -111,14 +124,16 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return The result of the closure
      */
     def withDatabase(String databaseName, Closure callable) {
-        MongoSession ms = (MongoSession)datastore.currentSession
-        final previous = ms.useDatabase(persistentEntity, databaseName)
-        try {
-            callable.call(ms)
-        }
-        finally {
-            ms.useDatabase(persistentEntity, previous)
-        }
+        execute( { Session session ->
+            MongoSession ms = (MongoSession)session
+            final previous = ms.useDatabase(persistentEntity, databaseName)
+            try {
+                callable.call(ms)
+            }
+            finally {
+                ms.useDatabase(persistentEntity, previous)
+            }
+        } as SessionCallback)
     }
 
     /**
@@ -128,7 +143,9 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return The previous database name
      */
     String useDatabase(String databaseName) {
-        MongoSession ms = (MongoSession)datastore.currentSession
-        ms.useDatabase(persistentEntity, databaseName)
+        execute( { Session session ->
+            MongoSession ms = (MongoSession)session
+            ms.useDatabase(persistentEntity, databaseName)
+        } as SessionCallback<String>)
     }
 }
