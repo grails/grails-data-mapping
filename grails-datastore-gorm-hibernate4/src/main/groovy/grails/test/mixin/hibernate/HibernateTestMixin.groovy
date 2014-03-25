@@ -67,7 +67,7 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
      * @param persistentClasses
      */
     @CompileStatic
-    SessionFactory hibernateDomain(Collection<Class> persistentClasses) {
+    static SessionFactory hibernateDomain(Collection<Class> persistentClasses) {
         def initializer = new HibernateDatastoreSpringInitializer(persistentClasses)
         configureDefaultDataSource()
         completeConfiguration(persistentClasses,initializer)
@@ -98,7 +98,7 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
         sessionFactory = null
     }
 
-    protected void configureDefaultDataSource() {
+    protected static void configureDefaultDataSource() {
         defineBeans {
             dataSource(DriverManagerDataSource) {
                 url = "jdbc:h2:mem:grailsDB;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1"
@@ -114,7 +114,7 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
      *
      * @param persistentClasses
      */
-    SessionFactory hibernateDomain(DataSource dataSource, Collection<Class> persistentClasses) {
+    static SessionFactory hibernateDomain(DataSource dataSource, Collection<Class> persistentClasses) {
         def initializer = new HibernateDatastoreSpringInitializer(persistentClasses)
         defineBeans {
             delegate.dataSource(InstanceFactoryBean, dataSource)
@@ -128,7 +128,7 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
      * @param persistentClasses
      */
     @CompileStatic
-    SessionFactory  hibernateDomain(Map config, Collection<Class> persistentClasses) {
+    static SessionFactory hibernateDomain(Map config, Collection<Class> persistentClasses) {
         def initializer = new HibernateDatastoreSpringInitializer(persistentClasses)
         def props = new Properties()
         props.putAll(config)
@@ -138,7 +138,7 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
     }
 
     @CompileStatic
-    protected SessionFactory completeConfiguration(Collection<Class> persistentClasses, HibernateDatastoreSpringInitializer initializer) {
+    protected static SessionFactory completeConfiguration(Collection<Class> persistentClasses, HibernateDatastoreSpringInitializer initializer) {
         for(cls in persistentClasses) {
             grailsApplication.addArtefact(DomainClassArtefactHandler.TYPE, cls)
         }
@@ -146,7 +146,6 @@ class HibernateTestMixin extends GrailsUnitTestMixin{
         applicationContext.getBeansOfType(GormEnhancer)
         transactionManager = applicationContext.getBean(PlatformTransactionManager)
         sessionFactory = applicationContext.getBean(SessionFactory)
-        hibernateInterceptor = new HibernatePersistenceContextInterceptor(sessionFactory: sessionFactory)
         return sessionFactory
     }
 }
