@@ -23,6 +23,7 @@ import com.mongodb.MongoURI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.model.DatastoreConfigurationException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -37,7 +38,7 @@ import com.mongodb.ServerAddress;
  * @author Graeme Rocher
  */
 public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/*,
-    PersistenceExceptionTranslator*/ {
+    PersistenceExceptionTranslator*/, DisposableBean {
 
     /**
      * Logger, available to subclasses.
@@ -119,6 +120,15 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
                 mongo = new GMongo(mongoHost, mongoOptions);
             }
         }
+    }
+
+    public void destroy() {
+        if(mongo == null) {
+            return;
+        }
+
+        mongo.close();
+        mongo = null;
     }
 
 }
