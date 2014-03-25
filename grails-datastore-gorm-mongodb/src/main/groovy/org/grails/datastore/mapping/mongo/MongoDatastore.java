@@ -291,14 +291,15 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                     final MongoCollection mappedForm = classMapping.getMappedForm();
                     if (mappedForm != null) {
                         for (Map compoundIndex : mappedForm.getCompoundIndices()) {
-                            DBObject indexDef = new BasicDBObject(compoundIndex);
+
                             Map indexAttributes = null;
                             if(compoundIndex.containsKey(INDEX_ATTRIBUTES)) {
-                                Object o = compoundIndex.get(INDEX_ATTRIBUTES);
+                                Object o = compoundIndex.remove(INDEX_ATTRIBUTES);
                                 if(o instanceof Map) {
                                     indexAttributes = (Map) o;
                                 }
                             }
+                            DBObject indexDef = new BasicDBObject(compoundIndex);
                             if(indexAttributes != null) {
                                 collection.ensureIndex(indexDef, new BasicDBObject(indexAttributes));
                             }
