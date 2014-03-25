@@ -3,7 +3,8 @@ import org.grails.datastore.gorm.mongo.plugin.support.MongoMethodsConfigurer
 import org.grails.datastore.gorm.mongo.plugin.support.MongoOnChangeHandler
 import org.grails.datastore.gorm.mongo.plugin.support.MongoSpringConfigurer
 import grails.converters.*
-import com.mongodb.DBObject
+import org.codehaus.groovy.grails.web.json.JSONWriter
+import com.mongodb.*
 
 
 class MongodbGrailsPlugin {
@@ -14,7 +15,7 @@ class MongodbGrailsPlugin {
     def issueManagement = [system: "JIRA", url: "http://jira.grails.org/browse/GPMONGODB"]
     def scm = [url: "https://github.com/grails/grails-data-mapping"]
 
-    def version = "2.0.0"
+    def version = "2.0.1-SNAPSHOT"
     def grailsVersion = "2.3.2 > *"
     def observe = ['services', 'domainClass']
     def loadAfter = ['domainClass', 'hibernate', 'hibernate4', 'services', 'cloudFoundry']
@@ -28,7 +29,41 @@ class MongodbGrailsPlugin {
     def doWithSpring = new MongoSpringConfigurer().getConfiguration()
 
     def doWithApplicationContext = { 
-        JSON.registerObjectMarshaller DBObject, { it.toMap() }
+        JSON.registerObjectMarshaller DBObject, { dbo, json ->
+            JSONWriter writer = json.getWriter();
+
+            writer.object()
+            dbo.each {  k, v ->
+                writer.key(k)
+                json.convertAnother(v)
+            }
+            writer.endObject()
+
+            null
+        }
+        JSON.registerObjectMarshaller(BasicDBList, 999) { dbo, json ->
+            JSONWriter writer = json.getWriter();
+
+            writer.array();
+            dbo.each { val -> json.convertAnother(val) }
+            writer.endArray();
+
+            null
+        }
+
+        JSON.registerObjectMarshaller(BasicDBObject, 999) { dbo, json ->
+            JSONWriter writer = json.getWriter();
+
+            writer.object()
+            dbo.each {  k, v ->
+                writer.key(k)
+                json.convertAnother(v)
+            }
+            writer.endObject()
+
+            null
+        }
+
     }
 
     def doWithDynamicMethods = { ctx ->
