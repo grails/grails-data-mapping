@@ -386,7 +386,9 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     List<D> findAllWhere(Map queryMap, Map args) {
         if (!queryMap) return null
         (List<D>)hibernateTemplate.execute({Session session ->
-            Map queryArgs = filterQueryArgumentMap(queryMap)
+            Map<String, Object> processedQueryMap = [:]
+            queryMap.each{ key, value -> processedQueryMap[key.toString()] = value }
+            Map queryArgs = filterQueryArgumentMap(processedQueryMap)
             List<String> nullNames = removeNullNames(queryArgs)
             Criteria criteria = session.createCriteria(persistentClass)
             hibernateTemplate.applySettings(criteria)
@@ -403,7 +405,9 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     D findWhere(Map queryMap, Map args) {
         if (!queryMap) return null
         (D)hibernateTemplate.execute({Session session ->
-            Map queryArgs = filterQueryArgumentMap(queryMap)
+            Map<String, Object> processedQueryMap = [:]
+            queryMap.each{ key, value -> processedQueryMap[key.toString()] = value }
+            Map queryArgs = filterQueryArgumentMap(processedQueryMap)
             List<String> nullNames = removeNullNames(queryArgs)
             Criteria criteria = session.createCriteria(persistentClass)
             hibernateTemplate.applySettings(criteria)
