@@ -40,6 +40,13 @@ class FindWhereSpec extends GormDatastoreSpec {
         Person.findWhere((property): 'Brown').lastName == 'Brown'
     }
 
+    void 'findWhere with GString property'() {
+        when:
+        def property='lastName'
+        then:
+        Person.findWhere("${property}":'Brown').lastName == 'Brown'
+    }
+
 }
 
 
