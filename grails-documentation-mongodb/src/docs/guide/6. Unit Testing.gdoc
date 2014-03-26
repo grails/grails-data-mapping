@@ -30,7 +30,7 @@ class PersonSpec extends Specification{
 {code}
 
 
-Example against using [Fongo|https://github.com/fakemongo/fongo]:
+Example using [Fongo|https://github.com/fakemongo/fongo]:
 
 {code}
 import com.github.fakemongo.Fongo

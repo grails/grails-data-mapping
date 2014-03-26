@@ -35,7 +35,7 @@ class MongoDbTestMixin extends GrailsUnitTestMixin{
      *
      * @param persistentClasses
      */
-    void mongoDomain(Collection<Class> persistentClasses) {
+    static void mongoDomain(Collection<Class> persistentClasses) {
         def initializer = new MongoDbDataStoreSpringInitializer(persistentClasses)
         completeConfiguration(persistentClasses,initializer)
     }
@@ -46,7 +46,7 @@ class MongoDbTestMixin extends GrailsUnitTestMixin{
      *
      * @param persistentClasses
      */
-    void mongoDomain(Mongo mongo, Collection<Class> persistentClasses) {
+    static void mongoDomain(Mongo mongo, Collection<Class> persistentClasses) {
         def initializer = new MongoDbDataStoreSpringInitializer(persistentClasses)
         initializer.setMongo(mongo)
         completeConfiguration(persistentClasses,initializer)
@@ -57,7 +57,7 @@ class MongoDbTestMixin extends GrailsUnitTestMixin{
      *
      * @param persistentClasses
      */
-    void mongoDomain(Map config, Collection<Class> persistentClasses) {
+    static void mongoDomain(Map config, Collection<Class> persistentClasses) {
         def initializer = new MongoDbDataStoreSpringInitializer(persistentClasses)
         def props = new Properties()
         props.putAll(config)
@@ -65,12 +65,14 @@ class MongoDbTestMixin extends GrailsUnitTestMixin{
         completeConfiguration(persistentClasses,initializer)
     }
 
-    protected void completeConfiguration(Collection<Class> persistentClasses, MongoDbDataStoreSpringInitializer initializer) {
+    protected static void completeConfiguration(Collection<Class> persistentClasses, MongoDbDataStoreSpringInitializer initializer) {
+        def application = getGrailsApplication()
         for(cls in persistentClasses) {
-            grailsApplication.addArtefact(DomainClassArtefactHandler.TYPE, cls)
+            application.addArtefact(DomainClassArtefactHandler.TYPE, cls)
         }
-        initializer.configureForBeanDefinitionRegistry(applicationContext)
-        applicationContext.getBeansOfType(GormEnhancer)
+        def context = getApplicationContext()
+        initializer.configureForBeanDefinitionRegistry(context)
+        context.getBeansOfType(GormEnhancer)
     }
 
 }
