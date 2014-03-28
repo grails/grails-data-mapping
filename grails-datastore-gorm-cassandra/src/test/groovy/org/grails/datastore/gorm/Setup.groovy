@@ -14,7 +14,7 @@ import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
-import org.grails.datstore.gorm.cassandra.CassandraMethodsConfigurer
+import org.grails.datastore.gorm.cassandra.CassandraMethodsConfigurer
 import org.springframework.context.support.GenericApplicationContext
 
 
