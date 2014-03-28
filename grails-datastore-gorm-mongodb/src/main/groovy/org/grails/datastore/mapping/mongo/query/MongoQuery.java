@@ -299,10 +299,10 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     BasicBSONObject geoJson = GeoJSONType.convertToGeoJSON((Point) value);
                     BasicDBObject geometry = new BasicDBObject();
                     geometry.put(GEOMETRY_OPERATOR, geoJson);
+                    if (near.maxDistance != null) {
+                        geometry.put(MAX_DISTANCE_OPERATOR, near.maxDistance.getValue());
+                    }
                     nearQuery.put(nearOperator, geometry);
-                }
-                if (near.maxDistance != null) {
-                    nearQuery.put(MAX_DISTANCE_OPERATOR, near.maxDistance.getValue());
                 }
 
                 String propertyName = getPropertyName(entity, near);

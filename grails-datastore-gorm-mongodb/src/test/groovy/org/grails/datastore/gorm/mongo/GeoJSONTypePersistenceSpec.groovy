@@ -122,6 +122,14 @@ class GeoJSONTypePersistenceSpec extends GormDatastoreSpec {
         then:"The results are correct"
             results.size() == 1
             results*.name == ['P2']
+
+        when:"We look for points near a given point that are too far away"
+        results = Loc.withCriteria {
+            near 'shape', Point.valueOf(1,7), 1
+        }
+
+        then:"The results are correct"
+        results.size() == 0
     }
 
 
