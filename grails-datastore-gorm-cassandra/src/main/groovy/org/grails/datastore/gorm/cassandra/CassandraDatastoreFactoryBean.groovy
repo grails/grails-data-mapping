@@ -1,4 +1,4 @@
-package org.grails.datstore.gorm.cassandra
+package org.grails.datastore.gorm.cassandra
 
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener

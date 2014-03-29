@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datstore.gorm.cassandra
+package org.grails.datastore.gorm.cassandra
 
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.mapping.cassandra.CassandraMappingContext
