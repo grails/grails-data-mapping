@@ -48,6 +48,13 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, CypherEngine cypherEngine) {
         super(datastore, mappingContext, publisher, stateless);
         this.cypherEngine = cypherEngine;
+        cypherEngine.beginTx();
+    }
+
+    @Override
+    public void disconnect() {
+        cypherEngine.commit();
+        super.disconnect();
     }
 
     @Override
@@ -123,6 +130,8 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     public void flush() {
         persistDirtyButUnsavedInstances();
         super.flush();
+        cypherEngine.commit();
+        cypherEngine.beginTx();
     }
 
     @Override
