@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.neo4j;
 import org.neo4j.cypher.export.DatabaseSubGraph;
 import org.neo4j.cypher.export.SubGraphExporter;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
@@ -26,10 +27,20 @@ public class DumpGraphOnSessionFlushListener implements ApplicationListener<Sess
 
     @Override
     public void onApplicationEvent(SessionFlushedEvent event) {
-        StringWriter writer = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(writer);
-        new SubGraphExporter(new DatabaseSubGraph(graphDatabaseService)).export(printWriter);
-        log.info(writer.toString());
-        log.info("svg: " + Neo4jUtils.dumpGraphToSvg(graphDatabaseService));
+        dump();
+    }
+
+    public void dump() {
+        Transaction tx = graphDatabaseService.beginTx(); // TODO: refactor to try-with-resources
+        try {
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(writer);
+            new SubGraphExporter(new DatabaseSubGraph(graphDatabaseService)).export(printWriter);
+            log.info(writer.toString());
+            log.info("svg: " + Neo4jUtils.dumpGraphToSvg(graphDatabaseService));
+            tx.success();
+        } finally {
+            tx.close();
+        }
     }
 }
