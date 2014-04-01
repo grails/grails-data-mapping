@@ -53,18 +53,32 @@ public class EmbeddedCypherEngine implements CypherEngine {
     public void beginTx() {
         Stack transactionStack = transactionStackThreadLocal.get();
         transactionStack.push(graphDatabaseService.beginTx());
+
+        log.info("beginTx: " + transactionStack);
     }
 
     @Override
     public void commit() {
-        Transaction tx = transactionStackThreadLocal.get().pop();
-        tx.success();
-        tx.close();
+        try {
+            Stack<Transaction> transactionStack = transactionStackThreadLocal.get();
+            log.info("commit: " + transactionStack);
+            if (!transactionStack.isEmpty()) { // in case session.disconnect() get manually called
+                Transaction tx = transactionStack.pop();
+                log.info("commit after: " + transactionStack);
+                tx.success();
+                tx.close();
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        }
     }
 
     @Override
     public void rollback() {
-        Transaction tx = transactionStackThreadLocal.get().pop();
+        Stack<Transaction> transactionStack = transactionStackThreadLocal.get();
+        log.info("rollback: " + transactionStack);
+        Transaction tx = transactionStack.pop();
+        log.info("rollback: " + transactionStack);
         tx.failure();
         tx.close();
     }
