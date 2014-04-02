@@ -32,13 +32,9 @@ class Setup {
     protected final Logger log = LoggerFactory.getLogger(getClass())
 
     static Neo4jDatastore datastore
-    static Transaction transaction
-    //static LocalTestServer server
     static GraphDatabaseService graphDb
 
     static destroy() {
-        transaction.failure()
-        transaction.finish()
         graphDb.shutdown()
         //server?.stop()
     }
@@ -106,7 +102,6 @@ class Setup {
         ctx.addApplicationListener new AutoTimestampEventListener(datastore)
         ctx.addApplicationListener new DumpGraphOnSessionFlushListener(graphDb)
 
-        transaction = graphDb.beginTx()
         datastore.connect()
     }
 
