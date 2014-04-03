@@ -47,8 +47,8 @@ import javax.sql.DataSource
 class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory"
 
-    private String dataSourceBeanName = "dataSource"
-    private String sessionFactoryBeanName = "sessionFactory"
+    String dataSourceBeanName = "dataSource"
+    String sessionFactoryBeanName = SESSION_FACTORY_BEAN_NAME
 
     HibernateDatastoreSpringInitializer() {
     }
@@ -74,10 +74,6 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
     HibernateDatastoreSpringInitializer(Properties hibernateProperties, Class... persistentClasses) {
         super(hibernateProperties, persistentClasses.toList())
-    }
-
-    public setDataSourceBeanName(String dataSourceBeanName) {
-        this.dataSourceBeanName = dataSourceBeanName
     }
 
     @CompileStatic
