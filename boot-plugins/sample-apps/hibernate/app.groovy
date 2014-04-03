@@ -1,5 +1,4 @@
-@GrabResolver(name='grailsSnapshots', root='http://repo.grails.org/grails/libs-snapshots-local')
-@Grab("org.grails:gorm-hibernate4-spring-boot:1.0.0.BUILD-SNAPSHOT")
+@Grab("org.grails:gorm-hibernate4-spring-boot:1.0.0.RC2")
 @Grab("com.h2database:h2:1.3.173")
 import grails.persistence.*
 import org.springframework.transaction.annotation.*
@@ -18,6 +17,11 @@ class PersonController {
         def p = new Person(firstName:"Bart", lastName:"Simpson")
         p.save()
         [firstName: p.firstName, lastName:p.lastName]
+    }
+
+    @PostConstruct
+    void init() {
+        new Person(firstName:"Homer", lastName)
     }
 }
 
