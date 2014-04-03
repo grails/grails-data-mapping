@@ -1,5 +1,4 @@
-@GrabResolver(name='grailsSnapshots', root='http://repo.grails.org/grails/libs-snapshots-local')
-@Grab("org.grails:gorm-mongodb-spring-boot:1.0.0.BUILD-SNAPSHOT")
+@Grab("org.grails:gorm-mongodb-spring-boot:1.0.0.RC1")
 import grails.persistence.*
 import org.springframework.transaction.annotation.*
 
