@@ -79,16 +79,14 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                     persistentClasses << classLoader.loadClass(reader.classMetadata.className)
                 }
             }
-
-            def entityNames = GormTransformer.getKnownEntityNames()
-            for (entityName in entityNames) {
-                try {
-                    persistentClasses << classLoader.loadClass(entityName)
-                } catch (ClassNotFoundException e) {
-                    // ignore
-                }
+        }
+        def entityNames = GormTransformer.getKnownEntityNames()
+        for (entityName in entityNames) {
+            try {
+                persistentClasses << classLoader.loadClass(entityName)
+            } catch (ClassNotFoundException e) {
+                // ignore
             }
-
         }
     }
 
