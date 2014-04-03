@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.*
 @RestController
 class PersonController {
     @RequestMapping("/")
-    List<Person> home() {
-        Person.list().collect { [firstName: it.firstName, lastName:it.lastName] }
+    List home() {
+        def results = Person.list().collect { [firstName: it.firstName, lastName:it.lastName] }
+        println "RESULTS = $results"
+        return results
     }    
 
     @Transactional
@@ -21,7 +23,9 @@ class PersonController {
 
     @PostConstruct
     void init() {
-        new Person(firstName:"Homer", lastName)
+        Person.withTransaction {
+            new Person(firstName:"Homer", lastName:"Simpson").save()    
+        }        
     }
 }
 
