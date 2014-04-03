@@ -16,8 +16,10 @@ package org.grails.datastore.gorm.boot.autoconfigure
 
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.grails.compiler.gorm.GormTransformer
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
+import org.grails.datastore.gorm.GormEnhancer
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
@@ -34,11 +36,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+import org.springframework.boot.bind.RelaxedPropertyResolver
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
+import org.springframework.context.EnvironmentAware
+import org.springframework.context.MessageSource
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
+import org.springframework.core.env.Environment
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
 
@@ -57,14 +63,13 @@ import javax.sql.DataSource
 @ConditionalOnMissingBean(HibernateDatastoreSpringInitializer)
 @AutoConfigureAfter(DataSourceAutoConfiguration)
 @AutoConfigureBefore(HibernateJpaAutoConfiguration)
-class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAware, ImportBeanDefinitionRegistrar{
-
-    @Autowired(required = false)
-    Properties hibernateProperties = new Properties()
+class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAware, ImportBeanDefinitionRegistrar, EnvironmentAware{
 
     BeanFactory beanFactory
 
     ResourceLoader resourceLoader
+
+    RelaxedPropertyResolver environment
 
     @Override
     void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
@@ -72,30 +77,67 @@ class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoader
         def packages = AutoConfigurationPackages.get(beanFactory)
         def classLoader = ((ConfigurableBeanFactory)beanFactory).getBeanClassLoader()
 
-        initializer = new HibernateDatastoreSpringInitializer(classLoader, packages as String[])
+        initializer = new HibernateDatastoreSpringInitializer(classLoader, packages as String[]) {
+            @Override
+            protected void scanForPersistentClasses() {
+                super.scanForPersistentClasses()
+                def entityNames = GormTransformer.getKnownEntityNames()
+                for (entityName in entityNames) {
+                    try {
+
+                        def cls = classLoader.loadClass(entityName)
+                        if(!persistentClasses.contains(cls))
+                            persistentClasses << cls
+                    } catch (ClassNotFoundException e) {
+                        // ignore
+                    }
+                }
+            }
+        }
         initializer.resourceLoader = resourceLoader
-        initializer.setConfiguration(hibernateProperties)
+        initializer.setConfiguration(getDatastoreConfiguration())
         initializer.configureForBeanDefinitionRegistry(registry)
 
         registry.registerBeanDefinition("org.grails.internal.gorm.hibernate4.EAGER_INIT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))
     }
 
+    protected Properties getDatastoreConfiguration() {
+        if(environment != null) {
+            def config = environment.getSubProperties("hibernate.")
+            def properties = new Properties()
+            for(entry in config.entrySet()) {
+                properties.put("hibernate.${entry.key}".toString(), entry.value)
+            }
+            return properties
+        }
+    }
+
+    @Override
+    void setEnvironment(Environment environment) {
+        this.environment = new RelaxedPropertyResolver(environment, "spring.");
+    }
+
     static class EagerInitProcessor implements BeanPostProcessor, ApplicationContextAware {
 
         ApplicationContext applicationContext
+        private MessageSource messageSource
+        private Map enhancers
 
         @Override
         Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-            if("org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration" == beanName) {
-                // force Hibernate enhancer initialisation
+            if(messageSource != null && enhancers == null) {
+                // force MongoDB enhancer initialisation
                 applicationContext.getBean(HibernateDatastoreSpringInitializer.PostInitializationHandling)
-                applicationContext.getBean(HibernateGormEnhancer)
+                enhancers = applicationContext.getBeansOfType(GormEnhancer)
             }
             return bean
         }
 
         @Override
         Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+            if(bean instanceof MessageSource) {
+                messageSource = (MessageSource)bean
+            }
             return bean
         }
     }
