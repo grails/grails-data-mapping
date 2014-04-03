@@ -18,8 +18,8 @@ import com.mongodb.Mongo
 import com.mongodb.MongoOptions
 import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.grails.compiler.gorm.GormTransformer
 import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.BeanFactory
@@ -35,11 +35,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import org.springframework.boot.autoconfigure.mongo.MongoProperties
 import org.springframework.boot.bind.RelaxedPropertyResolver
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationContextAware
-import org.springframework.context.EnvironmentAware
-import org.springframework.context.MessageSource
-import org.springframework.context.ResourceLoaderAware
+import org.springframework.context.*
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
 import org.springframework.core.env.Environment
@@ -80,7 +76,23 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
         def packages = AutoConfigurationPackages.get(beanFactory)
         def classLoader = ((ConfigurableBeanFactory)beanFactory).getBeanClassLoader()
 
-        initializer = new MongoDbDataStoreSpringInitializer(classLoader, packages as String[])
+        initializer = new MongoDbDataStoreSpringInitializer(classLoader, packages as String[]) {
+            @Override
+            protected void scanForPersistentClasses() {
+                super.scanForPersistentClasses()
+                def entityNames = GormTransformer.getKnownEntityNames()
+                for (entityName in entityNames) {
+                    try {
+
+                        def cls = classLoader.loadClass(entityName)
+                        if(!persistentClasses.contains(cls))
+                            persistentClasses << cls
+                    } catch (ClassNotFoundException e) {
+                        // ignore
+                    }
+                }
+            }
+        }
         initializer.resourceLoader = resourceLoader
         initializer.setConfiguration(getDatastoreConfiguration())
         initializer.setMongo(mongo)
