@@ -44,15 +44,13 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
 
     protected MappingContext mappingContext;
     protected CypherEngine cypherEngine;
-    protected GraphDatabaseService graphDatabaseService;
     protected AtomicLong atomicIdCounter;
     protected boolean skipIndexSetup = false;
 
-    public Neo4jDatastore(MappingContext mappingContext, ApplicationContext applicationContext, CypherEngine cypherEngine, GraphDatabaseService graphDatabaseService) {
+    public Neo4jDatastore(MappingContext mappingContext, ApplicationContext applicationContext, CypherEngine cypherEngine) {
         super(mappingContext);
         this.mappingContext = mappingContext;
         this.cypherEngine = cypherEngine;
-        this.graphDatabaseService = graphDatabaseService;
         setApplicationContext(applicationContext);
     }
 
@@ -74,14 +72,14 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     }
 
     private void loadIdCounters() {
-
-        Transaction tx = graphDatabaseService.beginTx(); // TODO: use some declarative approach
+        cypherEngine.beginTx();
         try {
             Long idCounter = (Long) IteratorUtil.single(cypherEngine.execute("MERGE (n:__IdCounter__) ON CREATE set n.idCounter=0 RETURN n.idCounter")).get("n.idCounter");
             atomicIdCounter = new AtomicLong(idCounter);
-            tx.success();
-        } finally {
-            tx.close();
+            cypherEngine.commit();
+        } catch (RuntimeException e) {
+            cypherEngine.rollback();
+            throw e;
         }
     }
 

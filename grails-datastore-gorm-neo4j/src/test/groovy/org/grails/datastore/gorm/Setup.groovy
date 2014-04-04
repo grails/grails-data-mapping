@@ -51,8 +51,7 @@ class Setup {
         datastore = new Neo4jDatastore(
                 mappingContext,
                 ctx,
-                new EmbeddedCypherEngine(graphDb),
-                graphDb
+                new EmbeddedCypherEngine(graphDb)
         )
         datastore.skipIndexSetup = true
         //datastore.mappingContext.proxyFactory = new GroovyProxyFactory()

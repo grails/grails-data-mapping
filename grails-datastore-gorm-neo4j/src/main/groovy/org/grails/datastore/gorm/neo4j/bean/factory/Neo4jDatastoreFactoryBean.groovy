@@ -35,7 +35,6 @@ import org.springframework.context.ConfigurableApplicationContext
 @CompileStatic
 class Neo4jDatastoreFactoryBean implements FactoryBean<Neo4jDatastore>, ApplicationContextAware {
 
-    GraphDatabaseService graphDatabaseService
     MappingContext mappingContext
     Map<String,String> config = [:]
     ApplicationContext applicationContext
@@ -43,7 +42,7 @@ class Neo4jDatastoreFactoryBean implements FactoryBean<Neo4jDatastore>, Applicat
 
     Neo4jDatastore getObject() {
 
-        Neo4jDatastore datastore = new Neo4jDatastore(mappingContext, applicationContext, cypherEngine, graphDatabaseService)
+        Neo4jDatastore datastore = new Neo4jDatastore(mappingContext, applicationContext, cypherEngine)
 
         ((ConfigurableApplicationContext) applicationContext).addApplicationListener new DomainEventListener(datastore)
         ((ConfigurableApplicationContext) applicationContext).addApplicationListener new AutoTimestampEventListener(datastore)
