@@ -128,13 +128,13 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             if(mongo) {
                 "$mongoBeanName"(InstanceFactoryBean, mongo)
             }
-            else if(!beanDefinitionRegistry.containsBeanDefinition(mongoOptionsBeanName)) {
+            else if(!beanDefinitionRegistry.containsBeanDefinition(mongoBeanName)) {
 
                 "gmongo"(GMongoFactoryBean) {
                     delegate.mongoOptions = ref("$mongoOptionsBeanName")
                     def mongoHost = mongoConfig?.get("host")
 
-                    if (mongoConfig?.replicaSet) {
+                    if (mongoConfig?.replicaSet instanceof Collection) {
                         def set = []
                         for (server in mongoConfig.get("replicaSet")) {
                             set << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
@@ -142,7 +142,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
 
                         replicaSetSeeds = set
                     }
-                    else if (mongoConfig?.replicaPair) {
+                    else if (mongoConfig?.replicaPair instanceof Collection) {
                         def pair = []
                         for (server in mongoConfig.get("replicaPair")) {
                             pair << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
