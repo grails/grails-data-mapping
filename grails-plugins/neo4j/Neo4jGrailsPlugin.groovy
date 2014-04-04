@@ -16,12 +16,12 @@ class Neo4jGrailsPlugin {
     def organization = [ name: "Stefan Armbruster", url: "http://blog.armbruster-it.de/" ]
     def developers = [
         [ name: "Stefan Armbruster", email: "stefan@armbruster-it.de" ] ]
-    def issueManagement = [ system: "JIRA", url: "https://github.com/SpringSource/grails-data-mapping/issues" ]
-    def scm = [ url: "https://github.com/sarmbruster/grails-data-mapping" ]
+    def issueManagement = [ system: "JIRA", url: "https://github.com/grails/grails-data-mapping/issues" ]
+    def scm = [ url: "https://github.com/grails/grails-data-mapping" ]
 
-//    def version = "1.1.2"
-    def version = "1.1.3-SNAPSHOT"
-    def grailsVersion = "1.2 > *"
+//    def version = "1.0.1"
+    def version = "2.0.0-SNAPSHOT"
+    def grailsVersion = "2.3 > *"
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry', 'converters']
     def observe = ['services', 'domainClass']
         
