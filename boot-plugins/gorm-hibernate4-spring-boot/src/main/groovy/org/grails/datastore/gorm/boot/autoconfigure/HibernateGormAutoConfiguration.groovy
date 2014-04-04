@@ -77,23 +77,7 @@ class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoader
         def packages = AutoConfigurationPackages.get(beanFactory)
         def classLoader = ((ConfigurableBeanFactory)beanFactory).getBeanClassLoader()
 
-        initializer = new HibernateDatastoreSpringInitializer(classLoader, packages as String[]) {
-            @Override
-            protected void scanForPersistentClasses() {
-                super.scanForPersistentClasses()
-                def entityNames = GormTransformer.getKnownEntityNames()
-                for (entityName in entityNames) {
-                    try {
-
-                        def cls = classLoader.loadClass(entityName)
-                        if(!persistentClasses.contains(cls))
-                            persistentClasses << cls
-                    } catch (ClassNotFoundException e) {
-                        // ignore
-                    }
-                }
-            }
-        }
+        initializer = new HibernateDatastoreSpringInitializer(classLoader, packages as String[])
         initializer.resourceLoader = resourceLoader
         initializer.setConfiguration(getDatastoreConfiguration())
         initializer.configureForBeanDefinitionRegistry(registry)
@@ -126,7 +110,7 @@ class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoader
         @Override
         Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
             if(messageSource != null && enhancers == null) {
-                // force MongoDB enhancer initialisation
+                // force GORM enhancer initialisation
                 applicationContext.getBean(HibernateDatastoreSpringInitializer.PostInitializationHandling)
                 enhancers = applicationContext.getBeansOfType(GormEnhancer)
             }
