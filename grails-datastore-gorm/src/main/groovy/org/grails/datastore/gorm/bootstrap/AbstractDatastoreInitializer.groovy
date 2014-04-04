@@ -30,6 +30,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     Collection<Class> persistentClasses = []
     Collection<String> packages = []
     Properties configuration = new Properties()
+    ConfigObject configurationObject = new ConfigObject()
 
     protected ClassLoader classLoader = Thread.currentThread().contextClassLoader
 
@@ -38,7 +39,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     AbstractDatastoreInitializer(ClassLoader classLoader, String... packages) {
         this(packages)
-        this.classLoader = classLoader
+        this.classLoader = classLoader ?: Thread.currentThread().contextClassLoader
     }
     AbstractDatastoreInitializer(String... packages) {
         this.packages = packages.toList()
@@ -97,6 +98,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
      */
     @CompileStatic
     void configureForBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {
+        this.configurationObject = new ConfigSlurper().parse(configuration)
         scanForPersistentClasses()
 
         ExpandoMetaClass.enableGlobally()

@@ -17,7 +17,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
 
             def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person)
             def applicationContext = new GenericApplicationContext()
-            def dataSource = new DriverManagerDataSource(Driver.name, "jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE", 'sa', '')
+            def dataSource = new DriverManagerDataSource(Driver.name, "jdbc:h2:mem:grailsDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
             applicationContext.beanFactory.registerSingleton("dataSource", dataSource)
 
 
@@ -59,8 +59,8 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
     void "Test that GORM is initialized correctly for a DataSource"() {
         given:"An initializer instance"
 
-        def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person)
-        def dataSource = new DriverManagerDataSource(Driver.name, "jdbc:h2:prodDb2;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE", 'sa', '')
+            def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person)
+            def dataSource = new DriverManagerDataSource(Driver.name, "jdbc:h2:mem:grailsDb2;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
 
         when:"The application context is configured"
             datastoreInitializer.configureForDataSource(dataSource)

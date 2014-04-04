@@ -203,7 +203,7 @@ public abstract class AbstractGrailsDomainBinder {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public void configureNamingStrategy(final Object strategy) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public static void configureNamingStrategy(final Object strategy) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         configureNamingStrategy(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE, strategy);
     }
 
@@ -217,7 +217,7 @@ public abstract class AbstractGrailsDomainBinder {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public void configureNamingStrategy(final String datasourceName, final Object strategy) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public static void configureNamingStrategy(final String datasourceName, final Object strategy) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         Class<?> namingStrategyClass = null;
         NamingStrategy namingStrategy;
         if (strategy instanceof Class<?>) {
@@ -1205,7 +1205,8 @@ public abstract class AbstractGrailsDomainBinder {
         String key = "sessionFactory".equals(sessionFactoryBeanName) ?
                 GrailsDomainClassProperty.DEFAULT_DATA_SOURCE :
                     sessionFactoryBeanName.substring("sessionFactory_".length());
-        return NAMING_STRATEGIES.get(key);
+        NamingStrategy namingStrategy = NAMING_STRATEGIES.get(key);
+        return namingStrategy != null ? namingStrategy : new ImprovedNamingStrategy();
     }
 
     /**
