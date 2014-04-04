@@ -115,8 +115,11 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             else if(!beanDefinitionRegistry.containsBeanDefinition(mongoOptionsBeanName)) {
                 "$mongoOptionsBeanName"(MongoOptionsFactoryBean) {
                     if (mongoConfig?.options) {
-                        for (option in mongoConfig.remove("options")) {
-                            setProperty(option.key, option.value)
+                        def options = mongoConfig.remove("options")
+                        if(options instanceof Map) {
+                            for (option in options) {
+                                setProperty(option.key, option.value)
+                            }
                         }
                     }
                 }
