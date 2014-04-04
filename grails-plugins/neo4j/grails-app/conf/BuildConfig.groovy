@@ -8,11 +8,20 @@ grails.project.dependency.resolution = {
         excludes 'xml-apis', 'netty'//, 'xercesImpl'
     }
     log "warn"
+    checksums true
+    legacyResolve false
+
     repositories {
+        inherits true
+
+        grailsPlugins()
+        grailsHome()
+        mavenLocal()
         grailsCentral()
         mavenLocal()   // for picking up self-built snapshots before fetching from grailsCentral
         mavenCentral()
-        mavenRepo 'http://m2.neo4j.org/releases'
+
+        //mavenRepo 'http://m2.neo4j.org/releases'
         //mavenRepo "http://repo.grails.org/grails/repo"
     }
 
@@ -29,10 +38,11 @@ grails.project.dependency.resolution = {
             transitive = false
         }
 
-        def datastoreVersion = "2.0.4.RELEASE"
-        def neo4jDatastoreVersion = "1.1.3-SNAPSHOT"
-        //def neo4jDatastoreVersion = "1.1.2"
-        def seleniumVersion = "2.31.0"
+        //def datastoreVersion = "1.1.4.BUILD-SNAPSHOT"
+        def datastoreVersion = "2.0.7.RELEASE"
+        def neo4jDatastoreVersion = "2.0.0-SNAPSHOT"
+//        def neo4jDatastoreVersion = "1.0.1"
+        def seleniumVersion = "2.40.0"
 
         compile("org.grails:grails-datastore-gorm-neo4j:$neo4jDatastoreVersion",
                 "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
@@ -43,12 +53,11 @@ grails.project.dependency.resolution = {
         test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
              "org.grails:grails-datastore-simple:$datastoreVersion", exlcudes)
 
-        compile('org.neo4j:neo4j-community:1.8.3')
+        compile('org.neo4j:neo4j-community:2.0.1')
 
-        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
-        test "org.gebish:geb-spock:0.9.0"
+        test "org.gebish:geb-spock:0.9.2"
         test "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
-        test( "com.github.detro.ghostdriver:phantomjsdriver:1.0.3" ) {
+        test( "com.github.detro.ghostdriver:phantomjsdriver:1.1.0" ) {
            transitive = false
         }
         test "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
@@ -61,7 +70,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime(":jquery:1.10.2", ":resources:1.2.1", ":tomcat:7.0.42") {
+        runtime(":jquery:1.11.0.1", ":resources:1.2.7", ":tomcat:7.0.50") {
             export = false
         }
         build(":release:3.0.1",  ":rest-client-builder:1.0.3") {
