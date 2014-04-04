@@ -14,9 +14,11 @@
  */
 package org.grails.datastore.gorm.neo4j.plugin.support
 
+import org.grails.datastore.gorm.neo4j.engine.EmbeddedCypherEngine
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
+import org.neo4j.graphdb.factory.GraphDatabaseFactory
 
 /**
  * Spring configurer for Neo4j
@@ -25,6 +27,9 @@ import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
  * @since 1.0
  */
 class Neo4jSpringConfigurer extends SpringConfigurer {
+
+    static neo4jDefaultLocation = "data/neo4j"
+
     @Override
     String getDatastoreType() {
         return "Neo4j"
@@ -37,7 +42,25 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
             if (!neo4jConfig) {
                 throw new IllegalArgumentException("Unable to find 'grails.neo4j' in application config.")
             }
-            Class neo4jGraphDatabaseClass
+
+            switch (neo4jConfig.type) {
+
+                case "embedded":
+                    graphDbFactory(GraphDatabaseFactory)
+                    graphDbBuilder(graphDbFactory : "newEmbeddedDatabaseBuilder",  neo4jConfig.location ?: neo4jDefaultLocation)
+
+                    graphDbBuilderFinal(graphDbBuilder: "setConfig", neo4jConfig.params ?: [:])
+                    graphDatabaseService(graphDbBuilderFinal: "newGraphDatabase") { bean ->
+                        bean.destroyMethod = 'shutdown'
+                    }
+                    cypherEngine(EmbeddedCypherEngine, graphDatabaseService)
+                    break
+                default:
+                    throw new UnsupportedOperationException("cannot handle type ${neo4jConfig.type}")
+
+            }
+
+/*            Class neo4jGraphDatabaseClass
 
             if (neo4jConfig.type == "rest") {
                 neo4jGraphDatabaseClass = "org.neo4j.rest.graphdb.RestGraphDatabase" as Class
@@ -92,14 +115,14 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                     bean.destroyMethod = "shutdown"
                 }
 
-            }
+            }    */
 
             neo4jMappingContext(Neo4jMappingContextFactoryBean) {
                 grailsApplication = ref('grailsApplication')
             }
 
             neo4jDatastore(Neo4jDatastoreFactoryBean) {
-                graphDatabaseService = graphDatabaseService
+                cypherEngine = cypherEngine
                 mappingContext = neo4jMappingContext
 
             }
