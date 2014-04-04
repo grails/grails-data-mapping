@@ -6,7 +6,6 @@ import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.Direction
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.neo4j.graphdb.Traverser
 
 class Neo4jController {
 
@@ -33,22 +32,6 @@ class Neo4jController {
         [rel:rel]
     }
 
-    def traverse = { TraverseCommand cmd ->
-
-        if (params.traverse ) {
-            log.error "cmd: $cmd"
-            if (!cmd.validate()) {
-                cmd.errors.each {
-                    log.error it
-                }
-            }
-         //Node node = params.id ? neoService.getNodeById(params.id as long) : neoService.getReferenceNode();
-         //node.traverse()
-        } else {
-    	}
-	    [command: cmd]
-    }
-
     def statistics = {
 
         def typeCounter = [:]
@@ -66,62 +49,6 @@ class Neo4jController {
         }
 
         [typeCounter:typeCounter, reltypeCounter:reltypeCounter]
-    }
-
-    def fixDoubleRelationShips = {
-
-        def counter = 0
-        def removed = 0
-        def intransaction = 0
-
-        def tx = graphDatabaseService.beginTx()
-
-        for (Node node in graphDatabaseService.allNodes) {
-            counter++
-            if (counter%10000==0) {
-                log.error "Processing $counter"
-            }
-
-            if (intransaction > 5000) {
-                log.error "intransaction: $intransaction -> new transaction"
-                intransaction = 0
-                tx.success()
-                tx.finish()
-                tx = graphDatabaseService.beginTx()
-            }
-
-            def relationshipsMap = [:]
-
-            for (Relationship rel in node.getRelationships(Direction.OUTGOING)) {
-                def reltype = rel.type.name()
-                //reltypeCounter[reltype]  = reltypeCounter.get(reltype, 0)+1
-
-                def key = [ reltype, rel.startNode.id, rel.endNode.id]
-                //key.sort()
-
-                if (relationshipsMap.containsKey(key)) {
-                    relationshipsMap[key] << rel
-                } else {
-                    relationshipsMap[key] = [rel]
-                }
-
-            }
-            def doubledRelationships = relationshipsMap.findAll {k, v -> v.size() > 1}
-
-            doubledRelationships.each {
-                log.debug "${it.key} -> ${it.value}"
-                removed += it.value.size()-1
-                intransaction += it.value.size()-1
-                it.value[1..-1].each { rel -> rel.delete() }
-            }
-
-        }
-
-        tx.success()
-        tx.finish()
-
-
-        [  removed: removed ]
     }
 
     def domain = {
@@ -157,13 +84,4 @@ class Neo4jController {
     def doforward() {
         forward action:"node"
     }
-}
-
-public class TraverseCommand {
-
-    long id
-    Traverser.Order order
-    Closure stopEvaluator
-    Closure returnableEvaluator
-
 }
