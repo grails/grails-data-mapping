@@ -127,13 +127,13 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
 
             }
 
-        if (manager?.hasGrailsPlugin("controllers")) {
-/*
+/*        if (manager?.hasGrailsPlugin("controllers")) {
+
             neo4jOpenSessionInViewInterceptor(Neo4jOpenSessionInViewInterceptor) {
                 datastore = ref("neo4jDatastore")
             }
-*/
-        }
+
+        }*/
 
         }
     }

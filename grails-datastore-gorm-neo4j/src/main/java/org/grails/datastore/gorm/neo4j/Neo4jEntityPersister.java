@@ -128,7 +128,7 @@ public class Neo4jEntityPersister extends EntityPersister {
     private Object unmarshall(PersistentEntity persistentEntity, Long id, Collection<String> labels,
                    Map<String, Object> data, Collection<Relationship> relationships) {
 
-        log.warn( "unmarshalling entity {}, props {}, {}", id, data, relationships);
+        log.debug( "unmarshalling entity {}, props {}, {}", id, data, relationships);
         EntityAccess entityAccess = new EntityAccess(persistentEntity, persistentEntity.newInstance());
         entityAccess.setConversionService(persistentEntity.getMappingContext().getConversionService());
 

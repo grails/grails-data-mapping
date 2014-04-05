@@ -18,15 +18,15 @@ import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.core.StatelessDatastore;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Simple;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
 import org.neo4j.helpers.collection.IteratorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Datastore implementation for Neo4j backend
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
-public class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
+public class Neo4jDatastore extends AbstractDatastore implements InitializingBean, DisposableBean, StatelessDatastore {
 
     private static Logger log = LoggerFactory.getLogger(Neo4jDatastore.class);
 
