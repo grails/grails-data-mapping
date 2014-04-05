@@ -42,7 +42,7 @@ class Neo4jMethodsConfigurer extends DynamicMethodsConfigurer {
 
     @Override
     protected GormStaticApi createGormStaticApi(Class cls, List<FinderMethod> finders) {
-        return new Neo4jGormStaticApi(cls, datastore, finders)
+        return new Neo4jGormStaticApi(cls, datastore, finders, transactionManager)
     }
 
     @Override

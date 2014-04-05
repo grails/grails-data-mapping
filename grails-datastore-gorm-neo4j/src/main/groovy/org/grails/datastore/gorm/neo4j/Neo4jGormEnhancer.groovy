@@ -208,11 +208,7 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
 
 class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
 
-    Neo4jGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
-        this(persistentClass, datastore, finders, null)
-    }
-    
-    Neo4jGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
+    Neo4jGormStaticApi(Class<D> persistentClass, Neo4jDatastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
         super(persistentClass, datastore, finders, transactionManager)
     }
 
