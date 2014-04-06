@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm.neo4j;
 
+import com.fasterxml.uuid.Generators;
+import com.fasterxml.uuid.NoArgGenerator;
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.core.AbstractDatastore;
@@ -23,16 +25,14 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Simple;
-import org.neo4j.helpers.collection.IteratorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 
 /**
  * Datastore implementation for Neo4j backend
@@ -44,8 +44,10 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
 
     protected MappingContext mappingContext;
     protected CypherEngine cypherEngine;
-    protected AtomicLong atomicIdCounter;
     protected boolean skipIndexSetup = false;
+
+    protected final NoArgGenerator uuidGenerator = Generators.timeBasedGenerator();
+
 
     public Neo4jDatastore(MappingContext mappingContext, ApplicationContext applicationContext, CypherEngine cypherEngine) {
         super(mappingContext);
@@ -68,23 +70,11 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
         if (!skipIndexSetup) {
             setupIndexing();
         }
-        loadIdCounters();
-    }
-
-    private void loadIdCounters() {
-        cypherEngine.beginTx();
-        try {
-            Long idCounter = (Long) IteratorUtil.single(cypherEngine.execute("MERGE (n:__IdCounter__) ON CREATE set n.idCounter=0 RETURN n.idCounter")).get("n.idCounter");
-            atomicIdCounter = new AtomicLong(idCounter);
-            cypherEngine.commit();
-        } catch (RuntimeException e) {
-            cypherEngine.rollback();
-            throw e;
-        }
     }
 
     public long nextIdForType(PersistentEntity pe) {
-        return atomicIdCounter.incrementAndGet();
+        UUID uuid = uuidGenerator.generate();
+        return uuid.getMostSignificantBits();  // TODO: good enough for now, consider twitter snowflake instead
     }
 
     public void setupIndexing() {
@@ -103,11 +93,5 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
                 }
             }
         }
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        super.destroy();
-        cypherEngine.execute("MERGE (n:__IdCounter__) SET n.idCounter={idCounter}", Collections.singletonMap("idCounter", atomicIdCounter.get()));
     }
 }
