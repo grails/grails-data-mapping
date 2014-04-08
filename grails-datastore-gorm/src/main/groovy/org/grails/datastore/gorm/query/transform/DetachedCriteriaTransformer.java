@@ -201,6 +201,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                 if (isCandidateWhereMethod(mce.getMethod(), mce.getArguments())) {
                     ArgumentListExpression args = (ArgumentListExpression) mce.getArguments();
+                    Expression target = mce.getObjectExpression();
+
                     List<Expression> argsExpressions = args.getExpressions();
                     int totalExpressions = argsExpressions.size();
                     if (totalExpressions > 0) {
@@ -208,11 +210,18 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         if (expression instanceof ClosureExpression) {
                             ClosureExpression closureExpression = (ClosureExpression) expression;
                             transformClosureExpression(classNode, closureExpression);
+                            if(target instanceof VariableExpression) {
+                                VariableExpression ve = (VariableExpression) target;
+                                ClassNode type = ve.getType();
+                                if(type.equals(DETACHED_CRITERIA_CLASS_NODE)) {
+                                    // don't turn into build method if the target is a DetachedCriteria instance
+                                    return;
+                                }
+                            }
 
                             String buildMethod = mce.getMethodAsString().equals("whereLazy") ? "buildLazy" : "build";
-                            
                             ClassNode detachedCriteriaClassNode = getParameterizedDetachedCriteriaClassNode(classNode);
-                            
+
                             MethodCallExpression newInitialExpression = new MethodCallExpression(new ConstructorCallExpression(detachedCriteriaClassNode, new ArgumentListExpression(new ClassExpression(classNode))), buildMethod, new ArgumentListExpression(closureExpression));
                             node.setInitialValueExpression(newInitialExpression);
                             node.setType(detachedCriteriaClassNode);
