@@ -46,8 +46,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     protected CypherEngine cypherEngine;
     protected boolean skipIndexSetup = false;
 
-    protected final NoArgGenerator uuidGenerator = Generators.timeBasedGenerator();
-
+    protected IdGenerator idGenerator = new SnowflakeIdGenerator();
 
     public Neo4jDatastore(MappingContext mappingContext, ApplicationContext applicationContext, CypherEngine cypherEngine) {
         super(mappingContext);
@@ -73,8 +72,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     }
 
     public long nextIdForType(PersistentEntity pe) {
-        UUID uuid = uuidGenerator.generate();
-        return uuid.getMostSignificantBits();  // TODO: good enough for now, consider twitter snowflake instead
+        return idGenerator.nextId();
     }
 
     public void setupIndexing() {
