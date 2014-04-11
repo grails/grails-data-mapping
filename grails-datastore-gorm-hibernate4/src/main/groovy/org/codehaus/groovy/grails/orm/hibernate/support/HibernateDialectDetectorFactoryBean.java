@@ -147,6 +147,14 @@ public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>,
             }
 
             @Override
+            public void registerChild(ServiceRegistryImplementor child) {
+            }
+
+            @Override
+            public void deRegisterChild(ServiceRegistryImplementor child) {
+            }
+
+            @Override
             public ServiceRegistry getParentServiceRegistry() {
                 return null;
             }
