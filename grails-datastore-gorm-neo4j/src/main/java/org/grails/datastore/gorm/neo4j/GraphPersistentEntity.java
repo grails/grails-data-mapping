@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.neo4j;
 
+import org.grails.datastore.gorm.neo4j.mapping.config.Neo4jEntity;
 import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.model.AbstractClassMapping;
 import org.grails.datastore.mapping.model.AbstractPersistentEntity;
@@ -8,11 +9,11 @@ import org.grails.datastore.mapping.model.MappingContext;
 
 public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
 
-    protected Entity mappedForm;
+    protected Neo4jEntity mappedForm;
 
     public GraphPersistentEntity(Class javaClass, MappingContext context) {
         super(javaClass, context);
-        this.mappedForm = context.getMappingFactory().createMappedForm(this);
+        this.mappedForm = (Neo4jEntity) context.getMappingFactory().createMappedForm(this);
     }
 
     @Override
@@ -36,9 +37,18 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
     }
 
     private void appendRecursive(StringBuilder sb){
-        sb.append(":").append(getDiscriminator());
+
+        sb.append(":").append(getLabel());
         if (getParentEntity()!=null) {
             ((GraphPersistentEntity)getParentEntity()).appendRecursive(sb);
         }
+    }
+
+    public String getLabel() {
+        String localLabel = mappedForm.getLabel();
+        if (localLabel==null) {
+            localLabel = getDiscriminator();
+        }
+        return localLabel;
     }
 }

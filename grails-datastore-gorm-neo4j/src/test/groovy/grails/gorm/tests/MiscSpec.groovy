@@ -379,6 +379,17 @@ class MiscSpec extends GormDatastoreSpec {
         then:
         c.save(flush: true)
     }
+
+    def "we can customize label being used"() {
+        setup:
+            def club = new Club(name: 'club')
+            club.save(flush: true)
+        when:
+            def result = session.nativeInterface.execute("MATCH (c:MyCustomLabel {name:{name}}) RETURN c",
+                        [name: 'club'])
+        then:
+            IteratorUtil.count(result) == 1
+    }
 }
 
 @Entity
@@ -410,6 +421,10 @@ class Club implements Serializable {
     String name
     List teams
     static hasMany = [teams: Team ]
+
+    static mapping = {
+        label "MyCustomLabel"
+    }
 
     // TODO: maybe refactor this into a AST
     protected Object writeReplace()

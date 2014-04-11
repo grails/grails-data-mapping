@@ -97,7 +97,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         int longestInheritenceChain = -1;
 
         for (String l: labels) {
-            PersistentEntity persistentEntity = findPersistentEntityWithDiscriminator(l);
+            PersistentEntity persistentEntity = findPersistentEntityWithLabel(l);
 
             int inheritenceChain = calcInheritenceChain(persistentEntity);
             if (inheritenceChain > longestInheritenceChain) {
@@ -108,13 +108,13 @@ public class Neo4jEntityPersister extends EntityPersister {
         return result;
     }
 
-    private PersistentEntity findPersistentEntityWithDiscriminator(String discriminator) {
+    private PersistentEntity findPersistentEntityWithLabel(String label) {
         for (PersistentEntity pe: getMappingContext().getPersistentEntities()) {
-            if (pe.getDiscriminator().equals(discriminator)) {
+            if (((GraphPersistentEntity)pe).getLabel().equals(label)) {
                 return pe;
             }
         }
-        throw new IllegalStateException("no persistententity with discriminator " + discriminator);
+        throw new IllegalStateException("no persistententity with discriminator " + label);
     }
 
     int calcInheritenceChain(PersistentEntity pe) {
@@ -289,7 +289,8 @@ public class Neo4jEntityPersister extends EntityPersister {
             return;
         }
         getCypherEngine().execute(
-                String.format("MATCH (n:%s) WHERE n.__id__={id} OPTIONAL MATCH (n)-[r]-() DELETE r,n", pe.getDiscriminator()),
+                String.format("MATCH (n:%s) WHERE n.__id__={id} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
+                        ((GraphPersistentEntity)pe).getLabel()),
                 Collections.singletonMap("id", entityAccess.getIdentifier()));
         firePostDeleteEvent(pe, entityAccess);
     }
@@ -305,7 +306,8 @@ public class Neo4jEntityPersister extends EntityPersister {
             entityAccesses.add(entityAccess);
         }
         getCypherEngine().execute(
-                String.format("MATCH (n:%s) OPTIONAL MATCH (n)-[r]-() DELETE r,n", pe.getDiscriminator()));
+                String.format("MATCH (n:%s) OPTIONAL MATCH (n)-[r]-() DELETE r,n",
+                        ((GraphPersistentEntity)pe).getLabel()));
         for (EntityAccess entityAccess: entityAccesses) {
             firePostDeleteEvent(pe, entityAccess);
         }

@@ -14,17 +14,9 @@
  */
 package org.grails.datastore.gorm.neo4j
 
+import org.grails.datastore.gorm.neo4j.mapping.config.Neo4jEntity
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory
 import org.grails.datastore.mapping.config.Property
-import org.grails.datastore.mapping.keyvalue.mapping.config.Family
-import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue
-import org.grails.datastore.mapping.model.PersistentProperty
-import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
-import java.beans.PropertyDescriptor
-import org.grails.datastore.mapping.annotation.Index
-import org.springframework.core.annotation.AnnotationUtils
-import java.lang.reflect.Field
-import org.springframework.util.ReflectionUtils
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -38,7 +30,7 @@ class GraphGormMappingFactory extends AbstractGormMappingFactory {
 
     @Override
     protected Class getEntityMappedFormType() {
-        Family
+        Neo4jEntity
     }
 
 /*
