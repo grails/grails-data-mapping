@@ -680,7 +680,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         if (persistentProperty != null) {
                             populateMongoQuery(entity, query, criteria);
 
-                            List propertyResults = null;
+                            List propertyResults;
                             if (max > -1) {
                                 // if there is a limit then we have to do a manual projection since the MongoDB driver doesn't support limits and distinct together
                                 cursor = executeQueryAndApplyPagination(collection, query);

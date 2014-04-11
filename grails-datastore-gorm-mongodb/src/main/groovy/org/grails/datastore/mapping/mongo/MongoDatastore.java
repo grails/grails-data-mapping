@@ -301,10 +301,10 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                             }
                             DBObject indexDef = new BasicDBObject(compoundIndex);
                             if(indexAttributes != null) {
-                                collection.ensureIndex(indexDef, new BasicDBObject(indexAttributes));
+                                collection.createIndex(indexDef, new BasicDBObject(indexAttributes));
                             }
                             else {
-                                collection.ensureIndex(indexDef);
+                                collection.createIndex(indexDef);
                             }
                         }
                     }

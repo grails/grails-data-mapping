@@ -92,8 +92,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     public MongoEntityPersister(MappingContext mappingContext, PersistentEntity entity,
              MongoSession mongoSession, ApplicationEventPublisher publisher) {
         super(mappingContext, entity, mongoSession, publisher);
-        MongoDatastore datastore = (MongoDatastore) mongoSession.getDatastore();
-
         if (!(entity instanceof EmbeddedPersistentEntity)) {
 
             PersistentProperty identity = entity.getIdentity();
@@ -507,7 +505,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             ConversionService conversionService = mappingContext.getConversionService();
             // go for toInteger or toString.
             TypeDescriptor itemTypeDescriptor = TypeDescriptor.forObject(item);
-            if ((itemTypeDescriptor.getObjectType() == Integer.class || itemTypeDescriptor.getObjectType() == Short.class) && conversionService.canConvert(itemTypeDescriptor, TypeDescriptor.valueOf(Integer.class))) {
+            Class<?> itemTypeClass = itemTypeDescriptor.getObjectType();
+            if ((itemTypeClass.equals(Integer.class) || itemTypeClass.equals(Short.class)) && conversionService.canConvert(itemTypeDescriptor, TypeDescriptor.valueOf(Integer.class))) {
                 nativeValue = conversionService.convert(item, Integer.class);
             } else if (conversionService.canConvert(itemTypeDescriptor, TypeDescriptor.valueOf(String.class))) {
                 nativeValue = conversionService.convert(item, String.class);
