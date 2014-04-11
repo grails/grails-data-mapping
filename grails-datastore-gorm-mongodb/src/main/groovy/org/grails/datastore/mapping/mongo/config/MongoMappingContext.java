@@ -146,6 +146,9 @@ public class MongoMappingContext extends DocumentMappingContext {
         MappingFactory.registerCustomType(new PointType());
         MappingFactory.registerCustomType(new PolygonType());
         MappingFactory.registerCustomType(new LineStringType());
+        MappingFactory.registerCustomType(new MultiLineStringType());
+        MappingFactory.registerCustomType(new MultiPointType());
+        MappingFactory.registerCustomType(new MultiPolygonType());
         MappingFactory.registerCustomType(new ShapeType());
         MappingFactory.registerCustomType(new BoxType());
         MappingFactory.registerCustomType(new CircleType());

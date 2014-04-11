@@ -14,24 +14,21 @@
  */
 package org.grails.datastore.gorm.mongo.geo
 
-import grails.mongodb.geo.Polygon
-import groovy.transform.CompileStatic
+import grails.mongodb.geo.MultiPolygon
 
 /**
- * Adds support for the {@link Polygon} type to GORM for MongoDB
+ * Adds support for the {@link grails.mongodb.geo.MultiPolygon} type to GORM for MongoDB
  *
  * @author Graeme Rocher
- * @since 2.0
+ * @since 3.0
  */
-@CompileStatic
-class PolygonType extends GeoJSONType<Polygon> {
-
-    PolygonType() {
-        super(Polygon)
+class MultiPolygonType extends GeoJSONType<MultiPolygon>{
+    MultiPolygonType() {
+        super(MultiPolygon)
     }
 
     @Override
-    Polygon createFromCoords(List coords) {
-        Polygon.valueOf(coords)
+    MultiPolygon createFromCoords(List coords) {
+        MultiPolygon.valueOf(coords)
     }
 }

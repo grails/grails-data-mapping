@@ -30,11 +30,11 @@ class Circle extends Shape{
     /**
      * The center of the circle
      */
-    Point center
+    final Point center
     /**
      * The radius of the circle
      */
-    double radius
+    final double radius
 
     /**
      * Construct a circle for the given center {@link Point} and radius

@@ -12,26 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.mongo.geo
+package grails.mongodb.geo
 
-import grails.mongodb.geo.Polygon
-import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.mongo.geo.GeoJSONType
 
 /**
- * Adds support for the {@link Polygon} type to GORM for MongoDB
+ * Represents a GeoJSON GeometryCollection. See http://geojson.org/geojson-spec.html#geometry-collection
  *
  * @author Graeme Rocher
- * @since 2.0
+ * @since 3.0
  */
-@CompileStatic
-class PolygonType extends GeoJSONType<Polygon> {
-
-    PolygonType() {
-        super(Polygon)
-    }
-
+class GeometryCollection extends ArrayList<GeoJSON> implements GeoJSON {
     @Override
-    Polygon createFromCoords(List coords) {
-        Polygon.valueOf(coords)
+    List<? extends Object> asList() {
+        collect() { GeoJSON current ->
+            GeoJSONType.convertToGeoJSON((Shape)current)
+        }
     }
 }

@@ -18,45 +18,32 @@ import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
 
 /**
- * See http://geojson.org/geojson-spec.html#linestring
+ * Represents a GeoJSON MultiPoint. See http://geojson.org/geojson-spec.html#multipoint
+ *
+ * Note: Requires MongoDB 2.6 or above
  *
  * @author Graeme Rocher
- * @since 2.0
+ * @since 3.0
  */
 @CompileStatic
 @EqualsAndHashCode
-class LineString extends Shape implements GeoJSON{
-    final List<Point>  coordinates
+class MultiPoint extends Shape implements GeoJSON{
+    final List<Point> positions
 
-    /**
-     * Constructs a LineString for the given {@link Point} instances
-     *
-     * @param points The {@link Point} instances. Must be at least 2 points.
-     */
-    LineString(Point...points) {
-        if(points.size() < 2)
-            throw new IllegalArgumentException("At least 2 points required for a LineString")
-        this.coordinates = points.toList()
+    MultiPoint(Point... positions) {
+        this.positions = Arrays.asList(positions)
     }
 
-    /**
-     * Converts the line string to a multi dimensional coordinate list.
-     * Example: [ [1.0d, 4.0d], [8.0d, 4.0d] ]
-     * @return
-     */
+    MultiPoint(Point a, Point b) {
+        this.positions = Arrays.asList(a, b)
+    }
+
     @Override
     List<List<Double>> asList() {
-        coordinates.collect() { Point p -> p.asList()}
+        return positions.collect() { Point p -> p.asList() }
     }
 
-    /**
-     * Constructs a LineString for the given coordinates
-     * @param coords The coordinates, which should be a list of {@link Point} instances or lists containing x and y values
-     * @return A LineString
-     */
-    public static LineString valueOf(List coords) {
-        if(coords.size() < 2) throw new IllegalArgumentException("Coordinates should contain at least 2 entries for a LineString")
-
+    public static MultiPoint valueOf(List coords) {
         List<Point> points = (List<Point>) coords.collect() {
             if(it instanceof Point) {
                 return it
@@ -67,6 +54,6 @@ class LineString extends Shape implements GeoJSON{
             throw new IllegalArgumentException("Invalid coordinates: $coords")
         }
 
-        return new LineString(points as Point[])
+        return new MultiPoint(points as Point[])
     }
 }

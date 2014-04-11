@@ -31,12 +31,12 @@ class Sphere extends Shape{
     /**
      * The center of there sphere
      */
-    Point center
+    final Point center
 
     /**
      * The distance used to calculate the radius in radians
      */
-    Distance distance
+    final Distance distance
 
     /**
      * Construct a circle for the given center {@link Point} and distance
