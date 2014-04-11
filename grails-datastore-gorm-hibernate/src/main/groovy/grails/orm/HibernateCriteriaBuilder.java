@@ -25,15 +25,11 @@ import groovy.lang.MetaMethod;
 import groovy.lang.MissingMethodException;
 
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.codehaus.groovy.grails.orm.hibernate.query.HibernateCriterionAdapter;
@@ -1242,8 +1238,22 @@ public class HibernateCriteriaBuilder extends GroovyObjectSupport implements org
         }
 
         propertyName = calculatePropertyName(propertyName);
+
+        if(values instanceof List) {
+            convertArgumentList((List)values);
+        }
         addToCriteria(Restrictions.in(propertyName, values == null ? Collections.EMPTY_LIST : values));
         return this;
+    }
+
+    private void convertArgumentList(List argList) {
+        ListIterator listIterator = argList.listIterator();
+        while (listIterator.hasNext()) {
+            Object next = listIterator.next();
+            if(next instanceof CharSequence) {
+                listIterator.set( next.toString() );
+            }
+        }
     }
 
     /**

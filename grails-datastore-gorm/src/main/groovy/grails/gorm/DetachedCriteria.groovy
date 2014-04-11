@@ -17,6 +17,8 @@ package grails.gorm
 
 import grails.async.Promise
 import grails.async.Promises
+import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
 
 import javax.persistence.FetchType
 
@@ -48,6 +50,7 @@ import org.grails.datastore.mapping.query.api.QueryableCriteria
  * @author Graeme Rocher
  * @since 1.0
  */
+@CompileStatic
 class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T>, GormOperations<T> {
 
     protected List<Criterion> criteria = []
@@ -117,7 +120,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
 
     @Override
     T getPersistentClass() {
-        getPersistentEntity().getJavaClass()
+        (T)getPersistentEntity().getJavaClass()
     }
 
     PersistentEntity getPersistentEntity() {
@@ -125,6 +128,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return persistentEntity
     }
 
+    @CompileStatic(TypeCheckingMode.SKIP)
     protected initialiseIfNecessary(Class<T> targetClass) {
         if (dynamicFinders != null) {
             return
@@ -142,7 +146,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         applyLazyCriteria()
         if (criterion instanceof PropertyCriterion) {
             if (criterion.value instanceof Closure) {
-                criterion.value = buildQueryableCriteria(criterion.value)
+                criterion.value = buildQueryableCriteria((Closure)criterion.value)
             }
         }
         if (junctions)  {
@@ -238,10 +242,23 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @see Criteria
      */
     Criteria inList(String propertyName, Collection values) {
+
+        if(values instanceof List) {
+            convertArgumentList((List)values);
+        }
         add Restrictions.in(propertyName, values)
         return this
     }
 
+    private void convertArgumentList(List argList) {
+        ListIterator listIterator = argList.listIterator();
+        while (listIterator.hasNext()) {
+            Object next = listIterator.next();
+            if(next instanceof CharSequence) {
+                listIterator.set( next.toString() )
+            }
+        }
+    }
     /**
      * @see Criteria
      */
@@ -706,10 +723,11 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param args The arguments
      * @return The count
      */
+
     boolean exists(Closure additionalCriteria = null) {
         (Boolean)withPopulatedQuery(Collections.emptyMap(), additionalCriteria) { Query query ->
             query.projections().count()
-            query.singleResult() > 0
+            ((Number)query.singleResult()) > 0
         }
     }
 
@@ -718,6 +736,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      *
      * @return The total number deleted
      */
+    @CompileStatic(TypeCheckingMode.SKIP)
     Number deleteAll() {
         targetClass.withDatastoreSession { Session session ->
             session.deleteAll(this)
@@ -729,6 +748,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      *
      * @return The total number deleted
      */
+    @CompileStatic(TypeCheckingMode.SKIP)
     Number updateAll(Map properties) {
         targetClass.withDatastoreSession { Session session ->
             session.updateAll(this, properties)
@@ -857,6 +877,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param args The arguments
      * @return The result of the method call
      */
+    @CompileStatic(TypeCheckingMode.SKIP)
     def methodMissing(String methodName, args) {
         initialiseIfNecessary(targetClass)
         def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
@@ -886,6 +907,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     @Override
+    @CompileStatic(TypeCheckingMode.SKIP)
     protected DetachedCriteria<T> clone() {
         def criteria = new DetachedCriteria(targetClass)
         criteria.criteria = new ArrayList(this.criteria)
@@ -909,6 +931,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         }
     }
 
+    @CompileStatic(TypeCheckingMode.SKIP)
     private withPopulatedQuery(Map args, Closure additionalCriteria, Closure callable)  {
         targetClass.withDatastoreSession { Session session ->
             applyLazyCriteria()

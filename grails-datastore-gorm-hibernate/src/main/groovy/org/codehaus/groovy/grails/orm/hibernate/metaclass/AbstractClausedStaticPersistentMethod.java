@@ -32,10 +32,7 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -146,39 +143,54 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             for (int i = 0; i < args.length; i++) {
-                if (args[i] == null) continue;
+                Object currentArg = args[i];
+                if (currentArg == null) continue;
                 // convert GStrings to strings
-                if (prop.getType() == String.class && (args[i] instanceof CharSequence)) {
-                    args[i] = args[i].toString();
+                if (prop.getType() == String.class && (currentArg instanceof CharSequence)) {
+                    currentArg = currentArg.toString();
                 }
-                else if (!prop.getType().isAssignableFrom(args[i].getClass()) && !(GrailsClassUtils.isMatchBetweenPrimativeAndWrapperTypes(prop.getType(), args[i].getClass()))) {
+                else if (!prop.getType().isAssignableFrom(currentArg.getClass()) && !(GrailsClassUtils.isMatchBetweenPrimativeAndWrapperTypes(prop.getType(), currentArg.getClass()))) {
                     try {
                         if (type.equals(IN_LIST)) {
-                            args[i] = conversionService.convert(args[i], Collection.class);
+                            currentArg = conversionService.convert(currentArg, Collection.class);
+                            if(currentArg instanceof List) {
+                                convertArgumentList(prop, (List)currentArg);
+                            }
                         }
                         else {
-                            args[i] = conversionService.convert(args[i], prop.getType());
+                            currentArg = conversionService.convert(currentArg, prop.getType());
                         }
                     }
                     catch (TypeMismatchException tme) {
                         // if we cannot perform direct conversion and argument is subclass of Number
                         // we can try to convert it through its String representation
-                        if (Number.class.isAssignableFrom(args[i].getClass())) {
+                        if (Number.class.isAssignableFrom(currentArg.getClass())) {
                             try {
-                                args[i] = conversionService.convert(args[i].toString(), prop.getType());
+                                currentArg = conversionService.convert(currentArg.toString(), prop.getType());
                             }
                             catch(TypeMismatchException tme1) {
-                                throw new IllegalArgumentException("Cannot convert value " + args[i] + " of property '"+propertyName+"' to required type " + prop.getType() + ": " + tme1.getMessage());
+                                throw new IllegalArgumentException("Cannot convert value " + currentArg + " of property '"+propertyName+"' to required type " + prop.getType() + ": " + tme1.getMessage());
                             }
                         }
                         else {
-                            throw new IllegalArgumentException("Cannot convert value " + args[i] + " of property '"+propertyName+"' to required type " + prop.getType());
+                            throw new IllegalArgumentException("Cannot convert value " + currentArg + " of property '"+propertyName+"' to required type " + prop.getType());
                         }
                     }
+                }
+                else if(type.equals(IN_LIST) && (currentArg instanceof List)) {
+                    convertArgumentList(prop, (List) currentArg);
                 }
             }
 
             arguments = args;
+        }
+
+        private void convertArgumentList(GrailsDomainClassProperty prop, List argList) {
+            ListIterator listIterator = argList.listIterator();
+            while (listIterator.hasNext()) {
+                Object next = listIterator.next();
+                listIterator.set( conversionService.convert(next, prop.getType()));
+            }
         }
 
         abstract Criterion createCriterion();
