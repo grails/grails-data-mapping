@@ -96,7 +96,6 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
 
             neo4jMappingContext(Neo4jMappingContextFactoryBean) {
                 grailsApplication = ref('grailsApplication')
-                pluginManager = ref('pluginManager')
             }
 
             neo4jDatastore(Neo4jDatastoreFactoryBean) {
