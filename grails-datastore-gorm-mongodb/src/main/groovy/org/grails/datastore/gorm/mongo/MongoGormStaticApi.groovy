@@ -15,6 +15,7 @@
 package org.grails.datastore.gorm.mongo
 
 import com.gmongo.internal.DBCollectionPatcher
+import com.mongodb.BasicDBObject
 import com.mongodb.DB
 import com.mongodb.DBCollection
 import groovy.transform.CompileStatic
@@ -24,6 +25,8 @@ import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.mongo.MongoSession
+import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
+import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
@@ -147,5 +150,67 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
             MongoSession ms = (MongoSession)session
             ms.useDatabase(persistentEntity, databaseName)
         } as SessionCallback<String>)
+    }
+
+    /**
+     * Counts the number of hits
+     * @param query The query
+     * @return The hit count
+     */
+    int countHits(String query) {
+        search(query).size()
+    }
+
+    /**
+     * Search for entities using the given query
+     *
+     * @param query The query
+     * @return The results
+     */
+    List<D> search(String query, Map options = Collections.emptyMap()) {
+        execute( { Session session ->
+            MongoSession ms = (MongoSession)session
+            def template = ms.getMongoTemplate(persistentEntity)
+            def coll = template.getCollection(ms.getCollectionName(persistentEntity))
+            MongoEntityPersister persister = (MongoEntityPersister)ms.getPersister(persistentClass)
+
+            def searchArgs = ['$search': query]
+            if(options.language) {
+                searchArgs['$language'] = options.language.toString()
+            }
+            def cursor = coll.find(new BasicDBObject(['$text': searchArgs]))
+
+            int offset = options.offset instanceof Number ? ((Number)options.offset).intValue() : 0
+            if(offset > 0) cursor.skip(offset)
+            new MongoQuery.MongoResultList(cursor, offset, persister)
+        } as SessionCallback<List<D>>)
+    }
+
+    /**
+     * Searches for the top results ordered by the MongoDB score
+     *
+     * @param query The query
+     * @param limit The maximum number of results. Defaults to 5.
+     * @return The results
+     */
+    List<D> searchTop(String query, int limit = 5, Map options = Collections.emptyMap()) {
+        execute( { Session session ->
+            MongoSession ms = (MongoSession)session
+            def template = ms.getMongoTemplate(persistentEntity)
+            def coll = template.getCollection(ms.getCollectionName(persistentEntity))
+            MongoEntityPersister persister = (MongoEntityPersister)ms.getPersister(persistentClass)
+
+            def searchArgs = ['$search': query]
+            if(options.language) {
+                searchArgs['$language'] = options.language.toString()
+            }
+
+            def score = new BasicDBObject([score: ['$meta': 'textScore']])
+            def cursor = coll.find(new BasicDBObject(['$text': searchArgs]), score)
+                                .sort(score)
+                                .limit(limit)
+
+            new MongoQuery.MongoResultList(cursor, 0, persister)
+        } as SessionCallback<List<D>>)
     }
 }

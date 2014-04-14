@@ -1263,6 +1263,13 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             this.offset = offset;
         }
 
+        /**
+         * @return The underlying MongoDB cursor instance
+         */
+        public DBCursor getCursor() {
+            return cursor;
+        }
+
         @Override
         public boolean isEmpty() {
             return initializedObjects.isEmpty() && !cursor.hasNext();
