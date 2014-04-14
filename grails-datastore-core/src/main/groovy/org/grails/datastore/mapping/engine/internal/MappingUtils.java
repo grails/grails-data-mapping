@@ -103,7 +103,10 @@ public class MappingUtils {
         if (genericType instanceof ParameterizedType) {
             Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
             if (typeArguments.length>0) {
-                genericClass = (Class) typeArguments[0];
+                Type typeArg = typeArguments[0];
+                if(typeArg instanceof Class) {
+                    genericClass = (Class) typeArg;
+                }
             }
         }
         return genericClass;
@@ -117,7 +120,10 @@ public class MappingUtils {
         if (genericType instanceof ParameterizedType) {
             Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
             if (typeArguments.length>0) {
-                genericClass = (Class) typeArguments[isKeyType ? 0 : 1];
+                Type typeArg = typeArguments[isKeyType ? 0 : 1];
+                if(typeArg instanceof Class) {
+                    genericClass = (Class) typeArg;
+                }
             }
         }
         return genericClass;
