@@ -3,8 +3,12 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import grails.mongodb.geo.Box
 import grails.mongodb.geo.Circle
+import grails.mongodb.geo.GeometryCollection
 import grails.mongodb.geo.LineString
 import grails.mongodb.geo.Metric
+import grails.mongodb.geo.MultiLineString
+import grails.mongodb.geo.MultiPoint
+import grails.mongodb.geo.MultiPolygon
 import grails.mongodb.geo.Point
 import grails.mongodb.geo.Polygon
 import grails.mongodb.geo.Shape
@@ -16,6 +20,71 @@ import grails.persistence.Entity
  */
 class GeoJSONTypePersistenceSpec extends GormDatastoreSpec {
 
+    void "Test persist GeometryCollection GeoJSON type"() {
+        when:"A GeometryCollection is persisted and queried"
+            def col = new GeometryCollection()
+            col << Point.valueOf(5,10)
+            col << LineString.valueOf([ [ 40 , 5 ] , [ 41 , 6 ] ])
+            def p = new Place(geometryCollection: col)
+            p.save(flush:true)
+            session.clear()
+            p = Place.get(p.id)
+
+        then:"The collection is correct"
+            p.geometryCollection == col
+    }
+
+    void "Test persist MultiPoint GeoJSON type"() {
+        when:"A domain with a multipoint is persisted"
+            def mp = MultiPoint.valueOf([
+                    [ -73.9580, 40.8003 ],
+                    [ -73.9498, 40.7968 ],
+                    [ -73.9737, 40.7648 ],
+                    [ -73.9814, 40.7681 ]
+            ])
+            def p = new Place(multiPoint: mp)
+            p.save(flush:true)
+            session.clear()
+            p = Place.findByMultiPoint(mp)
+
+        then:"The MultiPoint is persisted correctly"
+            p != null
+            p.multiPoint == mp
+    }
+
+    void "Test persist MultiLineString GeoJSON type"() {
+        when:"A domain with a multipoint is persisted"
+            def mls = MultiLineString.valueOf([
+                    [ [ -73.96943, 40.78519 ], [ -73.96082, 40.78095 ] ],
+                    [ [ -73.96415, 40.79229 ], [ -73.95544, 40.78854 ] ],
+                    [ [ -73.97162, 40.78205 ], [ -73.96374, 40.77715 ] ],
+                    [ [ -73.97880, 40.77247 ], [ -73.97036, 40.76811 ] ]
+            ])
+            def p = new Place(multiLineString: mls)
+            p.save(flush:true)
+            session.clear()
+            p = Place.findByMultiLineString(mls)
+
+        then:"The MultiPoint is persisted correctly"
+            p != null
+            p.multiLineString== mls
+    }
+
+    void "Test persist MultiPolygon GeoJSON type"() {
+        when:"A domain with a multipoint is persisted"
+            def mp = MultiPolygon.valueOf([
+                    [ [ [  -73.958, 40.8003 ], [ -73.9498, 40.7968 ], [ -73.9737, 40.7648 ], [ -73.9814, 40.7681 ], [  -73.958, 40.8003 ] ] ],
+                    [ [ [  -73.958, 40.8003 ], [ -73.9498, 40.7968 ], [ -73.9737, 40.7648 ], [  -73.958, 40.8003 ] ] ]
+            ])
+            def p = new Place(multiPolygon: mp)
+            p.save(flush:true)
+            session.clear()
+            p = Place.findByMultiPolygon(mp)
+
+        then:"The MultiPoint is persisted correctly"
+            p != null
+            p.multiPolygon == mp
+    }
 
     void "Test persist GeoJSON types"() {
         given:"A domain with GeoJSON types"
@@ -195,6 +264,10 @@ class Place {
     Box box
     Circle circle
     Sphere sphere
+    MultiPoint multiPoint
+    MultiLineString multiLineString
+    MultiPolygon multiPolygon
+    GeometryCollection geometryCollection
 
     static mapping = {
         point geoIndex:'2dsphere'

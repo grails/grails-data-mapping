@@ -49,6 +49,11 @@ class Box extends Shape{
      */
     List<List<Double>> asList() { [ lowerLeft.asList(), upperRight.asList() ] }
 
+    @Override
+    String toString() {
+        asList().toString()
+    }
+
     /**
      * Constructs a Box from the given coordinates
      * @param coords The coordinates

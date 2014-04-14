@@ -43,6 +43,11 @@ class MultiPoint extends Shape implements GeoJSON{
         return positions.collect() { Point p -> p.asList() }
     }
 
+    @Override
+    String toString() {
+        positions.toString()
+    }
+
     public static MultiPoint valueOf(List coords) {
         List<Point> points = (List<Point>) coords.collect() {
             if(it instanceof Point) {

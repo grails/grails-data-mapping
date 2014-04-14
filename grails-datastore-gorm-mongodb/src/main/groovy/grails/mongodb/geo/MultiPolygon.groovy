@@ -31,7 +31,7 @@ class MultiPolygon extends Shape implements GeoJSON {
     final List<Polygon> polygons
 
     MultiPolygon(Polygon...polygons) {
-        this.polygons = polygons
+        this.polygons = Arrays.asList(polygons)
     }
     MultiPolygon(List<Polygon> polygons) {
         this.polygons = polygons

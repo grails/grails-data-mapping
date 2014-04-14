@@ -52,6 +52,9 @@ class Circle extends Shape{
      */
     List<Object> asList() { [ center.asList(), radius] }
 
+    @Override
+    String toString() { "[$center, $radius]" }
+
     /**
      * Construct a circle for the given coordinates
      *

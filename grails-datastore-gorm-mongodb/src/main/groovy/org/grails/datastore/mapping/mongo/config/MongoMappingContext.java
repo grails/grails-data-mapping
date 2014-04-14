@@ -143,6 +143,7 @@ public class MongoMappingContext extends DocumentMappingContext {
     }
 
     protected void registerMongoTypes() {
+        MappingFactory.registerCustomType(new GeometryCollectionType());
         MappingFactory.registerCustomType(new PointType());
         MappingFactory.registerCustomType(new PolygonType());
         MappingFactory.registerCustomType(new LineStringType());

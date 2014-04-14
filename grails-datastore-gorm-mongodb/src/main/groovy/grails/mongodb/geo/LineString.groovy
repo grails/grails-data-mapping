@@ -26,6 +26,9 @@ import groovy.transform.EqualsAndHashCode
 @CompileStatic
 @EqualsAndHashCode
 class LineString extends Shape implements GeoJSON{
+    /**
+     * The points that constitute the LineString
+     */
     final List<Point>  coordinates
 
     /**
@@ -47,6 +50,11 @@ class LineString extends Shape implements GeoJSON{
     @Override
     List<List<Double>> asList() {
         coordinates.collect() { Point p -> p.asList()}
+    }
+
+    @Override
+    String toString() {
+        coordinates.toString()
     }
 
     /**

@@ -427,9 +427,21 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey));
             }
             else if (prop instanceof Basic) {
-                Object entryValue = getEntryValue(nativeEntry, propKey);
-                entryValue = convertBasicEntryValue(persistentEntity, prop, entryValue);
-                ea.setProperty(prop.getName(), entryValue);
+                Basic basic = (Basic) prop;
+                CustomTypeMarshaller customTypeMarshaller = basic.getCustomTypeMarshaller();
+                if(customTypeMarshaller != null) {
+                    if (!customTypeMarshaller.supports(getSession().getDatastore())) {
+                        return;
+                    }
+
+                    Object value = customTypeMarshaller.read(prop, nativeEntry);
+                    ea.setProperty(prop.getName(), value);
+                }
+                else {
+                    Object entryValue = getEntryValue(nativeEntry, propKey);
+                    entryValue = convertBasicEntryValue(persistentEntity, prop, entryValue);
+                    ea.setProperty(prop.getName(), entryValue);
+                }
             }
             else if (prop instanceof Custom) {
                 handleCustom(prop, ea, nativeEntry);
@@ -885,11 +897,27 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             }
             if (key == null) key = prop.getName();
             final boolean indexed = isPropertyIndexed(mappedProperty);
-            if ((prop instanceof Simple) || (prop instanceof Basic)) {
+            if ((prop instanceof Simple) ) {
+
                 Object propValue = entityAccess.getProperty(prop.getName());
 
                 handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, propValue);
                 setEntryValue(e, key, propValue);
+            }
+            else if((prop instanceof Basic)) {
+                Basic basic = (Basic) prop;
+                CustomTypeMarshaller customTypeMarshaller = basic.getCustomTypeMarshaller();
+                if (customTypeMarshaller != null && customTypeMarshaller.supports(getSession().getDatastore())) {
+                    Object propValue = entityAccess.getProperty(prop.getName());
+                    Object customValue = customTypeMarshaller.write(prop, propValue, e);
+                    handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, customValue);
+                }
+                else {
+                    Object propValue = entityAccess.getProperty(prop.getName());
+
+                    handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, propValue);
+                    setEntryValue(e, key, propValue);
+                }
             }
             else if ((prop instanceof Custom)) {
                 CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();

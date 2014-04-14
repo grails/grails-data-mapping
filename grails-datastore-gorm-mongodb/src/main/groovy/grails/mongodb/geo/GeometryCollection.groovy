@@ -14,6 +14,7 @@
  */
 package grails.mongodb.geo
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.mongo.geo.GeoJSONType
 
 /**
@@ -22,11 +23,29 @@ import org.grails.datastore.gorm.mongo.geo.GeoJSONType
  * @author Graeme Rocher
  * @since 3.0
  */
+
 class GeometryCollection extends ArrayList<GeoJSON> implements GeoJSON {
     @Override
     List<? extends Object> asList() {
         collect() { GeoJSON current ->
-            GeoJSONType.convertToGeoJSON((Shape)current)
+            GeoJSONType.convertToGeoJSON(
+                    (Shape)current)
         }
+    }
+
+    static GeometryCollection valueOf(List geometries) {
+
+        def col = new GeometryCollection()
+        def classLoader = GeometryCollection.classLoader
+        for(geo in geometries) {
+            if(geo instanceof Map) {
+                String type = geo.type?.toString()
+                def coordinates = geo.coordinates
+                if(type && coordinates) {
+                    col << classLoader.loadClass("grails.mongodb.geo.$type").valueOf(coordinates)
+                }
+            }
+        }
+        return col
     }
 }

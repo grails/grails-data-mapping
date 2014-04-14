@@ -51,6 +51,9 @@ class Point extends Shape implements GeoJSON{
      */
     List<Double> asList() { [ x, y] }
 
+    @Override
+    String toString() { "[$x,$y]" }
+
     /**
      * Construct a point for the given x and y values
      *

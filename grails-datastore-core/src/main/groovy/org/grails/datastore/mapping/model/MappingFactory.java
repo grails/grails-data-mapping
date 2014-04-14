@@ -338,12 +338,20 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
      */
     public Basic createBasicCollection(PersistentEntity entity,
             MappingContext context, PropertyDescriptor property) {
-        return new Basic(entity, context, property) {
+        Basic basic = new Basic(entity, context, property) {
             PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
+
             public PropertyMapping getMapping() {
                 return propertyMapping;
             }
         };
+
+        CustomTypeMarshaller customTypeMarshaller = typeConverterMap.get(property.getPropertyType());
+        if(customTypeMarshaller != null) {
+            basic.setCustomTypeMarshaller(customTypeMarshaller);
+        }
+
+        return basic;
     }
 
     public static boolean isCustomType(Class<?> propertyType) {

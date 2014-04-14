@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.model.types;
 
 import java.beans.PropertyDescriptor;
 
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
@@ -27,6 +28,8 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  */
 @SuppressWarnings("rawtypes")
 public abstract class Basic extends Association {
+
+    private CustomTypeMarshaller customTypeMarshaller;
 
     public Basic(PersistentEntity owner, MappingContext context,
             PropertyDescriptor descriptor) {
@@ -55,5 +58,17 @@ public abstract class Basic extends Association {
     @Override
     public PersistentEntity getAssociatedEntity() {
         return null; // basic collection types have no associated entity
+    }
+
+    /**
+     * @return The type converter for this custom type
+     */
+    @SuppressWarnings("rawtypes")
+    public CustomTypeMarshaller getCustomTypeMarshaller() {
+        return customTypeMarshaller;
+    }
+
+    public void setCustomTypeMarshaller(CustomTypeMarshaller customTypeMarshaller) {
+        this.customTypeMarshaller = customTypeMarshaller;
     }
 }

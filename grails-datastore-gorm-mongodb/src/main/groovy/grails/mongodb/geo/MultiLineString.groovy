@@ -15,6 +15,7 @@
 package grails.mongodb.geo
 
 import groovy.transform.CompileStatic
+import groovy.transform.EqualsAndHashCode
 import org.springframework.util.Assert
 
 /**
@@ -26,6 +27,7 @@ import org.springframework.util.Assert
  * @since 3.0
  */
 @CompileStatic
+@EqualsAndHashCode
 class MultiLineString extends Shape implements GeoJSON{
     final List<LineString> coordinates
 
@@ -41,6 +43,11 @@ class MultiLineString extends Shape implements GeoJSON{
     @Override
     List<List<List<Double>>> asList() {
         coordinates.collect() { LineString ls -> ls.asList() }
+    }
+
+    @Override
+    String toString() {
+        coordinates.toString()
     }
 
     static MultiLineString valueOf(List coords) {

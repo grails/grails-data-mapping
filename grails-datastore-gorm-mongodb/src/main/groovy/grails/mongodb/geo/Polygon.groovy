@@ -61,7 +61,11 @@ class Polygon extends Shape implements GeoJSON{
          [ points.collect() { Point p -> p.asList() } ]
     }
 
-    /**
+    @Override
+    String toString() {
+        points.toString()
+    }
+/**
      * The inverse of {@link Polygon#asList()}, constructs a Polygon from a coordinate list
      *
      * @param coords The coordinate list
