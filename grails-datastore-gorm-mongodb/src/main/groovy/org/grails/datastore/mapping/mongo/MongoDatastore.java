@@ -19,6 +19,7 @@ import static org.grails.datastore.mapping.config.utils.ConfigUtils.read;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -286,10 +287,16 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             public Object doInDB(DB db) throws MongoException, DataAccessException {
                 final DBCollection collection = db.getCollection(getCollectionName(entity));
 
+
                 final ClassMapping<MongoCollection> classMapping = entity.getMapping();
                 if (classMapping != null) {
                     final MongoCollection mappedForm = classMapping.getMappedForm();
                     if (mappedForm != null) {
+                        List<MongoCollection.Index> indices = mappedForm.getIndices();
+                        for (MongoCollection.Index index : indices) {
+                            collection.ensureIndex(new BasicDBObject(index.getDefinition()), new BasicDBObject(index.getOptions()));
+                        }
+
                         for (Map compoundIndex : mappedForm.getCompoundIndices()) {
 
                             Map indexAttributes = null;
@@ -329,6 +336,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                                 options.putAll(attributes);
                             }
                         }
+                        // continue using deprecated method to support older versions of MongoDB
                         if (options.toMap().isEmpty()) {
                             collection.ensureIndex(dbObject);
                         }

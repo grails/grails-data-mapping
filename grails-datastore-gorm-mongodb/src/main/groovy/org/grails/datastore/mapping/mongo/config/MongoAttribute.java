@@ -28,6 +28,8 @@ import org.grails.datastore.mapping.document.config.Attribute;
 public class MongoAttribute extends Attribute {
 
     public static final String INDEX_TYPE = "type";
+    public static final String INDEX_TYPE_2D = "2d";
+    public static final String INDEX_TYPE_2DSPHERE = "2dsphere";
 
     @SuppressWarnings("rawtypes")
     private Map indexAttributes;
@@ -70,13 +72,19 @@ public class MongoAttribute extends Attribute {
         if(Boolean.valueOf(indexType)) {
             setIndex(true);
             initIndexAttributes();
-            indexAttributes.put(INDEX_TYPE, "2d");
+            indexAttributes.put(INDEX_TYPE, INDEX_TYPE_2D);
         }
-        else if ("2d".equals(indexType) || "2dsphere".equals(indexType)) {
+        else if (INDEX_TYPE_2D.equals(indexType) || INDEX_TYPE_2DSPHERE.equals(indexType)) {
             setIndex(true);
             initIndexAttributes();
             indexAttributes.put(INDEX_TYPE, indexType);
         }
+    }
+
+    public void setIndex(String type) {
+        setIndex(true);
+        initIndexAttributes();
+        indexAttributes.put(INDEX_TYPE, type);
     }
 
     @SuppressWarnings("rawtypes")
