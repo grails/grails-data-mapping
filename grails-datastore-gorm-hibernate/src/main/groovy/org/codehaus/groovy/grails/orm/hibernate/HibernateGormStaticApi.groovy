@@ -17,7 +17,7 @@ package org.codehaus.groovy.grails.orm.hibernate
 
 import grails.orm.HibernateCriteriaBuilder
 import groovy.transform.CompileStatic
-
+import groovy.transform.TypeCheckingMode
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
@@ -101,6 +101,22 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         executeUpdateMethod = new ExecuteUpdatePersistentMethod(sessionFactory, classLoader, grailsApplication)
         findMethod = new FindPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
         findAllMethod = new FindAllPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
+    }
+
+
+    /**
+     * Property missing handling used to relay property access onto target entity for named queries etc.
+     *
+     * @param property The name of the property
+     */
+    @CompileStatic(TypeCheckingMode.SKIP)
+    def propertyMissing(String property) {
+        if(persistentClass.hasProperty(property)) {
+            return this.persistentClass."$property"
+        }
+        else {
+            throw new MissingPropertyException(property, HibernateGormStaticApi)
+        }
     }
 
     @Override

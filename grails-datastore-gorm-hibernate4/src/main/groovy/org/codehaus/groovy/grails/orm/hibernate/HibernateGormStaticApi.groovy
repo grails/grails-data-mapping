@@ -54,7 +54,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @author Graeme Rocher
  * @since 1.0
  */
-//@CompileStatic
+@CompileStatic
 class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     protected static final EMPTY_ARRAY = [] as Object[]
 
@@ -102,12 +102,28 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         findAllMethod = new FindAllPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
     }
 
+    /**
+     * Property missing handling used to relay property access onto target entity for named queries etc.
+     *
+     * @param property The name of the property
+     */
+    @CompileStatic(TypeCheckingMode.SKIP)
+    def propertyMissing(String property) {
+        if(persistentClass.hasProperty(property)) {
+            return this.persistentClass."$property"
+        }
+        else {
+            throw new MissingPropertyException(property, HibernateGormStaticApi)
+        }
+    }
+
+
     @Override
     D get(Serializable id) {
         doGetInstance(id)
     }
 
-    D doGetInstance(Serializable id) {
+    private D doGetInstance(Serializable id) {
         if (id || (id instanceof Number)) {
             id = convertIdentifier(id)
             D result = (D)hibernateTemplate.get((Class)persistentClass, id)
@@ -127,22 +143,20 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
             return null
         }
 
-        hibernateTemplate.execute new GrailsHibernateTemplate.HibernateCallback() {
-            def doInHibernate(Session session) {
-               D o = doGetInstance((Serializable)id)
-               if (o && session.contains(o)) {
-                   session.setReadOnly(o, true)
-               }
-               return o
-            }
-        }
+        hibernateTemplate.execute(  { Session session ->
+           D o = doGetInstance((Serializable)id)
+           if (o && session.contains(o)) {
+               session.setReadOnly(o, true)
+           }
+           return o
+        } as GrailsHibernateTemplate.HibernateCallback )
     }
 
     @Override
     D load(Serializable id) {
         id = convertIdentifier(id)
         if (id != null) {
-            return hibernateTemplate.load((Class)persistentClass, id)
+            return (D) hibernateTemplate.load((Class)persistentClass, id)
         }
     }
 
@@ -209,7 +223,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     D merge(o) {
-        mergeMethod.invoke(o, "merge", [] as Object[])
+        (D)mergeMethod.invoke(o, "merge", [] as Object[])
     }
 
     @Override
@@ -256,7 +270,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     D find(example, Map args) {
-        findMethod.invoke(persistentClass, "find", [example, args] as Object[])
+        (D)findMethod.invoke(persistentClass, "find", [example, args] as Object[])
     }
 
     D first(Map m) {
@@ -287,7 +301,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
      */
     @Deprecated
     D find(String query, Map args, Integer max) {
-        findMethod.invoke(persistentClass, "find", [query, args, max] as Object[])
+        (D)findMethod.invoke(persistentClass, "find", [query, args, max] as Object[])
     }
 
     /**
@@ -303,7 +317,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
      */
     @Deprecated
     D find(String query, Map args, Integer max, Integer offset) {
-        findMethod.invoke(persistentClass, "find", [query, args, max, offset] as Object[])
+        (D)findMethod.invoke(persistentClass, "find", [query, args, max, offset] as Object[])
     }
 
     /**
@@ -317,7 +331,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
      */
     @Deprecated
     D find(String query, Integer max) {
-        findMethod.invoke(persistentClass, "find", [query, max] as Object[])
+        (D)findMethod.invoke(persistentClass, "find", [query, max] as Object[])
     }
 
     /**
@@ -332,7 +346,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
      */
     @Deprecated
     D find(String query, Integer max, Integer offset) {
-        findMethod.invoke(persistentClass, "find", [query, max, offset] as Object[])
+        (D)findMethod.invoke(persistentClass, "find", [query, max, offset] as Object[])
     }
 
     /**
@@ -399,8 +413,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     List<D> findAllWhere(Map queryMap, Map args) {
         if (!queryMap) return null
 
-        (List<D>)hibernateTemplate.execute(new GrailsHibernateTemplate.HibernateCallback() {
-            def doInHibernate(Session session) {
+        (List<D>)hibernateTemplate.execute( { Session session ->
                 Map queryArgs = filterQueryArgumentMap(queryMap)
                 List<String> nullNames = removeNullNames(queryArgs)
                 Criteria criteria = session.createCriteria(persistentClass)
@@ -411,16 +424,14 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
                 }
                 criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
                 criteria.list()
-            }
-        })
+        } as GrailsHibernateTemplate.HibernateCallback)
     }
 
     @Override
     D findWhere(Map queryMap, Map args) {
         if (!queryMap) return null
 
-        (D)hibernateTemplate.execute(new GrailsHibernateTemplate.HibernateCallback() {
-            def doInHibernate(Session session) {
+        (D)hibernateTemplate.execute( { Session session ->
                 Map queryArgs = filterQueryArgumentMap(queryMap)
                 List<String> nullNames = removeNullNames(queryArgs)
                 Criteria criteria = session.createCriteria(persistentClass)
@@ -431,8 +442,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
                 }
                 criteria.setMaxResults(1)
                 GrailsHibernateUtil.unwrapIfProxy(criteria.uniqueResult())
-            }
-        })
+        } as GrailsHibernateTemplate.HibernateCallback)
     }
 
     private Map filterQueryArgumentMap(Map query) {
@@ -452,7 +462,8 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         List<String> nullNames = []
         Set<String> allNames = new HashSet(query.keySet())
         for (String name in allNames) {
-            if (query[name] == null) {
+            def value = query[name]
+            if (value == null) {
                 query.remove name
                 nullNames << name
             }
@@ -571,21 +582,21 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     D find(String query) {
-        findMethod.invoke(persistentClass, "find", [query] as Object[])
+        (D)findMethod.invoke(persistentClass, "find", [query] as Object[])
     }
 
     D find(String query, Object[] params) {
-        findMethod.invoke(persistentClass, "find", [query, params] as Object[])
+        (D)findMethod.invoke(persistentClass, "find", [query, params] as Object[])
     }
 
     @Override
     D find(String query, Map args) {
-        findMethod.invoke(persistentClass, "find", [query, args] as Object[])
+        (D)findMethod.invoke(persistentClass, "find", [query, args] as Object[])
     }
 
     @Override
     D find(String query, Map params, Map args) {
-        findMethod.invoke(persistentClass, "find", [query, params, args] as Object[])
+        (D)findMethod.invoke(persistentClass, "find", [query, params, args] as Object[])
     }
 
     @Override
@@ -595,7 +606,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     D find(String query, Collection params, Map args) {
-        findMethod.invoke(persistentClass, "find", [query, params, args] as Object[])
+        (D)findMethod.invoke(persistentClass, "find", [query, params, args] as Object[])
     }
 
     @Override
@@ -625,6 +636,6 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     D create() {
-        return super.create()
+        return (D)super.create()
     }
 }

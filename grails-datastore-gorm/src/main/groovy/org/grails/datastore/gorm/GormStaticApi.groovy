@@ -30,7 +30,6 @@ import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
-import org.grails.datastore.mapping.core.VoidSessionCallback
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
@@ -669,7 +668,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         D result = findWhere(queryMap)
         if (!result) {
             def persistentMetaClass = GroovySystem.metaClassRegistry.getMetaClass(persistentClass)
-            result = persistentMetaClass.invokeConstructor(queryMap)
+            result = (D)persistentMetaClass.invokeConstructor(queryMap)
             if (shouldSave) {
                 InvokerHelper.invokeMethod(result, "save", null)
             }
@@ -790,7 +789,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return the map
      */
     Map<D, Errors> getValidationErrorsMap() {
-        AbstractDatastore.getValidationErrorsMap()
+        (Map<D, Errors>)AbstractDatastore.getValidationErrorsMap()
     }
 
     /**
@@ -798,7 +797,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return the map
      */
     Map<D, Boolean> getValidationSkipMap() {
-        AbstractDatastore.getValidationSkipMap()
+        (Map<D, Boolean>)AbstractDatastore.getValidationSkipMap()
     }
 
     // TODO: In the first version no support will exist for String-based queries
