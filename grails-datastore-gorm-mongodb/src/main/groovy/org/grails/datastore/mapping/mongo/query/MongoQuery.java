@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.mapping.mongo.query;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -1397,7 +1399,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
 
-    public static class AggregatedResultList extends AbstractList {
+    public static class AggregatedResultList extends AbstractList implements Closeable {
 
         private Cursor cursor;
         private List<ProjectedProperty> projectedProperties;
@@ -1648,10 +1650,15 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             initializeFully();
             return initializedObjects.size();
         }
+
+        @Override
+        public void close() throws IOException {
+            cursor.close();
+        }
     }
 
     @SuppressWarnings("serial")
-    public static class MongoResultList extends AbstractList {
+    public static class MongoResultList extends AbstractList implements Closeable {
 
         private MongoEntityPersister mongoEntityPersister;
         private Cursor cursor;
@@ -1659,12 +1666,19 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         private int internalIndex;
         private List initializedObjects = new ArrayList();
         private Integer size;
+        private boolean initialized = false;
 
         @SuppressWarnings("unchecked")
         public MongoResultList(Cursor cursor, int offset, MongoEntityPersister mongoEntityPersister) {
             this.cursor = cursor;
             this.mongoEntityPersister = mongoEntityPersister;
             this.offset = offset;
+        }
+
+        @Override
+        public String toString() {
+            initializeFully();
+            return initializedObjects.toString();
         }
 
         /**
@@ -1685,7 +1699,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             if(initializedObjects.size() > index) {
                 return initializedObjects.get(index);
             }
-            else {
+            else if(!initialized) {
                 while(cursor.hasNext()) {
                     if(internalIndex > index) throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
                     Object o = convertDBObject(cursor.next());
@@ -1694,6 +1708,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         return o;
                     }
                 }
+                initialized = true;
             }
             throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
         }
@@ -1710,12 +1725,38 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             }
         }
 
+        @Override
+        public ListIterator listIterator() {
+            return listIterator(0);
+        }
+
+        @Override
+        public ListIterator listIterator(int index) {
+            initializeFully();
+            return initializedObjects.listIterator(0);
+        }
+
+        private void initializeFully() {
+            if(initialized) return;
+
+            while(cursor.hasNext()) {
+                DBObject dbo = cursor.next();
+                Object current = convertDBObject(dbo);
+                initializedObjects.add(current);
+            }
+            initialized = true;
+        }
+
         /**
          * Override to transform elements if necessary during iteration.
          * @return an iterator over the elements in this list in proper sequence
          */
         @Override
         public Iterator iterator() {
+            if(initialized) {
+                return initializedObjects.iterator();
+            }
+
             final Cursor cursor;
             if(this.cursor instanceof DBCursor) {
                 DBCursor dbCursor = (DBCursor) this.cursor;
@@ -1729,37 +1770,48 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
 
             return new Iterator() {
+                Object current;
+
                 public boolean hasNext() {
-                    return cursor.hasNext();
+                    boolean hasMore = cursor.hasNext();
+                    if(!hasMore) {
+                        initialized = true;
+                    }
+                    return hasMore;
                 }
 
                 @SuppressWarnings("unchecked")
                 public Object next() {
-                    Object object = cursor.next();
-                    if (object instanceof DBObject) {
-                        object = convertDBObject(object);
-                    }
-                    return object;
+                    DBObject dbo = cursor.next();
+                    current = convertDBObject(dbo);
+                    initializedObjects.add(current);
+                    return current;
                 }
 
                 public void remove() {
-                    throw new UnsupportedOperationException("Method remove() not supported by MongoResultList iterator");
+                    initializedObjects.remove(current);
                 }
             };
         }
 
         @Override
         public int size() {
+            if(initialized) {
+                return initializedObjects.size();
+            }
             if(this.size == null) {
                 if(cursor instanceof DBCursor) {
                     this.size = ((DBCursor)cursor).size();
                 }
                 else {
+
                     this.size = 0;
                     while(cursor.hasNext()) {
-                        cursor.next();
+                        DBObject object = cursor.next();
+                        initializedObjects.add( convertDBObject(object) );
                         this.size++;
                     }
+                    initialized = true;
                 }
             }
             return size;
@@ -1783,6 +1835,11 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         @Override
         public Object clone() {
             return new MongoResultList(cursor,offset, mongoEntityPersister);
+        }
+
+        @Override
+        public void close() throws IOException {
+            cursor.close();
         }
     }
 
