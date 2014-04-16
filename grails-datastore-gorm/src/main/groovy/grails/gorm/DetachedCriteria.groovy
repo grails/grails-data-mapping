@@ -19,6 +19,7 @@ import grails.async.Promise
 import grails.async.Promises
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
+import org.grails.datastore.mapping.query.api.QueryArgumentsAware
 
 import javax.persistence.FetchType
 
@@ -956,6 +957,10 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
                 query.offset(defaultOffset)
             }
             DynamicFinder.applyDetachedCriteria(query, this)
+
+            if(query instanceof QueryArgumentsAware) {
+                query.arguments = args
+            }
 
             if (additionalCriteria != null) {
                 def additionalDetached = new DetachedCriteria(targetClass).build(additionalCriteria)

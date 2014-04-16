@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.mongo
 import com.mongodb.MongoException
 import grails.gorm.CriteriaBuilder
+import grails.gorm.DetachedCriteria
 import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.tests.Person
 
@@ -31,4 +32,18 @@ class HintQueryArgumentSpec extends GormDatastoreSpec {
         then:"The hint is used"
             results.size() == 0
      }
+
+    void "Test that hints work on detached criteria queries"() {
+        when:"A criteria query is created with a hint"
+            DetachedCriteria<Person> detachedCriteria = new DetachedCriteria<>(Person)
+            detachedCriteria = detachedCriteria.build {
+                eq 'firstName', 'Bob'
+            }
+
+            def results = detachedCriteria.list(hint:["firstName":"blah"])
+            for(e in results) {} // just to trigger the query
+        then:"The hint is used"
+            MongoException exception = thrown()
+            exception.message.contains('bad hint')
+    }
 }
