@@ -29,6 +29,7 @@ import org.grails.datastore.gorm.mongo.geo.GeoJSONType;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
@@ -133,25 +134,25 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
-            public void handle(PersistentEntity entity, IdEquals criterion, DBObject query) {
+            public void handle(Session session, IdEquals criterion, DBObject query, PersistentEntity entity) {
                 query.put(MongoEntityPersister.MONGO_ID_FIELD, criterion.getValue());
             }
         });
 
         queryHandlers.put(AssociationQuery.class, new QueryHandler<AssociationQuery>() {
-            public void handle(PersistentEntity entity, AssociationQuery criterion, DBObject query) {
+            public void handle(Session session, AssociationQuery criterion, DBObject query, PersistentEntity entity) {
                 Association<?> association = criterion.getAssociation();
                 PersistentEntity associatedEntity = association.getAssociatedEntity();
                 if (association instanceof EmbeddedCollection) {
                     BasicDBObject associationCollectionQuery = new BasicDBObject();
-                    populateMongoQuery(associatedEntity, associationCollectionQuery, criterion.getCriteria());
+                    populateMongoQuery((MongoSession) session, associationCollectionQuery, criterion.getCriteria(), associatedEntity);
                     BasicDBObject collectionQuery = new BasicDBObject("$elemMatch", associationCollectionQuery);
                     String propertyKey = getPropertyName(entity, association.getName());
                     query.put(propertyKey, collectionQuery);
                 }
                 else if (associatedEntity instanceof EmbeddedPersistentEntity || association instanceof Embedded ) {
                     BasicDBObject associatedEntityQuery = new BasicDBObject();
-                    populateMongoQuery(associatedEntity, associatedEntityQuery, criterion.getCriteria());
+                    populateMongoQuery((MongoSession) session, associatedEntityQuery, criterion.getCriteria(), associatedEntity);
                     for (String property : associatedEntityQuery.keySet()) {
                         String propertyKey = getPropertyName(entity, association.getName());
                         query.put(propertyKey + '.' + property, associatedEntityQuery.get(property));
@@ -164,9 +165,17 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
-            public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
+            public void handle(Session session, Equals criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
-                Object value = criterion.getValue();
+                PersistentProperty persistentProperty = entity.getPropertyByName(criterion.getProperty());
+                Object value;
+                if((persistentProperty instanceof Embedded) && criterion.getValue() != null) {
+                    MongoEntityPersister persister = (MongoEntityPersister) session.getPersister(entity.getJavaClass());
+                    value = persister.createNativeObjectForEmbedded((Association) persistentProperty, criterion.getValue());
+                }
+                else {
+                    value = criterion.getValue();
+                }
                 if(value instanceof Pattern) {
                     Pattern pattern = (Pattern) value;
                     query.put(propertyName, new BasicDBObject(MONGO_REGEX_OPERATOR, pattern.toString()));
@@ -179,53 +188,53 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(IsNull.class, new QueryHandler<IsNull>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, IsNull criterion, DBObject query) {
-                queryHandlers.get(Equals.class).handle(entity, new Equals(criterion.getProperty(), null), query);
+            public void handle(Session session, IsNull criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(Equals.class).handle(session, new Equals(criterion.getProperty(), null), query, entity);
             }
         });
         queryHandlers.put(IsNotNull.class, new QueryHandler<IsNotNull>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, IsNotNull criterion, DBObject query) {
-                queryHandlers.get(NotEquals.class).handle(entity, new NotEquals(criterion.getProperty(), null), query);
+            public void handle(Session session, IsNotNull criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(NotEquals.class).handle(session, new NotEquals(criterion.getProperty(), null), query, entity);
             }
         });
         queryHandlers.put(EqualsProperty.class, new QueryHandler<EqualsProperty>() {
-            public void handle(PersistentEntity entity, EqualsProperty criterion, DBObject query) {
+            public void handle(Session session, EqualsProperty criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, "==");
             }
         });
         queryHandlers.put(NotEqualsProperty.class, new QueryHandler<NotEqualsProperty>() {
-            public void handle(PersistentEntity entity, NotEqualsProperty criterion, DBObject query) {
+            public void handle(Session session, NotEqualsProperty criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, "!=");
             }
         });
         queryHandlers.put(GreaterThanProperty.class, new QueryHandler<GreaterThanProperty>() {
-            public void handle(PersistentEntity entity, GreaterThanProperty criterion, DBObject query) {
+            public void handle(Session session, GreaterThanProperty criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, ">");
             }
         });
         queryHandlers.put(LessThanProperty.class, new QueryHandler<LessThanProperty>() {
-            public void handle(PersistentEntity entity, LessThanProperty criterion, DBObject query) {
+            public void handle(Session session, LessThanProperty criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, "<");
             }
         });
         queryHandlers.put(GreaterThanEqualsProperty.class, new QueryHandler<GreaterThanEqualsProperty>() {
-            public void handle(PersistentEntity entity, GreaterThanEqualsProperty criterion, DBObject query) {
+            public void handle(Session session, GreaterThanEqualsProperty criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, ">=");
             }
         });
         queryHandlers.put(LessThanEqualsProperty.class, new QueryHandler<LessThanEqualsProperty>() {
-            public void handle(PersistentEntity entity, LessThanEqualsProperty criterion, DBObject query) {
+            public void handle(Session session, LessThanEqualsProperty criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, "<=");
@@ -233,7 +242,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
-            public void handle(PersistentEntity entity, NotEquals criterion, DBObject query) {
+            public void handle(Session session, NotEquals criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 DBObject notEqualQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(notEqualQuery, MONGO_NE_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -243,19 +252,19 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(Like.class, new QueryHandler<Like>() {
-            public void handle(PersistentEntity entity, Like like, DBObject query) {
+            public void handle(Session session, Like like, DBObject query, PersistentEntity entity) {
                 handleLike(entity, like, query, true);
             }
         });
 
         queryHandlers.put(ILike.class, new QueryHandler<ILike>() {
-            public void handle(PersistentEntity entity, ILike like, DBObject query) {
+            public void handle(Session session, ILike like, DBObject query, PersistentEntity entity) {
                 handleLike(entity, like, query, false);
             }
         });
 
         queryHandlers.put(RLike.class, new QueryHandler<RLike>() {
-            public void handle(PersistentEntity entity, RLike like, DBObject query) {
+            public void handle(Session session, RLike like, DBObject query, PersistentEntity entity) {
                 Object value = like.getValue();
                 if (value == null) value = "null";
                 final String expr = value.toString();
@@ -266,7 +275,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(In.class, new QueryHandler<In>() {
-            public void handle(PersistentEntity entity, In in, DBObject query) {
+            public void handle(Session session, In in, DBObject query, PersistentEntity entity) {
                 DBObject inQuery = new BasicDBObject();
                 List values = getInListQueryValues(entity, in);
                 inQuery.put(MONGO_IN_OPERATOR, values);
@@ -278,7 +287,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
 
         queryHandlers.put(WithinBox.class, new QueryHandler<WithinBox>() {
-            public void handle(PersistentEntity entity, WithinBox withinBox, DBObject query) {
+            public void handle(Session session, WithinBox withinBox, DBObject query, PersistentEntity entity) {
                 DBObject nearQuery = new BasicDBObject();
                 DBObject box = new BasicDBObject();
                 MongoEntityPersister.setDBObjectValue(box, BOX_OPERATOR, withinBox.getValues(), entity.getMappingContext());
@@ -289,7 +298,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(WithinPolygon.class, new QueryHandler<WithinPolygon>() {
-            public void handle(PersistentEntity entity, WithinPolygon withinPolygon, DBObject query) {
+            public void handle(Session session, WithinPolygon withinPolygon, DBObject query, PersistentEntity entity) {
                 DBObject nearQuery = new BasicDBObject();
                 DBObject box = new BasicDBObject();
                 MongoEntityPersister.setDBObjectValue(box, POLYGON_OPERATOR, withinPolygon.getValues(), entity.getMappingContext());
@@ -300,7 +309,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(WithinCircle.class, new QueryHandler<WithinCircle>() {
-            public void handle(PersistentEntity entity, WithinCircle withinCentre, DBObject query) {
+            public void handle(Session session, WithinCircle withinCentre, DBObject query, PersistentEntity entity) {
                 DBObject nearQuery = new BasicDBObject();
                 DBObject center = new BasicDBObject();
                 MongoEntityPersister.setDBObjectValue(center, CENTER_OPERATOR, withinCentre.getValues(), entity.getMappingContext());
@@ -311,7 +320,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         QueryHandler<Near> nearHandler = new QueryHandler<Near>() {
-            public void handle(PersistentEntity entity, Near near, DBObject query) {
+            public void handle(Session session, Near near, DBObject query, PersistentEntity entity) {
                 DBObject nearQuery = new BasicDBObject();
                 Object value = near.getValue();
                 String nearOperator = near instanceof NearSphere ? NEAR_SPHERE_OPERATOR : NEAR_OPERATOR;
@@ -335,7 +344,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         queryHandlers.put(NearSphere.class, nearHandler);
 
         queryHandlers.put(GeoWithin.class, new QueryHandler<GeoWithin>() {
-            public void handle(PersistentEntity entity, GeoWithin geoWithin, DBObject query) {
+            public void handle(Session session, GeoWithin geoWithin, DBObject query, PersistentEntity entity) {
                 DBObject queryRoot = new BasicDBObject();
                 BasicDBObject queryGeoWithin = new BasicDBObject();
                 queryRoot.put(GEO_WITHIN_OPERATOR, queryGeoWithin);
@@ -367,7 +376,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(GeoIntersects.class, new QueryHandler<GeoIntersects>() {
-            public void handle(PersistentEntity entity, GeoIntersects geoIntersects, DBObject query) {
+            public void handle(Session session, GeoIntersects geoIntersects, DBObject query, PersistentEntity entity) {
                 DBObject queryRoot = new BasicDBObject();
                 BasicDBObject queryGeoWithin = new BasicDBObject();
                 queryRoot.put(GEO_INTERSECTS_OPERATOR, queryGeoWithin);
@@ -387,7 +396,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(Between.class, new QueryHandler<Between>() {
-            public void handle(PersistentEntity entity, Between between, DBObject query) {
+            public void handle(Session session, Between between, DBObject query, PersistentEntity entity) {
                 DBObject betweenQuery = new BasicDBObject();
                 MongoEntityPersister.setDBObjectValue(betweenQuery, MONGO_GTE_OPERATOR, between.getFrom(), entity.getMappingContext());
                 MongoEntityPersister.setDBObjectValue(betweenQuery, MONGO_LTE_OPERATOR, between.getTo(), entity.getMappingContext());
@@ -397,7 +406,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
-            public void handle(PersistentEntity entity, GreaterThan criterion, DBObject query) {
+            public void handle(Session session, GreaterThan criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 DBObject greaterThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(greaterThanQuery, MONGO_GT_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -407,7 +416,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
-            public void handle(PersistentEntity entity, GreaterThanEquals criterion, DBObject query) {
+            public void handle(Session session, GreaterThanEquals criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 DBObject greaterThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(greaterThanQuery, MONGO_GTE_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -417,7 +426,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
-            public void handle(PersistentEntity entity, LessThan criterion, DBObject query) {
+            public void handle(Session session, LessThan criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 DBObject lessThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(lessThanQuery, MONGO_LT_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -427,7 +436,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
-            public void handle(PersistentEntity entity, LessThanEquals criterion, DBObject query) {
+            public void handle(Session session, LessThanEquals criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 DBObject lessThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(lessThanQuery, MONGO_LTE_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -437,18 +446,18 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(Conjunction.class, new QueryHandler<Conjunction>() {
-            public void handle(PersistentEntity entity, Conjunction criterion, DBObject query) {
-                populateMongoQuery(entity, query, criterion);
+            public void handle(Session session, Conjunction criterion, DBObject query, PersistentEntity entity) {
+                populateMongoQuery((MongoSession) session, query, criterion, entity);
             }
         });
 
         queryHandlers.put(Negation.class, new QueryHandler<Negation>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, Negation criteria, DBObject query) {
+            public void handle(Session session, Negation criteria, DBObject query, PersistentEntity entity) {
                 for (Criterion criterion : criteria.getCriteria()) {
                     final QueryHandler queryHandler = negatedHandlers.get(criterion.getClass());
                     if (queryHandler != null) {
-                        queryHandler.handle(entity, criterion, query);
+                        queryHandler.handle(session, criterion, query, entity);
                     }
                     else {
                         throw new UnsupportedOperationException("Query of type "+criterion.getClass().getSimpleName()+" cannot be negated");
@@ -459,14 +468,14 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(Disjunction.class, new QueryHandler<Disjunction>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, Disjunction criterion, DBObject query) {
-                populateMongoQuery(entity, query, criterion);
+            public void handle(Session session, Disjunction criterion, DBObject query, PersistentEntity entity) {
+                populateMongoQuery((MongoSession) session, query, criterion, entity);
             }
         });
 
         queryHandlers.put(SizeEquals.class, new QueryHandler<SizeEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, SizeEquals criterion, DBObject query) {
+            public void handle(Session session, SizeEquals criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 DBObject sizeEqualsQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(sizeEqualsQuery, SIZE_OPERATOR, getNumber(criterion), entity.getMappingContext());
@@ -476,7 +485,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(SizeNotEquals.class, new QueryHandler<SizeNotEquals>() {
-            public void handle(PersistentEntity entity, SizeNotEquals criterion, DBObject query) {
+            public void handle(Session session, SizeNotEquals criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 DBObject sizeNotEqualsQuery = getOrCreatePropertyQuery(query, propertyName);
                 sizeNotEqualsQuery.put(NOT_OPERATOR,new BasicDBObject(SIZE_OPERATOR, getNumber(criterion)));
@@ -487,7 +496,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(SizeGreaterThan.class, new QueryHandler<SizeGreaterThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, SizeGreaterThan criterion, DBObject query) {
+            public void handle(Session session, SizeGreaterThan criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Integer greaterThanValue = getNumber(criterion);
 
@@ -497,7 +506,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(SizeLessThan.class, new QueryHandler<SizeLessThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, SizeLessThan criterion, DBObject query) {
+            public void handle(Session session, SizeLessThan criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Integer lessThanValue = getNumber(criterion);
 
@@ -507,7 +516,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(SizeLessThanEquals.class, new QueryHandler<SizeLessThanEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, SizeLessThanEquals criterion, DBObject query) {
+            public void handle(Session session, SizeLessThanEquals criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Integer lessThanValue = getNumber(criterion);
 
@@ -517,7 +526,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(SizeGreaterThanEquals.class, new QueryHandler<SizeGreaterThanEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, SizeGreaterThanEquals criterion, DBObject query) {
+            public void handle(Session session, SizeGreaterThanEquals criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Integer greaterThanValue = getNumber(criterion);
 
@@ -528,48 +537,48 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         negatedHandlers.put(SizeEquals.class, new QueryHandler<SizeEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, SizeEquals criterion, DBObject query) {
-                queryHandlers.get(SizeNotEquals.class).handle(entity, Restrictions.sizeNe(criterion.getProperty(), getNumber(criterion)), query);
+            public void handle(Session session, SizeEquals criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(SizeNotEquals.class).handle(session, Restrictions.sizeNe(criterion.getProperty(), getNumber(criterion)), query, entity);
             }
         });
 
         negatedHandlers.put(SizeNotEquals.class, new QueryHandler<SizeNotEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, SizeNotEquals criterion, DBObject query) {
-                queryHandlers.get(SizeEquals.class).handle(entity, Restrictions.sizeEq(criterion.getProperty(), getNumber(criterion)), query);
+            public void handle(Session session, SizeNotEquals criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(SizeEquals.class).handle(session, Restrictions.sizeEq(criterion.getProperty(), getNumber(criterion)), query, entity);
             }
         });
 
         negatedHandlers.put(SizeGreaterThan.class, new QueryHandler<SizeGreaterThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, SizeGreaterThan criterion, DBObject query) {
-                queryHandlers.get(SizeLessThan.class).handle(entity, Restrictions.sizeLt(criterion.getProperty(), getNumber(criterion)), query);
+            public void handle(Session session, SizeGreaterThan criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(SizeLessThan.class).handle(session, Restrictions.sizeLt(criterion.getProperty(), getNumber(criterion)), query, entity);
             }
         });
 
         negatedHandlers.put(SizeLessThan.class, new QueryHandler<SizeLessThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, SizeLessThan criterion, DBObject query) {
-                queryHandlers.get(SizeGreaterThan.class).handle(entity, Restrictions.sizeGt(criterion.getProperty(), getNumber(criterion)), query);
+            public void handle(Session session, SizeLessThan criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(SizeGreaterThan.class).handle(session, Restrictions.sizeGt(criterion.getProperty(), getNumber(criterion)), query, entity);
             }
         });
 
         negatedHandlers.put(Equals.class, new QueryHandler<Equals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
-                queryHandlers.get(NotEquals.class).handle(entity, Restrictions.ne(criterion.getProperty(), criterion.getValue()), query);
+            public void handle(Session session, Equals criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(NotEquals.class).handle(session, Restrictions.ne(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, NotEquals criterion, DBObject query) {
-                queryHandlers.get(Equals.class).handle(entity, Restrictions.eq(criterion.getProperty(), criterion.getValue()), query);
+            public void handle(Session session, NotEquals criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(Equals.class).handle(session, Restrictions.eq(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(In.class, new QueryHandler<In>() {
-            public void handle(PersistentEntity entity, In in, DBObject query) {
+            public void handle(Session session, In in, DBObject query, PersistentEntity entity) {
                 Object nativePropertyValue = getInListQueryValues(entity, in);
                 String property = getPropertyName(entity, in);
                 DBObject inQuery = getOrCreatePropertyQuery(query, property);
@@ -579,7 +588,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         negatedHandlers.put(Between.class, new QueryHandler<Between>() {
-            public void handle(PersistentEntity entity, Between between, DBObject query) {
+            public void handle(Session session, Between between, DBObject query, PersistentEntity entity) {
                 String property = getPropertyName(entity, between);
                 DBObject betweenQuery = getOrCreatePropertyQuery(query, property);
                 betweenQuery.put(MONGO_LTE_OPERATOR, between.getFrom());
@@ -590,29 +599,29 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         negatedHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, GreaterThan criterion, DBObject query) {
-                queryHandlers.get(LessThan.class).handle(entity, Restrictions.lt(criterion.getProperty(), criterion.getValue()), query);
+            public void handle(Session session, GreaterThan criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(LessThan.class).handle(session, Restrictions.lt(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, GreaterThanEquals criterion, DBObject query) {
-                queryHandlers.get(LessThanEquals.class).handle(entity, Restrictions.lte(criterion.getProperty(), criterion.getValue()), query);
+            public void handle(Session session, GreaterThanEquals criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(LessThanEquals.class).handle(session, Restrictions.lte(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, LessThan criterion, DBObject query) {
-                queryHandlers.get(GreaterThan.class).handle(entity, Restrictions.gt(criterion.getProperty(), criterion.getValue()), query);
+            public void handle(Session session, LessThan criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(GreaterThan.class).handle(session, Restrictions.gt(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, LessThanEquals criterion, DBObject query) {
-                queryHandlers.get(GreaterThanEquals.class).handle(entity, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query);
+            public void handle(Session session, LessThanEquals criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(GreaterThanEquals.class).handle(session, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
@@ -813,7 +822,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
      */
     public DBObject getMongoQuery() {
         DBObject query = createQueryObject(entity);
-        populateMongoQuery(entity, query,criteria);
+        populateMongoQuery((MongoSession) getSession(), query,criteria, entity);
         return query;
     }
 
@@ -853,7 +862,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     return (List)new MongoResultList(cursor,offset, mongoEntityPersister).clone();
                 }
 
-                populateMongoQuery(entity, query, criteria);
+                populateMongoQuery((MongoSession) session, query, criteria, entity);
                 List projectedResults = new ArrayList();
                 List<DBObject> aggregationPipeline = new ArrayList<DBObject>();
 
@@ -980,7 +989,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     cursor = executeQueryAndApplyPagination(collection, query);
                 }
                 else {
-                    populateMongoQuery(entity, query, criteria);
+                    populateMongoQuery((MongoSession) session, query, criteria, entity);
                     cursor = executeQueryAndApplyPagination(collection, query);
                 }
 
@@ -1046,7 +1055,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
     @SuppressWarnings("unchecked")
-    public static void populateMongoQuery(PersistentEntity entity, DBObject query, Junction criteria) {
+    public static void populateMongoQuery(MongoSession session, DBObject query, Junction criteria, PersistentEntity entity) {
 
         List subList = null;
         // if a query combines more than 1 item, wrap the items in individual $and or $or arguments
@@ -1078,7 +1087,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         continue;
                     }
                 }
-                queryHandler.handle(entity, criterion, dbo);
+                queryHandler.handle(session, criterion, dbo, entity);
             }
             else {
                 throw new InvalidDataAccessResourceUsageException("Queries of type "+criterion.getClass().getSimpleName()+" are not supported by this implementation");
@@ -1487,7 +1496,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
     private static interface QueryHandler<T> {
-        public void handle(PersistentEntity entity, T criterion, DBObject query);
+        public void handle(Session session, T criterion, DBObject query, PersistentEntity entity);
     }
 
     private static interface ProjectionHandler<T extends Projection> {

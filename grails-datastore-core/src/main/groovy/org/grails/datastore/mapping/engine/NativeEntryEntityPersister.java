@@ -1175,7 +1175,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         Collection instances = (Collection)embeddedInstances;
         List<T> embeddedEntries = new ArrayList<T>();
         for (Object instance : instances) {
-            T entry = handleEmbeddedInstance((Association) prop, instance);
+            T entry = handleEmbeddedInstance((Association)prop, instance);
             embeddedEntries.add(entry);
         }
 
@@ -1193,7 +1193,14 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         setEmbedded(nativeEntry, key, embeddedEntry);
     }
 
+    public T createNativeObjectForEmbedded(Association embedded, Object instance) {
+        return handleEmbeddedInstance(embedded, instance, false);
+    }
+
     protected T handleEmbeddedInstance(Association association, Object embeddedInstance) {
+        return handleEmbeddedInstance(association, embeddedInstance, true);
+    }
+    protected T handleEmbeddedInstance(Association association, Object embeddedInstance, boolean includeNulls) {
         NativeEntryEntityPersister<T,K> embeddedPersister = (NativeEntryEntityPersister<T,K>) session.getPersister(embeddedInstance);
 
         // embeddedPersister would be null if the associated entity is a EmbeddedPersistentEntity
@@ -1218,7 +1225,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             }
             for (PersistentProperty persistentProperty : embeddedProperties) {
                 if (persistentProperty instanceof Simple) {
-                    setEntryValue(embeddedEntry, getPropertyKey(persistentProperty), embeddedEntityAccess.getProperty(persistentProperty.getName()));
+                    Object value = embeddedEntityAccess.getProperty(persistentProperty.getName());
+                    if(value == null && !includeNulls) continue;
+
+                    setEntryValue(embeddedEntry, getPropertyKey(persistentProperty), value);
                 }
                 else if (persistentProperty instanceof Custom) {
                     CustomTypeMarshaller customTypeMarshaller = ((Custom) persistentProperty).getCustomTypeMarshaller();
@@ -1275,7 +1285,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                             if (propValue instanceof Collection) {
                                 Collection associatedObjects = (Collection) propValue;
                                 List<Serializable> keys = session.persist(associatedObjects);
-                                setManyToMany(embeddedPersister.getPersistentEntity(), embeddedInstance, embeddedEntry, manyToMany, associatedObjects, Collections.<Association, List<Serializable>>emptyMap());
+                                setManyToMany(associatedEntity, embeddedInstance, embeddedEntry, manyToMany, associatedObjects, Collections.<Association, List<Serializable>>emptyMap());
                             }
                         }
                     }
