@@ -324,10 +324,23 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     /**
-     * @see Criteria
+     * @see Criteria#neProperty(java.lang.String, java.lang.String)
      */
     Criteria neProperty(String propertyName, String otherPropertyName) {
         add Restrictions.neProperty(propertyName,otherPropertyName)
+        return this
+    }
+
+    /**
+     * @see Criteria#allEq(java.util.Map)
+     */
+    @Override
+    Criteria allEq(Map<String, Object> propertyValues) {
+        Query.Conjunction conjunction = new Query.Conjunction()
+        for (property in propertyValues.keySet()) {
+            conjunction.add Restrictions.eq(property, propertyValues.get(property))
+        }
+        add conjunction
         return this
     }
 

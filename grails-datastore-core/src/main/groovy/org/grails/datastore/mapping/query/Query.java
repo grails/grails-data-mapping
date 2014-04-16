@@ -260,8 +260,9 @@ public abstract class Query implements Cloneable{
      * @return This query instance
      */
     public Query allEq(Map<String, Object> values) {
+        Junction conjunction = conjunction();
         for (String property : values.keySet()) {
-            eq(property, values.get(property));
+            conjunction.add( Restrictions.eq(property, values.get(property)));
         }
         return this;
     }

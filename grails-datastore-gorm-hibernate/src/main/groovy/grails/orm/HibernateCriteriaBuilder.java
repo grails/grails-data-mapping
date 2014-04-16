@@ -787,6 +787,12 @@ public class HibernateCriteriaBuilder extends GroovyObjectSupport implements org
         return this;
     }
 
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria allEq(Map<String, Object> propertyValues) {
+        addToCriteria( Restrictions.allEq(propertyValues) );
+        return this;
+    }
+
     /**
      * Creates a subquery criterion that ensures the given property is equal to all the given returned values
      *
