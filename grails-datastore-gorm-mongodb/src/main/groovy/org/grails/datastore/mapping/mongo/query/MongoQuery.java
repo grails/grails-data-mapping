@@ -125,6 +125,12 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     public static final String MAX_OPERATOR = "$max";
 
+    public static final String SIZE_OPERATOR = "$size";
+
+    public static final String NOT_OPERATOR = "$not";
+
+    public static final String EXISTS_OPERATOR = "$exists";
+
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
             public void handle(PersistentEntity entity, IdEquals criterion, DBObject query) {
@@ -242,7 +248,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             }
         });
 
-      queryHandlers.put(ILike.class, new QueryHandler<ILike>() {
+        queryHandlers.put(ILike.class, new QueryHandler<ILike>() {
             public void handle(PersistentEntity entity, ILike like, DBObject query) {
                 handleLike(entity, like, query, false);
             }
@@ -458,6 +464,96 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             }
         });
 
+        queryHandlers.put(SizeEquals.class, new QueryHandler<SizeEquals>() {
+            @SuppressWarnings("unchecked")
+            public void handle(PersistentEntity entity, SizeEquals criterion, DBObject query) {
+                String propertyName = getPropertyName(entity, criterion);
+                DBObject sizeEqualsQuery = getOrCreatePropertyQuery(query, propertyName);
+                MongoEntityPersister.setDBObjectValue(sizeEqualsQuery, SIZE_OPERATOR, getNumber(criterion), entity.getMappingContext());
+
+                query.put(propertyName, sizeEqualsQuery);
+            }
+        });
+
+        queryHandlers.put(SizeNotEquals.class, new QueryHandler<SizeNotEquals>() {
+            public void handle(PersistentEntity entity, SizeNotEquals criterion, DBObject query) {
+                String propertyName = getPropertyName(entity, criterion);
+                DBObject sizeNotEqualsQuery = getOrCreatePropertyQuery(query, propertyName);
+                sizeNotEqualsQuery.put(NOT_OPERATOR,new BasicDBObject(SIZE_OPERATOR, getNumber(criterion)));
+
+                query.put(propertyName, sizeNotEqualsQuery);
+            }
+        });
+
+        queryHandlers.put(SizeGreaterThan.class, new QueryHandler<SizeGreaterThan>() {
+            @SuppressWarnings("unchecked")
+            public void handle(PersistentEntity entity, SizeGreaterThan criterion, DBObject query) {
+                String propertyName = getPropertyName(entity, criterion);
+                Integer greaterThanValue = getNumber(criterion);
+
+                query.put(propertyName + '.' + greaterThanValue, new BasicDBObject(EXISTS_OPERATOR, true));
+            }
+        });
+
+        queryHandlers.put(SizeLessThan.class, new QueryHandler<SizeLessThan>() {
+            @SuppressWarnings("unchecked")
+            public void handle(PersistentEntity entity, SizeLessThan criterion, DBObject query) {
+                String propertyName = getPropertyName(entity, criterion);
+                Integer lessThanValue = getNumber(criterion);
+
+                query.put(propertyName + '.' + (lessThanValue-1), new BasicDBObject(EXISTS_OPERATOR, 0));
+            }
+        });
+
+        queryHandlers.put(SizeLessThanEquals.class, new QueryHandler<SizeLessThanEquals>() {
+            @SuppressWarnings("unchecked")
+            public void handle(PersistentEntity entity, SizeLessThanEquals criterion, DBObject query) {
+                String propertyName = getPropertyName(entity, criterion);
+                Integer lessThanValue = getNumber(criterion);
+
+                query.put(propertyName + '.' + lessThanValue, new BasicDBObject(EXISTS_OPERATOR, 0));
+            }
+        });
+
+        queryHandlers.put(SizeGreaterThanEquals.class, new QueryHandler<SizeGreaterThanEquals>() {
+            @SuppressWarnings("unchecked")
+            public void handle(PersistentEntity entity, SizeGreaterThanEquals criterion, DBObject query) {
+                String propertyName = getPropertyName(entity, criterion);
+                Integer greaterThanValue = getNumber(criterion);
+
+                query.put(propertyName + '.' + (greaterThanValue-1), new BasicDBObject(EXISTS_OPERATOR, true));
+            }
+        });
+
+
+        negatedHandlers.put(SizeEquals.class, new QueryHandler<SizeEquals>() {
+            @SuppressWarnings("unchecked")
+            public void handle(PersistentEntity entity, SizeEquals criterion, DBObject query) {
+                queryHandlers.get(SizeNotEquals.class).handle(entity, Restrictions.sizeNe(criterion.getProperty(), getNumber(criterion)), query);
+            }
+        });
+
+        negatedHandlers.put(SizeNotEquals.class, new QueryHandler<SizeNotEquals>() {
+            @SuppressWarnings("unchecked")
+            public void handle(PersistentEntity entity, SizeNotEquals criterion, DBObject query) {
+                queryHandlers.get(SizeEquals.class).handle(entity, Restrictions.sizeEq(criterion.getProperty(), getNumber(criterion)), query);
+            }
+        });
+
+        negatedHandlers.put(SizeGreaterThan.class, new QueryHandler<SizeGreaterThan>() {
+            @SuppressWarnings("unchecked")
+            public void handle(PersistentEntity entity, SizeGreaterThan criterion, DBObject query) {
+                queryHandlers.get(SizeLessThan.class).handle(entity, Restrictions.sizeLt(criterion.getProperty(), getNumber(criterion)), query);
+            }
+        });
+
+        negatedHandlers.put(SizeLessThan.class, new QueryHandler<SizeLessThan>() {
+            @SuppressWarnings("unchecked")
+            public void handle(PersistentEntity entity, SizeLessThan criterion, DBObject query) {
+                queryHandlers.get(SizeGreaterThan.class).handle(entity, Restrictions.sizeGt(criterion.getProperty(), getNumber(criterion)), query);
+            }
+        });
+
         negatedHandlers.put(Equals.class, new QueryHandler<Equals>() {
             @SuppressWarnings("unchecked")
             public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
@@ -603,6 +699,14 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             }
         });
 
+    }
+
+    private static Integer getNumber(PropertyCriterion criterion) {
+        Object value = criterion.getValue();
+        if(value instanceof Number) {
+            return ((Number)value).intValue();
+        }
+        throw new IllegalArgumentException("Argument to size constraint must be a number");
     }
 
     private static DBObject getIdObjectForGroupBy(DBObject groupBy) {
