@@ -18,9 +18,13 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import com.mongodb.*;
 import grails.mongodb.geo.*;
+import groovy.lang.Closure;
 import org.bson.BasicBSONObject;
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.mongo.geo.GeoJSONType;
+import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
@@ -49,13 +53,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
-
 /**
  * A {@link org.grails.datastore.mapping.query.Query} implementation for the Mongo document store.
  *
@@ -65,8 +62,13 @@ import com.mongodb.MongoException;
 @SuppressWarnings("rawtypes")
 public class MongoQuery extends Query implements QueryArgumentsAware {
 
+    public static final String PROJECT_OPERATOR = "$project";
+    public static final String SORT_OPERATOR = "$sort";
     private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
     private static Map<Class, QueryHandler> negatedHandlers = new HashMap<Class, QueryHandler>();
+    private static Map<Class, ProjectionHandler> groupByProjectionHandlers = new HashMap<Class, ProjectionHandler>();
+    private static Map<Class, ProjectionHandler> projectProjectionHandlers = new HashMap<Class, ProjectionHandler>();
+
 
     public static final String MONGO_IN_OPERATOR = "$in";
     public static final String MONGO_OR_OPERATOR = "$or";
@@ -108,6 +110,18 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     public static final String NEAR_SPHERE_OPERATOR = "$nearSphere";
 
     public static final String MONGO_REGEX_OPERATOR = "$regex";
+
+    public static final String MATCH_OPERATOR = "$match";
+
+    public static final String AVERAGE_OPERATOR = "$avg";
+
+    public static final String GROUP_OPERATOR = "$group";
+
+    public static final String SUM_OPERATOR = "$sum";
+
+    public static final String MIN_OPERATOR = "$min";
+
+    public static final String MAX_OPERATOR = "$max";
 
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
@@ -503,6 +517,112 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 queryHandlers.get(GreaterThanEquals.class).handle(entity, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query);
             }
         });
+
+        groupByProjectionHandlers.put(AvgProjection.class, new ProjectionHandler<AvgProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, AvgProjection projection) {
+                return addProjectionToGroupBy(projectObject, groupBy,projection, AVERAGE_OPERATOR, "avg_");
+            }
+        });
+        groupByProjectionHandlers.put(CountProjection.class, new ProjectionHandler<CountProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, CountProjection projection) {
+                projectObject.put(MongoEntityPersister.MONGO_ID_FIELD, 1);
+                String projectionKey = "count";
+                groupBy.put(projectionKey, new BasicDBObject(SUM_OPERATOR, 1));
+                return projectionKey;
+            }
+        });
+        groupByProjectionHandlers.put(CountDistinctProjection.class, new ProjectionHandler<CountDistinctProjection>() {
+            @Override
+            // equivalent of "select count (distinct fieldName) from someTable". Example:
+            // db.someCollection.aggregate([{ $group: { _id: "$fieldName"}  },{ $group: { _id: 1, count: { $sum: 1 } } } ])
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, CountDistinctProjection projection) {
+                projectObject.put(projection.getPropertyName(), 1);
+                String property = projection.getPropertyName();
+                String projectionValueKey = "countDistinct_" + property;
+                DBObject id = getIdObjectForGroupBy(groupBy);
+                id.put(property, "$"+property);
+                return projectionValueKey;
+            }
+        });
+
+        groupByProjectionHandlers.put(MinProjection.class, new ProjectionHandler<MinProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, MinProjection projection) {
+                return addProjectionToGroupBy(projectObject, groupBy, projection, MIN_OPERATOR, "min_");
+            }
+        });
+        groupByProjectionHandlers.put(MaxProjection.class, new ProjectionHandler<MaxProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, MaxProjection projection) {
+                return addProjectionToGroupBy(projectObject, groupBy, projection, MAX_OPERATOR, "max_");
+            }
+        });
+        groupByProjectionHandlers.put(SumProjection.class, new ProjectionHandler<SumProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, SumProjection projection) {
+                return addProjectionToGroupBy(projectObject, groupBy, projection, SUM_OPERATOR, "sum_");
+            }
+        });
+
+        projectProjectionHandlers.put(DistinctPropertyProjection.class, new ProjectionHandler<DistinctPropertyProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, DistinctPropertyProjection projection) {
+                String property = projection.getPropertyName();
+                projectObject.put(property, 1);
+                DBObject id = getIdObjectForGroupBy(groupBy);
+                id.put(property, "$"+property);
+                return property;
+            }
+        });
+
+        projectProjectionHandlers.put(PropertyProjection.class, new ProjectionHandler<PropertyProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, PropertyProjection projection) {
+                String property = projection.getPropertyName();
+                projectObject.put(property, 1);
+                DBObject id = getIdObjectForGroupBy(groupBy);
+                id.put(property, "$"+property);
+                // we add the id to the grouping to make it not distinct
+                id.put(MongoEntityPersister.MONGO_ID_FIELD, "$"+MongoEntityPersister.MONGO_ID_FIELD);
+                return property;
+            }
+        });
+
+        projectProjectionHandlers.put(IdProjection.class, new ProjectionHandler<IdProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, IdProjection projection) {
+                projectObject.put(MongoEntityPersister.MONGO_ID_FIELD, 1);
+                DBObject id = getIdObjectForGroupBy(groupBy);
+                id.put(MongoEntityPersister.MONGO_ID_FIELD, "$_id");
+
+                return MongoEntityPersister.MONGO_ID_FIELD;
+            }
+        });
+
+    }
+
+    private static DBObject getIdObjectForGroupBy(DBObject groupBy) {
+        Object value = groupBy.get(MongoEntityPersister.MONGO_ID_FIELD);
+        DBObject id;
+        if(value instanceof DBObject) {
+            id = (DBObject) value;
+        }
+        else {
+            id = new BasicDBObject();
+            groupBy.put(MongoEntityPersister.MONGO_ID_FIELD, id);
+        }
+        return id;
+    }
+
+    private static String addProjectionToGroupBy(DBObject projectObject, DBObject groupBy, PropertyProjection projection, String operator, String prefix) {
+        projectObject.put(projection.getPropertyName(), 1);
+        String property = projection.getPropertyName();
+        String projectionValueKey = prefix + property;
+        BasicDBObject averageProjection = new BasicDBObject(operator, "$" + property);
+        groupBy.put(projectionValueKey, averageProjection);
+        return projectionValueKey;
     }
 
     private static DBObject getOrCreatePropertyQuery(DBObject query, String propertyName) {
@@ -617,8 +737,9 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     return wrapObjectResultInList(createObjectFromDBObject(dbObject));
                 }
 
-                DBCursor cursor = null;
+                DBCursor cursor;
                 DBObject query = createQueryObject(entity);
+
 
                 final List<Projection> projectionList = projections().getProjectionList();
                 if (projectionList.isEmpty()) {
@@ -626,104 +747,121 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     return (List)new MongoResultList(cursor,offset, mongoEntityPersister).clone();
                 }
 
+                populateMongoQuery(entity, query, criteria);
                 List projectedResults = new ArrayList();
+                List<DBObject> aggregationPipeline = new ArrayList<DBObject>();
+
+                if(!query.keySet().isEmpty()) {
+                    aggregationPipeline.add(new BasicDBObject(MATCH_OPERATOR, query));
+                }
+
+                List<Order> orderBy = getOrderBy();
+                if(!orderBy.isEmpty()) {
+                    BasicDBObject sortBy = new BasicDBObject();
+                    DBObject sort = new BasicDBObject(SORT_OPERATOR, sortBy);
+                    for (Order order : orderBy) {
+                        sortBy.put(order.getProperty(), order.getDirection() == Order.Direction.ASC ? 1 : -1);
+                    }
+
+                    aggregationPipeline.add(sort);
+                }
+
+
+                List<ProjectedProperty> projectedKeys = new ArrayList<ProjectedProperty>();
+                boolean singleResult = true;
+
+                BasicDBObject projectObject = new BasicDBObject();
+
+
+
+                BasicDBObject groupByObject = new BasicDBObject();
+                groupByObject.put(MongoEntityPersister.MONGO_ID_FIELD, 0);
+                BasicDBObject additionalGroupBy = null;
+
+
                 for (Projection projection : projectionList) {
-                    if (projection instanceof CountProjection) {
-                        // For some reason the below doesn't return the expected result whilst executing the query and returning the cursor does
-                        //projectedResults.add(collection.getCount(query));
-                        if (cursor == null) {
-                            cursor = executeQuery(entity, criteria, collection, query);
-                        }
-                        projectedResults.add(cursor.size());
-                    }
-                    else if (projection instanceof MinProjection) {
-                        if (cursor == null) {
-                            cursor = executeQuery(entity, criteria, collection, query);
-                        }
-                        MinProjection mp = (MinProjection) projection;
-
-                        MongoResultList results = new MongoResultList(cursor,offset, mongoEntityPersister);
-                        projectedResults.add(manualProjections.min((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
-                    }
-                    else if (projection instanceof MaxProjection) {
-                        if (cursor == null) {
-                            cursor = executeQuery(entity, criteria, collection, query);
-                        }
-                        MaxProjection mp = (MaxProjection) projection;
-
-                        MongoResultList results = new MongoResultList(cursor,offset, mongoEntityPersister);
-                        projectedResults.add(manualProjections.max((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
-                    }
-                    else if (projection instanceof CountDistinctProjection) {
-                        if (cursor == null) {
-                            cursor = executeQuery(entity, criteria, collection, query);
-                        }
-                        CountDistinctProjection mp = (CountDistinctProjection) projection;
-
-                        MongoResultList results = new MongoResultList(cursor, offset,mongoEntityPersister);
-                        projectedResults.add(manualProjections.countDistinct((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
-
-                    }
-                    else if ((projection instanceof DistinctPropertyProjection) || (projection instanceof PropertyProjection) || (projection instanceof IdProjection)) {
-                        final boolean distinct = (projection instanceof DistinctPropertyProjection);
-                        final PersistentProperty persistentProperty;
-                        final String propertyName;
-                        if (projection instanceof IdProjection) {
-                            persistentProperty = entity.getIdentity();
-                            propertyName = MongoEntityPersister.MONGO_ID_FIELD;
+                    ProjectionHandler projectionHandler = projectProjectionHandlers.get(projection.getClass());
+                    ProjectedProperty projectedProperty = new ProjectedProperty();
+                    projectedProperty.projection = projection;
+                    if(projection instanceof PropertyProjection) {
+                        PropertyProjection propertyProjection = (PropertyProjection) projection;
+                        PersistentProperty property = entity.getPropertyByName(propertyProjection.getPropertyName());
+                        if(property != null) {
+                            projectedProperty.property = property;
                         }
                         else {
-                            PropertyProjection pp = (PropertyProjection) projection;
-                            persistentProperty = entity.getPropertyByName(pp.getPropertyName());
-                            propertyName = getPropertyName(entity, persistentProperty.getName());
+                            throw new InvalidDataAccessResourceUsageException("Attempt to project on a non-existent project ["+propertyProjection.getPropertyName()+"]");
                         }
-                        if (persistentProperty != null) {
-                            populateMongoQuery(entity, query, criteria);
+                    }
+                    if(projectionHandler != null) {
+                        singleResult = false;
 
-                            List propertyResults;
-                            if (max > -1) {
-                                // if there is a limit then we have to do a manual projection since the MongoDB driver doesn't support limits and distinct together
-                                cursor = executeQueryAndApplyPagination(collection, query);
-                                if (distinct) {
-                                    propertyResults = new ArrayList(manualProjections.distinct(new MongoResultList(cursor, offset,mongoEntityPersister), propertyName));
-                                }
-                                else {
-                                    propertyResults = manualProjections.property(new MongoResultList(cursor,offset, mongoEntityPersister), propertyName);
-                                }
+                        String aggregationKey = projectionHandler.handle(entity, projectObject,groupByObject, projection);
+                        aggregationKey = "id." + aggregationKey;
+                        projectedProperty.projectionKey = aggregationKey;
+                        projectedKeys.add(projectedProperty);
+                    }
+                    else {
+
+                        projectionHandler = groupByProjectionHandlers.get(projection.getClass());
+                        if(projectionHandler != null) {
+                            projectedProperty.projectionKey = projectionHandler.handle(entity, projectObject,groupByObject, projection);
+                            projectedKeys.add(projectedProperty);
+
+                            if(projection instanceof CountDistinctProjection) {
+                                BasicDBObject finalCount = new BasicDBObject(MongoEntityPersister.MONGO_ID_FIELD, 1);
+                                finalCount.put(projectedProperty.projectionKey, new BasicDBObject(SUM_OPERATOR, 1));
+                                additionalGroupBy = new BasicDBObject(GROUP_OPERATOR, finalCount);
+                            }
+                        }
+
+                    }
+                }
+
+                if(!projectObject.isEmpty()) {
+                    aggregationPipeline.add(new BasicDBObject(PROJECT_OPERATOR, projectObject));
+                }
+
+                aggregationPipeline.add(new BasicDBObject(GROUP_OPERATOR, groupByObject));
+
+                if(additionalGroupBy != null) {
+                    aggregationPipeline.add(additionalGroupBy);
+                }
+
+
+                if(max > 0) {
+                    aggregationPipeline.add(new BasicDBObject("$limit", max));
+                }
+                if(offset > 0) {
+                    aggregationPipeline.add(new BasicDBObject("$skip", offset));
+                }
+
+
+
+                Cursor aggregatedResults = collection.aggregate(aggregationPipeline, AggregationOptions.builder().build());
+
+                if(singleResult && aggregatedResults.hasNext()) {
+                    DBObject dbo = aggregatedResults.next();
+                    for (ProjectedProperty projectedProperty : projectedKeys) {
+                        Object value = dbo.get(projectedProperty.projectionKey);
+                        PersistentProperty property = projectedProperty.property;
+                        if(value != null) {
+                            if(property instanceof ToOne ) {
+                                projectedResults.add( session.retrieve(property.getType(), (Serializable) value));
                             }
                             else {
-                                if (distinct || (projection instanceof IdProjection)) {
-                                    propertyResults = collection.distinct(propertyName, query);
-                                }
-                                else {
-
-                                    DBCursor propertyCursor = collection.find(query, new BasicDBObject(propertyName, 1));
-                                    ArrayList projectedProperties = new ArrayList();
-                                    while(propertyCursor.hasNext()) {
-                                        DBObject dbo = propertyCursor.next();
-                                        projectedProperties.add(dbo.get(propertyName));
-                                    }
-
-                                    propertyResults = projectedProperties;
-                                }
+                                projectedResults.add(value);
                             }
-
-                            if (persistentProperty instanceof ToOne) {
-                                Association a = (Association) persistentProperty;
-                                propertyResults = session.retrieveAll(a.getAssociatedEntity().getJavaClass(), propertyResults);
-                            }
-
-                            if (projectedResults.size() == 0 && projectionList.size() == 1) {
-                                return propertyResults;
-                            }
-                            projectedResults.add(propertyResults);
                         }
                         else {
-                            throw new InvalidDataAccessResourceUsageException("Cannot use [" +
-                                    projection.getClass().getSimpleName() +
-                                    "] projection on non-existent property: " + propertyName);
+                            if(projectedProperty.projection instanceof CountProjection) {
+                                projectedResults.add(0);
+                            }
                         }
                     }
+                }
+                else {
+                   return new AggregatedResultList(session, aggregatedResults, projectedKeys);
                 }
 
                 return projectedResults;
@@ -1246,18 +1384,284 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         public void handle(PersistentEntity entity, T criterion, DBObject query);
     }
 
+    private static interface ProjectionHandler<T extends Projection> {
+        /**
+         * Handles a projection modifying the aggregation pipeline appropriately
+         *
+         * @param entity The entity
+         * @param groupByObject The group by object
+         * @param projection The projection
+         * @return The key to be used to obtain the projected value from the pipeline results
+         */
+        public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupByObject, T projection);
+    }
+
+
+    public static class AggregatedResultList extends AbstractList {
+
+        private Cursor cursor;
+        private List<ProjectedProperty> projectedProperties;
+        private List initializedObjects = new ArrayList();
+        private int internalIndex = 0;
+        private boolean initialized = false;
+        private boolean containsAssociations = false;
+        private Session session;
+
+        public AggregatedResultList(Session session, Cursor cursor, List<ProjectedProperty> projectedProperties) {
+            this.cursor = cursor;
+            this.projectedProperties = projectedProperties;
+            this.session = session;
+            for (ProjectedProperty projectedProperty : projectedProperties) {
+                if(projectedProperty.property instanceof Association) {
+                    this.containsAssociations = true;
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public String toString() {
+            return initializedObjects.toString();
+        }
+
+        @Override
+        public Object get(int index) {
+            if(containsAssociations) initializeFully();
+            if(initializedObjects.size() > index) {
+                return initializedObjects.get(index);
+            }
+            else if(!initialized) {
+                boolean hasResults = false;
+                while(cursor.hasNext()) {
+                    hasResults = true;
+                    DBObject dbo = cursor.next();
+                    Object projected = addInitializedObject(dbo);
+                    if(index == internalIndex) {
+                        return projected;
+                    }
+                }
+                if(!hasResults) handleNoResults();
+                initialized = true;
+            }
+            throw new ArrayIndexOutOfBoundsException("Index value " + index + " exceeds size of aggregate list");
+        }
+
+
+        @Override
+        public Object set(int index, Object element) {
+            initializeFully();
+            return initializedObjects.set(index, element);
+        }
+
+        @Override
+        public ListIterator listIterator() {
+            return listIterator(0);
+        }
+
+        @Override
+        public ListIterator listIterator(int index) {
+            initializeFully();
+            return initializedObjects.listIterator(index);
+        }
+
+        protected void initializeFully() {
+            if(initialized) return;
+            if(containsAssociations) {
+                if(projectedProperties.size() == 1) {
+                    ProjectedProperty projectedProperty = projectedProperties.get(0);
+                    PersistentProperty property = projectedProperty.property;
+                    List<Serializable> identifiers = new ArrayList<Serializable>();
+                    boolean hasResults = false;
+                    while(cursor.hasNext()) {
+                        hasResults = true;
+                        DBObject dbo = cursor.next();
+                        Object id = getProjectedValue(dbo, projectedProperty.projectionKey);
+                        identifiers.add((Serializable) id);
+                    }
+                    if(!hasResults) {
+                        handleNoResults();
+                    }
+                    else {
+                        this.initializedObjects = session.retrieveAll(property.getType(), identifiers);
+                    }
+                }
+                else {
+                    Map<Integer, Map<Class, List<Serializable>>> associationMap = createAssociationMap();
+
+                    boolean hasResults = false;
+                    while(cursor.hasNext()) {
+                        hasResults = true;
+                        DBObject dbo = cursor.next();
+                        List<Object> projectedResult = new ArrayList<Object>();
+                        int index = 0;
+                        for (ProjectedProperty projectedProperty : projectedProperties) {
+                            PersistentProperty property = projectedProperty.property;
+                            Object value = getProjectedValue(dbo, projectedProperty.projectionKey);
+                            if(property instanceof Association) {
+                                Map<Class, List<Serializable>> identifierMap = associationMap.get(index);
+                                Class type = ((Association) property).getAssociatedEntity().getJavaClass();
+                                identifierMap.get(type).add((Serializable) value);
+                            }
+                            projectedResult.add(value);
+                            index++;
+                        }
+
+                        initializedObjects.add(projectedResult);
+                    }
+
+                    if(!hasResults) {
+                        handleNoResults();
+                        return;
+                    }
+
+                    Map<Integer, List> finalResults = new HashMap<Integer, List>();
+                    for (Integer index : associationMap.keySet()) {
+                        Map<Class, List<Serializable>> associatedEntityIdentifiers = associationMap.get(index);
+                        for (Class associationClass : associatedEntityIdentifiers.keySet()) {
+                            List<Serializable> identifiers = associatedEntityIdentifiers.get(associationClass);
+                            finalResults.put(index, session.retrieveAll(associationClass, identifiers));
+                        }
+                    }
+
+                    for (Object initializedObject : initializedObjects) {
+                        List projected = (List) initializedObject;
+                        for (Integer index : finalResults.keySet()) {
+                            List resultsByIndex = finalResults.get(index);
+                            if(index < resultsByIndex.size() ) {
+                                projected.set(index, resultsByIndex.get(index));
+                            }
+                            else {
+                                projected.set(index, null);
+                            }
+                        }
+
+                    }
+                }
+            }
+            else {
+                boolean hasResults = false;
+                while(cursor.hasNext()) {
+                    hasResults = true;
+                    DBObject dbo = cursor.next();
+                    addInitializedObject(dbo);
+                }
+                if(!hasResults) {
+                    handleNoResults();
+                }
+            }
+            initialized = true;
+        }
+
+        protected void handleNoResults() {
+            ProjectedProperty projectedProperty = projectedProperties.get(0);
+            if(projectedProperty.projection instanceof CountProjection) {
+                initializedObjects.add(0);
+            }
+        }
+
+        private Map<Integer, Map<Class, List<Serializable>>> createAssociationMap() {
+            Map<Integer, Map<Class, List<Serializable>>> associationMap = new HashMap<Integer, Map<Class, List<Serializable>>>();
+            associationMap = DefaultGroovyMethods.withDefault(associationMap, new Closure(this) {
+                public Object doCall(Object o) {
+                    Map<Class, List<Serializable>> subMap = new HashMap<Class, List<Serializable>>();
+                    subMap = DefaultGroovyMethods.withDefault(subMap, new Closure(this) {
+                        public Object doCall(Object o) {
+                            return new ArrayList<Serializable>();
+                        }
+                    });
+                    return subMap;
+                }
+            });
+            return associationMap;
+        }
+
+        @Override
+        public Iterator iterator() {
+            if(initialized || containsAssociations || internalIndex>0) {
+                initializeFully();
+                return initializedObjects.iterator();
+            }
+
+            if(!cursor.hasNext()) {
+                handleNoResults();
+                return initializedObjects.iterator();
+            }
+
+            return new Iterator() {
+                @Override
+                public boolean hasNext() {
+                    boolean hasMore = cursor.hasNext();
+                    if(!hasMore) initialized = true;
+                    return hasMore;
+                }
+
+                @Override
+                public Object next() {
+                    DBObject dbo = cursor.next();
+                    return addInitializedObject(dbo);
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException("Aggregate result list cannot be mutated.");
+                }
+            };
+        }
+
+        private Object addInitializedObject(DBObject dbo) {
+            if(projectedProperties.size() > 1) {
+
+                List<Object> projected = new ArrayList<Object>();
+                for (ProjectedProperty projectedProperty : projectedProperties) {
+                    Object value;
+                    value = getProjectedValue(dbo, projectedProperty.projectionKey);
+                    projected.add(value);
+                }
+                initializedObjects.add(internalIndex, projected);
+                internalIndex++;
+                return projected;
+            }
+            else {
+                ProjectedProperty projectedProperty = projectedProperties.get(0);
+                Object projected = getProjectedValue(dbo, projectedProperty.projectionKey);
+                initializedObjects.add(internalIndex, projected);
+                internalIndex++;
+                return projected;
+            }
+        }
+
+        private Object getProjectedValue(DBObject dbo, String projectionKey) {
+            Object value;
+            if(projectionKey.startsWith("id.")) {
+                projectionKey = projectionKey.substring(3);
+                DBObject id = (DBObject) dbo.get(MongoEntityPersister.MONGO_ID_FIELD);
+                value = id.get(projectionKey);
+            }
+            else {
+                value = dbo.get(projectionKey);
+            }
+            return value;
+        }
+
+        @Override
+        public int size() {
+            initializeFully();
+            return initializedObjects.size();
+        }
+    }
+
     @SuppressWarnings("serial")
     public static class MongoResultList extends AbstractList {
 
         private MongoEntityPersister mongoEntityPersister;
-        private DBCursor cursor;
+        private Cursor cursor;
         private int offset = 0;
         private int internalIndex;
         private List initializedObjects = new ArrayList();
         private Integer size;
 
         @SuppressWarnings("unchecked")
-        public MongoResultList(DBCursor cursor, int offset, MongoEntityPersister mongoEntityPersister) {
+        public MongoResultList(Cursor cursor, int offset, MongoEntityPersister mongoEntityPersister) {
             this.cursor = cursor;
             this.mongoEntityPersister = mongoEntityPersister;
             this.offset = offset;
@@ -1266,7 +1670,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         /**
          * @return The underlying MongoDB cursor instance
          */
-        public DBCursor getCursor() {
+        public Cursor getCursor() {
             return cursor;
         }
 
@@ -1312,8 +1716,18 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
          */
         @Override
         public Iterator iterator() {
-            final DBCursor cursor = this.cursor.copy();
-            cursor.skip(offset);
+            final Cursor cursor;
+            if(this.cursor instanceof DBCursor) {
+                DBCursor dbCursor = (DBCursor) this.cursor;
+                DBCursor newDbCursor = dbCursor.copy();
+                cursor = newDbCursor;
+                newDbCursor.skip(offset);
+            }
+            else {
+                cursor = this.cursor;
+            }
+
+
             return new Iterator() {
                 public boolean hasNext() {
                     return cursor.hasNext();
@@ -1337,7 +1751,16 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         @Override
         public int size() {
             if(this.size == null) {
-                this.size = cursor.size();
+                if(cursor instanceof DBCursor) {
+                    this.size = ((DBCursor)cursor).size();
+                }
+                else {
+                    this.size = 0;
+                    while(cursor.hasNext()) {
+                        cursor.next();
+                        this.size++;
+                    }
+                }
             }
             return size;
         }
@@ -1361,5 +1784,11 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         public Object clone() {
             return new MongoResultList(cursor,offset, mongoEntityPersister);
         }
+    }
+
+    private static class ProjectedProperty {
+        Projection projection;
+        String projectionKey;
+        PersistentProperty property;
     }
 }
