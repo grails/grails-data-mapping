@@ -253,9 +253,9 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             }
 
         then:
-            results.find { it.name = "Bob Child"}
-            results.find { it.name = "Fred Child"}
-            results.find { it.name = "Barney Child"}
-            results.find { it.name = "Frank Child"}
+            results.find { it.name == "Bob Child"}
+            results.find { it.name == "Fred Child"}
+            results.find { it.name == "Barney Child"}
+            results.find { it.name == "Frank Child"}
     }
 }
