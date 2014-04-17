@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import spock.lang.Ignore
+import spock.lang.Issue
 
 /**
  * Abstract base test for criteria queries. Subclasses should do the necessary setup to configure GORM
@@ -283,4 +284,32 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             results.find { it.name == "Barney Child"}
             results.find { it.name == "Frank Child"}
     }
+
+    @Issue("GRAILS-10589")
+    void "Test obtaining multiple association entity properties using property projection"() {
+        given:
+            def age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each {
+                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+            }
+
+            4 == ChildEntity.count()
+
+            def criteria = TestEntity.createCriteria()
+
+        when:
+            def results = criteria.list {
+                projections {
+                    property "child.id"
+                    property "child.name"
+                }
+            }
+
+        then:
+            results.find { it.size() == 2 && it[0] instanceof Long && it[1] == "Bob Child"}
+            results.find { it.size() == 2 && it[0] instanceof Long && it[1] == "Fred Child"}
+            results.find { it.size() == 2 && it[0] instanceof Long && it[1] == "Barney Child"}
+            results.find { it.size() == 2 && it[0] instanceof Long && it[1] == "Frank Child"}
+    }
+
 }

@@ -40,7 +40,7 @@ import org.springframework.util.Assert
  * @since 1.0
  */
 class SimpleMapQuery extends Query {
-
+    private static final int DOT_CHAR_INT = '.' as char 
     Map<String, Map> datastore
     private String family
     private SimpleMapEntityPersister entityPersister
@@ -105,7 +105,7 @@ class SimpleMapQuery extends Query {
                     results.add(uniqueList.size() )
                 }
                 else if (p instanceof Query.PropertyProjection) {
-                    def propertyValues = entityList.collect { it."$p.propertyName"}
+                    def propertyValues = entityList.collect { resolveIfEmbedded(p.propertyName, it)}
                     if (p instanceof Query.MaxProjection) {
                         results.add(propertyValues.max())
                     }
@@ -120,7 +120,7 @@ class SimpleMapQuery extends Query {
                         results.add(average)
                     }
                     else {
-                        PersistentProperty prop = entity.getPropertyByName(p.propertyName)
+                        PersistentProperty prop = resolveIfEmbeddedPersistentProperty(p.propertyName, entity)
                         boolean distinct = p instanceof Query.DistinctPropertyProjection
                         if (distinct) {
                             propertyValues = propertyValues.unique()
@@ -160,6 +160,7 @@ class SimpleMapQuery extends Query {
         return Collections.emptyList()
     }
 
+    
     private List applyMaxAndOffset(List sortedResults) {
         final def total = sortedResults.size()
         if (offset > total) return Collections.emptyList()
@@ -296,7 +297,7 @@ class SimpleMapQuery extends Query {
 
                 def associated = session.retrieve(associatedEntity.javaClass, id)
                 if (associated) {
-                    callable.call(associated)
+                    return callable.call(associated)
                 }
             }
             else {
@@ -307,6 +308,7 @@ class SimpleMapQuery extends Query {
                     return associatedEntities.any(callable)
                 }
             }
+            false
         }.keySet().toList()
     }
 
@@ -638,13 +640,35 @@ class SimpleMapQuery extends Query {
      * @return
      */
     protected resolveIfEmbedded(propertyName, obj) {
-        if( propertyName.contains('.') ) {
-            def (embeddedProperty, nestedProperty) = propertyName.tokenize('.')
-            obj?."${embeddedProperty}"?."${nestedProperty}"
+        if(propertyName.indexOf(DOT_CHAR_INT) > -1) {
+            return propertyName.tokenize('.').inject(obj) { currentObject, namePart -> 
+                currentObject != null ? currentObject[namePart] : null 
+            }
+        } else {
+            return obj != null ? obj[propertyName] : null
         }
-        else {
-            obj?."${propertyName}"
+    }
+    
+    protected PersistentProperty resolveIfEmbeddedPersistentProperty(String propertyName, PersistentEntity entity) {
+        if(propertyName.indexOf(DOT_CHAR_INT) > -1) {
+            def result = propertyName.tokenize('.').inject([entity, null]) { accumulator, namePart ->
+                PersistentEntity currentEntity = accumulator[0]
+                PersistentProperty property = resolvePersistentProperty(namePart, currentEntity) 
+                PersistentEntity associatedEntity = property instanceof Association ? ((Association)property).associatedEntity : null
+                [associatedEntity, property]
+            }
+            return result?.getAt(1)
+        } else {
+            resolvePersistentProperty(propertyName, entity)
         }
+    }
+
+    private resolvePersistentProperty(String propertyName, PersistentEntity entity) {
+        PersistentProperty property = entity.getPropertyByName(propertyName)
+        if(property == null && entity.isIdentityName(propertyName)) {
+            property = entity.identity
+        }
+        return property
     }
 
     protected List executeLikeWithRegex(SimpleMapEntityPersister entityPersister, PersistentProperty property, regexFormat) {
@@ -743,13 +767,9 @@ class SimpleMapQuery extends Query {
 
     protected PersistentProperty getValidProperty(criterion) {
         if (criterion instanceof Query.PropertyNameCriterion) {
-            def property = entity.getPropertyByName(criterion.property)
+            def property = resolveIfEmbeddedPersistentProperty(criterion.property, entity)
             if (property == null) {
-                def identity = entity.identity
-                if (identity.name == criterion.property) return identity
-                else {
-                    throw new InvalidDataAccessResourceUsageException("Cannot query [" + entity + "] on non-existent property: " + criterion.property)
-                }
+                throw new InvalidDataAccessResourceUsageException("Cannot query [" + entity + "] on non-existent property: " + criterion.property)
             }
             return property
         }
