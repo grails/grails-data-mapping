@@ -2,6 +2,7 @@ package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
 import grails.gorm.PagedResultList
+import spock.lang.Issue
 
 class DetachedCriteriaSpec extends GormDatastoreSpec {
 
@@ -65,6 +66,38 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             results == ["Homer", "Marge"]
 
     }
+    
+    @Issue("GRAILS-11046")
+    void "Test query on association property"() {
+        given:"A bunch of people and a face to Bart"
+            createPeople()
+            def face = new Face(name:"Bart's face")
+            def nose = new Nose(hasFreckles: true, face:face)
+            face.nose = nose
+            face.save(flush:true)
+            def bart = Person.findByFirstName('Bart')
+            bart.face = face
+            bart.save(flush:true)
+            def faceId = face.id
+        when:"A detached criteria instance is created that uses a property projection"
+            def criteria = new DetachedCriteria(Person).build {
+                eq 'face.name', "Bart's face"
+            }
+            def results = criteria.list()
+        then:"The list method returns the right results"
+            results.size() == 1
+            results[0].firstName == "Bart"
+        when:"A detached criteria instance is created that uses a property projection with id"
+            criteria = new DetachedCriteria(Person).build {
+                eq 'face.id', faceId
+            }
+            results = criteria.list()
+        then:"The list method returns the right results"
+            results.size() == 1
+            results[0].firstName == "Bart"
+    }
+    
+    
 //
 //    void "Test exists method"() {
 //        given:"A bunch of people"

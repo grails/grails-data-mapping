@@ -295,7 +295,7 @@ class SimpleMapQuery extends Query {
                     throw new IllegalStateException("No associated entity found for ${association.owner}.${association.name}")
                 }
 
-                def associated = session.retrieve(associatedEntity.javaClass, id)
+                def associated = associatedEntity.identity == null ? id : session.retrieve(associatedEntity.javaClass, id)
                 if (associated) {
                     return callable.call(associated)
                 }
@@ -446,8 +446,13 @@ class SimpleMapQuery extends Query {
                     return allEntities.findAll { it.value[property.name] == null }.collect { it.key }
                 }
                 else if (equals.property.contains('.')) {
+                    def parts = equals.property.tokenize('.')
+                    def partsTail = parts.tail().join('.')
                     def allEntities = datastore[family]
-                    return allEntities.findAll { resolveIfEmbedded(equals.property, it.value) == value }.collect { it.key }
+                    Association association = entity.getPropertyByName(parts[0])
+                    return queryAssociation(allEntities, association) {
+                        resolveIfEmbedded(partsTail, it) == value
+                    }
                 }
                 else {
                     return indexer.query(value)
