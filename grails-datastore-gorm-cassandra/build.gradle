@@ -57,7 +57,7 @@ dependencies {
 		project(':grails-datastore-gorm-tck')
 
 
-	compile "com.datastax.cassandra:cassandra-driver-core:2.0.0"
+	compile "com.datastax.cassandra:cassandra-driver-core:2.0.1"
 
 }
 

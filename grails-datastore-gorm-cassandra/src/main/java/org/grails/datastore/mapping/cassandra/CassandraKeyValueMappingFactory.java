@@ -15,7 +15,7 @@ import java.util.List;
 
 public class CassandraKeyValueMappingFactory extends GormKeyValueMappingFactory {
 
-    private static Logger log = LoggerFactory.getLogger(CassandraKeyValueMappingFactory.class);
+	private static Logger log = LoggerFactory.getLogger(CassandraKeyValueMappingFactory.class);
 	private String keyspace;
 	private Closure defaultMapping;
 
@@ -52,7 +52,7 @@ public class CassandraKeyValueMappingFactory extends GormKeyValueMappingFactory 
 		log.trace("family is {}", family.getFamily());
 		if (family.getFamily() == null) {
 			family.setFamily(entity.getDecapitalizedName());
-	        log.trace("family set to {}", family.getFamily());
+			log.trace("family set to {}", family.getFamily());
 		}
 		return family;
 	}

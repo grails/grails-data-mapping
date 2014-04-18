@@ -60,7 +60,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		super(context, entity, conn, applicationEventPublisher);
 		this.session = session;
 		this.cassandraSession = conn;
-  }
+	}
 
 	@Override
 	protected String getNativePropertyKey(PersistentProperty prop) {
@@ -91,7 +91,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 
 	@Override
 	protected void setEntryValue(KeyValueEntry nativeEntry, String key, Object value) {
-			nativeEntry.put(key, value);
+		nativeEntry.put(key, value);
 	}
 
 	@Override
@@ -100,8 +100,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		final ClassMapping cm = persistentEntity.getMapping();
 		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 
-		//TODO review Native Key string conversion
-		Statement stmt = QueryBuilder.select().all().from(keyspaceName, family).where(QueryBuilder.eq("id", UUID.fromString(nativeKey.toString())));
+		Statement stmt = QueryBuilder.select().all().from(keyspaceName, family).where(QueryBuilder.eq(persistentEntity.getIdentity().getName(), convertToCassandraType(nativeKey)));
 		ResultSet rs = session.execute(stmt);
 
 		KeyValueEntry entry = null;
@@ -124,23 +123,23 @@ Possible other way
 	@Override
 	protected Object storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object storeId, KeyValueEntry entry) {
 		log.debug("StoreEntry");
-		UUID uuid = (UUID)storeId;
+		//		UUID uuid = (UUID)storeId;
 		final ClassMapping cm = persistentEntity.getMapping();
 		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 		String family = getFamily(persistentEntity, persistentEntity.getMapping());
 		log.debug("storeEntry: family={}", family);
 		Insert insert = QueryBuilder.insertInto(keyspaceName, family);
 
-		//Include id
-		insert.value("id", uuid);
+		//Include identity
+		insert.value(persistentEntity.getIdentity().getName(), convertToCassandraType(storeId));
 
-        log.debug("storeEntry: id->UUID:{}", uuid.toString());
+		//        log.debug("storeEntry: id->UUID:{}", storeId.toString());
 
 		for (String prop : entry.keySet()) {
-            //log.debug("storeEntry: {}->{}:{}", prop, entry.get(prop), entry.get(prop).getClass());
-            log.debug("storeEntry: {}->{}", prop, entry.get(prop));
-
-			insert.value(prop, convertToCassandraType(entry.get(prop)));
+			if (!prop.equalsIgnoreCase("id")) { //Filter out ID in the case of mapping to a different id column
+				log.debug("storeEntry: {}->{}", prop, entry.get(prop));
+				insert.value(prop, convertToCassandraType(entry.get(prop)));
+			}
 		}
 
 		log.debug("After session execute insert " + insert.toString());
@@ -148,7 +147,7 @@ Possible other way
 		ResultSet rs = session.execute(insert);
 
 		log.debug(rs.getExecutionInfo().toString());
-		return uuid;
+		return storeId;
 	}
 
 	@Override
@@ -157,22 +156,22 @@ Possible other way
 		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 		final String family = getFamily(persistentEntity, persistentEntity.getMapping());
 
-		UUID uuid = (UUID)key;
-
 		Update.Assignments updateAssignments = QueryBuilder.update(keyspaceName, family).with();
 		for (PersistentProperty prop : persistentEntity.getPersistentProperties()) {
-			log.info("Update set: " + prop.getName() + " to " + entry.get(prop.getName()));
-			updateAssignments = updateAssignments.and(QueryBuilder.set(prop.getName(), convertToCassandraType(entry.get(prop.getName()))));
+			if (!prop.getName().equalsIgnoreCase("id")) { //Filter out ID in the case of mapping to a different id column
+				log.info("Update set: " + prop.getName() + " to " + entry.get(prop.getName()));
+				updateAssignments = updateAssignments.and(QueryBuilder.set(prop.getName(), convertToCassandraType(entry.get(prop.getName()))));
+			}
 		}
 
-		Statement update = updateAssignments.where(QueryBuilder.eq("id", UUID.fromString(uuid.toString())));
-
+		Statement update = updateAssignments.where(QueryBuilder.eq(persistentEntity.getIdentity().getName(), convertToCassandraType(key)));
+		log.info("Running Update: " + update.toString());
 		session.execute(update);
 	}
 
 	@Override
 	protected void deleteEntries(String family, List<Object> keys) {
-		//TODO make this a batch or single call but I'm sleepy so not now.
+		//TODO make this a batch or single call
 		for (Object key : keys) {
 			deleteEntry(family, key, null);
 		}
@@ -183,13 +182,13 @@ Possible other way
 		final ClassMapping cm = getPersistentEntity().getMapping();
 		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 
-		Statement stmt = QueryBuilder.delete().all().from(keyspaceName, family).where(QueryBuilder.eq("id", key));
+		Statement stmt = QueryBuilder.delete().all().from(keyspaceName, family).where(QueryBuilder.eq(getPersistentEntity().getIdentity().getName(), convertToCassandraType(key)));
 		session.execute(stmt);
 	}
 
 	@Override
 	protected Object generateIdentifier(PersistentEntity persistentEntity, KeyValueEntry id) {
-		return UUID.randomUUID(); //TODO review if this is the correct UUID type we want.
+		return UUID.randomUUID();
 	}
 
 	private String getKeyspaceName() {
@@ -220,42 +219,32 @@ Possible other way
 
 		Object o = object;
 		if (clazz == byte[].class) {
-	        o = ByteBuffer.wrap((byte[])object);
-		}
-		else if (clazz.isEnum()) {
-	        o = object.toString();
-		}
-        else if (clazz.equals(Long.class)) {
-            o = Long.class.cast(object).longValue();
-        }
-        else if (clazz.equals(Float.class)) {
-            o = Float.class.cast(object).floatValue();
-        }
-        else if (clazz.equals(Double.class)) {
-            o = Double.class.cast(object).doubleValue();
-        }
-        else if (clazz.equals(Byte.class)) {
-            o = Byte.class.cast(object).intValue();
-        }
-        else if (clazz.equals(Short.class)) {
-            o = Short.class.cast(object).intValue();
-        }
-        else if (clazz.equals(Boolean.class)) {
-            o = Boolean.class.cast(object).booleanValue();
-        }
-        else if (clazz.equals(URI.class) ||
-                 clazz.equals(URL.class) ||
-                 TimeZone.class.isAssignableFrom(clazz) ||
-                 clazz.equals(Currency.class) ||
-                 clazz.equals(Locale.class)
-                 ) {
-            o = object.toString();
-        }
-        else if (Calendar.class.isAssignableFrom(clazz)) {
-            o = ((Calendar)object).getTime();
-        }
-		else if (!cassandraNativeSupport(clazz)) {
-		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			o = ByteBuffer.wrap((byte[])object);
+		} else if (clazz.isEnum()) {
+			o = object.toString();
+		} else if (clazz.equals(Long.class)) {
+			o = Long.class.cast(object).longValue();
+		} else if (clazz.equals(Float.class)) {
+			o = Float.class.cast(object).floatValue();
+		} else if (clazz.equals(Double.class)) {
+			o = Double.class.cast(object).doubleValue();
+		} else if (clazz.equals(Byte.class)) {
+			o = Byte.class.cast(object).intValue();
+		} else if (clazz.equals(Short.class)) {
+			o = Short.class.cast(object).intValue();
+		} else if (clazz.equals(Boolean.class)) {
+			o = Boolean.class.cast(object).booleanValue();
+		} else if (clazz.equals(URI.class) ||
+			clazz.equals(URL.class) ||
+			TimeZone.class.isAssignableFrom(clazz) ||
+			clazz.equals(Currency.class) ||
+			clazz.equals(Locale.class)
+			) {
+			o = object.toString();
+		} else if (Calendar.class.isAssignableFrom(clazz)) {
+			o = ((Calendar)object).getTime();
+		} else if (!cassandraNativeSupport(clazz)) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			try {
 				ObjectOutputStream oos = new ObjectOutputStream(baos);
 				oos.writeObject(object);
@@ -276,8 +265,8 @@ Possible other way
 			cassandraType = "bigint";
 		} else if (c.equals(ByteBuffer.class)) {
 			cassandraType = "blob";
-        } else if (c.equals(boolean.class) || c.equals(Boolean.class)) {
-            cassandraType = "boolean";
+		} else if (c.equals(boolean.class) || c.equals(Boolean.class)) {
+			cassandraType = "boolean";
 		} else if (c.equals(BigDecimal.class)) {
 			cassandraType = "decimal";
 		} else if (c.equals(double.class)) {
@@ -286,7 +275,7 @@ Possible other way
 			cassandraType = "float";
 		} else if (c.equals(int.class) || c.equals(Integer.class) || c.equals(short.class) || c.equals(Short.class) || c.equals(byte.class) || c.equals(Byte.class)) {
 			cassandraType = "int";
-		} else if (c.equals(List.class)) {
+		} else if (List.class.isAssignableFrom(c)) {
 			cassandraType = "list<text>";
 		} else if (c.equals(Map.class)) {
 			cassandraType = "map<text,text>";
@@ -294,7 +283,7 @@ Possible other way
 			cassandraType = "set<text>";
 		} else if (c.equals(String.class)) {
 			cassandraType = "text";
-		} else if (c.equals(Date.class) ) {
+		} else if (c.equals(Date.class)) {
 			cassandraType = "timestamp";
 		} else if (c.equals(UUID.class)) {
 			cassandraType = "uuid";

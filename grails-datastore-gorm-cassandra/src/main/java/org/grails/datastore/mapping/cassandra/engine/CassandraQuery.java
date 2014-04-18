@@ -75,7 +75,7 @@ public class CassandraQuery extends Query implements QueryArgumentsAware {
 
 			for (Row row : rs) {
 				KeyValueEntry nativeEntry = cassandraEntityPersister.rowToKeyValueEntry(row, family);
-				out.add(cassandraEntityPersister.createObjectFromNativeEntry(entity, nativeEntry.get("id").toString(), nativeEntry));
+				out.add(cassandraEntityPersister.createObjectFromNativeEntry(entity, nativeEntry.get(cm.getIdentifier().getIdentifierName()[0]).toString(), nativeEntry));    //TODO change for updates
 			}
 		}
 
