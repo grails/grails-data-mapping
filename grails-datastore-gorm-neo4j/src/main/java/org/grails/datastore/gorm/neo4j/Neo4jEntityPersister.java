@@ -1,7 +1,7 @@
 package org.grails.datastore.gorm.neo4j;
 
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
-import org.grails.datastore.gorm.neo4j.simplegraph.Relationship;
+import org.grails.datastore.gorm.neo4j.engine.CypherResult;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
@@ -75,15 +75,13 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity,
                                         Long id, Collection<String> labels,
-                                        Map<String, Object> data, Collection<Relationship> relationships) {
+                                        Map<String, Object> data) {
 
         PersistentEntity persistentEntity = mostSpecificPersistentEntity(defaultPersistentEntity, labels);
         Object instance = getSession().getCachedEntry(persistentEntity, id);
 
         if (instance == null) {
-            getSession().addPersistentRelationships(relationships);
-            instance = unmarshall(persistentEntity, id, labels, data, relationships);
-
+            instance = unmarshall(persistentEntity, id, labels, data);
             getSession().cacheEntry(persistentEntity, id, instance);
         }
         return instance;
@@ -126,9 +124,9 @@ public class Neo4jEntityPersister extends EntityPersister {
     }
 
     private Object unmarshall(PersistentEntity persistentEntity, Long id, Collection<String> labels,
-                   Map<String, Object> data, Collection<Relationship> relationships) {
+                   Map<String, Object> data) {
 
-        log.debug( "unmarshalling entity {}, props {}, {}", id, data, relationships);
+        log.debug( "unmarshalling entity {}, props {}, {}", id, data);
         EntityAccess entityAccess = new EntityAccess(persistentEntity, persistentEntity.newInstance());
         entityAccess.setConversionService(persistentEntity.getMappingContext().getConversionService());
 
@@ -150,32 +148,26 @@ public class Neo4jEntityPersister extends EntityPersister {
             } else if (property instanceof ToOne) {
                 ToOne to = (ToOne) property;
 
-                String relType = RelationshipUtils.relationshipTypeUsedFor(to);
-                boolean reversed = RelationshipUtils.useReversedMappingFor(to);
+                CypherResult cypherResult = getSession().getNativeInterface().execute(CypherBuilder.findRelationshipEndpointIdsFor(to), Collections.singletonMap("id", id));
 
-                Relationship r = getSession().findPersistentRelationshipByType(relType, id, reversed);
-                if (r!=null) {
-                    long otherId = r.getOtherId(id);
+                Map<String,Object> row = IteratorUtil.singleOrNull(cypherResult);
+                if (row != null) {
+                    Long endpointId = (Long) row.get("id");
                     entityAccess.setProperty(property.getName(),
                             getMappingContext().getProxyFactory().createProxy(
                                     session,
                                     to.getAssociatedEntity().getJavaClass(),
-                                    otherId
+                                    endpointId
                             )
                     );
                 }
             } else if ((property instanceof OneToMany) || (property instanceof ManyToMany)) {
-                Association association = (Association) property;
-
-                String relType = RelationshipUtils.relationshipTypeUsedFor(association);
-                boolean reversed = RelationshipUtils.useReversedMappingFor(association);
 
                 LazyEnititySet lazyEnititySet = new LazyEnititySet(
-                        getSession().findPersistentRelationshipsByType(relType, id, reversed),
+                        entityAccess,
+                        (Association) property,
                         getMappingContext().getProxyFactory(),
-                        session,
-                        association.getAssociatedEntity().getJavaClass(),
-                        id
+                        getSession()
                 );
                 entityAccess.setProperty(property.getName(), lazyEnititySet);
 
@@ -246,8 +238,19 @@ public class Neo4jEntityPersister extends EntityPersister {
                         }
                     }
 
-                    persistEntities(association.getAssociatedEntity(), (Iterable) propertyValue);
-                    getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, association, getCypherEngine(), getMappingContext(), getSession()));
+                    Iterable targets = (Iterable) propertyValue;
+                    persistEntities(association.getAssociatedEntity(), targets);
+
+                    boolean reversed = RelationshipUtils.useReversedMappingFor(association);
+                    String relType = RelationshipUtils.relationshipTypeUsedFor(association);
+
+                    if (!reversed) {
+                        if (!(propertyValue instanceof LazyEnititySet)) {
+                            LazyEnititySet les = new LazyEnititySet(entityAccess, association, getMappingContext().getProxyFactory(), getSession());
+                            les.addAll(targets);
+                            entityAccess.setProperty(association.getName(), les);
+                        }
+                    }
                 }
             } else if (pp instanceof ToOne) {
                 if (propertyValue != null) {
@@ -270,7 +273,16 @@ public class Neo4jEntityPersister extends EntityPersister {
                     }
 
                     persistEntity(to.getAssociatedEntity(), propertyValue);
-                    getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, to, getCypherEngine(), getMappingContext(), getSession()));
+
+                    boolean reversed = RelationshipUtils.useReversedMappingFor(to);
+                    String relType = RelationshipUtils.relationshipTypeUsedFor(to);
+
+                    if (!reversed) {
+                        getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, relType,
+                                new EntityAccess(to.getAssociatedEntity(), propertyValue),
+                                getCypherEngine()));
+                    }
+
 
                 }
             } else {

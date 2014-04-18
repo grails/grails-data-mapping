@@ -1,53 +1,60 @@
 package org.grails.datastore.gorm.neo4j;
 
-import org.grails.datastore.gorm.neo4j.simplegraph.Relationship;
-import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.gorm.neo4j.engine.CypherResult;
+import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
-import org.neo4j.helpers.collection.IteratorUtil;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by stefan on 20.03.14.
  */
 public class LazyEnititySet<T> implements Set<T> {
 
-    private final Collection<Relationship> relationships;
     private final ProxyFactory proxyFactory;
-    private final Session session;
-    private final Class<T> clazz;
-    private final Long sourceId;
+    private final Neo4jSession session;
+    private final EntityAccess owner;
     private final Set<T> delegate = new HashSet<T>();
+    private final Association association;
     private boolean initialized = false;
+    private boolean reversed;
+    private String relType;
 
-    public LazyEnititySet(Iterable<Relationship> relationshipIterable, ProxyFactory proxyFactory, Session session, Class<T> clazz, Long sourceId) {
-        this.relationships = IteratorUtil.asCollection(relationshipIterable);
+    public LazyEnititySet(EntityAccess owner, Association association, ProxyFactory proxyFactory, Neo4jSession session) {
+        this.owner = owner;
+        this.association = association;
         this.proxyFactory = proxyFactory;
         this.session = session;
-        this.clazz = clazz;
-        this.sourceId = sourceId;
+        reversed = RelationshipUtils.useReversedMappingFor(association);
+        relType = RelationshipUtils.relationshipTypeUsedFor(association);
     }
 
     private void initialize() {
         if (!initialized) {
             initialized = true;
-            for (Relationship relationship: relationships) {
-                delegate.add(proxyFactory.createProxy(session, clazz, relationship.getOtherId(sourceId)));
+            String cypher = CypherBuilder.findRelationshipEndpointIdsFor(association);
+            CypherResult result = session.getNativeInterface().execute(cypher,
+                    Collections.singletonMap("id", owner.getIdentifier()));
+
+            Class<T> clazz = association.getAssociatedEntity().getJavaClass();
+            for (Map<String, Object> row : result) {
+                Long endpoint = (Long) row.get("id");
+                delegate.add( proxyFactory.createProxy(session, clazz, endpoint));
             }
         }
     }
 
     @Override
     public int size() {
-        return initialized ? delegate.size() : relationships.size();
+        initialize();
+        return delegate.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return  initialized ? delegate.isEmpty() : relationships.isEmpty();
+        initialize();
+        return  delegate.isEmpty();
     }
 
     @Override
@@ -71,19 +78,28 @@ public class LazyEnititySet<T> implements Set<T> {
     @Override
     public boolean add(Object o) {
         initialize();
-        return delegate.add((T) o);
+        boolean isNew = delegate.add((T) o);
+        if (isNew && (!reversed)) {
+            session.addPendingInsert(new RelationshipPendingInsert(owner, relType, new EntityAccess(association.getAssociatedEntity(), o), session.getNativeInterface()));
+        }
+
+        return isNew;
     }
 
     @Override
     public boolean remove(Object o) {
-        throw new UnsupportedOperationException();
-//        return false;
+        boolean isDeleted = delegate.remove(o);
+        if (isDeleted && (!reversed)) {
+            session.addPendingInsert(new RelationshipPendingDelete(owner, relType,
+                    new EntityAccess(association.getAssociatedEntity(), o),
+                    session.getNativeInterface()));
+        }
+        return isDeleted;
     }
 
     @Override
     public boolean addAll(Collection collection) {
-        throw new UnsupportedOperationException();
-//        return false;
+        return addAll((Iterable)collection);
     }
 
     @Override
@@ -114,5 +130,13 @@ public class LazyEnititySet<T> implements Set<T> {
     public T[] toArray(Object[] objects) {
         throw new UnsupportedOperationException();
 //        return new T[0];
+    }
+
+    public boolean addAll(Iterable objects) {
+        boolean hasChanged = false;
+        for (Object object: objects) {
+            hasChanged |= add(object);
+        }
+        return hasChanged;
     }
 }

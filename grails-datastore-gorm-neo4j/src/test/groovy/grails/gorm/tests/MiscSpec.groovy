@@ -390,6 +390,7 @@ class MiscSpec extends GormDatastoreSpec {
         then:
             IteratorUtil.count(result) == 1
     }
+
 }
 
 @Entity

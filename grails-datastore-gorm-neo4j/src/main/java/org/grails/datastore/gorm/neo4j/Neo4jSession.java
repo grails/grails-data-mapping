@@ -1,10 +1,6 @@
 package org.grails.datastore.gorm.neo4j;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.iterators.FilterIterator;
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
-import org.grails.datastore.gorm.neo4j.simplegraph.Relationship;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.impl.PendingInsert;
@@ -16,20 +12,14 @@ import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.transactions.Transaction;
-import org.neo4j.cypher.export.DatabaseSubGraph;
-import org.neo4j.cypher.export.SubGraphExporter;
 import org.neo4j.cypher.javacompat.ExecutionEngine;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.helpers.collection.IteratorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 
 import javax.persistence.FlushModeType;
-import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -42,7 +32,6 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     private CypherEngine cypherEngine;
 
     /** map node id -> hashmap of relationship types showing startNode id and endNode id */
-    private Collection<Relationship> persistentRelationships = new HashSet<Relationship>();
     private Collection<Object> persistingInstances = new HashSet<Object>();
 
     public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, CypherEngine cypherEngine) {
@@ -171,56 +160,12 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
         }
     }
 
-    public boolean containsOrAddPersistentRelationship(long startNode, long endNode, String type) {
-        Relationship r = new Relationship(startNode, endNode, type);
-        boolean result = persistentRelationships.contains(r);
-        persistentRelationships.add(r);
-        return result;
-    }
-
-    public void addPersistentRelationships(Collection<Relationship> toAdd) {
-        persistentRelationships.addAll(toAdd);
-    }
-
     public void addPersistingInstance(Object obj) {
         persistingInstances.add(obj);
     }
 
     public boolean containsPersistingInstance(Object obj) {
         return persistingInstances.contains(obj);
-    }
-
-    public Relationship findPersistentRelationshipByType(String relType, Long id, boolean reversed) {
-        return (Relationship) CollectionUtils.find(persistentRelationships, new RelationshipPredicate(relType, id, reversed));
-    }
-
-    public Iterable<Relationship> findPersistentRelationshipsByType(String relType, Long id, boolean reversed) {
-        return IteratorUtil.asIterable(new FilterIterator(persistentRelationships.iterator(), new RelationshipPredicate(relType, id, reversed)));
-    }
-
-    public class RelationshipPredicate implements Predicate {
-
-        private String type;
-        private long id;
-        private boolean reversed;
-
-        public RelationshipPredicate(String type, long id, boolean reversed) {
-            this.type = type;
-            this.id = id;
-            this.reversed = reversed;
-        }
-
-        @Override
-        public boolean evaluate(Object object) {
-            Relationship r = (Relationship) object;
-            if (type.equals(r.getType())) {
-                long startOrEndeId = reversed ? r.getEndNodeId() : r.getStartNodeId();
-                if (startOrEndeId == id) {
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 
 }

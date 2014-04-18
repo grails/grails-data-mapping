@@ -17,7 +17,6 @@ package org.grails.datastore.gorm.neo4j
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine
-import org.grails.datastore.gorm.neo4j.simplegraph.Relationship
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
@@ -78,22 +77,7 @@ class Neo4jQuery extends Query {
                 Long id = map.id as Long
                 Collection<String> labels = map.labels as Collection<String>
                 Map<String,Object> data = map.data as Map<String, Object>
-
-                Collection<Relationship> relationships = new HashSet<>()
-                for (m in map.relationships) {
-                    def relTypeMap = m as Map
-                    String relType = relTypeMap[CypherBuilder.TYPE]
-                    Collection<Long> startIds = relTypeMap[CypherBuilder.START] as Collection<Long>
-                    Collection<Long> endIds = relTypeMap[CypherBuilder.END] as Collection<Long>
-                    assert endIds.size() == startIds.size()
-                    [startIds, endIds].transpose().each { List it ->
-                        assert it.size()==2
-                        relationships << new Relationship(it[0] as Long, it[1] as Long, relType)
-                    }
-                }
-
-                log.debug "relationships = $relationships"
-                neo4jEntityPersister.unmarshallOrFromCache(persistentEntity, id, labels, data, relationships)
+                neo4jEntityPersister.unmarshallOrFromCache(persistentEntity, id, labels, data)
             }
         } else {
 

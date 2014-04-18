@@ -108,13 +108,13 @@ abstract class Neo4jUtils {
         value
     }
 
-    static String dumpGraphToSvg(GraphDatabaseService graphDatabaseService) {
+    static URL dumpGraphToSvg(GraphDatabaseService graphDatabaseService) {
         File dotFile = File.createTempFile("temp", ".dot")
         File svgFile = File.createTempFile("temp", ".svg")
         new GraphvizWriter().emit(dotFile, Walker.fullGraph(graphDatabaseService))
         def proc = "/usr/bin/dot -Tsvg ${dotFile.absolutePath}".execute()
         svgFile.withWriter { Writer it -> it << proc.in.text }
         dotFile.delete()
-        svgFile.absolutePath
+        svgFile.toURI().toURL()
     }
 }

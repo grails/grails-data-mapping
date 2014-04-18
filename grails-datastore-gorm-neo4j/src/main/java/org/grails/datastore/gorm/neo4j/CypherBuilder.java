@@ -1,5 +1,7 @@
 package org.grails.datastore.gorm.neo4j;
 
+import org.grails.datastore.mapping.model.types.Association;
+
 import java.util.*;
 
 /**
@@ -66,20 +68,14 @@ public class CypherBuilder {
         if ((conditions!=null) && (!conditions.isEmpty())) {
             cypher.append(" WHERE ").append(conditions);
         }
-        cypher.append(" ");
 
         if (returnColumns.isEmpty()) {
-            cypher
-                    .append("WITH n.__id__ as id, labels(n) as labels, n as data\n")
-                    .append("OPTIONAL MATCH (n)-[r]-()\n")
-                    .append("WITH id, labels, data, type(r) as t, collect(endnode(r).__id__) as endNodeIds, collect(startnode(r).__id__) as startNodeIds\n")
-                    .append("RETURN id, labels, data, collect( {")
-                    .append(TYPE).append(": t, ")
-                    .append(END).append(": endNodeIds, ")
-                    .append(START).append(": startNodeIds}) as relationships");
-
+            cypher.append(" RETURN n.__id__ as id, labels(n) as labels, n as data \n");
+            if (orderAndLimits!=null) {
+                cypher.append(orderAndLimits).append(" \n");
+            }
         } else {
-            cypher.append("RETURN ");
+            cypher.append(" RETURN ");
             Iterator<String> iter = returnColumns.iterator();   // same as Collection.join(String separator)
             if (iter.hasNext()) {
                 cypher.append(iter.next());
@@ -87,12 +83,32 @@ public class CypherBuilder {
                     cypher.append(", ").append(iter.next());
                 }
             }
-        }
-        if (orderAndLimits!=null) {
-            cypher.append(" ");
-            cypher.append(orderAndLimits);
+            if (orderAndLimits!=null) {
+                cypher.append(" ");
+                cypher.append(orderAndLimits);
+            }
         }
 
         return cypher.toString();
     }
+
+
+    public static String findRelationshipEndpointIdsFor(Association association) {
+        String relType = RelationshipUtils.relationshipTypeUsedFor(association);
+        boolean reversed = RelationshipUtils.useReversedMappingFor(association);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("MATCH (me {__id__:{id}})");
+        if (reversed) {
+            sb.append("<");
+        }
+        sb.append("-[:").append(relType).append("]-");
+        if (!reversed) {
+            sb.append(">");
+        }
+        sb.append("(other) RETURN other.__id__ as id");
+        return sb.toString();
+    }
+
+
 }

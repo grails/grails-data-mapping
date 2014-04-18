@@ -13,29 +13,28 @@ import java.util.Map;
 /**
  * Created by stefan on 15.02.14.
  */
-class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long> {
 
-    private static Logger log = LoggerFactory.getLogger(RelationshipPendingInsert.class);
+class RelationshipPendingDelete extends PendingInsertAdapter<Object, Long> {
 
+    private static Logger log = LoggerFactory.getLogger(RelationshipPendingDelete.class);
+
+    private String relType;
     private CypherEngine cypherEngine;
     private EntityAccess target;
-    private String relType;
 
-    RelationshipPendingInsert(EntityAccess source, String relType, EntityAccess target, CypherEngine cypherEngine) {
+    RelationshipPendingDelete(EntityAccess source, String relType, EntityAccess target, CypherEngine cypherEngine) {
         super(source.getPersistentEntity(), -1l, source.getEntity(), source);
-        this.relType = relType;
         this.target = target;
         this.cypherEngine = cypherEngine;
     }
 
     @Override
     public void run() {
-
         Map<String,Object> params = MapUtil.map(
                 "fromId", getEntityAccess().getIdentifier(),
                 "toId", target.getIdentifier()
         );
-        String cypher = String.format("MATCH (from), (to) WHERE from.__id__={fromId} AND to.__id__={toId} CREATE (from)-[:%s]->(to)", relType);
+        String cypher = String.format("MATCH (from)-[r:%s]->(to) WHERE from.__id__={fromId} AND to.__id__={toId} DELETE r", relType);
         cypherEngine.execute(cypher, params);
     }
 

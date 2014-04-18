@@ -71,7 +71,7 @@ class ManyToManySpec extends GormDatastoreSpec {
             2 == Role.findByRole('ROLE_ADMIN').people.size()
     }
 
-    @Ignore("test runs fine in IntelliJ but fails upon execution with gradle")
+    //@Ignore("test runs fine in IntelliJ but fails upon execution with gradle")
     def "test if setter on m2m property also updates reverse collection"() {
         setup:
             def roleAdmin = new Role(role:'ROLE_ADMIN').save()
@@ -134,14 +134,14 @@ class ManyToManySpec extends GormDatastoreSpec {
         user.bestBuddy == null
 
         when: "setting bestbuddy"
-        user.bestBuddy = new User(username:'bestBuddy')
+        user.bestBuddy = User.findByUsername('friend1') // new User(username:'bestBuddy')
         user.save()
         session.flush()
         session.clear()
         user = User.findByUsername('person1')
 
         then: "bestBuddy is there"
-        user.bestBuddy.username == 'bestBuddy'
+        user.bestBuddy.username == 'friend1'
 
         and: 'friends and foes are not modified'
         user.friends.size() == 1
@@ -151,7 +151,6 @@ class ManyToManySpec extends GormDatastoreSpec {
 
     }
 
-    @Ignore("disabled since addTo does not set dirty")
     def "test if addToXXX modifies the nodespace even if it's the only operation in a session"() {
         when:
         def friend = new User(username: 'friend').save()
