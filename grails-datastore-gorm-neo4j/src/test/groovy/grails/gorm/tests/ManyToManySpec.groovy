@@ -1,10 +1,16 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
+import org.grails.datastore.gorm.Setup
+import org.grails.datastore.gorm.neo4j.Neo4jUtils
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spock.lang.Ignore
-import spock.lang.IgnoreRest
 
 class ManyToManySpec extends GormDatastoreSpec {
+
+    private static Logger log = LoggerFactory.getLogger(ManyToManySpec.class);
+
     
     @Override
     List getDomainClasses() {
@@ -71,7 +77,8 @@ class ManyToManySpec extends GormDatastoreSpec {
             2 == Role.findByRole('ROLE_ADMIN').people.size()
     }
 
-    //@Ignore("test runs fine in IntelliJ but fails upon execution with gradle")
+    @Ignore("""test runs fine in IntelliJ but fails upon execution with gradle. Theory:
+when running gradle the DirtyCheckable interface is not injected into User by an AST. """)
     def "test if setter on m2m property also updates reverse collection"() {
         setup:
             def roleAdmin = new Role(role:'ROLE_ADMIN').save()
@@ -90,7 +97,7 @@ class ManyToManySpec extends GormDatastoreSpec {
             user.roles.size()==1
 
         when: "using setter for a bidi collection"
-            user.roles = [ roleAdmin, roleUser, roleSpecial ]
+            user.roles = [ roleAdmin, roleUser, roleSpecial ]  // should be tracked by dirtycheckable
             session.flush()
             session.clear()
             user = User.get(user.id)
