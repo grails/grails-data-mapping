@@ -12,7 +12,7 @@ grails.project.dependency.resolution = {
         grailsCentral()
         mavenLocal()   // for picking up self-built snapshots before fetching from grailsCentral
         mavenCentral()
-        //mavenRepo 'http://m2.neo4j.org/releases'
+        mavenRepo 'http://m2.neo4j.org/releases'
         //mavenRepo "http://repo.grails.org/grails/repo"
     }
 
@@ -30,8 +30,8 @@ grails.project.dependency.resolution = {
         }
 
         def datastoreVersion = "2.0.4.RELEASE"
-        def neo4jDatastoreVersion = "1.1.2-SNAPSHOT"
-        //def neo4jDatastoreVersion = "1.1.1"
+        //def neo4jDatastoreVersion = "1.1.3-SNAPSHOT"
+        def neo4jDatastoreVersion = "1.1.2"
         def seleniumVersion = "2.31.0"
 
         compile("org.grails:grails-datastore-gorm-neo4j:$neo4jDatastoreVersion",
