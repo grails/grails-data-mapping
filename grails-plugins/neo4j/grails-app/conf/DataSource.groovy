@@ -10,7 +10,7 @@ grails {
         // params: optional map passed to EmbeddedGraphDatabase
         type = "embedded"
         // location = "data/neo4j"
-        // params = [:]
+        params = [ enable_remote_shell: true]
 
 
         // 2) rest
