@@ -48,7 +48,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             }
             criteria = criteria.property("firstName")
 
-            def results = criteria.list(sort:'firstName', order:"desc", max: 2).sort()
+            def results = criteria.list(sort:'firstName', max: 2).sort()
         then:"The list method returns the right results"
             results.size() == 2
             results == ["Bart", "Homer"]
@@ -60,7 +60,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             }
             criteria = criteria.firstName
 
-            results = criteria.list(sort:'firstName', order:"desc", max: 2).sort()
+            results = criteria.list(sort:'firstName', max: 2).sort()
         then:"The list method returns the right results"
             results.size() == 2
             results == ["Bart", "Homer"]

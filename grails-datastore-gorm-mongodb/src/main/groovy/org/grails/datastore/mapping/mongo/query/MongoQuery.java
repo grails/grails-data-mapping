@@ -881,6 +881,13 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     aggregationPipeline.add(sort);
                 }
 
+                if(max > 0) {
+                    aggregationPipeline.add(new BasicDBObject("$limit", max));
+                }
+                if(offset > 0) {
+                    aggregationPipeline.add(new BasicDBObject("$skip", offset));
+                }
+
 
                 List<ProjectedProperty> projectedKeys = new ArrayList<ProjectedProperty>();
                 boolean singleResult = true;
@@ -944,12 +951,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 }
 
 
-                if(max > 0) {
-                    aggregationPipeline.add(new BasicDBObject("$limit", max));
-                }
-                if(offset > 0) {
-                    aggregationPipeline.add(new BasicDBObject("$skip", offset));
-                }
 
 
 
