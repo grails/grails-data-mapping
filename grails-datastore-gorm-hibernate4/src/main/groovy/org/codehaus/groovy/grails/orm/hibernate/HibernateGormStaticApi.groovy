@@ -102,20 +102,20 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         findAllMethod = new FindAllPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
     }
 
-    /**
-     * Property missing handling used to relay property access onto target entity for named queries etc.
-     *
-     * @param property The name of the property
-     */
-    @CompileStatic(TypeCheckingMode.SKIP)
-    def propertyMissing(String property) {
-        if(persistentClass.hasProperty(property)) {
-            return this.persistentClass."$property"
-        }
-        else {
-            throw new MissingPropertyException(property, HibernateGormStaticApi)
-        }
-    }
+//    /**
+//     * Property missing handling used to relay property access onto target entity for named queries etc.
+//     *
+//     * @param property The name of the property
+//     */
+//    @CompileStatic(TypeCheckingMode.SKIP)
+//    def propertyMissing(String property) {
+//        if(persistentClass.hasProperty(property)) {
+//            return this.persistentClass."$property"
+//        }
+//        else {
+//            throw new MissingPropertyException(property, HibernateGormStaticApi)
+//        }
+//    }
 
 
     @Override
