@@ -42,6 +42,8 @@ import org.grails.datastore.mapping.transactions.Transaction;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.transaction.NoTransactionException;
@@ -561,8 +563,17 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
         final PersistentEntity entity = getMappingContext().getPersistentEntity(type.getName());
         if (entity != null) {
-            key = (Serializable) getMappingContext().getConversionService().convert(
-                    key, entity.getIdentity().getType());
+					ConversionService conversionService = getMappingContext().getConversionService();
+					if(conversionService.canConvert(key.getClass(),entity.getIdentity().getType())) {
+						try {
+							key = (Serializable)conversionService.convert(key, entity.getIdentity().getType());
+						} catch (ConversionFailedException conversionFailedException){
+							return null;
+						}
+					} else {
+						//Key can not be converted to needed type we need to get out just as if the key passed in was null
+						return null;
+					}
         }
 
         Object o = getInstanceCache(type).get(key);
