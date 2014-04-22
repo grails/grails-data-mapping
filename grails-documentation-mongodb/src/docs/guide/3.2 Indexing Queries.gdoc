@@ -53,3 +53,15 @@ class Person {
 {code}
 
 As per the MongoDB docs 1 is for ascending and -1 is for descending.
+
+h4. Indexing using the 'index' method
+
+In addition to the convenience features described above you can use the @index@ method to define any index you want. For example:
+
+{code}
+static mapping = {
+    index( ["person.address.postCode":1], [unique:true] )
+}
+{code}
+
+In the above example I define an index on an embedded attribtue of the document. In fact what arguments you pass to the @index@ method get passed to the underlying MongoDB [createIndex|http://api.mongodb.org/java/2.12/com/mongodb/DBCollection.html#createIndex(com.mongodb.DBObject,%20com.mongodb.DBObject)] method.

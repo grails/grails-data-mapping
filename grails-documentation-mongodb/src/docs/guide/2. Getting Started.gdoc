@@ -2,7 +2,7 @@ To get started with GORM for Mongo you need configure it as a dependency in @Bui
 
 {code}
 plugins {
-	compile ':mongodb:2.0.0' // or whatever is the latest vesrion
+	compile ':mongodb:3.0.0.RC1' // or whatever is the latest vesrion
 }
 {code}
 

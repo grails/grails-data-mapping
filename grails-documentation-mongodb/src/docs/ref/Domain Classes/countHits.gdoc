@@ -1,0 +1,15 @@
+h1. countHits
+
+h2. Purpose
+
+Executes a MongoDB [$text|http://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text] search query and returns the number of hits.
+
+h2. Examples
+
+{code}
+assert Product.countHits("coffee") == 5
+{code}
+
+h2. Description
+
+The @countHits@ method uses MongoDB's full text search support to perform full text search on a "text" index and return the size of the returned cursor.

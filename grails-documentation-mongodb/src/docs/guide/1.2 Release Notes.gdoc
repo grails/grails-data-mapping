@@ -1,5 +1,15 @@
 Below are the details of the changes across releases:
 
+h4. 3.0
+
+* Support for MongoDB 2.6
+* MongoDB 2.6 GeoJSON type support (@MultiPoint@, @MultiLineString@, @MultiPolygon@ and @GeometryCollection@)
+* Support for Maps of embedded entities
+* Flexible index definition
+* Full text search support
+* Support for projections using MongoDB aggregation
+* Size related criteria implemented (@sizeEq@, @sizeLt@ etc.) on collections
+
 h4. 2.0
 
 * GeoJSON shape support

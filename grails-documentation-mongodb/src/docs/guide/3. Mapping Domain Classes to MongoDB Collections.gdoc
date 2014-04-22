@@ -37,6 +37,18 @@ class Person {
 }
 {code}
 
+You can also embed maps of embedded classes where the keys are strings:
+
+{code}
+class Person {
+    String firstName
+    String lastName
+    Map<String,Address> addresses
+    static embedded = ['addresses']
+}
+{code}
+
+
 h4. Basic Collection Types
 
 You can also map lists and maps of basic types (such as strings) simply by defining the appropriate collection type:

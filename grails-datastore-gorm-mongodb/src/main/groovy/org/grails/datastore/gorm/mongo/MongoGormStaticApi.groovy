@@ -224,7 +224,9 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
             def cursor = coll.find(new BasicDBObject(['$text': searchArgs]))
 
             int offset = options.offset instanceof Number ? ((Number)options.offset).intValue() : 0
+            int max = options.max instanceof Number ? ((Number)options.max).intValue() : -1
             if(offset > 0) cursor.skip(offset)
+            if(max > -1) cursor.limit(max)
             new MongoQuery.MongoResultList(cursor, offset, persister)
         } as SessionCallback<List<D>>)
     }
