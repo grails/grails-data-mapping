@@ -15,9 +15,12 @@
 package org.grails.datastore.gorm.mongo
 
 import com.gmongo.internal.DBCollectionPatcher
+import com.mongodb.AggregationOptions
 import com.mongodb.BasicDBObject
 import com.mongodb.DB
 import com.mongodb.DBCollection
+import com.mongodb.DBObject
+import com.mongodb.ReadPreference
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
@@ -162,6 +165,46 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     /**
+     * Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set
+     *
+     * @param pipeline The pipeline
+     * @param options The options (optional)
+     * @return A mongodb result list
+     */
+    List<D> aggregate(List pipeline, AggregationOptions options = AggregationOptions.builder().build()) {
+        execute( { Session session ->
+            List newPipeline = cleanPipeline(pipeline)
+            MongoSession ms = (MongoSession)session
+            def template = ms.getMongoTemplate(persistentEntity)
+            def coll = template.getCollection(ms.getCollectionName(persistentEntity))
+            MongoEntityPersister persister = (MongoEntityPersister)ms.getPersister(persistentClass)
+            new MongoQuery.MongoResultList(coll.aggregate(newPipeline, options),0, persister)
+        } as SessionCallback<List<D>>)
+    }
+
+
+
+    /**
+     * Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set
+     *
+     * @param pipeline The pipeline
+     * @param options The options (optional)
+     * @return A mongodb result list
+     */
+    List<D> aggregate(List pipeline, AggregationOptions options, ReadPreference readPreference) {
+        execute( { Session session ->
+            List newPipeline = cleanPipeline(pipeline)
+            MongoSession ms = (MongoSession)session
+            def template = ms.getMongoTemplate(persistentEntity)
+            def coll = template.getCollection(ms.getCollectionName(persistentEntity))
+            MongoEntityPersister persister = (MongoEntityPersister)ms.getPersister(persistentClass)
+
+            def cursor = coll.aggregate(newPipeline, options, readPreference)
+            new MongoQuery.MongoResultList(cursor,0, persister)
+        } as SessionCallback<List<D>>)
+    }
+
+    /**
      * Search for entities using the given query
      *
      * @param query The query
@@ -212,5 +255,17 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
 
             new MongoQuery.MongoResultList(cursor, 0, persister)
         } as SessionCallback<List<D>>)
+    }
+
+    private List cleanPipeline(List pipeline) {
+        List newPipeline = new ArrayList()
+        for (o in pipeline) {
+            if (o instanceof DBObject) {
+                newPipeline << o
+            } else if (o instanceof Map) {
+                newPipeline << new BasicDBObject((Map) o)
+            }
+        }
+        newPipeline
     }
 }
