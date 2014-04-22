@@ -4,8 +4,8 @@ configurations {
 }
 
 dependencies {
-    compile "org.mongodb:mongo-java-driver:2.11.4"
-    compile("org.springframework.data:spring-data-mongodb:1.4.0.RELEASE")
+    compile "org.mongodb:mongo-java-driver:2.12.0"
+    compile("org.springframework.data:spring-data-mongodb:1.4.1.RELEASE")
 
     compile("com.gmongo:gmongo:1.2") {
         exclude group:'org.mongodb',module:'mongo-java-driver'
@@ -76,6 +76,13 @@ dependencies {
     }
     optional "org.grails:grails-test:$grailsVersion", excludes
     optional "org.grails:grails-plugin-testing:$grailsVersion", excludes
+}
+
+tasks.withType(GroovyCompile) {
+    configure(groovyOptions.forkOptions) {
+        memoryMaximumSize = '1g'
+        jvmArgs = ['-XX:MaxPermSize=512m', '-Xms512m', '-Xmx1g']
+    }
 }
 
 sourceSets {

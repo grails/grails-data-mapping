@@ -15,6 +15,7 @@
 package org.grails.datastore.mapping.query.api;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Interface for the implementations that construct of criteria queries.
@@ -353,6 +354,17 @@ public interface Criteria  {
      * @return This criteria
      */
     Criteria leProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
+
+    /**
+     * Apply an "equals" constraint to each property in the key set of a <tt>Map</tt>
+     *
+     * @param propertyValues a map from property names to values
+     *
+     * @return Criterion
+     *
+     * @see org.grails.datastore.mapping.query.Query.Conjunction
+     */
+    Criteria allEq(Map<String, Object> propertyValues);
 
     /**
      * Creates a subquery criterion that ensures the given property is equal to all the given returned values

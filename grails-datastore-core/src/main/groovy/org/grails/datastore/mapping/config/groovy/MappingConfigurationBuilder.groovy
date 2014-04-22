@@ -51,7 +51,10 @@ class MappingConfigurationBuilder {
             target[name] = args.size() == 1 ? args[0] : args
         }
         else {
-            if (args[0] instanceof Map) {
+            if(target.respondsTo(name)) {
+                target."$name"(*args)
+            }
+            else if (args.size() == 1 && args[0] instanceof Map) {
 
                 def instance
                 if (properties['*']) {

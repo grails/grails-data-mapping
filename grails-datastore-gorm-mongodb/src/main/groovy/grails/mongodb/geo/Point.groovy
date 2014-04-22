@@ -29,7 +29,7 @@ class Point extends Shape implements GeoJSON{
     /**
      * The x and y values that indicate the location of the point
      */
-    double x, y
+    final double x, y
 
     /**
      * Construct a point for the given x and y coordinates
@@ -50,6 +50,9 @@ class Point extends Shape implements GeoJSON{
      * @return A list representation of the point
      */
     List<Double> asList() { [ x, y] }
+
+    @Override
+    String toString() { "[$x,$y]" }
 
     /**
      * Construct a point for the given x and y values

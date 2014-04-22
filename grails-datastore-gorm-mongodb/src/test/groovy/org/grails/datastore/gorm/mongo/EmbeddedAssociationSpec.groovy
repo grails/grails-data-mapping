@@ -2,6 +2,8 @@ package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+import spock.lang.IgnoreRest
+import spock.lang.Issue
 
 class EmbeddedAssociationSpec extends GormDatastoreSpec {
 
@@ -10,6 +12,27 @@ class EmbeddedAssociationSpec extends GormDatastoreSpec {
         return [Individual, Individual2, Address, LongAddress]
     }
 
+    @Issue('GPMONGODB-317')
+    void "Test query with an embedded instance"() {
+
+        given:"A domain with an embedded association"
+
+            def address = new Address(postCode: "30483")
+            def i = new Individual(name:"Bob", address: address)
+
+            i.save(flush:true)
+            session.clear()
+
+        when:"We query with the embedded instance"
+            i = Individual.findByAddress(address)
+
+        then:"the result is correct"
+            i != null
+            i.name == "Bob"
+            i.name == "Bob"
+
+
+    }
     void "Test persistence of embedded entities"() {
         given:"A domain with an embedded association"
             def i = new Individual(name:"Bob", address: new Address(postCode:"30483"))

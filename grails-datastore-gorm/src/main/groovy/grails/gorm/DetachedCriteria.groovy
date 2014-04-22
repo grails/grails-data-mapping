@@ -19,6 +19,7 @@ import grails.async.Promise
 import grails.async.Promises
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
+import org.grails.datastore.mapping.query.api.QueryArgumentsAware
 
 import javax.persistence.FetchType
 
@@ -324,10 +325,23 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     /**
-     * @see Criteria
+     * @see Criteria#neProperty(java.lang.String, java.lang.String)
      */
     Criteria neProperty(String propertyName, String otherPropertyName) {
         add Restrictions.neProperty(propertyName,otherPropertyName)
+        return this
+    }
+
+    /**
+     * @see Criteria#allEq(java.util.Map)
+     */
+    @Override
+    Criteria allEq(Map<String, Object> propertyValues) {
+        Query.Conjunction conjunction = new Query.Conjunction()
+        for (property in propertyValues.keySet()) {
+            conjunction.add Restrictions.eq(property, propertyValues.get(property))
+        }
+        add conjunction
         return this
     }
 
@@ -943,6 +957,10 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
                 query.offset(defaultOffset)
             }
             DynamicFinder.applyDetachedCriteria(query, this)
+
+            if(query instanceof QueryArgumentsAware) {
+                query.arguments = args
+            }
 
             if (additionalCriteria != null) {
                 def additionalDetached = new DetachedCriteria(targetClass).build(additionalCriteria)

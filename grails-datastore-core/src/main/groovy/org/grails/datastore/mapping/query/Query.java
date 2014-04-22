@@ -34,6 +34,7 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.Embedded;
 import org.grails.datastore.mapping.query.api.AssociationCriteria;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.query.event.PostQueryEvent;
@@ -243,7 +244,7 @@ public abstract class Query implements Cloneable{
      * @return This query instance
      */
     public Query eq(String property, Object value) {
-        Object resolved = resolveIdIfEntity(value);
+        Object resolved = resolvePropertyValue(entity, property, value);
         if (resolved == value) {
            criteria.add(Restrictions.eq(property, value));
         }
@@ -253,6 +254,18 @@ public abstract class Query implements Cloneable{
         return this;
     }
 
+    Object resolvePropertyValue(PersistentEntity entity, String property, Object value) {
+        PersistentProperty persistentProperty = entity.getPropertyByName(property);
+        Object resolved;
+        if(persistentProperty instanceof Embedded) {
+            resolved = value;
+        }
+        else {
+            resolved = resolveIdIfEntity(value);
+        }
+        return resolved;
+    }
+
     /**
      * Shortcut to restrict the query to multiple given property values
      *
@@ -260,8 +273,11 @@ public abstract class Query implements Cloneable{
      * @return This query instance
      */
     public Query allEq(Map<String, Object> values) {
+        Junction conjunction = conjunction();
         for (String property : values.keySet()) {
-            eq(property, values.get(property));
+            Object value = values.get(property);
+            Object resolved = resolvePropertyValue(entity, property, value);
+            conjunction.add(Restrictions.eq(property, resolved));
         }
         return this;
     }
@@ -606,7 +622,8 @@ public abstract class Query implements Cloneable{
     private void addToJunction(Junction currentJunction, Criterion criterion) {
         if (criterion instanceof PropertyCriterion) {
             final PropertyCriterion pc = (PropertyCriterion) criterion;
-            Object value = resolveIdIfEntity(pc.getValue());
+            String property = pc.getProperty();
+            Object value = resolvePropertyValue(entity, property, pc.getValue());
             pc.setValue(value);
         }
         if (criterion instanceof AssociationCriteria) {
@@ -1071,27 +1088,6 @@ public abstract class Query implements Cloneable{
 
         public Junction add(Criterion c) {
             if (c != null) {
-                if (c instanceof Equals) {
-                    final Equals eq = (Equals) c;
-                    Object value = eq.getValue();
-
-                    if (value != null) {
-
-                        try {
-                            Session session = AbstractDatastore.retrieveSession();
-                            final PersistentEntity persistentEntity = session.getMappingContext().getPersistentEntity(value.getClass().getName());
-                            if (persistentEntity != null) {
-                                EntityPersister ep = (EntityPersister) session.getPersister(value);
-
-                                if (ep != null) {
-                                    c = new Equals(eq.getProperty(), ep.getObjectIdentifier(value));
-                                }
-                            }
-                        } catch (ConnectionNotFoundException e) {
-                            // continue, use original value
-                        }
-                    }
-                }
                 criteria.add(c);
             }
             return this;

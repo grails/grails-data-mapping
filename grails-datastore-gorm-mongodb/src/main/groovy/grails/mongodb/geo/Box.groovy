@@ -28,7 +28,7 @@ import groovy.transform.EqualsAndHashCode
 @CompileStatic
 class Box extends Shape{
 
-    Point lowerLeft, upperRight
+    final Point lowerLeft, upperRight
 
     /**
      * Construct a box from 2 points representing the lower left corner and the uppper right corner
@@ -48,6 +48,11 @@ class Box extends Shape{
      * @return The list
      */
     List<List<Double>> asList() { [ lowerLeft.asList(), upperRight.asList() ] }
+
+    @Override
+    String toString() {
+        asList().toString()
+    }
 
     /**
      * Constructs a Box from the given coordinates

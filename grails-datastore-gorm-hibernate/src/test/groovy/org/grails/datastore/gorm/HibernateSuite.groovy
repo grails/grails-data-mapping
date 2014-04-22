@@ -7,6 +7,7 @@ import grails.gorm.tests.CriteriaBuilderSpec
 import grails.gorm.tests.CrudOperationsSpec
 import grails.gorm.tests.DomainEventsSpec
 import grails.gorm.tests.FindByMethodSpec
+import grails.gorm.tests.FindWhereSpec
 import grails.gorm.tests.GormEnhancerSpec
 import grails.gorm.tests.GroovyProxySpec
 import grails.gorm.tests.InheritanceSpec
@@ -55,6 +56,7 @@ import org.junit.runners.Suite.SuiteClasses
 //  CrudOperationsSpec,
 //  SaveAllSpec,
 //  DeleteAllSpec
-    OneToOneSpec
+//    OneToOneSpec
+    FindWhereSpec
 ])
 class HibernateSuite {}

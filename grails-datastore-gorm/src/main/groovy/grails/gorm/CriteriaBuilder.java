@@ -438,6 +438,25 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     }
 
     /**
+     * Apply an "equals" constraint to each property in the key set of a <tt>Map</tt>
+     *
+     * @param propertyValues a map from property names to values
+     *
+     * @return Criterion
+     *
+     * @see org.grails.datastore.mapping.query.Query.Conjunction
+     */
+    @Override
+    public Criteria allEq(Map<String, Object> propertyValues) {
+        Query.Conjunction conjunction = new Query.Conjunction();
+        for (String property : propertyValues.keySet()) {
+            conjunction.add( Restrictions.eq(property, propertyValues.get(property)));
+        }
+        addToCriteria(conjunction);
+        return this;
+    }
+
+    /**
      * Creates a subquery criterion that ensures the given property is equal to all the given returned values
      *
      * @param propertyName The property name

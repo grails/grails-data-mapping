@@ -427,9 +427,21 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey));
             }
             else if (prop instanceof Basic) {
-                Object entryValue = getEntryValue(nativeEntry, propKey);
-                entryValue = convertBasicEntryValue(persistentEntity, prop, entryValue);
-                ea.setProperty(prop.getName(), entryValue);
+                Basic basic = (Basic) prop;
+                CustomTypeMarshaller customTypeMarshaller = basic.getCustomTypeMarshaller();
+                if(customTypeMarshaller != null) {
+                    if (!customTypeMarshaller.supports(getSession().getDatastore())) {
+                        return;
+                    }
+
+                    Object value = customTypeMarshaller.read(prop, nativeEntry);
+                    ea.setProperty(prop.getName(), value);
+                }
+                else {
+                    Object entryValue = getEntryValue(nativeEntry, propKey);
+                    entryValue = convertBasicEntryValue(persistentEntity, prop, entryValue);
+                    ea.setProperty(prop.getName(), entryValue);
+                }
             }
             else if (prop instanceof Custom) {
                 handleCustom(prop, ea, nativeEntry);
@@ -885,11 +897,27 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             }
             if (key == null) key = prop.getName();
             final boolean indexed = isPropertyIndexed(mappedProperty);
-            if ((prop instanceof Simple) || (prop instanceof Basic)) {
+            if ((prop instanceof Simple) ) {
+
                 Object propValue = entityAccess.getProperty(prop.getName());
 
                 handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, propValue);
                 setEntryValue(e, key, propValue);
+            }
+            else if((prop instanceof Basic)) {
+                Basic basic = (Basic) prop;
+                CustomTypeMarshaller customTypeMarshaller = basic.getCustomTypeMarshaller();
+                if (customTypeMarshaller != null && customTypeMarshaller.supports(getSession().getDatastore())) {
+                    Object propValue = entityAccess.getProperty(prop.getName());
+                    Object customValue = customTypeMarshaller.write(prop, propValue, e);
+                    handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, customValue);
+                }
+                else {
+                    Object propValue = entityAccess.getProperty(prop.getName());
+
+                    handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, propValue);
+                    setEntryValue(e, key, propValue);
+                }
             }
             else if ((prop instanceof Custom)) {
                 CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();
@@ -1147,7 +1175,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         Collection instances = (Collection)embeddedInstances;
         List<T> embeddedEntries = new ArrayList<T>();
         for (Object instance : instances) {
-            T entry = handleEmbeddedInstance((Association) prop, instance);
+            T entry = handleEmbeddedInstance((Association)prop, instance);
             embeddedEntries.add(entry);
         }
 
@@ -1165,7 +1193,14 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         setEmbedded(nativeEntry, key, embeddedEntry);
     }
 
+    public T createNativeObjectForEmbedded(Association embedded, Object instance) {
+        return handleEmbeddedInstance(embedded, instance, false);
+    }
+
     protected T handleEmbeddedInstance(Association association, Object embeddedInstance) {
+        return handleEmbeddedInstance(association, embeddedInstance, true);
+    }
+    protected T handleEmbeddedInstance(Association association, Object embeddedInstance, boolean includeNulls) {
         NativeEntryEntityPersister<T,K> embeddedPersister = (NativeEntryEntityPersister<T,K>) session.getPersister(embeddedInstance);
 
         // embeddedPersister would be null if the associated entity is a EmbeddedPersistentEntity
@@ -1190,7 +1225,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             }
             for (PersistentProperty persistentProperty : embeddedProperties) {
                 if (persistentProperty instanceof Simple) {
-                    setEntryValue(embeddedEntry, getPropertyKey(persistentProperty), embeddedEntityAccess.getProperty(persistentProperty.getName()));
+                    Object value = embeddedEntityAccess.getProperty(persistentProperty.getName());
+                    if(value == null && !includeNulls) continue;
+
+                    setEntryValue(embeddedEntry, getPropertyKey(persistentProperty), value);
                 }
                 else if (persistentProperty instanceof Custom) {
                     CustomTypeMarshaller customTypeMarshaller = ((Custom) persistentProperty).getCustomTypeMarshaller();
@@ -1247,7 +1285,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                             if (propValue instanceof Collection) {
                                 Collection associatedObjects = (Collection) propValue;
                                 List<Serializable> keys = session.persist(associatedObjects);
-                                setManyToMany(embeddedPersister.getPersistentEntity(), embeddedInstance, embeddedEntry, manyToMany, associatedObjects, Collections.<Association, List<Serializable>>emptyMap());
+                                setManyToMany(associatedEntity, embeddedInstance, embeddedEntry, manyToMany, associatedObjects, Collections.<Association, List<Serializable>>emptyMap());
                             }
                         }
                     }

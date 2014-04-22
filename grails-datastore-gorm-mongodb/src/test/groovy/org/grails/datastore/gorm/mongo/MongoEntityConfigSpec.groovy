@@ -45,6 +45,8 @@ class MongoEntityConfigSpec extends GormDatastoreSpec{
             location != null
             location.index == true
             location.indexAttributes == [type:"2d"]
+            coll.indices.size() == 1
+            coll.indices[0].definition == [summary:"text"]
 
         when:
             MongoSession ms = session
@@ -59,12 +61,15 @@ class MyMongoEntity {
 
     String name
     String location
+    String summary
 
     static mapping = {
         collection "mycollection"
         database "test2"
         shard "name"
         writeConcern WriteConcern.FSYNC_SAFE
+        index summary:"text"
+
         name index:true, attr:"myattribute", indexAttributes: [unique:true]
 
         location geoIndex:true

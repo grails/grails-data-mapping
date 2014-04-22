@@ -14,15 +14,22 @@
  */
 package org.grails.datastore.mapping.mongo.query;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import com.mongodb.*;
 import grails.mongodb.geo.*;
+import groovy.lang.Closure;
 import org.bson.BasicBSONObject;
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.mongo.geo.GeoJSONType;
+import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
@@ -49,13 +56,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
-
 /**
  * A {@link org.grails.datastore.mapping.query.Query} implementation for the Mongo document store.
  *
@@ -65,8 +65,13 @@ import com.mongodb.MongoException;
 @SuppressWarnings("rawtypes")
 public class MongoQuery extends Query implements QueryArgumentsAware {
 
+    public static final String PROJECT_OPERATOR = "$project";
+    public static final String SORT_OPERATOR = "$sort";
     private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
     private static Map<Class, QueryHandler> negatedHandlers = new HashMap<Class, QueryHandler>();
+    private static Map<Class, ProjectionHandler> groupByProjectionHandlers = new HashMap<Class, ProjectionHandler>();
+    private static Map<Class, ProjectionHandler> projectProjectionHandlers = new HashMap<Class, ProjectionHandler>();
+
 
     public static final String MONGO_IN_OPERATOR = "$in";
     public static final String MONGO_OR_OPERATOR = "$or";
@@ -109,27 +114,45 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     public static final String MONGO_REGEX_OPERATOR = "$regex";
 
+    public static final String MATCH_OPERATOR = "$match";
+
+    public static final String AVERAGE_OPERATOR = "$avg";
+
+    public static final String GROUP_OPERATOR = "$group";
+
+    public static final String SUM_OPERATOR = "$sum";
+
+    public static final String MIN_OPERATOR = "$min";
+
+    public static final String MAX_OPERATOR = "$max";
+
+    public static final String SIZE_OPERATOR = "$size";
+
+    public static final String NOT_OPERATOR = "$not";
+
+    public static final String EXISTS_OPERATOR = "$exists";
+
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
-            public void handle(PersistentEntity entity, IdEquals criterion, DBObject query) {
+            public void handle(Session session, IdEquals criterion, DBObject query, PersistentEntity entity) {
                 query.put(MongoEntityPersister.MONGO_ID_FIELD, criterion.getValue());
             }
         });
 
         queryHandlers.put(AssociationQuery.class, new QueryHandler<AssociationQuery>() {
-            public void handle(PersistentEntity entity, AssociationQuery criterion, DBObject query) {
+            public void handle(Session session, AssociationQuery criterion, DBObject query, PersistentEntity entity) {
                 Association<?> association = criterion.getAssociation();
                 PersistentEntity associatedEntity = association.getAssociatedEntity();
                 if (association instanceof EmbeddedCollection) {
                     BasicDBObject associationCollectionQuery = new BasicDBObject();
-                    populateMongoQuery(associatedEntity, associationCollectionQuery, criterion.getCriteria());
+                    populateMongoQuery((MongoSession) session, associationCollectionQuery, criterion.getCriteria(), associatedEntity);
                     BasicDBObject collectionQuery = new BasicDBObject("$elemMatch", associationCollectionQuery);
                     String propertyKey = getPropertyName(entity, association.getName());
                     query.put(propertyKey, collectionQuery);
                 }
                 else if (associatedEntity instanceof EmbeddedPersistentEntity || association instanceof Embedded ) {
                     BasicDBObject associatedEntityQuery = new BasicDBObject();
-                    populateMongoQuery(associatedEntity, associatedEntityQuery, criterion.getCriteria());
+                    populateMongoQuery((MongoSession) session, associatedEntityQuery, criterion.getCriteria(), associatedEntity);
                     for (String property : associatedEntityQuery.keySet()) {
                         String propertyKey = getPropertyName(entity, association.getName());
                         query.put(propertyKey + '.' + property, associatedEntityQuery.get(property));
@@ -142,9 +165,17 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
-            public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
+            public void handle(Session session, Equals criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
-                Object value = criterion.getValue();
+                PersistentProperty persistentProperty = entity.getPropertyByName(criterion.getProperty());
+                Object value;
+                if((persistentProperty instanceof Embedded) && criterion.getValue() != null) {
+                    MongoEntityPersister persister = (MongoEntityPersister) session.getPersister(entity.getJavaClass());
+                    value = persister.createNativeObjectForEmbedded((Association) persistentProperty, criterion.getValue());
+                }
+                else {
+                    value = criterion.getValue();
+                }
                 if(value instanceof Pattern) {
                     Pattern pattern = (Pattern) value;
                     query.put(propertyName, new BasicDBObject(MONGO_REGEX_OPERATOR, pattern.toString()));
@@ -157,53 +188,53 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(IsNull.class, new QueryHandler<IsNull>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, IsNull criterion, DBObject query) {
-                queryHandlers.get(Equals.class).handle(entity, new Equals(criterion.getProperty(), null), query);
+            public void handle(Session session, IsNull criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(Equals.class).handle(session, new Equals(criterion.getProperty(), null), query, entity);
             }
         });
         queryHandlers.put(IsNotNull.class, new QueryHandler<IsNotNull>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, IsNotNull criterion, DBObject query) {
-                queryHandlers.get(NotEquals.class).handle(entity, new NotEquals(criterion.getProperty(), null), query);
+            public void handle(Session session, IsNotNull criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(NotEquals.class).handle(session, new NotEquals(criterion.getProperty(), null), query, entity);
             }
         });
         queryHandlers.put(EqualsProperty.class, new QueryHandler<EqualsProperty>() {
-            public void handle(PersistentEntity entity, EqualsProperty criterion, DBObject query) {
+            public void handle(Session session, EqualsProperty criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, "==");
             }
         });
         queryHandlers.put(NotEqualsProperty.class, new QueryHandler<NotEqualsProperty>() {
-            public void handle(PersistentEntity entity, NotEqualsProperty criterion, DBObject query) {
+            public void handle(Session session, NotEqualsProperty criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, "!=");
             }
         });
         queryHandlers.put(GreaterThanProperty.class, new QueryHandler<GreaterThanProperty>() {
-            public void handle(PersistentEntity entity, GreaterThanProperty criterion, DBObject query) {
+            public void handle(Session session, GreaterThanProperty criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, ">");
             }
         });
         queryHandlers.put(LessThanProperty.class, new QueryHandler<LessThanProperty>() {
-            public void handle(PersistentEntity entity, LessThanProperty criterion, DBObject query) {
+            public void handle(Session session, LessThanProperty criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, "<");
             }
         });
         queryHandlers.put(GreaterThanEqualsProperty.class, new QueryHandler<GreaterThanEqualsProperty>() {
-            public void handle(PersistentEntity entity, GreaterThanEqualsProperty criterion, DBObject query) {
+            public void handle(Session session, GreaterThanEqualsProperty criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, ">=");
             }
         });
         queryHandlers.put(LessThanEqualsProperty.class, new QueryHandler<LessThanEqualsProperty>() {
-            public void handle(PersistentEntity entity, LessThanEqualsProperty criterion, DBObject query) {
+            public void handle(Session session, LessThanEqualsProperty criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, "<=");
@@ -211,7 +242,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
-            public void handle(PersistentEntity entity, NotEquals criterion, DBObject query) {
+            public void handle(Session session, NotEquals criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 DBObject notEqualQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(notEqualQuery, MONGO_NE_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -221,19 +252,19 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(Like.class, new QueryHandler<Like>() {
-            public void handle(PersistentEntity entity, Like like, DBObject query) {
+            public void handle(Session session, Like like, DBObject query, PersistentEntity entity) {
                 handleLike(entity, like, query, true);
             }
         });
 
-      queryHandlers.put(ILike.class, new QueryHandler<ILike>() {
-            public void handle(PersistentEntity entity, ILike like, DBObject query) {
+        queryHandlers.put(ILike.class, new QueryHandler<ILike>() {
+            public void handle(Session session, ILike like, DBObject query, PersistentEntity entity) {
                 handleLike(entity, like, query, false);
             }
         });
 
         queryHandlers.put(RLike.class, new QueryHandler<RLike>() {
-            public void handle(PersistentEntity entity, RLike like, DBObject query) {
+            public void handle(Session session, RLike like, DBObject query, PersistentEntity entity) {
                 Object value = like.getValue();
                 if (value == null) value = "null";
                 final String expr = value.toString();
@@ -244,7 +275,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(In.class, new QueryHandler<In>() {
-            public void handle(PersistentEntity entity, In in, DBObject query) {
+            public void handle(Session session, In in, DBObject query, PersistentEntity entity) {
                 DBObject inQuery = new BasicDBObject();
                 List values = getInListQueryValues(entity, in);
                 inQuery.put(MONGO_IN_OPERATOR, values);
@@ -256,7 +287,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
 
         queryHandlers.put(WithinBox.class, new QueryHandler<WithinBox>() {
-            public void handle(PersistentEntity entity, WithinBox withinBox, DBObject query) {
+            public void handle(Session session, WithinBox withinBox, DBObject query, PersistentEntity entity) {
                 DBObject nearQuery = new BasicDBObject();
                 DBObject box = new BasicDBObject();
                 MongoEntityPersister.setDBObjectValue(box, BOX_OPERATOR, withinBox.getValues(), entity.getMappingContext());
@@ -267,7 +298,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(WithinPolygon.class, new QueryHandler<WithinPolygon>() {
-            public void handle(PersistentEntity entity, WithinPolygon withinPolygon, DBObject query) {
+            public void handle(Session session, WithinPolygon withinPolygon, DBObject query, PersistentEntity entity) {
                 DBObject nearQuery = new BasicDBObject();
                 DBObject box = new BasicDBObject();
                 MongoEntityPersister.setDBObjectValue(box, POLYGON_OPERATOR, withinPolygon.getValues(), entity.getMappingContext());
@@ -278,7 +309,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(WithinCircle.class, new QueryHandler<WithinCircle>() {
-            public void handle(PersistentEntity entity, WithinCircle withinCentre, DBObject query) {
+            public void handle(Session session, WithinCircle withinCentre, DBObject query, PersistentEntity entity) {
                 DBObject nearQuery = new BasicDBObject();
                 DBObject center = new BasicDBObject();
                 MongoEntityPersister.setDBObjectValue(center, CENTER_OPERATOR, withinCentre.getValues(), entity.getMappingContext());
@@ -289,7 +320,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         QueryHandler<Near> nearHandler = new QueryHandler<Near>() {
-            public void handle(PersistentEntity entity, Near near, DBObject query) {
+            public void handle(Session session, Near near, DBObject query, PersistentEntity entity) {
                 DBObject nearQuery = new BasicDBObject();
                 Object value = near.getValue();
                 String nearOperator = near instanceof NearSphere ? NEAR_SPHERE_OPERATOR : NEAR_OPERATOR;
@@ -313,7 +344,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         queryHandlers.put(NearSphere.class, nearHandler);
 
         queryHandlers.put(GeoWithin.class, new QueryHandler<GeoWithin>() {
-            public void handle(PersistentEntity entity, GeoWithin geoWithin, DBObject query) {
+            public void handle(Session session, GeoWithin geoWithin, DBObject query, PersistentEntity entity) {
                 DBObject queryRoot = new BasicDBObject();
                 BasicDBObject queryGeoWithin = new BasicDBObject();
                 queryRoot.put(GEO_WITHIN_OPERATOR, queryGeoWithin);
@@ -345,7 +376,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(GeoIntersects.class, new QueryHandler<GeoIntersects>() {
-            public void handle(PersistentEntity entity, GeoIntersects geoIntersects, DBObject query) {
+            public void handle(Session session, GeoIntersects geoIntersects, DBObject query, PersistentEntity entity) {
                 DBObject queryRoot = new BasicDBObject();
                 BasicDBObject queryGeoWithin = new BasicDBObject();
                 queryRoot.put(GEO_INTERSECTS_OPERATOR, queryGeoWithin);
@@ -365,7 +396,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(Between.class, new QueryHandler<Between>() {
-            public void handle(PersistentEntity entity, Between between, DBObject query) {
+            public void handle(Session session, Between between, DBObject query, PersistentEntity entity) {
                 DBObject betweenQuery = new BasicDBObject();
                 MongoEntityPersister.setDBObjectValue(betweenQuery, MONGO_GTE_OPERATOR, between.getFrom(), entity.getMappingContext());
                 MongoEntityPersister.setDBObjectValue(betweenQuery, MONGO_LTE_OPERATOR, between.getTo(), entity.getMappingContext());
@@ -375,7 +406,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
-            public void handle(PersistentEntity entity, GreaterThan criterion, DBObject query) {
+            public void handle(Session session, GreaterThan criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 DBObject greaterThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(greaterThanQuery, MONGO_GT_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -385,7 +416,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
-            public void handle(PersistentEntity entity, GreaterThanEquals criterion, DBObject query) {
+            public void handle(Session session, GreaterThanEquals criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 DBObject greaterThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(greaterThanQuery, MONGO_GTE_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -395,7 +426,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
-            public void handle(PersistentEntity entity, LessThan criterion, DBObject query) {
+            public void handle(Session session, LessThan criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 DBObject lessThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(lessThanQuery, MONGO_LT_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -405,7 +436,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
-            public void handle(PersistentEntity entity, LessThanEquals criterion, DBObject query) {
+            public void handle(Session session, LessThanEquals criterion, DBObject query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 DBObject lessThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(lessThanQuery, MONGO_LTE_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -415,18 +446,18 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(Conjunction.class, new QueryHandler<Conjunction>() {
-            public void handle(PersistentEntity entity, Conjunction criterion, DBObject query) {
-                populateMongoQuery(entity, query, criterion);
+            public void handle(Session session, Conjunction criterion, DBObject query, PersistentEntity entity) {
+                populateMongoQuery((MongoSession) session, query, criterion, entity);
             }
         });
 
         queryHandlers.put(Negation.class, new QueryHandler<Negation>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, Negation criteria, DBObject query) {
+            public void handle(Session session, Negation criteria, DBObject query, PersistentEntity entity) {
                 for (Criterion criterion : criteria.getCriteria()) {
                     final QueryHandler queryHandler = negatedHandlers.get(criterion.getClass());
                     if (queryHandler != null) {
-                        queryHandler.handle(entity, criterion, query);
+                        queryHandler.handle(session, criterion, query, entity);
                     }
                     else {
                         throw new UnsupportedOperationException("Query of type "+criterion.getClass().getSimpleName()+" cannot be negated");
@@ -437,27 +468,117 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(Disjunction.class, new QueryHandler<Disjunction>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, Disjunction criterion, DBObject query) {
-                populateMongoQuery(entity, query, criterion);
+            public void handle(Session session, Disjunction criterion, DBObject query, PersistentEntity entity) {
+                populateMongoQuery((MongoSession) session, query, criterion, entity);
+            }
+        });
+
+        queryHandlers.put(SizeEquals.class, new QueryHandler<SizeEquals>() {
+            @SuppressWarnings("unchecked")
+            public void handle(Session session, SizeEquals criterion, DBObject query, PersistentEntity entity) {
+                String propertyName = getPropertyName(entity, criterion);
+                DBObject sizeEqualsQuery = getOrCreatePropertyQuery(query, propertyName);
+                MongoEntityPersister.setDBObjectValue(sizeEqualsQuery, SIZE_OPERATOR, getNumber(criterion), entity.getMappingContext());
+
+                query.put(propertyName, sizeEqualsQuery);
+            }
+        });
+
+        queryHandlers.put(SizeNotEquals.class, new QueryHandler<SizeNotEquals>() {
+            public void handle(Session session, SizeNotEquals criterion, DBObject query, PersistentEntity entity) {
+                String propertyName = getPropertyName(entity, criterion);
+                DBObject sizeNotEqualsQuery = getOrCreatePropertyQuery(query, propertyName);
+                sizeNotEqualsQuery.put(NOT_OPERATOR,new BasicDBObject(SIZE_OPERATOR, getNumber(criterion)));
+
+                query.put(propertyName, sizeNotEqualsQuery);
+            }
+        });
+
+        queryHandlers.put(SizeGreaterThan.class, new QueryHandler<SizeGreaterThan>() {
+            @SuppressWarnings("unchecked")
+            public void handle(Session session, SizeGreaterThan criterion, DBObject query, PersistentEntity entity) {
+                String propertyName = getPropertyName(entity, criterion);
+                Integer greaterThanValue = getNumber(criterion);
+
+                query.put(propertyName + '.' + greaterThanValue, new BasicDBObject(EXISTS_OPERATOR, true));
+            }
+        });
+
+        queryHandlers.put(SizeLessThan.class, new QueryHandler<SizeLessThan>() {
+            @SuppressWarnings("unchecked")
+            public void handle(Session session, SizeLessThan criterion, DBObject query, PersistentEntity entity) {
+                String propertyName = getPropertyName(entity, criterion);
+                Integer lessThanValue = getNumber(criterion);
+
+                query.put(propertyName + '.' + (lessThanValue-1), new BasicDBObject(EXISTS_OPERATOR, 0));
+            }
+        });
+
+        queryHandlers.put(SizeLessThanEquals.class, new QueryHandler<SizeLessThanEquals>() {
+            @SuppressWarnings("unchecked")
+            public void handle(Session session, SizeLessThanEquals criterion, DBObject query, PersistentEntity entity) {
+                String propertyName = getPropertyName(entity, criterion);
+                Integer lessThanValue = getNumber(criterion);
+
+                query.put(propertyName + '.' + lessThanValue, new BasicDBObject(EXISTS_OPERATOR, 0));
+            }
+        });
+
+        queryHandlers.put(SizeGreaterThanEquals.class, new QueryHandler<SizeGreaterThanEquals>() {
+            @SuppressWarnings("unchecked")
+            public void handle(Session session, SizeGreaterThanEquals criterion, DBObject query, PersistentEntity entity) {
+                String propertyName = getPropertyName(entity, criterion);
+                Integer greaterThanValue = getNumber(criterion);
+
+                query.put(propertyName + '.' + (greaterThanValue-1), new BasicDBObject(EXISTS_OPERATOR, true));
+            }
+        });
+
+
+        negatedHandlers.put(SizeEquals.class, new QueryHandler<SizeEquals>() {
+            @SuppressWarnings("unchecked")
+            public void handle(Session session, SizeEquals criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(SizeNotEquals.class).handle(session, Restrictions.sizeNe(criterion.getProperty(), getNumber(criterion)), query, entity);
+            }
+        });
+
+        negatedHandlers.put(SizeNotEquals.class, new QueryHandler<SizeNotEquals>() {
+            @SuppressWarnings("unchecked")
+            public void handle(Session session, SizeNotEquals criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(SizeEquals.class).handle(session, Restrictions.sizeEq(criterion.getProperty(), getNumber(criterion)), query, entity);
+            }
+        });
+
+        negatedHandlers.put(SizeGreaterThan.class, new QueryHandler<SizeGreaterThan>() {
+            @SuppressWarnings("unchecked")
+            public void handle(Session session, SizeGreaterThan criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(SizeLessThan.class).handle(session, Restrictions.sizeLt(criterion.getProperty(), getNumber(criterion)), query, entity);
+            }
+        });
+
+        negatedHandlers.put(SizeLessThan.class, new QueryHandler<SizeLessThan>() {
+            @SuppressWarnings("unchecked")
+            public void handle(Session session, SizeLessThan criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(SizeGreaterThan.class).handle(session, Restrictions.sizeGt(criterion.getProperty(), getNumber(criterion)), query, entity);
             }
         });
 
         negatedHandlers.put(Equals.class, new QueryHandler<Equals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
-                queryHandlers.get(NotEquals.class).handle(entity, Restrictions.ne(criterion.getProperty(), criterion.getValue()), query);
+            public void handle(Session session, Equals criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(NotEquals.class).handle(session, Restrictions.ne(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, NotEquals criterion, DBObject query) {
-                queryHandlers.get(Equals.class).handle(entity, Restrictions.eq(criterion.getProperty(), criterion.getValue()), query);
+            public void handle(Session session, NotEquals criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(Equals.class).handle(session, Restrictions.eq(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(In.class, new QueryHandler<In>() {
-            public void handle(PersistentEntity entity, In in, DBObject query) {
+            public void handle(Session session, In in, DBObject query, PersistentEntity entity) {
                 Object nativePropertyValue = getInListQueryValues(entity, in);
                 String property = getPropertyName(entity, in);
                 DBObject inQuery = getOrCreatePropertyQuery(query, property);
@@ -467,7 +588,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         negatedHandlers.put(Between.class, new QueryHandler<Between>() {
-            public void handle(PersistentEntity entity, Between between, DBObject query) {
+            public void handle(Session session, Between between, DBObject query, PersistentEntity entity) {
                 String property = getPropertyName(entity, between);
                 DBObject betweenQuery = getOrCreatePropertyQuery(query, property);
                 betweenQuery.put(MONGO_LTE_OPERATOR, between.getFrom());
@@ -478,31 +599,145 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         negatedHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, GreaterThan criterion, DBObject query) {
-                queryHandlers.get(LessThan.class).handle(entity, Restrictions.lt(criterion.getProperty(), criterion.getValue()), query);
+            public void handle(Session session, GreaterThan criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(LessThan.class).handle(session, Restrictions.lt(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, GreaterThanEquals criterion, DBObject query) {
-                queryHandlers.get(LessThanEquals.class).handle(entity, Restrictions.lte(criterion.getProperty(), criterion.getValue()), query);
+            public void handle(Session session, GreaterThanEquals criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(LessThanEquals.class).handle(session, Restrictions.lte(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, LessThan criterion, DBObject query) {
-                queryHandlers.get(GreaterThan.class).handle(entity, Restrictions.gt(criterion.getProperty(), criterion.getValue()), query);
+            public void handle(Session session, LessThan criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(GreaterThan.class).handle(session, Restrictions.gt(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(PersistentEntity entity, LessThanEquals criterion, DBObject query) {
-                queryHandlers.get(GreaterThanEquals.class).handle(entity, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query);
+            public void handle(Session session, LessThanEquals criterion, DBObject query, PersistentEntity entity) {
+                queryHandlers.get(GreaterThanEquals.class).handle(session, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
+
+        groupByProjectionHandlers.put(AvgProjection.class, new ProjectionHandler<AvgProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, AvgProjection projection) {
+                return addProjectionToGroupBy(projectObject, groupBy,projection, AVERAGE_OPERATOR, "avg_");
+            }
+        });
+        groupByProjectionHandlers.put(CountProjection.class, new ProjectionHandler<CountProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, CountProjection projection) {
+                projectObject.put(MongoEntityPersister.MONGO_ID_FIELD, 1);
+                String projectionKey = "count";
+                groupBy.put(projectionKey, new BasicDBObject(SUM_OPERATOR, 1));
+                return projectionKey;
+            }
+        });
+        groupByProjectionHandlers.put(CountDistinctProjection.class, new ProjectionHandler<CountDistinctProjection>() {
+            @Override
+            // equivalent of "select count (distinct fieldName) from someTable". Example:
+            // db.someCollection.aggregate([{ $group: { _id: "$fieldName"}  },{ $group: { _id: 1, count: { $sum: 1 } } } ])
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, CountDistinctProjection projection) {
+                projectObject.put(projection.getPropertyName(), 1);
+                String property = projection.getPropertyName();
+                String projectionValueKey = "countDistinct_" + property;
+                DBObject id = getIdObjectForGroupBy(groupBy);
+                id.put(property, "$"+property);
+                return projectionValueKey;
+            }
+        });
+
+        groupByProjectionHandlers.put(MinProjection.class, new ProjectionHandler<MinProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, MinProjection projection) {
+                return addProjectionToGroupBy(projectObject, groupBy, projection, MIN_OPERATOR, "min_");
+            }
+        });
+        groupByProjectionHandlers.put(MaxProjection.class, new ProjectionHandler<MaxProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, MaxProjection projection) {
+                return addProjectionToGroupBy(projectObject, groupBy, projection, MAX_OPERATOR, "max_");
+            }
+        });
+        groupByProjectionHandlers.put(SumProjection.class, new ProjectionHandler<SumProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, SumProjection projection) {
+                return addProjectionToGroupBy(projectObject, groupBy, projection, SUM_OPERATOR, "sum_");
+            }
+        });
+
+        projectProjectionHandlers.put(DistinctPropertyProjection.class, new ProjectionHandler<DistinctPropertyProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, DistinctPropertyProjection projection) {
+                String property = projection.getPropertyName();
+                projectObject.put(property, 1);
+                DBObject id = getIdObjectForGroupBy(groupBy);
+                id.put(property, "$"+property);
+                return property;
+            }
+        });
+
+        projectProjectionHandlers.put(PropertyProjection.class, new ProjectionHandler<PropertyProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, PropertyProjection projection) {
+                String property = projection.getPropertyName();
+                projectObject.put(property, 1);
+                DBObject id = getIdObjectForGroupBy(groupBy);
+                id.put(property, "$"+property);
+                // we add the id to the grouping to make it not distinct
+                id.put(MongoEntityPersister.MONGO_ID_FIELD, "$"+MongoEntityPersister.MONGO_ID_FIELD);
+                return property;
+            }
+        });
+
+        projectProjectionHandlers.put(IdProjection.class, new ProjectionHandler<IdProjection>() {
+            @Override
+            public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, IdProjection projection) {
+                projectObject.put(MongoEntityPersister.MONGO_ID_FIELD, 1);
+                DBObject id = getIdObjectForGroupBy(groupBy);
+                id.put(MongoEntityPersister.MONGO_ID_FIELD, "$_id");
+
+                return MongoEntityPersister.MONGO_ID_FIELD;
+            }
+        });
+
+    }
+
+    private static Integer getNumber(PropertyCriterion criterion) {
+        Object value = criterion.getValue();
+        if(value instanceof Number) {
+            return ((Number)value).intValue();
+        }
+        throw new IllegalArgumentException("Argument to size constraint must be a number");
+    }
+
+    private static DBObject getIdObjectForGroupBy(DBObject groupBy) {
+        Object value = groupBy.get(MongoEntityPersister.MONGO_ID_FIELD);
+        DBObject id;
+        if(value instanceof DBObject) {
+            id = (DBObject) value;
+        }
+        else {
+            id = new BasicDBObject();
+            groupBy.put(MongoEntityPersister.MONGO_ID_FIELD, id);
+        }
+        return id;
+    }
+
+    private static String addProjectionToGroupBy(DBObject projectObject, DBObject groupBy, PropertyProjection projection, String operator, String prefix) {
+        projectObject.put(projection.getPropertyName(), 1);
+        String property = projection.getPropertyName();
+        String projectionValueKey = prefix + property;
+        BasicDBObject averageProjection = new BasicDBObject(operator, "$" + property);
+        groupBy.put(projectionValueKey, averageProjection);
+        return projectionValueKey;
     }
 
     private static DBObject getOrCreatePropertyQuery(DBObject query, String propertyName) {
@@ -587,7 +822,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
      */
     public DBObject getMongoQuery() {
         DBObject query = createQueryObject(entity);
-        populateMongoQuery(entity, query,criteria);
+        populateMongoQuery((MongoSession) getSession(), query,criteria, entity);
         return query;
     }
 
@@ -617,8 +852,9 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     return wrapObjectResultInList(createObjectFromDBObject(dbObject));
                 }
 
-                DBCursor cursor = null;
+                DBCursor cursor;
                 DBObject query = createQueryObject(entity);
+
 
                 final List<Projection> projectionList = projections().getProjectionList();
                 if (projectionList.isEmpty()) {
@@ -626,104 +862,121 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     return (List)new MongoResultList(cursor,offset, mongoEntityPersister).clone();
                 }
 
+                populateMongoQuery((MongoSession) session, query, criteria, entity);
                 List projectedResults = new ArrayList();
+                List<DBObject> aggregationPipeline = new ArrayList<DBObject>();
+
+                if(!query.keySet().isEmpty()) {
+                    aggregationPipeline.add(new BasicDBObject(MATCH_OPERATOR, query));
+                }
+
+                List<Order> orderBy = getOrderBy();
+                if(!orderBy.isEmpty()) {
+                    BasicDBObject sortBy = new BasicDBObject();
+                    DBObject sort = new BasicDBObject(SORT_OPERATOR, sortBy);
+                    for (Order order : orderBy) {
+                        sortBy.put(order.getProperty(), order.getDirection() == Order.Direction.ASC ? 1 : -1);
+                    }
+
+                    aggregationPipeline.add(sort);
+                }
+
+
+                List<ProjectedProperty> projectedKeys = new ArrayList<ProjectedProperty>();
+                boolean singleResult = true;
+
+                BasicDBObject projectObject = new BasicDBObject();
+
+
+
+                BasicDBObject groupByObject = new BasicDBObject();
+                groupByObject.put(MongoEntityPersister.MONGO_ID_FIELD, 0);
+                BasicDBObject additionalGroupBy = null;
+
+
                 for (Projection projection : projectionList) {
-                    if (projection instanceof CountProjection) {
-                        // For some reason the below doesn't return the expected result whilst executing the query and returning the cursor does
-                        //projectedResults.add(collection.getCount(query));
-                        if (cursor == null) {
-                            cursor = executeQuery(entity, criteria, collection, query);
-                        }
-                        projectedResults.add(cursor.size());
-                    }
-                    else if (projection instanceof MinProjection) {
-                        if (cursor == null) {
-                            cursor = executeQuery(entity, criteria, collection, query);
-                        }
-                        MinProjection mp = (MinProjection) projection;
-
-                        MongoResultList results = new MongoResultList(cursor,offset, mongoEntityPersister);
-                        projectedResults.add(manualProjections.min((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
-                    }
-                    else if (projection instanceof MaxProjection) {
-                        if (cursor == null) {
-                            cursor = executeQuery(entity, criteria, collection, query);
-                        }
-                        MaxProjection mp = (MaxProjection) projection;
-
-                        MongoResultList results = new MongoResultList(cursor,offset, mongoEntityPersister);
-                        projectedResults.add(manualProjections.max((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
-                    }
-                    else if (projection instanceof CountDistinctProjection) {
-                        if (cursor == null) {
-                            cursor = executeQuery(entity, criteria, collection, query);
-                        }
-                        CountDistinctProjection mp = (CountDistinctProjection) projection;
-
-                        MongoResultList results = new MongoResultList(cursor, offset,mongoEntityPersister);
-                        projectedResults.add(manualProjections.countDistinct((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
-
-                    }
-                    else if ((projection instanceof DistinctPropertyProjection) || (projection instanceof PropertyProjection) || (projection instanceof IdProjection)) {
-                        final boolean distinct = (projection instanceof DistinctPropertyProjection);
-                        final PersistentProperty persistentProperty;
-                        final String propertyName;
-                        if (projection instanceof IdProjection) {
-                            persistentProperty = entity.getIdentity();
-                            propertyName = MongoEntityPersister.MONGO_ID_FIELD;
+                    ProjectionHandler projectionHandler = projectProjectionHandlers.get(projection.getClass());
+                    ProjectedProperty projectedProperty = new ProjectedProperty();
+                    projectedProperty.projection = projection;
+                    if(projection instanceof PropertyProjection) {
+                        PropertyProjection propertyProjection = (PropertyProjection) projection;
+                        PersistentProperty property = entity.getPropertyByName(propertyProjection.getPropertyName());
+                        if(property != null) {
+                            projectedProperty.property = property;
                         }
                         else {
-                            PropertyProjection pp = (PropertyProjection) projection;
-                            persistentProperty = entity.getPropertyByName(pp.getPropertyName());
-                            propertyName = getPropertyName(entity, persistentProperty.getName());
+                            throw new InvalidDataAccessResourceUsageException("Attempt to project on a non-existent project ["+propertyProjection.getPropertyName()+"]");
                         }
-                        if (persistentProperty != null) {
-                            populateMongoQuery(entity, query, criteria);
+                    }
+                    if(projectionHandler != null) {
+                        singleResult = false;
 
-                            List propertyResults = null;
-                            if (max > -1) {
-                                // if there is a limit then we have to do a manual projection since the MongoDB driver doesn't support limits and distinct together
-                                cursor = executeQueryAndApplyPagination(collection, query);
-                                if (distinct) {
-                                    propertyResults = new ArrayList(manualProjections.distinct(new MongoResultList(cursor, offset,mongoEntityPersister), propertyName));
-                                }
-                                else {
-                                    propertyResults = manualProjections.property(new MongoResultList(cursor,offset, mongoEntityPersister), propertyName);
-                                }
+                        String aggregationKey = projectionHandler.handle(entity, projectObject,groupByObject, projection);
+                        aggregationKey = "id." + aggregationKey;
+                        projectedProperty.projectionKey = aggregationKey;
+                        projectedKeys.add(projectedProperty);
+                    }
+                    else {
+
+                        projectionHandler = groupByProjectionHandlers.get(projection.getClass());
+                        if(projectionHandler != null) {
+                            projectedProperty.projectionKey = projectionHandler.handle(entity, projectObject,groupByObject, projection);
+                            projectedKeys.add(projectedProperty);
+
+                            if(projection instanceof CountDistinctProjection) {
+                                BasicDBObject finalCount = new BasicDBObject(MongoEntityPersister.MONGO_ID_FIELD, 1);
+                                finalCount.put(projectedProperty.projectionKey, new BasicDBObject(SUM_OPERATOR, 1));
+                                additionalGroupBy = new BasicDBObject(GROUP_OPERATOR, finalCount);
+                            }
+                        }
+
+                    }
+                }
+
+                if(!projectObject.isEmpty()) {
+                    aggregationPipeline.add(new BasicDBObject(PROJECT_OPERATOR, projectObject));
+                }
+
+                aggregationPipeline.add(new BasicDBObject(GROUP_OPERATOR, groupByObject));
+
+                if(additionalGroupBy != null) {
+                    aggregationPipeline.add(additionalGroupBy);
+                }
+
+
+                if(max > 0) {
+                    aggregationPipeline.add(new BasicDBObject("$limit", max));
+                }
+                if(offset > 0) {
+                    aggregationPipeline.add(new BasicDBObject("$skip", offset));
+                }
+
+
+
+                Cursor aggregatedResults = collection.aggregate(aggregationPipeline, AggregationOptions.builder().build());
+
+                if(singleResult && aggregatedResults.hasNext()) {
+                    DBObject dbo = aggregatedResults.next();
+                    for (ProjectedProperty projectedProperty : projectedKeys) {
+                        Object value = dbo.get(projectedProperty.projectionKey);
+                        PersistentProperty property = projectedProperty.property;
+                        if(value != null) {
+                            if(property instanceof ToOne ) {
+                                projectedResults.add( session.retrieve(property.getType(), (Serializable) value));
                             }
                             else {
-                                if (distinct || (projection instanceof IdProjection)) {
-                                    propertyResults = collection.distinct(propertyName, query);
-                                }
-                                else {
-
-                                    DBCursor propertyCursor = collection.find(query, new BasicDBObject(propertyName, 1));
-                                    ArrayList projectedProperties = new ArrayList();
-                                    while(propertyCursor.hasNext()) {
-                                        DBObject dbo = propertyCursor.next();
-                                        projectedProperties.add(dbo.get(propertyName));
-                                    }
-
-                                    propertyResults = projectedProperties;
-                                }
+                                projectedResults.add(value);
                             }
-
-                            if (persistentProperty instanceof ToOne) {
-                                Association a = (Association) persistentProperty;
-                                propertyResults = session.retrieveAll(a.getAssociatedEntity().getJavaClass(), propertyResults);
-                            }
-
-                            if (projectedResults.size() == 0 && projectionList.size() == 1) {
-                                return propertyResults;
-                            }
-                            projectedResults.add(propertyResults);
                         }
                         else {
-                            throw new InvalidDataAccessResourceUsageException("Cannot use [" +
-                                    projection.getClass().getSimpleName() +
-                                    "] projection on non-existent property: " + propertyName);
+                            if(projectedProperty.projection instanceof CountProjection) {
+                                projectedResults.add(0);
+                            }
                         }
                     }
+                }
+                else {
+                   return new AggregatedResultList(session, aggregatedResults, projectedKeys);
                 }
 
                 return projectedResults;
@@ -736,7 +989,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     cursor = executeQueryAndApplyPagination(collection, query);
                 }
                 else {
-                    populateMongoQuery(entity, query, criteria);
+                    populateMongoQuery((MongoSession) session, query, criteria, entity);
                     cursor = executeQueryAndApplyPagination(collection, query);
                 }
 
@@ -802,7 +1055,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
     @SuppressWarnings("unchecked")
-    public static void populateMongoQuery(PersistentEntity entity, DBObject query, Junction criteria) {
+    public static void populateMongoQuery(MongoSession session, DBObject query, Junction criteria, PersistentEntity entity) {
 
         List subList = null;
         // if a query combines more than 1 item, wrap the items in individual $and or $or arguments
@@ -834,7 +1087,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         continue;
                     }
                 }
-                queryHandler.handle(entity, criterion, dbo);
+                queryHandler.handle(session, criterion, dbo, entity);
             }
             else {
                 throw new InvalidDataAccessResourceUsageException("Queries of type "+criterion.getClass().getSimpleName()+" are not supported by this implementation");
@@ -1243,24 +1496,309 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
     private static interface QueryHandler<T> {
-        public void handle(PersistentEntity entity, T criterion, DBObject query);
+        public void handle(Session session, T criterion, DBObject query, PersistentEntity entity);
+    }
+
+    private static interface ProjectionHandler<T extends Projection> {
+        /**
+         * Handles a projection modifying the aggregation pipeline appropriately
+         *
+         * @param entity The entity
+         * @param groupByObject The group by object
+         * @param projection The projection
+         * @return The key to be used to obtain the projected value from the pipeline results
+         */
+        public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupByObject, T projection);
+    }
+
+
+    public static class AggregatedResultList extends AbstractList implements Closeable {
+
+        private Cursor cursor;
+        private List<ProjectedProperty> projectedProperties;
+        private List initializedObjects = new ArrayList();
+        private int internalIndex = 0;
+        private boolean initialized = false;
+        private boolean containsAssociations = false;
+        private Session session;
+
+        public AggregatedResultList(Session session, Cursor cursor, List<ProjectedProperty> projectedProperties) {
+            this.cursor = cursor;
+            this.projectedProperties = projectedProperties;
+            this.session = session;
+            for (ProjectedProperty projectedProperty : projectedProperties) {
+                if(projectedProperty.property instanceof Association) {
+                    this.containsAssociations = true;
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public String toString() {
+            return initializedObjects.toString();
+        }
+
+        @Override
+        public Object get(int index) {
+            if(containsAssociations) initializeFully();
+            if(initializedObjects.size() > index) {
+                return initializedObjects.get(index);
+            }
+            else if(!initialized) {
+                boolean hasResults = false;
+                while(cursor.hasNext()) {
+                    hasResults = true;
+                    DBObject dbo = cursor.next();
+                    Object projected = addInitializedObject(dbo);
+                    if(index == internalIndex) {
+                        return projected;
+                    }
+                }
+                if(!hasResults) handleNoResults();
+                initialized = true;
+            }
+            throw new ArrayIndexOutOfBoundsException("Index value " + index + " exceeds size of aggregate list");
+        }
+
+
+        @Override
+        public Object set(int index, Object element) {
+            initializeFully();
+            return initializedObjects.set(index, element);
+        }
+
+        @Override
+        public ListIterator listIterator() {
+            return listIterator(0);
+        }
+
+        @Override
+        public ListIterator listIterator(int index) {
+            initializeFully();
+            return initializedObjects.listIterator(index);
+        }
+
+        protected void initializeFully() {
+            if(initialized) return;
+            if(containsAssociations) {
+                if(projectedProperties.size() == 1) {
+                    ProjectedProperty projectedProperty = projectedProperties.get(0);
+                    PersistentProperty property = projectedProperty.property;
+                    List<Serializable> identifiers = new ArrayList<Serializable>();
+                    boolean hasResults = false;
+                    while(cursor.hasNext()) {
+                        hasResults = true;
+                        DBObject dbo = cursor.next();
+                        Object id = getProjectedValue(dbo, projectedProperty.projectionKey);
+                        identifiers.add((Serializable) id);
+                    }
+                    if(!hasResults) {
+                        handleNoResults();
+                    }
+                    else {
+                        this.initializedObjects = session.retrieveAll(property.getType(), identifiers);
+                    }
+                }
+                else {
+                    Map<Integer, Map<Class, List<Serializable>>> associationMap = createAssociationMap();
+
+                    boolean hasResults = false;
+                    while(cursor.hasNext()) {
+                        hasResults = true;
+                        DBObject dbo = cursor.next();
+                        List<Object> projectedResult = new ArrayList<Object>();
+                        int index = 0;
+                        for (ProjectedProperty projectedProperty : projectedProperties) {
+                            PersistentProperty property = projectedProperty.property;
+                            Object value = getProjectedValue(dbo, projectedProperty.projectionKey);
+                            if(property instanceof Association) {
+                                Map<Class, List<Serializable>> identifierMap = associationMap.get(index);
+                                Class type = ((Association) property).getAssociatedEntity().getJavaClass();
+                                identifierMap.get(type).add((Serializable) value);
+                            }
+                            projectedResult.add(value);
+                            index++;
+                        }
+
+                        initializedObjects.add(projectedResult);
+                    }
+
+                    if(!hasResults) {
+                        handleNoResults();
+                        return;
+                    }
+
+                    Map<Integer, List> finalResults = new HashMap<Integer, List>();
+                    for (Integer index : associationMap.keySet()) {
+                        Map<Class, List<Serializable>> associatedEntityIdentifiers = associationMap.get(index);
+                        for (Class associationClass : associatedEntityIdentifiers.keySet()) {
+                            List<Serializable> identifiers = associatedEntityIdentifiers.get(associationClass);
+                            finalResults.put(index, session.retrieveAll(associationClass, identifiers));
+                        }
+                    }
+
+                    for (Object initializedObject : initializedObjects) {
+                        List projected = (List) initializedObject;
+                        for (Integer index : finalResults.keySet()) {
+                            List resultsByIndex = finalResults.get(index);
+                            if(index < resultsByIndex.size() ) {
+                                projected.set(index, resultsByIndex.get(index));
+                            }
+                            else {
+                                projected.set(index, null);
+                            }
+                        }
+
+                    }
+                }
+            }
+            else {
+                boolean hasResults = false;
+                while(cursor.hasNext()) {
+                    hasResults = true;
+                    DBObject dbo = cursor.next();
+                    addInitializedObject(dbo);
+                }
+                if(!hasResults) {
+                    handleNoResults();
+                }
+            }
+            initialized = true;
+        }
+
+        protected void handleNoResults() {
+            ProjectedProperty projectedProperty = projectedProperties.get(0);
+            if(projectedProperty.projection instanceof CountProjection) {
+                initializedObjects.add(0);
+            }
+        }
+
+        private Map<Integer, Map<Class, List<Serializable>>> createAssociationMap() {
+            Map<Integer, Map<Class, List<Serializable>>> associationMap = new HashMap<Integer, Map<Class, List<Serializable>>>();
+            associationMap = DefaultGroovyMethods.withDefault(associationMap, new Closure(this) {
+                public Object doCall(Object o) {
+                    Map<Class, List<Serializable>> subMap = new HashMap<Class, List<Serializable>>();
+                    subMap = DefaultGroovyMethods.withDefault(subMap, new Closure(this) {
+                        public Object doCall(Object o) {
+                            return new ArrayList<Serializable>();
+                        }
+                    });
+                    return subMap;
+                }
+            });
+            return associationMap;
+        }
+
+        @Override
+        public Iterator iterator() {
+            if(initialized || containsAssociations || internalIndex>0) {
+                initializeFully();
+                return initializedObjects.iterator();
+            }
+
+            if(!cursor.hasNext()) {
+                handleNoResults();
+                return initializedObjects.iterator();
+            }
+
+            return new Iterator() {
+                @Override
+                public boolean hasNext() {
+                    boolean hasMore = cursor.hasNext();
+                    if(!hasMore) initialized = true;
+                    return hasMore;
+                }
+
+                @Override
+                public Object next() {
+                    DBObject dbo = cursor.next();
+                    return addInitializedObject(dbo);
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException("Aggregate result list cannot be mutated.");
+                }
+            };
+        }
+
+        private Object addInitializedObject(DBObject dbo) {
+            if(projectedProperties.size() > 1) {
+
+                List<Object> projected = new ArrayList<Object>();
+                for (ProjectedProperty projectedProperty : projectedProperties) {
+                    Object value;
+                    value = getProjectedValue(dbo, projectedProperty.projectionKey);
+                    projected.add(value);
+                }
+                initializedObjects.add(internalIndex, projected);
+                internalIndex++;
+                return projected;
+            }
+            else {
+                ProjectedProperty projectedProperty = projectedProperties.get(0);
+                Object projected = getProjectedValue(dbo, projectedProperty.projectionKey);
+                initializedObjects.add(internalIndex, projected);
+                internalIndex++;
+                return projected;
+            }
+        }
+
+        private Object getProjectedValue(DBObject dbo, String projectionKey) {
+            Object value;
+            if(projectionKey.startsWith("id.")) {
+                projectionKey = projectionKey.substring(3);
+                DBObject id = (DBObject) dbo.get(MongoEntityPersister.MONGO_ID_FIELD);
+                value = id.get(projectionKey);
+            }
+            else {
+                value = dbo.get(projectionKey);
+            }
+            return value;
+        }
+
+        @Override
+        public int size() {
+            initializeFully();
+            return initializedObjects.size();
+        }
+
+        @Override
+        public void close() throws IOException {
+            cursor.close();
+        }
     }
 
     @SuppressWarnings("serial")
-    public static class MongoResultList extends AbstractList {
+    public static class MongoResultList extends AbstractList implements Closeable {
 
         private MongoEntityPersister mongoEntityPersister;
-        private DBCursor cursor;
+        private Cursor cursor;
         private int offset = 0;
         private int internalIndex;
         private List initializedObjects = new ArrayList();
         private Integer size;
+        private boolean initialized = false;
 
         @SuppressWarnings("unchecked")
-        public MongoResultList(DBCursor cursor, int offset, MongoEntityPersister mongoEntityPersister) {
+        public MongoResultList(Cursor cursor, int offset, MongoEntityPersister mongoEntityPersister) {
             this.cursor = cursor;
             this.mongoEntityPersister = mongoEntityPersister;
             this.offset = offset;
+        }
+
+        @Override
+        public String toString() {
+            initializeFully();
+            return initializedObjects.toString();
+        }
+
+        /**
+         * @return The underlying MongoDB cursor instance
+         */
+        public Cursor getCursor() {
+            return cursor;
         }
 
         @Override
@@ -1274,7 +1812,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             if(initializedObjects.size() > index) {
                 return initializedObjects.get(index);
             }
-            else {
+            else if(!initialized) {
                 while(cursor.hasNext()) {
                     if(internalIndex > index) throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
                     Object o = convertDBObject(cursor.next());
@@ -1283,6 +1821,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         return o;
                     }
                 }
+                initialized = true;
             }
             throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
         }
@@ -1299,38 +1838,94 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             }
         }
 
+        @Override
+        public ListIterator listIterator() {
+            return listIterator(0);
+        }
+
+        @Override
+        public ListIterator listIterator(int index) {
+            initializeFully();
+            return initializedObjects.listIterator(0);
+        }
+
+        private void initializeFully() {
+            if(initialized) return;
+
+            while(cursor.hasNext()) {
+                DBObject dbo = cursor.next();
+                Object current = convertDBObject(dbo);
+                initializedObjects.add(current);
+            }
+            initialized = true;
+        }
+
         /**
          * Override to transform elements if necessary during iteration.
          * @return an iterator over the elements in this list in proper sequence
          */
         @Override
         public Iterator iterator() {
-            final DBCursor cursor = this.cursor.copy();
-            cursor.skip(offset);
+            if(initialized) {
+                return initializedObjects.iterator();
+            }
+
+            final Cursor cursor;
+            if(this.cursor instanceof DBCursor) {
+                DBCursor dbCursor = (DBCursor) this.cursor;
+                DBCursor newDbCursor = dbCursor.copy();
+                cursor = newDbCursor;
+                newDbCursor.skip(offset);
+            }
+            else {
+                cursor = this.cursor;
+            }
+
+
             return new Iterator() {
+                Object current;
+
                 public boolean hasNext() {
-                    return cursor.hasNext();
+                    boolean hasMore = cursor.hasNext();
+                    if(!hasMore) {
+                        initialized = true;
+                    }
+                    return hasMore;
                 }
 
                 @SuppressWarnings("unchecked")
                 public Object next() {
-                    Object object = cursor.next();
-                    if (object instanceof DBObject) {
-                        object = convertDBObject(object);
-                    }
-                    return object;
+                    DBObject dbo = cursor.next();
+                    current = convertDBObject(dbo);
+                    initializedObjects.add(current);
+                    return current;
                 }
 
                 public void remove() {
-                    throw new UnsupportedOperationException("Method remove() not supported by MongoResultList iterator");
+                    initializedObjects.remove(current);
                 }
             };
         }
 
         @Override
         public int size() {
+            if(initialized) {
+                return initializedObjects.size();
+            }
             if(this.size == null) {
-                this.size = cursor.size();
+                if(cursor instanceof DBCursor) {
+                    this.size = ((DBCursor)cursor).size();
+                }
+                else {
+
+                    this.size = 0;
+                    while(cursor.hasNext()) {
+                        DBObject object = cursor.next();
+                        initializedObjects.add( convertDBObject(object) );
+                        this.size++;
+                    }
+                    initialized = true;
+                }
             }
             return size;
         }
@@ -1354,5 +1949,16 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         public Object clone() {
             return new MongoResultList(cursor,offset, mongoEntityPersister);
         }
+
+        @Override
+        public void close() throws IOException {
+            cursor.close();
+        }
+    }
+
+    private static class ProjectedProperty {
+        Projection projection;
+        String projectionKey;
+        PersistentProperty property;
     }
 }

@@ -28,11 +28,11 @@ class Distance {
     /**
      * The value representing the distance
      */
-    double value
+    final double value
     /**
      * The metric used to calculate radians. See {@link Distance#inRadians()}
      */
-    Metric metric
+    final Metric metric
 
     /**
      * Constructs a distance for the given value and optional metric

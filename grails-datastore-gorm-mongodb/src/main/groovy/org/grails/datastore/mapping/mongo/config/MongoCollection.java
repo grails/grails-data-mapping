@@ -14,9 +14,7 @@
  */
 package org.grails.datastore.mapping.mongo.config;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.grails.datastore.mapping.document.config.Collection;
 import org.grails.datastore.mapping.query.Query;
@@ -35,6 +33,22 @@ public class MongoCollection extends Collection {
     private WriteConcern writeConcern;
     private List<Map> compoundIndices = new ArrayList<Map>();
     private Query.Order sort;
+    private List<Index> indices = new ArrayList<Index>();
+
+
+    public void index(Map<String, String> definition) {
+        index(definition, Collections.<String,String>emptyMap());
+    }
+
+    public void index(Map<String, String> definition, Map<String, String> options) {
+        if(definition != null && !definition.isEmpty()) {
+            indices.add(new Index(definition, options));
+        }
+    }
+
+    public List<Index> getIndices() {
+        return indices;
+    }
 
     public Query.Order getSort() {
         return sort;
@@ -111,5 +125,31 @@ public class MongoCollection extends Collection {
      */
     public List<Map> getCompoundIndices() {
         return compoundIndices;
+    }
+
+    /**
+     * Definition of an index
+     */
+    public static class Index {
+        Map<String, String> definition = new HashMap<String, String>();
+        Map<String, String> options = new HashMap<String, String>();
+
+
+        public Index(Map<String, String> definition) {
+            this.definition = definition;
+        }
+
+        public Index(Map<String, String> definition, Map<String, String> options) {
+            this.definition = definition;
+            this.options = options;
+        }
+
+        public Map<String, String> getDefinition() {
+            return definition;
+        }
+
+        public Map<String, String> getOptions() {
+            return options;
+        }
     }
 }

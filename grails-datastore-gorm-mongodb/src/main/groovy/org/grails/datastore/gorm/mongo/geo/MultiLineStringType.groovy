@@ -14,24 +14,24 @@
  */
 package org.grails.datastore.gorm.mongo.geo
 
-import grails.mongodb.geo.Polygon
+import grails.mongodb.geo.MultiLineString
 import groovy.transform.CompileStatic
 
 /**
- * Adds support for the {@link Polygon} type to GORM for MongoDB
+ * Adds support for the {@link grails.mongodb.geo.MultiLineString} type to GORM for MongoDB
  *
  * @author Graeme Rocher
- * @since 2.0
+ * @since 3.0
  */
 @CompileStatic
-class PolygonType extends GeoJSONType<Polygon> {
+class MultiLineStringType extends GeoJSONType<MultiLineString>{
 
-    PolygonType() {
-        super(Polygon)
+    MultiLineStringType() {
+        super(MultiLineString)
     }
 
     @Override
-    Polygon createFromCoords(List coords) {
-        Polygon.valueOf(coords)
+    MultiLineString createFromCoords(List coords) {
+        MultiLineString.valueOf(coords)
     }
 }

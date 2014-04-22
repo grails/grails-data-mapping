@@ -14,7 +14,6 @@
  */
 package grails.mongodb.geo
 
-import groovy.transform.Canonical
 import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
 
@@ -27,7 +26,10 @@ import groovy.transform.EqualsAndHashCode
 @CompileStatic
 @EqualsAndHashCode
 class LineString extends Shape implements GeoJSON{
-    List<Point>  coordinates
+    /**
+     * The points that constitute the LineString
+     */
+    final List<Point>  coordinates
 
     /**
      * Constructs a LineString for the given {@link Point} instances
@@ -48,6 +50,11 @@ class LineString extends Shape implements GeoJSON{
     @Override
     List<List<Double>> asList() {
         coordinates.collect() { Point p -> p.asList()}
+    }
+
+    @Override
+    String toString() {
+        coordinates.toString()
     }
 
     /**
