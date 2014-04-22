@@ -18,14 +18,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Queue;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.PersistentProperty;
@@ -99,13 +92,21 @@ public class MappingUtils {
         Class genericClass = null;
 
         Field declaredField = getDeclaredField(javaClass, propertyName);
-        Type genericType = declaredField != null ? declaredField.getGenericType() : null;
-        if (genericType instanceof ParameterizedType) {
-            Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-            if (typeArguments.length>0) {
-                Type typeArg = typeArguments[0];
-                if(typeArg instanceof Class) {
-                    genericClass = (Class) typeArg;
+        if(declaredField != null) {
+            Class<?> type = declaredField.getType();
+            Type genericType = declaredField.getGenericType();
+            if (genericType instanceof ParameterizedType) {
+                Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+                int len = typeArguments.length;
+                if (len >0) {
+                    int i = 0;
+                    if(Map.class.isAssignableFrom(type) && len == 2) {
+                        i++;
+                    }
+                    Type typeArg = typeArguments[i];
+                    if(typeArg instanceof Class) {
+                        genericClass = (Class) typeArg;
+                    }
                 }
             }
         }

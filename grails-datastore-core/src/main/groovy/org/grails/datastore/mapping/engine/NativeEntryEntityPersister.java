@@ -1163,24 +1163,36 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         // For embedded properties simply set the entry value, the underlying implementation
         // will have to store the embedded entity in an appropriate way (as a sub-document in a document store for example)
         Object embeddedInstances = entityAccess.getProperty(prop.getName());
-        if (!(embeddedInstances instanceof Collection) || ((Collection)embeddedInstances).isEmpty()) {
+        if(embeddedInstances instanceof Map) {
+            Map instances = (Map)embeddedInstances;
+            Map<Object, T> embeddedEntries = new HashMap<Object, T>();
+            for (Object k : instances.keySet()) {
+                embeddedEntries.put(k, handleEmbeddedInstance((Association) prop, instances.get(k)));
+            }
+            setEmbeddedMap(e, key, instances, embeddedEntries);
+
+        }
+        else if (!(embeddedInstances instanceof Collection) || ((Collection)embeddedInstances).isEmpty()) {
             if (embeddedInstances == null)
                 setEmbeddedCollection(e, key, null, null);
             else {
                 setEmbeddedCollection(e, key, MappingUtils.createConcreteCollection(prop.getType()), new ArrayList<T>());
             }
-            return;
+        }
+        else {
+            Collection instances = (Collection)embeddedInstances;
+            List<T> embeddedEntries = new ArrayList<T>();
+            for (Object instance : instances) {
+                T entry = handleEmbeddedInstance((Association)prop, instance);
+                embeddedEntries.add(entry);
+            }
+
+            setEmbeddedCollection(e, key, instances, embeddedEntries);
         }
 
-        Collection instances = (Collection)embeddedInstances;
-        List<T> embeddedEntries = new ArrayList<T>();
-        for (Object instance : instances) {
-            T entry = handleEmbeddedInstance((Association)prop, instance);
-            embeddedEntries.add(entry);
-        }
 
-        setEmbeddedCollection(e, key, instances, embeddedEntries);
     }
+
 
     protected void handleEmbeddedToOne(Association association, String key, EntityAccess entityAccess, T nativeEntry) {
         Object embeddedInstance = entityAccess.getProperty(association.getName());
@@ -1350,6 +1362,19 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     protected void setEmbeddedCollection(T nativeEntry, String key, Collection<?> instances, List<T> embeddedEntries) {
         // do nothing. The default is no support for embedded collections
     }
+
+    /**
+     * Implementors should override this method to provide support for maps of embedded objects
+     *
+     * @param nativeEntry The native entry
+     * @param key The key
+     * @param instances the embedded instances
+     * @param embeddedEntries the native entries
+     */
+    protected void setEmbeddedMap(T nativeEntry, String key, Map instances, Map<Object, T> embeddedEntries) {
+        // do nothing. The default is no support for embedded maps
+    }
+
 
     /**
      * Subclasses should override to provide id generation. If an identifier is only generated via an insert operation then this

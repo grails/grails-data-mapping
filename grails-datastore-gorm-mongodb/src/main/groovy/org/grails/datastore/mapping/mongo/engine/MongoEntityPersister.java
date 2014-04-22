@@ -35,6 +35,7 @@ import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.engine.PropertyValueIndexer;
+import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -137,6 +138,16 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         nativeEntry.put(key, embeddedEntries);
     }
 
+    @Override
+    protected void setEmbeddedMap(DBObject nativeEntry, String key, Map instances, Map<Object, DBObject> embeddedEntries) {
+        if (instances == null || instances.isEmpty()) {
+            nativeEntry.put(key, null);
+            return;
+        }
+
+        nativeEntry.put(key, embeddedEntries);
+    }
+
     /**
      * Implementors who want to support one-to-many associations embedded should implement this method
      *
@@ -189,29 +200,44 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     protected void loadEmbeddedCollection(EmbeddedCollection embeddedCollection,
             EntityAccess ea, Object embeddedInstances, String propertyKey) {
 
-        Collection<Object> instances;
-        if (List.class.isAssignableFrom(embeddedCollection.getType())) {
-            instances = new ArrayList<Object>();
-        }
-        else {
-            instances = new HashSet<Object>();
-        }
+        if(Map.class.isAssignableFrom(embeddedCollection.getType())) {
+            if(embeddedInstances instanceof DBObject) {
+                Map instances = new HashMap();
+                DBObject embedded = (DBObject)embeddedInstances;
+                for (String key : embedded.keySet()) {
+                    Object o = embedded.get(key);
+                    if(o instanceof DBObject) {
+                        DBObject nativeEntry = (DBObject) o;
+                        Object instance =
+                                createObjectFromEmbeddedNativeEntry(embeddedCollection.getAssociatedEntity(), nativeEntry);
+                        SessionImplementor<DBObject> si = (SessionImplementor<DBObject>)getSession();
+                        si.cacheEntry(embeddedCollection.getAssociatedEntity(), createEmbeddedCacheEntryKey(instance), nativeEntry);
+                        instances.put(key, instance);
+                    }
 
-        if (embeddedInstances instanceof List) {
-            List list = (List)embeddedInstances;
-            for (Object dbo : list) {
-                if (dbo instanceof BasicDBObject) {
-                    BasicDBObject nativeEntry = (BasicDBObject)dbo;
-                    Object instance =
-                            createObjectFromEmbeddedNativeEntry(embeddedCollection.getAssociatedEntity(), nativeEntry);
-                    SessionImplementor<DBObject> si = (SessionImplementor<DBObject>)getSession();
-                    si.cacheEntry(embeddedCollection.getAssociatedEntity(), createEmbeddedCacheEntryKey(instance), nativeEntry);
-                    instances.add(instance);
                 }
+                ea.setProperty(embeddedCollection.getName(), instances);
             }
         }
+        else {
+            Collection<Object> instances = MappingUtils.createConcreteCollection(embeddedCollection.getType());
 
-        ea.setProperty(embeddedCollection.getName(), instances);
+            if (embeddedInstances instanceof Collection) {
+                Collection coll = (Collection)embeddedInstances;
+                for (Object dbo : coll) {
+                    if (dbo instanceof BasicDBObject) {
+                        BasicDBObject nativeEntry = (BasicDBObject)dbo;
+                        Object instance =
+                                createObjectFromEmbeddedNativeEntry(embeddedCollection.getAssociatedEntity(), nativeEntry);
+                        SessionImplementor<DBObject> si = (SessionImplementor<DBObject>)getSession();
+                        si.cacheEntry(embeddedCollection.getAssociatedEntity(), createEmbeddedCacheEntryKey(instance), nativeEntry);
+                        instances.add(instance);
+                    }
+                }
+            }
+
+            ea.setProperty(embeddedCollection.getName(), instances);
+        }
     }
 
     @Override
@@ -342,10 +368,9 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                             long nextId = getMappingContext().getConversionService().convert(result.get("next_id"), Long.class);
                             nativeEntry.put(MONGO_ID_FIELD, nextId);
                             break;
-                        }
-                        else {
+                        } else {
                             attempts++;
-                            if(attempts > 3) {
+                            if (attempts > 3) {
                                 throw new IdentityGenerationException("Unable to generate identity using findAndModify after 3 attempts: " + con.getLastError().getErrorMessage());
                             }
                         }
