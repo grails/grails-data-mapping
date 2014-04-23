@@ -47,6 +47,7 @@ import org.codehaus.groovy.grails.orm.hibernate.validation.PersistentConstraintF
 import org.codehaus.groovy.grails.orm.hibernate.validation.UniqueConstraint
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.codehaus.groovy.grails.validation.ConstraintsEvaluator
+import org.grails.datastore.mapping.model.MappingContext
 import org.hibernate.EmptyInterceptor
 import org.hibernate.cfg.ImprovedNamingStrategy
 import org.springframework.beans.factory.config.BeanDefinition
