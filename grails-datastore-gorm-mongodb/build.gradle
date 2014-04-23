@@ -1,4 +1,4 @@
-version = "3.0.0.BUILD-SNAPSHOT"
+version = "3.0.0.RELEASE"
 configurations {
     optional
 }
