@@ -152,13 +152,13 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
                 else if (!prop.getType().isAssignableFrom(currentArg.getClass()) && !(GrailsClassUtils.isMatchBetweenPrimativeAndWrapperTypes(prop.getType(), currentArg.getClass()))) {
                     try {
                         if (type.equals(IN_LIST)) {
-                            currentArg = conversionService.convert(currentArg, Collection.class);
+                            args[i] = conversionService.convert(currentArg, Collection.class);
                             if(currentArg instanceof List) {
                                 convertArgumentList(prop, (List)currentArg);
                             }
                         }
                         else {
-                            currentArg = conversionService.convert(currentArg, prop.getType());
+                            args[i] = conversionService.convert(currentArg, prop.getType());
                         }
                     }
                     catch (TypeMismatchException tme) {
@@ -166,7 +166,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
                         // we can try to convert it through its String representation
                         if (Number.class.isAssignableFrom(currentArg.getClass())) {
                             try {
-                                currentArg = conversionService.convert(currentArg.toString(), prop.getType());
+                                args[i] = conversionService.convert(currentArg.toString(), prop.getType());
                             }
                             catch(TypeMismatchException tme1) {
                                 throw new IllegalArgumentException("Cannot convert value " + currentArg + " of property '"+propertyName+"' to required type " + prop.getType() + ": " + tme1.getMessage());
