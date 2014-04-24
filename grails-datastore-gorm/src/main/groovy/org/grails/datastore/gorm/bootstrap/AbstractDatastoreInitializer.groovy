@@ -68,25 +68,40 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     }
 
     protected void scanForPersistentClasses() {
+        // scan defined packages
+        def readerFactory = new CachingMetadataReaderFactory(resourcePatternResolver)
         for (pkg in packages) {
             String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
                     ClassUtils.convertClassNameToResourcePath(pkg) + ENTITY_CLASS_RESOURCE_PATTERN;
 
-            def readerFactory = new CachingMetadataReaderFactory(resourcePatternResolver)
-            def resources = this.resourcePatternResolver.getResources(pattern)
-            for (Resource res in resources) {
-                def reader = readerFactory.getMetadataReader(res)
-                if (reader.annotationMetadata.hasAnnotation("grails.persistence.Entity")) {
-                    persistentClasses << classLoader.loadClass(reader.classMetadata.className)
+            scanUsingPattern(pattern, readerFactory)
+        }
+
+
+        def entityNames = GormTransformer.getKnownEntityNames()
+        if(entityNames) {
+            // only works at development time
+            for (entityName in entityNames) {
+                try {
+                    persistentClasses << classLoader.loadClass(entityName)
+                } catch (ClassNotFoundException e) {
+                    // ignore
                 }
             }
         }
-        def entityNames = GormTransformer.getKnownEntityNames()
-        for (entityName in entityNames) {
-            try {
-                persistentClasses << classLoader.loadClass(entityName)
-            } catch (ClassNotFoundException e) {
-                // ignore
+        else {
+            // try the default package in case of a script without recursing into subpackages
+            String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +  "*.class"
+            scanUsingPattern(pattern, readerFactory)
+        }
+    }
+
+    private void scanUsingPattern(String pattern, CachingMetadataReaderFactory readerFactory) {
+        def resources = this.resourcePatternResolver.getResources(pattern)
+        for (Resource res in resources) {
+            def reader = readerFactory.getMetadataReader(res)
+            if (reader.annotationMetadata.hasAnnotation("grails.persistence.Entity")) {
+                persistentClasses << classLoader.loadClass(reader.classMetadata.className)
             }
         }
     }
