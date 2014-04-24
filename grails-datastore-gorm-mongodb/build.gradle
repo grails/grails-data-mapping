@@ -5,7 +5,9 @@ configurations {
 
 dependencies {
     compile "org.mongodb:mongo-java-driver:2.12.0"
-    compile("org.springframework.data:spring-data-mongodb:1.4.1.RELEASE")
+    compile("org.springframework.data:spring-data-mongodb:1.4.1.RELEASE") {
+        exclude group:'org.mongodb',module:'mongo-java-driver'
+    }
 
     compile("com.gmongo:gmongo:1.2") {
         exclude group:'org.mongodb',module:'mongo-java-driver'
