@@ -43,6 +43,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.action.internal.EntityUpdateAction;
 import org.hibernate.engine.spi.ActionQueue;
+import org.hibernate.engine.spi.ExecutableList;
 import org.hibernate.event.spi.*;
 import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.util.ReflectionUtils;
@@ -174,7 +175,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
             HashMap<Integer, Object> changedState) {
         if(actionQueueUpdatesField != null && event instanceof PreInsertEvent && changedState.size() > 0) {
             try {
-                List<EntityUpdateAction> updates = (List<EntityUpdateAction>)actionQueueUpdatesField.get(event.getSource().getActionQueue());
+                ExecutableList<EntityUpdateAction> updates = (ExecutableList<EntityUpdateAction>)actionQueueUpdatesField.get(event.getSource().getActionQueue());
                 if(updates != null) {
                     for (EntityUpdateAction updateAction : updates) {
                         if(updateAction.getInstance() == entity) {
