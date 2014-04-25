@@ -26,6 +26,7 @@ import org.codehaus.groovy.grails.commons.*;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateDomainClass;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
+import org.codehaus.groovy.grails.orm.hibernate.query.HibernateQueryConstants;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
 import org.hibernate.*;
 import org.hibernate.criterion.Order;
@@ -55,28 +56,12 @@ import java.util.Set;
  * @author Graeme Rocher
  * @since 0.4
  */
-public class GrailsHibernateUtil {
+public class GrailsHibernateUtil implements HibernateQueryConstants{
     protected static final Log LOG = LogFactory.getLog(GrailsHibernateUtil.class);
 
     private static final String DYNAMIC_FILTER_ENABLER = "dynamicFilterEnabler";
 
-    public static final String ARGUMENT_FETCH_SIZE = "fetchSize";
-    public static final String ARGUMENT_TIMEOUT = "timeout";
-    public static final String ARGUMENT_READ_ONLY = "readOnly";
-    public static final String ARGUMENT_FLUSH_MODE = "flushMode";
-    public static final String ARGUMENT_MAX = "max";
-    public static final String ARGUMENT_OFFSET = "offset";
-    public static final String ARGUMENT_ORDER = "order";
-    public static final String ARGUMENT_SORT = "sort";
-    public static final String ORDER_DESC = "desc";
-    public static final String ORDER_ASC = "asc";
-    public static final String ARGUMENT_FETCH = "fetch";
-    public static final String ARGUMENT_IGNORE_CASE = "ignoreCase";
-    public static final String ARGUMENT_CACHE = "cache";
-    public static final String ARGUMENT_LOCK = "lock";
-    public static final String CONFIG_PROPERTY_CACHE_QUERIES = "grails.hibernate.cache.queries";
-    public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";
-    public static final String CONFIG_PROPERTY_PASS_READONLY_TO_HIBERNATE = "grails.hibernate.pass.readonly";
+
     public static final Class<?>[] EMPTY_CLASS_ARRAY = {};
 
 
