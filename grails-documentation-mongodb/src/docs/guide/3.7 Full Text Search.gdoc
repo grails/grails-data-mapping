@@ -31,4 +31,4 @@ And count the number of hits with the @countHits@ method:
 
 {code}
 assert Product.countHits('coffee') == 5
-[code]
+{code}

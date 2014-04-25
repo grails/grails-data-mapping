@@ -5,8 +5,8 @@ h4. Stateful mode
 Domain classes are by default stateful, which means when they are read from a MongoDB document their state is stored in the user session (which is typically bound to the request in Grails). This has several advantages for write heavy applications:
 
 * GORM can automatically detect whether a call to save() is a an update or an insert and act appropriately
-* GORM store the state of the read MongoDB document and therefore updates to schemaless properties don't require an extra query
-* GORM can store the version and therefore implement optimistic locking
+* GORM stores the state of the read MongoDB document and therefore updates to schemaless properties don't require an extra query
+* GORM can store the current version and therefore implement optimistic locking
 * Repeated reads of the same entity can be retrieved from the cache, thus optimizing reads as well
 
 For an example of when a stateful domain class is better consider the following:
