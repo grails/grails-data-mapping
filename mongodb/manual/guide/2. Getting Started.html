@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2 Getting Started 2.0.1.GA</title>
+    <title>2 Getting Started 3.0.0</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -80,7 +80,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 2.0.1.GA</p>
+                    <p><strong>Version:</strong> 3.0.0</p>
 
                     
                 </div>
@@ -105,7 +105,7 @@ function addJsClass() {
 
 <h1 id="2. Getting Started">2 Getting Started</h1>
 To get started with GORM for Mongo you need configure it as a dependency in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
-	compile ':mongodb:2.0.0' // or whatever is the latest vesrion
+	compile ':mongodb:3.0.0.RC1' // or whatever is the latest vesrion
 &#125;</pre></div><p class="paragraph"/>With that done you need to set up a running MongoDB server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">MongoDB Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Tue Mar 18 14:16:35.267 &#91;initandlisten&#93; db version v2.4.9
 Tue Mar 18 14:16:35.267 &#91;initandlisten&#93; git version: 52fe0d21959e32a5bdbecdc62057db386e4e029c
 Tue Mar 18 14:16:35.267 &#91;initandlisten&#93; build info: Darwin bs&#45;osx&#45;106&#45;x86&#45;64&#45;2.10gen.cc 10.8.0 Darwin Kernel Version 10.8.0: Tue Jun  7 16:32:41 PDT 2011; root:xnu&#45;1504.15.3~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
@@ -127,7 +127,7 @@ Tue Mar 18 14:16:35.297 &#91;initandlisten&#93; waiting <span class="java&#45;ke
 
 
 <h2 id="2.1 Using MongoDB Standalone">2.1 Using MongoDB Standalone</h2>
-If you plan to use MongoDB as your primary datastore then you need to remove the Hibernate plugin from the <code>grails-app/conf/BuildConfig.groovy</code> file by commenting out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile ':hibernate:2.0.0'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via MongoDB and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in MongoDB.
+If you plan to use MongoDB as your primary datastore then you need to remove the Hibernate plugin from the <code>grails-app/conf/BuildConfig.groovy</code> file by commenting out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile ':hibernate:3.6.10.12'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via MongoDB and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in MongoDB.
 
 
 
@@ -214,6 +214,9 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
                             <div class="menu-item"><a href="../ref/Domain%20Classes/collectionName.html">collectionName</a>
                             </div>
                             
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/countHits.html">countHits</a>
+                            </div>
+                            
                             <div class="menu-item"><a href="../ref/Domain%20Classes/dbo.html">dbo</a>
                             </div>
                             
@@ -235,6 +238,12 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
                             <div class="menu-item"><a href="../ref/Domain%20Classes/findByWithinCircle.html">findByWithinCircle</a>
                             </div>
                             
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/search.html">search</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/searchTop.html">searchTop</a>
+                            </div>
+                            
                             <div class="menu-item"><a href="../ref/Domain%20Classes/useCollection.html">useCollection</a>
                             </div>
                             
@@ -253,7 +262,7 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
                     <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
                         
                             
-                            <div class="menu-item"><a href="../ref/Testing/DatastoreUnitTestMixin.html">DatastoreUnitTestMixin</a>
+                            <div class="menu-item"><a href="../ref/Testing/MongoDbTestMixin.html">MongoDbTestMixin</a>
                             </div>
                             
                             </div>

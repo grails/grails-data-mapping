@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>1.2 Release Notes 2.0.1.GA</title>
+    <title>1.2 Release Notes 3.0.0</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -78,7 +78,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 2.0.1.GA</p>
+                    <p><strong>Version:</strong> 3.0.0</p>
 
                     
                 </div>
@@ -88,7 +88,16 @@ function addJsClass() {
                 
 
 <h2 id="1.2 Release Notes">1.2 Release Notes</h2>
-Below are the details of the changes across releases:<p class="paragraph"/><h4>2.0</h4>
+Below are the details of the changes across releases:<p class="paragraph"/><h4>3.0</h4>
+<ul class="star">
+<li>Support for MongoDB 2.6</li>
+<li>MongoDB 2.6 GeoJSON type support (<code>MultiPoint</code>, <code>MultiLineString</code>, <code>MultiPolygon</code> and <code>GeometryCollection</code>)</li>
+<li>Support for Maps of embedded entities</li>
+<li>Flexible index definition</li>
+<li>Full text search support</li>
+<li>Support for projections using MongoDB aggregation</li>
+<li>Size related criteria implemented (<code>sizeEq</code>, <code>sizeLt</code> etc.) on collections</li>
+</ul><p class="paragraph"/><h4>2.0</h4>
 <ul class="star">
 <li>GeoJSON shape support</li>
 <li>Support for SSL connections</li>
@@ -146,6 +155,9 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
                             <div class="menu-item"><a href="../../ref/Domain%20Classes/collectionName.html">collectionName</a>
                             </div>
                             
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/countHits.html">countHits</a>
+                            </div>
+                            
                             <div class="menu-item"><a href="../../ref/Domain%20Classes/dbo.html">dbo</a>
                             </div>
                             
@@ -167,6 +179,12 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
                             <div class="menu-item"><a href="../../ref/Domain%20Classes/findByWithinCircle.html">findByWithinCircle</a>
                             </div>
                             
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/search.html">search</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/searchTop.html">searchTop</a>
+                            </div>
+                            
                             <div class="menu-item"><a href="../../ref/Domain%20Classes/useCollection.html">useCollection</a>
                             </div>
                             
@@ -185,7 +203,7 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
                     <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
                         
                             
-                            <div class="menu-item"><a href="../../ref/Testing/DatastoreUnitTestMixin.html">DatastoreUnitTestMixin</a>
+                            <div class="menu-item"><a href="../../ref/Testing/MongoDbTestMixin.html">MongoDbTestMixin</a>
                             </div>
                             
                             </div>

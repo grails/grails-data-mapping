@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>GORM for Mongo 2.0.1.GA</title>
+        <title>GORM for Mongo 3.0.0</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
@@ -62,7 +62,7 @@ function addJsClass(el) {
                         <div class="project">
                             <h1>GORM for Mongo - Reference Documentation</h1>
                             <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
-                            <p><strong>Version:</strong> 2.0.1.GA</p>
+                            <p><strong>Version:</strong> 3.0.0</p>
                             
                         </div>
 
@@ -104,9 +104,11 @@ function addJsClass(el) {
                             
                             <div class="toc-item" style="margin-left:20px"><a href="#3.6.3%20GeoJSON%20Data%20Models"><strong>3.6.3</strong><span>GeoJSON Data Models</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.7%20Custom%20User%20Types"><strong>3.7</strong><span>Custom User Types</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#3.7%20Full%20Text%20Search"><strong>3.7</strong><span>Full Text Search</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.8%20Stateful%20vs.%20Stateless%20Domain%20Classes"><strong>3.8</strong><span>Stateful vs. Stateless Domain Classes</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#3.8%20Custom%20User%20Types"><strong>3.8</strong><span>Custom User Types</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:10px"><a href="#3.9%20Stateful%20vs.%20Stateless%20Domain%20Classes"><strong>3.9</strong><span>Stateful vs. Stateless Domain Classes</span></a></div>
                             
                             <div class="toc-item" style="margin-left:0px"><a href="#4.%20Low-level%20API"><strong>4</strong><span>Low-level API</span></a></div>
                             
@@ -151,7 +153,16 @@ This implementation tries to be as compatible as possible with GORM for Hibernat
 
 
 <h2 id="1.2 Release Notes">1.2 Release Notes</h2>
-Below are the details of the changes across releases:<p class="paragraph"/><h4>2.0</h4>
+Below are the details of the changes across releases:<p class="paragraph"/><h4>3.0</h4>
+<ul class="star">
+<li>Support for MongoDB 2.6</li>
+<li>MongoDB 2.6 GeoJSON type support (<code>MultiPoint</code>, <code>MultiLineString</code>, <code>MultiPolygon</code> and <code>GeometryCollection</code>)</li>
+<li>Support for Maps of embedded entities</li>
+<li>Flexible index definition</li>
+<li>Full text search support</li>
+<li>Support for projections using MongoDB aggregation</li>
+<li>Size related criteria implemented (<code>sizeEq</code>, <code>sizeLt</code> etc.) on collections</li>
+</ul><p class="paragraph"/><h4>2.0</h4>
 <ul class="star">
 <li>GeoJSON shape support</li>
 <li>Support for SSL connections</li>
@@ -175,7 +186,7 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 
 <h1 id="2. Getting Started">2 Getting Started</h1>
 To get started with GORM for Mongo you need configure it as a dependency in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
-	compile ':mongodb:2.0.0' // or whatever is the latest vesrion
+	compile ':mongodb:3.0.0.RC1' // or whatever is the latest vesrion
 &#125;</pre></div><p class="paragraph"/>With that done you need to set up a running MongoDB server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">MongoDB Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Tue Mar 18 14:16:35.267 &#91;initandlisten&#93; db version v2.4.9
 Tue Mar 18 14:16:35.267 &#91;initandlisten&#93; git version: 52fe0d21959e32a5bdbecdc62057db386e4e029c
 Tue Mar 18 14:16:35.267 &#91;initandlisten&#93; build info: Darwin bs&#45;osx&#45;106&#45;x86&#45;64&#45;2.10gen.cc 10.8.0 Darwin Kernel Version 10.8.0: Tue Jun  7 16:32:41 PDT 2011; root:xnu&#45;1504.15.3~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
@@ -197,7 +208,7 @@ Tue Mar 18 14:16:35.297 &#91;initandlisten&#93; waiting <span class="java&#45;ke
 
 
 <h2 id="2.1 Using MongoDB Standalone">2.1 Using MongoDB Standalone</h2>
-If you plan to use MongoDB as your primary datastore then you need to remove the Hibernate plugin from the <code>grails-app/conf/BuildConfig.groovy</code> file by commenting out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile ':hibernate:2.0.0'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via MongoDB and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in MongoDB.
+If you plan to use MongoDB as your primary datastore then you need to remove the Hibernate plugin from the <code>grails-app/conf/BuildConfig.groovy</code> file by commenting out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile ':hibernate:3.6.10.12'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via MongoDB and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in MongoDB.
 
 
 
@@ -262,7 +273,13 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
     Address address
     List otherAddresses
     <span class="java&#45;keyword">static</span> embedded = &#91;'address', 'otherAddresses'&#93;
-&#125;</pre></div><p class="paragraph"/><h4>Basic Collection Types</h4><p class="paragraph"/>You can also map lists and maps of basic types (such as strings) simply by defining the appropriate collection type:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+&#125;</pre></div><p class="paragraph"/>You can also embed maps of embedded classes where the keys are strings:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName
+    Map&#60;<span class="java&#45;object">String</span>,Address&#62; addresses
+    <span class="java&#45;keyword">static</span> embedded = &#91;'addresses'&#93;
+&#125;</pre></div><p class="paragraph"/>
+<h4>Basic Collection Types</h4><p class="paragraph"/>You can also map lists and maps of basic types (such as strings) simply by defining the appropriate collection type:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     List&#60;<span class="java&#45;object">String</span>&#62; friends
     Map pets
 &#125;<p class="paragraph"/>...<p class="paragraph"/><span class="java&#45;keyword">new</span> Person(friends:&#91;'Fred', 'Bob'&#93;, pets:&#91;chuck:<span class="java&#45;quote">"Dog"</span>, eddie:'Parrot'&#93;).save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>Basic collection types are stored as native ArrayList and BSON documents within the Mongo documents.<p class="paragraph"/><h4>Customized Collection and Database Mapping</h4><p class="paragraph"/>You may wish to customize how a domain class maps onto a <code>DBCollection</code>. This is possible using the <code>mapping</code> block as follows:<p class="paragraph"/><div class="code"><pre>class Person &#123;
@@ -320,7 +337,9 @@ p.save()</pre></div>
     <span class="java&#45;keyword">static</span> mapping = &#123;
         compoundIndex name:1, age:&#45;1
     &#125;
-&#125;</pre></div><p class="paragraph"/>As per the MongoDB docs 1 is for ascending and -1 is for descending.
+&#125;</pre></div><p class="paragraph"/>As per the MongoDB docs 1 is for ascending and -1 is for descending.<p class="paragraph"/><h4>Indexing using the 'index' method</h4><p class="paragraph"/>In addition to the convenience features described above you can use the <code>index</code> method to define any index you want. For example:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapping = &#123;
+    index( &#91;<span class="java&#45;quote">"person.address.postCode"</span>:1&#93;, &#91;unique:<span class="java&#45;keyword">true</span>&#93; )
+&#125;</pre></div><p class="paragraph"/>In the above example I define an index on an embedded attribtue of the document. In fact what arguments you pass to the <code>index</code> method get passed to the underlying MongoDB <a href="http://api.mongodb.org/java/2.12/com/mongodb/DBCollection.html#createIndex(com.mongodb.DBObject,%20com.mongodb.DBObject)" target="blank">createIndex</a> method.
 
 
 <h2 id="3.3 Customizing the WriteConcern">3.3 Customizing the WriteConcern</h2>
@@ -428,7 +447,18 @@ assert Entry.findByShapeGeoIntersects( LineString.valueOf( &#91;&#91;1,4&#93;, &
 
 
 
-<h2 id="3.7 Custom User Types">3.7 Custom User Types</h2>
+<h2 id="3.7 Full Text Search">3.7 Full Text Search</h2>
+Using MongoDB 2.6 and above you can create <a href="http://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text" target="blank">full text search</a> indices.<p class="paragraph"/>To create a "text" index using the <code>index</code> method inside the <code>mapping</code> block:<p class="paragraph"/><div class="code"><pre>class Product &#123;
+    ObjectId id
+    <span class="java&#45;object">String</span> title<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+        index title:<span class="java&#45;quote">"text"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>You can then search for instances using the <code>search</code> method:<p class="paragraph"/><div class="code"><pre>assert Product.search(<span class="java&#45;quote">"bake coffee cake"</span>).size() == 10
+assert Product.search(<span class="java&#45;quote">"bake coffee &#45;cake"</span>).size() == 6</pre></div><p class="paragraph"/>You can search for the top results by rank using the <code>searchTop</code> method:<p class="paragraph"/><div class="code"><pre>assert Product.searchTop(<span class="java&#45;quote">"cake"</span>).size() == 4
+assert Product.searchTop(<span class="java&#45;quote">"cake"</span>,3).size() == 3</pre></div><p class="paragraph"/>And count the number of hits with the <code>countHits</code> method:<p class="paragraph"/><div class="code"><pre>assert Product.countHits('coffee') == 5</pre></div>
+
+
+<h2 id="3.8 Custom User Types">3.8 Custom User Types</h2>
 GORM for MongoDB will persist all common known Java types like String, Integer, URL etc., however if you want to persist one of your own classes that is not a domain class you can implement a custom user type.<p class="paragraph"/>For example consider the following class:<p class="paragraph"/><div class="code"><pre>class Birthday <span class="java&#45;keyword">implements</span> Comparable&#123;
     Date date<p class="paragraph"/>    Birthday(Date date) &#123;
         <span class="java&#45;keyword">this</span>.date = date
@@ -504,12 +534,12 @@ beans = &#123;
 
 
 
-<h2 id="3.8 Stateful vs. Stateless Domain Classes">3.8 Stateful vs. Stateless Domain Classes</h2>
+<h2 id="3.9 Stateful vs. Stateless Domain Classes">3.9 Stateful vs. Stateless Domain Classes</h2>
 GORM for MongoDB supports both stateless and stateful modes for mapping domain classes to MongoDB. In general stateful mapping is superior for write heavy applications and stateless mode better for read heavy applications (particularily when large amounts of data is involved).<p class="paragraph"/><h4>Stateful mode</h4><p class="paragraph"/>Domain classes are by default stateful, which means when they are read from a MongoDB document their state is stored in the user session (which is typically bound to the request in Grails). This has several advantages for write heavy applications:
 <ul class="star">
 <li>GORM can automatically detect whether a call to save() is a an update or an insert and act appropriately</li>
-<li>GORM store the state of the read MongoDB document and therefore updates to schemaless properties don't require an extra query</li>
-<li>GORM can store the version and therefore implement optimistic locking</li>
+<li>GORM stores the state of the read MongoDB document and therefore updates to schemaless properties don't require an extra query</li>
+<li>GORM can store the current version and therefore implement optimistic locking</li>
 <li>Repeated reads of the same entity can be retrieved from the cache, thus optimizing reads as well</li>
 </ul><p class="paragraph"/>For an example of when a stateful domain class is better consider the following:<p class="paragraph"/><div class="code"><pre>def b = Book.get(1)
 b&#91;'pages'&#93; = 400
@@ -598,7 +628,7 @@ class PersonSpec <span class="java&#45;keyword">extends</span> Specification&#12
             Person.count() == 0
     &#125;
 &#125;</pre></div><p class="paragraph"/>
-Example against using <a href="../ref/Httpsgithubcomfakemongofongo/Fongo.html" class="https://github.com/fakemongo/fongo">Fongo</a>:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> com.github.fakemongo.Fongo
+Example using <a href="../ref/Httpsgithubcomfakemongofongo/Fongo.html" class="https://github.com/fakemongo/fongo">Fongo</a>:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> com.github.fakemongo.Fongo
 <span class="java&#45;keyword">import</span> grails.test.mixin.mongodb.&#42;<p class="paragraph"/>@TestMixin(MongoDbTestMixin)
 class PersonSpec <span class="java&#45;keyword">extends</span> Specification&#123;<p class="paragraph"/>    void <span class="java&#45;quote">"Test count people"</span>() &#123;
         given:<span class="java&#45;quote">"A mongo domain model"</span>
@@ -639,6 +669,9 @@ class PersonSpec <span class="java&#45;keyword">extends</span> Specification&#12
                         <div class="menu-item"><a href="../ref/Domain%20Classes/collectionName.html">collectionName</a>
                         </div>
                         
+                        <div class="menu-item"><a href="../ref/Domain%20Classes/countHits.html">countHits</a>
+                        </div>
+                        
                         <div class="menu-item"><a href="../ref/Domain%20Classes/dbo.html">dbo</a>
                         </div>
                         
@@ -660,6 +693,12 @@ class PersonSpec <span class="java&#45;keyword">extends</span> Specification&#12
                         <div class="menu-item"><a href="../ref/Domain%20Classes/findByWithinCircle.html">findByWithinCircle</a>
                         </div>
                         
+                        <div class="menu-item"><a href="../ref/Domain%20Classes/search.html">search</a>
+                        </div>
+                        
+                        <div class="menu-item"><a href="../ref/Domain%20Classes/searchTop.html">searchTop</a>
+                        </div>
+                        
                         <div class="menu-item"><a href="../ref/Domain%20Classes/useCollection.html">useCollection</a>
                         </div>
                         
@@ -678,7 +717,7 @@ class PersonSpec <span class="java&#45;keyword">extends</span> Specification&#12
                     <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
                         
                         
-                        <div class="menu-item"><a href="../ref/Testing/DatastoreUnitTestMixin.html">DatastoreUnitTestMixin</a>
+                        <div class="menu-item"><a href="../ref/Testing/MongoDbTestMixin.html">MongoDbTestMixin</a>
                         </div>
                         
                         </div>
