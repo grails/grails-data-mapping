@@ -399,6 +399,16 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         return this;
     }
 
+    @Override
+    public Criteria existsFor(QueryableCriteria<?> subquery) {
+        addToCriteria(new Query.Exists(subquery));
+        return this;
+    }
+
+    public Criteria exists(QueryableCriteria<?> subquery) {
+        return existsFor(subquery);
+    }
+
     public Criteria isEmpty(String propertyName) {
         validatePropertyName(propertyName, "isEmpty");
         addToCriteria(Restrictions.isEmpty(propertyName));
@@ -547,6 +557,88 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         validatePropertyName(propertyName, "gtAll");
         addToCriteria(new Query.GreaterThanAll(propertyName, propertyValue));
         return this;
+    }
+
+    @Override
+    public Criteria gtSome(String propertyName, QueryableCriteria propertyValue) {
+        validatePropertyName(propertyName, "gtSome");
+        addToCriteria(new Query.GreaterThanSome(propertyName, propertyValue));
+        return this;
+    }
+
+    @Override
+    public Criteria gtSome(String propertyName, Closure<?> propertyValue) {
+        return gtSome(propertyName, buildQueryableCriteria(propertyValue));
+    }
+
+    @Override
+    public Criteria geSome(String propertyName, QueryableCriteria propertyValue) {
+        validatePropertyName(propertyName, "geSome");
+        addToCriteria(new Query.GreaterThanEqualsSome(propertyName, propertyValue));
+        return this;
+    }
+
+    @Override
+    public Criteria geSome(String propertyName, Closure<?> propertyValue) {
+        return geSome(propertyName, buildQueryableCriteria(propertyValue));
+    }
+
+    @Override
+    public Criteria ltSome(String propertyName, QueryableCriteria propertyValue) {
+        validatePropertyName(propertyName, "ltSome");
+        addToCriteria(new Query.LessThanEqualsSome(propertyName, propertyValue));
+        return this;
+    }
+
+    @Override
+    public Criteria ltSome(String propertyName, Closure<?> propertyValue) {
+        return ltSome(propertyName, buildQueryableCriteria(propertyValue));
+    }
+
+    @Override
+    public Criteria leSome(String propertyName, QueryableCriteria propertyValue) {
+        validatePropertyName(propertyName, "leSome");
+        addToCriteria(new Query.LessThanEqualsSome(propertyName, propertyValue));
+        return this;
+    }
+
+    @Override
+    public Criteria leSome(String propertyName, Closure<?> propertyValue) {
+        return leSome(propertyName, buildQueryableCriteria(propertyValue));
+    }
+
+    @Override
+    public Criteria in(String propertyName, QueryableCriteria<?> subquery) {
+        return inList(propertyName, subquery);
+    }
+
+    @Override
+    public Criteria in(String propertyName, Closure<?> subquery) {
+        return inList(propertyName, subquery);
+    }
+
+    @Override
+    public Criteria inList(String propertyName, QueryableCriteria<?> subquery) {
+        validatePropertyName(propertyName, "inList");
+        addToCriteria(new Query.In(propertyName, subquery));
+        return this;
+    }
+
+    @Override
+    public Criteria inList(String propertyName, Closure<?> subquery) {
+        return inList(propertyName, buildQueryableCriteria(subquery));
+    }
+
+    @Override
+    public Criteria notIn(String propertyName, QueryableCriteria<?> subquery) {
+        validatePropertyName(propertyName, "notIn");
+        addToCriteria(new Query.NotIn(propertyName, subquery));
+        return this;
+    }
+
+    @Override
+    public Criteria notIn(String propertyName, Closure<?> subquery) {
+        return notIn(propertyName, buildQueryableCriteria(subquery));
     }
 
     /**
@@ -1047,4 +1139,5 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
             invokeClosureNode(criteria);
         }
     }
+
 }

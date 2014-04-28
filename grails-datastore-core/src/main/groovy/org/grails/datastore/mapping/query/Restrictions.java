@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.mapping.query;
 
+import org.grails.datastore.mapping.query.api.QueryableCriteria;
+
 import java.util.Collection;
 
 /**
@@ -62,6 +64,27 @@ public class Restrictions {
     }
 
     /**
+     * Restricts the property to be in the list of given values
+     * @param property The property
+     * @param subquery The subquery
+     * @return An instance of Query.In
+     */
+    public static Query.In in(String property, QueryableCriteria subquery) {
+        return new Query.In(property, subquery);
+    }
+
+
+    /**
+     * Restricts the property to be in the list of given values
+     * @param property The property
+     * @param subquery The subquery
+     * @return An instance of Query.In
+     */
+    public static Query.NotIn notIn(String property, QueryableCriteria subquery) {
+        return new Query.NotIn(property, subquery);
+    }
+
+    /**
      * Restricts the property match the given String expressions. Expressions use SQL-like % to denote wildcards
      * @param property The property name
      * @param expression The expression
@@ -71,6 +94,13 @@ public class Restrictions {
         return new Query.Like(property, expression);
     }
 
+    /**
+     * Case insensitive like
+     *
+     * @param property The property
+     * @param expression The expression
+     * @return An ILike expression
+     */
     public static Query.ILike ilike(String property, String expression) {
         return new Query.ILike(property, expression);
     }

@@ -21,6 +21,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.DetachedCriteria;
 
 /**
  * @author Graeme Rocher
@@ -42,5 +43,10 @@ public class HibernateCriterionAdapter extends AbstractHibernateCriterionAdapter
 
     protected Object getHibernateDetachedCriteria(QueryableCriteria<?> value) {
         return HibernateCriteriaBuilder.getHibernateDetachedCriteria(value);
+    }
+
+    @Override
+    protected DetachedCriteria toHibernateDetachedCriteria(QueryableCriteria<?> queryableCriteria) {
+        return HibernateCriteriaBuilder.getHibernateDetachedCriteria(queryableCriteria);
     }
 }

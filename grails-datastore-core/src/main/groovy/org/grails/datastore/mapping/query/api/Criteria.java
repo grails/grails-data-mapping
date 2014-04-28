@@ -29,6 +29,14 @@ import java.util.Map;
 public interface Criteria  {
 
     /**
+     * Executes an exists subquery
+     *
+     * @param subquery The subquery
+     * @return this criteria
+     */
+    Criteria existsFor(QueryableCriteria<?> subquery);
+
+    /**
      * Creates a criterion that restricts the id to the given value
      * @param value The value
      * @return The criteria
@@ -218,6 +226,47 @@ public interface Criteria  {
     Criteria in(String propertyName, Collection values);
 
     /**
+     * Creates an "in" Criterion using a subquery.
+     *
+     * @param propertyName The property name
+     * @param subquery The subquery
+     *
+     * @return The criteria
+     */
+    Criteria in(String propertyName, QueryableCriteria<?> subquery);
+
+
+    /**
+     * Creates an "in" Criterion using a subquery.
+     *
+     * @param propertyName The property name
+     * @param subquery The subquery
+     *
+     * @return The criteria
+     */
+    Criteria inList(String propertyName, QueryableCriteria<?> subquery);
+
+    /**
+     * Creates an "in" Criterion using a subquery.
+     *
+     * @param propertyName The property name
+     * @param subquery The subquery
+     *
+     * @return The criteria
+     */
+    Criteria in(String propertyName, Closure<?> subquery);
+
+    /**
+     * Creates an "in" Criterion using a subquery.
+     *
+     * @param propertyName The property name
+     * @param subquery The subquery
+     *
+     * @return The criteria
+     */
+    Criteria inList(String propertyName, Closure<?> subquery);
+
+    /**
      * Creates an "in" Criterion based on the specified property name and list of values.
      *
      * @param propertyName The property name
@@ -246,6 +295,26 @@ public interface Criteria  {
       * @return The criteria
       */
     Criteria in(String propertyName, Object[] values);
+
+    /**
+     * Creates a negated "in" Criterion using a subquery.
+     *
+     * @param propertyName The property name
+     * @param subquery The subquery
+     *
+     * @return The criteria
+     */
+    Criteria notIn(String propertyName, QueryableCriteria<?> subquery);
+
+    /**
+     * Creates a negated "in" Criterion using a subquery.
+     *
+     * @param propertyName The property name
+     * @param subquery The subquery
+     *
+     * @return The criteria
+     */
+    Criteria notIn(String propertyName, Closure<?> subquery);
 
     /**
      * Orders by the specified property name (defaults to ascending)
@@ -390,6 +459,9 @@ public interface Criteria  {
      */
     Criteria allEq(Map<String, Object> propertyValues);
 
+
+    //===== Subquery methods
+
     /**
      * Creates a subquery criterion that ensures the given property is equals to all the given returned values
      *
@@ -482,4 +554,86 @@ public interface Criteria  {
      * @return A Criterion instance
      */
     Criteria leAll(String propertyName, QueryableCriteria propertyValue);
+
+
+    /**
+     * Creates a subquery criterion that ensures the given property is greater than some of the given values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria gtSome(String propertyName, QueryableCriteria propertyValue);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is greater than some of the given values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria gtSome(String propertyName, Closure<?> propertyValue);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is greater than or equal to some of the given values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria geSome(String propertyName, QueryableCriteria propertyValue);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is greater than or equal to some of the given values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria geSome(String propertyName, Closure<?> propertyValue);
+
+
+    /**
+     * Creates a subquery criterion that ensures the given property is less than some of the given values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria ltSome(String propertyName, QueryableCriteria propertyValue);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is less than some of the given values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria ltSome(String propertyName, Closure<?> propertyValue);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is less than or equal to some of the given values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria leSome(String propertyName, QueryableCriteria propertyValue);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is less than or equal to some of the given values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria leSome(String propertyName, Closure<?> propertyValue);
 }

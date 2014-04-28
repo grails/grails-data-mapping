@@ -748,6 +748,82 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         return this;
     }
 
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria gtSome(String propertyName, QueryableCriteria propertyValue) {
+        addToCriteria(Property.forName(propertyName).gtSome(convertToHibernateCriteria(propertyValue)));
+        return this;
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria gtSome(String propertyName, Closure<?> propertyValue) {
+        return gtSome(propertyName, new grails.gorm.DetachedCriteria(targetClass).build(propertyValue));
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria geSome(String propertyName, QueryableCriteria propertyValue) {
+        addToCriteria(Property.forName(propertyName).geSome(convertToHibernateCriteria(propertyValue)));
+        return this;
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria geSome(String propertyName, Closure<?> propertyValue) {
+        return geSome(propertyName, new grails.gorm.DetachedCriteria(targetClass).build(propertyValue));
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria ltSome(String propertyName, QueryableCriteria propertyValue) {
+        addToCriteria(Property.forName(propertyName).ltSome(convertToHibernateCriteria(propertyValue)));
+        return this;
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria ltSome(String propertyName, Closure<?> propertyValue) {
+        return ltSome(propertyName, new grails.gorm.DetachedCriteria(targetClass).build(propertyValue));
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria leSome(String propertyName, QueryableCriteria propertyValue) {
+        addToCriteria(Property.forName(propertyName).leSome(convertToHibernateCriteria(propertyValue)));
+        return this;
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria leSome(String propertyName, Closure<?> propertyValue) {
+        return leSome(propertyName, new grails.gorm.DetachedCriteria(targetClass).build(propertyValue));
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria in(String propertyName, QueryableCriteria<?> subquery) {
+        return inList(propertyName, subquery);
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria inList(String propertyName, QueryableCriteria<?> subquery) {
+        addToCriteria(Property.forName(propertyName).in(convertToHibernateCriteria(subquery)));
+        return this;
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria in(String propertyName, Closure<?> subquery) {
+        return inList(propertyName, new grails.gorm.DetachedCriteria(targetClass).build(subquery));
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria inList(String propertyName, Closure<?> subquery) {
+        return inList(propertyName, new grails.gorm.DetachedCriteria(targetClass).build(subquery));
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria notIn(String propertyName, QueryableCriteria<?> subquery) {
+        addToCriteria(Property.forName(propertyName).notIn(convertToHibernateCriteria(subquery)));
+        return this;
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria notIn(String propertyName, Closure<?> subquery) {
+        return notIn(propertyName, new grails.gorm.DetachedCriteria(targetClass).build(subquery));
+    }
+
     /**
      * Creates a subquery criterion that ensures the given property is less than all the given returned values
      *
@@ -898,6 +974,16 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
 
     public org.grails.datastore.mapping.query.api.Criteria idEquals(Object o) {
         return idEq(o);
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria existsFor(QueryableCriteria<?> subquery) {
+        addToCriteria(Subqueries.exists(convertToHibernateCriteria(subquery)));
+        return this;
+    }
+
+    public org.grails.datastore.mapping.query.api.Criteria exists(QueryableCriteria<?> subquery) {
+        return existsFor(subquery);
     }
 
     public org.grails.datastore.mapping.query.api.Criteria isEmpty(String property) {
@@ -1734,6 +1820,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         criteriaClosure.call();
         return criteria;
     }
+
 
     protected abstract void createCriteriaInstance();
 

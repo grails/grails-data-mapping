@@ -67,6 +67,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     protected Map<String, FetchType> fetchStrategies = [:]
     protected Closure lazyQuery
 
+
     ProjectionList projectionList = new DetachedProjections(projections)
 
     /**
@@ -219,8 +220,42 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     /**
      * @see Criteria
      */
+    Criteria 'in'(String propertyName, QueryableCriteria subquery) {
+        inList(propertyName, subquery)
+    }
+
+    @Override
+    Criteria inList(String propertyName, QueryableCriteria<?> subquery) {
+        add Restrictions.in(propertyName, subquery)
+        return this
+    }
+
+    @Override
+    Criteria "in"(String propertyName, Closure<?> subquery) {
+        inList propertyName, buildQueryableCriteria(subquery)
+    }
+
+    @Override
+    Criteria inList(String propertyName, Closure<?> subquery) {
+        inList propertyName, buildQueryableCriteria(subquery)
+    }
+
+    /**
+     * @see Criteria
+     */
     Criteria 'in'(String propertyName, Object[] values) {
         inList(propertyName, values)
+    }
+
+    @Override
+    Criteria notIn(String propertyName, QueryableCriteria<?> subquery) {
+        add Restrictions.notIn(propertyName, subquery)
+        return this
+    }
+
+    @Override
+    Criteria notIn(String propertyName, Closure<?> subquery) {
+        notIn propertyName, buildQueryableCriteria(subquery)
     }
 
     /**
@@ -385,6 +420,11 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return this
     }
 
+    @Override
+    Criteria existsFor(QueryableCriteria<?> subquery) {
+        add new Query.Exists(subquery);
+        return this;
+    }
     /**
      * @see Criteria
      */
@@ -552,6 +592,50 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     @Override
+    Criteria gtSome(String propertyName, QueryableCriteria propertyValue) {
+        add new Query.GreaterThanSome(propertyName, propertyValue)
+        return this
+    }
+
+    @Override
+    Criteria gtSome(String propertyName, Closure<?> propertyValue) {
+        gtSome propertyName, buildQueryableCriteria(propertyValue)
+    }
+
+    @Override
+    Criteria geSome(String propertyName, QueryableCriteria propertyValue) {
+        add new Query.GreaterThanEqualsSome(propertyName, propertyValue)
+        return this
+    }
+
+    @Override
+    Criteria geSome(String propertyName, Closure<?> propertyValue) {
+        geSome propertyName, buildQueryableCriteria(propertyValue)
+    }
+
+    @Override
+    Criteria ltSome(String propertyName, QueryableCriteria propertyValue) {
+        add new Query.LessThanSome(propertyName, propertyValue)
+        return this
+    }
+
+    @Override
+    Criteria ltSome(String propertyName, Closure<?> propertyValue) {
+        ltSome propertyName, buildQueryableCriteria(propertyValue)
+    }
+
+    @Override
+    Criteria leSome(String propertyName, QueryableCriteria propertyValue) {
+        add new Query.LessThanEqualsSome(propertyName, propertyValue)
+        return this
+    }
+
+    @Override
+    Criteria leSome(String propertyName, Closure<?> propertyValue) {
+        leSome propertyName, buildQueryableCriteria(propertyValue)
+    }
+
+    @Override
     Criteria ltAll(String propertyName, QueryableCriteria propertyValue) {
         add new Query.LessThanAll(propertyName, propertyValue)
         return this
@@ -645,6 +729,17 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     /**
+     * Where method derives a new query from this query. This method will not mutate the original query, but instead return a new one.
+     *
+     * @param additionalQuery The additional query
+     * @return A new query
+     */
+    DetachedCriteria<T> whereLazy(Closure additionalQuery) {
+        DetachedCriteria<T> newQuery = clone()
+        return newQuery.build(additionalQuery)
+    }
+
+    /**
      * Synonym for #get
      */
     T find(Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
@@ -725,6 +820,13 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
             query.projections().count()
             query.singleResult()
         }
+    }
+
+    /**
+     * Synonym for #count()
+     */
+    Number size() {
+        count()
     }
 
     /**
@@ -843,7 +945,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     /**
      * Adds a property projection
      *
-     * @param property The property to sort by
+     * @param property The property to project
      * @return This criteria instance
      */
     DetachedCriteria<T> property(String property) {
@@ -851,6 +953,55 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         newCriteria.projectionList.property(property)
         return newCriteria
     }
+
+    /**
+     * Adds a avg projection
+     *
+     * @param property The property to avg by
+     * @return This criteria instance
+     */
+    DetachedCriteria<T> avg(String property) {
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.projectionList.avg(property)
+        return newCriteria
+    }
+
+    /**
+     * Adds a sum projection
+     *
+     * @param property The property to sum by
+     * @return This criteria instance
+     */
+    DetachedCriteria<T> sum(String property) {
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.projectionList.sum(property)
+        return newCriteria
+    }
+
+    /**
+     * Adds a sum projection
+     *
+     * @param property The property to min by
+     * @return This criteria instance
+     */
+    DetachedCriteria<T> min(String property) {
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.projectionList.min(property)
+        return newCriteria
+    }
+
+    /**
+     * Adds a min projection
+     *
+     * @param property The property to max by
+     * @return This criteria instance
+     */
+    DetachedCriteria<T> max(String property) {
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.projectionList.max(property)
+        return newCriteria
+    }
+
 
     def propertyMissing(String name) {
         final entity = getPersistentEntity()

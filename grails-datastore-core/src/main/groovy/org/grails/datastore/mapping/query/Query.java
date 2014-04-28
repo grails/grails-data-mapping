@@ -827,38 +827,97 @@ public abstract class Query implements Cloneable{
         public SubqueryCriterion(String name, QueryableCriteria value) {
             super(name, value);
         }
+
+        @Override
+        public QueryableCriteria getValue() {
+            return (QueryableCriteria)super.getValue();
+        }
     }
 
+    /**
+     * Restricts a value to be equal to all the given values
+     */
     public static class EqualsAll extends SubqueryCriterion{
         public EqualsAll(String name, QueryableCriteria value) {
             super(name, value);
         }
     }
 
+    /**
+     * Restricts a value to be not equal to all the given values
+     */
     public static class NotEqualsAll extends SubqueryCriterion{
         public NotEqualsAll(String name, QueryableCriteria value) {
             super(name, value);
         }
     }
 
+    /**
+     * Restricts a value to be greater than all the given values
+     */
     public static class GreaterThanAll extends SubqueryCriterion{
         public GreaterThanAll(String name, QueryableCriteria value) {
             super(name, value);
         }
     }
 
+    /**
+     * Restricts a value to be greater than some of the given values
+     */
+    public static class GreaterThanSome extends SubqueryCriterion{
+        public GreaterThanSome(String name, QueryableCriteria value) {
+            super(name, value);
+        }
+    }
+
+    /**
+     * Restricts a value to be greater than some of the given values
+     */
+    public static class GreaterThanEqualsSome extends SubqueryCriterion{
+        public GreaterThanEqualsSome(String name, QueryableCriteria value) {
+            super(name, value);
+        }
+    }
+
+    /**
+     * Restricts a value to be less than some of the given values
+     */
+    public static class LessThanSome extends SubqueryCriterion{
+        public LessThanSome(String name, QueryableCriteria value) {
+            super(name, value);
+        }
+    }
+
+    /**
+     * Restricts a value to be less than some of the given values
+     */
+    public static class LessThanEqualsSome extends SubqueryCriterion{
+        public LessThanEqualsSome(String name, QueryableCriteria value) {
+            super(name, value);
+        }
+    }
+
+    /**
+     * Restricts a value to be less than all the given values
+     */
     public static class LessThanAll extends SubqueryCriterion{
         public LessThanAll(String name, QueryableCriteria value) {
             super(name, value);
         }
     }
 
+    /**
+     * Restricts a value to be greater than or equal to all the given values
+     */
     public static class GreaterThanEqualsAll extends SubqueryCriterion{
         public GreaterThanEqualsAll(String name, QueryableCriteria value) {
             super(name, value);
         }
     }
 
+    /**
+     * Restricts a value to be less than or equal to all the given values
+     */
     public static class LessThanEqualsAll extends SubqueryCriterion{
         public LessThanEqualsAll(String name, QueryableCriteria value) {
             super(name, value);
@@ -952,26 +1011,65 @@ public abstract class Query implements Cloneable{
      * Criterion used to restrict the results based on a list of values
      */
     public static class In extends PropertyCriterion {
-        private String name;
         private Collection values = Collections.emptyList();
+        private QueryableCriteria subquery;
 
         public In(String name, Collection values) {
             super(name, values);
-            this.name = name;
             this.values = values;
         }
 
-        public String getName() {
-            return name;
+        public In(String name, QueryableCriteria subquery) {
+            super(name, subquery);
+            this.subquery = subquery;
         }
 
-        @Override
-        public String getProperty() {
-            return getName();
+        public String getName() {
+            return getProperty();
         }
 
         public Collection getValues() {
             return Collections.unmodifiableCollection(values);
+        }
+
+        public QueryableCriteria getSubquery() {
+            return subquery;
+        }
+    }
+
+    /**
+     * Criterion used to restrict the results based on a list of values
+     */
+    public static class NotIn extends SubqueryCriterion {
+        private QueryableCriteria subquery;
+
+
+        public NotIn(String name, QueryableCriteria subquery) {
+            super(name, subquery);
+            this.subquery = subquery;
+        }
+
+        public String getName() {
+            return getProperty();
+        }
+
+        public QueryableCriteria getSubquery() {
+            return subquery;
+        }
+    }
+
+    /**
+     * Used for exists subquery
+     */
+    public static class Exists implements Criterion {
+        private QueryableCriteria subquery;
+
+        public Exists(QueryableCriteria subquery) {
+            this.subquery = subquery;
+        }
+
+        public QueryableCriteria getSubquery() {
+            return subquery;
         }
     }
 
