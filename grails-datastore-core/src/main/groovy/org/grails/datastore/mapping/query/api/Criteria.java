@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.mapping.query.api;
 
+import groovy.lang.Closure;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -182,6 +184,28 @@ public interface Criteria  {
      * @return The criteria
      */
     Criteria rlike(String propertyName, Object propertyValue);
+
+    /**
+     * Creates a logical conjunction
+     * @param callable The closure
+     *
+     * @return This criteria
+     */
+    Criteria and(Closure callable);
+
+    /**
+     * Creates a logical disjunction
+     * @param callable The closure
+     * @return This criteria
+     */
+    Criteria or(Closure callable);
+
+    /**
+     * Creates a logical negation
+     * @param callable The closure
+     * @return This criteria
+     */
+    Criteria not(Closure callable);
 
     /**
      * Creates an "in" Criterion based on the specified property name and list of values.
@@ -365,6 +389,49 @@ public interface Criteria  {
      * @see org.grails.datastore.mapping.query.Query.Conjunction
      */
     Criteria allEq(Map<String, Object> propertyValues);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is equals to all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue A closure that is converted to a {@link org.grails.datastore.mapping.query.api.QueryableCriteria}
+     * @return This criterion instance
+     */
+    Criteria eqAll(String propertyName, Closure<?> propertyValue);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is greater than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue A closure that is converted to a {@link org.grails.datastore.mapping.query.api.QueryableCriteria}
+     * @return This criterion instance
+     */
+    Criteria gtAll(String propertyName, Closure<?> propertyValue);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is less than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue A closure that is converted to a {@link org.grails.datastore.mapping.query.api.QueryableCriteria}
+     * @return This criterion instance
+     */
+    Criteria ltAll(String propertyName, Closure<?> propertyValue);
+    /**
+     * Creates a subquery criterion that ensures the given property is greater than or equals to all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue A closure that is converted to a {@link org.grails.datastore.mapping.query.api.QueryableCriteria}
+     * @return This criterion instance
+     */
+    Criteria geAll(String propertyName, Closure<?> propertyValue);
+    /**
+     * Creates a subquery criterion that ensures the given property is less than or equal to all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue A closure that is converted to a {@link org.grails.datastore.mapping.query.api.QueryableCriteria}
+     * @return This criterion instance
+     */
+    Criteria leAll(String propertyName, Closure<?> propertyValue);
 
     /**
      * Creates a subquery criterion that ensures the given property is equal to all the given returned values

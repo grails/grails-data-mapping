@@ -4,9 +4,11 @@ import grails.util.CollectionUtils;
 import groovy.lang.*;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
-import org.grails.datastore.mapping.query.api.QueryableCriteria;
+import org.grails.datastore.mapping.query.api.*;
 import org.hibernate.*;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.*;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.transform.ResultTransformer;
 import org.hibernate.type.AssociationType;
@@ -671,6 +673,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         return eqAll(propertyName, new grails.gorm.DetachedCriteria(targetClass).build(propertyValue));
     }
 
+
     /**
      * Creates a subquery criterion that ensures the given property is greater than all the given returned values
      *
@@ -918,6 +921,34 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
     public org.grails.datastore.mapping.query.api.Criteria isNotNull(String property) {
         String propertyName = calculatePropertyName(property);
         addToCriteria(Restrictions.isNotNull(propertyName));
+        return this;
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria and(Closure callable) {
+        return executeLogicalExpression(callable, AND);
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria or(Closure callable) {
+        return executeLogicalExpression(callable, OR);
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria not(Closure callable) {
+        return executeLogicalExpression(callable, NOT);
+    }
+
+    protected org.grails.datastore.mapping.query.api.Criteria executeLogicalExpression(Closure callable, String logicalOperator) {
+        logicalExpressionStack.add(new LogicalExpression(logicalOperator));
+        try {
+            invokeClosureNode(callable);
+        } finally {
+            LogicalExpression logicalExpression = logicalExpressionStack.remove(logicalExpressionStack.size()-1);
+            if(logicalExpression != null)
+                addToCriteria(logicalExpression.toCriterion());
+        }
+
         return this;
     }
 

@@ -519,27 +519,23 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return this
     }
 
-    Criteria eqAll(String propertyName, Closure propertyValue) {
+    Criteria eqAll(String propertyName, Closure<?> propertyValue) {
         eqAll(propertyName, buildQueryableCriteria(propertyValue))
     }
 
-    private QueryableCriteria buildQueryableCriteria(Closure queryClosure) {
-        return new DetachedCriteria(targetClass).build(queryClosure)
-    }
-
-    Criteria gtAll(String propertyName, Closure propertyValue) {
+    Criteria gtAll(String propertyName, Closure<?> propertyValue) {
         gtAll(propertyName, buildQueryableCriteria(propertyValue))
     }
 
-    Criteria ltAll(String propertyName, Closure propertyValue) {
+    Criteria ltAll(String propertyName, Closure<?> propertyValue) {
         ltAll(propertyName, buildQueryableCriteria(propertyValue))
     }
 
-    Criteria geAll(String propertyName, Closure propertyValue) {
+    Criteria geAll(String propertyName, Closure<?> propertyValue) {
         geAll(propertyName, buildQueryableCriteria(propertyValue))
     }
 
-    Criteria leAll(String propertyName, Closure propertyValue) {
+    Criteria leAll(String propertyName, Closure<?> propertyValue) {
         leAll(propertyName, buildQueryableCriteria(propertyValue))
     }
 
@@ -943,6 +939,10 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
             def lastJunction = junctions.remove(junctions.size() - 1)
             add lastJunction
         }
+    }
+
+    private QueryableCriteria buildQueryableCriteria(Closure queryClosure) {
+        return new DetachedCriteria(targetClass).build(queryClosure)
     }
 
     @CompileStatic(TypeCheckingMode.SKIP)
