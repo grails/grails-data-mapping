@@ -111,6 +111,7 @@ abstract class Neo4jUtils {
     static URL dumpGraphToSvg(GraphDatabaseService graphDatabaseService) {
         File dotFile = File.createTempFile("temp", ".dot")
         File svgFile = File.createTempFile("temp", ".svg")
+        // TODO: sort properties when emitting.
         new GraphvizWriter().emit(dotFile, Walker.fullGraph(graphDatabaseService))
         def proc = "/usr/bin/dot -Tsvg ${dotFile.absolutePath}".execute()
         svgFile.withWriter { Writer it -> it << proc.in.text }
