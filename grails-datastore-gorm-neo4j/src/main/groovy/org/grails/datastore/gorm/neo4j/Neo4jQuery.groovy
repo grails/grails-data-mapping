@@ -44,7 +44,7 @@ class Neo4jQuery extends Query {
         def cypher = ""
         if (!orderBy.empty) {
             cypher += " ORDER BY "
-            cypher += orderBy.collect { Order order -> "data.${order.property} $order.direction" }.join(", ")
+            cypher += orderBy.collect { Order order -> "n.${order.property} $order.direction" }.join(", ")
         }
 
         if (offset != 0) {

@@ -325,16 +325,22 @@ public class Neo4jEntityPersister extends EntityPersister {
     @Override
     protected void deleteEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objects) {
         List<EntityAccess> entityAccesses = new ArrayList<EntityAccess>();
+
+        List<Object> ids = new ArrayList<Object>();
         for (Object obj : objects) {
             EntityAccess entityAccess = createEntityAccess(pe, obj);
             if (cancelDelete(pe, entityAccess)) {
                 return;
             }
             entityAccesses.add(entityAccess);
+            ids.add(entityAccess.getIdentifier());
         }
+
+
+
         getCypherEngine().execute(
-                String.format("MATCH (n:%s) OPTIONAL MATCH (n)-[r]-() DELETE r,n",
-                        ((GraphPersistentEntity)pe).getLabel()));
+                String.format("MATCH (n:%s) WHERE n.__id__ in {ids} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
+                        ((GraphPersistentEntity)pe).getLabel()), Collections.singletonMap("ids", ids));
         for (EntityAccess entityAccess: entityAccesses) {
             firePostDeleteEvent(pe, entityAccess);
         }
