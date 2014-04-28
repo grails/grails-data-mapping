@@ -98,7 +98,9 @@ public class CypherBuilder {
         boolean reversed = RelationshipUtils.useReversedMappingFor(association);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("MATCH (me {__id__:{id}})");
+        GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) (association.getOwner());
+        String label = graphPersistentEntity.getLabel();
+        sb.append("MATCH (me:").append(label).append(" {__id__:{id}})");
         if (reversed) {
             sb.append("<");
         }
