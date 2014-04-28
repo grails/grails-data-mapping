@@ -45,17 +45,10 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected List<Object> retrieveAllEntities(PersistentEntity pe, Iterable<Serializable> keys) {
-
         List<Criterion> criterions = new ArrayList<Criterion>(1);
         criterions.add(new In("id", IteratorUtil.asCollection(keys)));
         Junction junction = new Conjunction(criterions);
         return new Neo4jQuery(session, pe, this).executeQuery(pe, junction);
-
-/*
-        cypherEngine.execute("match (n:${pe.discriminator}) where id(n) in {keys} return ${"id(n) as id, labels(n) as labels, n as data, collect({type: type(r), endNodeIds: id(endnode(r))}) as endNodeId"}", [keys: keys] as Map<String,Object>).collect { Map<String,Object> map ->
-            retrieveEntityAccess(pe, map["n"] as Node).entity
-        }
-*/
     }
 
     @Override
@@ -82,7 +75,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         Object instance = getSession().getCachedEntry(persistentEntity, id);
 
         if (instance == null) {
-            instance = unmarshall(persistentEntity, id, labels, data);
+            instance = unmarshall(persistentEntity, id, data);
             getSession().cacheEntry(persistentEntity, id, instance);
         }
         return instance;
@@ -124,8 +117,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
     }
 
-    private Object unmarshall(PersistentEntity persistentEntity, Long id, Collection<String> labels,
-                   Map<String, Object> data) {
+    private Object unmarshall(PersistentEntity persistentEntity, Long id, Map<String, Object> data) {
 
         log.debug( "unmarshalling entity {}, props {}, {}", id, data);
         EntityAccess entityAccess = new EntityAccess(persistentEntity, persistentEntity.newInstance());
@@ -186,13 +178,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             return null;
         }
 
-        /* dirtychecking seems not tracking collections
-        if ((obj instanceof DirtyCheckable) && (!((DirtyCheckable)obj).hasChanged())) {
-            log.error("skip it " + obj);
-        }  */
-
         EntityAccess entityAccess = createEntityAccess(pe, obj);
-
         if (getMappingContext().getProxyFactory().isProxy(obj)) {
             return (Serializable) entityAccess.getIdentifier();
         }
@@ -205,14 +191,8 @@ public class Neo4jEntityPersister extends EntityPersister {
             if (cancelUpdate(pe, entityAccess)) {
                 return null;
             }
-            // TODO: check for dirty object
-            if (pe.hasProperty("version", Long.class)) {
-                long version = (Long) entityAccess.getProperty("version");
-                version++;
-                entityAccess.setProperty("version", version);
-            }
             getSession().addPendingUpdate(new NodePendingUpdate(entityAccess, getCypherEngine(), getMappingContext()));
-            persistAssociationsOfEntity(pe, entityAccess, isUpdate);
+            persistAssociationsOfEntity(pe, entityAccess, true);
             firePostUpdateEvent(pe, entityAccess);
 
         } else {
@@ -220,7 +200,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                 return null;
             }
             getSession().addPendingInsert(new NodePendingInsert(getSession().getDatastore().nextIdForType(pe), entityAccess, getCypherEngine(), getMappingContext()));
-            persistAssociationsOfEntity(pe, entityAccess, isUpdate);
+            persistAssociationsOfEntity(pe, entityAccess, false);
             firePostInsertEvent(pe, entityAccess);
         }
 
@@ -256,7 +236,6 @@ public class Neo4jEntityPersister extends EntityPersister {
                         persistEntities(association.getAssociatedEntity(), targets);
 
                         boolean reversed = RelationshipUtils.useReversedMappingFor(association);
-                        String relType = RelationshipUtils.relationshipTypeUsedFor(association);
 
                         if (!reversed) {
                             if (!(propertyValue instanceof LazyEnititySet)) {

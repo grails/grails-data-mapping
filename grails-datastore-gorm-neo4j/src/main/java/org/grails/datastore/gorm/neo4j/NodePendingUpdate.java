@@ -64,7 +64,11 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
         cypherStringBuilder.append("MATCH (n%s) WHERE n.__id__={id}");
         if (persistentEntity.hasProperty("version", Long.class) && persistentEntity.isVersioned()) {
             cypherStringBuilder.append(" AND n.version={version}");
-            params.put("version", ((Long)getEntityAccess().getProperty("version")) - 1);
+            Long version = (Long) getEntityAccess().getProperty("version");
+            params.put("version", version);
+            long newVersion = version + 1;
+            simpleProps.put("version", newVersion);
+            getEntityAccess().setProperty("version", newVersion);
         }
         cypherStringBuilder.append(" SET n={props} RETURN id(n) as id");
         String cypher = String.format(cypherStringBuilder.toString(), labels);
