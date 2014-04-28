@@ -79,10 +79,22 @@ public class LazyEnititySet<T> implements Set<T> {
     public boolean add(Object o) {
         initialize();
         boolean isNew = delegate.add((T) o);
-        if (isNew && (!reversed)) {
-            session.addPendingInsert(new RelationshipPendingInsert(owner, relType, new EntityAccess(association.getAssociatedEntity(), o), session.getNativeInterface()));
-        }
+        if (isNew) {
+            EntityAccess target = new EntityAccess(association.getAssociatedEntity(), o);
 
+            if (association.isBidirectional()) {
+                target.setProperty(association.getReferencedPropertyName(), owner.getEntity()); // TODO: might fail on many2many
+            }
+
+            if (target.getIdentifier()==null) { // non-persistent instance
+                session.persist(o);
+            }
+
+            if (!reversed) { // prevent duplicated rels
+                session.addPendingInsert(new RelationshipPendingInsert(owner, relType, target, session.getNativeInterface()));
+            }
+
+        }
         return isNew;
     }
 

@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.neo4j;
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
 import org.grails.datastore.gorm.neo4j.engine.CypherResult;
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -211,6 +212,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                 entityAccess.setProperty("version", version);
             }
             getSession().addPendingUpdate(new NodePendingUpdate(entityAccess, getCypherEngine(), getMappingContext()));
+            persistAssociationsOfEntity(pe, entityAccess, isUpdate);
             firePostUpdateEvent(pe, entityAccess);
 
         } else {
@@ -218,80 +220,93 @@ public class Neo4jEntityPersister extends EntityPersister {
                 return null;
             }
             getSession().addPendingInsert(new NodePendingInsert(getSession().getDatastore().nextIdForType(pe), entityAccess, getCypherEngine(), getMappingContext()));
+            persistAssociationsOfEntity(pe, entityAccess, isUpdate);
             firePostInsertEvent(pe, entityAccess);
         }
 
-        for (PersistentProperty pp: pe.getPersistentProperties()) {
-            Object propertyValue = entityAccess.getProperty(pp.getName());
+        return (Serializable) entityAccess.getIdentifier();
+    }
 
-            if ( pp instanceof Simple) {
-                // nothing
-            } else if ((pp instanceof OneToMany) || (pp instanceof ManyToMany)) {
-                Association association = (Association) pp;
+    private void persistAssociationsOfEntity(PersistentEntity pe, EntityAccess entityAccess, boolean isUpdate) {
 
-                if (propertyValue!= null) {
+        Object obj = entityAccess.getEntity();
+        DirtyCheckable dirtyCheckable = null;
+        if (obj instanceof DirtyCheckable) {
+            dirtyCheckable = (DirtyCheckable)obj;
+        }
 
-                    if (association.isBidirectional()) {  // Populate other side of bidi
-                        for (Object associatedObject: (Iterable)propertyValue) {
-                            EntityAccess assocEntityAccess = createEntityAccess(association.getAssociatedEntity(), associatedObject);
-                            assocEntityAccess.setProperty(association.getReferencedPropertyName(), obj);
-                        }
-                    }
+        for (PersistentProperty pp: pe.getAssociations()) {
+            if ((!isUpdate) || ((dirtyCheckable!=null) && dirtyCheckable.hasChanged(pp.getName()))) {
 
-                    Iterable targets = (Iterable) propertyValue;
-                    persistEntities(association.getAssociatedEntity(), targets);
+                Object propertyValue = entityAccess.getProperty(pp.getName());
 
-                    boolean reversed = RelationshipUtils.useReversedMappingFor(association);
-                    String relType = RelationshipUtils.relationshipTypeUsedFor(association);
+                if ((pp instanceof OneToMany) || (pp instanceof ManyToMany)) {
+                    Association association = (Association) pp;
 
-                    if (!reversed) {
-                        if (!(propertyValue instanceof LazyEnititySet)) {
-                            LazyEnititySet les = new LazyEnititySet(entityAccess, association, getMappingContext().getProxyFactory(), getSession());
-                            les.addAll(targets);
-                            entityAccess.setProperty(association.getName(), les);
-                        }
-                    }
-                }
-            } else if (pp instanceof ToOne) {
-                if (propertyValue != null) {
-                    ToOne to = (ToOne) pp;
+                    if (propertyValue!= null) {
 
-                    if (to.isBidirectional()) {  // Populate other side of bidi
-                        EntityAccess assocEntityAccess = createEntityAccess(to.getAssociatedEntity(), propertyValue);
-                        if (to instanceof OneToOne) {
-                            assocEntityAccess.setProperty(to.getReferencedPropertyName(), obj);
-                        } else {
-                            Collection collection = (Collection) assocEntityAccess.getProperty(to.getReferencedPropertyName());
-                            if (collection == null ) {
-                                collection = new ArrayList();
-                                assocEntityAccess.setProperty(to.getReferencedPropertyName(), collection);
+                        if (association.isBidirectional()) {  // Populate other side of bidi
+                            for (Object associatedObject: (Iterable)propertyValue) {
+                                EntityAccess assocEntityAccess = createEntityAccess(association.getAssociatedEntity(), associatedObject);
+                                assocEntityAccess.setProperty(association.getReferencedPropertyName(), obj);
                             }
-                            if (!collection.contains(obj)) {
-                                collection.add(obj);
+                        }
+
+                        Iterable targets = (Iterable) propertyValue;
+                        persistEntities(association.getAssociatedEntity(), targets);
+
+                        boolean reversed = RelationshipUtils.useReversedMappingFor(association);
+                        String relType = RelationshipUtils.relationshipTypeUsedFor(association);
+
+                        if (!reversed) {
+                            if (!(propertyValue instanceof LazyEnititySet)) {
+                                LazyEnititySet les = new LazyEnititySet(entityAccess, association, getMappingContext().getProxyFactory(), getSession());
+                                les.addAll(targets);
+                                entityAccess.setProperty(association.getName(), les);
                             }
                         }
                     }
+                } else if (pp instanceof ToOne) {
+                    if (propertyValue != null) {
+                        ToOne to = (ToOne) pp;
 
-                    persistEntity(to.getAssociatedEntity(), propertyValue);
+                        if (to.isBidirectional()) {  // Populate other side of bidi
+                            EntityAccess assocEntityAccess = createEntityAccess(to.getAssociatedEntity(), propertyValue);
+                            if (to instanceof OneToOne) {
+                                assocEntityAccess.setProperty(to.getReferencedPropertyName(), obj);
+                            } else {
+                                Collection collection = (Collection) assocEntityAccess.getProperty(to.getReferencedPropertyName());
+                                if (collection == null ) {
+                                    collection = new ArrayList();
+                                    assocEntityAccess.setProperty(to.getReferencedPropertyName(), collection);
+                                }
+                                if (!collection.contains(obj)) {
+                                    collection.add(obj);
+                                }
+                            }
+                        }
 
-                    boolean reversed = RelationshipUtils.useReversedMappingFor(to);
-                    String relType = RelationshipUtils.relationshipTypeUsedFor(to);
+                        persistEntity(to.getAssociatedEntity(), propertyValue);
 
-                    if (!reversed) {
-                        getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, relType,
-                                new EntityAccess(to.getAssociatedEntity(), propertyValue),
-                                getCypherEngine()));
+                        boolean reversed = RelationshipUtils.useReversedMappingFor(to);
+                        String relType = RelationshipUtils.relationshipTypeUsedFor(to);
+
+                        if (!reversed) {
+                            getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, relType,
+                                    new EntityAccess(to.getAssociatedEntity(), propertyValue),
+                                    getCypherEngine()));
+                        }
+
+
                     }
-
+                } else {
+                    throw new IllegalArgumentException("wtf don't know how to handle " + pp + "(" + pp.getClass() +")" );
 
                 }
-            } else {
-                throw new IllegalArgumentException("wtf don't know how to handle " + pp + "(" + pp.getClass() +")" );
-
             }
 
+
         }
-        return (Serializable) entityAccess.getIdentifier();
     }
 
     @Override

@@ -34,12 +34,21 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
         simpleProps.put("__id__", id);
 
         PersistentEntity persistentEntity = getEntityAccess().getPersistentEntity();
+//        DirtyCheckable dirtyCheckable = null;
+//        if (getNativeEntry() instanceof DirtyCheckable) {
+//            dirtyCheckable = (DirtyCheckable)getNativeEntry();
+//        }
         for (PersistentProperty pp : persistentEntity.getPersistentProperties()) {
             if (pp instanceof Simple) {
-                String name = pp.getName();
-                Object value = getEntityAccess().getProperty(name);
-                if (value != null) {
-                    simpleProps.put(name,  Neo4jUtils.mapToAllowedNeo4jType( value, mappingContext));
+//                boolean needsUpdate = dirtyCheckable==null ? true : dirtyCheckable.hasChanged(pp.getName());
+                boolean needsUpdate = true; // TODO: do partial node updates via SET node += {props} for Neo4j 2.1
+
+                if (needsUpdate) {
+                    String name = pp.getName();
+                    Object value = getEntityAccess().getProperty(name);
+                    if (value != null) { // TODO: remove property when value is null
+                        simpleProps.put(name,  Neo4jUtils.mapToAllowedNeo4jType( value, mappingContext));
+                    }
                 }
             }
         }

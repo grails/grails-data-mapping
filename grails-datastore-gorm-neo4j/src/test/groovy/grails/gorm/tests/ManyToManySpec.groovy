@@ -1,5 +1,6 @@
 package grails.gorm.tests
 
+import grails.gorm.dirty.checking.DirtyCheck
 import grails.persistence.Entity
 import org.grails.datastore.gorm.Setup
 import org.grails.datastore.gorm.neo4j.Neo4jUtils
@@ -192,6 +193,7 @@ when running gradle the DirtyCheckable interface is not injected into User by an
 
 }
 
+@DirtyCheck
 @Entity
 class User {
     Long id
