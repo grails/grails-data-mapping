@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
+import grails.persistence.Entity
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
 /**
@@ -62,7 +63,7 @@ class SubquerySpec extends GormDatastoreSpec {
 
         when:"We query for people above a certain age average"
             def results = Person.withCriteria {
-                gtSome "age", Person.where { age < 18 }.property('age')
+                gtSome "age", Person.where { age < 18 }.age
                 order "firstName"
             }
 
@@ -76,22 +77,9 @@ class SubquerySpec extends GormDatastoreSpec {
             createPeople()
 
         when:"We query for people above a certain age average"
-//              def results = new GroovyShell().evaluate('''
-//import grails.gorm.tests.*
-//import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
-//
-//@ApplyDetachedCriteriaTransform
-//class MyQuery {
-//    static execute() {
-//        Person.where {
-//            firstName in where { age < 18 }.property('firstName')
-//        }.list()
-//    }
-//}
-//MyQuery.execute()
-//''')
+
             def results = Person.where {
-                firstName in where { age < 18 }.property('firstName')
+                firstName in where { age < 18 }.firstName
             }.order('firstName').list()
 
 
@@ -108,7 +96,7 @@ class SubquerySpec extends GormDatastoreSpec {
         when:"We query for people not in a list of values using a subquery"
 
             def results = Person.withCriteria {
-                notIn "firstName", Person.where { age < 18 }.property('firstName')
+                notIn "firstName", Person.where { age < 18 }.firstName
                 order "firstName"
             }
 
@@ -124,7 +112,7 @@ class SubquerySpec extends GormDatastoreSpec {
         when:"We query that uses an exists subquery"
 
             def results = Person.withCriteria {
-                existsFor Person.where { age < 18 }.property('firstName')
+                exists Person.where { age < 18 }.firstName
                 order "firstName"
             }
 
@@ -151,6 +139,32 @@ class SubquerySpec extends GormDatastoreSpec {
             results[1].firstName == "Homer"
     }
 
+    void "Test correlated subquery"() {
+        given:"Some test data"
+            def r1 = new Region(continent: "EMEA").save()
+            def r2 = new Region(continent: "APAC").save()
+            def e1 = new Employee(name:"Bob", region: r1).save()
+            def e2 = new Employee(name:"Fred", region: r2).save()
+            new Sale(employee: e1, total: 50000).save()
+            new Sale(employee: e1, total: 150000).save()
+            new Sale(employee: e2, total: 70000).save()
+            session.clear()
+
+        when:"A correlated subquery is executed"
+            def employees = Employee.where {
+                region.continent in ['APAC', "EMEA"]
+            }.id()
+
+            def results = Sale.where {
+                employee in employees && total > 100000
+            }.employee.list()
+
+
+        then:"The results are correct"
+            results.size() == 1
+            results[0].name == "Bob"
+
+    }
 
     protected def createPeople() {
         new Person(firstName: "Homer", lastName: "Simpson", age:45).save()
@@ -160,4 +174,51 @@ class SubquerySpec extends GormDatastoreSpec {
         new Person(firstName: "Barney", lastName: "Rubble", age:35).save()
         new Person(firstName: "Fred", lastName: "Flinstone", age:41).save()
     }
+
+    @Override
+    List getDomainClasses() {
+        [Employee, Sale, Region]
+    }
 }
+
+@Entity
+class Employee {
+    Long id
+    Long version
+    String name
+    Region region
+}
+@Entity
+class Sale {
+    Long id
+    Long version
+
+    int total
+    Employee employee
+    static belongsTo = [employee: Employee]
+}
+@Entity
+class Region {
+    Long id
+    Long version
+
+    String continent
+}
+
+
+// Use to test where query transform:
+//
+//def results = new GroovyShell().evaluate('''
+//import grails.gorm.tests.*
+//import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+//
+//@ApplyDetachedCriteriaTransform
+//class MyQuery {
+//    static execute() {
+//        Person.where {
+//            firstName in where { age < 18 }.property('firstName')
+//        }.list()
+//    }
+//}
+//MyQuery.execute()
+//''')

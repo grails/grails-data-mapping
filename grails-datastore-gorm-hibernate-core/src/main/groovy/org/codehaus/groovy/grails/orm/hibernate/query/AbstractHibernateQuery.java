@@ -37,10 +37,7 @@ import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.SimpleExpression;
+import org.hibernate.criterion.*;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.function.SQLFunction;
 import org.hibernate.persister.entity.PropertyMapping;
@@ -71,6 +68,7 @@ public abstract class AbstractHibernateQuery extends Query {
     }
 
     protected Criteria criteria;
+    protected org.hibernate.criterion.DetachedCriteria detachedCriteria;
     protected AbstractHibernateQuery.HibernateProjectionList hibernateProjectionList;
     protected String alias;
     protected int aliasCount;
@@ -78,11 +76,16 @@ public abstract class AbstractHibernateQuery extends Query {
     protected LinkedList<String> aliasStack = new LinkedList<String>();
     protected LinkedList<PersistentEntity> entityStack = new LinkedList<PersistentEntity>();
     protected LinkedList<Association> associationStack = new LinkedList<Association>();
-    protected LinkedList<Criteria> aliasInstanceStack = new LinkedList<Criteria>();
+    protected LinkedList aliasInstanceStack = new LinkedList();
 
     protected AbstractHibernateQuery(Criteria criteria, AbstractHibernateSession session, PersistentEntity entity) {
         super(session, entity);
         this.criteria = criteria;
+    }
+
+    protected AbstractHibernateQuery(DetachedCriteria criteria) {
+        super(null, null);
+        this.detachedCriteria = criteria;
     }
 
     protected AbstractHibernateQuery(Criteria subCriteria, AbstractHibernateSession session, PersistentEntity associatedEntity, String newAlias) {
@@ -141,7 +144,10 @@ public abstract class AbstractHibernateQuery extends Query {
 
             CriteriaAndAlias criteriaAndAlias = getCriteriaAndAlias(association);
 
-            aliasInstanceStack.add(criteriaAndAlias.criteria);
+            if(criteriaAndAlias.criteria != null)
+                aliasInstanceStack.add(criteriaAndAlias.criteria);
+            else if(criteriaAndAlias.detachedCriteria != null)
+                aliasInstanceStack.add(criteriaAndAlias.detachedCriteria);
             aliasStack.add(criteriaAndAlias.alias);
             associationStack.add(association);
             entityStack.add(association.getAssociatedEntity());
@@ -403,21 +409,33 @@ public abstract class AbstractHibernateQuery extends Query {
             CriteriaAndAlias subCriteria = getOrCreateAlias(associationName, alias);
 
             Association association = (Association) property;
-            return new HibernateAssociationQuery(subCriteria.criteria, (AbstractHibernateSession) getSession(), association.getAssociatedEntity(), association, alias);
+            if(subCriteria.criteria != null) {
+                return new HibernateAssociationQuery(subCriteria.criteria, (AbstractHibernateSession) getSession(), association.getAssociatedEntity(), association, alias);
+            }
+            else if(subCriteria.detachedCriteria != null) {
+                return new HibernateAssociationQuery(subCriteria.detachedCriteria, (AbstractHibernateSession) getSession(), association.getAssociatedEntity(), association, alias);
+            }
         }
         throw new InvalidDataAccessApiUsageException("Cannot query association [" + calculatePropertyName(associationName) + "] of entity [" + entity + "]. Property is not an association!");
     }
 
     protected CriteriaAndAlias getOrCreateAlias(String associationName, String alias) {
-        CriteriaAndAlias subCriteria;
+        CriteriaAndAlias subCriteria = null;
         String associationPath = getAssociationPath(associationName);
         if (createdAssociationPaths.containsKey(associationName)) {
             subCriteria = createdAssociationPaths.get(associationPath);
         }
         else {
-            Criteria sc = criteria.createAlias(associationPath, alias);
-            subCriteria = new CriteriaAndAlias(sc, alias);
-            createdAssociationPaths.put(associationPath,subCriteria);
+            if(criteria != null) {
+                Criteria sc = criteria.createAlias(associationPath, alias);
+                subCriteria = new CriteriaAndAlias(sc, alias);
+            }
+            else if(detachedCriteria != null) {
+                DetachedCriteria sc = detachedCriteria.createAlias(associationPath, alias);
+                subCriteria = new CriteriaAndAlias(sc, alias);
+            }
+            if(subCriteria != null)
+                createdAssociationPaths.put(associationPath,subCriteria);
         }
         return subCriteria;
     }
@@ -432,19 +450,22 @@ public abstract class AbstractHibernateQuery extends Query {
 
     @Override
     public Query max(int max) {
-        criteria.setMaxResults(max);
+        if(criteria != null)
+            criteria.setMaxResults(max);
         return this;
     }
 
     @Override
     public Query maxResults(int max) {
-        criteria.setMaxResults(max);
+        if(criteria != null)
+            criteria.setMaxResults(max);
         return this;
     }
 
     @Override
     public Query offset(int offset) {
-        criteria.setFirstResult(offset);
+        if(criteria != null)
+            criteria.setFirstResult(offset);
         return this;
     }
 
@@ -457,14 +478,42 @@ public abstract class AbstractHibernateQuery extends Query {
     @Override
     public Query order(Order order) {
         super.order(order);
-        criteria.addOrder(order.getDirection() == Order.Direction.ASC ?
-            org.hibernate.criterion.Order.asc(calculatePropertyName(order.getProperty())) :
-            org.hibernate.criterion.Order.desc(calculatePropertyName(order.getProperty())));
+        if(criteria != null) {
+
+            criteria.addOrder(order.getDirection() == Order.Direction.ASC ?
+                    org.hibernate.criterion.Order.asc(calculatePropertyName(order.getProperty())) :
+                    org.hibernate.criterion.Order.desc(calculatePropertyName(order.getProperty())));
+        }else if(detachedCriteria != null) {
+            detachedCriteria.addOrder(order.getDirection() == Order.Direction.ASC ?
+                    org.hibernate.criterion.Order.asc(calculatePropertyName(order.getProperty())) :
+                    org.hibernate.criterion.Order.desc(calculatePropertyName(order.getProperty())));
+
+        }
+        return this;
+    }
+
+    @Override
+    public Query join(String property) {
+        if(criteria != null)
+            criteria.setFetchMode(property, FetchMode.JOIN);
+        else if(detachedCriteria != null)
+            detachedCriteria.setFetchMode(property, FetchMode.JOIN);
+        return this;
+    }
+
+    @Override
+    public Query select(String property) {
+        if(criteria != null)
+            criteria.setFetchMode(property, FetchMode.SELECT);
+        else if(detachedCriteria != null)
+            detachedCriteria.setFetchMode(property, FetchMode.SELECT);
         return this;
     }
 
     @Override
     public List list() {
+        if(criteria == null) throw new IllegalStateException("Cannot execute query using a detached criteria instance");
+
         int projectionLength = 0;
         if (hibernateProjectionList != null) {
             org.hibernate.criterion.ProjectionList projectionList = hibernateProjectionList.getHibernateProjectionList();
@@ -484,10 +533,16 @@ public abstract class AbstractHibernateQuery extends Query {
         for (Map.Entry<String, FetchType> entry : fetchStrategies.entrySet()) {
             switch(entry.getValue()) {
                 case EAGER:
-                    criteria.setFetchMode(entry.getKey(), FetchMode.JOIN);
+                    if(criteria != null)
+                        criteria.setFetchMode(entry.getKey(), FetchMode.JOIN);
+                    else if(detachedCriteria != null)
+                        detachedCriteria.setFetchMode(entry.getKey(), FetchMode.JOIN);
                     break;
                 case LAZY:
-                    criteria.setFetchMode(entry.getKey(), FetchMode.SELECT);
+                    if(criteria != null)
+                        criteria.setFetchMode(entry.getKey(), FetchMode.SELECT);
+                    else if(detachedCriteria != null)
+                        detachedCriteria.setFetchMode(entry.getKey(), FetchMode.SELECT);
                     break;
             }
         }
@@ -500,6 +555,8 @@ public abstract class AbstractHibernateQuery extends Query {
 
     @Override
     public Object singleResult() {
+        if(criteria == null) throw new IllegalStateException("Cannot execute query using a detached criteria instance");
+
         if (hibernateProjectionList != null) {
             criteria.setProjection(hibernateProjectionList.getHibernateProjectionList());
         }
@@ -529,10 +586,21 @@ public abstract class AbstractHibernateQuery extends Query {
         }
 
         if (aliasInstanceStack.isEmpty()) {
-            criteria.add(criterion);
+            if(criteria != null) {
+                criteria.add(criterion);
+
+            }
+            else if(detachedCriteria != null) {
+                detachedCriteria.add(criterion);
+            }
         }
         else {
-            aliasInstanceStack.getLast().add(criterion);
+            Object criteriaObject = aliasInstanceStack.getLast();
+            if(criteriaObject instanceof Criteria)
+                ((Criteria)criteriaObject).add(criterion);
+            else if(criteriaObject instanceof DetachedCriteria) {
+                ((DetachedCriteria)criteriaObject).add(criterion);
+            }
         }
     }
 
@@ -660,7 +728,10 @@ public abstract class AbstractHibernateQuery extends Query {
 
         @Override
         public ProjectionList distinct() {
-            criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+            if(criteria != null)
+                criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+            else if(detachedCriteria != null)
+                detachedCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
             return this;
         }
     }
@@ -670,11 +741,18 @@ public abstract class AbstractHibernateQuery extends Query {
         protected String alias;
         protected org.hibernate.criterion.Junction hibernateJunction;
         protected Criteria assocationCriteria;
+        protected DetachedCriteria detachedAssocationCriteria;
 
         public HibernateAssociationQuery(Criteria criteria, AbstractHibernateSession session, PersistentEntity associatedEntity, Association association, String alias) {
             super(session, associatedEntity, association);
             this.alias = alias;
             assocationCriteria = criteria;
+        }
+
+        public HibernateAssociationQuery(DetachedCriteria criteria, AbstractHibernateSession session, PersistentEntity associatedEntity, Association association, String alias) {
+            super(session, associatedEntity, association);
+            this.alias = alias;
+            detachedAssocationCriteria = criteria;
         }
 
         @Override
@@ -688,8 +766,11 @@ public abstract class AbstractHibernateQuery extends Query {
            if (hibernateJunction != null) {
                hibernateJunction.add(criterion);
            }
-           else {
+           else if(assocationCriteria != null) {
                assocationCriteria.add(criterion);
+           }
+           else if(detachedAssocationCriteria != null) {
+               detachedAssocationCriteria.add(criterion);
            }
         }
 
@@ -836,11 +917,17 @@ public abstract class AbstractHibernateQuery extends Query {
     }
 
     protected class CriteriaAndAlias {
+        protected DetachedCriteria detachedCriteria;
         protected Criteria criteria;
         protected String alias;
 
         public CriteriaAndAlias(Criteria subCriteria, String alias) {
             criteria = subCriteria;
+            this.alias = alias;
+        }
+
+        public CriteriaAndAlias(DetachedCriteria detachedCriteria, String alias) {
+            this.detachedCriteria = detachedCriteria;
             this.alias = alias;
         }
     }

@@ -38,6 +38,11 @@ public class HibernateProjectionAdapter {
                 return Projections.avg(avg.getPropertyName());
             }
         });
+        adapterMap.put(Query.IdProjection.class, new ProjectionAdapter() {
+            public Projection toHibernateProjection(Query.Projection gormProjection) {
+                return Projections.id();
+            }
+        });
         adapterMap.put(Query.SumProjection.class, new ProjectionAdapter() {
             public Projection toHibernateProjection(Query.Projection gormProjection) {
                 Query.SumProjection avg = (Query.SumProjection) gormProjection;
@@ -82,6 +87,7 @@ public class HibernateProjectionAdapter {
 
     public Projection toHibernateProjection() {
         ProjectionAdapter projectionAdapter = adapterMap.get(projection.getClass());
+        if(projectionAdapter == null) throw new UnsupportedOperationException("Unsupported projection used: " + projection.getClass().getName());
         return projectionAdapter.toHibernateProjection(projection);
     }
 

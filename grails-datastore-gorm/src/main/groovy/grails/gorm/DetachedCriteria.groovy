@@ -955,6 +955,18 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     /**
+     * Adds an id projection
+     *
+     * @param property The property to project
+     * @return This criteria instance
+     */
+    DetachedCriteria<T> id() {
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.projectionList.id()
+        return newCriteria
+    }
+
+    /**
      * Adds a avg projection
      *
      * @param property The property to avg by

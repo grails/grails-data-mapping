@@ -53,8 +53,16 @@ public class HibernateQuery extends AbstractHibernateQuery {
         super(criteria, session, entity);
     }
 
+    public HibernateQuery(Criteria criteria) {
+        super(criteria, null, null);
+    }
+
     public HibernateQuery(Criteria subCriteria, AbstractHibernateSession session, PersistentEntity associatedEntity, String newAlias) {
         super(subCriteria, session, associatedEntity, newAlias);
+    }
+
+    public HibernateQuery(DetachedCriteria criteria) {
+        super(criteria);
     }
 
     protected AbstractHibernateCriterionAdapter createHibernateCriterionAdapter(PersistentEntity entity, Criterion c, String alias) {
@@ -66,7 +74,7 @@ public class HibernateQuery extends AbstractHibernateQuery {
     }
 
     protected void setDetachedCriteriaValue(QueryableCriteria value, PropertyCriterion pc) {
-        DetachedCriteria hibernateDetachedCriteria = HibernateCriteriaBuilder.getHibernateDetachedCriteria(value);
+        DetachedCriteria hibernateDetachedCriteria = HibernateCriteriaBuilder.getHibernateDetachedCriteria(this, value);
         pc.setValue(hibernateDetachedCriteria);
     }
 

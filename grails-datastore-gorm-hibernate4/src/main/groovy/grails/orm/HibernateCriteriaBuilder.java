@@ -18,9 +18,7 @@ package grails.orm;
 import groovy.lang.GroovySystem;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.codehaus.groovy.grails.orm.hibernate.query.AbstractHibernateCriteriaBuilder;
-import org.codehaus.groovy.grails.orm.hibernate.query.HibernateCriterionAdapter;
-import org.codehaus.groovy.grails.orm.hibernate.query.HibernateProjectionAdapter;
+import org.codehaus.groovy.grails.orm.hibernate.query.*;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -201,20 +199,20 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
 
     @Override
     protected org.hibernate.criterion.DetachedCriteria convertToHibernateCriteria(QueryableCriteria<?> queryableCriteria) {
-        return getHibernateDetachedCriteria(queryableCriteria);
+        return getHibernateDetachedCriteria(new HibernateQuery(criteria), queryableCriteria);
     }
 
-    public static org.hibernate.criterion.DetachedCriteria getHibernateDetachedCriteria(QueryableCriteria<?> queryableCriteria) {
+    public static org.hibernate.criterion.DetachedCriteria getHibernateDetachedCriteria(AbstractHibernateQuery query, QueryableCriteria<?> queryableCriteria) {
         org.hibernate.criterion.DetachedCriteria detachedCriteria = org.hibernate.criterion.DetachedCriteria.forClass(
                 queryableCriteria.getPersistentEntity().getJavaClass());
-        populateHibernateDetachedCriteria(detachedCriteria, queryableCriteria);
+        populateHibernateDetachedCriteria(new HibernateQuery(detachedCriteria), detachedCriteria, queryableCriteria);
         return detachedCriteria;
     }
 
-    private static void populateHibernateDetachedCriteria(org.hibernate.criterion.DetachedCriteria detachedCriteria, QueryableCriteria<?> queryableCriteria) {
+    private static void populateHibernateDetachedCriteria(AbstractHibernateQuery query, org.hibernate.criterion.DetachedCriteria detachedCriteria, QueryableCriteria<?> queryableCriteria) {
         List<org.grails.datastore.mapping.query.Query.Criterion> criteriaList = queryableCriteria.getCriteria();
         for (org.grails.datastore.mapping.query.Query.Criterion criterion : criteriaList) {
-            Criterion hibernateCriterion = new HibernateCriterionAdapter(criterion).toHibernateCriterion(null);
+            Criterion hibernateCriterion = new HibernateCriterionAdapter(criterion).toHibernateCriterion(query);
             if (hibernateCriterion != null) {
                 detachedCriteria.add(hibernateCriterion);
             }
@@ -230,5 +228,6 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
         }
         detachedCriteria.setProjection(projectionList);
     }
+
 
 }

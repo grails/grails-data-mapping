@@ -18,9 +18,7 @@ package grails.orm;
 import groovy.lang.GroovySystem;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.codehaus.groovy.grails.orm.hibernate.query.AbstractHibernateCriteriaBuilder;
-import org.codehaus.groovy.grails.orm.hibernate.query.HibernateCriterionAdapter;
-import org.codehaus.groovy.grails.orm.hibernate.query.HibernateProjectionAdapter;
+import org.codehaus.groovy.grails.orm.hibernate.query.*;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.hibernate.Criteria;
@@ -130,7 +128,7 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
 
     @Override
     protected org.hibernate.criterion.DetachedCriteria convertToHibernateCriteria(QueryableCriteria<?> queryableCriteria) {
-        return getHibernateDetachedCriteria(queryableCriteria);
+        return getHibernateDetachedCriteria(new HibernateQuery(criteria), queryableCriteria);
     }
 
     @Override
@@ -144,16 +142,21 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
     }
 
     public static org.hibernate.criterion.DetachedCriteria getHibernateDetachedCriteria(QueryableCriteria<?> queryableCriteria) {
+        return getHibernateDetachedCriteria(null, queryableCriteria);
+    }
+
+    public static org.hibernate.criterion.DetachedCriteria getHibernateDetachedCriteria(AbstractHibernateQuery hibernateQuery, QueryableCriteria<?> queryableCriteria) {
         org.hibernate.criterion.DetachedCriteria detachedCriteria = org.hibernate.criterion.DetachedCriteria.forClass(
-             queryableCriteria.getPersistentEntity().getJavaClass());
-        populateHibernateDetachedCriteria(detachedCriteria, queryableCriteria);
+                queryableCriteria.getPersistentEntity().getJavaClass());
+        populateHibernateDetachedCriteria(new HibernateQuery(detachedCriteria), detachedCriteria, queryableCriteria);
         return detachedCriteria;
     }
 
-    private static void populateHibernateDetachedCriteria(org.hibernate.criterion.DetachedCriteria detachedCriteria, QueryableCriteria<?> queryableCriteria) {
+
+    private static void populateHibernateDetachedCriteria(AbstractHibernateQuery hibernateQuery, org.hibernate.criterion.DetachedCriteria detachedCriteria, QueryableCriteria<?> queryableCriteria) {
         List<Query.Criterion> criteriaList = queryableCriteria.getCriteria();
         for (Query.Criterion criterion : criteriaList) {
-            Criterion hibernateCriterion = new HibernateCriterionAdapter(criterion).toHibernateCriterion(null);
+            Criterion hibernateCriterion = new HibernateCriterionAdapter(criterion).toHibernateCriterion(hibernateQuery);
             if (hibernateCriterion != null) {
                 detachedCriteria.add(hibernateCriterion);
             }
@@ -164,7 +167,7 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
         for (Query.Projection projection : projections) {
             Projection hibernateProjection = new HibernateProjectionAdapter(projection).toHibernateProjection();
             if (hibernateProjection != null) {
-                 projectionList.add(hibernateProjection);
+                projectionList.add(hibernateProjection);
             }
         }
         detachedCriteria.setProjection(projectionList);

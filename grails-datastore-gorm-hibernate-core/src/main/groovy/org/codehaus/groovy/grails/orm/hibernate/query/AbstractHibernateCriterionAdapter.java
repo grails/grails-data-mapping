@@ -92,7 +92,7 @@ public abstract class AbstractHibernateCriterionAdapter {
             public Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.GreaterThanAll criterion, String alias) {
                 QueryableCriteria subQuery = criterion.getValue();
                 String propertyName = getPropertyName(criterion, alias);
-                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(subQuery);
+                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(hibernateQuery, subQuery);
                 return Property.forName(propertyName).gtAll(detachedCriteria);
             }
         });
@@ -100,21 +100,21 @@ public abstract class AbstractHibernateCriterionAdapter {
         criterionAdaptors.put(Query.GreaterThanEqualsAll.class, new CriterionAdaptor<Query.GreaterThanEqualsAll>() {
             @Override
             public Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.GreaterThanEqualsAll criterion, String alias) {
-                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(criterion.getValue());
+                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(hibernateQuery,criterion.getValue());
                 return Property.forName(getPropertyName(criterion, alias)).geAll(detachedCriteria);
             }
         });
         criterionAdaptors.put(Query.LessThanAll.class, new CriterionAdaptor<Query.LessThanAll>() {
             @Override
             public Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.LessThanAll criterion, String alias) {
-                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(criterion.getValue());
+                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(hibernateQuery,criterion.getValue());
                 return Property.forName(getPropertyName(criterion, alias)).ltAll(detachedCriteria);
             }
         });
         criterionAdaptors.put(Query.LessThanEqualsAll.class, new CriterionAdaptor<Query.LessThanEqualsAll>() {
             @Override
             public Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.LessThanEqualsAll criterion, String alias) {
-                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(criterion.getValue());
+                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(hibernateQuery,criterion.getValue());
                 return Property.forName(getPropertyName(criterion, alias)).leAll(detachedCriteria);
             }
         });
@@ -122,28 +122,28 @@ public abstract class AbstractHibernateCriterionAdapter {
         criterionAdaptors.put(Query.GreaterThanSome.class, new CriterionAdaptor<Query.GreaterThanSome>() {
             @Override
             public Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.GreaterThanSome criterion, String alias) {
-                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(criterion.getValue());
+                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(hibernateQuery,criterion.getValue());
                 return Property.forName(getPropertyName(criterion, alias)).gtSome(detachedCriteria);
             }
         });
         criterionAdaptors.put(Query.GreaterThanEqualsSome.class, new CriterionAdaptor<Query.GreaterThanEqualsSome>() {
             @Override
             public Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.GreaterThanEqualsSome criterion, String alias) {
-                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(criterion.getValue());
+                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(hibernateQuery,criterion.getValue());
                 return Property.forName(getPropertyName(criterion, alias)).geSome(detachedCriteria);
             }
         });
         criterionAdaptors.put(Query.LessThanSome.class, new CriterionAdaptor<Query.LessThanSome>() {
             @Override
             public Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.LessThanSome criterion, String alias) {
-                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(criterion.getValue());
+                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(hibernateQuery,criterion.getValue());
                 return Property.forName(getPropertyName(criterion, alias)).ltSome(detachedCriteria);
             }
         });
         criterionAdaptors.put(Query.LessThanEqualsSome.class, new CriterionAdaptor<Query.LessThanEqualsSome>() {
             @Override
             public Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.LessThanEqualsSome criterion, String alias) {
-                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(criterion.getValue());
+                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(hibernateQuery,criterion.getValue());
                 return Property.forName(getPropertyName(criterion, alias)).leSome(detachedCriteria);
             }
         });
@@ -151,7 +151,7 @@ public abstract class AbstractHibernateCriterionAdapter {
         criterionAdaptors.put(Query.NotIn.class, new CriterionAdaptor<Query.NotIn>() {
             @Override
             public Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.NotIn criterion, String alias) {
-                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(criterion.getSubquery());
+                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(hibernateQuery,criterion.getSubquery());
                 return Property.forName(getPropertyName(criterion, alias)).notIn(detachedCriteria);
             }
         });
@@ -159,7 +159,7 @@ public abstract class AbstractHibernateCriterionAdapter {
         criterionAdaptors.put(Query.Exists.class, new CriterionAdaptor<Query.Exists>() {
             @Override
             public Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.Exists criterion, String alias) {
-                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(criterion.getSubquery());
+                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(hibernateQuery,criterion.getSubquery());
                 return Subqueries.exists(detachedCriteria);
             }
         });
@@ -242,7 +242,7 @@ public abstract class AbstractHibernateCriterionAdapter {
                 Query.In inListQuery = (Query.In) criterion;
                 QueryableCriteria subquery = inListQuery.getSubquery();
                 if(subquery != null) {
-                    return Property.forName(getPropertyName(criterion,alias)).in( toHibernateDetachedCriteria(subquery) );
+                    return Property.forName(getPropertyName(criterion,alias)).in( toHibernateDetachedCriteria(hibernateQuery, subquery) );
                 }
                 else {
                     return Restrictions.in(getPropertyName(criterion, alias), inListQuery.getValues());
@@ -501,7 +501,7 @@ public abstract class AbstractHibernateCriterionAdapter {
             if (subCriterion instanceof Query.PropertyCriterion) {
                 Query.PropertyCriterion pc = (Query.PropertyCriterion) subCriterion;
                 if (pc.getValue() instanceof QueryableCriteria) {
-                    pc.setValue(toHibernateDetachedCriteria((QueryableCriteria<?>) pc.getValue()));
+                    pc.setValue(toHibernateDetachedCriteria(hibernateCriteria, (QueryableCriteria<?>) pc.getValue()));
                 }
                 else {
                     AbstractHibernateQuery.doTypeConversionIfNeccessary(entity, pc);
@@ -530,7 +530,8 @@ public abstract class AbstractHibernateCriterionAdapter {
         return null;
     }
 
-    protected abstract org.hibernate.criterion.DetachedCriteria toHibernateDetachedCriteria(QueryableCriteria<?> queryableCriteria);
+
+    protected abstract org.hibernate.criterion.DetachedCriteria toHibernateDetachedCriteria(AbstractHibernateQuery query, QueryableCriteria<?> queryableCriteria);
 
     public static abstract class CriterionAdaptor<T extends Query.Criterion> {
         public abstract org.hibernate.criterion.Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, T criterion, String alias);
