@@ -37,7 +37,9 @@ public class EmbeddedCypherEngine implements CypherEngine {
     @Override
     public CypherResult execute(String cypher, Map params) {
         log.info("running cypher {}", cypher);
-        log.info("   with params {}", params);
+        if (params!=null) {
+            log.info("   with params {}", params);
+        }
         return new EmbeddedCypherResult(params != null ?
             executionEngine.execute(cypher, params) :
             executionEngine.execute(cypher)

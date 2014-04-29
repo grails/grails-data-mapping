@@ -92,7 +92,6 @@ public class CypherBuilder {
         return cypher.toString();
     }
 
-
     public static String findRelationshipEndpointIdsFor(Association association) {
         String relType = RelationshipUtils.relationshipTypeUsedFor(association);
         boolean reversed = RelationshipUtils.useReversedMappingFor(association);
@@ -111,6 +110,5 @@ public class CypherBuilder {
         sb.append("(other) RETURN other.__id__ as id");
         return sb.toString();
     }
-
 
 }

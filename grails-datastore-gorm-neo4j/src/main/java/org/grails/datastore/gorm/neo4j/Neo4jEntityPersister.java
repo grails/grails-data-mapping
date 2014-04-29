@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
+import javax.persistence.CascadeType;
 import java.io.Serializable;
 import java.util.*;
 
@@ -294,18 +295,35 @@ public class Neo4jEntityPersister extends EntityPersister {
         if (cancelDelete(pe, entityAccess)) {
             return;
         }
+
+        for (Association association: pe.getAssociations()) {
+            if (association.isOwningSide() && association.doesCascade(CascadeType.REMOVE)) {
+                log.debug("cascading delete for property " + association.getName());
+
+                GraphPersistentEntity otherPersistentEntity = (GraphPersistentEntity) association.getAssociatedEntity();
+                Object otherSideValue = entityAccess.getProperty(association.getName());
+                if (association instanceof ToOne) {
+                    deleteEntity(otherPersistentEntity, otherSideValue);
+                } else {
+                    deleteEntities(otherPersistentEntity, (Iterable) otherSideValue);
+                }
+            }
+        }
+
         getCypherEngine().execute(
                 String.format("MATCH (n:%s) WHERE n.__id__={id} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
                         ((GraphPersistentEntity)pe).getLabel()),
                 Collections.singletonMap("id", entityAccess.getIdentifier()));
+
         firePostDeleteEvent(pe, entityAccess);
     }
 
     @Override
     protected void deleteEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objects) {
         List<EntityAccess> entityAccesses = new ArrayList<EntityAccess>();
-
         List<Object> ids = new ArrayList<Object>();
+        Map<PersistentEntity, Collection<Object>> cascades = new HashMap<PersistentEntity, Collection<Object>>();
+
         for (Object obj : objects) {
             EntityAccess entityAccess = createEntityAccess(pe, obj);
             if (cancelDelete(pe, entityAccess)) {
@@ -313,13 +331,39 @@ public class Neo4jEntityPersister extends EntityPersister {
             }
             entityAccesses.add(entityAccess);
             ids.add(entityAccess.getIdentifier());
+
+            // populate cascades
+            for (Association association: pe.getAssociations()) {
+                if (association.isOwningSide() && association.doesCascade(CascadeType.REMOVE)) {
+
+                    PersistentEntity associatedEntity = association.getAssociatedEntity();
+                    Object property = entityAccess.getProperty(association.getName());
+                    Collection<Object> cascadesForPersistentEntity = cascades.get(associatedEntity);
+                    if (cascadesForPersistentEntity==null) {
+                        cascadesForPersistentEntity = new ArrayList<Object>();
+                        cascades.put(associatedEntity, cascadesForPersistentEntity);
+                    }
+
+                    if (association instanceof ToOne) {
+                        cascadesForPersistentEntity.add(property);
+                    } else {
+                        cascadesForPersistentEntity.addAll((Collection<?>) property);
+                    }
+
+                }
+            }
+
         }
 
+        for (Map.Entry<PersistentEntity, Collection<Object>> entry: cascades.entrySet()) {
+            deleteEntities(entry.getKey(), entry.getValue());
 
+        }
 
         getCypherEngine().execute(
                 String.format("MATCH (n:%s) WHERE n.__id__ in {ids} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
                         ((GraphPersistentEntity)pe).getLabel()), Collections.singletonMap("ids", ids));
+
         for (EntityAccess entityAccess: entityAccesses) {
             firePostDeleteEvent(pe, entityAccess);
         }

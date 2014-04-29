@@ -413,6 +413,8 @@ class Team implements Serializable {
     String name
     Club club
     byte[] binaryData
+
+    static belongsTo = Club
 }
 
 @Entity
