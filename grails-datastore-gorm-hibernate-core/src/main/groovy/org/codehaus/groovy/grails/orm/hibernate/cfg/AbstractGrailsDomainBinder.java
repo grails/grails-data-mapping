@@ -2734,6 +2734,8 @@ public abstract class AbstractGrailsDomainBinder {
         if (cc != null) {
             column.setComment(cc.getComment());
             column.setDefaultValue(cc.getDefaultValue());
+            column.setCustomRead(cc.getRead());
+            column.setCustomWrite(cc.getWrite());
         }
 
         Class<?> userType = getUserType(property);

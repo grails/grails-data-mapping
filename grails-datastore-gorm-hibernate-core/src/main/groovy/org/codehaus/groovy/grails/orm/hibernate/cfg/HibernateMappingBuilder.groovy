@@ -435,6 +435,8 @@ class HibernateMappingBuilder {
                 if (namedArgs["enumType"]) cc.enumType = namedArgs["enumType"]
                 if (namedArgs["index"]) cc.index = namedArgs["index"]
                 if (namedArgs["unique"]) cc.unique = namedArgs["unique"]
+                if (namedArgs["read"]) cc.read = namedArgs["read"]
+                if (namedArgs["write"]) cc.write = namedArgs["write"]
                 if (namedArgs.defaultValue) cc.defaultValue = namedArgs.defaultValue
                 if (namedArgs.comment) cc.comment = namedArgs.comment
                 cc.length = namedArgs["length"] ?: -1

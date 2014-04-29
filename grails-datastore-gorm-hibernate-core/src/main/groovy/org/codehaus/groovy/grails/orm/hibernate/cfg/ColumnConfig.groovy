@@ -32,6 +32,8 @@ class ColumnConfig {
     int scale = -1
     String defaultValue
     String comment
+    String read
+    String write
 
     String toString() {
         "column[name:$name, index:$index, unique:$unique, length:$length, precision:$precision, scale:$scale]"
