@@ -74,7 +74,6 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
     protected BeanDefinition createAggregateBeanDefinition(ManagedList interceptorBeans) {
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition()
         beanDefinition.beanClass = aggregatorBeanClass
-        beanDefinition.singleton = true
         beanDefinition.primary = true
         ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues()
         constructorArgumentValues.addIndexedArgumentValue(0, interceptorBeans)
