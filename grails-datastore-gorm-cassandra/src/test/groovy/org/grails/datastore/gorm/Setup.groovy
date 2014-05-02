@@ -1,12 +1,13 @@
 package org.grails.datastore.gorm
 
 import java.nio.ByteBuffer
+
 import org.grails.datastore.gorm.cassandra.CassandraGormEnhancer
 import org.grails.datastore.gorm.cassandra.CassandraMethodsConfigurer
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.mapping.cassandra.CassandraDatastore
-import org.grails.datastore.mapping.cassandra.CassandraMappingContext
+import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -14,7 +15,7 @@ import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
-import org.grails.datastore.gorm.cassandra.CassandraMethodsConfigurer
+import org.grails.datastore.gorm.cassandra.plugin.support.CassandraMethodsConfigurer;
 import org.springframework.context.support.GenericApplicationContext
 
 

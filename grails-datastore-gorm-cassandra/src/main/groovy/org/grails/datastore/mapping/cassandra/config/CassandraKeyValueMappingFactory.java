@@ -1,4 +1,4 @@
-package org.grails.datastore.mapping.cassandra;
+package org.grails.datastore.mapping.cassandra.config;
 
 import groovy.lang.Closure;
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;

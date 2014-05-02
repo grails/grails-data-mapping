@@ -1,4 +1,4 @@
-package org.grails.datastore.mapping.cassandra;
+package org.grails.datastore.mapping.cassandra.config;
 
 import org.grails.datastore.mapping.keyvalue.mapping.config.AnnotationKeyValueMappingFactory;
 import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
