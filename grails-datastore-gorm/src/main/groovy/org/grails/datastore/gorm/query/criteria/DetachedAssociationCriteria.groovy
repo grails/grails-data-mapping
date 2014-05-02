@@ -35,4 +35,9 @@ class DetachedAssociationCriteria<T> extends DetachedCriteria<T> implements Crit
         super(targetClass)
         this.association = association
     }
+
+    DetachedAssociationCriteria(Class targetClass, Association association, String alias) {
+        super(targetClass, alias)
+        this.association = association
+    }
 }

@@ -422,6 +422,9 @@ public abstract class AbstractHibernateQuery extends Query {
     protected CriteriaAndAlias getOrCreateAlias(String associationName, String alias) {
         CriteriaAndAlias subCriteria = null;
         String associationPath = getAssociationPath(associationName);
+        if(alias == null) {
+            alias = generateAlias(associationName);
+        }
         if (createdAssociationPaths.containsKey(associationName)) {
             subCriteria = createdAssociationPaths.get(associationPath);
         }
@@ -572,6 +575,11 @@ public abstract class AbstractHibernateQuery extends Query {
 
     String handleAssociationQuery(Association<?> association, List<Criterion> criteriaList) {
         return getCriteriaAndAlias(association).alias;
+    }
+
+    String handleAssociationQuery(Association<?> association, List<Criterion> criteriaList, String alias) {
+        String associationName = calculatePropertyName(association.getName());
+        return getOrCreateAlias(associationName, alias).alias;
     }
 
     protected CriteriaAndAlias getCriteriaAndAlias(Association<?> association) {

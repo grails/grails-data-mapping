@@ -400,13 +400,9 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     }
 
     @Override
-    public Criteria existsFor(QueryableCriteria<?> subquery) {
+    public Criteria exists(QueryableCriteria<?> subquery) {
         addToCriteria(new Query.Exists(subquery));
         return this;
-    }
-
-    public Criteria exists(QueryableCriteria<?> subquery) {
-        return existsFor(subquery);
     }
 
     public Criteria isEmpty(String propertyName) {

@@ -47,4 +47,9 @@ public interface QueryableCriteria<T> extends Criteria{
      */
     List<T> list();
 
+    /**
+     * @return The alias to be used for the query, null if none
+     */
+    String getAlias();
+
 }

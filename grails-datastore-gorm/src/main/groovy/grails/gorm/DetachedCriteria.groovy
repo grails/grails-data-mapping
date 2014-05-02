@@ -19,6 +19,7 @@ import grails.async.Promise
 import grails.async.Promises
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
+import org.grails.datastore.mapping.query.api.QueryAliasAwareSession
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware
 
 import javax.persistence.FetchType
@@ -66,16 +67,21 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     protected PersistentEntity persistentEntity
     protected Map<String, FetchType> fetchStrategies = [:]
     protected Closure lazyQuery
+    protected String alias;
+    protected Map<String, DetachedAssociationCriteria> associationCriteriaMap = [:]
 
 
     ProjectionList projectionList = new DetachedProjections(projections)
 
+
     /**
-     * Constructs a DetachedCriteria instance target the given class
-     * @param targetClass
+     * Constructs a DetachedCriteria instance target the given class and alias for the name
+     * @param targetClass The target class
+     * @param alias The root alias to be used in queries
      */
-    DetachedCriteria(Class<T> targetClass) {
+    DetachedCriteria(Class<T> targetClass, String alias = null) {
         this.targetClass = targetClass
+        this.alias = alias
     }
 
     /**
@@ -96,6 +102,50 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
 
     Map<String, FetchType> getFetchStrategies() {
         return fetchStrategies
+    }
+
+    /**
+     * @return The root alias to be used for the query
+     */
+    String getAlias() {
+        return this.alias
+    }
+
+    /**
+     * Sets the root alias to be used for the query
+     * @param alias The alias
+     * @return The alias
+     */
+    Criteria setAlias(String alias) {
+        this.alias = alias
+        return this
+    }
+
+    /**
+     * If the underlying datastore supports aliases, then an alias is created for the given association
+     *
+     * @param association The name of the association
+     * @param alias The alias
+     * @return This create
+     */
+    Criteria createAlias(String association, String alias) {
+        initialiseIfNecessary(targetClass)
+        final prop = persistentEntity.getPropertyByName(association)
+        if (!(prop instanceof Association)) {
+            throw new IllegalArgumentException("Argument [$association] is not an association")
+        }
+
+        Association a = (Association)prop
+        DetachedAssociationCriteria associationCriteria = associationCriteriaMap[association]
+        if(associationCriteria == null) {
+            associationCriteria = new DetachedAssociationCriteria(a.associatedEntity.javaClass, a, alias)
+            associationCriteriaMap[association] = associationCriteria
+            add associationCriteria
+        }
+        else {
+            associationCriteria.alias = alias
+        }
+        return this
     }
 
     /**
@@ -421,10 +471,12 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     @Override
-    Criteria existsFor(QueryableCriteria<?> subquery) {
+    Criteria exists(QueryableCriteria<?> subquery) {
         add new Query.Exists(subquery);
         return this;
     }
+
+
     /**
      * @see Criteria
      */
@@ -836,7 +888,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @return The count
      */
 
-    boolean exists(Closure additionalCriteria = null) {
+    boolean asBoolean(Closure additionalCriteria = null) {
         (Boolean)withPopulatedQuery(Collections.emptyMap(), additionalCriteria) { Query query ->
             query.projections().count()
             ((Number)query.singleResult()) > 0
@@ -1058,7 +1110,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
             return method.invoke(targetClass, methodName,this, args)
         }
 
-        if (!args || args.size() != 1 || !(args[-1] instanceof Closure)) {
+        if (!args || !(args[-1] instanceof Closure)) {
             throw new MissingMethodException(methodName, DetachedCriteria, args)
         }
 
@@ -1067,8 +1119,17 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
             throw new MissingMethodException(methodName, DetachedCriteria, args)
         }
 
-        def associationCriteria = new DetachedAssociationCriteria(prop.associatedEntity.javaClass, prop)
+        def alias = args.size() == 2 ? args[0]?.toString() : null
+
+        def existing = associationCriteriaMap[methodName]
+        alias = !alias && existing ? existing.alias : alias
+        DetachedAssociationCriteria associationCriteria = alias ? new DetachedAssociationCriteria(prop.associatedEntity.javaClass, prop, alias)
+                                                                : new DetachedAssociationCriteria(prop.associatedEntity.javaClass, prop)
+
+        associationCriteriaMap[methodName] = associationCriteria
         add associationCriteria
+
+
         final callable = args[-1]
         callable.delegate = associationCriteria
         callable.call()
@@ -1082,7 +1143,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     @Override
     @CompileStatic(TypeCheckingMode.SKIP)
     protected DetachedCriteria<T> clone() {
-        def criteria = new DetachedCriteria(targetClass)
+        def criteria = new DetachedCriteria(targetClass, alias)
         criteria.criteria = new ArrayList(this.criteria)
         final projections = new ArrayList(this.projections)
         criteria.projections = projections
@@ -1112,7 +1173,14 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     private withPopulatedQuery(Map args, Closure additionalCriteria, Closure callable)  {
         targetClass.withDatastoreSession { Session session ->
             applyLazyCriteria()
-            Query query = session.createQuery(targetClass)
+            Query query
+            if(alias && (session instanceof QueryAliasAwareSession)) {
+                query = session.createQuery(targetClass, alias)
+            }
+            else {
+                query = session.createQuery(targetClass)
+            }
+
             if (defaultMax != null) {
                 query.max(defaultMax)
             }
@@ -1136,7 +1204,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         }
     }
 
-    private void applyLazyCriteria() {
+    protected void applyLazyCriteria() {
         if (lazyQuery == null) {
             return
         }

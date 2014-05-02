@@ -977,13 +977,9 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
     }
 
     @Override
-    public org.grails.datastore.mapping.query.api.Criteria existsFor(QueryableCriteria<?> subquery) {
+    public org.grails.datastore.mapping.query.api.Criteria exists(QueryableCriteria<?> subquery) {
         addToCriteria(Subqueries.exists(convertToHibernateCriteria(subquery)));
         return this;
-    }
-
-    public org.grails.datastore.mapping.query.api.Criteria exists(QueryableCriteria<?> subquery) {
-        return existsFor(subquery);
     }
 
     public org.grails.datastore.mapping.query.api.Criteria isEmpty(String property) {

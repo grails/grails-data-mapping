@@ -136,18 +136,4 @@ interface GormOperations<T> {
      */
     def methodMissing(String methodName, args)
 
-    /**
-     * Returns whether the record exists
-     *
-     * @param additionalCriteria The additional criteria
-     * @return Whether the record exists
-     */
-    boolean exists(Closure additionalCriteria)
-
-    /**
-     * Returns whether the record exists
-     *
-     * @return Whether the record exists
-     */
-    boolean exists()
 }

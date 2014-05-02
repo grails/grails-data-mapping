@@ -34,7 +34,7 @@ public interface Criteria  {
      * @param subquery The subquery
      * @return this criteria
      */
-    Criteria existsFor(QueryableCriteria<?> subquery);
+    Criteria exists(QueryableCriteria<?> subquery);
 
     /**
      * Creates a criterion that restricts the id to the given value

@@ -24,6 +24,7 @@ import org.grails.datastore.mapping.core.AbstractAttributeStoringSession;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.query.api.QueryAliasAwareSession;
 import org.grails.datastore.mapping.transactions.Transaction;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
@@ -36,7 +37,7 @@ import org.hibernate.SessionFactory;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractHibernateSession extends AbstractAttributeStoringSession {
+public abstract class AbstractHibernateSession extends AbstractAttributeStoringSession implements QueryAliasAwareSession{
 
     protected AbstractHibernateDatastore datastore;
     protected boolean connected = true;
