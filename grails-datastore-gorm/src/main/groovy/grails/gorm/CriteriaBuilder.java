@@ -405,6 +405,12 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         return this;
     }
 
+    @Override
+    public Criteria notExists(QueryableCriteria<?> subquery) {
+        addToCriteria(new Query.NotExists(subquery));
+        return this;
+    }
+
     public Criteria isEmpty(String propertyName) {
         validatePropertyName(propertyName, "isEmpty");
         addToCriteria(Restrictions.isEmpty(propertyName));

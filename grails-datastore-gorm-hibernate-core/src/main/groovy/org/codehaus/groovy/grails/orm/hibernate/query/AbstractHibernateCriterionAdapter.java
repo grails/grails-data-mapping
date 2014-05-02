@@ -163,6 +163,14 @@ public abstract class AbstractHibernateCriterionAdapter {
                 return Subqueries.exists(detachedCriteria);
             }
         });
+
+        criterionAdaptors.put(Query.NotExists.class, new CriterionAdaptor<Query.NotExists>() {
+            @Override
+            public Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.NotExists criterion, String alias) {
+                DetachedCriteria detachedCriteria = toHibernateDetachedCriteria(hibernateQuery,criterion.getSubquery());
+                return Subqueries.notExists(detachedCriteria);
+            }
+        });
     }
 
     protected void addAssociationQueryCriterionAdapters() {

@@ -1074,6 +1074,21 @@ public abstract class Query implements Cloneable{
     }
 
     /**
+     * Used for exists subquery
+     */
+    public static class NotExists implements Criterion {
+        private QueryableCriteria subquery;
+
+        public NotExists(QueryableCriteria subquery) {
+            this.subquery = subquery;
+        }
+
+        public QueryableCriteria getSubquery() {
+            return subquery;
+        }
+    }
+
+    /**
      * Used to restrict a value to be greater than the given value
      */
     public static class GreaterThan extends PropertyCriterion {

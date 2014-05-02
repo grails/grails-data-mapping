@@ -37,6 +37,14 @@ public interface Criteria  {
     Criteria exists(QueryableCriteria<?> subquery);
 
     /**
+     * Executes an not exists subquery
+     *
+     * @param subquery The subquery
+     * @return this criteria
+     */
+    Criteria notExists(QueryableCriteria<?> subquery);
+
+    /**
      * Creates a criterion that restricts the id to the given value
      * @param value The value
      * @return The criteria

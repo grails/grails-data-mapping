@@ -470,12 +470,23 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return this
     }
 
+    /**
+     * @see Criteria#exists(org.grails.datastore.mapping.query.api.QueryableCriteria)
+     */
     @Override
     Criteria exists(QueryableCriteria<?> subquery) {
         add new Query.Exists(subquery);
         return this;
     }
 
+    /**
+     * @see Criteria#notExists(org.grails.datastore.mapping.query.api.QueryableCriteria)
+     */
+    @Override
+    Criteria notExists(QueryableCriteria<?> subquery) {
+        add new Query.NotExists(subquery);
+        return this;
+    }
 
     /**
      * @see Criteria

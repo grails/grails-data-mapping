@@ -982,6 +982,12 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         return this;
     }
 
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria notExists(QueryableCriteria<?> subquery) {
+        addToCriteria(Subqueries.notExists(convertToHibernateCriteria(subquery)));
+        return this;
+    }
+
     public org.grails.datastore.mapping.query.api.Criteria isEmpty(String property) {
         String propertyName = calculatePropertyName(property);
         addToCriteria(Restrictions.isEmpty(propertyName));
