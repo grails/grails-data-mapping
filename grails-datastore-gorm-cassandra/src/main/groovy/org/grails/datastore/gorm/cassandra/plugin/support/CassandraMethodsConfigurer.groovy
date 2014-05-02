@@ -1,4 +1,4 @@
-package org.grails.datastore.gorm.cassandra
+package org.grails.datastore.gorm.cassandra.plugin.support
 
 import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
 import org.grails.datastore.mapping.core.Datastore;

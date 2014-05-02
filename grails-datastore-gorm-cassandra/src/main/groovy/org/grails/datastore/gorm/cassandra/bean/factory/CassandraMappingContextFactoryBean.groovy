@@ -12,11 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.cassandra
+package org.grails.datastore.gorm.cassandra.bean.factory
 
 
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
-import org.grails.datastore.mapping.cassandra.CassandraMappingContext
+import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
 import org.grails.datastore.mapping.model.MappingContext
 
 /**
