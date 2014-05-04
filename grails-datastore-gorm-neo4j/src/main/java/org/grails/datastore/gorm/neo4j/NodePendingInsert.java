@@ -6,7 +6,6 @@ import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Simple;
-import org.neo4j.helpers.collection.IteratorUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,9 +40,12 @@ class NodePendingInsert extends PendingInsertAdapter<Object, Long> {
             }
         }
 
+        Neo4jGormEnhancer.amendMapWithUndeclaredProperties(simpleProps, getNativeEntry(), mappingContext);
+
         String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance();
         String cypher = String.format("CREATE (n%s {props})", labels);
 
         cypherEngine.execute(cypher, Collections.singletonMap("props", simpleProps));
     }
+
 }

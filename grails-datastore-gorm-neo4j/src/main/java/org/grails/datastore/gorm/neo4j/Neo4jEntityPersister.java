@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.neo4j;
 
+import groovy.lang.GroovyObject;
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
 import org.grails.datastore.gorm.neo4j.engine.CypherResult;
 import org.grails.datastore.mapping.core.Session;
@@ -123,20 +124,14 @@ public class Neo4jEntityPersister extends EntityPersister {
         log.debug( "unmarshalling entity {}, props {}, {}", id, data);
         EntityAccess entityAccess = new EntityAccess(persistentEntity, persistentEntity.newInstance());
         entityAccess.setConversionService(persistentEntity.getMappingContext().getConversionService());
-
-        if (entityAccess.getPersistentEntity().hasProperty("version", Long.class)) {
-            Object version = data.get("version");
-            if (version==null) {
-                version = 0;
-            }
-            entityAccess.setProperty("version", version);
-        }
         entityAccess.setIdentifier(id);
+        data.remove("__id__");
 
         for (PersistentProperty property: entityAccess.getPersistentEntity().getPersistentProperties()) {
 
-            if (property instanceof Simple) {
-                entityAccess.setProperty(property.getName(), data.get(property.getName()));
+            String propertyName = property.getName();
+            if (property instanceof Simple) {  // implicitly sets version property as well
+                entityAccess.setProperty(propertyName, data.remove(propertyName));
 //            } else if (property instanceof OneToOne) {
 //                log.error("property " + property.getName() + " is of type " + property.getClass().getSuperclass());
             } else if (property instanceof ToOne) {
@@ -147,7 +142,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                 Map<String,Object> row = IteratorUtil.singleOrNull(cypherResult);
                 if (row != null) {
                     Long endpointId = (Long) row.get("id");
-                    entityAccess.setProperty(property.getName(),
+                    entityAccess.setProperty(propertyName,
                             getMappingContext().getProxyFactory().createProxy(
                                     session,
                                     to.getAssociatedEntity().getJavaClass(),
@@ -163,12 +158,19 @@ public class Neo4jEntityPersister extends EntityPersister {
                         getMappingContext().getProxyFactory(),
                         getSession()
                 );
-                entityAccess.setProperty(property.getName(), lazyEnititySet);
+                entityAccess.setProperty(propertyName, lazyEnititySet);
 
             } else {
                     throw new IllegalArgumentException("property $property.name is of type ${property.class.superclass}");
             }
+
         }
+
+        if (!data.isEmpty()) {
+            GroovyObject go = (GroovyObject)(entityAccess.getEntity());
+            go.setProperty(Neo4jGormEnhancer.UNDECLARED_PROPERTIES, data);
+        }
+
         firePostLoadEvent(entityAccess.getPersistentEntity(), entityAccess);
         return entityAccess.getEntity();
     }
@@ -334,10 +336,11 @@ public class Neo4jEntityPersister extends EntityPersister {
 
             // populate cascades
             for (Association association: pe.getAssociations()) {
-                if (association.isOwningSide() && association.doesCascade(CascadeType.REMOVE)) {
+                Object property = entityAccess.getProperty(association.getName());
+                if (association.isOwningSide() && association.doesCascade(CascadeType.REMOVE) && (property!=null)) {
 
                     PersistentEntity associatedEntity = association.getAssociatedEntity();
-                    Object property = entityAccess.getProperty(association.getName());
+
                     Collection<Object> cascadesForPersistentEntity = cascades.get(associatedEntity);
                     if (cascadesForPersistentEntity==null) {
                         cascadesForPersistentEntity = new ArrayList<Object>();

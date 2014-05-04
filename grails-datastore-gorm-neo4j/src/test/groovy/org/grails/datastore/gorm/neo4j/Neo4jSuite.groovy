@@ -51,10 +51,12 @@ import grails.gorm.tests.*
 //// non TCK - specs, locally to neo4j
 //FindWhereSpec,
 //JoinCriteriaSpec,
-ManyToManySpec,
+//ManyToManySpec,
 //MiscSpec,
 //ApiExtensionsSpec,
-//RelationshipUtilsSpec
+//RelationshipUtilsSpec,
+//CascadingDeleteSpec,
+//NonDeclaredPropertiesSpec
 
 ])
 class Neo4jSuite {

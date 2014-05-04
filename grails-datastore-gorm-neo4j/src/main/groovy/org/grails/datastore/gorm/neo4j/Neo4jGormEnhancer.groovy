@@ -18,11 +18,9 @@ import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
-import org.neo4j.graphdb.Direction
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.model.MappingContext
 import org.neo4j.graphdb.Node
-import org.neo4j.graphdb.ReturnableEvaluator
-import org.neo4j.graphdb.StopEvaluator
-import org.neo4j.graphdb.Traverser
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
@@ -33,6 +31,8 @@ import org.springframework.util.ClassUtils
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
 class Neo4jGormEnhancer extends GormEnhancer {
+
+    public static final String UNDECLARED_PROPERTIES = "_neo4j_gorm_undecl_"
 
     Neo4jGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager = null) {
         super(datastore, transactionManager)
@@ -52,6 +52,16 @@ class Neo4jGormEnhancer extends GormEnhancer {
         api.failOnError = failOnError
         return api
     }
+
+    public static void amendMapWithUndeclaredProperties(Map<String, Object> simpleProps, Object pojo, MappingContext mappingContext) {
+        GroovyObject obj = (GroovyObject) pojo;
+        Map<String,Object> map = (Map) obj.getProperty(Neo4jGormEnhancer.UNDECLARED_PROPERTIES);
+        if (map!=null) {
+            for (Map.Entry<String,Object> entry : map.entrySet()) {
+                simpleProps.put(entry.getKey(), Neo4jUtils.mapToAllowedNeo4jType(entry.getValue(), mappingContext));
+            }
+        }
+    }
 }
 
 class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
@@ -59,51 +69,6 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
     Neo4jGormInstanceApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
     }
-
-    /*def traverse(instance, Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args ) {
-
-        execute new SessionCallback() {
-            def doInSession(Session session) {
-
-                Node referenceNode = ((Neo4jDatastore)datastore).graphDatabaseService.getNodeById(instance.id)
-
-                // run neo4j traverser
-                Traverser traverser = args ? referenceNode.traverse(order, stopEvaluator, returnableEvaluator, args) :
-                    referenceNode.traverse(order, stopEvaluator, returnableEvaluator,
-                    GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH)
-
-                // iterate result, unmarshall nodes to domain class instances if possible
-                traverser.collect { Node node ->
-                    String className = node.getProperty("__type__", null)
-                    if (className) {
-                        session.retrieve(ClassUtils.forName(className), node.id)
-                    } else {
-                        node
-                    }
-                }
-            }
-        }
-    }
-
-    Node getSubreferenceNode(instance) {
-        ((Neo4jDatastore)datastore).subReferenceNodes[instance.getClass().name]
-    }
-
-    Node getNode(instance) {
-        ((Neo4jDatastore)datastore).graphDatabaseService.getNodeById(instance.id)
-    }
-
-    def traverse(instance, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args) {
-        traverse(instance, Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
-    }
-
-    def traverse(instance, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
-        traverse(instance, Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
-    }
-
-    def traverse(instance, Traverser.Order order, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
-        traverse(instance, order, stopEvaluator as StopEvaluator, returnableEvaluator as ReturnableEvaluator, args)
-    } */
 
     /**
      * Allows accessing to dynamic properties with the dot operator
@@ -113,7 +78,21 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @return The property value
      */
     def propertyMissing(D instance, String name) {
-        getAt(instance, name)
+
+        def unwrappedInstance = unwrappedInstance(instance)
+
+        MetaProperty mp = unwrappedInstance.hasProperty(Neo4jGormEnhancer.UNDECLARED_PROPERTIES);
+        mp ? mp.getProperty(unwrappedInstance)[name] : null
+    }
+
+    /**
+     * dealing with undeclared properties must not happen on proxied instances
+     * @param instance
+     * @return the unwrapped instance
+     */
+    private D unwrappedInstance(D instance) {
+        def proxyFactory = datastore.mappingContext.proxyFactory
+        proxyFactory.unwrap(instance)
     }
 
     /**
@@ -123,7 +102,25 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param val The value
      */
     def propertyMissing(D instance, String name, val) {
-        putAt(instance, name, val)
+
+        def unwrappedInstance = unwrappedInstance(instance)
+
+        if (name == Neo4jGormEnhancer.UNDECLARED_PROPERTIES) {
+            unwrappedInstance.metaClass."${Neo4jGormEnhancer.UNDECLARED_PROPERTIES}" = val
+        } else {
+            MetaProperty mp = unwrappedInstance.hasProperty(Neo4jGormEnhancer.UNDECLARED_PROPERTIES);
+            Map undeclaredProps
+            if (mp) {
+                undeclaredProps = mp.getProperty(unwrappedInstance)
+            } else {
+                undeclaredProps = [:]
+                unwrappedInstance.metaClass."${Neo4jGormEnhancer.UNDECLARED_PROPERTIES}" = undeclaredProps
+            }
+            (val == null) ? undeclaredProps.remove(name) : undeclaredProps.put(name, val)
+            if (unwrappedInstance instanceof DirtyCheckable) {
+                ((DirtyCheckable)unwrappedInstance).markDirty(name)
+            }
+        }
     }
 
     /**
@@ -133,41 +130,8 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param name The name of the field
      */
     void putAt(D instance, String name, value) {
-        if (instance.hasProperty(name)) {
-            instance.setProperty(name, value)
-        }
-        else {
-            execute new SessionCallback() {
-                @Override
-                Object doInSession(Session session) {
-                    if (!session.contains(instance)) {
-                        throw new IllegalStateException("cannot store a non declared property on a transient instance")
-                    }
-                    session.persist(instance)
-                    Node node = instance.node
-                    if (value instanceof Collection) {
+        instance."$name" = value
 
-                        Class c = String[]
-                        if (!value.empty) {
-                            def first = value.iterator().next()
-                            def baseClass = first.getClass()
-                            switch (first) {
-                                case BigDecimal:  // BigDeciaml is not allowed in neo4j -> storing doubles instead
-                                    baseClass = Double.class
-                                    break
-                            }
-                            c = ClassUtils.forName("[L${baseClass.name};")
-                        }
-                        value = value.asType(c)
-                    }
-                    if (value==null) {
-                        node.removeProperty(name)
-                    } else {
-                        node.setProperty(name, value)
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -178,19 +142,7 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @return the value
      */
     def getAt(D instance, String name) {
-        if (instance.hasProperty(name)) {
-            return instance.getProperty(name)
-        }
-        else {
-            execute new SessionCallback() {
-                @Override
-                Object doInSession(Session session) {
-                    session.persist(instance)
-                    Node node = instance.node
-                    node.getProperty(name, null)
-                }
-            }
-        }
+        instance."$name"
     }
 
     /**
@@ -210,54 +162,6 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
 
     Neo4jGormStaticApi(Class<D> persistentClass, Neo4jDatastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
         super(persistentClass, datastore, finders, transactionManager)
-    }
-
-    /*def traverseStatic(Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args ) {
-
-        execute new SessionCallback() {
-            def doInSession(Session session) {
-
-                Node subReferenceNode = ((Neo4jDatastore)datastore).subReferenceNodes[persistentEntity.name]
-
-                // run neo4j traverser
-                Traverser traverser = args ? subReferenceNode.traverse(order, stopEvaluator, returnableEvaluator, args) :
-                    subReferenceNode.traverse(order, stopEvaluator, returnableEvaluator,
-                            GrailsRelationshipTypes.INSTANCE, Direction.BOTH,
-                            GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH,
-                            GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.BOTH,
-                    )
-
-                // iterate result, unmarshall nodes to domain class instances if possible
-                traverser.collect { Node node ->
-                    String className = node.getProperty("__type__", null)
-                    if (className) {
-                        session.retrieve(ClassUtils.forName(className), node.id)
-                    } else {
-                        node
-                    }
-                }
-            }
-        }
-    }
-
-    def traverseStatic(StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args) {
-        traverseStatic(Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
-    }
-
-    def traverseStatic(Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
-        traverseStatic(Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
-    }
-
-    def traverseStatic(Traverser.Order order, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
-        traverseStatic(order, stopEvaluator as StopEvaluator, returnableEvaluator as ReturnableEvaluator, args)
-    }*/
-
-    def createInstanceForNode(nodeOrId) {
-        execute new SessionCallback() {
-            def doInSession(Session session) {
-                session.createInstanceForNode(nodeOrId)
-            }
-        }
     }
 
     def cypherStatic(String queryString, Map params = [:]) {

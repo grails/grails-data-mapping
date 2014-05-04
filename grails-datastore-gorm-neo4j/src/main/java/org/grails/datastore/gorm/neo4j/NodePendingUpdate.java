@@ -52,6 +52,7 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
                 }
             }
         }
+        Neo4jGormEnhancer.amendMapWithUndeclaredProperties(simpleProps, getNativeEntry(), mappingContext);
 
         String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance();
 
@@ -65,6 +66,9 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
         if (persistentEntity.hasProperty("version", Long.class) && persistentEntity.isVersioned()) {
             cypherStringBuilder.append(" AND n.version={version}");
             Long version = (Long) getEntityAccess().getProperty("version");
+            if (version == null) {
+                version = 0l;
+            }
             params.put("version", version);
             long newVersion = version + 1;
             simpleProps.put("version", newVersion);
