@@ -1,11 +1,15 @@
 package org.grails.datastore.gorm.neo4j
 
 import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.graphdb.Label
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.Direction
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.neo4j.graphdb.RelationshipType
+import org.neo4j.helpers.collection.IteratorUtil
+import org.neo4j.tooling.GlobalGraphOperations
 
 class Neo4jController {
 
@@ -21,7 +25,7 @@ class Neo4jController {
     }
 
     def node = {
-        def node = params.id ? graphDatabaseService.getNodeById(params.long("id")) : graphDatabaseService.referenceNode;
+        def node = graphDatabaseService.getNodeById(params.long("id") ?: 0)
         assert node        
         [node: node]
     }
@@ -35,17 +39,19 @@ class Neo4jController {
     def statistics = {
 
         def typeCounter = [:]
-        def reltypeCounter = [:]
+        def reltypeCounter = [:].withDefault { 0 }
 
-        for (Node node in graphDatabaseService.allNodes) {
-            def type = node.getProperty("type", "n/a")
-            typeCounter[type]  = typeCounter.get(type, 0)+1
+        def ggo = GlobalGraphOperations.at(graphDatabaseService)
 
-            for (Relationship rel in node.getRelationships(Direction.OUTGOING)) {
-                def reltype = rel.type.name()
-                reltypeCounter[reltype]  = reltypeCounter.get(reltype, 0)+1
+        for (Label label in ggo.allLabels) {
+            def count = IteratorUtil.count(ggo.getAllNodesWithLabel(label));
+            typeCounter[label.name()] = count
+        }
 
-            }
+
+        for (Relationship rel in ggo.getAllRelationships()) {
+            reltypeCounter[rel.type.name()]++
+
         }
 
         [typeCounter:typeCounter, reltypeCounter:reltypeCounter]
@@ -64,7 +70,7 @@ class Neo4jController {
         def domainClasses = allDomainClasses.findAll { domainClassesNames.contains(it.name) }
 
         for (GrailsDomainClass dc in domainClasses) {
-            for (GrailsDomainClassProperty prop in dc.persistantProperties) {
+            for (GrailsDomainClassProperty prop in dc.persistentProperties) {
 
                 if (filters.any { prop."$it" } ) {
                 //if (!params.filter || params.filter=='all' || prop.association) {

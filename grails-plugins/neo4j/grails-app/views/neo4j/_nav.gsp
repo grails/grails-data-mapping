@@ -4,6 +4,5 @@
         <li><g:link action="node">explore node space</g:link></li>
         <li><g:link action="statistics">neo4j statistics</g:link></li>
         <li><g:link action="domain">show domain structure</g:link></li>
-        <li><g:link action="fixDoubleRelationShips">clean up doubled rels</g:link></li>
 	</ul>
 </div>
