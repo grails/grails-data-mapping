@@ -773,7 +773,11 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
             if(v instanceof CharSequence && !(v instanceof String)) {
                 v = v.toString()
             }
-            transactionDefinition[k as String] = v
+            try {
+                transactionDefinition[k as String] = v
+            } catch (MissingPropertyException mpe) {
+                throw new IllegalArgumentException("[${k}] is not a valid transaction property.")
+            }
         }
 
         def transactionTemplate = new GrailsTransactionTemplate(transactionManager, transactionDefinition)

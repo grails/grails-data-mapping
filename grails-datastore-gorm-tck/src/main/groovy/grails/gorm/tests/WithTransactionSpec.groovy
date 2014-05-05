@@ -43,6 +43,16 @@ class WithTransactionSpec extends GormDatastoreSpec {
             results.size() == 0
     }
 
+    void 'Test specifying invalid transaction properties for withTransaction'() {
+        when:
+        TestEntity.withTransaction([someBogusProperty: -42]) {
+        }
+
+        then:
+        IllegalArgumentException ex = thrown()
+        ex.message == '[someBogusProperty] is not a valid transaction property.'
+    }
+
     void 'Test specifying transaction properties for withTransaction'() {
         when:
         new TestEntity(name: 'One', age: 1).save()
