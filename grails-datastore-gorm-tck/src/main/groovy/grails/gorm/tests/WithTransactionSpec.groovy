@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import groovy.transform.InheritConstructors
+import org.springframework.transaction.TransactionDefinition
 
 /**
  * Transaction tests.
@@ -40,6 +41,36 @@ class WithTransactionSpec extends GormDatastoreSpec {
         then:
             count == 0
             results.size() == 0
+    }
+
+    void 'Test specifying transaction properties for withNewTransaction'() {
+        when:
+        new TestEntity(name: 'One', age: 1).save()
+
+        then:
+        1 == TestEntity.count()
+
+        when: 'the outer transaction rolls back and the inner transaction propagation is PROPAGATION_REQUIRES_NEW'
+        TestEntity.withNewTransaction { status ->
+            TestEntity.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW]) {
+                new TestEntity(name: 'Two', age: 2).save()
+            }
+            status.setRollbackOnly()
+        }
+
+        then: 'the inner transaction is committed'
+        2 == TestEntity.count()
+
+        when: 'the outer transaction rolls back and the inner transaction propagation is PROPAGATION_REQUIRED'
+        TestEntity.withNewTransaction { status ->
+            TestEntity.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRED]) {
+                new TestEntity(name: 'Three', age: 3).save()
+            }
+            status.setRollbackOnly()
+        }
+
+        then: 'the inner transaction is rolled back'
+        2 == TestEntity.count()
     }
 
     void "Test rollback transaction with Runtime Exception"() {

@@ -706,6 +706,8 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      *
      * @param callable The closure to call
      * @return The result of the closure execution
+     * @see #withTransaction(Map, Closure)
+     * @see #withNewTransaction(Closure)
      */
     def withTransaction(Closure callable) {
         Assert.notNull transactionManager, "No transactionManager bean configured"
@@ -722,6 +724,8 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      *
      * @param callable The closure to call
      * @return The result of the closure execution
+     * @see #withTransaction(Closure)
+     * @see #withTransaction(Map, Closure)
      */
     def withNewTransaction(Closure callable) {
         Assert.notNull transactionManager, "No transactionManager bean configured"
@@ -732,6 +736,48 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
         def transactionTemplate = new GrailsTransactionTemplate(transactionManager,
                 new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW))
+        transactionTemplate.execute(callable)
+    }
+
+    /**
+     * Executes the closure within the context of a transaction which is
+     * configured with the properties contained in transactionProperties.
+     * transactionProperties may contain any properties supported by
+     * {@link DefaultTransactionDefinition}.
+     * 
+     * <blockquote>
+     * <pre>
+     * SomeEntity.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW,
+     *                             isolationLevel: TransactionDefinition.ISOLATION_REPEATABLE_READ]) {
+     *     // ...
+     * }
+     * </pre>
+     * </blockquote>
+     *
+     * @param transactionProperties properties to configure the transaction properties
+     * @param callable The closure to call
+     * @return The result of the closure execution
+     * @see DefaultTransactionDefinition
+     * @see #withNewTransaction(Closure)
+     * @see #withTransaction(Closure)
+     */
+    def withTransaction(Map transactionProperties, Closure callable) {
+        Assert.notNull transactionManager, "No transactionManager bean configured"
+
+        if (!callable) {
+            return
+        }
+        
+        def transactionDefinition = new DefaultTransactionDefinition()
+        transactionProperties.each { k, v ->
+            if(v instanceof CharSequence && !(v instanceof String)) {
+                v = v.toString()
+            }
+            transactionDefinition[k as String] = v
+        }
+
+        def transactionTemplate = new GrailsTransactionTemplate(transactionManager, transactionDefinition)
+
         transactionTemplate.execute(callable)
     }
 
