@@ -43,7 +43,7 @@ class WithTransactionSpec extends GormDatastoreSpec {
             results.size() == 0
     }
 
-    void 'Test specifying transaction properties for withNewTransaction'() {
+    void 'Test specifying transaction properties for withTransaction'() {
         when:
         new TestEntity(name: 'One', age: 1).save()
 
