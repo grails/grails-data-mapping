@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.mongo.plugin.support
 
 import com.gmongo.GMongo
+import com.mongodb.MongoClientURI
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import spock.lang.Specification
 import grails.spring.BeanBuilder
@@ -27,7 +28,8 @@ class MongoSpringConfigurerSpec extends Specification{
             bb.beans config
 
         then:"Then the mongo bean has its connection string set"
-            bb.getBeanDefinition('mongo').getPropertyValues().getPropertyValue('connectionString').value == connectionString
+            bb.getBeanDefinition('mongoMappingContext').getPropertyValues().getPropertyValue('defaultDatabaseName').value == "mydb"
+            bb.getBeanDefinition('mongo').getPropertyValues().getPropertyValue('clientURI').value.toString() == new MongoClientURI(connectionString).toString()
     }
 
     void "Test configure Mongo via Spring"() {

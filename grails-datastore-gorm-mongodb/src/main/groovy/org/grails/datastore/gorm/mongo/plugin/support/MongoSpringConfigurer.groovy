@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.mongo.plugin.support
 
+import com.mongodb.MongoClientURI
 import org.grails.datastore.gorm.mongo.bean.factory.DefaultMappingHolder
 import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoDatastoreFactoryBean
@@ -41,7 +42,18 @@ class MongoSpringConfigurer extends SpringConfigurer {
         return {
             def mongoConfig = application.config?.grails?.mongo?.clone() ?: application.config?.grails?.mongodb?.clone()
             if(mongoConfig == null) mongoConfig = new ConfigObject()
-            def databaseName = mongoConfig?.remove("databaseName") ?: application.metadata.getApplicationName()
+
+            def connectionString = mongoConfig?.connectionString?.toString()
+            def databaseName
+
+            MongoClientURI mongoClientURI = null
+            if(connectionString) {
+                mongoClientURI = new MongoClientURI(connectionString)
+                databaseName = mongoClientURI.database
+            } else {
+                databaseName = mongoConfig?.remove("databaseName") ?: application.metadata.getApplicationName()
+            }
+
             "${databaseName}DB"(MethodInvokingFactoryBean) { bean ->
                 bean.scope = "request"
                 targetObject = ref("mongo")
@@ -69,6 +81,7 @@ class MongoSpringConfigurer extends SpringConfigurer {
                 mongoOptions = mongoOptions
                 def mongoHost = mongoConfig?.remove("host")
 
+
                 if (mongoConfig?.replicaSet) {
                     def set = []
                     for (server in mongoConfig.remove("replicaSet")) {
@@ -84,8 +97,8 @@ class MongoSpringConfigurer extends SpringConfigurer {
                     }
                     replicaPair = pair
                 }
-                else if(mongoConfig?.connectionString) {
-                    connectionString = mongoConfig.connectionString.toString()
+                else if(mongoClientURI) {
+                    clientURI = mongoClientURI
                 }
                 else if (mongoHost) {
                     host = mongoHost

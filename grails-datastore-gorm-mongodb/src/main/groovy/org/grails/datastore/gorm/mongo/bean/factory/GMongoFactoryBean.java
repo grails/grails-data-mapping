@@ -52,6 +52,7 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
     private List<ServerAddress> replicaSetSeeds;
     private List<ServerAddress> replicaPair;
     private String connectionString;
+    private MongoClientURI clientURI;
 
     public void setReplicaPair(List<ServerAddress> replicaPair) {
         this.replicaPair = replicaPair;
@@ -75,6 +76,10 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
 
     public void setConnectionString(String connectionString) {
         this.connectionString = connectionString;
+    }
+
+    public void setClientURI(MongoClientURI clientURI) {
+        this.clientURI = clientURI;
     }
 
     public GMongo getObject() throws Exception {
@@ -107,6 +112,9 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
         }
         else if (replicaSetSeeds != null) {
             mongo = new GMongo(replicaSetSeeds, mongoOptions);
+        }
+        else if(clientURI != null) {
+            mongo = new GMongoClient(clientURI);
         }
         else if(connectionString != null) {
             mongo = new GMongoClient(new MongoClientURI(connectionString));

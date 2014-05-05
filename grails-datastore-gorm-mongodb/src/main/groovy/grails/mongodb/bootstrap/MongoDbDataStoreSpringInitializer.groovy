@@ -16,6 +16,7 @@ package grails.mongodb.bootstrap
 
 import com.mongodb.DBAddress
 import com.mongodb.Mongo
+import com.mongodb.MongoClientURI
 import com.mongodb.MongoOptions
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -97,6 +98,13 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             def mongoConfig = config?.grails?.mongo?.clone() ?: config?.grails?.mongodb?.clone()
             if(mongoConfig == null) mongoConfig = new ConfigObject()
 
+            def connectionString = mongoConfig?.connectionString?.toString()
+            MongoClientURI mongoClientURI = null
+            if(connectionString) {
+                mongoClientURI = new MongoClientURI(connectionString)
+                databaseName = mongoClientURI.database
+            }
+
             def callable = getCommonConfiguration(beanDefinitionRegistry)
             callable.delegate = delegate
             callable.call()
@@ -149,8 +157,8 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
                         }
                         replicaPair = pair
                     }
-                    else if(mongoConfig?.connectionString) {
-                        connectionString = mongoConfig.connectionString.toString()
+                    else if(mongoClientURI) {
+                        clientURI = mongoClientURI
                     }
                     else if (mongoHost) {
                         host = mongoHost
