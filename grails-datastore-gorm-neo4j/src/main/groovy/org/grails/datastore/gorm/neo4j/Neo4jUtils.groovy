@@ -108,14 +108,20 @@ abstract class Neo4jUtils {
         value
     }
 
-    static URL dumpGraphToSvg(GraphDatabaseService graphDatabaseService) {
+    static def dumpGraphToSvg(GraphDatabaseService graphDatabaseService) {
         File dotFile = File.createTempFile("temp", ".dot")
         File svgFile = File.createTempFile("temp", ".svg")
-        // TODO: sort properties when emitting.
-        new GraphvizWriter().emit(dotFile, Walker.fullGraph(graphDatabaseService))
-        def proc = "/usr/bin/dot -Tsvg ${dotFile.absolutePath}".execute()
-        svgFile.withWriter { Writer it -> it << proc.in.text }
-        dotFile.delete()
-        svgFile.toURI().toURL()
+        def dotName = "/usr/bin/dot"
+        def dot = new File(dotName)
+        if (dot.exists() && dot.canExecute()) {
+            // TODO: sort properties when emitting.
+            new GraphvizWriter().emit(dotFile, Walker.fullGraph(graphDatabaseService))
+            def proc = "${dotName} -Tsvg ${dotFile.absolutePath}".execute()
+            svgFile.withWriter { Writer it -> it << proc.in.text }
+            dotFile.delete()
+            svgFile.toURI().toURL()
+        } else {
+            "cannot find or execute $dotName, consider to install graphviz binaries (apt-get install graphviz)"
+        }
     }
 }
