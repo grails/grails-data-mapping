@@ -43,7 +43,8 @@ class MongoSpringConfigurer extends SpringConfigurer {
             def mongoConfig = application.config?.grails?.mongo?.clone() ?: application.config?.grails?.mongodb?.clone()
             if(mongoConfig == null) mongoConfig = new ConfigObject()
 
-            def connectionString = mongoConfig?.connectionString?.toString()
+            def cso = mongoConfig?.connectionString
+            def connectionString = cso ? cso?.toString() : null
             def databaseName
 
             MongoClientURI mongoClientURI = null

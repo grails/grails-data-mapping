@@ -98,7 +98,9 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             def mongoConfig = config?.grails?.mongo?.clone() ?: config?.grails?.mongodb?.clone()
             if(mongoConfig == null) mongoConfig = new ConfigObject()
 
-            def connectionString = mongoConfig?.connectionString?.toString()
+
+            def cso = mongoConfig?.connectionString
+            def connectionString = cso ? cso?.toString() : null
             MongoClientURI mongoClientURI = null
             if(connectionString) {
                 mongoClientURI = new MongoClientURI(connectionString)
