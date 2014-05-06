@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.mapping.config;
 
+import javax.persistence.EnumType;
 import javax.persistence.FetchType;
 
 /**
@@ -30,6 +31,7 @@ public class Property implements Cloneable{
     private String targetName;
     private String generator;
     private String propertyName;
+    private EnumType enumType;
 
     @Override
     public Property clone() throws CloneNotSupportedException {
@@ -105,5 +107,21 @@ public class Property implements Cloneable{
      */
     public String getGenerator() {
         return generator;
+    }
+
+    public String getEnumType() {
+        return enumType.toString();
+    }
+
+    public EnumType getEnumTypeObject() {
+        return enumType;
+    }
+
+    public void setEnumType(EnumType enumType) {
+        this.enumType = enumType;
+    }
+
+    public void setEnumType(String enumType) {
+        this.enumType = EnumType.valueOf(enumType.toUpperCase());
     }
 }

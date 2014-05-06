@@ -15,6 +15,8 @@
 package org.grails.datastore.mapping.engine;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -67,16 +69,32 @@ public class EntityAccess {
     }
 
     public void setProperty(String name, Object value) {
+        Class type = getPropertyType(name);
         if(value == null) {
-            Class type = getPropertyType(name);
             if(!type.isPrimitive()) {
                 beanWrapper.setPropertyValue(name, value);
             }
         }
         else {
-            beanWrapper.setPropertyValue(name, value);
+            if(type.isEnum() && value instanceof Number) {
+                Object enumValue = getEnumValueForOrdinal((Number) value, type);
+                beanWrapper.setPropertyValue(name, enumValue);
+            }
+            else {
+                beanWrapper.setPropertyValue(name, value);
+            }
         }
 
+    }
+
+    private Object getEnumValueForOrdinal(Number value, Class type) {
+        try {
+            Object values = type.getMethod("values").invoke(type);
+            return Array.get(values, value.intValue());
+        } catch (Exception e) {
+            // ignore
+        }
+        return value;
     }
 
     public Object getIdentifier() {

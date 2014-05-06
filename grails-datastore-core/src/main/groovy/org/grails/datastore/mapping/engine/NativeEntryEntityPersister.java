@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import javax.persistence.CascadeType;
+import javax.persistence.EnumType;
 import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
 
@@ -891,9 +892,13 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         for (PersistentProperty prop : props) {
             PropertyMapping<Property> pm = prop.getMapping();
             final Property mappedProperty = pm.getMappedForm();
+            boolean ordinalEnum = false;
             String key = null;
             if (mappedProperty != null) {
                 key = mappedProperty.getTargetName();
+                if(prop.getType().isEnum() && mappedProperty.getEnumTypeObject() == EnumType.ORDINAL) {
+                    ordinalEnum = true;
+                }
             }
             if (key == null) key = prop.getName();
             final boolean indexed = isPropertyIndexed(mappedProperty);
@@ -902,6 +907,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 Object propValue = entityAccess.getProperty(prop.getName());
 
                 handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, propValue);
+
+                if(ordinalEnum && (propValue instanceof Enum)) {
+                    propValue = ((Enum)propValue).ordinal();
+                }
                 setEntryValue(e, key, propValue);
             }
             else if((prop instanceof Basic)) {
