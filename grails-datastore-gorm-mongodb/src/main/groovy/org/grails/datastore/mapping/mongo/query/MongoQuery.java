@@ -1804,7 +1804,10 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         @Override
         public boolean isEmpty() {
-            return initializedObjects.isEmpty() && !cursor.hasNext();
+            if(initialized) return initializedObjects.isEmpty();
+            else {
+                return initializedObjects.isEmpty() && !cursor.hasNext();
+            }
         }
 
         @SuppressWarnings("unchecked")
@@ -1882,9 +1885,9 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 cursor = this.cursor;
             }
 
-
             return new Iterator() {
                 Object current;
+                int index = 0;
 
                 public boolean hasNext() {
                     boolean hasMore = cursor.hasNext();
@@ -1898,7 +1901,12 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 public Object next() {
                     DBObject dbo = cursor.next();
                     current = convertDBObject(dbo);
-                    initializedObjects.add(current);
+                    if(index < initializedObjects.size())
+                        initializedObjects.set(index++, current);
+                    else {
+                        index++;
+                        initializedObjects.add(current);
+                    }
                     return current;
                 }
 
@@ -1948,6 +1956,16 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         @SuppressWarnings("unchecked")
         @Override
         public Object clone() {
+            final Cursor cursor;
+            if(this.cursor instanceof DBCursor) {
+                DBCursor dbCursor = (DBCursor) this.cursor;
+                DBCursor newDbCursor = dbCursor.copy();
+                cursor = newDbCursor;
+                newDbCursor.skip(offset);
+            }
+            else {
+                cursor = this.cursor;
+            }
             return new MongoResultList(cursor,offset, mongoEntityPersister);
         }
 

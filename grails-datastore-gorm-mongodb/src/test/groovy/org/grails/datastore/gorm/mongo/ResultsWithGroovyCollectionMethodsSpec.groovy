@@ -56,4 +56,23 @@ class ResultsWithGroovyCollectionMethodsSpec extends GormDatastoreSpec {
             results[1].name == 'Carrot'
             results[2].name == 'Cabbage'
     }
+
+    void "Test retainAll can return empty list"() {
+        given:"Some test data"
+            new Plant(name:"Cabbage", goesInPatch: true).save()
+            new Plant(name:"Carrot", goesInPatch: true).save()
+            new Plant(name:"Pineapple", goesInPatch: false).save()
+            new Plant(name:"Coconut Tree", goesInPatch: false).save()
+            new Plant(name:"Lettuce", goesInPatch: true).save(flush:true)
+            session.clear()
+
+        when:"The results are retrieved"
+            def results = Plant.findAll()
+
+        and:"Only the Tomato plants are retained"
+            results.retainAll{ it.name == 'Tomato'}
+
+        then:"The results are empty"
+            !results
+    }
 }
