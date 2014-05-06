@@ -1847,7 +1847,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         @Override
         public ListIterator listIterator(int index) {
             initializeFully();
-            return initializedObjects.listIterator(0);
+            return initializedObjects.listIterator(index);
         }
 
         private void initializeFully() {
