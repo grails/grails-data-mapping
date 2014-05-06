@@ -708,6 +708,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The result of the closure execution
      * @see #withTransaction(Map, Closure)
      * @see #withNewTransaction(Closure)
+     * @see #withNewTransaction(Map, Closure)
      */
     def withTransaction(Closure callable) {
         withTransaction(new DefaultTransactionDefinition(), callable)
@@ -720,6 +721,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The result of the closure execution
      * @see #withTransaction(Closure)
      * @see #withTransaction(Map, Closure)
+     * @see #withNewTransaction(Map, Closure)
      */
     def withNewTransaction(Closure callable) {
         withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW], callable)
@@ -745,6 +747,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The result of the closure execution
      * @see DefaultTransactionDefinition
      * @see #withNewTransaction(Closure)
+     * @see #withNewTransaction(Map, Closure)
      * @see #withTransaction(Closure)
      */
     def withTransaction(Map transactionProperties, Closure callable) {
@@ -761,6 +764,38 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         }
 
         withTransaction(transactionDefinition, callable)
+    }
+
+    /**
+     * Executes the closure within the context of a new transaction which is
+     * configured with the properties contained in transactionProperties.
+     * transactionProperties may contain any properties supported by
+     * {@link DefaultTransactionDefinition}.  Note that if transactionProperties
+     * includes entries for propagationBehavior or propagationName, those values
+     * will be ignored.  This method always sets the propagation level to
+     * TransactionDefinition.REQUIRES_NEW.
+     *
+     * <blockquote>
+     * <pre>
+     * SomeEntity.withNewTransaction([isolationLevel: TransactionDefinition.ISOLATION_REPEATABLE_READ]) {
+     *     // ...
+     * }
+     * </pre>
+     * </blockquote>
+     *
+     * @param transactionProperties properties to configure the transaction properties
+     * @param callable The closure to call
+     * @return The result of the closure execution
+     * @see DefaultTransactionDefinition
+     * @see #withNewTransaction(Closure)
+     * @see #withTransaction(Closure)
+     * @see #withTransaction(Map, Closure)
+     */
+    def withNewTransaction(Map transactionProperties, Closure callable) {
+        def props = new HashMap(transactionProperties)
+        props.remove 'propagationName'
+        props.propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRES_NEW
+        withTransaction(props, callable)
     }
 
     /**
