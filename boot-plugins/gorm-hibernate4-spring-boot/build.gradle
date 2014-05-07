@@ -1,7 +1,7 @@
 apply from:'../gradle/maven-central-build.gradle'
 
 group = 'org.grails'
-version = "1.0.0.RC3"
+version = "1.0.0.RC4"
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
@@ -13,12 +13,13 @@ repositories {
 }
 
 dependencies {
-    compile 'org.springframework.boot:spring-boot-cli:1.0.1.RELEASE', {
+    def springBootVersion = '1.0.2.RELEASE'
+    compile "org.springframework.boot:spring-boot-cli:$springBootVersion", {
         exclude group:'org.codehaus.groovy', module:'groovy'
     }
     compile 'org.codehaus.groovy:groovy-all:2.2.1'
-    compile "org.springframework.boot:spring-boot-autoconfigure:1.0.1.RELEASE"
-    compile "org.grails:grails-datastore-gorm-hibernate4:3.0.6.RELEASE"
+    compile "org.springframework.boot:spring-boot-autoconfigure:$springBootVersion"
+    compile "org.grails:grails-datastore-gorm-hibernate4:3.1.0.RELEASE"
 
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
     testRuntime "com.h2database:h2:1.3.173"
