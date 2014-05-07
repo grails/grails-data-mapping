@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 import org.bson.types.ObjectId
+import spock.lang.Issue
 
 /**
  * Created by graemerocher on 15/04/14.
@@ -31,6 +32,25 @@ class ProjectionsSpec extends GormDatastoreSpec{
         then:"The result is correct"
             Dog.count() == 5
             avg == [5,11,2,25,5]
+    }
+
+    @Issue('GPMONGODB-294')
+    void "Test multiple projections"() {
+        given:"Some test data"
+            new Dog(name:"Fred", age:6).save()
+            new Dog(name:"Joe", age:2).save(flush:true)
+
+        when:"A sum projection is used"
+            def results = Dog.createCriteria().list {
+                projections {
+                    property 'name'
+                    property 'age'
+                }
+                order 'name'
+            }
+
+        then:"The result is correct"
+            results == [["Joe", 2], ["Fred", 6]]
     }
 
     @Override
