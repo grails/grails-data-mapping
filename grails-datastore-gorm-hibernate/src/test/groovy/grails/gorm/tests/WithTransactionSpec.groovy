@@ -83,6 +83,25 @@ class WithTransactionSpec extends GormDatastoreSpec {
         2 == TestEntity.count()
     }
 
+    void 'Test specifying transaction properties for withNewTransaction'() {
+        when:
+        new TestEntity(name: 'One', age: 1).save()
+
+        then:
+        1 == TestEntity.count()
+
+        when: 'if the properties ask for REQUIRED propagation level'
+        TestEntity.withNewTransaction { status ->
+            TestEntity.withNewTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRED]) {
+                new TestEntity(name: 'Two', age: 2).save()
+            }
+            status.setRollbackOnly()
+        }
+
+        then: 'the the property is ignored and the propagation is REQUIRES_NEW'
+        2 == TestEntity.count()
+    }
+
     void "Test rollback transaction with Runtime Exception"() {
         given:
             def ex
