@@ -1,0 +1,6 @@
+language: groovy
+services:
+  - mongodb
+jdk:
+- oraclejdk7
+script: ./travis-build.sh
