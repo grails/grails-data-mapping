@@ -3,4 +3,6 @@ services:
   - mongodb
 jdk:
 - oraclejdk7
+env:
+   - TERM=dumb
 script: ./travis-build.sh
