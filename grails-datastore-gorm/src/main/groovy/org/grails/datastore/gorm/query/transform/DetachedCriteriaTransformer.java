@@ -1323,6 +1323,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 if (Entity.class.getName().equals(className)) {
                     return true;
                 }
+                if (javax.persistence.Entity.class.getName().equals(className)) {
+                    return true;
+                }
             }
         }
         return false;
