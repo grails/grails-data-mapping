@@ -7,6 +7,5 @@ before_install:
 jdk:
 - oraclejdk7
 env:
-   - TERM=dumb
-   - GRADLE_OPTS="-Xmx2048m -Xms256m -XX:MaxPermSize=768m -XX:+CMSClassUnloadingEnabled -XX:+HeapDumpOnOutOfMemoryError" 
+   - TERM=dumb GRADLE_OPTS="-Xmx2048m -Xms256m -XX:MaxPermSize=768m -XX:+CMSClassUnloadingEnabled -XX:+HeapDumpOnOutOfMemoryError" 
 script: ./travis-build.sh
