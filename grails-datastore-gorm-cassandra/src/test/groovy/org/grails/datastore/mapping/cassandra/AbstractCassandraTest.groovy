@@ -1,7 +1,9 @@
 package org.grails.datastore.mapping.cassandra
 
+import org.apache.cassandra.service.EmbeddedCassandraService
+import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
 import org.junit.BeforeClass
-import org.springframework.core.io.ClassPathResource
+import org.springframework.context.support.GenericApplicationContext
 
 /**
  * Test harness for Cassandra tests
@@ -9,26 +11,38 @@ import org.springframework.core.io.ClassPathResource
  * @author Graeme Rocher
  * @since 1.0
  */
-class AbstractCassandraTest {
+abstract class AbstractCassandraTest {
 
-//    protected static EmbeddedCassandraService cassandra
+	protected static EmbeddedCassandraService cassandra
+	protected static CassandraDatastore datastore
+	protected static CassandraSession  session
 
-    @BeforeClass
-    static void setupCassandra() {
-        // Tell cassandra where the configuration files are.
-        // Use the test configuration file.
-        try {
-//            System.setProperty("storage-config", new ClassPathResource("cassandra-conf").file.absolutePath)
-//            new CassandraServiceDataCleaner().prepare()
-//            cassandra = new EmbeddedCassandraService()
-//            cassandra.init()
-//            Thread t = new Thread(cassandra)
-//            t.setDaemon(true)
-//            t.start()
-        }
-        catch (Throwable e) {
-            e.printStackTrace()
-            println("Failed to setup Cassandra ${e.message}")
-        }
-    }
+	@BeforeClass
+	static void setupCassandra() {
+		// Tell cassandra where the configuration files are.
+		// Use the test configuration file.
+
+		def ctx = new GenericApplicationContext()
+		ctx.refresh()
+
+		ConfigObject config = new ConfigObject()
+		datastore = new CassandraDatastore(new CassandraMappingContext(CassandraDatastore.DEFAULT_KEYSPACE), config, ctx)
+		datastore.afterPropertiesSet()
+		session = datastore.connect()
+
+		def nativeSession = session.getNativeInterface()
+
+		try {
+			nativeSession.execute("""
+                CREATE KEYSPACE ${datastore.DEFAULT_KEYSPACE} WITH replication = {
+                    'class': 'SimpleStrategy',
+                    'replication_factor': '1'
+                };
+                """)
+		} catch (AlreadyExistsException)
+		{
+			
+		}
+
+	}
 }

@@ -1,13 +1,13 @@
 package org.grails.datastore.mapping.cassandra.engine;
 
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.querybuilder.Clause;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Select;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.grails.datastore.mapping.cassandra.CassandraDatastore;
 import org.grails.datastore.mapping.cassandra.CassandraSession;
-import org.grails.datastore.mapping.keyvalue.engine.KeyValueEntry;
 import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -16,7 +16,11 @@ import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
+import com.datastax.driver.core.querybuilder.Clause;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Select;
 
 public class CassandraQuery extends Query implements QueryArgumentsAware {
 
@@ -74,8 +78,8 @@ public class CassandraQuery extends Query implements QueryArgumentsAware {
 			CassandraEntityPersister cassandraEntityPersister = (CassandraEntityPersister)session.getPersister(entity);
 
 			for (Row row : rs) {
-				KeyValueEntry nativeEntry = cassandraEntityPersister.rowToKeyValueEntry(row, family);
-				out.add(cassandraEntityPersister.createObjectFromNativeEntry(entity, nativeEntry.get(cm.getIdentifier().getIdentifierName()[0]).toString(), nativeEntry));    //TODO change for updates
+				//KeyValueEntry nativeEntry = cassandraEntityPersister.rowToKeyValueEntry(row, family);
+				//out.add(cassandraEntityPersister.createObjectFromNativeEntry(entity, nativeEntry.get("id").toString(), nativeEntry));
 			}
 		}
 
