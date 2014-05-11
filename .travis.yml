@@ -1,6 +1,9 @@
 language: groovy
 services:
+  - redis
   - mongodb
+before_install:
+  - "mongo --eval 'db.runCommand({setParameter: 1, textSearchEnabled: true})' admin"  
 jdk:
 - oraclejdk7
 env:
