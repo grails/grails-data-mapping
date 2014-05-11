@@ -14,11 +14,9 @@
  */
 package org.grails.datastore.gorm.cassandra.plugin.support
 
-import org.grails.datastore.gorm.cassandra.bean.factory.CassandraDatastoreFactoryBean;
-import org.grails.datastore.gorm.cassandra.bean.factory.CassandraMappingContextFactoryBean;
+import org.grails.datastore.gorm.cassandra.bean.factory.CassandraDatastoreFactoryBean
+import org.grails.datastore.gorm.cassandra.bean.factory.CassandraMappingContextFactoryBean
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
-import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
-import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 
 
 /**
@@ -41,8 +39,6 @@ class CassandraSpringConfigurer extends SpringConfigurer {
 				pluginManager = ref('pluginManager')
 				config = cassandraConfig
 			}
-
-
 
 			cassandraDatastore(CassandraDatastoreFactoryBean) {
 				mappingContext = cassandraMappingContext

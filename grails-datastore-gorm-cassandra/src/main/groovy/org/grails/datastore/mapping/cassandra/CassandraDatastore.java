@@ -14,73 +14,62 @@
  */
 package org.grails.datastore.mapping.cassandra;
 
-import java.util.ArrayList;
+import static org.grails.datastore.mapping.config.utils.ConfigUtils.read;
+
 import java.util.Calendar;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.SocketOptions;
-import com.datastax.driver.core.policies.ConstantReconnectionPolicy;
-import com.datastax.driver.core.policies.DowngradingConsistencyRetryPolicy;
-
-import groovy.util.ConfigObject;
+import org.grails.datastore.mapping.core.AbstractDatastore;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.cassandra.config.CassandraCqlClusterFactoryBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.grails.datastore.mapping.core.AbstractDatastore;
-import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
-import org.grails.datastore.mapping.model.MappingContext;
+import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
+import org.springframework.data.cassandra.config.SchemaAction;
+import org.springframework.data.cassandra.convert.CassandraConverter;
+import org.springframework.data.cassandra.convert.MappingCassandraConverter;
+import org.springframework.data.cassandra.core.CassandraTemplate;
+import org.springframework.data.cassandra.mapping.BasicCassandraMappingContext;
+import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 
-public class CassandraDatastore extends AbstractDatastore implements DisposableBean {
+import com.datastax.driver.core.Cluster;
 
-	private static Logger log = LoggerFactory.getLogger(CassandraDatastore.class);
+public class CassandraDatastore extends AbstractDatastore implements InitializingBean, DisposableBean, MappingContext.Listener {
 
-	public static final String DEFAULT_KEYSPACE = "CassandraKeySpace"; //TODO make one keyspace for each session somehow, maybe just do a different datastore instance?
-	private Cluster cluster;
-	private Session session;
+    private static Logger log = LoggerFactory.getLogger(CassandraDatastore.class);
+    // TODO make one keyspace for each session somehow, maybe just do a
+    // different datastore instance?
+    public static final String DEFAULT_KEYSPACE = "CassandraKeySpace";
+    public static final SchemaAction DEFAULT_SCHEMA_ACTION = SchemaAction.NONE;
+    public static final String CASSANDRA_CONTACT_POINTS = "contactPoints";
+    public static final String CASSANDRA_PORT = "port";
+    public static final String CASSANDRA_KEYSPACE = "keyspace";
+    public static final String CASSANDRA_SCHEMA_ACTION = "schemaAction";
 
-	public CassandraDatastore(MappingContext mappingContext, ConfigurableApplicationContext ctx, ConfigObject config) {
-		super(mappingContext);
+    protected Cluster cluster;
+    protected com.datastax.driver.core.Session nativeSession;
+    protected BasicCassandraMappingContext cassandraMappingContext;
+    protected CassandraTemplate cassandraTemplate;
+    protected boolean stateless = false;
 
-		List<String> contactPoints = Collections.<String>emptyList();
-		Object configContactPoints = config.get("contactPoints");
-		if (configContactPoints instanceof List) {
-			List configContactPointsList = (List)configContactPoints;
-			contactPoints = new ArrayList<String>(configContactPointsList.size());
-			for (Object point : (List)configContactPoints) {
-				if (point instanceof String) {
-					contactPoints.add((String)point);
-				} else {
-					log.warn("Rejecting non-string contact point: " + point.toString());
-				}
-			}
-		} else if (configContactPoints instanceof String) {
-			contactPoints = new ArrayList<String>(1);
-			contactPoints.add((String)configContactPoints);
-		} else {
-			log.error("Could not convert contactPoints to needed format. Should be a List of Strings or a String.");
-		}
+    public CassandraDatastore(MappingContext mappingContext, Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
+        super(mappingContext, connectionDetails, ctx);
+        cassandraMappingContext = new BasicCassandraMappingContext();
+        //cassandraMappingContext.setVerifier(null);
 
-		this.setApplicationContext(ctx);
-
-		Cluster.Builder builder = Cluster.builder();
-
-		for (String contactPoint : contactPoints) {
-			builder.addContactPoint(contactPoint);
-		}
-		builder.withRetryPolicy(DowngradingConsistencyRetryPolicy.INSTANCE)
-			.withReconnectionPolicy(new ConstantReconnectionPolicy(100L))
-			.withSocketOptions(new SocketOptions().setKeepAlive(true));
-
-		this.cluster = builder.build();
-		this.session = cluster.connect();
+        if (mappingContext != null) {
+            mappingContext.addMappingContextListener(this);
+        }
 
         initializeConverters(mappingContext);
 
@@ -98,22 +87,73 @@ public class CassandraDatastore extends AbstractDatastore implements DisposableB
             }
         });
 
-	}
+    }
 
-	@Override
-	public void destroy() throws Exception {
-		super.destroy();
-		session.close();
-		cluster.close();
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        CassandraCqlClusterFactoryBean cassandraClusterFactory = new CassandraCqlClusterFactoryBean();
+        cassandraClusterFactory.setContactPoints(read(String.class, CASSANDRA_CONTACT_POINTS, connectionDetails, CassandraCqlClusterFactoryBean.DEFAULT_CONTACT_POINTS));
+        cassandraClusterFactory.setPort(read(Integer.class, CASSANDRA_PORT, connectionDetails, CassandraCqlClusterFactoryBean.DEFAULT_PORT));
+        cassandraClusterFactory.afterPropertiesSet();
+        cluster = cassandraClusterFactory.getObject();
 
-	@Override
-	protected org.grails.datastore.mapping.core.Session createSession(Map<String, String> connectionDetails) {
+        CassandraSessionFactoryBean cassandraSessionFactory = new CassandraSessionFactoryBean();
+        cassandraSessionFactory.setCluster(cluster);
+        cassandraSessionFactory.setKeyspaceName(read(String.class, CASSANDRA_KEYSPACE, connectionDetails, DEFAULT_KEYSPACE));
+        MappingCassandraConverter mappingCassandraConverter = new MappingCassandraConverter(cassandraMapping());
+        cassandraSessionFactory.setConverter(mappingCassandraConverter);
+        cassandraSessionFactory.setSchemaAction(read(SchemaAction.class, CASSANDRA_SCHEMA_ACTION, connectionDetails, DEFAULT_SCHEMA_ACTION));
+        // TODO: startup and shutdown scripts addition
+        cassandraSessionFactory.afterPropertiesSet();
+        nativeSession = cassandraSessionFactory.getObject();
+        cassandraTemplate = new CassandraTemplate(nativeSession, mappingCassandraConverter);
 
-		try {
-			return new CassandraSession(this, getMappingContext(), this.session, getApplicationEventPublisher(), false);
-		} catch (Exception e) {
-			throw new DataAccessResourceFailureException("Failed to obtain Cassandra client session: " + e.getMessage(), e);
-		}
-	}
+    }
+
+    public CassandraMappingContext cassandraMapping() throws ClassNotFoundException {
+
+        Collection<PersistentEntity> persistentEntities = mappingContext.getPersistentEntities();
+        Set<Class<?>> entitySet = new HashSet<Class<?>>();
+        for (PersistentEntity persistentEntity : persistentEntities) {
+            entitySet.add(persistentEntity.getJavaClass());
+        }
+        cassandraMappingContext.setInitialEntitySet(entitySet);
+        cassandraMappingContext.afterPropertiesSet();
+
+        return cassandraMappingContext;
+    }
+
+    @Override
+    public void persistentEntityAdded(PersistentEntity entity) {
+        // get adds persistententity
+        cassandraMappingContext.getPersistentEntity(entity.getJavaClass());
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        super.destroy();
+        nativeSession.close();
+        cluster.close();
+    }
+
+    @Override
+    protected Session createSession(Map<String, String> connectionDetails) {
+        if (stateless) {
+            return createStatelessSession(connectionDetails);
+        } else {
+            return new CassandraSession(this, getMappingContext(), this.nativeSession, getApplicationEventPublisher(), false, cassandraTemplate);
+        }
+    }
+
+    @Override
+    protected Session createStatelessSession(Map<String, String> connectionDetails) {
+        return new CassandraSession(this, getMappingContext(), this.nativeSession, getApplicationEventPublisher(), true, cassandraTemplate);
+    }
+
+    public static class GormCassandraConverter extends MappingCassandraConverter implements CassandraConverter {
+        public GormCassandraConverter() {
+
+        }
+    }
+
 }
