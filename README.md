@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/grails/grails-data-mapping.svg?branch=master)](https://travis-ci.org/grails/grails-data-mapping)
+
 Grails Datastore API
 ===
 

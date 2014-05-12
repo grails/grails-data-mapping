@@ -3,10 +3,13 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 import org.bson.types.ObjectId
+import spock.lang.*
 
 /**
  * Created by graemerocher on 14/04/14.
  */
+// TODO: Remove IgnoreIf when travis supports MongoDB 2.6
+@IgnoreIf( { System.getenv('TRAVIS_BRANCH') != null } )
 class TestSearchSpec extends GormDatastoreSpec{
 
     void "Test simple text search"() {

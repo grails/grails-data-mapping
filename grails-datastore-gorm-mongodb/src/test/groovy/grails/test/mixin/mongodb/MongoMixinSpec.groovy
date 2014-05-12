@@ -15,7 +15,8 @@ class MongoMixinSpec extends Specification{
             mongoDomain([Person])
 
         expect:"Dynamic finders to work"
-            Person.count() == 0
+            Person.list() != null
+            Person.count() != null
     }
 }
 
