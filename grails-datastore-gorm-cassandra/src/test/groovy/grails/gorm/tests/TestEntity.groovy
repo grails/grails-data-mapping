@@ -1,18 +1,19 @@
 package grails.gorm.tests
 
+import grails.gorm.CassandraEntity
 import grails.persistence.Entity
 
 /**
  * @author graemerocher
  */
-@Entity
+@CassandraEntity
 class TestEntity implements Serializable {
     UUID id
     Long version
     String name
     Integer age = 30
 
-    ChildEntity child
+   // ChildEntity child
 
     static mapping = {
         name index:true
