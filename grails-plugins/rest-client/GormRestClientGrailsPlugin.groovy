@@ -35,7 +35,7 @@ A GORM implementation that can back onto a REST web service
 '''
 
     // URL to the plugin's documentation
-    def documentation = "http://projects.spring.io/grails-data-mapping/rest-client/manual/index.html"
+    def documentation = "http://grails.github.io/grails-data-mapping/rest-client/"
 
     // Extra (optional) plugin metadata
 
@@ -43,7 +43,7 @@ A GORM implementation that can back onto a REST web service
     def license = "APACHE"
 
     // Details of company behind the plugin (if there is one)
-    def organization = [ name: "SpringSource", url: "http://www.springsource.com/" ]
+    def organization = [ name: "Pivotal", url: "http://www.gopivotal.com/" ]
 
     // Any additional developers beyond the author specified above.
     def developers = [ [ name: "Graeme Rocher", email: "graeme.rocher@gmail.com" ]]
