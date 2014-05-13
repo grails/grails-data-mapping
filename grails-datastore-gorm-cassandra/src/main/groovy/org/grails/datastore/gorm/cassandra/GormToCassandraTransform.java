@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,7 +92,7 @@ public class GormToCassandraTransform implements ASTTransformation {
         try {
             transformEntity(source, cNode);
         } catch (Exception e) {
-            String message = "Error occured transfoming GORM entity to Cassandra entity: " + ExceptionUtils.getFullStackTrace(e);            
+            String message = "Error occured transfoming GORM entity to Cassandra entity: " + ExceptionUtils.getStackTrace(e);  
             LOG.error(message, e);
             source.getErrorCollector().addFatalError(new SimpleMessage(message, source));
         }
