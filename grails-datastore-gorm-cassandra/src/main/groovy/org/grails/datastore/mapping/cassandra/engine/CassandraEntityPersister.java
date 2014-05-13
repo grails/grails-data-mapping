@@ -18,7 +18,6 @@ import static org.springframework.data.cassandra.repository.support.BasicMapId.i
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.UUID;
 
 import org.grails.datastore.mapping.cassandra.CassandraDatastore;
 import org.grails.datastore.mapping.cassandra.CassandraSession;
@@ -38,6 +37,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.repository.MapId;
+
+import com.datastax.driver.core.utils.UUIDs;
 
 /**
  * @author Graeme Rocher
@@ -133,7 +134,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<En
 
     @Override
     protected Object generateIdentifier(PersistentEntity persistentEntity, EntityAccess id) {
-        return UUID.randomUUID(); // TODO review if this is the correct UUID
+        return UUIDs.timeBased(); // TODO review if this is the correct UUID
                                   // type we want.
     }
 
