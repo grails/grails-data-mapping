@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -40,7 +41,7 @@ import org.springframework.data.cassandra.convert.CassandraConverter;
 import org.springframework.data.cassandra.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.mapping.BasicCassandraMappingContext;
-import org.springframework.data.cassandra.mapping.CassandraMappingContext;
+import org.springframework.util.Assert;
 
 import com.datastax.driver.core.Cluster;
 
@@ -56,16 +57,19 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
     public static final String CASSANDRA_KEYSPACE = "keyspace";
     public static final String CASSANDRA_SCHEMA_ACTION = "schemaAction";
 
-    protected Cluster cluster;
+    protected Cluster nativeCluster;
     protected com.datastax.driver.core.Session nativeSession;
     protected BasicCassandraMappingContext cassandraMappingContext;
     protected CassandraTemplate cassandraTemplate;
     protected boolean stateless = false;
 
+    public CassandraDatastore(Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
+        this(new CassandraMappingContext(CassandraDatastore.DEFAULT_KEYSPACE), connectionDetails, ctx);
+    }
+
     public CassandraDatastore(MappingContext mappingContext, Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         super(mappingContext, connectionDetails, ctx);
         cassandraMappingContext = new BasicCassandraMappingContext();
-        //cassandraMappingContext.setVerifier(null);
 
         if (mappingContext != null) {
             mappingContext.addMappingContextListener(this);
@@ -91,26 +95,39 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        CassandraCqlClusterFactoryBean cassandraClusterFactory = new CassandraCqlClusterFactoryBean();
-        cassandraClusterFactory.setContactPoints(read(String.class, CASSANDRA_CONTACT_POINTS, connectionDetails, CassandraCqlClusterFactoryBean.DEFAULT_CONTACT_POINTS));
-        cassandraClusterFactory.setPort(read(Integer.class, CASSANDRA_PORT, connectionDetails, CassandraCqlClusterFactoryBean.DEFAULT_PORT));
-        cassandraClusterFactory.afterPropertiesSet();
-        cluster = cassandraClusterFactory.getObject();
-
-        CassandraSessionFactoryBean cassandraSessionFactory = new CassandraSessionFactoryBean();
-        cassandraSessionFactory.setCluster(cluster);
-        cassandraSessionFactory.setKeyspaceName(read(String.class, CASSANDRA_KEYSPACE, connectionDetails, DEFAULT_KEYSPACE));
-        MappingCassandraConverter mappingCassandraConverter = new MappingCassandraConverter(cassandraMapping());
-        cassandraSessionFactory.setConverter(mappingCassandraConverter);
-        cassandraSessionFactory.setSchemaAction(read(SchemaAction.class, CASSANDRA_SCHEMA_ACTION, connectionDetails, DEFAULT_SCHEMA_ACTION));
-        // TODO: startup and shutdown scripts addition
-        cassandraSessionFactory.afterPropertiesSet();
-        nativeSession = cassandraSessionFactory.getObject();
-        cassandraTemplate = new CassandraTemplate(nativeSession, mappingCassandraConverter);
-
+        createCluster();
+        createNativeSession();
     }
 
-    public CassandraMappingContext cassandraMapping() throws ClassNotFoundException {
+    public Cluster createCluster() throws Exception {
+        if (nativeCluster == null) {
+            CassandraCqlClusterFactoryBean cassandraClusterFactory = new CassandraCqlClusterFactoryBean();
+            cassandraClusterFactory.setContactPoints(read(String.class, CASSANDRA_CONTACT_POINTS, connectionDetails, CassandraCqlClusterFactoryBean.DEFAULT_CONTACT_POINTS));
+            cassandraClusterFactory.setPort(read(Integer.class, CASSANDRA_PORT, connectionDetails, CassandraCqlClusterFactoryBean.DEFAULT_PORT));
+            cassandraClusterFactory.afterPropertiesSet();
+            nativeCluster = cassandraClusterFactory.getObject();
+        }
+        return nativeCluster;
+    }
+
+    public com.datastax.driver.core.Session createNativeSession() throws ClassNotFoundException, Exception {
+        if (nativeSession == null) {
+            Assert.notNull(nativeCluster);
+            CassandraSessionFactoryBean cassandraSessionFactory = new CassandraSessionFactoryBean();
+            cassandraSessionFactory.setCluster(nativeCluster);
+            cassandraSessionFactory.setKeyspaceName(read(String.class, CASSANDRA_KEYSPACE, connectionDetails, DEFAULT_KEYSPACE));
+            MappingCassandraConverter mappingCassandraConverter = new MappingCassandraConverter(cassandraMapping());
+            cassandraSessionFactory.setConverter(mappingCassandraConverter);
+            cassandraSessionFactory.setSchemaAction(read(SchemaAction.class, CASSANDRA_SCHEMA_ACTION, connectionDetails, DEFAULT_SCHEMA_ACTION));
+            // TODO: startup and shutdown scripts addition
+            cassandraSessionFactory.afterPropertiesSet();
+            nativeSession = cassandraSessionFactory.getObject();
+            cassandraTemplate = new CassandraTemplate(nativeSession, mappingCassandraConverter);
+        }
+        return nativeSession;
+    }
+
+    public org.springframework.data.cassandra.mapping.CassandraMappingContext cassandraMapping() throws ClassNotFoundException {
 
         Collection<PersistentEntity> persistentEntities = mappingContext.getPersistentEntities();
         Set<Class<?>> entitySet = new HashSet<Class<?>>();
@@ -121,19 +138,6 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
         cassandraMappingContext.afterPropertiesSet();
 
         return cassandraMappingContext;
-    }
-
-    @Override
-    public void persistentEntityAdded(PersistentEntity entity) {
-        // get adds persistententity
-        cassandraMappingContext.getPersistentEntity(entity.getJavaClass());
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        super.destroy();
-        nativeSession.close();
-        cluster.close();
     }
 
     @Override
@@ -148,6 +152,27 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
     @Override
     protected Session createStatelessSession(Map<String, String> connectionDetails) {
         return new CassandraSession(this, getMappingContext(), this.nativeSession, getApplicationEventPublisher(), true, cassandraTemplate);
+    }
+
+    @Override
+    public void persistentEntityAdded(PersistentEntity entity) {
+        // get adds persistententity
+        cassandraMappingContext.getPersistentEntity(entity.getJavaClass());
+    }
+
+    public Cluster getNativeCluster() {
+        return nativeCluster;
+    }
+
+    public com.datastax.driver.core.Session getNativeSession() {
+        return nativeSession;
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        super.destroy();
+        nativeSession.close();
+        nativeCluster.close();
     }
 
     public static class GormCassandraConverter extends MappingCassandraConverter implements CassandraConverter {
