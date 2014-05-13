@@ -1,11 +1,8 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
+import grails.gorm.CassandraEntity
 
-import java.io.Serializable;
-import java.util.UUID;
-
-@Entity
+@CassandraEntity
 class Book implements Serializable {
     UUID id
     Long version

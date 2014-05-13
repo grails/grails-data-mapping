@@ -10,9 +10,9 @@ class CrudOperationsSpec extends GormDatastoreSpec {
     void "Test get using a string-based key"() {
         given:
 
-            def t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
+            def t = new TestEntity(name:"Bob")
             t.save(flush:true)
-
+            
         when:
             t = TestEntity.get("${t.id}")
 
@@ -24,7 +24,7 @@ class CrudOperationsSpec extends GormDatastoreSpec {
         given:
             def t
         when:
-            t = TestEntity.get(1)
+            t = TestEntity.get("1")
         then:
             t == null
     }
@@ -32,7 +32,7 @@ class CrudOperationsSpec extends GormDatastoreSpec {
     void "Test basic CRUD operations"() {
         given:
 
-            def t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
+            def t = new TestEntity(name:"Bob")
             t.save()
 
         when:
@@ -50,7 +50,7 @@ class CrudOperationsSpec extends GormDatastoreSpec {
     void "Test save method that takes a map"() {
 
         given:
-            def t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
+            def t = new TestEntity(name:"Bob")
             t.save(param:"one", flush: true)
         when:
             t = TestEntity.get(t.id)
@@ -60,7 +60,7 @@ class CrudOperationsSpec extends GormDatastoreSpec {
 
     void "Test failOnError"() {
         given:
-            def t = new TestEntity(child: new ChildEntity(name:"Child"))
+            def t = new TestEntity()
 
         when:
             t.save(failOnError: true)

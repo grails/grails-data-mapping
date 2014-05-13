@@ -1,18 +1,15 @@
 package grails.gorm.tests
 
+import grails.gorm.CassandraEntity
 import grails.persistence.Entity
-import grails.gorm.dirty.checking.DirtyCheck;
 
-import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform;
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
-@DirtyCheck
-@Entity
 @ApplyDetachedCriteriaTransform
-//@groovy.transform.EqualsAndHashCode - breaks gorm-neo4j: TODO: http://jira.grails.org/browse/GPNEO4J-10 
+@groovy.transform.EqualsAndHashCode 
+@CassandraEntity
 class Person implements Serializable, Comparable<Person> {
-    static simpsons = where {
-         lastName == "Simpson"
-    }
+    
 
     UUID id
     Long version
