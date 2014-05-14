@@ -1,4 +1,4 @@
-package org.grails.datastore.mapping.cassandra.engine;
+package org.grails.datastore.mapping.cassandra.query;
 
 import java.util.Collections;
 import java.util.HashMap;
