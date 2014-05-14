@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.grails.datastore.mapping.cassandra.CassandraDatastore;
 import org.grails.datastore.mapping.cassandra.CassandraSession;
+import org.grails.datastore.mapping.cassandra.query.CassandraQuery;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.PropertyValueIndexer;
