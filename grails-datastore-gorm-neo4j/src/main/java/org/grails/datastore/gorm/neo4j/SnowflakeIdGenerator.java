@@ -1,6 +1,10 @@
 package org.grails.datastore.gorm.neo4j;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Random;
 
@@ -8,6 +12,8 @@ import java.util.Random;
  * Created by stefan on 10.04.14.
  */
 public class SnowflakeIdGenerator implements IdGenerator {
+
+    private static Logger log = LoggerFactory.getLogger(SnowflakeIdGenerator.class);
 
     private final long datacenterIdBits = 10L;
     private final long maxDatacenterId = -1L ^ (-1L << datacenterIdBits);
@@ -58,32 +64,29 @@ public class SnowflakeIdGenerator implements IdGenerator {
         return timestamp;
     }
 
-    protected long getDatacenterId() {
+    protected long getDatacenterId() { // TODO: unit test with empty array for nic.getHwAddress
+        byte[] hardwareAddress = null;
         try {
-
-            byte[] hardwareAddress = null;
             Enumeration<NetworkInterface> nics = NetworkInterface.getNetworkInterfaces();
-
-            while ((hardwareAddress == null) && (nics.hasMoreElements())) {
-               NetworkInterface nic = nics.nextElement();
-               hardwareAddress = nic.getHardwareAddress();
+            while (isInvalidHardwareAddress(hardwareAddress) && (nics.hasMoreElements())) {
+                NetworkInterface nic = nics.nextElement();
+                hardwareAddress = nic.getHardwareAddress();
             }
-
-            if (hardwareAddress==null) {
-                // no hardware address found, generate 6 random bytes
-                hardwareAddress = new byte[6];
-                new Random().nextBytes(hardwareAddress);
-            }
-
-            //System.out.println(DatatypeConverter.printHexBinary(mac));
-            long id = ((0x000000FF & (long) hardwareAddress[hardwareAddress.length - 1]) | (0x0000FF00 & (((long) hardwareAddress[hardwareAddress.length - 2]) << 8))) >> 6;
-            //System.out.println(id);
-            return id;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (SocketException e) {
+            log.error(e.getMessage(), e);
         }
+        if (isInvalidHardwareAddress(hardwareAddress)) {
+            // no hardware address found, generate 6 random bytes
+            hardwareAddress = new byte[6];
+            new Random().nextBytes(hardwareAddress);
+        }
+
+        long id = ((0x000000FF & (long) hardwareAddress[hardwareAddress.length - 1]) | (0x0000FF00 & (((long) hardwareAddress[hardwareAddress.length - 2]) << 8))) >> 6;
+        return id;
+    }
+
+    private boolean isInvalidHardwareAddress(byte[] hardwareAddress) {
+        return ((hardwareAddress == null) || (hardwareAddress.length<6));
     }
 
 }
-
-
