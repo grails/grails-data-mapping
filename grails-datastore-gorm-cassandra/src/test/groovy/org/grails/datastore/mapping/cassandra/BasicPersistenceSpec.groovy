@@ -1,35 +1,23 @@
 package org.grails.datastore.mapping.cassandra
 
 import grails.gorm.CassandraEntity
+import grails.gorm.tests.GormDatastoreSpec
 
 import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil
-import org.junit.Before
-import org.junit.Test
-import org.springframework.context.ApplicationEvent
-import org.springframework.context.ApplicationEventPublisher
 
 /**
  * @author Graeme Rocher
  * @since 1.1
  */
-class BasicPersistenceSpec extends AbstractCassandraTest {
-        
-    @Before
-    public void setUp() {
-        session.deleteAll(TestEntity)
-    }
+class BasicPersistenceSpec extends GormDatastoreSpec {
     
-    @Test
+	List getDomainClasses() {
+		[TestEntity]
+	}
+	
     void testBasicPersistenceOperations() {
-        datastore.mappingContext.addPersistentEntity(TestEntity)
-        session.applicationEventPublisher = new ApplicationEventPublisher() {
-                    @Override
-                    void publishEvent(ApplicationEvent applicationEvent) {
-                        println applicationEvent
-                    }
-                }
-
-        def te = session.retrieve(TestEntity, UUIDUtil.getRandomUUID())
+		given:
+        def te = session.retrieve(TestEntity, UUIDUtil.getTimeUUID())
 
         assert te == null
 
@@ -82,7 +70,6 @@ class TestEntity {
     int age
     
     static mapping = {
-        id name:"name"
         version false
     }
     
