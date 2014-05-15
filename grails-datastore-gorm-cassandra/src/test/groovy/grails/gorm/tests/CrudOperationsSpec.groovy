@@ -1,12 +1,19 @@
 package grails.gorm.tests
 
+import java.util.List;
+
 import grails.validation.ValidationException
 
 /**
  * @author graemerocher
  */
 class CrudOperationsSpec extends GormDatastoreSpec {
-
+	
+	@Override
+	public List getDomainClasses() {
+		[TestEntity]
+	}
+	
     void "Test get using a string-based key"() {
         given:
 
