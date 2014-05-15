@@ -54,7 +54,7 @@ class Setup {
             ensureKeyspace()
 
             def entities = []
-            for (cls in [TestEntity, Person]) {
+            for (cls in classes) {
                 entities << cassandraDatastore.mappingContext.addPersistentEntity(cls)
             }
 

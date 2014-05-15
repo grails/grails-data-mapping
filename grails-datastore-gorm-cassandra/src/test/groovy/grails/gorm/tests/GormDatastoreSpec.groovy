@@ -38,7 +38,7 @@ abstract class GormDatastoreSpec extends Specification {
 
     def setup() {
         cleanRegistry()
-        session = setupClass.setup(((TEST_CLASSES + getDomainClasses()) as Set) as List)
+        session = setupClass.setup(((getDomainClasses()) as Set) as List)
         DatastoreUtils.bindSession session
     }
 
