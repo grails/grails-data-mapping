@@ -16,6 +16,8 @@ package org.grails.datastore.mapping.cassandra.uuid;
 
 import java.nio.ByteBuffer;
 
+import com.datastax.driver.core.utils.UUIDs;
+
 /**
  * Utilities for creating Time based UUIDs for Cassandra
  *
@@ -26,9 +28,9 @@ import java.nio.ByteBuffer;
  */
 public class UUIDUtil {
 
-//    public static java.util.UUID getTimeUUID() {
-//        return java.util.UUID.fromString(new com.eaio.uuid.UUID().toString());
-//    }
+    public static java.util.UUID getTimeUUID() {
+        return UUIDs.timeBased();
+    }
 
     public static java.util.UUID getRandomUUID() {
         return java.util.UUID.randomUUID();
