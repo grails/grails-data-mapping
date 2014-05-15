@@ -16,7 +16,7 @@ abstract class AbstractCassandraTest {
 	protected static EmbeddedCassandraService cassandra
 	protected static CassandraDatastore datastore
 	protected static CassandraSession  session
-
+	protected static keyspace = "unittest"
 	@BeforeClass
 	static void setupCassandra() {
 		// Tell cassandra where the configuration files are.
@@ -26,7 +26,7 @@ abstract class AbstractCassandraTest {
 		ctx.refresh()
 
 		ConfigObject config = new ConfigObject()
-		datastore = new CassandraDatastore(new CassandraMappingContext(CassandraDatastore.DEFAULT_KEYSPACE), config, ctx)
+		datastore = new CassandraDatastore(new CassandraMappingContext(keyspace), config, ctx)
 		datastore.afterPropertiesSet()
 		session = datastore.connect()
 
@@ -34,7 +34,7 @@ abstract class AbstractCassandraTest {
 
 		try {
 			nativeSession.execute("""
-                CREATE KEYSPACE ${datastore.DEFAULT_KEYSPACE} WITH replication = {
+                CREATE KEYSPACE ${keyspace} WITH replication = {
                     'class': 'SimpleStrategy',
                     'replication_factor': '1'
                 };
