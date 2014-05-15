@@ -62,15 +62,16 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
     protected BasicCassandraMappingContext cassandraMappingContext;
     protected CassandraTemplate cassandraTemplate;
     protected boolean stateless = false;
+    protected String keyspace;
 
     public CassandraDatastore(Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         this(new CassandraMappingContext(CassandraDatastore.DEFAULT_KEYSPACE), connectionDetails, ctx);
     }
 
-    public CassandraDatastore(MappingContext mappingContext, Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
+    public CassandraDatastore(CassandraMappingContext mappingContext, Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         super(mappingContext, connectionDetails, ctx);
         cassandraMappingContext = new BasicCassandraMappingContext();
-
+        this.keyspace = mappingContext.getKeyspace();
         if (mappingContext != null) {
             mappingContext.addMappingContextListener(this);
         }
@@ -115,7 +116,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
             Assert.notNull(nativeCluster);
             CassandraSessionFactoryBean cassandraSessionFactory = new CassandraSessionFactoryBean();
             cassandraSessionFactory.setCluster(nativeCluster);
-            cassandraSessionFactory.setKeyspaceName(read(String.class, CASSANDRA_KEYSPACE, connectionDetails, DEFAULT_KEYSPACE));
+            cassandraSessionFactory.setKeyspaceName(read(String.class, CASSANDRA_KEYSPACE, connectionDetails, this.keyspace));
             MappingCassandraConverter mappingCassandraConverter = new MappingCassandraConverter(cassandraMapping());
             cassandraSessionFactory.setConverter(mappingCassandraConverter);
             cassandraSessionFactory.setSchemaAction(read(SchemaAction.class, CASSANDRA_SCHEMA_ACTION, connectionDetails, DEFAULT_SCHEMA_ACTION));
