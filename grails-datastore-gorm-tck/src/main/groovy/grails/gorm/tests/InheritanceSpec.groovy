@@ -97,7 +97,7 @@ class City extends Location {
 
 @Entity
 class Country extends Location {
-    Integer population
+    Integer population = 0
 
     static hasMany = [residents:Person]
     Set residents

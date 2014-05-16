@@ -1,6 +1,8 @@
 package org.grails.datastore.gorm
 
+import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.commons.metaclass.MetaClassEnhancer
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTransactionManager
@@ -8,8 +10,10 @@ import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
 import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateUtils
+import org.codehaus.groovy.grails.orm.hibernate.events.PatchedDefaultFlushEventListener
 import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
 import org.codehaus.groovy.grails.orm.hibernate.validation.HibernateConstraintsEvaluator
+import org.codehaus.groovy.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.codehaus.groovy.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.codehaus.groovy.grails.orm.hibernate.validation.UniqueConstraint
 //import org.codehaus.groovy.grails.plugins.web.api.ControllersDomainBindingApi
@@ -19,6 +23,7 @@ import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.h2.Driver
 import org.hibernate.SessionFactory
+import org.hibernate.cache.EhCacheRegionFactory
 import org.hibernate.cfg.Environment
 import org.hibernate.dialect.H2Dialect
 import org.springframework.beans.BeanUtils
@@ -30,23 +35,29 @@ import org.springframework.beans.factory.support.GenericBeanDefinition
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.orm.hibernate3.SessionFactoryUtils
+import org.springframework.orm.hibernate3.SessionHolder
 import org.springframework.orm.hibernate3.SpringSessionContext
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.DefaultTransactionDefinition
+import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 import org.springframework.util.Log4jConfigurer
 
 class Setup {
+    static GrailsApplication grailsApplication
     static HibernateDatastore hibernateDatastore
     static hibernateSession
     static GrailsHibernateTransactionManager transactionManager
+    static SessionFactory sessionFactory
     static TransactionStatus transactionStatus
     static GrailsAnnotationConfiguration hibernateConfig
+    static ApplicationContext applicationContext
 
+    @CompileStatic
     static destroy() {
         if (hibernateSession != null) {
-            SessionFactoryUtils.releaseSession hibernateSession, hibernateDatastore.sessionFactory
+            SessionFactoryUtils.releaseSession( (org.hibernate.Session)hibernateSession, hibernateDatastore.sessionFactory )
         }
         if (transactionStatus) {
             transactionManager.rollback(transactionStatus)
@@ -55,13 +66,25 @@ class Setup {
         if(hibernateConfig != null) {
             hibernateConfig = null
         }
+        grailsApplication = null
+        hibernateDatastore = null
+        hibernateSession = null
+        transactionManager = null
+        sessionFactory = null
+        applicationContext = null
     }
 
-    static Session setup(List<Class> classes) {
+    static Session setup(List<Class> classes, ConfigObject grailsConfig = null, boolean isTransactional = true) {
+        ExpandoMetaClass.enableGlobally()
 //        Log4jConfigurer.initLogging("classpath:log4j.properties")
 
-        def grailsApplication = new DefaultGrailsApplication(classes as Class[], Setup.getClassLoader())
-        def ctx = new GenericApplicationContext()
+        grailsApplication = new DefaultGrailsApplication(classes as Class[], new GroovyClassLoader(Setup.getClassLoader()))
+        if(grailsConfig) {
+            grailsApplication.config.putAll(grailsConfig)
+        }
+
+        applicationContext = new GenericApplicationContext()
+        def ctx = applicationContext
 
         grailsApplication.applicationContext = ctx
         grailsApplication.mainContext = ctx
@@ -88,11 +111,15 @@ class Setup {
         config.setProperty Environment.SHOW_SQL, "true"
         config.setProperty Environment.FORMAT_SQL, "true"
         config.setProperty Environment.CURRENT_SESSION_CONTEXT_CLASS, SpringSessionContext.name
+        config.setProperty Environment.USE_SECOND_LEVEL_CACHE, "true"
+        config.setProperty Environment.USE_QUERY_CACHE, "true"
+        config.setProperty Environment.CACHE_REGION_FACTORY, EhCacheRegionFactory.name
 
         hibernateConfig = new GrailsAnnotationConfiguration()
         hibernateConfig.setProperties config
 
         def eventTriggeringInterceptor = new ClosureEventTriggeringInterceptor(applicationContext: ctx)
+        hibernateConfig.setListener('flush', new PatchedDefaultFlushEventListener())
         hibernateConfig.setListener 'pre-load', eventTriggeringInterceptor
         hibernateConfig.setListener 'post-load', eventTriggeringInterceptor
         hibernateConfig.setListener 'save', eventTriggeringInterceptor
@@ -109,7 +136,7 @@ class Setup {
         def context = new GrailsDomainClassMappingContext(grailsApplication)
         ctx.beanFactory.registerSingleton 'grailsDomainClassMappingContext', context
 
-        SessionFactory sessionFactory = hibernateConfig.buildSessionFactory()
+        sessionFactory = hibernateConfig.buildSessionFactory()
         ctx.beanFactory.registerSingleton 'sessionFactory', sessionFactory
 
         transactionManager = new GrailsHibernateTransactionManager(sessionFactory: sessionFactory)
@@ -132,12 +159,12 @@ class Setup {
 
             metaClassEnhancer.enhance dc.metaClass
 
-            def validator = [supports: { Class c -> true}, validate: { target, Errors errors ->
-                for (ConstrainedProperty cp in evaluator.evaluate(dc.clazz).values()) {
-                    cp.validate(target, target[cp.propertyName], errors)
-                }
-            }] as Validator
 
+            def validator = new HibernateDomainClassValidator()
+            validator.sessionFactory = sessionFactory
+            validator.grailsApplication = grailsApplication
+            validator.domainClass = dc
+            validator.messageSource = ctx
             dc.validator = validator
 
             dc.metaClass.constructor = { ->
@@ -160,14 +187,17 @@ class Setup {
         } as MappingContext.Listener)
 
         transactionManager = new GrailsHibernateTransactionManager(sessionFactory: sessionFactory)
-        if (transactionStatus == null) {
+        if (transactionStatus == null && isTransactional) {
             transactionStatus = transactionManager.getTransaction(new DefaultTransactionDefinition())
         }
-        else {
+        else if(isTransactional){
             throw new RuntimeException("new transaction started during active transaction")
         }
 
         hibernateSession = SessionFactoryUtils.doGetSession(sessionFactory, true)
+        if(!isTransactional) {
+            TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(hibernateSession))
+        }
 
         ApplicationContext.metaClass.getProperty = { String name ->
             if (delegate.containsBean(name)) {

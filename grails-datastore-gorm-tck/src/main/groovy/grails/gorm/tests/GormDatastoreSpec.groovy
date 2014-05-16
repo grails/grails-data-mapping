@@ -66,7 +66,7 @@ abstract class GormDatastoreSpec extends Specification {
         }
     }
 
-    static private loadSetupClass() {
+    static Class loadSetupClass() {
         try {
             getClassLoader().loadClass(SETUP_CLASS_NAME)
         } catch (Throwable e) {

@@ -50,6 +50,11 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 public class HibernateSession extends AbstractHibernateSession {
 
     ProxyHandler proxyHandler = new HibernateProxyHandler();
+
+    public HibernateSession(HibernateDatastore hibernateDatastore) {
+        this(hibernateDatastore, hibernateDatastore.getSessionFactory());
+    }
+
     public HibernateSession(HibernateDatastore hibernateDatastore, SessionFactory sessionFactory) {
         super(hibernateDatastore, sessionFactory);
 

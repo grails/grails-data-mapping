@@ -128,6 +128,7 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
 @Entity
 class UniqueGroup implements Serializable {
     Long id
+    Long version
     String name
     static constraints = {
         name unique:true, index:true
@@ -137,6 +138,7 @@ class UniqueGroup implements Serializable {
 @Entity
 class GroupWithin implements Serializable {
     Long id
+    Long version
     String name
     String org
     static constraints = {

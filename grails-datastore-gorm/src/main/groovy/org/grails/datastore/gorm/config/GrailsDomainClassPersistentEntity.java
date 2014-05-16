@@ -71,7 +71,9 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
 
     public void initialize() {
         identifier = new GrailsDomainClassPersistentProperty(this, domainClass.getIdentifier());
+        propertiesByName.put(identifier.getName(), identifier);
         version = new GrailsDomainClassPersistentProperty(this, domainClass.getVersion());
+        propertiesByName.put(version.getName(), version);
 
         mappingContext.addEntityValidator(this, domainClass.getValidator());
 
