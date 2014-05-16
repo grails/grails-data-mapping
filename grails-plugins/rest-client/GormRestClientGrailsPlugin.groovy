@@ -19,7 +19,7 @@ import org.grails.datastore.gorm.rest.client.plugin.support.*
  */
 class GormRestClientGrailsPlugin {
     // the plugin version
-    def version = "1.0.0.M1"
+    def version = "1.0.0.M2"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > *"
     // resources that are excluded from plugin packaging

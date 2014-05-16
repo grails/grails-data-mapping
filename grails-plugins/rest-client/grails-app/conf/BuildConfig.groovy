@@ -44,7 +44,6 @@ grails.project.dependency.resolution = {
             excludes group:"org.grails", name:'grails-test'
             excludes group:'xml-apis', name:'xml-apis'
             excludes 'ehcache-core'
-            transitive = false
         }
 
 
@@ -57,12 +56,14 @@ grails.project.dependency.resolution = {
                 "org.grails:grails-datastore-core:$datastoreVersion",                
                 "org.grails:grails-datastore-web:$datastoreVersion",excludes)
         
-        runtime 'org.javassist:javassist:3.16.1-GA'
+        runtime 'org.javassist:javassist:3.17.1-GA'
+
+        build 'org.apache.maven:maven-repository-metadata:2.1.0'
     }
 
     plugins {
-        build(":release:3.0.0",
-              ":rest-client-builder:1.0.3") {
+        build(":release:3.0.1",
+              ":rest-client-builder:2.0.1") {
             export = false
         }
     }
