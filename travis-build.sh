@@ -1,2 +1,7 @@
 export GRADLE_OPTS="-Xmx2048m -Xms256m -XX:MaxPermSize=768m -XX:+CMSClassUnloadingEnabled -XX:+HeapDumpOnOutOfMemoryError" 
-./gradlew test -PisCiBuild=true -x :grails-datastore-gorm-cassandra:test -x :grails-datastore-gorm-simpledb:test -x :grails-datastore-gorm-dynamodb:test -x :grails-datastore-gorm-gemfire:test -x signArchives -x :grails-documentation-redis:docs -x :grails-documentation-simpledb:docs -x :grails-documentation-neo4j:docs 
+
+
+./gradlew grails-datastore-gorm-hibernate:test
+./gradlew grails-datastore-gorm-hibernate4:test
+./gradlew grails-datastore-gorm-mongodb:test
+./gradlew grails-datastore-gorm-test:test
