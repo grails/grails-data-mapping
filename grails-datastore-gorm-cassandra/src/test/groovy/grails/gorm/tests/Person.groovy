@@ -16,9 +16,9 @@ class Person implements Serializable, Comparable<Person> {
     String firstName
     String lastName
     Integer age = 0
-    Set<Pet> pets = [] as Set
-    static hasMany = [pets:Pet]
-    Face face
+    //Set<Pet> pets = [] as Set
+    //static hasMany = [pets:Pet]
+    //Face face
     boolean myBooleanProperty
 
 //    static peopleWithOlderPets = where {
@@ -35,9 +35,9 @@ class Person implements Serializable, Comparable<Person> {
     }
 
     static mapping = {
-        firstName index:true
-        lastName index:true
-        age index:true
+        id name:"firstName", primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned"       
+        lastName index:true, primaryKey:[ordinal:1, type: "clustered"]
+        age index:true, primaryKey:[ordinal:2, type: "clustered"]
     }
 
     static constraints = {
