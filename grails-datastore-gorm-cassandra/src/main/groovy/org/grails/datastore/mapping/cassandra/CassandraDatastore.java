@@ -16,13 +16,13 @@ package org.grails.datastore.mapping.cassandra;
 
 import static org.grails.datastore.mapping.config.utils.ConfigUtils.read;
 
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
@@ -33,17 +33,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cassandra.config.CassandraCqlClusterFactoryBean;
+import org.springframework.cassandra.core.SessionCallback;
+import org.springframework.cassandra.core.cql.generator.CreateIndexCqlGenerator;
+import org.springframework.cassandra.core.keyspace.CreateIndexSpecification;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.convert.converter.Converter;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.convert.CassandraConverter;
 import org.springframework.data.cassandra.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.mapping.BasicCassandraMappingContext;
+import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
+import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
+import org.springframework.data.mapping.PropertyHandler;
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.ResultSet;
 
 public class CassandraDatastore extends AbstractDatastore implements InitializingBean, DisposableBean, MappingContext.Listener {
 
@@ -65,32 +72,27 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
     protected String keyspace;
 
     public CassandraDatastore(Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
-        this(new CassandraMappingContext(CassandraDatastore.DEFAULT_KEYSPACE), connectionDetails, ctx);
+        this(null, connectionDetails, ctx);
     }
 
     public CassandraDatastore(CassandraMappingContext mappingContext, Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
-        super(mappingContext, connectionDetails, ctx);
+        this.connectionDetails = connectionDetails != null ? connectionDetails : Collections.<String, String> emptyMap();
+        this.keyspace = read(String.class, CASSANDRA_KEYSPACE, connectionDetails, DEFAULT_KEYSPACE);
+        setApplicationContext(ctx);
+        if (mappingContext == null) {
+            mappingContext = new CassandraMappingContext(keyspace);
+        } else {
+            if (StringUtils.isNotBlank(mappingContext.getKeyspace())) {
+                this.keyspace = mappingContext.getKeyspace();
+            }
+        }
+        this.mappingContext = mappingContext;
         cassandraMappingContext = new BasicCassandraMappingContext();
-        this.keyspace = mappingContext.getKeyspace();
         if (mappingContext != null) {
             mappingContext.addMappingContextListener(this);
         }
 
         initializeConverters(mappingContext);
-
-        mappingContext.getConverterRegistry().addConverter(new Converter<Date, Calendar>() {
-            public Calendar convert(Date source) {
-                Calendar dest = Calendar.getInstance();
-                dest.setTime(source);
-                return dest;
-            }
-        });
-
-        mappingContext.getConverterRegistry().addConverter(new Converter<Calendar, Date>() {
-            public Date convert(Calendar source) {
-                return source.getTime();
-            }
-        });
 
     }
 
@@ -114,9 +116,10 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
     public com.datastax.driver.core.Session createNativeSession() throws ClassNotFoundException, Exception {
         if (nativeSession == null) {
             Assert.notNull(nativeCluster);
-            CassandraSessionFactoryBean cassandraSessionFactory = new CassandraSessionFactoryBean();
+            Assert.notNull(keyspace);
+            GormCassandraSessionFactoryBean cassandraSessionFactory = new GormCassandraSessionFactoryBean();
             cassandraSessionFactory.setCluster(nativeCluster);
-            cassandraSessionFactory.setKeyspaceName(read(String.class, CASSANDRA_KEYSPACE, connectionDetails, this.keyspace));
+            cassandraSessionFactory.setKeyspaceName(this.keyspace);
             MappingCassandraConverter mappingCassandraConverter = new MappingCassandraConverter(cassandraMapping());
             cassandraSessionFactory.setConverter(mappingCassandraConverter);
             cassandraSessionFactory.setSchemaAction(read(SchemaAction.class, CASSANDRA_SCHEMA_ACTION, connectionDetails, DEFAULT_SCHEMA_ACTION));
@@ -182,4 +185,53 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
         }
     }
 
+    // TODO: replace index creation when spring-data-cassandra has implemented
+    // it
+    private static class GormCassandraSessionFactoryBean extends CassandraSessionFactoryBean {
+        @Override
+        public void afterPropertiesSet() throws Exception {
+            super.afterPropertiesSet();
+            performIndexAction();
+        }
+
+        private void performIndexAction() {
+            switch (schemaAction) {
+
+            case NONE:
+                return;
+
+            case RECREATE_DROP_UNUSED:
+                // don't break!
+            case RECREATE:
+                // don't break!
+            case CREATE:
+                createIndex();
+            }
+
+        }
+
+        private void createIndex() {
+            Collection<? extends CassandraPersistentEntity<?>> entities = converter.getMappingContext().getNonPrimaryKeyEntities();
+            for (final CassandraPersistentEntity<?> entity : entities) {
+                entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
+                    @Override
+                    public void doWithPersistentProperty(CassandraPersistentProperty persistentProperty) {
+                        if (persistentProperty.isIndexed()) {
+                            final CreateIndexSpecification createIndexSpecification = new CreateIndexSpecification();
+                            createIndexSpecification.tableName(entity.getTableName()).columnName(persistentProperty.getColumnName()).ifNotExists();
+                            admin.execute(new SessionCallback<ResultSet>() {
+                                @Override
+                                public ResultSet doInSession(com.datastax.driver.core.Session s) throws DataAccessException {
+                                    String cql = CreateIndexCqlGenerator.toCql(createIndexSpecification);
+                                    log.debug(cql);
+                                    return s.execute(cql);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+        }
+    }
 }
