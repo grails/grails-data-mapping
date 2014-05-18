@@ -54,8 +54,10 @@ class GormToCassandraTest {
     
         static mapping = {
             table "the_person"
-            lastname primaryKey:[ordinal:0, type:"partitioned"]
+            id name:"lastname", primaryKey:[ordinal:0, type:"partitioned"]
             firstname primaryKey:[ordinal:1, type: "clustered"]
+            nickname index:true
+            birthDate index:true
         }
     }
 
