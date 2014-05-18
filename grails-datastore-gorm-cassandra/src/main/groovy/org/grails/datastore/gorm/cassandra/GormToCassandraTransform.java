@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -53,6 +54,7 @@ import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
 import org.springframework.cassandra.core.PrimaryKeyType;
+import org.springframework.data.cassandra.mapping.Indexed;
 import org.springframework.data.cassandra.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.mapping.Table;
 import org.springframework.util.ClassUtils;
@@ -92,14 +94,14 @@ public class GormToCassandraTransform implements ASTTransformation {
         try {
             transformEntity(source, cNode);
         } catch (Exception e) {
-            String message = "Error occured transfoming GORM entity to Cassandra entity: " + ExceptionUtils.getStackTrace(e);  
+            String message = "Error occured transfoming GORM entity to Cassandra entity: " + ExceptionUtils.getStackTrace(e);
             LOG.error(message, e);
             source.getErrorCollector().addFatalError(new SimpleMessage(message, source));
         }
     }
 
     public static void transformEntity(SourceUnit source, ClassNode classNode) {
-       
+
         classNode.addAnnotation(ANNOTATION_ENTITY);
 
         PropertyNode mappingNode = classNode.getProperty(GrailsDomainClassProperty.MAPPING);
@@ -145,12 +147,19 @@ public class GormToCassandraTransform implements ASTTransformation {
                 }
                 primaryKeyPropertyName = propertyName;
             }
+
             if (propertyConfig.containsKey("generator")) {
                 String generatorName = propertyConfig.get("generator").toString();
                 if ("assigned".equals(generatorName)) {
                     generationType = null;
                 }
             }
+
+            if (propertyConfig.containsKey("index") && BooleanUtils.toBoolean(propertyConfig.get("index").toString())) {
+                AnnotationNode indexAnnotation = new AnnotationNode(new ClassNode(Indexed.class));
+                annotateProperty(classNode, propertyName, indexAnnotation);
+            }
+
             if (annotatePrimaryKey) {
                 AnnotationNode primaryKeyAnnotation = new AnnotationNode(new ClassNode(PrimaryKeyColumn.class));
                 if (columnName != null) {
