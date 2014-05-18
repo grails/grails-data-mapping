@@ -80,7 +80,17 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<En
     public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
         return null;
     }
-
+    
+    @Override
+    protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj) {
+        return new EntityAccess(persistentEntity, obj);        
+    }
+    
+    @Override
+    protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, final EntityAccess nativeEntry) {
+        return new NativeEntryModifyingEntityAccess(persistentEntity, obj);
+    }
+    
     @Override
     protected EntityAccess createNewEntry(String family, Object instance) {
         return new EntityAccess(null, instance);
@@ -109,6 +119,12 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<En
         return entity == null ? null : new EntityAccess(persistentEntity, entity);
     }
 
+    @Override
+    public Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, EntityAccess nativeEntry) {        
+        cacheNativeEntry(persistentEntity, nativeKey, nativeEntry);
+        return nativeEntry.getEntity();               
+    }
+        
     @Override
     protected Object storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object storeId, EntityAccess entry) {       
         getCassandraTemplate().insert(entityAccess.getEntity());
