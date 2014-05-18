@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
+import org.grails.datastore.mapping.cassandra.CassandraSession
 import org.grails.datastore.mapping.core.DatastoreUtils
-import org.grails.datastore.mapping.core.Session
 
 import spock.lang.Shared
 import spock.lang.Specification
@@ -21,15 +21,16 @@ import spock.lang.Specification
 abstract class GormDatastoreSpec extends Specification {
 
     static final SETUP_CLASS_NAME = 'org.grails.datastore.gorm.Setup'
-    static final TEST_CLASSES = [
-         Book, ChildEntity, City, ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,
-         ClassWithOverloadedBeforeValidate, CommonTypes, Country, EnumThing, Face, Highway,
-         Location, ModifyPerson, Nose, OptLockNotVersioned, OptLockVersioned, Person, PersonEvent,
-         Pet, PetType, Plant, PlantCategory, Publication, Task, TestEntity]
-
+//    static final TEST_CLASSES = [
+//         Book, ChildEntity, City, ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,
+//         ClassWithOverloadedBeforeValidate, CommonTypes, Country, EnumThing, Face, Highway,
+//         Location, ModifyPerson, Nose, OptLockNotVersioned, OptLockVersioned, Person, PersonEvent,
+//         Pet, PetType, Plant, PlantCategory, Publication, Task, TestEntity]
+    static final TEST_CLASSES = [TestEntity, Person, Highway, Book]
+    
     @Shared Class setupClass
 
-    Session session
+    CassandraSession session
 
     def setupSpec() {
         ExpandoMetaClass.enableGlobally()
@@ -38,7 +39,7 @@ abstract class GormDatastoreSpec extends Specification {
 
     def setup() {
         cleanRegistry()
-        session = setupClass.setup(((getDomainClasses()) as Set) as List)
+        session = setupClass.setup(((TEST_CLASSES + getDomainClasses()) as Set) as List)
         DatastoreUtils.bindSession session
     }
 
