@@ -3,6 +3,7 @@ package org.grails.datastore.gorm
 import grails.gorm.CassandraEntity
 
 import org.springframework.cassandra.core.PrimaryKeyType
+import org.springframework.data.cassandra.mapping.Indexed
 import org.springframework.data.cassandra.mapping.PrimaryKeyColumn
 import org.springframework.data.cassandra.mapping.Table
 
@@ -77,7 +78,18 @@ class CassandraTransformTest extends GroovyTestCase {
         assert ann != null
         assert ann.ordinal() == 1
         assert ann.type() == PrimaryKeyType.CLUSTERED
-
+        
+        field = Person.class.getDeclaredField("nickname")
+        assert field != null
+        ann = field.getAnnotation(Indexed)
+        assert ann != null
+        
+        field = Person.class.getDeclaredField("birthDate")
+        assert field != null
+        ann = field.getAnnotation(Indexed)
+        assert ann != null
+        
+        
         shouldFail {
             Person.class.getDeclaredField("id")
         }
@@ -123,8 +135,10 @@ class Person {
 
     static mapping = {
         table "the_person"
-        lastname primaryKey:[ordinal:0, type:"partitioned"]
+        id name:"lastname", primaryKey:[ordinal:0, type:"partitioned"]
         firstname primaryKey:[ordinal:1, type: "clustered"]
+        nickname index:true
+        birthDate index:true
     }
 }
 
