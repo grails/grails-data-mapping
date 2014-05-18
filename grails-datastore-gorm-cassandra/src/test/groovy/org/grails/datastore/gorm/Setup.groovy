@@ -1,15 +1,10 @@
 package org.grails.datastore.gorm
 
-import grails.gorm.tests.Person
-import grails.gorm.tests.TestEntity
-
-import org.grails.datastore.gorm.cassandra.CassandraGormEnhancer
 import org.grails.datastore.gorm.cassandra.plugin.support.CassandraMethodsConfigurer
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.mapping.cassandra.CassandraDatastore
 import org.grails.datastore.mapping.core.Session
-import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.context.support.GenericApplicationContext
@@ -40,7 +35,7 @@ class Setup {
         return caught
     }
 
-    static Session setup(List<Class> classes) {
+    static Session setup(List<Class> classes) {        
         if (cassandraDatastore == null) {
             def ctx = new GenericApplicationContext()
             ctx.refresh()
@@ -68,25 +63,17 @@ class Setup {
                     }
                 }
             ] as Validator)
-
-            cassandraDatastore.afterPropertiesSet()
-
-            cassandraDatastore.mappingContext.addMappingContextListener({ e ->
-                enhancer.enhance e
-                println "enhance " + e
-            } as MappingContext.Listener)
-
+                                                                
             cassandraDatastore.applicationContext.addApplicationListener new DomainEventListener(cassandraDatastore)
             cassandraDatastore.applicationContext.addApplicationListener new AutoTimestampEventListener(cassandraDatastore)
+            
+            cassandraDatastore.afterPropertiesSet()
         }
-
+        
         def txMgr = new DatastoreTransactionManager(datastore: cassandraDatastore)
-        CassandraMethodsConfigurer methodsConfigurer = new CassandraMethodsConfigurer(cassandraDatastore, txMgr)
+        CassandraMethodsConfigurer methodsConfigurer = new CassandraMethodsConfigurer(cassandraDatastore)
         methodsConfigurer.configure()
-
-
-        def enhancer = new CassandraGormEnhancer(cassandraDatastore)
-
+        
         def cassandraSession = cassandraDatastore.connect()
 
         deleteAllEntities(cassandraSession)
