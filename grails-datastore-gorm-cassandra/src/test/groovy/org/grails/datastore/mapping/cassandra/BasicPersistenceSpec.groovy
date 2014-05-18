@@ -1,7 +1,7 @@
 package org.grails.datastore.mapping.cassandra
 
-import grails.gorm.CassandraEntity
 import grails.gorm.tests.GormDatastoreSpec
+import grails.gorm.tests.TestEntity
 
 import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil
 
@@ -10,67 +10,59 @@ import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil
  * @since 1.1
  */
 class BasicPersistenceSpec extends GormDatastoreSpec {
-    
-	List getDomainClasses() {
-		[TestEntity]
-	}
-	
+
     void testBasicPersistenceOperations() {
-		given:
+        when:
         def te = session.retrieve(TestEntity, UUIDUtil.getTimeUUID())
 
-        assert te == null
-
-        te = new TestEntity(name: "Bob", age: 45)
-
-        session.persist(te)
-        session.flush()
+        then:
+            te == null
         
-        assert te != null
-        assert te.id != null
-        assert te.id instanceof UUID
-
-        session.clear()
-        def t2 = session.retrieve(TestEntity, te.id)
-
-        println t2.id.toString() + " - " + t2.name
-
-        assert t2 != null
-        assert t2.name == "Bob" 
-        assert t2.age == 45 
-        assert t2.id != null
-        assert t2.id instanceof UUID
-
-        te.age = 55
-        session.persist(te)  
-        def tcached = session.retrieve(TestEntity, te.id)
-        assert tcached == te  
-        session.flush()
-        session.clear()
+        when:
+            te = new TestEntity(name: "Bob", age: 45)
+    
+            session.persist(te)
+            session.flush()
+        then:
+            te != null
+            te.id != null
+            te.id instanceof UUID
+    
+        when:
+            session.clear()
+            def t2 = session.retrieve(TestEntity, te.id)
+    
+        then:
+    
+            t2 != null
+            t2.name == "Bob"
+            t2.age == 45
+            t2.id != null
+            t2.id instanceof UUID
         
-        te = session.retrieve(TestEntity, te.id)
-
-        assert te != null
-        assert te.id != null
-        assert te.name == "Bob"
-        assert te.age == 55 
+        when:
+            te.age = 55
+            session.persist(te)
+            def tcached = session.retrieve(TestEntity, te.id)
+        then:
+            tcached == te
         
-        session.delete(te)
-        session.flush()
-
-        def deletedEntity = session.retrieve(TestEntity, te.id)
-        assert deletedEntity == null
+        when:    
+            session.flush()
+            session.clear()             
+            te = session.retrieve(TestEntity, te.id)
+        
+        then:
+            te != null
+            te.id != null
+            te.name == "Bob"
+            te.age == 55
+        
+        when:
+            session.delete(te)
+            session.flush()            
+            def deletedEntity = session.retrieve(TestEntity, te.id)
+        then:
+             deletedEntity == null
     }
-}
-
-@CassandraEntity
-class TestEntity {
-    
-    String name
-    int age
-    
-    static mapping = {
-        version false
-    }
-    
 }
