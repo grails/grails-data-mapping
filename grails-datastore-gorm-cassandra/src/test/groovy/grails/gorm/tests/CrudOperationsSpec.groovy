@@ -1,7 +1,5 @@
 package grails.gorm.tests
 
-import java.util.List;
-
 import grails.validation.ValidationException
 
 /**
@@ -9,17 +7,12 @@ import grails.validation.ValidationException
  */
 class CrudOperationsSpec extends GormDatastoreSpec {
 	
-	@Override
-	public List getDomainClasses() {
-		[TestEntity]
-	}
-	
     void "Test get using a string-based key"() {
         given:
 
             def t = new TestEntity(name:"Bob")
             t.save(flush:true)
-            
+            session.clear()
         when:
             t = TestEntity.get("${t.id}")
 
@@ -59,6 +52,7 @@ class CrudOperationsSpec extends GormDatastoreSpec {
         given:
             def t = new TestEntity(name:"Bob")
             t.save(param:"one", flush: true)
+            
         when:
             t = TestEntity.get(t.id)
         then:
