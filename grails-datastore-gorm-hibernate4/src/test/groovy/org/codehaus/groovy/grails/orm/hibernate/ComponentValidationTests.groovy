@@ -24,6 +24,12 @@ class ComponentValidationTests extends AbstractGrailsHibernateTests {
     @Test
     void testComponentValidation() {
 
+
+        ConstrainedProperty.removeConstraint("custom")
+        ga.refreshConstraints()
+
+        assert !ConstrainedProperty.hasRegisteredConstraint("custom")
+
         def person = new ComponentValidationTestsPerson()
         person.name = 'graeme'
         def date = new Date()
