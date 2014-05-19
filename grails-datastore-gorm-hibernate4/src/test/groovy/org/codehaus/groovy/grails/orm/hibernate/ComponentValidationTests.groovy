@@ -2,6 +2,7 @@ package org.codehaus.groovy.grails.orm.hibernate
 
 import org.codehaus.groovy.grails.validation.AbstractConstraint
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.junit.Before
 import org.junit.Test
 import org.springframework.validation.Errors
 
@@ -15,6 +16,11 @@ import static junit.framework.Assert.*
  */
 class ComponentValidationTests extends AbstractGrailsHibernateTests {
 
+    @Before
+    void setup() {
+        ConstrainedProperty.removeConstraint("custom")
+    }
+
     @Test
     void testComponentValidation() {
 
@@ -23,9 +29,7 @@ class ComponentValidationTests extends AbstractGrailsHibernateTests {
         def date = new Date()
         person.auditInfo = new ComponentValidationTestsAuditInfo(dateEntered:date,dateUpdated:date,enteredBy:'chris',updatedBy:'chris')
 
-        person.save()
-
-        assertNotNull person.id
+        assert person.save(flush:true)
     }
 
     @Test
