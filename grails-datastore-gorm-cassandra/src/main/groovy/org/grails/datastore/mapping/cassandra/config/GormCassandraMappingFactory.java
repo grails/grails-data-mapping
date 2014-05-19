@@ -13,13 +13,13 @@ import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 
-public class CassandraKeyValueMappingFactory extends GormKeyValueMappingFactory {
+public class GormCassandraMappingFactory extends GormKeyValueMappingFactory {
 
-    private static Logger log = LoggerFactory.getLogger(CassandraKeyValueMappingFactory.class);
+    private static Logger log = LoggerFactory.getLogger(GormCassandraMappingFactory.class);
 	private String keyspace;
 	private Closure defaultMapping;
 
-	public CassandraKeyValueMappingFactory(String keyspace) {
+	public GormCassandraMappingFactory(String keyspace) {
 		super(keyspace);
 		this.keyspace = keyspace;
 	}
