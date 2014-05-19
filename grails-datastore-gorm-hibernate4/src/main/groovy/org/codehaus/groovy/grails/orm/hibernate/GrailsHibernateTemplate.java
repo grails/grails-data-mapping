@@ -81,6 +81,12 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
         if(connectionProvider instanceof DatasourceConnectionProviderImpl) {
             jdbcExceptionTranslator = new SQLErrorCodeSQLExceptionTranslator(((DatasourceConnectionProviderImpl) connectionProvider).getDataSource());
         }
+        else {
+            // must be in unit test mode, setup default translator
+            SQLErrorCodeSQLExceptionTranslator sqlErrorCodeSQLExceptionTranslator = new SQLErrorCodeSQLExceptionTranslator();
+            sqlErrorCodeSQLExceptionTranslator.setDatabaseProductName("H2");
+            jdbcExceptionTranslator = sqlErrorCodeSQLExceptionTranslator;
+        }
     }
     public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application) {
         this(sessionFactory);
@@ -588,7 +594,10 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
     }
 
     protected DataAccessException convertJdbcAccessException(JDBCException ex, SQLExceptionTranslator translator) {
-        return translator.translate("Hibernate operation: " + ex.getMessage(), ex.getSQL(), ex.getSQLException());
+        String msg = ex.getMessage();
+        String sql = ex.getSQL();
+        SQLException sqlException = ex.getSQLException();
+        return translator.translate("Hibernate operation: " + msg, sql, sqlException);
     }
 
     public Serializable save(Object o) {

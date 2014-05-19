@@ -5,6 +5,7 @@ import grails.gorm.tests.CircularOneToManySpec
 import grails.gorm.tests.CommonTypesPersistenceSpec
 import grails.gorm.tests.CriteriaBuilderSpec
 import grails.gorm.tests.CrudOperationsSpec
+import grails.gorm.tests.DetachedCriteriaSpec
 import grails.gorm.tests.DomainEventsSpec
 import grails.gorm.tests.FindByMethodSpec
 import grails.gorm.tests.FindWhereSpec
@@ -21,6 +22,7 @@ import grails.gorm.tests.ProxyLoadingSpec
 import grails.gorm.tests.QueryAfterPropertyChangeSpec
 import grails.gorm.tests.RangeQuerySpec
 import grails.gorm.tests.SaveAllSpec
+import grails.gorm.tests.SizeQuerySpec
 import grails.gorm.tests.UpdateWithProxyPresentSpec
 import grails.gorm.tests.ValidationSpec
 import grails.gorm.tests.WithTransactionSpec
@@ -35,7 +37,7 @@ import org.junit.runners.Suite.SuiteClasses
 //  ValidationSpec,
 //  GroovyProxySpec,
 //  CommonTypesPersistenceSpec,
-//  OneToManySpec,
+//  OneToManySpec
 //  SaveAllSpec,
 //  GormEnhancerSpec,
 //  DomainEventsSpec,
@@ -57,6 +59,8 @@ import org.junit.runners.Suite.SuiteClasses
 //  SaveAllSpec,
 //  DeleteAllSpec
 //    OneToOneSpec
-    FindWhereSpec
+//    FindWhereSpec
+//DetachedCriteriaSpec
+SizeQuerySpec
 ])
 class HibernateSuite {}

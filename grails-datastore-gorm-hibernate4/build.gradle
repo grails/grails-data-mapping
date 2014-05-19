@@ -74,6 +74,9 @@ dependencies {
     testCompile project(":grails-datastore-gorm-tck")
     testCompile "com.h2database:h2:1.3.164"
 
+    testCompile "net.sf.ehcache:ehcache-core:2.4.6"
+    testCompile "org.hibernate:hibernate-ehcache:4.3.5.Final"
+
     optional "javax.servlet:servlet-api:2.5"
     def excludes = {
         exclude group:"org.grails",module: "grails-plugin-url-mappings"
