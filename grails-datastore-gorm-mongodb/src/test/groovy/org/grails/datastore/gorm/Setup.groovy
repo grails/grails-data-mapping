@@ -3,6 +3,7 @@ package org.grails.datastore.gorm
 
 import com.mongodb.BasicDBObject
 import com.mongodb.DBObject
+import grails.gorm.tests.GormDatastoreSpec
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.mongo.Birthday
@@ -15,6 +16,7 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.MongoSession
+import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query.Between
 import org.grails.datastore.mapping.query.Query.PropertyCriterion
@@ -39,7 +41,7 @@ class Setup {
     }
 
     static Session setup(classes) {
-        mongo = new MongoDatastore()
+        mongo = new MongoDatastore(new MongoMappingContext(System.getProperty(GormDatastoreSpec.CURRENT_TEST_NAME) ?: 'test'), Collections.emptyMap(), null)
         def ctx = new GenericApplicationContext()
         ctx.refresh()
         mongo.applicationContext = ctx

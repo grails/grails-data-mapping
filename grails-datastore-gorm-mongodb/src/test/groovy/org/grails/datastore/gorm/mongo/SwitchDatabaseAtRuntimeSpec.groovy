@@ -24,6 +24,7 @@ class SwitchDatabaseAtRuntimeSpec extends GormDatastoreSpec {
     void "Test switch database at runtime"() {
         given:"Some test data"
             createPeople()
+            def initialDb = Person.DB.name
 
         when:"A count is issued"
             int total = Person.count()
@@ -51,7 +52,7 @@ class SwitchDatabaseAtRuntimeSpec extends GormDatastoreSpec {
 
         then:"the people count is 6 again"
             Person.count() == 6
-            Person.DB.name == 'test'
+            Person.DB.name == initialDb
     }
 
 

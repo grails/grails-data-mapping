@@ -93,6 +93,11 @@ sourceSets {
     }
 }
 
+test {
+    forkEvery = 30
+    maxParallelForks = 4
+}
+
 //test {
 //    if (System.getProperty('debug', 'false') == 'true') {
 //        jvmArgs '-server','-Xmx2048M', '-Xms64M', '-XX:PermSize=32m','-XX:MaxPermSize=256m', '-Xdebug',

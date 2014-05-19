@@ -20,6 +20,7 @@ import spock.lang.Specification
  */
 abstract class GormDatastoreSpec extends Specification {
 
+    static final CURRENT_TEST_NAME = "current.gorm.test"
     static final SETUP_CLASS_NAME = 'org.grails.datastore.gorm.Setup'
     static final TEST_CLASSES = [
          Book, ChildEntity, City, ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,
@@ -38,6 +39,7 @@ abstract class GormDatastoreSpec extends Specification {
 
     def setup() {
         cleanRegistry()
+        System.setProperty(CURRENT_TEST_NAME, this.getClass().simpleName - 'Spec')
         session = setupClass.setup(((TEST_CLASSES + getDomainClasses()) as Set) as List)
         DatastoreUtils.bindSession session
     }
