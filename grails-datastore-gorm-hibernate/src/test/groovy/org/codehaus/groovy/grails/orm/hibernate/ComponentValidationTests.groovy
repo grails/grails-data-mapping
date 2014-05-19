@@ -29,8 +29,12 @@ class ComponentValidationTests extends AbstractGrailsHibernateTests {
         def date = new Date()
         person.auditInfo = new ComponentValidationTestsAuditInfo(dateEntered:date,dateUpdated:date,enteredBy:'chris',updatedBy:'chris')
 
-        assert person.save(flush:true)
+
+        def isValid = person.validate()
+        println "ERRORS = ${person.errors}"
+        assert isValid
     }
+
 
     @Test
     void testCustomConstraint() {
