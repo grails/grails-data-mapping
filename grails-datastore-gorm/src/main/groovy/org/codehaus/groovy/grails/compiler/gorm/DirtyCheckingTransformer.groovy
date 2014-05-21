@@ -177,17 +177,27 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                 newMethod.addAnnotation(persistenceMethodAnnotation)
             }
 
-            // Implement getOriginalValue(String) such that
-            // Object getOriginalValue(String propertyName) { $changedProperties.get(propertyName) }
+            /* Implement getOriginalValue(String) such that
+
+               Object getOriginalValue(String propertyName) {
+								if($changedProperties.containsKey(propertyName) {
+             			$changedProperties.get(propertyName)
+								} else {
+									this.getProperty(propertyName)
+								}
+            	}
+            */
             if(!classNode.getMethod(METHOD_NAME_GET_PERSISTENT_VALUE, propertyNameParameterArray)) {
 
                 final methodBody = new BlockStatement()
                 final propertyNameVariable = new VariableExpression(propertyNameParameter)
                 final containsKeyMethodCall = new MethodCallExpression(changeTrackingVariable, containsKeyMethodNode.name, propertyNameVariable)
                 containsKeyMethodCall.methodTarget = containsKeyMethodNode
-                methodBody.addStatement(new IfStatement(new BooleanExpression(containsKeyMethodCall),
+                methodBody.addStatement(new IfStatement(new BooleanExpression(changeTrackingVariable),
+									new IfStatement(new BooleanExpression(containsKeyMethodCall),
                         new ExpressionStatement( new MethodCallExpression(changeTrackingVariable, "get", propertyNameVariable) ),
-                        new ReturnStatement(new MethodCallExpression(THIS_EXPR, "getProperty", propertyNameVariable))))
+                        new ReturnStatement(new MethodCallExpression(THIS_EXPR, "getProperty", propertyNameVariable))),
+									ReturnStatement.RETURN_NULL_OR_VOID))
                 final newMethod = classNode.addMethod(METHOD_NAME_GET_PERSISTENT_VALUE, PUBLIC, ClassHelper.OBJECT_TYPE, propertyNameParameterArray, null, methodBody)
                 newMethod.addAnnotation(persistenceMethodAnnotation)
             }
