@@ -99,6 +99,17 @@ class FundProduct {
             b.hasChanged("author")
 
     }
+
+    void "Test that dirty checking transformation doesn't allow for NPE for new objects"(){
+			given: "A new book is created"
+				def book = new Book()
+
+			when: "Title is set"
+				book.title = "Title"
+
+			then: "getOrginal Value returns null"
+				book.getOriginalValue('title') == null
+		}
 }
 
 @DirtyCheck
