@@ -42,7 +42,7 @@ public class CassandraDatastore extends AbstractDatastore implements DisposableB
 
 	private static Logger log = LoggerFactory.getLogger(CassandraDatastore.class);
 
-	public static final String DEFAULT_KEYSPACE = "CassandraKeySpace"; //TODO make one keyspace for each session somehow, maybe just do a different datastore instance?
+	public static final String DEFAULT_KEYSPACE = "CassandraKeySpace";
 	private Cluster cluster;
 	private Session session;
 

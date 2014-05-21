@@ -28,17 +28,17 @@ grails.project.dependency.resolution = {
             transitive = true
         }
 
-        compile("org.springframework.data:spring-data-commons-core:1.4.1.RELEASE", excludes)
-        runtime 'org.springframework.data:spring-data-commons:1.5.1.RELEASE'
+        //compile("org.springframework.data:spring-data-commons-core:1.4.1.RELEASE", excludes)
+        //runtime 'org.springframework.data:spring-data-commons:1.5.1.RELEASE'
 
-        def datastoreVersion = "2.0.3.RELEASE"
+        def datastoreVersion = "3.1.0.RELEASE"
         def cassandraDatastoreVersion = "0.2.BUILD-SNAPSHOT"
 
         compile ("org.grails:grails-datastore-gorm-cassandra:$cassandraDatastoreVersion",excludes)
 
         compile("org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
-                "org.grails:grails-datastore-gorm:$datastoreVersion",
                 "org.grails:grails-datastore-core:$datastoreVersion",
+                "org.grails:grails-datastore-gorm:$datastoreVersion",                
                 "org.grails:grails-datastore-web:$datastoreVersion",excludes)
 
         runtime 'org.javassist:javassist:3.16.1-GA'

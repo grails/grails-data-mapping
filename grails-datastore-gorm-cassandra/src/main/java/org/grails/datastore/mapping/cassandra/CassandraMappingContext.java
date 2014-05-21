@@ -17,7 +17,7 @@ import org.springframework.util.ClassUtils;
 /**
  * Started by Jeff Beck(@beckje01) on 1/23/14.
  * <p>
- * Just building out Mapping for Cassandra stating model with keyvalue? hacking honestly
+ * Just building out Mapping for Cassandra starting model with keyvalue? hacking honestly
  * </p>
  */
 public class CassandraMappingContext extends AbstractMappingContext {
