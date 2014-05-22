@@ -12,6 +12,7 @@ import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.Query.Order.Direction;
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.springframework.cassandra.core.ResultSetExtractor;
 import org.springframework.dao.DataAccessException;
@@ -23,6 +24,7 @@ import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.DriverException;
+import com.datastax.driver.core.querybuilder.Ordering;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
 import com.datastax.driver.core.querybuilder.Select.Selection;
@@ -110,6 +112,21 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
             if (!criteria.getCriteria().isEmpty()) {
                 buildCompositeClause(criteria, select.where());
             }
+            
+            List<Order> orderBys = getOrderBy();          
+            if (!orderBys.isEmpty() ) {
+                Ordering[] orderings = new Ordering[orderBys.size()];
+                for (int i = 0; i < orderBys.size(); i++) {
+                    Order orderBy = orderBys.get(i); 
+                    if (orderBy.getDirection() == Direction.ASC) {
+                        orderings[i] = QueryBuilder.asc(orderBy.getProperty());
+                    } else {
+                        orderings[i] = QueryBuilder.desc(orderBy.getProperty());
+                    }
+                }
+                select.orderBy(orderings);
+            }
+            
             if (arguments.containsKey(ARGUMENT_ALLOW_FILTERING)) {
                 select.allowFiltering();
             }
