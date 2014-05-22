@@ -2,6 +2,8 @@ package grails.gorm.tests
 
 import grails.validation.ValidationException
 
+import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil
+
 /**
  * @author graemerocher
  */
@@ -25,6 +27,10 @@ class CrudOperationsSpec extends GormDatastoreSpec {
             def t
         when:
             t = TestEntity.get("1")
+        then:
+            t == null
+        when: 
+            t = TestEntity.get(UUIDUtil.randomTimeUUID)
         then:
             t == null
     }

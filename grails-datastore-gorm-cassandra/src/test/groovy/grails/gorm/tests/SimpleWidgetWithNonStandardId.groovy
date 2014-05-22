@@ -1,10 +1,8 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
+import grails.gorm.CassandraEntity
 
-import java.io.Serializable;
-
-@Entity
+@CassandraEntity
 class SimpleWidgetWithNonStandardId implements Serializable {
     Long myIdentifier
     Long version

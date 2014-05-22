@@ -10,39 +10,39 @@ class FindByMethodSpec extends GormDatastoreSpec {
     
     void 'Test Using AND Multiple Times In A Dynamic Finder'() {
         given:
-            new Person(firstName: 'Jake', lastName: 'Brown', age: 11).insert()
-            new Person(firstName: 'Zack', lastName: 'Brown', age: 14).insert()
-            new Person(firstName: 'Jeff', lastName: 'Brown', age: 41).insert()
-            new Person(firstName: 'Zack', lastName: 'Galifianakis', age: 41).insert()
+            new PersonAssigned(firstName: 'Jake', lastName: 'Brown', age: 11).insert()
+            new PersonAssigned(firstName: 'Zack', lastName: 'Brown', age: 14).insert()
+            new PersonAssigned(firstName: 'Jeff', lastName: 'Brown', age: 41).insert()
+            new PersonAssigned(firstName: 'Zack', lastName: 'Galifianakis', age: 41).insert()
 
         when:
-            def people = Person.findAllByFirstNameAndLastNameAndAge('Jeff', 'Brown', 1)
+            def people = PersonAssigned.findAllByFirstNameAndLastNameAndAge('Jeff', 'Brown', 1)
 
         then:
             0 == people?.size()
 
         when:
-            people = Person.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 20)
+            people = PersonAssigned.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 20)
 
         then:
             0 == people?.size()
 
         when:
-            people = Person.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 8)
+            people = PersonAssigned.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 8)
 
         then:
             1 == people?.size()
             14 == people[0].age
 
         when:
-            people = Person.findAllByFirstNameAndLastNameAndAgeLessThan('Jake', 'Brown', 14)
+            people = PersonAssigned.findAllByFirstNameAndLastNameAndAgeLessThan('Jake', 'Brown', 14)
 
         then:
             1 == people?.size()
             11 == people[0].age
         
         when:
-            people = Person.findAllByLastNameAndAgeLessThanEquals('Brown', 14, [allowFiltering:true])
+            people = PersonAssigned.findAllByLastNameAndAgeLessThanEquals('Brown', 14, [allowFiltering:true])
 
         then:
             2 == people?.size()
@@ -50,7 +50,7 @@ class FindByMethodSpec extends GormDatastoreSpec {
             14 == people[1].age
         
         when:
-            people = Person.findAllByLastNameAndAgeGreaterThanEquals('Brown', 14, [allowFiltering:true])
+            people = PersonAssigned.findAllByLastNameAndAgeGreaterThanEquals('Brown', 14, [allowFiltering:true])
 
         then:
             2 == people?.size()
@@ -58,7 +58,7 @@ class FindByMethodSpec extends GormDatastoreSpec {
             41 == people[1].age
         
         when:
-            people = Person.findAllByLastNameAndAgeBetween('Brown', 11, 42, [allowFiltering:true])
+            people = PersonAssigned.findAllByLastNameAndAgeBetween('Brown', 11, 42, [allowFiltering:true])
 
         then:
             3 == people?.size()
@@ -67,13 +67,13 @@ class FindByMethodSpec extends GormDatastoreSpec {
             41 == people[2].age
             
         when:
-            def cnt = Person.countByFirstNameAndLastNameAndAge('Jake', 'Brown', 11)
+            def cnt = PersonAssigned.countByFirstNameAndLastNameAndAge('Jake', 'Brown', 11)
 
         then:
             1 == cnt
 
         when:
-            cnt = Person.countByFirstNameAndLastNameAndAgeInList('Zack', 'Brown', [12, 13, 14, 15])
+            cnt = PersonAssigned.countByFirstNameAndLastNameAndAgeInList('Zack', 'Brown', [12, 13, 14, 15])
 
         then:
             1 == cnt
@@ -81,13 +81,13 @@ class FindByMethodSpec extends GormDatastoreSpec {
 
     void 'Test Using OR exception In A Dynamic Finder'() {
         given:
-            new Person(firstName: 'Jake', lastName: 'Brown', age: 11).save()
-            new Person(firstName: 'Zack', lastName: 'Brown', age: 14).save()
-            new Person(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
-            new Person(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
+            new PersonAssigned(firstName: 'Jake', lastName: 'Brown', age: 11).save()
+            new PersonAssigned(firstName: 'Zack', lastName: 'Brown', age: 14).save()
+            new PersonAssigned(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
+            new PersonAssigned(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
 
         when:
-            def people = Person.findAllByFirstNameOrLastNameOrAge('Zack', 'Tyler', 125)
+            def people = PersonAssigned.findAllByFirstNameOrLastNameOrAge('Zack', 'Tyler', 125)
 
         then:
            thrown UnsupportedOperationException      

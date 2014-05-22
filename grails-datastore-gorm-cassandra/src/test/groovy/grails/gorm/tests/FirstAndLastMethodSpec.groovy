@@ -1,7 +1,6 @@
 package grails.gorm.tests
 
-
-import spock.lang.Ignore
+import org.junit.Ignore
 
 @Ignore
 class FirstAndLastMethodSpec extends GormDatastoreSpec {
@@ -25,6 +24,7 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
     void "Test first and last method with multiple entities in the datastore"() {
         given:
+        
         assert new SimpleWidget(name: 'one', spanishName: 'uno').save()
         assert new SimpleWidget(name: 'two', spanishName: 'dos').save()
         assert new SimpleWidget(name: 'three', spanishName: 'tres').save()
@@ -208,6 +208,6 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
-        [SimpleWidget, PersonWithCompositeKey, SimpleWidgetWithNonStandardId]
+        [SimpleWidget, SimpleWidgetWithNonStandardId]
     }
 }

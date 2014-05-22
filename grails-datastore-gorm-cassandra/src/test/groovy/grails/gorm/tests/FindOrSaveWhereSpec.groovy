@@ -5,7 +5,7 @@ class FindOrSaveWhereSpec extends GormDatastoreSpec {
     def "Test findOrSaveWhere returns a new instance if it doesn't exist in the database"() {
         when:
             def entity = TestEntity.findOrSaveWhere(name: 'Lake', age: 63, [allowFiltering:true])
-            def person = Person.findOrSaveWhere(firstName: 'Jake', lastName: 'Brown', age: 11)
+            def person = Person.findOrSaveWhere(firstName: 'Jake', lastName: 'Brown', age: 11, [allowFiltering:true])
         then:
             'Lake' == entity.name
             63 == entity.age
