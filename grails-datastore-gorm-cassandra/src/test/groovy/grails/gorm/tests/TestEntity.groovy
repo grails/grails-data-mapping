@@ -13,7 +13,7 @@ class TestEntity implements Serializable {
     String name
     Integer age = 30
 
-   // ChildEntity child
+    ChildEntity child
 
     static mapping = {
         name index:true
@@ -25,4 +25,6 @@ class TestEntity implements Serializable {
         name blank:false
         child nullable:true
     }
+    
+    static transients = ['child']
 }

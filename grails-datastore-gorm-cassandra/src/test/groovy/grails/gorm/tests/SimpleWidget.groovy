@@ -1,14 +1,14 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
+import grails.gorm.CassandraEntity
 
-import java.io.Serializable;
-import java.util.UUID;
-
-@Entity
-class SimpleWidget implements Serializable {
-    UUID id
-    Long version
+@CassandraEntity
+class SimpleWidget implements Serializable {    
+    String category
     String name
-    String spanishName
+    
+    static mapping = {
+        id name:"category", primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned"       
+        name primaryKey:[ordinal:1, type: "clustered"]
+    }
 }

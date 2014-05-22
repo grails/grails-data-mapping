@@ -12,6 +12,7 @@ class Highway implements Serializable {
     String other
 
     static mapping = {
+        id type:'timeuuid'
         bypassed index:true
         name index:true
     }

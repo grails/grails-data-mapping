@@ -13,7 +13,7 @@ class BasicPersistenceSpec extends GormDatastoreSpec {
 
     void testBasicPersistenceOperations() {
         when:
-        def te = session.retrieve(TestEntity, UUIDUtil.getTimeUUID())
+        def te = session.retrieve(TestEntity, UUIDUtil.getRandomTimeUUID())
 
         then:
             te == null
