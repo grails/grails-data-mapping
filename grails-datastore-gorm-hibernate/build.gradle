@@ -48,6 +48,9 @@ eclipse {
 }
 
 test {
+    testLogging {
+        exceptionFormat ='full'
+    }
     forkEvery = 30
     maxParallelForks = 4
     jvmArgs '-server','-Xmx1024M', '-Xms64M', '-XX:PermSize=32m','-XX:MaxPermSize=256m'
