@@ -66,7 +66,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 
     protected Cluster nativeCluster;
     protected com.datastax.driver.core.Session nativeSession;
-    protected BasicCassandraMappingContext cassandraMappingContext;
+    protected BasicCassandraMappingContext springCassandraMappingContext;
     protected CassandraTemplate cassandraTemplate;
     protected boolean stateless = false;
     protected String keyspace;
@@ -87,13 +87,13 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
             }
         }
         this.mappingContext = mappingContext;
-        cassandraMappingContext = new BasicCassandraMappingContext();
+        springCassandraMappingContext = new BasicCassandraMappingContext();
+        mappingContext.setSpringCassandraMappingContext(springCassandraMappingContext);
         if (mappingContext != null) {
             mappingContext.addMappingContextListener(this);
         }
 
         initializeConverters(mappingContext);
-
     }
 
     @Override
@@ -138,10 +138,10 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
         for (PersistentEntity persistentEntity : persistentEntities) {
             entitySet.add(persistentEntity.getJavaClass());
         }
-        cassandraMappingContext.setInitialEntitySet(entitySet);
-        cassandraMappingContext.afterPropertiesSet();
+        springCassandraMappingContext.setInitialEntitySet(entitySet);
+        springCassandraMappingContext.afterPropertiesSet();
 
-        return cassandraMappingContext;
+        return springCassandraMappingContext;
     }
 
     @Override
@@ -161,7 +161,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
     @Override
     public void persistentEntityAdded(PersistentEntity entity) {
         // get adds persistententity
-        cassandraMappingContext.getPersistentEntity(entity.getJavaClass());
+        springCassandraMappingContext.getPersistentEntity(entity.getJavaClass());
     }
 
     public Cluster getNativeCluster() {
@@ -231,7 +231,6 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
                     }
                 });
             }
-
         }
     }
 }
