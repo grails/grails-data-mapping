@@ -28,7 +28,7 @@ import com.datastax.driver.core.utils.UUIDs;
  */
 public class UUIDUtil {
 
-    public static java.util.UUID getTimeUUID() {
+    public static java.util.UUID getRandomTimeUUID() {
         return UUIDs.timeBased();
     }
 
