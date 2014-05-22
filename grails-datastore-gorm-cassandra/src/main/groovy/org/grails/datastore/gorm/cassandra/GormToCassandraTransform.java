@@ -8,6 +8,7 @@ import groovy.lang.GroovyShell;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,8 +22,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
@@ -53,11 +52,16 @@ import org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
+import org.grails.datastore.mapping.model.MappingFactory;
 import org.springframework.cassandra.core.PrimaryKeyType;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.cassandra.mapping.CassandraType;
 import org.springframework.data.cassandra.mapping.Indexed;
 import org.springframework.data.cassandra.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.mapping.Table;
 import org.springframework.util.ClassUtils;
+
+import com.datastax.driver.core.DataType.Name;
 
 /**
  * A AST transformation that turns a GORM entity into a Spring Data Cassandra
@@ -67,8 +71,17 @@ import org.springframework.util.ClassUtils;
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 public class GormToCassandraTransform implements ASTTransformation {
 
-    private static Log LOG = LogFactory.getLog(GormToCassandraTransform.class);
+    // private static Log LOG =
+    // LogFactory.getLog(GormToCassandraTransform.class);
     private static final AnnotationNode ANNOTATION_ENTITY = new AnnotationNode(new ClassNode(Entity.class));
+    private static final AnnotationNode ANNOTATION_CASSANDRA_UUID = createCassandraTypeAnnotationNode(Name.UUID);
+    private static final AnnotationNode ANNOTATION_CASSANDRA_TIMEUUID = createCassandraTypeAnnotationNode(Name.TIMEUUID);
+    private static final AnnotationNode ANNOTATION_CASSANDRA_TEXT = createCassandraTypeAnnotationNode(Name.TEXT);
+    private static final AnnotationNode ANNOTATION_CASSANDRA_ASCII = createCassandraTypeAnnotationNode(Name.ASCII);
+    private static final AnnotationNode ANNOTATION_CASSANDRA_VARCHAR = createCassandraTypeAnnotationNode(Name.VARCHAR);
+    private static final AnnotationNode ANNOTATION_CASSANDRA_BIG_INT = createCassandraTypeAnnotationNode(Name.BIGINT);
+    private static final AnnotationNode ANNOTATION_CASSANDRA_COUNTER = createCassandraTypeAnnotationNode(Name.COUNTER);
+    private static final AnnotationNode ANNOTATION_TRANSIENT = new AnnotationNode(new ClassNode(Transient.class));
 
     private static final ClassNode MY_TYPE = new ClassNode(CassandraEntity.class);
     private static final String MY_TYPE_NAME = "@" + MY_TYPE.getNameWithoutPackage();
@@ -95,7 +108,7 @@ public class GormToCassandraTransform implements ASTTransformation {
             transformEntity(source, cNode);
         } catch (Exception e) {
             String message = "Error occured transfoming GORM entity to Cassandra entity: " + ExceptionUtils.getStackTrace(e);
-            LOG.error(message, e);
+            // LOG.error(message, e);
             source.getErrorCollector().addFatalError(new SimpleMessage(message, source));
         }
     }
@@ -117,7 +130,7 @@ public class GormToCassandraTransform implements ASTTransformation {
             }
         }
 
-        // setup properties with PrimaryKeyColumn annotation
+        // annotate properties in mapping closure
         String primaryKeyPropertyName = GrailsDomainClassProperty.IDENTITY;
         String generationType = "auto";
         for (Entry<String, Map<String, ?>> mappingEntry : propertyMappings.entrySet()) {
@@ -145,7 +158,23 @@ public class GormToCassandraTransform implements ASTTransformation {
                 if (primaryKeyConfig.containsKey("type")) {
                     primaryKeyType = EnumUtils.getEnum(PrimaryKeyType.class, primaryKeyConfig.get("type").toString().toUpperCase());
                 }
-                primaryKeyPropertyName = propertyName;
+            }
+
+            if (propertyConfig.containsKey("type")) {
+                String type = propertyConfig.get("type").toString();
+                AnnotationNode annotationNode = null;
+                if (("timeuuid").equals(type)) {
+                    annotationNode = ANNOTATION_CASSANDRA_TIMEUUID;
+                } else if (("ascii").equals(type)) {
+                    annotationNode = ANNOTATION_CASSANDRA_ASCII;
+                } else if (("varchar").equals(type)) {
+                    annotationNode = ANNOTATION_CASSANDRA_VARCHAR;
+                } else if (("counter").equals(type)) {
+                    annotationNode = ANNOTATION_CASSANDRA_COUNTER;
+                }
+                if (annotationNode != null) {
+                    annotateProperty(classNode, propertyName, annotationNode);
+                }
             }
 
             if (propertyConfig.containsKey("generator")) {
@@ -175,28 +204,23 @@ public class GormToCassandraTransform implements ASTTransformation {
             }
         }
 
-        injectIdProperty(classNode, primaryKeyPropertyName);
+        injectIdPropertyIfNecessary(classNode, primaryKeyPropertyName);
 
+        // annotate existing or newly created id field with @PrimaryKeyColumn if
+        // not already added above
         PropertyNode primaryKeyProperty = classNode.getProperty(primaryKeyPropertyName);
-
-        // annotate existing or newly created id field if not already present
         AnnotationNode primaryKeyAnnotation = new AnnotationNode(new ClassNode(PrimaryKeyColumn.class));
         primaryKeyAnnotation.addMember("type", new PropertyExpression(new ClassExpression(new ClassNode(PrimaryKeyType.class)), new ConstantExpression(PrimaryKeyType.PARTITIONED)));
         annotateProperty(classNode, primaryKeyProperty.getName(), primaryKeyAnnotation);
 
-        // add table annotation if required
+        final PropertyNode transientsProp = classNode.getProperty(GrailsDomainClassProperty.TRANSIENT);
+        List<String> propertyNameList = new ArrayList<String>();
+        populateConstantList(propertyNameList, transientsProp);
+        annotateAllProperties(classNode, propertyNameList, ANNOTATION_TRANSIENT);
+
+        annotatePropertiesWithDefaultType(classNode);
+
         annotateIfNecessary(classNode, Table.class);
-    }
-
-    private static void injectIdProperty(ClassNode classNode, String primaryKeyPropertyName) {
-        final boolean hasId = GrailsASTUtils.hasOrInheritsProperty(classNode, primaryKeyPropertyName);
-
-        if (!hasId) {
-            // inject into furthest relative
-            ClassNode parent = GrailsASTUtils.getFurthestUnresolvedParent(classNode);
-
-            parent.addProperty(GrailsDomainClassProperty.IDENTITY, Modifier.PUBLIC, new ClassNode(UUID.class), null, null, null);
-        }
     }
 
     private static String addErrorsScript = null;
@@ -285,6 +309,46 @@ public class GormToCassandraTransform implements ASTTransformation {
                 }
             }
         }
+    }
+
+    private static void injectIdPropertyIfNecessary(ClassNode classNode, String primaryKeyPropertyName) {
+        final boolean hasId = GrailsASTUtils.hasOrInheritsProperty(classNode, primaryKeyPropertyName);
+
+        if (!hasId) {
+            // inject into furthest relative
+            ClassNode parent = GrailsASTUtils.getFurthestUnresolvedParent(classNode);
+
+            parent.addProperty(GrailsDomainClassProperty.IDENTITY, Modifier.PUBLIC, new ClassNode(UUID.class), null, null, null);
+        }
+    }
+
+    private static void annotatePropertiesWithDefaultType(ClassNode classNode) {
+        final List<PropertyNode> properties = classNode.getProperties();
+        for (PropertyNode propertyNode : properties) {
+            if (!propertyNode.isPublic() || propertyNode.isStatic()) {
+                continue;
+            }
+
+            final String propertyName = propertyNode.getName();
+            final String typeName = propertyNode.getType().getName();
+            if (typeName.equals(UUID.class.getName())) {
+                annotateProperty(classNode, propertyName, ANNOTATION_CASSANDRA_UUID);
+            } else if (typeName.equals(String.class.getName())) {
+                annotateProperty(classNode, propertyName, ANNOTATION_CASSANDRA_TEXT);
+            } else if (typeName.equals(long.class.getName()) || typeName.equals(Long.class.getName())) {
+                annotateProperty(classNode, propertyName, ANNOTATION_CASSANDRA_BIG_INT);
+            } else if (!MappingFactory.isSimpleType(typeName)) {
+                annotateProperty(classNode, propertyName, ANNOTATION_TRANSIENT);
+            }
+        }
+    }
+
+    private static AnnotationNode createCassandraTypeAnnotationNode(Name type) {
+        AnnotationNode annotationNode = new AnnotationNode(new ClassNode(CassandraType.class));
+        // the overridden toString in Name is lowercased which prevents it
+        // being found, so need to uppercase it
+        annotationNode.addMember("type", new PropertyExpression(new ClassExpression(new ClassNode(Name.class)), new ConstantExpression(type.name().toUpperCase())));
+        return annotationNode;
     }
 
     private static Map<String, String> lookupStringToStringMap(ClassNode classNode, String mapName) {
