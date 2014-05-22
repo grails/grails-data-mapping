@@ -1,7 +1,7 @@
 apply from:'../gradle/maven-central-build.gradle'
 
 group = 'org.grails'
-version = "1.0.0.RC4"
+version = "1.0.0.GA"
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
