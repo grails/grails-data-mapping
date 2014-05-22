@@ -5,5 +5,5 @@ services:
 jdk:
 - oraclejdk7
 env:
-   - TERM=dumb GRADLE_OPTS="-Xmx2048m -Xms256m -XX:MaxPermSize=768m -XX:+CMSClassUnloadingEnabled -XX:+HeapDumpOnOutOfMemoryError" 
+   - TERM=dumb GRADLE_OPTS="-Xmx1048m -Xms256m" 
 script: ./travis-build.sh

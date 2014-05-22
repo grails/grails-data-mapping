@@ -134,7 +134,7 @@ test {
     }
     forkEvery = 30
     maxParallelForks = 4
-    jvmArgs '-server','-Xmx1024M', '-Xms64M', '-XX:PermSize=32m','-XX:MaxPermSize=256m'
+    jvmArgs '-server','-Xmx1024M', '-Xms64M', '-XX:PermSize=32m','-XX:MaxPermSize=256m','-XX:+CMSClassUnloadingEnabled','-XX:+HeapDumpOnOutOfMemoryError'
 }
 /*
 test {
