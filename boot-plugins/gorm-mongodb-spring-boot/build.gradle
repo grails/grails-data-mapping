@@ -1,7 +1,7 @@
 apply from:'../gradle/maven-central-build.gradle'
 
 group = 'org.grails'
-version = "1.0.0.RC3"
+version = "1.0.0.GA"
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
@@ -29,7 +29,7 @@ dependencies {
     compile "org.springframework.data:spring-data-mongodb:1.4.2.RELEASE", {
         exclude group:"org.mongodb", module:"mongo-java-driver"
     }
-    compile "org.springframework:spring-tx:4.0.4.RELEASE"
+    compile "org.springframework:spring-tx:4.0.5.RELEASE"
 
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
 }
