@@ -54,14 +54,13 @@ task wrapper(type: Wrapper) {
 subprojects {
     if(project.name.endsWith("spring-boot")) return
     ext {
-        releaseType = "RELEASE"
-      // releaseType = "BUILD-SNAPSHOT"
-        // releaseType = "RC2"
+        //releaseType = "RELEASE"
+        releaseType = "BUILD-SNAPSHOT"
         isCiBuild = project.hasProperty("isCiBuild")
         isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
     }
 
-    version = "3.1.0.${releaseType}"
+    version = "3.1.1.${releaseType}"
     group = "org.grails"
 
 
