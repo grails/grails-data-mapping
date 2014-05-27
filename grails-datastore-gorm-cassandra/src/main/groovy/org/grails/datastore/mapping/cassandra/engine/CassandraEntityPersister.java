@@ -38,6 +38,7 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.grails.datastore.mapping.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +52,9 @@ import org.springframework.data.cassandra.core.CassandraTemplate;
 @SuppressWarnings("rawtypes")
 public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityAccess, Object> {
 
-    private static Logger log = LoggerFactory.getLogger(CassandraEntityPersister.class);       
-    private  org.springframework.data.cassandra.mapping.CassandraPersistentEntity<?> springCassandraPersistentEntity;
+    private static Logger log = LoggerFactory.getLogger(CassandraEntityPersister.class);
+    private org.springframework.data.cassandra.mapping.CassandraPersistentEntity<?> springCassandraPersistentEntity;
+
     public CassandraEntityPersister(MappingContext context, PersistentEntity entity, CassandraSession cassandraSession, ApplicationEventPublisher applicationEventPublisher) {
         super(context, entity, cassandraSession, applicationEventPublisher);
         springCassandraPersistentEntity = ((CassandraMappingContext) context).getSpringCassandraMappingContext().getExistingPersistentEntity(entity.getJavaClass());
@@ -65,54 +67,54 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
     protected CassandraSession getCassandraSession() {
         return (CassandraSession) getSession();
     }
-    
+
     @Override
     public String getEntityFamily() {
-        String table = getPersistentEntity().getDecapitalizedName();        
+        String table = getPersistentEntity().getDecapitalizedName();
         if (table == null) {
             table = getPersistentEntity().getJavaClass().getSimpleName();
         }
         log.trace("table: " + table);
         return table;
     }
-    
+
     @Override
     protected boolean doesRequirePropertyIndexing() {
         return false;
     }
-    
+
     @Override
     protected String getNativePropertyKey(PersistentProperty prop) {
         // To C* all column names are lowercase
         return super.getNativePropertyKey(prop).toLowerCase();
     }
-    
+
     @Override
     protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj) {
         return new CassandraEntityAccess(persistentEntity, obj);
     }
-    
+
     @Override
     protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, final EntityAccess nativeEntry) {
         return new NativeEntryModifyingEntityAccess(persistentEntity, obj) {
             @Override
-            public void setProperty(String name, Object value) {                
+            public void setProperty(String name, Object value) {
             }
         };
     }
-    
+
     @Override
     protected EntityAccess createNewEntry(String family, Object instance) {
         return new CassandraEntityAccess(getPersistentEntity(), instance);
     }
 
     @Override
-    protected EntityAccess createNewEntry(String family) {        
+    protected EntityAccess createNewEntry(String family) {
         return new CassandraEntityAccess(getPersistentEntity(), getPersistentEntity().newInstance());
     }
-    
+
     @Override
-    protected Object readObjectIdentifier(EntityAccess entityAccess, ClassMapping cm) {        
+    protected Object readObjectIdentifier(EntityAccess entityAccess, ClassMapping cm) {
         Table table = (Table) cm.getMappedForm();
         if (table.hasCompositePrimaryKeys()) {
             Map<String, Object> identifier = new HashMap<String, Object>();
@@ -123,9 +125,25 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
             return identifier;
         } else {
             return entityAccess.getIdentifier();
-        }        
+        }
+    }
+
+    @Override
+    protected Object readIdentifierFromObject(Object object) {
+        EntityAccess entityAccess = createEntityAccess(getPersistentEntity(), object);
+        return readObjectIdentifier(entityAccess, getPersistentEntity().getMapping());
     }
     
+    @Override
+    public Serializable getObjectIdentifier(Object object) {
+        if (object == null) return null;
+        final ProxyFactory pf = getProxyFactory();
+        if (pf.isProxy(object)) {
+            return pf.getIdentifier(object);
+        }
+        return (Serializable) readIdentifierFromObject(object);
+    }
+
     @Override
     protected Object getEntryValue(EntityAccess nativeEntry, String property) {
         return nativeEntry.getProperty(property);
@@ -133,17 +151,17 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 
     @Override
     protected void setEntryValue(EntityAccess nativeEntry, String key, Object value) {
-        //no-op as no need to update the same object
+        // no-op as no need to update the same object
     }
 
     @SuppressWarnings("unchecked")
     @Override
     protected EntityAccess retrieveEntry(PersistentEntity persistentEntity, String family, Serializable nativeKey) {
-        if (!(nativeKey instanceof Map)) {            
+        if (!(nativeKey instanceof Map)) {
             nativeKey = id(persistentEntity.getIdentity().getName(), nativeKey);
-        } else {  
+        } else {
             Table table = (Table) persistentEntity.getMapping().getMappedForm();
-            for (Entry<String,?> entry : ((Map<String,?>) nativeKey).entrySet()) {
+            for (Entry<String, ?> entry : ((Map<String, ?>) nativeKey).entrySet()) {
                 String property = entry.getKey();
                 if (!table.isPrimaryKey(property)) {
                     throw new IllegalArgumentException(String.format("unknown property [%s] on entity class [%s]", property, persistentEntity.getName()));
@@ -155,28 +173,28 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
     }
 
     @Override
-    public Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, EntityAccess nativeEntry) {        
+    public Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, EntityAccess nativeEntry) {
         cacheNativeEntry(persistentEntity, nativeKey, nativeEntry);
-        return nativeEntry.getEntity();               
+        return nativeEntry.getEntity();
     }
-        
+
     @Override
-    protected Object storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object storeId, EntityAccess entry) {       
+    protected Object storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object storeId, EntityAccess entry) {
         getCassandraTemplate().insert(entityAccess.getEntity());
         return storeId;
     }
 
     @Override
-    protected void updateEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object key, EntityAccess entry) {                
+    protected void updateEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object key, EntityAccess entry) {
         getCassandraTemplate().update(entityAccess.getEntity());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void deleteEntries(String family, List<Object> keys) {
-        // TODO make this a batch or single call but I'm sleepy so not now.
-        for (Object key : keys) {
-            deleteEntry(family, key, null);
-        }        
+        // should fetch from first level cache
+        List entities = getSession().retrieveAll(getPersistentEntity().getJavaClass(), keys);
+        getCassandraTemplate().delete(entities);
     }
 
     @Override
@@ -201,7 +219,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
     public Query createQuery() {
         return new CassandraQuery(getCassandraSession(), getPersistentEntity());
     }
-    
+
     @Override
     public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
         return null;
@@ -211,18 +229,18 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
     public AssociationIndexer getAssociationIndexer(EntityAccess nativeEntry, Association association) {
         return null;
     }
-    
+
     protected static class CassandraEntityAccess extends EntityAccess {
 
         public CassandraEntityAccess(PersistentEntity persistentEntity, Object entity) {
-            super(persistentEntity, entity);           
+            super(persistentEntity, entity);
         }
-        
+
         @Override
         public void setProperty(String name, Object value) {
-         
+
         }
-        
+
         @Override
         public void setIdentifier(Object id) {
             String idName = getIdentifierName(persistentEntity.getMapping());
