@@ -1,24 +1,18 @@
 package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
+
 import org.grails.datastore.mapping.query.event.AbstractQueryEvent
 import org.grails.datastore.mapping.query.event.PostQueryEvent
 import org.grails.datastore.mapping.query.event.PreQueryEvent
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.event.SmartApplicationListener
-import spock.lang.Ignore
 
 /**
  * Tests for query events.
  */
-@Ignore
 class QueryEventsSpec extends GormDatastoreSpec {
     SpecQueryEventListener listener
-
-    @Override
-    List getDomainClasses() {
-        [Simples]
-    }
 
     def setup() {
         listener = new SpecQueryEventListener()
@@ -59,7 +53,7 @@ class QueryEventsSpec extends GormDatastoreSpec {
         listener.events[1].query == listener.events[0].query
         listener.events[1].results instanceof List
         listener.events[1].results.size() == 1
-        listener.events[1].results[0] == entity
+        listener.events[1].results[0] != entity
         listener.PostExecution == 1
 
         when:

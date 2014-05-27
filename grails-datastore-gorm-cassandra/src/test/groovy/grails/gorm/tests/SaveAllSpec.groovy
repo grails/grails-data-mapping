@@ -2,12 +2,7 @@ package grails.gorm.tests
 
 
 class SaveAllSpec extends GormDatastoreSpec {
-    
-    @Override
-    public List getDomainClasses() {
-        [Person]
-    }
-    
+        
     def "Test that many objects can be saved at once using multiple arguments"() {
         given:
             def bob = new Person(firstName:"Bob", lastName:"Builder")
