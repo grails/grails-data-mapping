@@ -12,20 +12,7 @@ class PersonAssignedId implements Serializable, Comparable<Person> {
     Long version
     String firstName
     String lastName
-    Integer age = 0
-    //Set<Pet> pets = [] as Set
-    //static hasMany = [pets:Pet]
-    //Face face
-    boolean myBooleanProperty
-
-//    static peopleWithOlderPets = where {
-//        pets {
-//            age > 9
-//        }
-//    }
-//    static peopleWithOlderPets2 = where {
-//        pets.age > 9
-//    }
+    Integer age = 0    
 
     static Person getByFirstNameAndLastNameAndAge(String firstName, String lastName, int age) {
         find( new Person(firstName: firstName, lastName: lastName, age: age) )
@@ -37,8 +24,7 @@ class PersonAssignedId implements Serializable, Comparable<Person> {
         age index:true, primaryKey:[ordinal:2, type: "clustered"]
     }
 
-    static constraints = {
-        face nullable:true
+    static constraints = {        
     }
 
     @Override

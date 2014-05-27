@@ -14,8 +14,7 @@ class Person implements Serializable, Comparable<Person> {
     Long version
     String firstName
     String lastName
-    Integer age = 0
-    boolean myBooleanProperty
+    Integer age = 0    
 
     static Person getByFirstNameAndLastNameAndAge(String firstName, String lastName, int age) {
         find( new Person(firstName: firstName, lastName: lastName, age: age) )
@@ -28,7 +27,7 @@ class Person implements Serializable, Comparable<Person> {
     }
 
     static constraints = {
-        //face nullable:true
+
     }
 
     @Override
