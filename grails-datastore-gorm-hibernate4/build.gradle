@@ -28,7 +28,6 @@ dependencies {
     String hibernateVersion = '4.3.5.Final'
 
     compile("org.hibernate:hibernate-core:$hibernateVersion") {
-        exclude group: 'antlr', module: 'antlr'
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'dom4j', module:'dom4j'
         exclude group:'com.h2database', module:'h2'
