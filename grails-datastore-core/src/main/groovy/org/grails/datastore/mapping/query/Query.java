@@ -128,6 +128,16 @@ public abstract class Query implements Cloneable{
      */
     public void add(Criterion criterion) {
         Junction currentJunction = criteria;
+        add(currentJunction, criterion);
+    }
+
+    /**
+     * Adds the specified criterion instance to the given junction
+     *
+     * @param currentJunction The junction to add the criterion to
+     * @param criterion The criterion instance
+     */
+    public void add(Junction currentJunction, Criterion criterion) {
         addToJunction(currentJunction, criterion);
     }
 
@@ -155,7 +165,7 @@ public abstract class Query implements Cloneable{
     }
 
     /**
-     * Creates a disjunction (OR) query
+     * Creates a conjunction (AND) query
      * @return The Junction instance
      */
     public Junction conjunction() {
@@ -600,9 +610,9 @@ public abstract class Query implements Cloneable{
     }
 
     private Junction conjunction(Junction currentJunction) {
-        Conjunction dis = new Conjunction();
-        currentJunction.add(dis);
-        return dis;
+        Conjunction con = new Conjunction();
+        currentJunction.add(con);
+        return con;
     }
 
     /**
