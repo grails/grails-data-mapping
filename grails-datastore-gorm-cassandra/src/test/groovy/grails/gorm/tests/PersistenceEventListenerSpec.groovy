@@ -11,6 +11,8 @@ import org.grails.datastore.mapping.engine.event.PreDeleteEvent
 import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.springframework.context.ApplicationEvent
 
+import spock.lang.Ignore;
+
 /**
  * @author Tom Widmer
  */
@@ -167,6 +169,7 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
         1 == listener.PostLoadCount
     }
 
+	@Ignore
     void "Test multi-load events"() {
         given:
         def freds = (1..3).collect {
