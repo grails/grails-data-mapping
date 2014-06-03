@@ -62,25 +62,7 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
 
     @Override
     protected IdentityMapping getIdentityMappedForm(final ClassMapping classMapping, final Column property) {
-        // TODO handle composite keys identity
-        /*
-        final Table table = (Table) classMapping.getMappedForm();
-        if (table.hasCompositePrimaryKeys()) {
-            return new IdentityMapping() {
-                public String[] getIdentifierName() {
-                    return table.getPrimaryKeyNames();
-                }
-
-                public ClassMapping getClassMapping() {
-                    return classMapping;
-                }
-
-                public Property getMappedForm() {
-                    return property;
-                }
-            };
-
-        } else*/ if (property != null) {
+      if (property != null) {
             final String name = property.getName();
             if (name != null) {
                 final PersistentProperty idProperty = classMapping.getEntity().getPropertyByName(name);
