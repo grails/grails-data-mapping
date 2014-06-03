@@ -127,6 +127,11 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
                 select.orderBy(orderings);
             }
             
+            if (max > 0) { 
+            	select.limit(max);
+            	select.setFetchSize(max);
+            }
+            
             if (arguments.containsKey(ARGUMENT_ALLOW_FILTERING)) {
                 select.allowFiltering();
             }
