@@ -96,16 +96,9 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 
     @Override
     protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, final EntityAccess nativeEntry) {
-        return new NativeEntryModifyingEntityAccess(persistentEntity, obj) {
-            @Override
-            public void setProperty(String name, Object value) {
-            }
-        };
-    }
-
-    @Override
-    protected EntityAccess createNewEntry(String family, Object instance) {
-        return new CassandraEntityAccess(getPersistentEntity(), instance);
+    	final CassandraEntityAccess ea = new CassandraEntityAccess(persistentEntity, obj);
+        ea.setNativeEntry(nativeEntry);
+        return ea;
     }
 
     @Override
@@ -151,7 +144,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 
     @Override
     protected void setEntryValue(EntityAccess nativeEntry, String key, Object value) {
-        // no-op as no need to update the same object
+        nativeEntry.setProperty(key, value);
     }
 
     @SuppressWarnings("unchecked")
@@ -169,13 +162,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
             }
         }
         Object entity = getCassandraTemplate().selectOneById(persistentEntity.getJavaClass(), nativeKey);
-        return entity == null ? null : new EntityAccess(persistentEntity, entity);
-    }
-
-    @Override
-    public Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, EntityAccess nativeEntry) {
-        cacheNativeEntry(persistentEntity, nativeKey, nativeEntry);
-        return nativeEntry.getEntity();
+        return entity == null ? null : new CassandraEntityAccess(persistentEntity, entity);
     }
 
     @Override
@@ -230,22 +217,20 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
         return null;
     }
 
-    protected static class CassandraEntityAccess extends EntityAccess {
+    protected class CassandraEntityAccess extends NativeEntryModifyingEntityAccess {
 
         public CassandraEntityAccess(PersistentEntity persistentEntity, Object entity) {
             super(persistentEntity, entity);
         }
-
+        
         @Override
         public void setProperty(String name, Object value) {
-
+        	final Table table = (Table) classMapping.getMappedForm();
+        	if (table.isPrimaryKey(name) && value instanceof Map) {
+        		value = ((Map)value).get(name);
+        	}
+        	setPropertyNoConversion(name, value);
         }
 
-        @Override
-        public void setIdentifier(Object id) {
-            String idName = getIdentifierName(persistentEntity.getMapping());
-            beanWrapper.setPropertyValue(idName, id);
-        }
     }
-
 }
