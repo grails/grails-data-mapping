@@ -1,5 +1,5 @@
-import org.grails.datastore.gorm.cassandra.CassandraMethodsConfigurer
-import org.grails.datastore.gorm.cassandra.CassandraSpringConfigurer
+import org.grails.datastore.gorm.cassandra.plugin.support.CassandraMethodsConfigurer
+import org.grails.datastore.gorm.cassandra.plugin.support.CassandraSpringConfigurer
 
 class CassandraGormGrailsPlugin {
 	def license = "Apache 2.0 License"
