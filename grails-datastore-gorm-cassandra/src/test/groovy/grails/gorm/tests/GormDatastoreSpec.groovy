@@ -1,6 +1,5 @@
 package grails.gorm.tests
 
-import org.grails.datastore.mapping.cassandra.CassandraSession
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.Session
 
@@ -28,7 +27,7 @@ abstract class GormDatastoreSpec extends Specification {
 //         ClassWithOverloadedBeforeValidate, CommonTypes, Country, EnumThing, Face, Highway,
 //         Location, ModifyPerson, Nose, OptLockNotVersioned, OptLockVersioned, Person, PersonEvent,
 //         Pet, PetType, Plant, PlantCategory, Publication, Task, TestEntity]
-    static final TEST_CLASSES = [TestEntity, Person, PersonAssignedId, Highway, Book, SimpleWidget, Artist, Simples, CommonTypes]
+    static final TEST_CLASSES = [TestEntity, Person, PersonAssignedId, Highway, Book, SimpleWidget, Artist, Simples]
     
     @Shared Class setupClass
 
