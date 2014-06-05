@@ -16,7 +16,7 @@ package org.grails.datastore.gorm.cassandra.bean.factory
 
 
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
-import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
+import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
 import org.grails.datastore.mapping.model.MappingContext
 
 /**
@@ -25,15 +25,11 @@ import org.grails.datastore.mapping.model.MappingContext
  * Forked from Mongo version
  */
 class CassandraMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
-	ConfigObject config = [:]
+	String keyspace
 
 	@Override
 	protected MappingContext createMappingContext() {
-		return new CassandraMappingContext(config.get("keyspace"));
+		return new CassandraMappingContext(keyspace)
 	}
 }
 
-//@Canonical
-//class DefaultMappingHolder {
-//	Closure defaultMapping
-//}
