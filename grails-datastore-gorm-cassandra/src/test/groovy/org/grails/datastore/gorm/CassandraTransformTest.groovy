@@ -20,7 +20,10 @@ class CassandraTransformTest extends GroovyTestCase {
         assert field != null
         def anno = field.getAnnotation(PrimaryKeyColumn)
         assert anno != null
-
+        
+        assertTransientField(Basic.class.getDeclaredField("errors"))
+        assertTransientField(Basic.class.getDeclaredField("tran"))
+        
         shouldFail {
             Basic.class.getDeclaredField("version")
         }
@@ -40,16 +43,9 @@ class CassandraTransformTest extends GroovyTestCase {
         assertCassandraTypeAnnotation(BasicWithId.class.getDeclaredField("oneLong"), Name.BIGINT)
         assertCassandraTypeAnnotation(BasicWithId.class.getDeclaredField("anotherLong"), Name.BIGINT)
         assertCassandraTypeAnnotation(BasicWithId.class.getDeclaredField("counter"), Name.COUNTER)
-        
-        
-        field = BasicWithId.class.getDeclaredField('transientBoolean')
-        assert field != null
-        anno = field.getAnnotation(Transient)
-        assert anno != null
-        field = BasicWithId.class.getDeclaredField('transientString')
-        assert field != null
-        anno = field.getAnnotation(Transient)
-        assert anno != null
+             
+        assertTransientField(BasicWithId.class.getDeclaredField('transientBoolean'))        
+        assertTransientField(BasicWithId.class.getDeclaredField('transientString'))        
                 
     }
 
@@ -58,10 +54,9 @@ class CassandraTransformTest extends GroovyTestCase {
         assert field != null
         def anno = field.getAnnotation(PrimaryKeyColumn)
         assert anno != null
-
-        shouldFail {
-            BasicWithPrimaryKey.class.getDeclaredField("id")
-        }
+        
+        assertTransientField(BasicWithPrimaryKey.class.getDeclaredField("id"))
+        
     }
 
     void testBasicWithCustomPrimaryKeyColumnNamesAndAssociation() {
@@ -81,14 +76,10 @@ class CassandraTransformTest extends GroovyTestCase {
         assert anno.ordinal() == 1
         assert anno.type() == PrimaryKeyType.CLUSTERED
 
-        field = BasicCustomPrimaryKeyWithAssociation.class.getDeclaredField("association")
-        assert field != null
-        anno = field.getAnnotation(Transient)
-        assert anno != null
+        assertTransientField(BasicCustomPrimaryKeyWithAssociation.class.getDeclaredField("association"))
 
-        shouldFail {
-            BasicCustomPrimaryKeyWithAssociation.class.getDeclaredField("id")
-        }
+        assertTransientField(BasicCustomPrimaryKeyWithAssociation.class.getDeclaredField("id"))
+        
     }
 
     void testCustomTableMappingAndPrimaryKeyMapping() {
@@ -121,10 +112,20 @@ class CassandraTransformTest extends GroovyTestCase {
         anno = field.getAnnotation(Indexed)
         assert anno != null
 
-
-        shouldFail {
-            Person.class.getDeclaredField("id")
-        }
+        assertTransientField(Person.class.getDeclaredField("id"))
+                
+    }
+    
+    void testAssociationCollectionAndMap() {        
+        assertTransientField(Simple.class.getDeclaredField("address"))
+        
+        assertNonTransientField(Simple.class.getDeclaredField("dateCreated"))   
+        assertNonTransientField(Simple.class.getDeclaredField("list"))
+        assertNonTransientField(Simple.class.getDeclaredField("collection"))
+        assertNonTransientField(Simple.class.getDeclaredField("arrayList"))
+        assertNonTransientField(Simple.class.getDeclaredField("set"))
+        assertNonTransientField(Simple.class.getDeclaredField("map"))
+        assertNonTransientField(Simple.class.getDeclaredField("hashMap"))
     }
     
     private assertCassandraTypeAnnotation(def field, Name name) {
@@ -133,11 +134,24 @@ class CassandraTransformTest extends GroovyTestCase {
         assert anno != null
         assert anno.type() == name
     }
+    
+    private assertNonTransientField(def field) {        
+        assert field != null
+        def anno = field.getAnnotation(Transient)
+        assert anno == null
+    }
+    
+    private assertTransientField(def field) {
+        assert field != null
+        def anno = field.getAnnotation(Transient)
+        assert anno != null
+    }
 }
 
 @CassandraEntity
 class Basic {
     String value
+    transient tran    
 }
 
 @CassandraEntity
@@ -201,6 +215,7 @@ class Person {
     }
 }
 
+@CassandraEntity
 class Simple {
     Long id
     Long version
@@ -210,7 +225,13 @@ class Simple {
     Address address
     Person person
     Date dateCreated
-
+    List list
+    Collection collection
+    ArrayList arrayList
+    Set set
+    Map map
+    HashMap hashMap
+    
     static transients = ['age']
     static embedded = ["address"]
 

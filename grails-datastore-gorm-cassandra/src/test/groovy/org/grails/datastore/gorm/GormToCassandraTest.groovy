@@ -17,6 +17,7 @@ class GormToCassandraTest {
     @CassandraEntity
     static class ABasic {
         String value
+        transient tran        
     }
 
     @CassandraEntity
@@ -41,7 +42,7 @@ class GormToCassandraTest {
     @CassandraEntity
     static class ABasicWithPrimaryKey {
         UUID primary
-
+        long id
         static mapping = { id name:"primary" }
     }
 
@@ -64,7 +65,9 @@ class GormToCassandraTest {
         String nickname
         Date birthDate
         int numberOfChildren
-
+        List list
+        Map map
+        
         static mapping = {
             table "the_person"
             id name:"lastname", primaryKey:[ordinal:0, type:"partitioned"]
