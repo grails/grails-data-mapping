@@ -12,28 +12,29 @@ import org.springframework.context.ApplicationContextAware
  * Created by jeff.beck on 2/13/14.
  */
 class CassandraDatastoreFactoryBean implements FactoryBean<CassandraDatastore>, ApplicationContextAware {
-	
-	MappingContext mappingContext
-	Map<String,String> config = [:]
-	ApplicationContext applicationContext
 
-	@Override
-	CassandraDatastore getObject() throws Exception {
-		CassandraDatastore datastore = new CassandraDatastore(mappingContext, applicationContext, config)
+    MappingContext mappingContext
+    Map<String,String> config = [:]
+    ApplicationContext applicationContext
 
-		applicationContext.addApplicationListener new DomainEventListener(datastore)
-		applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
+    @Override
+    CassandraDatastore getObject() throws Exception {
+        CassandraDatastore datastore = new CassandraDatastore(mappingContext, config, applicationContext)
 
-		return datastore
-	}
+        applicationContext.addApplicationListener new DomainEventListener(datastore)
+        applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
 
-	@Override
-	Class<?> getObjectType() {
-		return CassandraDatastore
-	}
+        datastore.afterPropertiesSet()
+        datastore
+    }
 
-	@Override
-	boolean isSingleton() {
-		return true
-	}
+    @Override
+    Class<?> getObjectType() {
+        CassandraDatastore
+    }
+
+    @Override
+    boolean isSingleton() {
+        true
+    }
 }
