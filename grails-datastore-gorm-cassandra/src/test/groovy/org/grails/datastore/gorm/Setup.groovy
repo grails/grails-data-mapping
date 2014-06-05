@@ -4,6 +4,7 @@ import org.grails.datastore.gorm.cassandra.plugin.support.CassandraMethodsConfig
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.mapping.cassandra.CassandraDatastore
+import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
@@ -40,10 +41,9 @@ class Setup {
             def ctx = new GenericApplicationContext()
             ctx.refresh()
 
-            ConfigObject config = new ConfigObject()
-            config.setProperty("keyspace", "unittest")
+            ConfigObject config = new ConfigObject()            
             config.setProperty(CassandraDatastore.CASSANDRA_SCHEMA_ACTION, "RECREATE_DROP_UNUSED")
-            cassandraDatastore = new CassandraDatastore(config, ctx)
+            cassandraDatastore = new CassandraDatastore(new CassandraMappingContext("unittest"), config, ctx)
             cassandraDatastore.createCluster()
 
             ensureKeyspace()
