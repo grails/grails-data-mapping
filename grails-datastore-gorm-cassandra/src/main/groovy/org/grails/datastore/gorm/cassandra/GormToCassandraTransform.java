@@ -2,12 +2,8 @@ package org.grails.datastore.gorm.cassandra;
 
 import grails.gorm.CassandraEntity;
 import grails.persistence.Entity;
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
 
-import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -46,10 +43,11 @@ import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
-import org.codehaus.groovy.control.messages.SimpleMessage;
+import org.codehaus.groovy.control.messages.LocatedMessage;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.codehaus.groovy.grails.compiler.injection.ASTValidationErrorsHelper;
 import org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
 import org.grails.datastore.mapping.model.MappingFactory;
@@ -66,7 +64,7 @@ import com.datastax.driver.core.DataType.Name;
 /**
  * A AST transformation that turns a GORM entity into a Spring Data Cassandra
  * entity.
- *
+ * 
  */
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 public class GormToCassandraTransform implements ASTTransformation {
@@ -98,18 +96,19 @@ public class GormToCassandraTransform implements ASTTransformation {
             return;
         }
 
-        ClassNode cNode = (ClassNode) parent;
-        String cName = cNode.getName();
-        if (cNode.isInterface()) {
+        ClassNode classNode = (ClassNode) parent;
+        String cName = classNode.getName();
+        if (classNode.isInterface()) {
             throw new RuntimeException("Error processing interface '" + cName + "'. " + MY_TYPE_NAME + " not allowed for interfaces.");
         }
 
         try {
-            transformEntity(source, cNode);
+            transformEntity(source, classNode);            
         } catch (Exception e) {
             String message = "Error occured transfoming GORM entity to Cassandra entity: " + ExceptionUtils.getStackTrace(e);
-            // LOG.error(message, e);
-            source.getErrorCollector().addFatalError(new SimpleMessage(message, source));
+            Token token = Token.newString(classNode.getText(),classNode.getLineNumber(),classNode.getColumnNumber());
+            LocatedMessage locatedMessage = new LocatedMessage(message, token, source);                       
+            source.getErrorCollector().addFatalError(locatedMessage);
         }
     }
 
@@ -126,7 +125,7 @@ public class GormToCassandraTransform implements ASTTransformation {
         final PropertyNode errorsProperty = classNode.getProperty("errors");
         if (errorsProperty == null) {
             if (ClassUtils.isPresent("org.codehaus.groovy.grails.compiler.injection.ASTValidationErrorsHelper", Thread.currentThread().getContextClassLoader())) {
-                // addErrorsProperty(classNode);
+                addErrorsProperty(classNode);
             }
         }
 
@@ -211,38 +210,30 @@ public class GormToCassandraTransform implements ASTTransformation {
         PropertyNode primaryKeyProperty = classNode.getProperty(primaryKeyPropertyName);
         AnnotationNode primaryKeyAnnotation = new AnnotationNode(new ClassNode(PrimaryKeyColumn.class));
         primaryKeyAnnotation.addMember("type", new PropertyExpression(new ClassExpression(new ClassNode(PrimaryKeyType.class)), new ConstantExpression(PrimaryKeyType.PARTITIONED)));
-        annotateProperty(classNode, primaryKeyProperty.getName(), primaryKeyAnnotation);
-
-        final PropertyNode transientsProp = classNode.getProperty(GrailsDomainClassProperty.TRANSIENT);
-        List<String> propertyNameList = new ArrayList<String>();
-        populateConstantList(propertyNameList, transientsProp);
-        annotateAllProperties(classNode, propertyNameList, ANNOTATION_TRANSIENT);
+        annotateProperty(classNode, primaryKeyProperty.getName(), primaryKeyAnnotation);       
 
         annotatePropertiesWithDefaultType(classNode);
+        
+        annotateTransientProperties(classNode);
 
         annotateIfNecessary(classNode, Table.class);
     }
 
+    
+
     private static String addErrorsScript = null;
 
-    private static void addErrorsProperty(ClassNode classNode) {
-        // Horrible to have to do this, but only way to support both Grails
-        // 1.3.7 and Grails 2.0
-        if (addErrorsScript == null) {
-            URL resource = GormToCassandraTransform.class.getResource("/org/grails/datastore/gorm/cassandra/AddErrors.groovy");
-            try {
-                if (resource != null) {
-                    addErrorsScript = DefaultGroovyMethods.getText(resource);
-                }
-            } catch (IOException e) {
-                // ignore
+    private static void addErrorsProperty(ClassNode classNode) {   
+        final PropertyNode errorsProperty = classNode.getProperty(ERRORS);
+        if (errorsProperty == null) {
+            if (ClassUtils.isPresent("org.codehaus.groovy.grails.compiler.injection.ASTValidationErrorsHelper", Thread.currentThread().getContextClassLoader())) {
+                new ASTValidationErrorsHelper().injectErrorsCode(classNode);
+                final FieldNode errorsField = classNode.getField(ERRORS);
+                errorsField.addAnnotation(new AnnotationNode(new ClassNode(Transient.class)));
+                int i = 1;
             }
-        }
-
-        if (addErrorsScript != null) {
-            Binding b = new Binding();
-            b.setVariable("classNode", classNode);
-            new GroovyShell(b).evaluate(addErrorsScript);
+        } else {
+            annotateProperty(classNode, ERRORS, new AnnotationNode(new ClassNode(Transient.class)));
         }
     }
 
@@ -313,12 +304,25 @@ public class GormToCassandraTransform implements ASTTransformation {
 
     private static void injectIdPropertyIfNecessary(ClassNode classNode, String primaryKeyPropertyName) {
         final boolean hasId = GrailsASTUtils.hasOrInheritsProperty(classNode, primaryKeyPropertyName);
-
+        ClassNode parent = GrailsASTUtils.getFurthestUnresolvedParent(classNode);
+        
         if (!hasId) {
             // inject into furthest relative
-            ClassNode parent = GrailsASTUtils.getFurthestUnresolvedParent(classNode);
-
             parent.addProperty(GrailsDomainClassProperty.IDENTITY, Modifier.PUBLIC, new ClassNode(UUID.class), null, null, null);
+        } 
+        
+        if (!primaryKeyPropertyName.equals(GrailsDomainClassProperty.IDENTITY)) {
+            PropertyNode idProperty = classNode.getProperty(GrailsDomainClassProperty.IDENTITY);                 
+            if (idProperty == null) {
+                parent.addProperty(GrailsDomainClassProperty.IDENTITY, Modifier.PUBLIC, new ClassNode(Long.class), null, null, null);
+                idProperty = classNode.getProperty(GrailsDomainClassProperty.IDENTITY); 
+            }            
+            if (idProperty != null) {
+                String type = idProperty.getType().getName();
+                if ("long".equals(type) || "java.lang.Long".equals(type)) {            
+                    annotateProperty(classNode, GrailsDomainClassProperty.IDENTITY, ANNOTATION_TRANSIENT);
+                }
+            }
         }
     }
 
@@ -331,18 +335,27 @@ public class GormToCassandraTransform implements ASTTransformation {
 
             final String propertyName = propertyNode.getName();
             final String typeName = propertyNode.getType().getName();
-            if (typeName.equals(UUID.class.getName())) {
+            if ((propertyNode.getModifiers() & PropertyNode.ACC_TRANSIENT) != 0) {
+                annotateProperty(classNode, propertyName, ANNOTATION_TRANSIENT);
+            } else if (typeName.equals(UUID.class.getName())) {
                 annotateProperty(classNode, propertyName, ANNOTATION_CASSANDRA_UUID);
             } else if (typeName.equals(String.class.getName())) {
                 annotateProperty(classNode, propertyName, ANNOTATION_CASSANDRA_TEXT);
             } else if (typeName.equals(long.class.getName()) || typeName.equals(Long.class.getName())) {
                 annotateProperty(classNode, propertyName, ANNOTATION_CASSANDRA_BIG_INT);
-            } else if (!MappingFactory.isSimpleType(typeName)) {
+            } else if ( !(MappingFactory.isSimpleType(typeName) || isCollectionOrMap(propertyNode))) {
                 annotateProperty(classNode, propertyName, ANNOTATION_TRANSIENT);
             }
         }
     }
 
+    private static void annotateTransientProperties(ClassNode classNode) {
+        final PropertyNode transientsProp = classNode.getProperty(GrailsDomainClassProperty.TRANSIENT);
+        List<String> propertyNameList = new ArrayList<String>();
+        populateConstantList(propertyNameList, transientsProp);
+        annotateAllProperties(classNode, propertyNameList, ANNOTATION_TRANSIENT);    
+    }
+    
     private static AnnotationNode createCassandraTypeAnnotationNode(Name type) {
         AnnotationNode annotationNode = new AnnotationNode(new ClassNode(CassandraType.class));
         // the overridden toString in Name is lowercased which prevents it
@@ -481,5 +494,17 @@ public class GormToCassandraTransform implements ASTTransformation {
         if (val != null) {
             theList.add(val.toString());
         }
+    }
+
+    protected static boolean isCollectionOrMap(PropertyNode propertyNode) {
+        Set<ClassNode> interfaces = propertyNode.getType().getAllInterfaces();
+        for (ClassNode inter : interfaces) {
+            String name = inter.getName();
+            if ("java.util.Collection".equals(name) || "java.util.Map".equals(name)) {
+                return true;
+            }
+        }
+        return false;
+
     }
 }
