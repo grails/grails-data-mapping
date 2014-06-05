@@ -16,11 +16,15 @@ import org.springframework.util.Assert;
  * </p>
  */
 public class CassandraMappingContext extends AbstractMappingContext {
+    public static final String DEFAULT_KEYSPACE = "CassandraKeySpace";
     protected String keyspace;
     protected MappingFactory<Table, Column> mappingFactory;
     protected MappingConfigurationStrategy syntaxStrategy;
     protected BasicCassandraMappingContext springCassandraMappingContext;     
     
+    public CassandraMappingContext() {
+        this(DEFAULT_KEYSPACE);
+    }
     /**
      * Constructs a context using the given keyspace
      *
@@ -28,7 +32,7 @@ public class CassandraMappingContext extends AbstractMappingContext {
      *            The keyspace, this is typically the application name
      */
     public CassandraMappingContext(String keyspace) {
-        Assert.notNull(keyspace, "Argument [keyspace] cannot be null");
+        Assert.hasText(keyspace, "Property [keyspace] must be set");
         this.keyspace = keyspace;
         mappingFactory = createMappingFactory();
         syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
