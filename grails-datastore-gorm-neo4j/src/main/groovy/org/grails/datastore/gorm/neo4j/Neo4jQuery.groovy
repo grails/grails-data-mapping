@@ -48,13 +48,13 @@ class Neo4jQuery extends Query {
         }
 
         if (offset != 0) {
-            cypher += " SKIP {__skip__}"
-            cypherBuilder.putParam("__skip__", offset)
+            int skipParam = cypherBuilder.addParam(offset)
+            cypher += " SKIP {$skipParam}"
         }
 
         if (max != -1) {
-            cypher += " LIMIT {__limit__}"
-            cypherBuilder.putParam("__limit__", max)
+            int limtiParam = cypherBuilder.addParam(max)
+            cypher += " LIMIT {$limtiParam}"
         }
         cypher
     }
@@ -137,7 +137,7 @@ class Neo4jQuery extends Query {
                 break
             case Negation:
                 List<Criterion> criteria = ((Negation) criterion).criteria
-                return "NOT (${buildConditions(new Conjunction(criteria), builder, prefix)})"
+                return "NOT (${buildConditions(new Disjunction(criteria), builder, prefix)})"
                 break
             case PropertyComparisonCriterion:
                 return buildConditionsPropertyComparisonCriterion(criterion as PropertyComparisonCriterion, prefix)
@@ -191,8 +191,7 @@ class Neo4jQuery extends Query {
     }
 
     def buildConditionsPropertyCriterion( PropertyCriterion pnc, CypherBuilder builder, String prefix) {
-        def paramName = "param_${builder.getNextParamNumber()}" as String
-        builder.putParam(paramName, Neo4jUtils.mapToAllowedNeo4jType(pnc.value, entity.mappingContext))
+        int paramNumber = builder.addParam(Neo4jUtils.mapToAllowedNeo4jType(pnc.value, entity.mappingContext))
         def rhs
         def lhs
         def operator
@@ -208,97 +207,99 @@ class Neo4jQuery extends Query {
                     lhs = pnc.property == "id" ? "${prefix}.__id__" : "${prefix}.${pnc.property}"
                 }
                 operator = "="
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             case IdEquals:
                 lhs = "${prefix}.__id__"
                 operator = "="
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             case Like:
                 lhs = "${prefix}.$pnc.property"
                 operator = "=~"
-                rhs = "{$paramName}"
-                builder.putParam(paramName, pnc.value.toString().replaceAll("%", ".*"))
+                rhs = "{$paramNumber}"
+                builder.replaceParamAt(paramNumber, pnc.value.toString().replaceAll("%", ".*"))
                 break
             case In:
                 lhs = pnc.property == "id" ? "${prefix}.__id__" : "${prefix}.$pnc.property"
                 operator = " IN "
-                rhs = "{$paramName}"
-                builder.putParam(paramName, convertEnumsInList(((In) pnc).values))
+                rhs = "{$paramNumber}"
+                builder.replaceParamAt(paramNumber, convertEnumsInList(((In) pnc).values))
                 break
             case GreaterThan:
                 lhs = "${prefix}.${pnc.property}"
                 operator = ">"
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             case GreaterThanEquals:
                 lhs = "${prefix}.${pnc.property}"
                 operator = ">="
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             case LessThan:
                 lhs = "${prefix}.${pnc.property}"
                 operator = "<"
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             case LessThanEquals:
                 lhs = "${prefix}.${pnc.property}"
                 operator = "<="
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             case NotEquals:
                 lhs = "${prefix}.${pnc.property}"
                 operator = "<>"
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             case Between:
                 Between b = (Between) pnc
-                builder.putParam("${paramName}_from".toString(), Neo4jUtils.mapToAllowedNeo4jType(b.from, entity.mappingContext))
-                builder.putParam("${paramName}_to".toString(), Neo4jUtils.mapToAllowedNeo4jType(b.to, entity.mappingContext))
-                return "{${paramName}_from}<=${prefix}.$pnc.property and ${prefix}.$pnc.property<={${paramName}_to}"
+
+
+                int paramNumberFrom = builder.addParam(Neo4jUtils.mapToAllowedNeo4jType(b.from, entity.mappingContext))
+                int parmaNumberTo = builder.addParam(Neo4jUtils.mapToAllowedNeo4jType(b.to, entity.mappingContext))
+                return "{$paramNumberFrom}<=${prefix}.$pnc.property and ${prefix}.$pnc.property<={$parmaNumberTo}"
                 break
             case SizeLessThanEquals:
                 Association association = entity.getPropertyByName(pnc.property) as Association
                 builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
                 lhs = "count"
                 operator = "<="
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             case SizeLessThan:
                 Association association = entity.getPropertyByName(pnc.property) as Association
                 builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
                 lhs = "count"
                 operator = "<"
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             case SizeGreaterThan:
                 Association association = entity.getPropertyByName(pnc.property) as Association
                 builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
                 lhs = "count"
                 operator = ">"
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             case SizeGreaterThanEquals:
                 Association association = entity.getPropertyByName(pnc.property) as Association
                 builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
                 lhs = "count"
                 operator = ">="
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             case SizeEquals:
                 Association association = entity.getPropertyByName(pnc.property) as Association
                 builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
                 lhs = "count"
                 operator = "="
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             case SizeNotEquals:   // occurs multiple times
                 Association association = entity.getPropertyByName(pnc.property) as Association
                 builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
                 lhs = "count"
                 operator = "<>"
-                rhs = "{$paramName}"
+                rhs = "{$paramNumber}"
                 break
             default:
                 throw new UnsupportedOperationException("propertycriterion ${pnc.class}")

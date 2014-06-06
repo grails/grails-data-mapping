@@ -47,7 +47,7 @@ import grails.gorm.tests.*
 //UpdateWithProxyPresentSpec,
 //ValidationSpec,
 //WithTransactionSpec,
-
+//
 //// non TCK - specs, locally to neo4j
 //FindWhereSpec,
 //JoinCriteriaSpec,

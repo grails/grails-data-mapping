@@ -19,7 +19,7 @@ public class CypherBuilder {
     private String conditions;
     private String orderAndLimits;
     private List<String> returnColumns = new ArrayList<String>();
-    private Map<String, Object> params = new HashMap<String, Object>();
+    private List<Object> params = new ArrayList<Object>();
 
     public CypherBuilder(String forLabel) {
         this.forLabel = forLabel;
@@ -41,15 +41,25 @@ public class CypherBuilder {
         this.orderAndLimits = orderAndLimits;
     }
 
-    public void putParam(String key, Object value) {
-        params.put(key, value);
-    }
-
-    public int getNextParamNumber() {
+    public int addParam(Object value) {
+        params.add(value);
         return params.size();
     }
 
-    public Map<String, Object> getParams() {
+    /**
+     *
+     * @param position first element is 1
+     * @param value
+     */
+    public void replaceParamAt(int position, Object value) {
+        params.set(position-1, value);
+    }
+
+//    public int getNextParamNumber() {
+//        return params.size();
+//    }
+
+    public List<Object> getParams() {
         return params;
     }
 
@@ -99,7 +109,7 @@ public class CypherBuilder {
         StringBuilder sb = new StringBuilder();
         GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) (association.getOwner());
         String label = graphPersistentEntity.getLabel();
-        sb.append("MATCH (me:").append(label).append(" {__id__:{id}})");
+        sb.append("MATCH (me:").append(label).append(" {__id__:{1}})");
         if (reversed) {
             sb.append("<");
         }

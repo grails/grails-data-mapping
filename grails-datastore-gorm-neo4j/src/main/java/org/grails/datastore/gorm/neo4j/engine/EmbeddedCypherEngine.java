@@ -6,6 +6,8 @@ import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -35,15 +37,18 @@ public class EmbeddedCypherEngine implements CypherEngine {
     }
 
     @Override
-    public CypherResult execute(String cypher, Map params) {
-        log.info("running cypher {}", cypher);
+    public CypherResult execute(String cypher, List params) {
+        Map paramsMap = null;
+
         if (params!=null) {
-            log.info("   with params {}", params);
+            paramsMap = new HashMap();
+            for (int i = 0; i < params.size(); i++) {
+                paramsMap.put(Integer.toString(i), params.get(i));
+            }
         }
-        return new EmbeddedCypherResult(params != null ?
-            executionEngine.execute(cypher, params) :
-            executionEngine.execute(cypher)
-        );
+        return new EmbeddedCypherResult(paramsMap == null ?
+                executionEngine.execute(cypher) :
+                executionEngine.execute(cypher, paramsMap));
     }
 
     @Override

@@ -42,7 +42,7 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     @Override
     public void disconnect() {
-        cypherEngine.commit();
+        //cypherEngine.commit();
         super.disconnect();
     }
 
@@ -119,14 +119,14 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     public void flush() {
         persistDirtyButUnsavedInstances();
         super.flush();
-        cypherEngine.commit();
-        cypherEngine.beginTx();
     }
 
     @Override
     protected void postFlush(boolean hasUpdates) {
         persistingInstances.clear();
         super.postFlush(hasUpdates);
+        cypherEngine.commit();
+        cypherEngine.beginTx();
         if (publisher!=null) {
             publisher.publishEvent(new SessionFlushedEvent(this));
         }

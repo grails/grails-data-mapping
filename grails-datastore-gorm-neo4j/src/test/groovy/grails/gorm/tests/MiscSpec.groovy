@@ -10,9 +10,9 @@ import org.neo4j.graphdb.DynamicLabel
 import org.neo4j.graphdb.Node
 import org.neo4j.helpers.collection.IteratorUtil
 import spock.lang.Ignore
-import spock.lang.IgnoreRest
 import spock.lang.Issue
-import spock.lang.Unroll
+
+import java.util.concurrent.TimeUnit
 
 /**
  * some more unrelated testcases, in more belong together logically, consider refactoring them into a seperate spec
@@ -149,9 +149,48 @@ class MiscSpec extends GormDatastoreSpec {
         tournament.teams[0].club.name == 'club'
     }
 
+    @Ignore
+    void "test concurrent accesses"() {
+        when:
+        GParsPool.withPool {
+            (1..90).eachParallel { counter ->
+                Team.withTransaction {
+                    new Team(name: "Team $counter").save(flush:true, failOnError: true)
+                }
+            }
+        }
+//        Thread.start {
+//            Task.withTransaction {
+//                new Task(name: 'Task 1').save(flush: true)
+//            }
+            /*def tx = Setup.graphDb.beginTx()
+            try {
+                new Task(name: 'Task 1').save(flush: true)
+                tx.success()
+            } finally {
+                tx.finish()
+            }*/
+
+//        }.join()
+//        new Task(name: 'Task 2').save(flush: true)
+
+        then:
+        Task.count() == 100
+
+    }
+
     void "test indexing"() {
         setup: "by default test suite runs without indexes, so we need to build them"
+
         Thread.start {
+/*  TODO: withNewTransaction seems not work as expected
+            Book.withNewTransaction {
+                session.datastore.setupIndexing()
+            }
+            Book.withNewTransaction {
+                Setup.graphDb.schema().awaitIndexesOnline(10, TimeUnit.SECONDS)
+            }
+*/
             def tx = Setup.graphDb.beginTx()
             try {
                 session.datastore.setupIndexing()
@@ -159,16 +198,32 @@ class MiscSpec extends GormDatastoreSpec {
             } finally {
                 tx.close()
             }
-
+            tx = Setup.graphDb.beginTx()
+            try {
+                Setup.graphDb.schema().awaitIndexesOnline(10, TimeUnit.SECONDS)
+                tx.success()
+            } finally {
+                tx.close()
+            }
         }.join()
+
+
         def task1 = new Task(name: 'task1')
         task1.save()
-        new Task(name: 'task2').save(flush: true)
+//        new Task(name: 'task2').save(flush: true)
         session.clear()
 
         when:
-        def indexedProperties = Setup.graphDb.schema().getIndexes(DynamicLabel.label("Task")).collect {
-            IteratorUtil.single(it.propertyKeys)
+
+        def indexedProperties
+        def tx = Setup.graphDb.beginTx()
+        try {
+            indexedProperties = Setup.graphDb.schema().getIndexes(DynamicLabel.label("Task")).collect {
+                IteratorUtil.single(it.propertyKeys)
+            }
+            tx.success()
+        } finally {
+            tx.close()
         }
 
         then:
@@ -286,7 +341,7 @@ class MiscSpec extends GormDatastoreSpec {
         when:
             def pet = new Pet(birthDate: new Date(), name: 'Cosima').save(flush: true)
         then:
-            IteratorUtil.single(session.nativeInterface.execute("MATCH (p:Pet {name:{name}}) RETURN p.birthDate as birthDate", [name: 'Cosima'])).birthDate instanceof Long
+            IteratorUtil.single(session.nativeInterface.execute("MATCH (p:`Pet` {name:{1}}) RETURN p.birthDate as birthDate", ['Cosima'])).birthDate instanceof Long
     }
 
     @Issue("https://github.com/SpringSource/grails-data-mapping/issues/52")
@@ -296,8 +351,8 @@ class MiscSpec extends GormDatastoreSpec {
             def pet = new Pet(birthDate: date, name:'Cosima').save(flush: true)
 
         when: "write birthDate as a String"
-            session.nativeInterface.execute("MATCH (p:Pet {name:{name}}) SET p.birthDate={birthDate}",
-                [name: 'Cosima', birthDate: date.time.toString()])
+            session.nativeInterface.execute("MATCH (p:`Pet` {name:{}}) SET p.birthDate={}",
+                ['Cosima', date.time.toString()])
             pet = Pet.get(pet.id)
         then: "the string stored date gets parsed correctly"
             pet.birthDate == date
@@ -307,8 +362,8 @@ class MiscSpec extends GormDatastoreSpec {
         when:
         def team = new Team(name: 'name', binaryData: 'abc'.bytes)
         team.save(flush: true)
-        def value = IteratorUtil.single(session.nativeInterface.execute("MATCH (p:Team {name:{name}}) RETURN p.binaryData as binaryData",
-            [name: 'name'])).binaryData
+        def value = IteratorUtil.single(session.nativeInterface.execute("MATCH (p:`Team` {name:{1}}) RETURN p.binaryData as binaryData",
+            ['name'])).binaryData
 
         then:
         value.class == byte[].class
@@ -385,8 +440,7 @@ class MiscSpec extends GormDatastoreSpec {
             def club = new Club(name: 'club')
             club.save(flush: true)
         when:
-            def result = session.nativeInterface.execute("MATCH (c:MyCustomLabel {name:{name}}) RETURN c",
-                        [name: 'club'])
+            def result = session.nativeInterface.execute("MATCH (c:`MyCustomLabel` {name:{1}}) RETURN c", ['club'])
         then:
             IteratorUtil.count(result) == 1
     }

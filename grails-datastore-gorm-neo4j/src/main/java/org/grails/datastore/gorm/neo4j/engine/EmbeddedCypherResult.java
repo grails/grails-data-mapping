@@ -29,7 +29,6 @@ public class EmbeddedCypherResult implements CypherResult {
     }
 
     @Override
-
     public ResourceIterator<Map<String, Object>> iterator() {
         return new NodeToMapConvertingIterator(executionResult.iterator());
     }

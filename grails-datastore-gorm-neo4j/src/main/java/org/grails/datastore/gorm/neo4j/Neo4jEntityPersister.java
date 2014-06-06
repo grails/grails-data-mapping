@@ -91,7 +91,9 @@ public class Neo4jEntityPersister extends EntityPersister {
         int longestInheritenceChain = -1;
 
         for (String l: labels) {
-            PersistentEntity persistentEntity = findPersistentEntityWithLabel(l);
+            StringBuilder sb = new StringBuilder();
+            sb.append("`").append(l).append("`");
+            PersistentEntity persistentEntity = findPersistentEntityWithLabel(sb.toString());
 
             int inheritenceChain = calcInheritenceChain(persistentEntity);
             if (inheritenceChain > longestInheritenceChain) {
@@ -137,7 +139,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             } else if (property instanceof ToOne) {
                 ToOne to = (ToOne) property;
 
-                CypherResult cypherResult = getSession().getNativeInterface().execute(CypherBuilder.findRelationshipEndpointIdsFor(to), Collections.singletonMap("id", id));
+                CypherResult cypherResult = getSession().getNativeInterface().execute(CypherBuilder.findRelationshipEndpointIdsFor(to), Collections.singletonList(id));
 
                 Map<String,Object> row = IteratorUtil.singleOrNull(cypherResult);
                 if (row != null) {
@@ -313,9 +315,9 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
 
         getCypherEngine().execute(
-                String.format("MATCH (n:%s) WHERE n.__id__={id} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
+                String.format("MATCH (n:%s) WHERE n.__id__={1} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
                         ((GraphPersistentEntity)pe).getLabel()),
-                Collections.singletonMap("id", entityAccess.getIdentifier()));
+                Collections.singletonList(entityAccess.getIdentifier()));
 
         firePostDeleteEvent(pe, entityAccess);
     }
@@ -364,8 +366,8 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
 
         getCypherEngine().execute(
-                String.format("MATCH (n:%s) WHERE n.__id__ in {ids} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
-                        ((GraphPersistentEntity)pe).getLabel()), Collections.singletonMap("ids", ids));
+                String.format("MATCH (n:%s) WHERE n.__id__ in {1} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
+                        ((GraphPersistentEntity)pe).getLabel()), Collections.singletonList(ids));
 
         for (EntityAccess entityAccess: entityAccesses) {
             firePostDeleteEvent(pe, entityAccess);

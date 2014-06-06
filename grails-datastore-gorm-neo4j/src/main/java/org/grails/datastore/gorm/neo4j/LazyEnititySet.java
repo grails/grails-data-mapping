@@ -34,8 +34,7 @@ public class LazyEnititySet<T> implements Set<T> {
         if (!initialized) {
             initialized = true;
             String cypher = CypherBuilder.findRelationshipEndpointIdsFor(association);
-            CypherResult result = session.getNativeInterface().execute(cypher,
-                    Collections.singletonMap("id", owner.getIdentifier()));
+            CypherResult result = session.getNativeInterface().execute(cypher, Collections.singletonList(owner.getIdentifier()));
 
             Class<T> clazz = association.getAssociatedEntity().getJavaClass();
             for (Map<String, Object> row : result) {

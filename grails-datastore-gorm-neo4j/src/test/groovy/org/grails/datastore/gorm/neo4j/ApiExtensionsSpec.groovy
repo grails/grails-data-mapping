@@ -18,13 +18,13 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         session.clear()
 
         when:
-        def result = Person.cypherStatic("MATCH (p:Person) RETURN p")
+        def result = Person.cypherStatic("MATCH (p:`Person`) RETURN p")
 
         then:
         result.iterator().size()==2
 
         when: "test with parameters"
-        result = Person.cypherStatic("MATCH (p:Person) WHERE p.lastName={name} RETURN p", [name:'person1'])
+        result = Person.cypherStatic("MATCH (p:`Person`) WHERE p.lastName={1} RETURN p", [ 'person1'])
 
         then:
         result.iterator().size()==1
@@ -40,7 +40,7 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         session.clear()
 
         when:
-        def result = person.cypher("MATCH (p:Person)<-[:OWNER]->m WHERE p.__id__={this} return m")
+        def result = person.cypher("MATCH (p:`Person`)<-[:`OWNER`]->m WHERE p.__id__={1} return m")
 
         then:
         result.iterator().size() == 1

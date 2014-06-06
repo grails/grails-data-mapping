@@ -14,8 +14,6 @@
  */
 package org.grails.datastore.gorm.neo4j;
 
-import com.fasterxml.uuid.Generators;
-import com.fasterxml.uuid.NoArgGenerator;
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.core.AbstractDatastore;
@@ -32,7 +30,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Datastore implementation for Neo4j backend

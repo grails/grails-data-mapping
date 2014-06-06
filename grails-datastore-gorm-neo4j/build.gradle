@@ -1,13 +1,13 @@
 version = "2.0.0-SNAPSHOT"
 //version = "2.0.0-M01"
 
-ext.neo4jVersion = "2.0.1"
+ext.neo4jVersion = "2.0.3"
 ext.gdmVersion = "2.0.7.RELEASE"
 
 sourceSets.main.java.srcDirs = []
 sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
-/*repositories {
+repositories {
     //mavenLocal()
     //mavenCentral()
 
@@ -15,12 +15,14 @@ sourceSets.main.groovy.srcDirs += ["src/main/java"]
     maven { url "http://m2.neo4j.org/content/repositories/releases/" }
 //    maven { url "http://m2.neo4j.org/content/repositories/snapshots/" }
 //    maven { url "http://repo.grails.org/grails/core" }
-}*/
+}
 
 dependencies {
     compile "org.neo4j:neo4j-community:$neo4jVersion",
         "org.neo4j:neo4j-graphviz:$neo4jVersion",
-        "com.fasterxml.uuid:java-uuid-generator:3.1.3"
+        'org.codehaus.groovy:groovy-all:2.1.9'
+
+    runtime "org.neo4j:neo4j-jdbc:2.0.2"
 
     // during development (aka snapshot version), use project dependencies
     // during release, use 'regular' dependencies
@@ -41,12 +43,15 @@ dependencies {
     testCompile 'org.codehaus.gpars:gpars:0.12',
             [group: "org.neo4j", name: "neo4j-kernel", version: neo4jVersion, classifier: 'tests'],
             [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion, classifier: 'tests'],
-            [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion]
-            "org.neo4j:neo4j-graphviz:$neo4jVersion"
+            [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion],
+            "org.neo4j:neo4j-graphviz:$neo4jVersion",
+            "org.neo4j:neo4j-management:$neo4jVersion",
+            'org.apache.tomcat:tomcat-jdbc:8.0.8'
     testRuntime "javax.servlet:servlet-api:2.5",
             'com.sun.jersey:jersey-server:1.9',
             'com.sun.jersey:jersey-core:1.9',
-            'com.sun.jersey:jersey-client:1.9'
+            'com.sun.jersey:jersey-client:1.9',
+            'p6spy:p6spy:2.0.2'
     testRuntime "org.grails:grails-web:$grailsVersion", {
         transitive = false
     }

@@ -1,6 +1,8 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.tests.Role
+import org.apache.tomcat.jdbc.pool.DataSource
+import org.apache.tomcat.jdbc.pool.PoolProperties
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
@@ -9,14 +11,14 @@ import org.grails.datastore.gorm.neo4j.DumpGraphOnSessionFlushListener
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
-import org.grails.datastore.gorm.neo4j.engine.EmbeddedCypherEngine
-import org.grails.datastore.gorm.proxy.GroovyProxyFactory
+import org.grails.datastore.gorm.neo4j.engine.JdbcCypherEngine
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.neo4j.graphdb.GraphDatabaseService
-import org.neo4j.graphdb.Transaction
+import org.neo4j.kernel.GraphDatabaseAPI
+import org.neo4j.kernel.impl.transaction.TxManager
 import org.neo4j.test.TestGraphDatabaseFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -25,18 +27,23 @@ import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
+import java.lang.management.ManagementFactory
+
 class Setup {
 
-    static HOST = "localhost"
-    static PORT = 7473
-    protected final Logger log = LoggerFactory.getLogger(getClass())
+    protected static final Logger log = LoggerFactory.getLogger(getClass())
 
     static Neo4jDatastore datastore
     static GraphDatabaseService graphDb
+    static DataSource dataSource
 
     static destroy() {
-        graphDb.shutdown()
-        //server?.stop()
+        dataSource.close()
+        TxManager txManager = ((GraphDatabaseAPI)graphDb).getDependencyResolver().resolveDependency(TxManager)
+        log.info "before shutdown, active: $txManager.activeTxCount, committed $txManager.committedTxCount, started: $txManager.startedTxCount, rollback: $txManager.rolledbackTxCount, status: $txManager.status"
+
+        graphDb?.shutdown()
+        log.info "after shutdown"
     }
 
     static Session setup(classes) {
@@ -44,14 +51,35 @@ class Setup {
         def ctx = new GenericApplicationContext()
         ctx.refresh()
 
-        initializeGraphDatabaseSerivce()
-
         MappingContext mappingContext = new Neo4jMappingContext()
+
+        // setup datasource
+        def mode = "embedded"
+        def poolprops = [
+                driverClassName: 'org.neo4j.jdbc.Driver',
+                defaultAutoCommit: false
+        ]
+
+        switch (mode) {
+            case "embedded":
+                graphDb = new TestGraphDatabaseFactory().newImpermanentDatabase()
+                def instanceName = ManagementFactory.runtimeMXBean.name
+                poolprops.url = "jdbc:neo4j:instance:${instanceName}"
+                        //url: 'jdbc:neo4j:mem',
+                poolprops.dbProperties = ["$instanceName": graphDb]
+                break
+            case "server":
+                poolprops.url = "jdbc:neo4j://localhost:7474/"
+                break
+            default:
+                throw new IllegalStateException("dunno know how to handle mode $mode")
+        }
+        dataSource = new DataSource(new PoolProperties(poolprops))
 
         datastore = new Neo4jDatastore(
                 mappingContext,
                 ctx,
-                new EmbeddedCypherEngine(graphDb)
+                new JdbcCypherEngine(dataSource)
         )
         datastore.skipIndexSetup = true
         //datastore.mappingContext.proxyFactory = new GroovyProxyFactory()
@@ -104,15 +132,4 @@ class Setup {
         datastore.connect()
     }
 
-    private static initializeGraphDatabaseSerivce() {
-        if (System.properties.get("gorm_neo4j_test_use_rest")) {
-//            System.setProperty(Config.CONFIG_BATCH_TRANSACTION, "false") // TODO: remove when support for batch has been finished
-            //System.setProperty(Config.CONFIG_LOG_REQUESTS,"true") // enable for verbose request/response logging
-            //server = new LocalTestServer(HOST, PORT).withPropertiesFile("neo4j-server.properties");
-            //server.start()
-            //graphDb = new RestGraphDatabase("http://localhost:7473/db/data/")
-        } else {
-            graphDb = new TestGraphDatabaseFactory().newImpermanentDatabase()
-        }
-    }
 }
