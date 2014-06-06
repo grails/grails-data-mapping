@@ -341,7 +341,7 @@ class MiscSpec extends GormDatastoreSpec {
         when:
             def pet = new Pet(birthDate: new Date(), name: 'Cosima').save(flush: true)
         then:
-            IteratorUtil.single(session.nativeInterface.execute("MATCH (p:`Pet` {name:{1}}) RETURN p.birthDate as birthDate", ['Cosima'])).birthDate instanceof Long
+            IteratorUtil.single(session.nativeInterface.execute("MATCH (p:Pet {name:{1}}) RETURN p.birthDate as birthDate", ['Cosima'])).birthDate instanceof Long
     }
 
     @Issue("https://github.com/SpringSource/grails-data-mapping/issues/52")
@@ -351,7 +351,7 @@ class MiscSpec extends GormDatastoreSpec {
             def pet = new Pet(birthDate: date, name:'Cosima').save(flush: true)
 
         when: "write birthDate as a String"
-            session.nativeInterface.execute("MATCH (p:`Pet` {name:{}}) SET p.birthDate={}",
+            session.nativeInterface.execute("MATCH (p:Pet {name:{}}) SET p.birthDate={}",
                 ['Cosima', date.time.toString()])
             pet = Pet.get(pet.id)
         then: "the string stored date gets parsed correctly"
@@ -362,7 +362,7 @@ class MiscSpec extends GormDatastoreSpec {
         when:
         def team = new Team(name: 'name', binaryData: 'abc'.bytes)
         team.save(flush: true)
-        def value = IteratorUtil.single(session.nativeInterface.execute("MATCH (p:`Team` {name:{1}}) RETURN p.binaryData as binaryData",
+        def value = IteratorUtil.single(session.nativeInterface.execute("MATCH (p:Team {name:{1}}) RETURN p.binaryData as binaryData",
             ['name'])).binaryData
 
         then:
@@ -440,7 +440,7 @@ class MiscSpec extends GormDatastoreSpec {
             def club = new Club(name: 'club')
             club.save(flush: true)
         when:
-            def result = session.nativeInterface.execute("MATCH (c:`MyCustomLabel` {name:{1}}) RETURN c", ['club'])
+            def result = session.nativeInterface.execute("MATCH (c:MyCustomLabel {name:{1}}) RETURN c", ['club'])
         then:
             IteratorUtil.count(result) == 1
     }

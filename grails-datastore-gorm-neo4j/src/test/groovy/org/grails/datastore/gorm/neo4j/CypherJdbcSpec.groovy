@@ -16,6 +16,8 @@ class CypherJdbcSpec extends Specification {
     def "understand using cypher over groovy sql"() {
         setup:
         def sql = Sql.newInstance('jdbc:p6spy:neo4j://localhost:7474/')
+
+        // NB: groovy SQL class does magic stuff, so we need to quote labels and reltypes
         sql.eachRow("match (m:`Movie` {title:{1}}) return m", ['The Matrix']) {
             println "row $it"
         }

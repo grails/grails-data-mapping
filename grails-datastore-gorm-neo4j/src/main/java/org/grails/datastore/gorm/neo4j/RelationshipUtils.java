@@ -19,8 +19,6 @@ public abstract class RelationshipUtils {
         String name = useReversedMappingFor(association) ?
                 association.getReferencedPropertyName() :
                 association.getName();
-        StringBuilder builder = new StringBuilder();
-        builder.append("`").append(name.toUpperCase()).append("`");
-        return builder.toString();
+        return name.toUpperCase();
     }
 }

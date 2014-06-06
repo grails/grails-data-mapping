@@ -91,9 +91,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         int longestInheritenceChain = -1;
 
         for (String l: labels) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("`").append(l).append("`");
-            PersistentEntity persistentEntity = findPersistentEntityWithLabel(sb.toString());
+            PersistentEntity persistentEntity = findPersistentEntityWithLabel(l);
 
             int inheritenceChain = calcInheritenceChain(persistentEntity);
             if (inheritenceChain > longestInheritenceChain) {

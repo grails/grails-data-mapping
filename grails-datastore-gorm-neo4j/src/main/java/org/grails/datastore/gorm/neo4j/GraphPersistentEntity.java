@@ -49,6 +49,6 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
         if (localLabel==null) {
             localLabel = getDiscriminator();
         }
-        return new StringBuilder().append("`").append(localLabel).append("`").toString();
+        return localLabel;
     }
 }
