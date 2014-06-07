@@ -13,7 +13,9 @@ import java.util.Stack;
 
 /**
  * CypherEngine implementation backed by {@link ExecutionEngine}
+ * @deprecated due to usage of {@link org.grails.datastore.gorm.neo4j.engine.JdbcCypherEngine}
  */
+@Deprecated
 public class EmbeddedCypherEngine implements CypherEngine {
 
     private static Logger log = LoggerFactory.getLogger(EmbeddedCypherEngine.class);
