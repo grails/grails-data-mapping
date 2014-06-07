@@ -41,6 +41,7 @@ class Setup {
         dataSource.close()
         TxManager txManager = ((GraphDatabaseAPI)graphDb).getDependencyResolver().resolveDependency(TxManager)
         log.info "before shutdown, active: $txManager.activeTxCount, committed $txManager.committedTxCount, started: $txManager.startedTxCount, rollback: $txManager.rolledbackTxCount, status: $txManager.status"
+        assert txManager.activeTxCount == 0, "something is wrong with connection handling - we still have $txManager.activeTxCount connections open"
 
         graphDb?.shutdown()
         log.info "after shutdown"
@@ -127,7 +128,11 @@ class Setup {
 
         ctx.addApplicationListener new DomainEventListener(datastore)
         ctx.addApplicationListener new AutoTimestampEventListener(datastore)
-        ctx.addApplicationListener new DumpGraphOnSessionFlushListener(graphDb)
+
+//      // enable for debugging
+//        if (graphDb) {
+//            ctx.addApplicationListener new DumpGraphOnSessionFlushListener(graphDb)
+//        }
 
         datastore.connect()
     }

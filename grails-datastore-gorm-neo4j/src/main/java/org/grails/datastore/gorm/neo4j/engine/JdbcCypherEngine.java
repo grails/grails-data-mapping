@@ -17,13 +17,16 @@ public class JdbcCypherEngine implements CypherEngine {
 
     private static Logger log = LoggerFactory.getLogger(JdbcCypherEngine.class);
     private final DataSource dataSource;
-    private ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<>();
-//    private ThreadLocal<Stack<Connection>> connectionStackThreadLocal = new ThreadLocal<Stack<Connection>>() {
-//        @Override
-//        protected Stack<Connection> initialValue() {
-//            return new Stack<Connection>();
-//        }
-//    };
+    private ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<Connection>() {
+        @Override
+        protected Connection initialValue() {
+            try {
+                return dataSource.getConnection();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    };
 
     public JdbcCypherEngine(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -31,7 +34,8 @@ public class JdbcCypherEngine implements CypherEngine {
 
     @Override
     public CypherResult execute(String cypher, List params) {
-        try (Connection connection = dataSource.getConnection()) {
+        try {
+            Connection connection = connectionThreadLocal.get();
             logCypher(cypher, params);
             PreparedStatement ps = connection.prepareStatement(cypher);
             for (int i=0; i<params.size(); i++) {
@@ -54,7 +58,8 @@ public class JdbcCypherEngine implements CypherEngine {
 
     @Override
     public CypherResult execute(String cypher) {
-        try (Connection connection = dataSource.getConnection()) {
+        try {
+            Connection connection = connectionThreadLocal.get();
             logCypher(cypher, null);
             ResultSet rs = connection.createStatement().executeQuery(cypher);
             return new JdbcCypherResult(rs);
@@ -63,16 +68,12 @@ public class JdbcCypherEngine implements CypherEngine {
         }
     }
 
+    /**
+     * intentionally a noop here since execute open a tx implicitly
+     */
     @Override
     public void beginTx() {
-        try {
-            log.info("beginTx");
-            connectionThreadLocal.set(dataSource.getConnection());
-//            Stack<Connection> stack = connectionStackThreadLocal.get();
-//            stack.push(dataSource.getConnection());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        log.info("beginTx");
     }
 
     @Override
@@ -83,9 +84,6 @@ public class JdbcCypherEngine implements CypherEngine {
             connection.commit();
             connection.close();
             connectionThreadLocal.remove();
-//            Stack<Connection> stack = connectionStackThreadLocal.get();
-//            Connection connection = stack.pop();
-//            connection.commit();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -95,12 +93,10 @@ public class JdbcCypherEngine implements CypherEngine {
     public void rollback() {
         try {
             log.info("rollback");
-            connectionThreadLocal.get().rollback();
-            connectionThreadLocal.get().close();
+            Connection connection = connectionThreadLocal.get();
+            connection.rollback();
+            connection.close();
             connectionThreadLocal.remove();
-//            Stack<Connection> stack = connectionStackThreadLocal.get();
-//            Connection connection = stack.pop();
-//            connection.rollback();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

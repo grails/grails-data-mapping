@@ -149,33 +149,22 @@ class MiscSpec extends GormDatastoreSpec {
         tournament.teams[0].club.name == 'club'
     }
 
-    @Ignore
     void "test concurrent accesses"() {
         when:
-        GParsPool.withPool {
-            (1..90).eachParallel { counter ->
-                Team.withTransaction {
-                    new Team(name: "Team $counter").save(flush:true, failOnError: true)
-                }
+        GParsPool.withPool(concurrency) {
+            (1..count).eachParallel { counter ->
+                new Team(name: "Team $counter").save(flush:true, failOnError: true)
             }
         }
-//        Thread.start {
-//            Task.withTransaction {
-//                new Task(name: 'Task 1').save(flush: true)
-//            }
-            /*def tx = Setup.graphDb.beginTx()
-            try {
-                new Task(name: 'Task 1').save(flush: true)
-                tx.success()
-            } finally {
-                tx.finish()
-            }*/
-
-//        }.join()
-//        new Task(name: 'Task 2').save(flush: true)
 
         then:
-        Task.count() == 100
+        Team.count() == count
+
+        where:
+        count | concurrency
+        100   | 4
+        100   | 16
+        100   | 100
 
     }
 

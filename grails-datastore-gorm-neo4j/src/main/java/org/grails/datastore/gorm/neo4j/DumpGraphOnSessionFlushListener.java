@@ -33,10 +33,10 @@ public class DumpGraphOnSessionFlushListener implements ApplicationListener<Sess
     public void dump() {
         Transaction tx = graphDatabaseService.beginTx(); // TODO: refactor to try-with-resources
         try {    // TODO: disabled due to tx issue: getallnodes sees deleted stuff in weird cases
-//            StringWriter writer = new StringWriter();
-//            PrintWriter printWriter = new PrintWriter(writer);
-//            new SubGraphExporter(new DatabaseSubGraph(graphDatabaseService)).export(printWriter);
-//            log.info(writer.toString());
+            StringWriter writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(writer);
+            new SubGraphExporter(new DatabaseSubGraph(graphDatabaseService)).export(printWriter);
+            log.info(writer.toString());
             log.info("svg: " + Neo4jUtils.dumpGraphToSvg(graphDatabaseService));
             tx.success();
         } finally {
