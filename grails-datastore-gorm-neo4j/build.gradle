@@ -49,8 +49,7 @@ dependencies {
             [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion],
             "org.neo4j:neo4j-graphviz:$neo4jVersion",
             "org.neo4j:neo4j-management:$neo4jVersion",
-            'org.apache.tomcat:tomcat-jdbc:8.0.8'
-    testRuntime "javax.servlet:servlet-api:2.5",
+            'org.apache.tomcat:tomcat-jdbc:8.0.8',
             'com.sun.jersey:jersey-server:1.9',
             'com.sun.jersey:jersey-core:1.9',
             'com.sun.jersey:jersey-client:1.9',

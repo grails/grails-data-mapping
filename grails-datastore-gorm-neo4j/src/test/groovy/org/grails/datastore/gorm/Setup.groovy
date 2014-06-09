@@ -11,6 +11,7 @@ import org.grails.datastore.gorm.neo4j.DumpGraphOnSessionFlushListener
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
+import org.grails.datastore.gorm.neo4j.TestServer
 import org.grails.datastore.gorm.neo4j.engine.JdbcCypherEngine
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
@@ -19,6 +20,7 @@ import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.kernel.GraphDatabaseAPI
 import org.neo4j.kernel.impl.transaction.TxManager
+import org.neo4j.server.web.WebServer
 import org.neo4j.test.TestGraphDatabaseFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -36,6 +38,7 @@ class Setup {
     static Neo4jDatastore datastore
     static GraphDatabaseService graphDb
     static DataSource dataSource
+    static WebServer webServer
 
     static destroy() {
         dataSource.close()
@@ -43,6 +46,7 @@ class Setup {
         log.info "before shutdown, active: $txManager.activeTxCount, committed $txManager.committedTxCount, started: $txManager.startedTxCount, rollback: $txManager.rolledbackTxCount, status: $txManager.status"
         assert txManager.activeTxCount == 0, "something is wrong with connection handling - we still have $txManager.activeTxCount connections open"
 
+        webServer?.stop()
         graphDb?.shutdown()
         log.info "after shutdown"
     }
@@ -55,13 +59,14 @@ class Setup {
         MappingContext mappingContext = new Neo4jMappingContext()
 
         // setup datasource
-        def mode = "embedded"
+        def testMode = System.properties.get("gorm_neo4j_test_mode", "embedded")
+
         def poolprops = [
                 driverClassName: 'org.neo4j.jdbc.Driver',
                 defaultAutoCommit: false
         ]
 
-        switch (mode) {
+        switch (testMode) {
             case "embedded":
                 graphDb = new TestGraphDatabaseFactory().newImpermanentDatabase()
                 def instanceName = ManagementFactory.runtimeMXBean.name
@@ -70,10 +75,17 @@ class Setup {
                 poolprops.dbProperties = ["$instanceName": graphDb]
                 break
             case "server":
+                graphDb = new TestGraphDatabaseFactory().newImpermanentDatabase()
+                def port
+                (port, webServer) = TestServer.startWebServer(graphDb)
+                poolprops.url = "jdbc:neo4j://localhost:$port/"
+                break
+
+            case "remote":
                 poolprops.url = "jdbc:neo4j://localhost:7474/"
                 break
             default:
-                throw new IllegalStateException("dunno know how to handle mode $mode")
+                throw new IllegalStateException("dunno know how to handle mode $testMode")
         }
         dataSource = new DataSource(new PoolProperties(poolprops))
 

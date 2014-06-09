@@ -28,6 +28,8 @@ public class DefaultConversionService extends org.springframework.core.convert.s
         addConverter(new IntegerToByteConverter());
         addConverter(new DoubleToFloatConverter());
         addConverter(new IntegerToShortConverter());
+        addConverter(new ByteArrayToStringConverter());
+        addConverter(new StringToByteArrayConverter());
     }
 
     @Override

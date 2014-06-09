@@ -10,6 +10,7 @@ import org.neo4j.graphdb.DynamicLabel
 import org.neo4j.graphdb.Node
 import org.neo4j.helpers.collection.IteratorUtil
 import spock.lang.Ignore
+import spock.lang.IgnoreRest
 import spock.lang.Issue
 
 import java.util.concurrent.TimeUnit
@@ -347,6 +348,7 @@ class MiscSpec extends GormDatastoreSpec {
             pet.birthDate == date
     }
 
+    @Ignore("this test no longer makes sense as we're storing base64 encoded strings for byte[] props")
     def "byte arrays work as domain class properties"() {
         when:
         def team = new Team(name: 'name', binaryData: 'abc'.bytes)
