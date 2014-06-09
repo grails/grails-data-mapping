@@ -88,5 +88,6 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
                 }
             }
         }
+        cypherEngine.commit();
     }
 }
