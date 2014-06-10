@@ -20,19 +20,19 @@ import org.grails.datastore.gorm.redis.plugin.support.RedisSpringConfigurer
 
 class RedisGormGrailsPlugin {
     def license = "Apache 2.0 License"
-    def organization = [ name: "SpringSource", url: "http://www.springsource.org/" ]
+    def organization = [ name: "Pivotal", url: "http://gopivotal.com/oss" ]
     def developers = [
         [ name: "Graeme Rocher", email: "grocher@vmware.com" ] ]
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPREDIS" ]
     def scm = [ url: "https://github.com/grails/grails-data-mapping" ]
 
-    def version = "1.0.0.M8"
-    def grailsVersion = "1.3.4 > *"
+    def version = "1.0.0"
+    def grailsVersion = "2.3.0 > *"
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
     def observe = ['services', 'domainClass']
     
     def author = "Graeme Rocher"
-    def authorEmail = "graeme.rocher@springsource.com"
+    def authorEmail = "grocher@gopivotal.com"
     def title = "Redis GORM"
     def description = 'A plugin that integrates the Redis key/value datastore into Grails, providing a GORM-like API onto it'
 
@@ -42,7 +42,7 @@ class RedisGormGrailsPlugin {
         "grails-app/controllers/*.groovy"
     ]
 
-    def documentation = "http://projects.spring.io/grails-data-mapping/redis/manual/index.html"
+    def documentation = "http://grails.github.io/grails-data-mapping/redis/"
 
     def doWithSpring = new RedisSpringConfigurer().getConfiguration()
     
