@@ -1,10 +1,13 @@
 version = "1.0.0.BUILD-SNAPSHOT"
 
 dependencies {
+
+    compile('redis.clients:jedis:2.5.1')
     compile project(":grails-datastore-gorm"),
             project(":grails-datastore-gorm-plugin-support"),
-            project(":grails-datastore-redis"),
             project(":grails-datastore-core")
+
+
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
     testRuntime "org.springframework:spring-expression:$springVersion"
