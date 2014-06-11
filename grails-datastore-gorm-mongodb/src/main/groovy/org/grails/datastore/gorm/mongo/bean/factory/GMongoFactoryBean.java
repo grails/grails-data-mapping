@@ -18,8 +18,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import com.gmongo.GMongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.MongoURI;
+import com.mongodb.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.model.DatastoreConfigurationException;
@@ -29,8 +28,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import com.gmongo.GMongo;
-import com.mongodb.MongoOptions;
-import com.mongodb.ServerAddress;
 
 /**
  * A Factory bean for initializing a {@link GMongo} instance
@@ -49,6 +46,9 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
     private MongoOptions mongoOptions;
     private String host;
     private Integer port;
+	private String username;
+	private String password;
+	private String database;
     private List<ServerAddress> replicaSetSeeds;
     private List<ServerAddress> replicaPair;
     private String connectionString;
@@ -73,6 +73,18 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
     public void setPort(int port) {
         this.port = port;
     }
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setDatabase(String databaseName) {
+		this.database = databaseName;
+	}
 
     public void setConnectionString(String connectionString) {
         this.connectionString = connectionString;
@@ -104,6 +116,7 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
 
         ServerAddress defaultOptions = new ServerAddress();
         if (mongoOptions == null) mongoOptions = new MongoOptions();
+
         if (replicaPair != null) {
             if (replicaPair.size() < 2) {
                 throw new DatastoreConfigurationException("A replica pair must have two server entries");
@@ -128,6 +141,10 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
                 mongo = new GMongo(mongoHost, mongoOptions);
             }
         }
+
+	    // If username/pw exists and we are not authenticated, authenticate now
+	    if (username != null && mongo.getDB(database).isAuthenticated())
+		    mongo.getDB(database).authenticate(username, password.toCharArray());
     }
 
     public void destroy() {
@@ -138,5 +155,4 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
         mongo.close();
         mongo = null;
     }
-
 }
