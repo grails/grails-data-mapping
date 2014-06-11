@@ -84,12 +84,6 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
     }
 
     @Override
-    protected String getNativePropertyKey(PersistentProperty prop) {
-        // To C* all column names are lowercase
-        return super.getNativePropertyKey(prop).toLowerCase();
-    }
-
-    @Override
     protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj) {
         return new CassandraEntityAccess(persistentEntity, obj);
     }
@@ -150,7 +144,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
     @SuppressWarnings("unchecked")
     @Override
     protected EntityAccess retrieveEntry(PersistentEntity persistentEntity, String family, Serializable nativeKey) {
-        if (!(nativeKey instanceof Map)) {
+    	if (!(nativeKey instanceof Map)) {
             nativeKey = id(persistentEntity.getIdentity().getName(), nativeKey);
         } else {
             Table table = (Table) persistentEntity.getMapping().getMappedForm();
