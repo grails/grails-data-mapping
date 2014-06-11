@@ -145,7 +145,7 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
         }
 
         // If username/pw exists and we are not authenticated, authenticate now
-        if (username != null && mongo.getDB(database).isAuthenticated())
+        if (username != null && !mongo.getDB(database).isAuthenticated())
             mongo.getDB(database).authenticate(username, password.toCharArray());
     }
 
