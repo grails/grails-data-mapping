@@ -18,7 +18,9 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import com.gmongo.GMongoClient;
-import com.mongodb.*;
+import com.mongodb.MongoClientURI;
+import com.mongodb.MongoOptions;
+import com.mongodb.ServerAddress;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.model.DatastoreConfigurationException;
