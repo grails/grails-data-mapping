@@ -48,9 +48,9 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
     private MongoOptions mongoOptions;
     private String host;
     private Integer port;
-	private String username;
-	private String password;
-	private String database;
+    private String username;
+    private String password;
+    private String database;
     private List<ServerAddress> replicaSetSeeds;
     private List<ServerAddress> replicaPair;
     private String connectionString;
@@ -76,17 +76,17 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
         this.port = port;
     }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public void setDatabase(String databaseName) {
-		this.database = databaseName;
-	}
+    public void setDatabase(String databaseName) {
+        this.database = databaseName;
+    }
 
     public void setConnectionString(String connectionString) {
         this.connectionString = connectionString;
@@ -144,9 +144,9 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
             }
         }
 
-	    // If username/pw exists and we are not authenticated, authenticate now
-	    if (username != null && mongo.getDB(database).isAuthenticated())
-		    mongo.getDB(database).authenticate(username, password.toCharArray());
+        // If username/pw exists and we are not authenticated, authenticate now
+        if (username != null && mongo.getDB(database).isAuthenticated())
+            mongo.getDB(database).authenticate(username, password.toCharArray());
     }
 
     public void destroy() {
