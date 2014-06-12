@@ -82,7 +82,12 @@ class MongoSpringConfigurer extends SpringConfigurer {
                 mongoOptions = mongoOptions
                 def mongoHost = mongoConfig?.remove("host")
 
-
+                // add username and password to bean so we can authenticate without mongoClientURI
+                if (mongoConfig?.username) {
+                    username = mongoConfig.username
+                    password = mongoConfig.password
+                    database = databaseName
+                }
                 if (mongoConfig?.replicaSet) {
                     def set = []
                     for (server in mongoConfig.remove("replicaSet")) {
