@@ -1,0 +1,3 @@
+grails.gorm.tests
+grails.persistence
+org.codehaus.groovy.grails.orm.hibernate.metaclass

@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project xmlns='http://maven.apache.org/POM/4.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd'>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.grails.plugins</groupId>
+  <artifactId>redis-gorm</artifactId>
+  <packaging>zip</packaging>
+  <version>1.0.0</version>
+  <name>Redis GORM</name>
+  <description>A plugin that integrates the Redis key/value datastore into Grails, providing a GORM-like API onto it</description>
+  <url>http://grails.github.io/grails-data-mapping/redis/</url>
+  <organization>
+    <name>Pivotal</name>
+    <url>http://gopivotal.com/oss</url>
+  </organization>
+  <developers>
+    <developer>
+      <name>Graeme Rocher</name>
+      <email>grocher@gopivotal.com</email>
+    </developer>
+    <developer>
+      <name>Graeme Rocher</name>
+      <email>grocher@vmware.com</email>
+    </developer>
+  </developers>
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.grails.org/browse/GPREDIS</url>
+  </issueManagement>
+  <scm>
+    <url>https://github.com/grails/grails-data-mapping</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>org.grails</groupId>
+      <artifactId>grails-datastore-gorm-redis</artifactId>
+      <version>1.0.0.RELEASE</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.grails</groupId>
+          <artifactId>grails-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.grails</groupId>
+          <artifactId>grails-bootstrap</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.grails</groupId>
+          <artifactId>grails-test</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+</project>

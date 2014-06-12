@@ -1,0 +1,3 @@
+org.grails.datastore.gorm.dynamodb
+org.grails.datastore.gorm.dynamodb.bean.factory
+org.grails.datastore.gorm.dynamodb.plugin.support

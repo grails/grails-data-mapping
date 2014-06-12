@@ -1,0 +1,15 @@
+h1. generate-pom
+
+h2. Purpose
+
+Creates a POM for the current project based on the information in @BuildConfig.groovy@ and the plugin descriptor (if it exists).
+
+h2. Options
+
+{code}
+grails generate-pom
+{code}
+
+h2. Description
+
+Generates a POM in the 'target' directory with the metadata and dependency information provided by @BuildConfig.groovy@ and the plugin descriptor (if there is one).

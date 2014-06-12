@@ -1,0 +1,29 @@
+When Maven builds a project, it first looks for the project's dependencies in the local Maven cache (by default @\$HOME/.m2/repository@). Only if a dependency is not in the cache does Maven pull it from the appropriate remote repository. This makes testing pretty easy: simply install your own version of the artifact into the Maven cache and that's the one that Maven will use. You don't have to deploy a development version of an artifact to a remote repository just to test it.
+
+This approach doesn't only work for Maven. Grails can also pull artifacts from the Maven cache if you add the following entry to your project's @BuildConfig.groovy@ file:
+
+{code}
+grails.project.dependency.resolution = {
+    ...
+    repositories {
+        mavenLocal()
+        ...
+    }
+    ...
+}
+{code}
+
+So how do you get your plugins or WAR files into the Maven cache? With the [maven-install|commandLine] command:
+
+bc.
+grails maven-install
+
+That's it! You can then test your new artifact locally. If you want, you can change where your artifacts are installed by adding the following configuration option to either @BuildConfig.groovy@ or @settings.groovy@:
+
+{code}
+grails.project.mavenCache = "target/m2cache"
+{code}
+
+By adding this option to @settings.groovy@ it will apply to every project that doesn't override it, so be careful!
+
+Installing artifacts to the local Maven cache is trivial, so what about remote deployment?

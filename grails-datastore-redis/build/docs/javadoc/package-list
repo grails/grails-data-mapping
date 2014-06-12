@@ -1,0 +1,5 @@
+org.grails.datastore.mapping.redis
+org.grails.datastore.mapping.redis.collection
+org.grails.datastore.mapping.redis.engine
+org.grails.datastore.mapping.redis.query
+org.grails.datastore.mapping.redis.util

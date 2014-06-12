@@ -1,0 +1,6 @@
+org.codehaus.groovy.grails.orm.hibernate
+org.codehaus.groovy.grails.orm.hibernate.cfg
+org.codehaus.groovy.grails.orm.hibernate.exceptions
+org.codehaus.groovy.grails.orm.hibernate.query
+org.codehaus.groovy.grails.orm.hibernate.support
+org.codehaus.groovy.grails.orm.hibernate.transaction

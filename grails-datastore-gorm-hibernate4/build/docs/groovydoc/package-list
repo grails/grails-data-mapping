@@ -1,0 +1,13 @@
+grails.orm
+grails.orm.bootstrap
+grails.plugin.hibernate4
+org.codehaus.groovy.grails.orm.hibernate
+org.codehaus.groovy.grails.orm.hibernate.cfg
+org.codehaus.groovy.grails.orm.hibernate.events
+org.codehaus.groovy.grails.orm.hibernate.metaclass
+org.codehaus.groovy.grails.orm.hibernate.persister.entity
+org.codehaus.groovy.grails.orm.hibernate.proxy
+org.codehaus.groovy.grails.orm.hibernate.query
+org.codehaus.groovy.grails.orm.hibernate.support
+org.codehaus.groovy.grails.orm.hibernate.transaction
+org.codehaus.groovy.grails.orm.hibernate.validation

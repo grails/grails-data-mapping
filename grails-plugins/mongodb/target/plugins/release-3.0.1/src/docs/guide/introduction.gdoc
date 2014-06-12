@@ -1,0 +1,3 @@
+Many Grails projects are private applications and the only "publication" of those applications involves deploying the generated WAR file to a servlet container like Tomcat. But sometimes, particularly in the case of plugins, you want to share the project's WAR, zip or JAR. That's where the Release plugin comes in.
+
+Once this plugin is installed, you can immediately start publishing your artifacts to Maven-compatible repositories. In the case of plugins, you can also publish them to Subversion-based repositories such as the Grails Central Plugin Repository. This user guide will show you exactly what you need to do.

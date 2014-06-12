@@ -1,0 +1,5 @@
+You can use the @publish-plugin@ command to release plugins to the Grails Central Plugin Repository without any configuration whatsoever, but if you want to manage your own plugin repository and/or portal you will have to master the available configuration settings. The same goes if you want to deploy artifacts to a custom Maven-compatible repository. But don't worry: it's all very straightforward.
+
+All the configuration options described in the next section can either go into your project's @BuildConfig.groovy@ file or your personal @~/.grails/settings.groovy@. The latter is particular useful for storing credentials since the file is typically not stored in a shared source repository, thus making it easy to keep that information confidential.
+
+Let's start by looking at how you can configure a Maven-compatible repository, since this is the most common scenario.

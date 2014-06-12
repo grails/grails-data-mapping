@@ -1,0 +1,7 @@
+<plugin name='rest-client-builder' version='2.0.0' grailsVersion='2.0 &gt; *'>
+  <title>REST Client Builder Plugin</title>
+  <description>Grails REST Client Builder Plugin</description>
+  <documentation>https://github.com/grails-plugins/grails-rest-client-builder/</documentation>
+  <type>RestClientBuilderGrailsPlugin</type>
+  <resources />
+</plugin>

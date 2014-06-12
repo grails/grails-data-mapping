@@ -1,0 +1,16 @@
+introduction: 
+  title: Introduction
+  migrating: Migrating from release-plugin
+configuration: 
+  title: Configuration
+  repositories: Repositories
+  pluginPortals: Plugin portals
+  scm: Source control management
+maven: 
+  title: Maven integration
+  mavenCache: The local Maven cache
+  deployment: Deployment to remote repositories
+plugins:
+  title: Publishing Grails plugins
+  grailsCentral: Publishing to Grails Central Plugin Repository
+  custom: Custom repositories and plugin portals

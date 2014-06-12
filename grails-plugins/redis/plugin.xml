@@ -1,0 +1,9 @@
+<plugin name='redis-gorm' version='1.0.0' grailsVersion='2.3.0 &gt; *'>
+  <author>Graeme Rocher</author>
+  <authorEmail>grocher@gopivotal.com</authorEmail>
+  <title>Redis GORM</title>
+  <description>A plugin that integrates the Redis key/value datastore into Grails, providing a GORM-like API onto it</description>
+  <documentation>http://grails.github.io/grails-data-mapping/redis/</documentation>
+  <type>RedisGormGrailsPlugin</type>
+  <resources />
+</plugin>

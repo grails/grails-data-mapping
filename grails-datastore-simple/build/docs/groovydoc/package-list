@@ -1,0 +1,3 @@
+org.grails.datastore.mapping.simple
+org.grails.datastore.mapping.simple.engine
+org.grails.datastore.mapping.simple.query

@@ -1,0 +1,36 @@
+Starting with Grails 2.0, the Release plugin replaces the old @release-plugin@ command. Fortunately, you should have little trouble switching to the new @publish-plugin@ command. Let's take a look at the most important differences (apart from the name change!).
+
+h4. No \-\-zipOnly option
+
+The new @publish-plugin@ command has a more flexible approach to source control management than @release-plugin@ and so the @\-\-zipOnly@ option is no longer available. Instead, you specify whether you want the plugin to manage source control integration via the new @\-\-scm@ and @\-\-noScm@ options. The former is effectively the default, but you can disable SCM for the project via the @grails.release.scm.enabled@ build configuration option. 
+
+The source control management is handled by plugins, such as the Subversion plugin that this plugin depends on. If you don't have the appropriate plugin for your SCM system, you won't be able to use the SCM integration.
+
+h4. Configuration changes
+
+Although your old repository configurations will continue to work, i.e. ones like @grails.plugin.repos.distribution.<id>@ used by @release-plugin@, there is far more flexibility if you migrate to the latest style of repository and portal configuration. In particular, by using the syntax described in the [configuration chapter|guide:configuration] you'll be able to put repository credentials and URLs in your personal ~/.grails/settings.groovy file.
+
+You can also continue to use the repository configuration options supported by the old Maven Publisher plugin, but again, the new syntax is preferable.
+
+h4. New metadata
+
+You can put extra metadata into your plugin descriptor, which will then be reflected both in the plugin's POM and in the Grails plugin portal. For example, you can specify:
+
+{code}
+def license = "APACHE"
+def organization = [ name: "SpringSource", url: "http://www.springsource.org/" ]
+def developers = [
+        [ name: "Peter Ledbrook", email: "pledbrook@somewhere.net" ],
+        [ name: "Graeme Rocher", email: "grocher@somewhere.net" ] ]
+def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GRAILSPLUGINS" ]
+def scm = [ url: "http://svn.grails-plugins.codehaus.org/browse/grails-plugins/" ]
+{code}
+
+Note that the @developers@ property should only include additional entries over and above the @author@. In other words, the primary author should still be declared in the @author@ and @authorEmail@ properties with only additional people going into the @developers@ list.
+
+The plugin currently supports the licenses [listed in the source](https://github.com/nwwells/grails-release/blob/master/scripts/_GrailsMaven.groovy#L31), but you can also specify a custom license via an explicit name and URL:
+
+{code}
+def license = [name: "MYLICENSE", url: "http://my.company.com/licenses/opensource.txt"]
+{code}
+

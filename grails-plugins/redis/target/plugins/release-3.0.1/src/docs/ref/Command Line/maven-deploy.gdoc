@@ -1,0 +1,40 @@
+h1. maven-deploy
+
+h2. Purpose
+
+Installs a packaged application or plugin into the local Maven cache and then deploys it to a remote Maven-compatible repository.
+
+h2. Options
+
+{code}
+grails maven-deploy [--repository=repoId] [--binary]
+{code}
+
+* @repository@ specifies which Subversion or Maven-compatible repository the plugin should be deployed to. A remote repository must first be defined with that ID in BuildConfig.groovy.
+* @binary@ packages the plugin in binary form before installing it. This overrides the default packaging for the plugin.
+
+h2. Examples
+
+Deploy a WAR or plugin to the Maven-compatible repository declared with the ID 'myRepo':
+
+{code}
+grails maven-deploy --repository=myRepo
+{code}
+
+Package a plugin in binary form before deploying it:
+
+{code}
+grails maven-deploy --repository=otherRepo --binary
+{code}
+
+h2. Description
+
+Packages the current project (either a plugin or application), installs the resulting artifact into the local Maven cache along with its POM, and then deploys both to a [configured remote repository|guide:repositories].
+
+If you want to install the artifact to a different location from the standard Maven cache, you can set the destination path in @BuildConfig.groovy@ or @settings.groovy@ via the option
+
+{code}
+grails.project.mavenCache = "\${userHome}/my/other/cache"
+{code}
+
+This command will automatically generate a POM for the artifact based on the information in @BuildConfig.groovy@ and the plugin descriptor (for a plugin project), but you can override this behaviour by putting your own @pom.xml@ file in the root of the project directory.

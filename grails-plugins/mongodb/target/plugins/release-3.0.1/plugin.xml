@@ -1,0 +1,9 @@
+<plugin name='release' version='3.0.1' grailsVersion='2.3 &gt; *'>
+  <author>Graeme Rocher</author>
+  <authorEmail>grocher@vmware.com</authorEmail>
+  <title>Release Plugin</title>
+  <description>Allows you to publish Grails plugins, either to a public or private repository. It also supports deploying Grails applications and plugins to Maven repositories without the need to use Maven directly.</description>
+  <documentation>http://grails-plugins.github.com/grails-release/</documentation>
+  <type>ReleaseGrailsPlugin</type>
+  <resources />
+</plugin>
