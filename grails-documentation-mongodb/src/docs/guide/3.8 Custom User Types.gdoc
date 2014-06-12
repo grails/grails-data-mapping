@@ -1,0 +1,134 @@
+GORM for MongoDB will persist all common known Java types like String, Integer, URL etc., however if you want to persist one of your own classes that is not a domain class you can implement a custom user type.
+
+For example consider the following class:
+
+{code}
+class Birthday implements Comparable{
+    Date date
+
+    Birthday(Date date) {
+        this.date = date
+    }
+
+    @Override
+    int compareTo(Object t) {
+        date.compareTo(t.date)
+    }
+}
+{code}
+
+{note}
+Custom types should go in src/groovy not grails-app/domain
+{note}
+
+If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with Spring. For example:
+
+{code}
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller;
+import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.mongo.query.MongoQuery;
+import org.grails.datastore.mapping.query.Query;
+
+class BirthdayType extends AbstractMappingAwareCustomTypeMarshaller<Birthday, DBObject, DBObject> {
+	BirthdayType() {
+		super(Birthday)
+	}
+    @Override
+    protected Object writeInternal(PersistentProperty property, String key, Birthday value, DBObject nativeTarget) {
+        final converted = value.date.time
+        nativeTarget.put(key, converted)
+        return converted
+    }
+
+    @Override
+    protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, DBObject nativeQuery) {
+        if(criterion instanceof Between) {
+            def dbo = new BasicDBObject()
+            dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
+            dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time);
+            nativeQuery.put(key, dbo)
+        }
+        else {
+            nativeQuery.put(key, criterion.value.date.time)
+        }
+
+    }
+
+    @Override
+    protected Birthday readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+        final num = nativeSource.get(key)
+        if(num instanceof Long) {
+            return new Birthday(new Date(num))
+        }
+        return null
+    }
+}
+{code}
+
+The above @BirthdayType@ class is a custom user type implementation for MongoDB for the @Birthday@ class. It provides implementations for three methods: @readInternal@, @writeInternal@ and the optional @queryInternal@. If you do not implement @queryInternal@ your custom type can be persisted but not queried.
+
+The @writeInternal@ method gets passed the property, the key to store it under, the value and the native DBObject where the custom type is to be stored:
+
+{code}
+@Override
+protected Object writeInternal(PersistentProperty property, String key, Birthday value, DBObject nativeTarget) {
+    final converted = value.date.time
+    nativeTarget.put(key, converted)
+    return converted
+}
+{code}
+
+You can then read the values of the custom type and register them with the @DBObject@. The @readInternal@ method gets passed the @PersistentProperty@, the key the user type info is stored under (although you may want to use multiple keys) and the @DBObject@:
+
+{code}
+@Override
+protected Birthday readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+    final num = nativeSource.get(key)
+    if(num instanceof Long) {
+        return new Birthday(new Date(num))
+    }
+    return null
+}
+{code}
+
+You can then construct the custom type by reading values from the @DBObject@. Finally the @queryInternal@ method allows you to handle how a custom type is queried:
+
+{code}
+@Override
+protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, DBObject nativeQuery) {
+    if(criterion instanceof Between) {
+        def dbo = new BasicDBObject()
+        dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
+        dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time);
+        nativeQuery.put(key, dbo)
+    }
+    else if(criterion instanceof Equals){
+        nativeQuery.put(key, criterion.value.date.time)
+    }
+    else {
+	    throw new RuntimeException("unsupported query type for property $property")
+    }
+}
+{code}
+
+The method gets passed a @criterion@ which is the type of query and depending on the type of query you may handle the query differently. For example the above implementation supports @between@ and @equals@ style queries. So the following 2 queries will work:
+
+{code}
+Person.findByBirthday(new Birthday(new Date()-7)) // find someone who was born 7 days ago
+Person.findByBirthdayBetween(new Birthday(new Date()-7), new Birthday(new Date())) // find someone who was born in the last 7 days
+{code}
+
+However "like" or other query types will not work.
+
+To register a custom type in a grails application simply register it as Spring bean. For example, to register the above @BirthdayType@ add the following to grails-app/conf/spring/resources.groovy:
+
+{code}
+import com.example.BirthdayType
+
+// Place your Spring DSL code here
+beans = {
+  birthdayType(BirthdayType)
+}
+{code}

@@ -1,8 +1,0 @@
-If you want to make your Grails plugins available to other people, then the best approach is to publish them using this plugin. The publication process is straightforward:
-
-# Package the plugin as a zip or jar
-# Deploy it to a Maven or Subversion repository
-# Optionally notify a plugin portal of the release
-
-The [publish-plugin|commandLine] command does all of this for you. It can also integrate with a source control management (SCM) provider if a corresponding plugin is installed, ensuring that all your changes are committed and tagged before the plugin is published. You'll find more information about this later.
-

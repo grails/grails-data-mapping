@@ -1,0 +1,6 @@
+target
+*.log
+*.zip
+*.iws
+data
+plugin.xml

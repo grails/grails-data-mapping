@@ -1,0 +1,21 @@
+DynamoDB is a web service providing structured data storage in the cloud and backed by clusters
+of Amazon-managed database servers using SSD drives for storage.
+
+The dynamodb plugin aims to provide an object-mapping layer on top of DynamoDB to ease common activities such as:
+
+* Marshalling from DynamoDB to Groovy/Java types and back again
+* Support for GORM dynamic finders, criteria and named queries
+* Session-managed transactions
+* Validating domain instances backed by the DynamoDB datastore
+
+For example, this is all that is needed to persist a domain class in DynamoDB:
+
+{code}
+class Book  {
+    String id
+    String title
+    int pages
+
+    static mapWith = "dynamodb"
+}
+{code}

@@ -1,0 +1,32 @@
+Riak is an Internet-scale Key/Value datastore that stores arbitrary data based on Content-Type, has an [efficient HTTP REST API|https://wiki.basho.com/display/RIAK/REST+API], and supports queries and data filtering via [Map/Reduce operations|https://wiki.basho.com/display/RIAK/MapReduce] written in either Javascript or Erlang.
+
+This project aims to provide an object-mapping framework on top of Riak to ease common activities like:
+
+* Converting objects to/from JSON for storage in Riak
+* Easy access to custom Map/Reduce queries
+* Validating domain instances backed by the Riak datastore
+
+The following key features are supported by GORM for Riak:
+
+* Simple persistence methods
+* Dynamic finders
+* Criteria queries
+* Named queries
+* Inheritance
+* Embedded types
+* Query by example
+
+However, some features are not supported:
+
+* Pagination (yes Riak doesn't allow you to paginate records)
+* Queries that compare properties
+* Queries that operate on the size() of a collection association
+* Join queries
+* HQL queries
+* Dirty checking methods
+* Composite primary keys
+* Many-to-many associations (these can be modelled with a mapping class)
+* Any direct interaction with the Hibernate API
+* Custom Hibernate user types
+
+There may be other limitations not mentioned here so in general it shouldn't be expected that an application based on GORM for Hibernate will "just work" without some tweaking involved. Having said that, the large majority of common GORM functionality is supported.

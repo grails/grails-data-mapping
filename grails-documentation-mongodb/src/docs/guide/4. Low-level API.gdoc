@@ -1,0 +1,68 @@
+A lower level API is provided by the plugin that is based on the [GMongo|http://github.com/poiati/gmongo] project.
+
+GMongo is a simple Groovy wrapper around the regular [Mongo Java Driver|http://www.mongodb.org/display/DOCS/Java+Language+Center]. In general you can refer to the Mongo Java Drivers [Javadoc API|http://api.mongodb.org/java/current/index.html] when using GMongo.
+
+GMongo provides some nice enhancements like easy access to collections using the dot operator and support for Groovy operator overloading.
+
+{note}
+There is an excellent tutorial on how to use the Mongo Java driver's API directly in the [Mongo documentation|http://www.mongodb.org/display/DOCS/Java+Tutorial]
+{note}
+
+An example of GMongo usage can be seen below:
+
+{code}
+// Get a db reference in the old fashion way
+def db = mongo.getDB("gmongo")
+
+// Collections can be accessed as a db property (like the javascript API)
+assert db.myCollection instanceof com.mongodb.DBCollection
+// They also can be accessed with array notation
+assert db['my.collection'] instanceof com.mongodb.DBCollection
+
+// Insert a document
+db.languages.insert([name: 'Groovy'])
+// A less verbose way to do it
+db.languages.insert(name: 'Ruby')
+// Yet another way
+db.languages << [name: 'Python']
+
+// Insert a list of documents
+db.languages << [[name: 'Javascript', type: 'prototyped'], [name: 'Ioke', type: 'prototyped']]
+{code}
+
+
+To get hold of the @mongo@ instance (which is an of the [com.mongodb.Mongo|http://api.mongodb.org/java/current/com/mongodb/Mongo.html] class) inside a controller or service simple define a @mongo@ property:
+
+{code}
+def mongo
+def myAction = {
+    def db = mongo.getDB("mongo")
+    db.languages.insert([name: 'Groovy'])
+}
+{code}
+
+A request scoped bean is also available for the default database (typically the name of your application, unless specified by the @databaseName@ config option, plus the suffix "DB").
+
+{code}
+def peopleDB
+def myAction = {
+    peopleDB.languages.insert([name: 'Fred'])
+}
+{code}
+
+Each domain class you define also has a @collection@ property that allows easy access to the underlying @DBCollection@ instance and hence the GMongo API:
+
+{code}
+Person.collection.count() == 1
+Person.collection.findOne(firstName:"Fred").lastName == "Flintstone"
+{code}
+
+{note}
+If you are using Hibernate entities with Mongo then the collection will be scoped in the @mongo@ namespace. Example: Person.mongo.collection.count()
+{note}
+
+You can easily convert from a native MongoDB @DBObject@ into an entity using a cast:
+
+{code}
+def fred = Person.collection.findOne(firstName:"Fred") as Person
+{code}

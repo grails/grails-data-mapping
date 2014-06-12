@@ -1,0 +1,95 @@
+As mentioned the GORM for Neo4j plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your @grails-app/conf/DataSource.groovy@ file:
+
+{code}
+grails {
+    neo4j {
+        type = "embedded"
+        location = "/var/neo4j"
+        params = []
+    }
+}
+{code}
+
+The @type@ provides currently the following choices:
+
+h4. type = "embedded"
+Runs the Neo4j in embedded mode, Neo4j and Tomcat use the same JVM. No seperate setup outside the Grails application is required. @location@ specifies the directory where Neo4j stores its data.
+
+Example:
+{code}
+grails {
+    neo4j {
+        type = "embedded"
+        location = "/var/neo4j"
+    }
+}
+{code}
+
+{note}
+If your configuration is empty, 'embedded' is used as default.
+{note}
+
+h4. type = "rest"
+Uses a @org.neo4j.rest.graphdb.RestGraphDatabase@ instance to connect to a Neo4j database. See [http://docs.neo4j.org/chunked/stable/server.html|http://docs.neo4j.org/chunked/stable/server.html] for how to setup a Neo4j server.
+
+@location@ specifies the URL of he Neo4j REST server. When using the Heroku neo4j addon, omit the location. In this case location will default to env.NEO4J_URL that is provided by Heroku.
+
+Example:
+{code}
+grails {
+    neo4j {
+        type = "rest"
+        location = "http://localhost:7474/db/data/"
+    }
+}
+{code}
+
+Additionally you must add another dependency to your application's @grails-app/conf/BuildConfig.groovy@:
+
+{code}
+compile("org.neo4j:neo4j-rest-graphdb:1.6")
+{code}
+
+h4. type = "ha"
+Uses a Neo4j HA setup, for details see [http://docs.neo4j.org/chunked/stable/ha.html|http://docs.neo4j.org/chunked/stable/ha.html]. In this case params must at least contain
+
+{note}
+For Neo4j HA either a commercial license is [required|http://neo4j.org/licensing-guide/], or you could use AGPL.
+{note}
+
+Example:
+{code}
+grails {
+    neo4j {
+        type = "ha"
+        location = "/var/neo4j"
+        params = [ // see http://docs.neo4j.org/chunked/stable/ha-configuration.html
+                'ha.server_id': 1,
+                'ha.coordinators': 'localhost:2181,localhost:2182,localhost:2183'
+        ]
+    }
+}
+{code}
+
+Additionally you must add another dependency to your application's @grails-app/conf/BuildConfig.groovy@:
+
+{code}
+compile('org.neo4j:neo4j-enterprise:1.8.RC1')
+{code}
+
+h4. type = "impermanent"
+Uses [ImpermanentGraphDatabase|https://github.com/neo4j/community/blob/master/kernel/src/test/java/org/neo4j/test/ImpermanentGraphDatabase.java].
+This option required a dependency to artifact [group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests'] in BuildConfig.groovy.
+ImpermanentGraphDatabase is intended to be used for testing.
+
+h4. custom graph database
+If you use a custom implementation of GraphDatabaseService, you can use
+{code}
+grails {
+    neo4j {
+        type = "my.fancy.custom.GraphDatabaseServiceImplementation"
+        location = "/var/neo4j"
+        params = [ :]
+    }
+}
+{code}

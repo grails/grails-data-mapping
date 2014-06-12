@@ -1,0 +1,67 @@
+package org.codehaus.groovy.grails.orm.hibernate
+
+import org.codehaus.groovy.grails.commons.*
+import static junit.framework.Assert.*
+import org.junit.Test
+
+
+class MappedByColumnTests extends AbstractGrailsHibernateTests {
+
+    @Test
+    void testByConvention() {
+        def a = Airport.newInstance()
+
+        a.save()
+
+        def r = Route.newInstance()
+        a.addToRoutes(r)
+
+        a.save()
+
+        assertEquals 1, a.routes.size()
+        assertEquals a, r.airport
+
+        assertNull r.destination
+    }
+
+    @Test
+    void testOtherPropertyWithConvention() {
+        def a = Airport.newInstance()
+
+        a.save()
+
+        def r = Route.newInstance()
+        r.destination = a
+
+        r.save()
+
+        assertNotNull r.destination.id
+    }
+
+    @Override
+    protected getDomainClasses() {
+        [Airport, Route]
+    }
+}
+
+class Airport {
+    Long id
+    Long version
+    Set routes
+
+    static hasMany = [routes:Route]
+}
+
+class Route {
+    Long id
+    Long version
+
+    Airport airport
+    Airport destination
+
+    static constraints = {
+        airport(nullable:true)
+        destination(nullable:true)
+    }
+}
+

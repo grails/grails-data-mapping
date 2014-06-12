@@ -1,0 +1,13 @@
+h1. Riak
+
+h2. Purpose
+
+An implementation that creates a GORM API on top of [Riak|http://basho.com/products/riak-overview/]
+
+h2. Description
+
+Sub-projects:
+
+* @grails-datastore-riak@ 
+* @grails-datastore-gorm-riak@
+

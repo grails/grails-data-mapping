@@ -1,0 +1,51 @@
+version = "1.0.0.BUILD-SNAPSHOT"
+
+configurations {
+    grails
+}
+
+dependencies {
+    grails("org.grails:grails-core:$grailsVersion") {
+        transitive = false
+    }
+    grails("org.grails:grails-bootstrap:$grailsVersion") {
+        transitive = false
+    }
+    compile project(":grails-datastore-gorm"), {
+        exclude group:"org.grails", module:"grails-datastore-core"
+    }
+    compile project(":grails-datastore-gorm-plugin-support"),
+            project(":grails-datastore-jpa"),
+            project(":grails-datastore-core"),
+            project(":grails-datastore-web")
+
+    testCompile 'org.hibernate:hibernate-entitymanager:3.4.0.GA',
+                'hsqldb:hsqldb:1.8.0.10'
+    testCompile('org.hibernate:hibernate-commons-annotations:3.2.0.Final'){
+        exclude group: 'org.slf4j', module:'slf4j-api'
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
+    testCompile('org.hibernate:hibernate-validator:4.1.0.Final') {
+        exclude group:'commons-logging', module:'commons-logging'
+        exclude group:'commons-collections', module:'commons-collections'
+        exclude group:'org.slf4j', module:'slf4j-api'
+    }
+    testCompile('org.hibernate:hibernate-core:3.6.10.Final') {
+        exclude group:'commons-logging', module:'commons-logging'
+        exclude group:'commons-collections', module:'commons-collections'
+        exclude group:'org.slf4j', module:'slf4j-api'
+        exclude group:'xml-apis', module:'xml-apis'
+        exclude group:'dom4j', module:'dom4j'
+        exclude group:'antlr', module: 'antlr'
+    }
+    testCompile project(":grails-datastore-gorm-tck")
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.grails
+    }
+    test {
+        compileClasspath += configurations.grails
+    }
+}

@@ -1,0 +1,14 @@
+language: groovy
+services:
+- redis
+- mongodb
+jdk:
+- oraclejdk7
+env:
+  global:
+  - GRADLE_OPTS="-Xmx2048m -Xms256m -XX:MaxPermSize=768m -XX:+CMSClassUnloadingEnabled -XX:+HeapDumpOnOutOfMemoryError"
+  - GIT_NAME="Graeme Rocher"
+  - GIT_EMAIL="graeme.rocher@gmail.com"
+  - TERM=dumb GRADLE_OPTS="-Xmx1048m -Xms256m"
+  - secure: f2DAQhvxnzr4zptig+H8vPMWr+pMCLw29oHG+A1U20IBowgSrHThfpleIXRTi45Frmv7tSyD5S9Zq+v/tM5Mh2NLljVugYsg7EGIbLVGQQPmnjhG934RyYpwJM+CzypOR8QH9YqTQtzbFUDGpqJ01A2viHsM8nLCp1vxuhW1srU=
+script: ./travis-build.sh

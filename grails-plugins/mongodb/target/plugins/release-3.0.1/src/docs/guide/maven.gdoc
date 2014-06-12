@@ -1,3 +1,0 @@
-One of the best things that sprung from Maven was a standard way to provide Java dependencies to projects via HTTP-based repositories. Not only do we now have the Maven Central repository, but it's almost trivial to set up your own company-wide Maven-compatible repositories using tools like [Nexus|http://nexus.sonatype.org/] or [Artifactory|http://www.jfrog.com/products.php]. Following on from the Maven Publisher plugin, the Release plugin provides everything you need to easily and effectively deploy your project artifacts to such repositories.
-
-Before we look at deployment to one of these remote repositories, let's look at another aspect of Maven: installing artifacts into the local Maven cache.

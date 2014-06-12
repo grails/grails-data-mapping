@@ -1,5 +1,0 @@
-grails.gorm
-org.grails.datastore.gorm.jpa
-org.grails.datastore.gorm.jpa.bean.factory
-org.grails.datastore.gorm.jpa.plugin.support
-org.grails.datastore.gorm.jpa.support

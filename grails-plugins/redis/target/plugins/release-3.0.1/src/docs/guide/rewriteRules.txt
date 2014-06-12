@@ -1,3 +1,0 @@
-1%20Introduction.html -> introduction.html
-2%20Configuration.html -> configuration.html
-3%20Maven%20integration.html -> mavenIntegration.html

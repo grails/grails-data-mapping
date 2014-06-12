@@ -1,0 +1,34 @@
+Using MongoDB 2.6 and above you can create [full text search|http://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text] indices.
+
+To create a "text" index using the @index@ method inside the @mapping@ block:
+
+{code}
+class Product {
+    ObjectId id
+    String title
+
+    static mapping = {
+        index title:"text"
+    }
+}
+{code}
+
+You can then search for instances using the @search@ method:
+
+{code}
+assert Product.search("bake coffee cake").size() == 10
+assert Product.search("bake coffee -cake").size() == 6
+{code}
+
+You can search for the top results by rank using the @searchTop@ method:
+
+{code}
+assert Product.searchTop("cake").size() == 4
+assert Product.searchTop("cake",3).size() == 3
+{code}
+
+And count the number of hits with the @countHits@ method:
+
+{code}
+assert Product.countHits('coffee') == 5
+{code}

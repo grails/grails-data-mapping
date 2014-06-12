@@ -1,0 +1,23 @@
+h1. mongo
+
+h2. Purpose
+
+A Spring bean that provides access to the lower level Mongo API based on GMongo
+
+h2. Examples
+
+{code}
+def mongo
+
+def foo = {
+    def mongo
+    def myAction = {
+        def db = mongo.getDB("mongo")
+        db.languages.insert([name: 'Groovy'])
+    }
+}
+{code}
+
+h2. Description
+
+See the [GMongo|https://github.com/poiati/gmongo] docs and the API for [Mongo Java Driver|http://api.mongodb.org/java/current/] for API usage info.

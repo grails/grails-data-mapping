@@ -1,0 +1,7 @@
+dependencies {
+    compile project(":grails-datastore-gorm"),
+            project(":grails-datastore-jcr"),
+            project(":grails-datastore-core")
+    testCompile project(":grails-datastore-gorm-test"),
+                project(":grails-datastore-gorm-tck")
+}

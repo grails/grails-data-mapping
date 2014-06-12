@@ -1,9 +1,0 @@
-<plugin name='mongodb' version='3.0.0' grailsVersion='2.3.2 &gt; *'>
-  <author>Graeme Rocher</author>
-  <authorEmail>graeme.rocher@springsource.com</authorEmail>
-  <title>MongoDB GORM</title>
-  <description>A plugin that integrates the Mongo document datastore into Grails, providing a GORM API onto it</description>
-  <documentation>http://grails.github.io/grails-data-mapping/mongodb</documentation>
-  <type>MongodbGrailsPlugin</type>
-  <resources />
-</plugin>

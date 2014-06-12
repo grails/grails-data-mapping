@@ -1,0 +1,13 @@
+Below are the details of the changes across releases:
+
+h4. Version 0.1
+
+Initial implementation of the DynamoDB support with:
+* Dynamic finders
+* Criteria queries
+* Named queries
+* Hilo numeric id generator to use as alternative to default UUID
+* Support of Enum fields
+* Automatic retry of load/save operations when AWS rejects request with 'ServiceUnavailable' error code
+* Behind-the-scenes working with lastEvaluatedKey when more than 1MB worth of records are returned/scanned
+

@@ -1,0 +1,39 @@
+The @GormEnhancer@ class defines three methods called @getStaticApi@, @getInstanceApi@ and @getValidationApi@ that return instances of @GormStaticApi@, @GormInstanceApi@ and @GormValidationApi@ respectively. If you wish to provide custom GORM functionality then you can subclass each of these and override one of the aforementioned methods to provide said functionality.
+
+For example GORM for MongoDB does this to provide access to the underlying @DBCollection@:
+
+{code}
+class MongoGormStaticApi<D> extends GormStaticApi<D> {
+    ...
+    /**
+     * The actual collection that this entity maps to.
+     *
+     * @return The actual collection
+     */
+    DBCollection getCollection() {
+        MongoDatastore ms = datastore
+        def template = ms.getMongoTemplate(persistentEntity)
+
+        def coll = template.getCollection(ms.getCollectionName(persistentEntity))
+        DBCollectionPatcher.patch(coll)
+        return coll
+    }    
+}
+{code}
+
+With this method in place users of GORM for MongoDB can access the underlying MongoDB API directly:
+
+{code}
+def dbo = Book.collection.findOne()
+{code}
+
+The enable usage of this API the @MongoGormEnhancer@ extends and overrides the @getStaticApi@ method:
+
+{code}
+class MongoGormEnhancer extends GormEnhancer {
+    ...
+    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
+        return new MongoGormStaticApi<D>(cls, datastore, finders)
+    }   
+}
+{code}

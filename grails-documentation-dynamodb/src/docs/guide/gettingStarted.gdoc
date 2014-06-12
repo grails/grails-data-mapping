@@ -1,0 +1,6 @@
+To get started with GORM for DynamoDB you need to install the plugin into a Grails application:
+
+{code}
+grails install-plugin dynamodb
+{code}
+

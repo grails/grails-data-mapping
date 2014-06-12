@@ -1,0 +1,31 @@
+Inspired by a [Github issue ticket|https://github.com/SpringSource/grails-data-mapping/issues/66] the Neo4j Grails contains some
+enhancements to the Neo4j core API. These enhancements are implemented using Groovy's ExpandoMetaClass.
+
+h4. setting properties on nodes/relationships
+
+Assigning an arbitrary property onto a Neo4j node or relationship can be simply done by using Groovy's property
+mechanism:
+{code}
+def node = graphDatabaseService.createNode()
+node.myProperty = myValue
+{code}
+
+The same words for getting properties:
+
+{code}
+def node = ...
+def value = node.myProperty
+{code}
+
+{note}
+There is a important convention: when the property ends with "Date" then a date type is assumed. The node property then
+helds respective millis.
+{note}
+
+h4. JSON marshalling
+Neo4j nodes and relationships can be easily marshalled to JSON, e.g. in a controller using:
+
+{code}
+def node = graphDatabaseService.getNodeById(myid)
+render node as JSON
+{code}

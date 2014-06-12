@@ -1,0 +1,40 @@
+dependencies {
+    compile "com.googlecode.concurrentlinkedhashmap:concurrentlinkedhashmap-lru:1.3.1"
+    compile "org.springframework:spring-core:$springVersion" , {
+        exclude group:'commons-logging',module:'commons-logging'
+    }
+    compile "org.springframework:spring-beans:$springVersion", {
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'commons-logging',module:'commons-logging'
+    }
+    compile "org.springframework:spring-tx:$springVersion", {
+        exclude group:'commons-logging',module:'commons-logging'
+        exclude group:'org.springframework', module:'spring-context'
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'org.springframework', module:'spring-beans'
+        exclude group:'org.springframework', module:'spring-aop'
+    }
+    compile "org.springframework:spring-context:$springVersion", {
+        exclude group:'commons-logging',module:'commons-logging'
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'org.springframework', module:'spring-expression'
+        exclude group:'org.springframework', module:'spring-aop'
+        exclude group:'org.springframework', module:'spring-beans'
+        exclude group:'org.springframework', module:'spring-asm'
+    }
+    compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
+    compile 'org.javassist:javassist:3.17.1-GA'
+    compile 'javax.transaction:jta:1.1'
+
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
+
+    // we need the Grails @Entity annotation to test GORM syntax mapping
+    testCompile("commons-lang:commons-lang:2.4")
+    testCompile("org.springframework:spring-context:$springVersion")
+    testCompile("org.springframework:spring-web:$springVersion")
+    testCompile("org.grails:grails-bootstrap:$grailsVersion") {
+        exclude module:'gpars'
+    }
+    testCompile "org.grails:grails-core:$grailsVersion"
+}

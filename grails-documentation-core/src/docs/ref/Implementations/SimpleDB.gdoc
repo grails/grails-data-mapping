@@ -1,0 +1,13 @@
+h1. Amazon SimpleDB
+
+h2. Purpose
+
+An implementation that creates a GORM API on top of [Amazon SimpleDB|http://aws.amazon.com/simpledb/]
+
+h2. Description
+
+Sub-projects:
+
+* @grails-datastore-simpledb@ 
+* @grails-datastore-gorm-simpledb@
+

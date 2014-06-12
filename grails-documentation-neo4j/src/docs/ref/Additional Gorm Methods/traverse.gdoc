@@ -1,0 +1,61 @@
+h1. traverse
+
+h2. Purpose
+
+Perform a Neo4j node taversal starting at the node of this domain instance.
+
+h2. Example
+
+{code}
+given:
+def person = new Person(lastName: "person1")
+person.save()
+new Person(lastName: "person2").save()
+
+when:
+def traverserResult = person.traverse(Traverser.Order.BREADTH_FIRST, StopEvaluator.END_OF_GRAPH, ReturnableEvaluator.ALL_BUT_START_NODE,
+        GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH)
+def size = traverserResult.size()
+
+then:
+
+size == person.traverse(StopEvaluator.END_OF_GRAPH, ReturnableEvaluator.ALL_BUT_START_NODE,
+    GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH).size()
+
+size+1 == person.traverse(Traverser.Order.BREADTH_FIRST,
+        { TraversalPosition p -> false },
+        { TraversalPosition p -> true },
+    GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH).size()
+
+size+1 == person.traverse(
+        { TraversalPosition p -> false },
+        { TraversalPosition p -> true },
+    GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH).size()
+
+size+1 == person.traverse(
+        { TraversalPosition p -> false },
+        { TraversalPosition p -> true } ).size()
+
+Person.count() == person.traverse(
+        { TraversalPosition p -> false },
+        { TraversalPosition p -> p.currentNode().getProperty("__type__",null) == Person.name } ).size()
+
+2 == person.traverse(
+                { TraversalPosition p -> true },
+                { TraversalPosition p -> true } ).size()
+{code}
+
+h2. Description
+
+@traverse@ is invoked on any domain instance and comes in 4 variants
+
+{code}
+def traverse(Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args )
+def traverse(StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args)
+def traverse(Closure stopEvaluator, Closure returnableEvaluator, Object... args)
+def traverse(Traverser.Order order, Closure stopEvaluator, Closure returnableEvaluator, Object... args)
+{code}
+
+All variants return a collection of domain class instances (if the matching nodes can be mapped to a domain class) or of nodes.
+See also the "Neo4j API":http://api.neo4j.org/current/
+

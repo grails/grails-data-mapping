@@ -1,0 +1,13 @@
+introduction:
+    title: Introduction
+    currentFeatureSet: Current Feature Set
+    simpleDBSpecifics: SimpleDB Specifics
+gettingStarted:
+    title: Getting Started
+    configurationOptions: Configuration Options
+mapping:
+    title: Mapping Domain Classes to SimpleDB
+    identityGeneration: IdentityGeneration
+    automaticIndexing: Automatic Indexing
+transactions: Transactions
+releaseNotes: Release Notes

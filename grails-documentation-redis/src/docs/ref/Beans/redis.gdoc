@@ -1,0 +1,23 @@
+h1. redis
+
+h2. Purpose
+
+A Spring bean that provides access to the lower level Redis API
+
+h2. Examples
+
+{code}
+def redis
+
+def foo = {
+    redis.select(2)
+    redis.flushdb()
+    redis["message"] = "World"
+
+    render "Hello ${redis["message"]}!"
+}
+{code}
+
+h2. Description
+
+See the @org.grails.redis.util.RedisTemplate@ interface for the full list of available methods.

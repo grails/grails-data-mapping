@@ -1,0 +1,81 @@
+h3. Configuration options for simpledb plugin.
+
+simpledb plugin supports the following configuration options:
+{table}
+*Name* | *Required* | *Description*
+accessKey | Y | AWS access key value. IMPORTANT: *You have to properly guard this value. Do not keep it in version control system if anyone except authorized persons has access to your VCS*
+secretKey | Y | AWS secret key value. IMPORTANT: *You have to properly guard this value. Do not keep it in version control system if anyone except authorized persons has access to your VCS*
+domainNamePrefix | N | if this property is specified, the value will be prefixed to all AWS domain names. It is handy when the same AWS account is shared between more than one environment.
+dbCreate | N | similar to GORM for hibernate. Currently supports *'drop'* (will drop the domains for domain classes at startup), *'create'* (will create domains for domain classes at startup if they do not exist), *'drop-create'* (at startup will ensure that all domains are present and are *empty* - do not use in PROD environment!)
+disableDrop | N | boolean property used as an extra protection against accidentally dropping data by setting dbCreate flag to 'drop' or 'drop-create'. Typically, this property would be set to true in PROD configuration after initial release of the application. Since AWS SimpleDB does not provide backup, accidentally dropping PROD domains can have a devastating effect. If the value of this property is true, the plugin will throw an exception if dbCreate is 'drop' or 'create-drop'.
+{table}
+
+To configure, provide the following in the Config.groovy or your custom MyApp.groovy config file:
+{code}
+grails {
+    simpledb {
+        accessKey = '...'
+        secretKey = '...'
+        domainNamePrefix = 'DEV_' //optional, used when the same AWS account is shared between more than one environment
+        dbCreate = 'drop-create' // optional, one of 'drop', 'create', 'drop-create'
+    }
+}
+{code}
+
+Per-environment configuration works as well. For example:
+{code}
+grails {
+    simpledb {
+        accessKey = '...'
+        secretKey = '...'
+    }
+}
+
+environments {
+    production {
+        grails {
+            simpledb {
+                disableDrop = true //extra protection against accidental misconfiguration of the 'dbCreate' flag
+                domainNamePrefix = 'PROD_' //this setting is optional, used when the same AWS account is shared between more than one environment
+                dbCreate = 'create' // one of 'drop, 'create', 'drop-create'
+            }
+        }
+    }
+    development {
+        grails {
+            simpledb {
+                domainNamePrefix = 'DEV_' //this setting is optional, used when the same AWS account is shared between more than one environment
+                dbCreate = 'drop-create' // one of 'drop, 'create', 'drop-create'
+            }
+        }
+    }
+}
+{code}
+
+Or, if you use separate AWS accounts for PROD and dev:
+{code}
+environments {
+    production {
+        grails {
+            simpledb {
+                accessKey = '... production account ...'
+                secretKey = '... production account ...'
+                dbCreate = 'create' // one of 'drop, 'create', 'drop-create'
+            }
+        }
+    }
+    development {
+        grails {
+            simpledb {
+                accessKey = '... dev account ...'
+                secretKey = '... dev account ...'
+                domainNamePrefix = 'DEV_' //this setting is optional, used when the same AWS account is shared between more than one environment
+                dbCreate = 'drop-create' // one of 'drop, 'create', 'drop-create'
+            }
+        }
+    }
+}
+{code}
+
+
+

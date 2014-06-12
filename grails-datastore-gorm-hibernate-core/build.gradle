@@ -1,0 +1,159 @@
+configurations {
+    optional
+}
+
+dependencies {
+    compile("org.grails:grails-async:$grailsVersion")
+    compile("org.grails:grails-core:$grailsVersion") {
+        exclude group:'aopalliance',module:'aopalliance'
+        exclude group:'commons-logging',module:'commons-logging'
+        exclude group:'commons-lang',module:'commons-lang'
+        exclude group:'commons-collections',module:'commons-collections'
+        exclude group:'commons-io',module:'commons-io'
+        exclude group:'org.grails',module:'grails-spring'
+        exclude group:'org.grails',module:'grails-bootstrap'
+        exclude group:'org.aspectj',module:'aspectjweaver'
+        exclude group:'org.aspectj',module:'aspectjrt'
+        exclude group:'oro',module:'oro'
+        exclude group:'asm',module:'asm'
+        exclude group:'cglib',module:'cglib'
+        exclude group:'xalan',module:'serializer'
+        exclude group:'org.springframework',module:'spring-core'
+        exclude group:'org.springframework',module:'spring-tx'
+        exclude group:'org.springframework',module:'spring-aspects'
+        exclude group:'org.springframework',module:'spring-beans'
+        exclude group:'org.springframework',module:'spring-context'
+        exclude group:'org.springframework',module:'spring-expression'
+        exclude group:'org.springframework',module:'spring-web'
+        exclude group:'org.springframework',module:'spring-aop'
+        exclude group:'org.springframework',module:'spring-context-support'
+        exclude group:'commons-logging',module:'commons-logging'
+        exclude group:'commons-validator',module:'commons-validator'
+        exclude group:'com.googlecode.concurrentlinkedhashmap',module:'concurrentlinkedhashmap-lru'
+    }
+    compile("org.grails:grails-bootstrap:$grailsVersion") {
+        exclude group:'org.apache.ant',module:'ant'
+        exclude group:'org.apache.ant',module:'ant-launcher'
+        exclude group:'org.apache.ant',module:'ant-trax'
+        exclude group:'org.apache.ant',module:'ant-junit'
+        exclude group:'org.apache.ant',module:'ant'
+        exclude group:'org.apache.ivy',module:'ivy'
+        exclude group:'org.codehaus.gant',module:'gant_groovy1.8'
+        exclude group:'jline',module:'jline'
+        exclude group:'org.fusesource.jansi',module:'jansi'
+        exclude group:'net.java.dev.jna',module:'jna'
+    }
+
+    compile(project(":grails-datastore-gorm")) {
+        exclude group: 'org.grails', module:'grails-bootstrap'
+        exclude group: 'org.grails', module:'grails-core'
+        exclude group: 'org.grails', module:'grails-async'
+        exclude group: 'org.grails', module:'grails-plugin-testing'
+        exclude group: 'org.slf4j', module:'jcl-over-slf4j'
+        exclude group: 'org.slf4j', module:'jul-to-slf4j'
+        exclude group: 'org.slf4j', module:'slf4j-api'
+        exclude group: 'org.slf4j', module:'slf4j-simple'
+    }
+    compile(project(":grails-datastore-gorm-plugin-support")) {
+        exclude group: 'org.grails', module:'grails-bootstrap'
+        exclude group: 'org.grails', module:'grails-core'
+        exclude group: 'org.grails', module:'grails-spring'
+        exclude group: 'org.grails', module:'grails-plugin-testing'
+        exclude group: 'org.grails', module:'grails-datastore-web'
+    }
+    compile(project(":grails-datastore-core")) {
+        exclude group: 'org.grails', module:'grails-plugin-testing'
+    }
+
+
+    compile "org.springframework:spring-core:$springVersion", {
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
+    compile "org.springframework:spring-jdbc:$springVersion", {
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
+    compile "org.springframework:spring-orm:$springVersion", {
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
+    compile "org.springframework:spring-tx:$springVersion", {
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
+
+    compile 'javax.transaction:jta:1.1'
+    compile 'org.javassist:javassist:3.17.1-GA'
+
+    compile('org.hibernate:hibernate-core:3.6.10.Final') {
+        exclude group:'commons-logging', module:'commons-logging'
+        exclude group:'commons-collections', module:'commons-collections'
+        exclude group:'org.slf4j', module:'slf4j-api'
+        exclude group:'xml-apis', module:'xml-apis'
+        exclude group:'dom4j', module:'dom4j'
+        exclude group:'antlr', module: 'antlr'
+    }
+
+    compile('dom4j:dom4j:1.6.1') {
+        exclude group: 'xml-apis', module:'xml-apis'
+    }
+
+    runtime ('antlr:antlr:2.7.7') {
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
+
+
+    compile('org.hibernate:hibernate-commons-annotations:3.2.0.Final'){
+        exclude group: 'org.slf4j', module:'slf4j-api'
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
+
+
+    optional(project(":grails-datastore-web"))
+
+
+    optional('org.hibernate:hibernate-validator:4.1.0.Final') {
+        exclude group:'commons-logging', module:'commons-logging'
+        exclude group:'commons-collections', module:'commons-collections'
+        exclude group:'org.slf4j', module:'slf4j-api'
+    }
+    optional('org.hibernate:hibernate-ehcache:3.6.10.Final') {
+         exclude group:'commons-logging', module:'commons-logging'
+         exclude group:'commons-collections', module:'commons-collections'
+         exclude group:'org.slf4j', module:'slf4j-api'
+         exclude group:'xml-apis', module:'xml-apis'
+         exclude group:'dom4j', module:'dom4j'
+         exclude group:'org.hibernate', module:'hibernate-core'
+         exclude group:'net.sf.ehcache', module:'ehcache'
+         exclude group:'net.sf.ehcache', module:'ehcache-core'
+    }
+
+    optional ("net.sf.ehcache:ehcache-core:2.4.8") {
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
+
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.optional
+    }
+    javadoc {
+        classpath += configurations.optional
+    }
+}
+
+idea {
+    module {
+        scopes.PROVIDED.plus += configurations.optional
+    }
+}
+
+eclipse {
+    classpath {
+        plusConfigurations += configurations.optional
+    }
+}
+/*
+test {
+	jvmArgs '-Xmx1024m', '-Xdebug', '-Xnoagent', '-Dgrails.full.stacktrace=true', '-Djava.compiler=NONE',
+	        '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
+}
+*/

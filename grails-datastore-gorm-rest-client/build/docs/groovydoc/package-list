@@ -1,8 +1,0 @@
-org.grails.datastore.gorm.rest.client
-org.grails.datastore.gorm.rest.client.plugin.support
-org.grails.datastore.mapping.rest.client
-org.grails.datastore.mapping.rest.client.config
-org.grails.datastore.mapping.rest.client.engine
-org.grails.datastore.mapping.rest.client.http.converters
-org.grails.datastore.mapping.rest.client.query
-org.grails.datastore.mapping.rest.client.util

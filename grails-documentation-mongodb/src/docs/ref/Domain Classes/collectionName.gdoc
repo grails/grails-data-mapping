@@ -1,0 +1,15 @@
+h1. collectionName
+
+h2. Purpose
+
+Returns the name of the MongoDB [collection|http://api.mongodb.org/java/current/com/mongodb/DBCollection.html] used for the current domain class
+
+h2. Examples
+
+{code:java}
+println Book.collectionName
+{code}
+
+h2. Description
+
+The @collectionName@ property allows introspection of the name of the [DBCollection|http://api.mongodb.org/java/current/com/mongodb/DBCollection.html] object used by a given domain class. Can be used in conjunction with @useCollection@ to switch to different collections and back again.

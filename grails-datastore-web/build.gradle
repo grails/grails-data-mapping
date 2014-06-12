@@ -1,0 +1,18 @@
+dependencies {
+    compile project(":grails-datastore-core")
+    compile "org.springframework:spring-web:$springVersion", {
+        exclude group:'commons-logging',module:'commons-logging'
+        exclude group:'org.springframework', module:'spring-context'
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'org.springframework', module:'spring-beans'
+        exclude group:'org.springframework', module:'spring-aop'
+    }
+    compile "org.springframework:spring-context:$springVersion", {
+        exclude group:'commons-logging',module:'commons-logging'
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'org.springframework', module:'spring-expression'
+        exclude group:'org.springframework', module:'spring-aop'
+        exclude group:'org.springframework', module:'spring-beans'
+        exclude group:'org.springframework', module:'spring-asm'
+    }
+}

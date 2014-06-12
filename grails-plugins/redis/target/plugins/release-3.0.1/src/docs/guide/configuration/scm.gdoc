@@ -1,9 +1,0 @@
-By default, source control management is enabled for the @publish-plugin@ command. This means that the command ensures that the latest changes are committed and tagged before a plugin is published. If you don't want the command to do this, then you can disable it via the @\-\-noScm@ command line option, but that gets tedious if you use it every time you run the command.
-
-An alternative approach is to use a configuration setting to disable source control management for the project (or all projects if you put it into @~/.grails/settings.groovy@):
-
-{code}
-grails.release.scm.enabled = false
-{code}
-
-Once the above setting is in place, @publish-plugin@ will no longer attempt to commit and tag source changes. Of course, if you do this you lose the benefit of the plugin keeping the source and the published plugins reliably in sync.

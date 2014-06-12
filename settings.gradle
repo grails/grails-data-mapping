@@ -1,0 +1,60 @@
+// Datastore Project
+include ("grails-datastore-core",
+         "grails-datastore-gemfire",
+        "grails-datastore-jpa",
+/*        "grails-datastore-riak",*/
+        "grails-datastore-simple",
+        "grails-datastore-web",
+        "grails-datastore-simpledb",
+        "grails-datastore-dynamodb",
+        'grails-datastore-rest-client',
+/*
+        "grails-datastore-jcr",*/
+
+
+        // Documentation
+        'grails-documentation-core',
+        'grails-documentation-mongodb',
+        'grails-documentation-redis',
+/*        'grails-documentation-riak',*/
+        'grails-documentation-neo4j',
+        'grails-documentation-simpledb',
+        'grails-documentation-dynamodb',
+        'grails-documentation-rest-client',
+
+        // Core GORM Implementation projects
+        'grails-datastore-gorm',
+        'grails-datastore-gorm-tck',
+        'grails-datastore-gorm-test',
+        'grails-datastore-gorm-plugin-support',
+
+        // Grails Plugins
+/*
+        'grails-plugins:redis',
+        'grails-plugins:riak',
+*/
+
+        // Boot Extensions
+//        'boot-plugins/gorm-hibernate4-spring-boot',
+//        'boot-plugins/gorm-mongodb-spring-boot',
+
+        // GORM Implementations
+        'grails-datastore-gorm-cassandra',
+        'grails-datastore-gorm-jpa',
+        'grails-datastore-gorm-neo4j',
+        'grails-datastore-gorm-redis',
+        'grails-datastore-gorm-rest-client',
+        
+/*        'grails-datastore-gorm-riak',*/
+        'grails-datastore-gorm-mongodb',
+        'grails-datastore-gorm-gemfire',
+        'grails-datastore-gorm-simpledb',
+        'grails-datastore-gorm-dynamodb',
+        'grails-datastore-gorm-hibernate-core',
+        'grails-datastore-gorm-hibernate',
+        'grails-datastore-gorm-hibernate4'
+/*
+        'grails-datastore-gorm-jcr',
+        'grails-datastore-gorm-simpledb'
+*/
+)

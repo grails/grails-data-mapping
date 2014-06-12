@@ -1,0 +1,38 @@
+Below are the details of the changes across releases:
+
+h4. 3.0
+
+* Support for MongoDB 2.6
+* MongoDB 2.6 GeoJSON type support (@MultiPoint@, @MultiLineString@, @MultiPolygon@ and @GeometryCollection@)
+* Support for Maps of embedded entities
+* Flexible index definition
+* Full text search support
+* Support for projections using MongoDB aggregation
+* Size related criteria implemented (@sizeEq@, @sizeLt@ etc.) on collections
+
+h4. 2.0
+
+* GeoJSON shape support
+* Support for SSL connections
+* Support for MongoDB connection strings
+
+h4. 1.3
+
+* Support for stateless mode to improve read performance
+* Support for dynamically switching which database or collection to persist to at runtime
+
+h4. 1.2 
+	
+{warning}
+MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails version, if you are using older versions of Grails you will need to stay with 1.1
+{warning}
+
+h4. 1.1 GA
+
+* DBRefs no longer used by default for associations
+* Upgrade to GMongo 1.0 and Spring Data MongoDB 1.1
+* Support for global mapping configuration
+
+h4. 1.0 GA
+
+* Initial feature complete 1.0 release

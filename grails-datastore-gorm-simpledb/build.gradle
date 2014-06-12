@@ -1,0 +1,37 @@
+version = "0.6.BUILD-SNAPSHOT"
+
+configurations {
+    grails
+}
+
+dependencies {
+
+    grails("org.grails:grails-core:$grailsVersion")
+    grails("org.grails:grails-bootstrap:$grailsVersion") {
+        transitive = false
+    }
+
+    compile project(":grails-datastore-gorm"),
+            project(":grails-datastore-gorm-plugin-support"),
+            project(":grails-datastore-simpledb"),
+            project(":grails-datastore-core")
+
+    testCompile project(":grails-datastore-gorm-test"),
+                project(":grails-datastore-gorm-tck")
+}
+
+configurations {
+    compile.exclude module: "org.slf4j"
+    testCompile.exclude module: "org.slf4j"
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.grails
+    }
+}
+
+//test {
+//        maxParallelForks = 4
+//        forkEvery = 25
+//}
