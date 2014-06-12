@@ -18,7 +18,7 @@ echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 git clone https://${GH_TOKEN}@github.com/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
 cd gh-pages
 
-version=$(grep 'projectVersion =' build.gradle)
+version=$(grep 'projectVersion =' ../build.gradle)
 version=${version//[[:blank:]]/}
 version="${version#*=}";
 version=${version//\"/}
