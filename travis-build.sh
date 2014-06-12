@@ -15,7 +15,7 @@ git config --global user.email "$GIT_EMAIL"
 git config --global credential.helper "store --file=~/.git-credentials"
 echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
-git clone https://${GH_TOKEN}@github.com/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
+git clone https://${GH_TOKEN}@github.com/grails/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
 cd gh-pages
 
 version=$(grep 'projectVersion =' ../build.gradle)
@@ -28,7 +28,7 @@ cd "$version"
 git rm -rf .
 cp -r ../../build/docs/. ./
 git add *
-git commit -a -m "Updating docs for Travis build: https://travis-ci.org/grails-data-mapping/builds/$TRAVIS_BUILD_ID"
+git commit -a -m "Updating docs for Travis build: https://travis-ci.org/grails/grails-data-mapping/builds/$TRAVIS_BUILD_ID"
 git push origin HEAD
 cd ../..
 rm -rf gh-pages
