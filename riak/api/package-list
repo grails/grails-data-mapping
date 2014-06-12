@@ -1,5 +1,0 @@
-org.grails.datastore.mapping.riak
-org.grails.datastore.mapping.riak.collection
-org.grails.datastore.mapping.riak.engine
-org.grails.datastore.mapping.riak.query
-org.grails.datastore.mapping.riak.util

@@ -1,7 +1,0 @@
-dependencies {
-    compile project(":grails-datastore-core")
-    compile "org.springframework:spring-web:$springVersion"
-    compile "org.springframework:spring-context:$springVersion"
-}
-
-jar.appendix = 'web'

@@ -1,0 +1,6 @@
+org.grails.datastore.mapping.dynamodb
+org.grails.datastore.mapping.dynamodb.config
+org.grails.datastore.mapping.dynamodb.engine
+org.grails.datastore.mapping.dynamodb.model.types
+org.grails.datastore.mapping.dynamodb.query
+org.grails.datastore.mapping.dynamodb.util

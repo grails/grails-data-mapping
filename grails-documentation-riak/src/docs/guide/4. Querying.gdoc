@@ -1,7 +1,0 @@
-The Riak GORM module provides several ways to query data that is stored in Riak:
-
-* [Dynamic Finders|http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html#5.4.1%20Dynamic%20Finders]
-* [Criteria|http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html#5.4.2%20Criteria]
-* [Named Queries|http://grails.org/doc/latest/ref/Domain%20Classes/namedQueries.html]
-
-These queries operate in largely the same way as they do with GORM for Hibernate.
