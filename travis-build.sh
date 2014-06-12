@@ -36,9 +36,9 @@ then
     cp -r ../../build/docs/. ./
     git add *
     cd ..
-    git rm -rf current
     mkdir -p current
     cd current
+    git rm -rf .
     cp -r ../../build/docs/. ./
     git add *
     git commit -a -m "Updating docs for Travis build: https://travis-ci.org/grails/grails-data-mapping/builds/$TRAVIS_BUILD_ID"
