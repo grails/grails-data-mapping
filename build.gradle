@@ -381,7 +381,7 @@ task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
         new File("$allDocsDir/index.html").text = template.toString()
 
         for(store in stores) {
-            def index = "http://grails.github.io/grails-data-mapping/$allDocsDir/$store/index.html"
+            def index = "$allDocsDir/$store/index.html"
             def storeName = "${store[0].toUpperCase()}${store[1..-1]}".toString()
             binding = [
                 datastore:storeName
