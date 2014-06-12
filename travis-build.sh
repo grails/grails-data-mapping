@@ -7,16 +7,7 @@ EXIT_STATUS=0
 ./gradlew grails-datastore-gorm-mongodb:test || EXIT_STATUS=$?
 ./gradlew grails-datastore-gorm-redis:test || EXIT_STATUS=$?
 ./gradlew grails-datastore-gorm-test:test || EXIT_STATUS=$?
-./gradlew allDocs
 
-
-git config --global user.name "$GIT_NAME"
-git config --global user.email "$GIT_EMAIL"
-git config --global credential.helper "store --file=~/.git-credentials"
-echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
-
-git clone https://${GH_TOKEN}@github.com/grails/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
-cd gh-pages
 
 version=$(grep 'projectVersion =' ../build.gradle)
 version=${version//[[:blank:]]/}
@@ -30,6 +21,16 @@ releaseType=${releaseType//\"/}
 
 if [[ $releaseType != *-SNAPSHOT* ]]
 then
+    ./gradlew allDocs
+
+
+    git config --global user.name "$GIT_NAME"
+    git config --global user.email "$GIT_EMAIL"
+    git config --global credential.helper "store --file=~/.git-credentials"
+    echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
+
+    git clone https://${GH_TOKEN}@github.com/grails/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
+    cd gh-pages
     mkdir -p "$version"
     cd "$version"
     git rm -rf .
