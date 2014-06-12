@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2 Getting Started 1.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/3.%20Understanding%20the%20Low-level%20API.html"><strong>3</strong><span>Understanding the Low-level API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20GORM%20Enhancer.html"><strong>4</strong><span>GORM Enhancer</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Using%20the%20Test%20Compatibility%20Kit.html"><strong>5</strong><span>Using the Test Compatibility Kit</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/6.%20Creating%20a%20GORM%20implementatio%20Step%20by%20Step.html"><strong>6</strong><span>Creating a GORM implementatio Step by Step</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/1.%20Introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/3.%20Understanding%20the%20Low-level%20API.html"><strong>3</strong><span>Understanding the Low-level API</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2 Getting Started - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher</p>
+
+                    <p><strong>Version:</strong> 1.0.0</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h1 id="2. Getting Started">2 Getting Started</h1>
+<h3>Checking out and Building </h3><p class="paragraph"/>The project is currently hosted on Github at https://github.com/SpringSource/grails-data-mapping.<p class="paragraph"/>You are free to fork the project from there or clone it anonymously using git:<p class="paragraph"/><div class="code"><pre>git clone git@github.com:SpringSource/grails&#45;data&#45;mapping.git
+cd grails&#45;data&#45;mapping</pre></div><p class="paragraph"/>The project has a <a href="http://gradle.org" target="blank">Gradle</a> build. You can generate Eclipse or Intellij project files to open the project using:<p class="paragraph"/><div class="code"><pre>./gradlew eclipse</pre></div><p class="paragraph"/>Or<p class="paragraph"/><div class="code"><pre>./gradlew idea</pre></div><p class="paragraph"/>Once this is done your can import the project into Eclipse, or in the case of Intellij open up the generated <code>grails-data-mapping.ipr</code> file.<p class="paragraph"/><blockquote class="note">
+The version of Gradle used has a bug whereby a subproject is generated for the root directory called "grails-data-mapping". You should remove this subproject from your Intellij Modules or delete it it from Eclipse.
+</blockquote><p class="paragraph"/>To build the project you can run the <code>assemble</code> task:<p class="paragraph"/><div class="code"><pre>./gradlew assemble</pre></div><p class="paragraph"/>To install the jar files for the various subprojects into your local Maven repository you can run:<p class="paragraph"/><div class="code"><pre>./gradlew install</pre></div><p class="paragraph"/>To build all of the documentation run the command:<p class="paragraph"/><div class="code"><pre>./gradlew allDocs</pre></div><p class="paragraph"/>Documentation will produced in the <code>build/docs</code> directory.<p class="paragraph"/><blockquote class="note">
+If you experience PermGen errors when building documentation you may need to increase the JVM permgen inside GRADLE_OPTS
+</blockquote><p class="paragraph"/><h3>Project Structure</h3><p class="paragraph"/>The project is essentially a multi-project Gradle build. There is a core API and then subprojects that implement that API. The core API subprojects include:
+<ul class="star">
+<li><code>grails-datastore-core</code> - The core API, this provides core interfaces for implementing a GORM provider</li>
+<li><code>grails-datastore-gorm</code> - The runtime meta-programming and AST transformation infrastructure behind GORM. Also provides end users APIs like <code>grails.gorm.CriteriaBuilder</code> and <code>grails.gorm.DetachedCriteria</code></li>
+<li><code>grails-datastore-gorm-plugin-support</code> - Support classes for easing the writing of a GORM plugin for Grails</li>
+<li><code>grails-datastore-gorm-tck</code> - The TCK that includes hundreds of Spock specifications that a GORM implementation will need to pass</li>
+<li><code>grails-datastore-web</code> - Classes required to integrate GORM into a web tier</li>
+</ul><p class="paragraph"/>Beyond these core subprojects there are implementations for various datastores. For example:
+<ul class="star">
+<li><code>grails-datastore-gemfire/grails-datastore-gorm-gemfire</code> - GORM for Gemfire project <a href="http://grails.org/plugin/gemfire" target="blank"></a></li>
+<li><code>grails-datastore-jpa/grails-datastore-gorm-jpa</code> - GORM for JPA project <a href="http://grails.org/plugin/gorm-jpa" target="blank"></a></li>
+<li><code>grails-datastore-mongo/grails-datastore-gorm-mongo</code> - GORM for MongoDB project <a href="http://grails.org/plugin/mongodb" target="blank"></a></li>
+<li><code>grails-datastore-neo4j</code> - GORM for Neo4j project <a href="http://grails.org/plugin/neo4j" target="blank"></a></li>
+<li><code>grails-datastore-redis/grails-datastore-gorm-redis</code> - GORM for Redis project <a href="http://grails.org/plugin/redis" target="blank"></a></li>
+<li><code>grails-datastore-riak/grails-datastore-gorm-riak</code> - GORM for Riak project <a href="http://grails.org/plugin/riak" target="blank"></a></li>
+<li><code>grails-datastore-simpledb/grails-datastore-gorm-simpledb</code> - GORM for SimpleDB project <a href="http://grails.org/plugin/simpledb" target="blank"></a></li>
+</ul><p class="paragraph"/>Some implementations are split into 2 subprojects others are not. It depends whether the author chooses to divide the Java parts and the Groovy parts of the project implementation. It is not a requirement to do so.<p class="paragraph"/>The documentation for each implementation is kept in the documentation subprojects that start with <code>grails-documentation</code>. There are documentation projects for the core API, MongoDB, Neo4j, Redis, Riak and Amazon SimpleDB.<p class="paragraph"/>Finally the Grails plugins that are used to distribute the GORM implementations to end users can be found in the <code>grails-plugins</code> directory.<p class="paragraph"/><p class="paragraph"/>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/1.%20Introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/3.%20Understanding%20the%20Low-level%20API.html"><strong>3</strong><span>Understanding the Low-level API</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Implementations</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/ConcurrentHashMap.html">ConcurrentHashMap</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/Hibernate.html">Hibernate</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/JPA.html">JPA</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/MongoDB.html">MongoDB</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/Neo4j.html">Neo4j</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/Redis.html">Redis</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/Riak.html">Riak</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/SimpleDB.html">SimpleDB</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
