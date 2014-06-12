@@ -7,7 +7,7 @@ EXIT_STATUS=0
 #./gradlew grails-datastore-gorm-mongodb:test || EXIT_STATUS=$?
 #./gradlew grails-datastore-gorm-redis:test || EXIT_STATUS=$?
 #./gradlew grails-datastore-gorm-test:test || EXIT_STATUS=$?
-./gradlew allDocs || EXIT_STATUS=$?
+./gradlew allDocs
 
 
 git config --global user.name "$GIT_NAME"
@@ -23,16 +23,23 @@ version=${version//[[:blank:]]/}
 version="${version#*=}";
 version=${version//\"/}
 
-mkdir -p "$version"
-cd "$version"
-git rm -rf .
-cp -r ../../build/docs/. ./
-git add *
-git commit -a -m "Updating docs for Travis build: https://travis-ci.org/grails/grails-data-mapping/builds/$TRAVIS_BUILD_ID"
-git push origin HEAD
-cd ../..
-rm -rf gh-pages
+releaseType=$(grep 'releaseType =' ../build.gradle | egrep -v ^[[:blank:]]*\/\/ | egrep -v ^[[:blank:]]*isBuildSnapshot)
+releaseType=${releaseType//[[:blank:]]/}
+releaseType="${releaseType#*=}";
+releaseType=${releaseType//\"/}
 
+if [[ $releaseType != *-SNAPSHOT* ]]
+then
+    mkdir -p "$version"
+    cd "$version"
+    git rm -rf .
+    cp -r ../../build/docs/. ./
+    git add *
+    git commit -a -m "Updating docs for Travis build: https://travis-ci.org/grails/grails-data-mapping/builds/$TRAVIS_BUILD_ID"
+    git push origin HEAD
+    cd ../..
+    rm -rf gh-pages
+fi
 
 
 exit $EXIT_STATUS
