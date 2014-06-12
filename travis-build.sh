@@ -25,6 +25,9 @@ if [[ $releaseType != *-SNAPSHOT* ]]
 then
     ./gradlew allDocs
 
+    base_dir=$(pwd)
+
+    echo "BASE DIR = $base_dir"
 
     git config --global user.name "$GIT_NAME"
     git config --global user.email "$GIT_EMAIL"
@@ -35,21 +38,25 @@ then
     cd gh-pages
     echo "Making directory for Version: $version"
     mkdir -p "$version"
-    cd "$version"
-    echo "Current Directory:"
-    pwd
+    cd "$version"    
+    current_dir=$(pwd)
+    git rm -rf .    
+    mkdir -p "$current_dir"
 
-    git rm -rf .
-    cp -r ../../build/docs/. ./
-    git add *
+    echo "Current Directory: $current_dir"
+    cp -r "$base_dir/build/docs/." "$current_dir/"
+    git add "$current_dir"
+
     cd ..
     mkdir -p current
     cd current
-    echo "Current Directory:"
-    pwd
+    current_dir=$(pwd)
     git rm -rf .
-    cp -r ../../build/docs/. ./
-    git add *
+    mkdir -p "$current_dir"
+    
+    echo "Current Directory: $current_dir"
+    cp -r "$base_dir/build/docs/." "$current_dir/"
+    git add "$current_dir"
     git commit -a -m "Updating docs for Travis build: https://travis-ci.org/grails/grails-data-mapping/builds/$TRAVIS_BUILD_ID"
     git push origin HEAD
     cd ../..
