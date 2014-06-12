@@ -19,6 +19,8 @@ releaseType=${releaseType//[[:blank:]]/}
 releaseType="${releaseType#*=}";
 releaseType=${releaseType//\"/}
 
+echo "Project Version: $version $releaseType"
+
 if [[ $releaseType != *-SNAPSHOT* ]]
 then
     ./gradlew allDocs
@@ -31,14 +33,20 @@ then
 
     git clone https://${GH_TOKEN}@github.com/grails/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
     cd gh-pages
+    echo "Making directory for Version: $version"
     mkdir -p "$version"
     cd "$version"
+    echo "Current Directory:"
+    pwd
+
     git rm -rf .
     cp -r ../../build/docs/. ./
     git add *
     cd ..
     mkdir -p current
     cd current
+    echo "Current Directory:"
+    pwd
     git rm -rf .
     cp -r ../../build/docs/. ./
     git add *
