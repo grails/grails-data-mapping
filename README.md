@@ -16,6 +16,11 @@ See the following links for documentation on the various implementations:
 * [GORM for Hibernate](http://grails.org/doc/latest/guide/GORM.html)
 * [GORM for MongoDB](http://grails.github.io/grails-data-mapping/current/mongodb/index.html)
  
+For API documentation see:
+
+* [Core API / GORM for Hibernate](http://grails.github.io/grails-data-mapping/current/api)
+* [GORM for MongoDB API](http://grails.github.io/grails-data-mapping/current/mongodb/api/index.html)
+* 
 For other implementations see the [following page](http://grails.github.io/grails-data-mapping/current).
 
 Below is an example of using GORM for Hibernate in a Groovy script:
