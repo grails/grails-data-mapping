@@ -45,8 +45,6 @@ then
 
     echo "Current Directory: $current_dir"
     cp -r "$base_dir/build/docs/." "$current_dir/"
-    git add "$current_dir"
-
     cd ..
     mkdir -p current
     cd current
@@ -56,10 +54,12 @@ then
     
     echo "Current Directory: $current_dir"
     cp -r "$base_dir/build/docs/." "$current_dir/"
-    git add "$current_dir"
+    cd ..
+    cp -r "$base_dir/build/docs/." ./
+    git add .
     git commit -a -m "Updating docs for Travis build: https://travis-ci.org/grails/grails-data-mapping/builds/$TRAVIS_BUILD_ID"
     git push origin HEAD
-    cd ../..
+    cd ..
     rm -rf gh-pages
 fi
 
