@@ -37,14 +37,18 @@ class MongoDbGormAutoConfigureWithGeoSpacialSpec extends Specification{
 
 
         when:"Geospacial data is saved"
-
+            City city
             def location = Point.valueOf([-0.125487, 51.508515])
-            City city = new City(name:"London", location: location)
-            city.save(flush:true)
-            city.discard()
+            City.withTransaction {
 
-            city = City.get(city.id)
-        then:"GORM queries work"
+                city = new City(name:"London", location: location)
+                city.save(flush:true)
+                city.discard()
+
+                city = City.get(city.id)
+                then:"GORM queries work"
+            }
+        then:
             city != null
             city.location == location
             City.findByLocationNear(location)
