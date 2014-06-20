@@ -20,6 +20,8 @@ grails.project.dependency.resolution = {
         mavenLocal()
         mavenCentral()
 
+        mavenRepo "http://m2.neo4j.org/content/repositories/releases/"
+
         //mavenRepo 'http://m2.neo4j.org/releases'
         //mavenRepo "http://repo.grails.org/grails/repo"
     }
@@ -51,8 +53,8 @@ grails.project.dependency.resolution = {
         test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
              "org.grails:grails-datastore-simple:$datastoreVersion", exlcudes)
 
-        compile('org.neo4j:neo4j-community:2.0.1',
-                "com.fasterxml.uuid:java-uuid-generator:3.1.3")  // workaround, seems like grails-datastore-gorm-neo4j does not expose this as dependency
+        compile('org.neo4j:neo4j-community:2.0.3')
+        compile "org.neo4j:neo4j-jdbc:2.0.2"
 
         test "org.gebish:geb-spock:0.9.2"
         test "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
