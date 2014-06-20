@@ -4,3 +4,4 @@ target
 *.iws
 data
 plugin.xml
+*.sha1
