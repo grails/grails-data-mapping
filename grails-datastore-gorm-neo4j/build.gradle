@@ -1,5 +1,5 @@
-//version = "2.0.0-SNAPSHOT"
-version = "2.0.0-M02"
+version = "2.0.0-SNAPSHOT"
+//version = "2.0.0-M02"
 
 ext.neo4jVersion = "2.0.3"
 ext.gdmVersion = "2.0.7.RELEASE"
