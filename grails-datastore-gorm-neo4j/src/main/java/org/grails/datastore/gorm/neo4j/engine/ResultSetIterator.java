@@ -44,7 +44,7 @@ public class ResultSetIterator implements ResourceIterator<Map<String, Object>> 
             resultSet.next();
             ResultSetMetaData metaData = resultSet.getMetaData();
             int cols = metaData.getColumnCount();
-            Map<String, Object> map = new HashMap<>(cols);
+            Map<String, Object> map = new HashMap<String, Object>(cols);
             for (int i=1; i<=cols; i++) {
                 Object value = resultSet.getObject(i);
                 map.put(metaData.getColumnName(i), convertNodeToMap(value));
