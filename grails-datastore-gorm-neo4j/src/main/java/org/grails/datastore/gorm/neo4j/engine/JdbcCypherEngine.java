@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 /**
@@ -37,7 +34,14 @@ public class JdbcCypherEngine implements CypherEngine {
         try {
             Connection connection = connectionThreadLocal.get();
             logCypher(cypher, params);
-            PreparedStatement ps = connection.prepareStatement(cypher);
+            PreparedStatement ps;
+            try {
+                ps = connection.prepareStatement(cypher);
+            } catch (SQLException e) { // TODO: hackish wordaround since connection is closed when view is rendered
+                connectionThreadLocal.remove();
+                connection = connectionThreadLocal.get();
+                ps = connection.prepareStatement(cypher);
+            }
             for (int i=0; i<params.size(); i++) {
                 ps.setObject(i+1, params.get(i));
             }
@@ -61,7 +65,16 @@ public class JdbcCypherEngine implements CypherEngine {
         try {
             Connection connection = connectionThreadLocal.get();
             logCypher(cypher, null);
-            ResultSet rs = connection.createStatement().executeQuery(cypher);
+            Statement statement;
+            try {
+                statement = connection.createStatement();
+            } catch (SQLException e) { // TODO: hackish wordaround since connection is closed when view is rendered
+                connectionThreadLocal.remove();
+                connection = connectionThreadLocal.get();
+                statement = connection.createStatement();
+            }
+
+            ResultSet rs = statement.executeQuery(cypher);
             return new JdbcCypherResult(rs);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -83,9 +96,10 @@ public class JdbcCypherEngine implements CypherEngine {
             Connection connection = connectionThreadLocal.get();
             connection.commit();
             connection.close();
-            connectionThreadLocal.remove();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            connectionThreadLocal.remove();
         }
     }
 
@@ -96,9 +110,10 @@ public class JdbcCypherEngine implements CypherEngine {
             Connection connection = connectionThreadLocal.get();
             connection.rollback();
             connection.close();
-            connectionThreadLocal.remove();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            connectionThreadLocal.remove();
         }
     }
 
