@@ -1,3 +1,17 @@
+/* Copyright (C) 2010 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.grails.datastore.gorm.neo4j.engine;
 
 import org.slf4j.Logger;
@@ -8,40 +22,38 @@ import java.sql.*;
 import java.util.List;
 
 /**
- * CypherEngine implementation backed by {@link org.neo4j.cypher.javacompat.ExecutionEngine}
+ * CypherEngine implementation backed by a Neo4j JDBC datasource
+ * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
 public class JdbcCypherEngine implements CypherEngine {
 
     private static Logger log = LoggerFactory.getLogger(JdbcCypherEngine.class);
     private final DataSource dataSource;
-    private ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<Connection>() {
-        @Override
-        protected Connection initialValue() {
-            try {
-                return dataSource.getConnection();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    };
+    private ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<Connection>();
 
     public JdbcCypherEngine(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
+    private Connection getOrInitConnectionThreadLocal() {
+        Connection connection = connectionThreadLocal.get();
+        if (connection==null) {
+            try {
+                connection = dataSource.getConnection();
+                connectionThreadLocal.set(connection);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return connection;
+    }
+
     @Override
     public CypherResult execute(String cypher, List params) {
         try {
-            Connection connection = connectionThreadLocal.get();
+            Connection connection = getOrInitConnectionThreadLocal();
             logCypher(cypher, params);
-            PreparedStatement ps;
-            try {
-                ps = connection.prepareStatement(cypher);
-            } catch (SQLException e) { // TODO: hackish wordaround since connection is closed when view is rendered
-                connectionThreadLocal.remove();
-                connection = connectionThreadLocal.get();
-                ps = connection.prepareStatement(cypher);
-            }
+            PreparedStatement ps = connection.prepareStatement(cypher);
             for (int i=0; i<params.size(); i++) {
                 ps.setObject(i+1, params.get(i));
             }
@@ -63,17 +75,9 @@ public class JdbcCypherEngine implements CypherEngine {
     @Override
     public CypherResult execute(String cypher) {
         try {
-            Connection connection = connectionThreadLocal.get();
+            Connection connection = getOrInitConnectionThreadLocal();
             logCypher(cypher, null);
-            Statement statement;
-            try {
-                statement = connection.createStatement();
-            } catch (SQLException e) { // TODO: hackish wordaround since connection is closed when view is rendered
-                connectionThreadLocal.remove();
-                connection = connectionThreadLocal.get();
-                statement = connection.createStatement();
-            }
-
+            Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(cypher);
             return new JdbcCypherResult(rs);
         } catch (SQLException e) {
@@ -86,34 +90,41 @@ public class JdbcCypherEngine implements CypherEngine {
      */
     @Override
     public void beginTx() {
-        log.info("beginTx");
+        if (connectionThreadLocal.get()==null) {
+            log.info("beginTx");
+            getOrInitConnectionThreadLocal();
+        }
     }
 
     @Override
     public void commit() {
-        try {
-            log.info("commit");
-            Connection connection = connectionThreadLocal.get();
-            connection.commit();
-            connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            connectionThreadLocal.remove();
+        Connection connection = connectionThreadLocal.get();
+        if (connection != null) {
+            try {
+                log.info("commit");
+                connection.commit();
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            } finally {
+                connectionThreadLocal.remove();
+            }
         }
     }
 
     @Override
     public void rollback() {
-        try {
-            log.info("rollback");
-            Connection connection = connectionThreadLocal.get();
-            connection.rollback();
-            connection.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            connectionThreadLocal.remove();
+        Connection connection = connectionThreadLocal.get();
+        if (connection!=null) {
+            try {
+                log.info("rollback");
+                connection.rollback();
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            } finally {
+                connectionThreadLocal.remove();
+            }
         }
     }
 
