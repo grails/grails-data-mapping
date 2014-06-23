@@ -15,6 +15,7 @@ repositories {
     maven { url "http://m2.neo4j.org/content/repositories/releases/" }
 //    maven { url "http://m2.neo4j.org/content/repositories/snapshots/" }
 //    maven { url "http://repo.grails.org/grails/core" }
+    maven { url 'http://maven.restlet.com'}
 }
 
 dependencies {
