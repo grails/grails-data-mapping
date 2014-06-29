@@ -4,13 +4,9 @@ import grails.persistence.Entity
 import groovy.beans.Bindable
 import groovyx.gpars.GParsPool
 import org.grails.datastore.gorm.Setup
-import org.grails.datastore.gorm.neo4j.GrailsRelationshipTypes
-import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.DynamicLabel
-import org.neo4j.graphdb.Node
 import org.neo4j.helpers.collection.IteratorUtil
 import spock.lang.Ignore
-import spock.lang.IgnoreRest
 import spock.lang.Issue
 
 import java.util.concurrent.TimeUnit
@@ -285,39 +281,6 @@ class MiscSpec extends GormDatastoreSpec {
         when:
         start = System.currentTimeMillis()
         def count = Team.count()
-        delta = System.currentTimeMillis() - start
-        println "count is $count, delta $delta"
-
-        then:
-        delta > 0
-
-    }
-
-    @Ignore
-    def "manual perf test"() {
-        when:
-
-        Node subRef
-        Team.withNewTransaction {
-            subRef = session.nativeInterface.createNode()
-        }
-        def start = System.currentTimeMillis()
-        Team.withNewTransaction {
-            for (i in 1..10000) {
-                Node node = session.nativeInterface.createNode()
-                node.setProperty("name", "Team $i".toString())
-                subRef.createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
-            }
-        }
-        def delta = System.currentTimeMillis() - start
-        println "create 10000 in $delta msec"
-
-        then:
-        delta > 0
-
-        when:
-        start = System.currentTimeMillis()
-        def count = IteratorUtil.count((Iterator)subRef.getRelationships(Direction.OUTGOING, GrailsRelationshipTypes.INSTANCE))
         delta = System.currentTimeMillis() - start
         println "count is $count, delta $delta"
 

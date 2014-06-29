@@ -78,8 +78,6 @@ class ManyToManySpec extends GormDatastoreSpec {
             2 == Role.findByRole('ROLE_ADMIN').people.size()
     }
 
-    @Ignore("""test runs fine in IntelliJ but fails upon execution with gradle. Theory:
-when running gradle the DirtyCheckable interface is not injected into User by an AST. """)
     def "test if setter on m2m property also updates reverse collection"() {
         setup:
             def roleAdmin = new Role(role:'ROLE_ADMIN').save()
