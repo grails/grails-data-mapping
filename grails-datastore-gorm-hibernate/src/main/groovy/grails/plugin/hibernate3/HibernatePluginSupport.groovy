@@ -181,7 +181,7 @@ class HibernatePluginSupport {
                         catch (Throwable t) {
                             hibConfig.cache.region.factory_class='net.sf.ehcache.hibernate.EhCacheRegionFactory'
                             log.error """WARNING: Your cache provider is set to '${cacheProvider}' in DataSource.groovy, however the class for this provider cannot be found.
-Using Grails' default cache region factory: 'net.sf.ehcache.hibernate.EhCacheRegionFactory'"""
+Using Grails' default cache region factory: 'net.sf.ehcache.hibernate.EhCacheRegionFactory'""",t
                         }
                     } else if (!(hibConfig.cache.useCacheProvider) && (cacheProvider=='org.hibernate.cache.EhCacheProvider' || cacheProvider=='net.sf.ehcache.hibernate.EhCacheProvider')) {
                         hibConfig.cache.region.factory_class = 'net.sf.ehcache.hibernate.EhCacheRegionFactory'
@@ -199,7 +199,7 @@ Using Grails' default cache region factory: 'net.sf.ehcache.hibernate.EhCacheReg
                 }
                 catch (Throwable t) {
                     log.error """WARNING: You've configured a custom Hibernate naming strategy '$namingStrategy' in DataSource.groovy, however the class cannot be found.
-Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
+Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'""",t
                     grailsDomainBinder.configureNamingStrategy datasourceName, ImprovedNamingStrategy
                 }
 
