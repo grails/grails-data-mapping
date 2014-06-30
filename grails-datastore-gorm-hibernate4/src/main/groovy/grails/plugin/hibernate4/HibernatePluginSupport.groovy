@@ -168,7 +168,7 @@ class HibernatePluginSupport {
                         catch (Throwable t) {
                             hibConfig.cache.region.factory_class = 'org.hibernate.cache.ehcache.EhCacheRegionFactory'
                             log.error """WARNING: Your cache provider is set to '${cacheProvider}' in DataSource.groovy, however the class for this provider cannot be found.
-Using Grails' default cache region factory: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'"""
+Using Grails' default cache region factory: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'""", t
                         }
                     }
                     else if (!(hibConfig.cache.useCacheProvider) && (cacheProvider == 'org.hibernate.cache.EhCacheProvider' || cacheProvider == 'net.sf.ehcache.hibernate.EhCacheProvider')) {
@@ -185,6 +185,8 @@ Using Grails' default cache region factory: 'org.hibernate.cache.ehcache.EhCache
                 boolean problem = false
                 if (cacheProvider == 'net.sf.ehcache.hibernate.EhCacheRegionFactory') {
                     problem = true
+                    log.error """WARNING: Your cache provider is set to '${cacheProvider}' in DataSource.groovy, however the class for this provider cannot be found.
+Using Grails' default cache region factory: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'"""
                 }
                 else if (cacheProvider) {
                     try {
@@ -192,12 +194,12 @@ Using Grails' default cache region factory: 'org.hibernate.cache.ehcache.EhCache
                     }
                     catch (Throwable t) {
                         problem = true
+                        log.error """WARNING: Your cache provider is set to '${cacheProvider}' in DataSource.groovy, however the class for this provider cannot be found.
+Using Grails' default cache region factory: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'""", t
                     }
                 }
                 if (problem) {
                     hibConfig.cache.region.factory_class = 'org.hibernate.cache.ehcache.EhCacheRegionFactory'
-                    log.error """WARNING: Your cache provider is set to '${cacheProvider}' in DataSource.groovy, however the class for this provider cannot be found.
-Using Grails' default cache region factory: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'"""
                 }
 
                 def namingStrategy = hibConfig.naming_strategy ?: ImprovedNamingStrategy
@@ -206,7 +208,7 @@ Using Grails' default cache region factory: 'org.hibernate.cache.ehcache.EhCache
                 }
                 catch (Throwable t) {
                     log.error """WARNING: You've configured a custom Hibernate naming strategy '$namingStrategy' in DataSource.groovy, however the class cannot be found.
-Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
+Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'""",t
                     grailsDomainBinder.configureNamingStrategy datasourceName, ImprovedNamingStrategy
                 }
 
