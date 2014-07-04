@@ -13,7 +13,7 @@ import com.datastax.driver.core.DataType.Name
 
 class CassandraTransformTest extends GroovyTestCase {
 
-    void testBasicAnnotatedEntity() {
+    void testBasicEntity() {
         def tableanno = Basic.class.getAnnotation(Table)
         assert tableanno != null
         def field = Basic.class.getDeclaredField("id")
@@ -23,6 +23,7 @@ class CassandraTransformTest extends GroovyTestCase {
         
         assertTransientField(Basic.class.getDeclaredField("errors"))
         assertTransientField(Basic.class.getDeclaredField("tran"))
+        assertTransientField(Basic.class.getDeclaredField("service"))
         
         shouldFail {
             Basic.class.getDeclaredField("version")
@@ -30,22 +31,23 @@ class CassandraTransformTest extends GroovyTestCase {
     }
 
     void testBasicWithIdAndTypes() {
-        def field = BasicWithId.class.getDeclaredField("id")
+        def field = BasicWithIdAndTypes.class.getDeclaredField("id")
         assert field != null
         def anno = field.getAnnotation(PrimaryKeyColumn)
         assert anno != null
         assert anno.type() == PrimaryKeyType.PARTITIONED
         
         assertCassandraTypeAnnotation(field, Name.TIMEUUID)
-        assertCassandraTypeAnnotation(BasicWithId.class.getDeclaredField("ascii"), Name.ASCII)
-        assertCassandraTypeAnnotation(BasicWithId.class.getDeclaredField("varchar"), Name.VARCHAR)
-        assertCassandraTypeAnnotation(BasicWithId.class.getDeclaredField("value"), Name.TEXT)
-        assertCassandraTypeAnnotation(BasicWithId.class.getDeclaredField("oneLong"), Name.BIGINT)
-        assertCassandraTypeAnnotation(BasicWithId.class.getDeclaredField("anotherLong"), Name.BIGINT)
-        assertCassandraTypeAnnotation(BasicWithId.class.getDeclaredField("counter"), Name.COUNTER)
-             
-        assertTransientField(BasicWithId.class.getDeclaredField('transientBoolean'))        
-        assertTransientField(BasicWithId.class.getDeclaredField('transientString'))        
+        assertCassandraTypeAnnotation(BasicWithIdAndTypes.class.getDeclaredField("ascii"), Name.ASCII)
+        assertCassandraTypeAnnotation(BasicWithIdAndTypes.class.getDeclaredField("varchar"), Name.VARCHAR)
+        assertCassandraTypeAnnotation(BasicWithIdAndTypes.class.getDeclaredField("value"), Name.TEXT)
+        assertCassandraTypeAnnotation(BasicWithIdAndTypes.class.getDeclaredField("oneLong"), Name.BIGINT)
+        assertCassandraTypeAnnotation(BasicWithIdAndTypes.class.getDeclaredField("anotherLong"), Name.BIGINT)
+        assertCassandraTypeAnnotation(BasicWithIdAndTypes.class.getDeclaredField("counter"), Name.COUNTER)
+        assertNonTransientField(BasicWithIdAndTypes.class.getDeclaredField("testEnum"))
+        
+        assertTransientField(BasicWithIdAndTypes.class.getDeclaredField('transientBoolean'))        
+        assertTransientField(BasicWithIdAndTypes.class.getDeclaredField('transientString'))        
                 
     }
 
@@ -55,12 +57,14 @@ class CassandraTransformTest extends GroovyTestCase {
         def anno = field.getAnnotation(PrimaryKeyColumn)
         assert anno != null
         
-        assertTransientField(BasicWithPrimaryKey.class.getDeclaredField("id"))
+        field = BasicWithPrimaryKey.class.getDeclaredField("id")
+        assertTransientField(field)
+        assert java.lang.reflect.Modifier.isTransient(field.getModifiers()) == true
         
     }
 
-    void testBasicWithCustomPrimaryKeyColumnNamesAndAssociation() {
-        def field = BasicCustomPrimaryKeyWithAssociation.class.getDeclaredField("primary")
+    void testBasicWithCustomPrimaryKeyAndAssociation() {
+        def field = BasicWithCustomPrimaryKeyAndAssociation.class.getDeclaredField("primary")
         assert field != null
         def anno = field.getAnnotation(PrimaryKeyColumn)
         assert anno != null
@@ -68,7 +72,7 @@ class CassandraTransformTest extends GroovyTestCase {
         assert anno.ordinal() == 0
         assert anno.type() == PrimaryKeyType.PARTITIONED
 
-        field = BasicCustomPrimaryKeyWithAssociation.class.getDeclaredField("clustered")
+        field = BasicWithCustomPrimaryKeyAndAssociation.class.getDeclaredField("clustered")
         assert field != null
         anno = field.getAnnotation(PrimaryKeyColumn)
         assert anno != null
@@ -76,13 +80,13 @@ class CassandraTransformTest extends GroovyTestCase {
         assert anno.ordinal() == 1
         assert anno.type() == PrimaryKeyType.CLUSTERED
 
-        assertTransientField(BasicCustomPrimaryKeyWithAssociation.class.getDeclaredField("association"))
+        assertTransientField(BasicWithCustomPrimaryKeyAndAssociation.class.getDeclaredField("association"))
 
-        assertTransientField(BasicCustomPrimaryKeyWithAssociation.class.getDeclaredField("id"))
+        assertTransientField(BasicWithCustomPrimaryKeyAndAssociation.class.getDeclaredField("id"))
         
     }
 
-    void testCustomTableMappingAndPrimaryKeyMapping() {
+    void testCustomTableAndPrimaryKeyMapping() {
         Table tableanno = Person.class.getAnnotation(Table)
         assert tableanno != null
         assert tableanno.value() == "the_person"
@@ -128,6 +132,14 @@ class CassandraTransformTest extends GroovyTestCase {
         assertNonTransientField(Simple.class.getDeclaredField("hashMap"))
     }
     
+    void testInheritanceMapping() {
+        def field = Sub.class.getSuperclass().getDeclaredField("id")
+        assert field != null
+        def anno = field.getAnnotation(PrimaryKeyColumn)
+        assert anno != null
+        assert anno.type() == PrimaryKeyType.PARTITIONED                     
+    }
+    
     private assertCassandraTypeAnnotation(def field, Name name) {
         assert field != null
         def anno = field.getAnnotation(CassandraType)
@@ -152,19 +164,22 @@ class CassandraTransformTest extends GroovyTestCase {
 class Basic {
     String value
     transient tran    
+    def service
 }
 
 @CassandraEntity
-class BasicWithId {
+class BasicWithIdAndTypes {
     UUID id
     String value
     String ascii
     String varchar
     Long oneLong
     long anotherLong   
-    long counter        
+    long counter
+    TestEnum testEnum
     boolean transientBoolean
     String transientString
+    
     
     static mapping = {
         id type:"timeuuid"
@@ -186,7 +201,7 @@ class BasicWithPrimaryKey {
 }
 
 @CassandraEntity
-class BasicCustomPrimaryKeyWithAssociation {
+class BasicWithCustomPrimaryKeyAndAssociation {
     UUID primary
     UUID clustered
     BasicWithPrimaryKey association
@@ -255,6 +270,21 @@ class Simple {
 
     def afterDelete() {
     }
+}
+
+@CassandraEntity
+class Base {
+    UUID id
+    String value
+}
+
+@CassandraEntity
+class Sub extends Base {
+    String subValue
+}
+
+enum TestEnum {
+    A,B,Z
 }
 
 class Address {

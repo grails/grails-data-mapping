@@ -5,34 +5,38 @@ import grails.gorm.CassandraEntity
 import org.springframework.data.cassandra.mapping.CassandraType
 
 class GormToCassandraTest {
-    public static void main(String[] a) {
-        def basic = new ABasic()
-        def basicWithId = new ABasicWithId()
-        def basicWithPrimaryKey = new ABasicWithPrimaryKey()
-        def basicCustomPrimaryKey = new ABasicCustomPrimaryKeyWithAssociation()
-        def person = new APerson()
+    public static void main(String[] a) {        
         println "ok"
     }
-
+    
+    static enum ATestEnum {
+        V1, V2, V3
+    }
+    
     @CassandraEntity
-    static class ABasic {
-        String value
-        transient tran        
+    static class ABasic {        
+        ATestEnum testEnum       
     }
 
     @CassandraEntity
     static class ABasicWithId {
         UUID id
         String value
+        String ascii
+        String varchar
         Long oneLong
         long anotherLong
-        @CassandraType(type = com.datastax.driver.core.DataType.Name.COUNTER)
         long counter
-        @CassandraType(type = com.datastax.driver.core.DataType.Name.ASCII)
-        String ascii
         boolean transientBoolean
         String transientString
+        def service
 
+        static mapping = {
+            id type:"timeuuid"
+            ascii type:'ascii'
+            varchar type:'varchar'
+            counter type:'counter'
+        }
         static transients = [
             'transientBoolean',
             'transientString'
@@ -67,7 +71,7 @@ class GormToCassandraTest {
         int numberOfChildren
         List list
         Map map
-        
+
         static mapping = {
             table "the_person"
             id name:"lastname", primaryKey:[ordinal:0, type:"partitioned"]
@@ -75,5 +79,16 @@ class GormToCassandraTest {
             nickname index:true
             birthDate index:true
         }
+    }
+
+    @CassandraEntity
+    static class ABase {
+        UUID id
+        String value
+    }
+
+    @CassandraEntity
+    static class ASub extends ABase {
+        String subValue
     }
 }
