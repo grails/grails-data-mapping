@@ -23,11 +23,13 @@ abstract class GormDatastoreSpec extends Specification {
     static final CURRENT_TEST_NAME = "current.gorm.test"
     static final SETUP_CLASS_NAME = 'org.grails.datastore.gorm.Setup'
 //    static final TEST_CLASSES = [
-//         Book, ChildEntity, City, ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,
-//         ClassWithOverloadedBeforeValidate, CommonTypes, Country, EnumThing, Face, Highway,
+//         Book, ChildEntity,  ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,
+//         ClassWithOverloadedBeforeValidate, CommonTypes,  EnumThing, Face, Highway,
 //         Location, ModifyPerson, Nose, OptLockNotVersioned, OptLockVersioned, Person, PersonEvent,
 //         Pet, PetType, Plant, PlantCategory, Publication, Task, TestEntity]
-    static final TEST_CLASSES = [TestEntity, Person, PersonAssignedId, Highway, Book, SimpleWidget, Artist, Simples]
+    static final TEST_CLASSES = [Artist, Book, City, CollectionTypes, CommonTypes, ConstrainedEntity, Country, EnumThing, EnumGeneratedIdThing, Highway, 
+            Location, ModifyPerson, OptLockNotVersioned, OptLockVersioned, Plant, Person, PersonEvent, PersonAssignedId, 
+            SimpleWidget, Simples, TestEntity]
     
     @Shared Class setupClass
 

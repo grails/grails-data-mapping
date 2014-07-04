@@ -10,23 +10,21 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
             def now = new Date()
             def cal = new GregorianCalendar()
             def ct = new CommonTypes(
-                //l: 10L,
-                //b: 10 as byte,
-                //s: 10 as short,
-                //bool: true,
-                //i: 10,
-                //url: new URL("http://google.com"),
+                l: 10L,
+                b: 10 as byte,
+                s: 10 as short,
+                bool: true,
+                i: 10,
+                url: new URL("http://google.com"),
                 date: now,
-                //c: cal,
+                c: cal,
                 bd: 1.0,
                 bi: 10 as BigInteger,
                 d: 1.0 as Double,
                 f: 1.0 as Float,
-                list: []
-                //tz: TimeZone.getTimeZone("GMT"),
-                //loc: Locale.UK,
-                //: Currency.getInstance("USD"),
-                //ba: 'hello'.bytes
+                tz: TimeZone.getTimeZone("GMT"),
+                loc: Locale.UK,
+                cur: Currency.getInstance("USD"),                
             )
 
         when:
@@ -50,8 +48,7 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
             (1.0 as Float) == ct.f
             TimeZone.getTimeZone("GMT") == ct.tz
             Locale.UK == ct.loc
-            Currency.getInstance("USD") == ct.cur
-            'hello'.bytes == ct.ba
+            Currency.getInstance("USD") == ct.cur            
     }
 }
 

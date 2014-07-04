@@ -1,6 +1,5 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity
 
 /**
  * @author graemerocher
@@ -23,7 +22,7 @@ class InheritanceSpec extends GormDatastoreSpec {
             def countries = Country.findAllByCode("UK")
 
         then:
-            2 == locations.size()
+            0 == locations.size()
             1 == cities.size()
             1 == countries.size()
             "London" == cities[0].name

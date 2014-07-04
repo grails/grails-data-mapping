@@ -1,12 +1,10 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
+import grails.gorm.CassandraEntity
 
-import java.io.Serializable;
-import java.util.UUID;
-
-@Entity
-class Plant implements Serializable {
+@CassandraEntity
+class Plant implements Serializable {    
+    
     UUID id
     Long version
     boolean goesInPatch

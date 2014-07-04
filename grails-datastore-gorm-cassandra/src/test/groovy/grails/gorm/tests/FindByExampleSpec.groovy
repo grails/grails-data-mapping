@@ -9,20 +9,20 @@ class FindByExampleSpec extends GormDatastoreSpec {
             new Plant(name:"Kiwi", goesInPatch:false).save(flush:true)
             session.clear()
         when:
-            def results = Plant.findAll(new Plant(goesInPatch:false))
+            def results = Plant.findAll(new Plant(goesInPatch:false), [allowFiltering:true])
         then:
             results.size() == 2
             "Pineapple" in results*.name
             "Kiwi" in results*.name
 
         when:
-            results = Plant.findAll(new Plant(name:"Cabbage",goesInPatch:false))
+            results = Plant.findAll(new Plant(name:"Cabbage",goesInPatch:false), [allowFiltering:true])
 
         then:
             results.size() == 0
 
         when:
-            results = Plant.findAll(new Plant(name:"Cabbage",goesInPatch:true))
+            results = Plant.findAll(new Plant(name:"Cabbage",goesInPatch:true), [allowFiltering:true])
 
         then:
             results.size() == 1
@@ -37,13 +37,13 @@ class FindByExampleSpec extends GormDatastoreSpec {
             session.clear()
 
         when:
-            Plant result = Plant.find(new Plant(name:"Cabbage",goesInPatch:false))
+            Plant result = Plant.find(new Plant(name:"Cabbage",goesInPatch:false), [allowFiltering:true])
 
         then:
             result == null
 
         when:
-            result = Plant.find(new Plant(name:"Cabbage",goesInPatch:true))
+            result = Plant.find(new Plant(name:"Cabbage",goesInPatch:true), [allowFiltering:true])
 
         then:
             result != null

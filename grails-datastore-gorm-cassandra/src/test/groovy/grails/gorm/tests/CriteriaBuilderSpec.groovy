@@ -1,40 +1,36 @@
 package grails.gorm.tests
 
-import spock.lang.Ignore
 
 /**
  * Abstract base test for criteria queries. Subclasses should do the necessary setup to configure GORM
  */
 class CriteriaBuilderSpec extends GormDatastoreSpec {
 
-    void "Test count distinct projection"() {
+    void "Test count projection"() {
         given:
             def age = 40
             ["Bob", "Fred", "Barney", "Frank"].each {
-                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+                new TestEntity(name:it, age: age++).save()
             }
 
-             new TestEntity(name:"Chuck", age: age-1, child:new ChildEntity(name:"Chuckie")).save()
-
-            5 == ChildEntity.count()
-
+            new TestEntity(name:"Chuck", age: age-1).save()
+           
             def criteria = TestEntity.createCriteria()
 
         when:
             def result = criteria.get {
                 projections {
-                    countDistinct "age"
+                    count()
                 }
             }
 
         then:
-            result == 4
+            result == 5
     }
-
-    @Ignore // ignored this test because the id() projection does not actually exist in GORM for Hibernate
+   
     void "Test id projection"() {
         given:
-            def entity = new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Child")).save(flush:true)
+            def entity = new TestEntity(name:"Bob", age: 44).save(flush:true)
 
         when:
             def result = TestEntity.createCriteria().get {
@@ -49,7 +45,7 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
 
     void "Test idEq method"() {
         given:
-            def entity = new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Child")).save(flush:true)
+            def entity = new TestEntity(name:"Bob", age: 44).save(flush:true)
 
         when:
             def result = TestEntity.createCriteria().get { idEq entity.id }
@@ -61,10 +57,8 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
 
     void "Test disjunction query"() {
         given:
-            def age = 40
-            ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
+            def entity = new TestEntity(name:"Bob", age: 44).save(flush:true)
             def criteria = TestEntity.createCriteria()
-
         when:
             def results = criteria.list {
                 or {
@@ -74,40 +68,53 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             }
 
         then:
-            3 == results.size()
+            thrown UnsupportedOperationException
     }
 
     void "Test conjunction query"() {
         given:
             def age = 40
-            ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
-
-            def criteria = TestEntity.createCriteria()
+            ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+            age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each { new PersonAssignedId(firstName:it, lastName: 'Brown', age: age++).save() }
+            
+            def criteria = TestEntity.createCriteria()            
 
         when:
-            def results = criteria.list {
+            def results = criteria.list (allowFiltering:true) {
                 and {
-                    like('name', 'B%')
+                    eq('name', 'Bob')
+                    eq('age', 40)
+                }
+            }            
+        then:
+            1 == results.size()
+        
+        when:
+            criteria = PersonAssignedId.createCriteria()
+            results = criteria.list {
+                and {
+                    eq('firstName', 'Bob')
                     eq('age', 40)
                 }
             }
-
         then:
             1 == results.size()
+            
     }
 
     void "Test list() query"() {
         given:
             def age = 40
-            ["Bob", "Fred", "Barney", "Frank"].each {
-                new TestEntity(name:it, age: age++, child: new ChildEntity(name:"$it Child")).save()
+            ["Bob", "Fred", "Barney", "Frank", "Bob"].each {
+                new TestEntity(name:it, age: age++).save()
             }
 
             def criteria = TestEntity.createCriteria()
 
         when:
             def results = criteria.list {
-                 like('name', 'B%')
+                 eq('name', 'Bob')
             }
 
         then:
@@ -116,7 +123,7 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
         when:
             criteria = TestEntity.createCriteria()
             results = criteria.list {
-                like('name', 'B%')
+                eq('name', 'Bob')
                 maxResults 1
             }
 
@@ -127,15 +134,15 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
     void "Test count()"() {
         given:
             def age = 40
-            ["Bob", "Fred", "Barney", "Frank"].each {
-                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+            ["Bob", "Fred", "Barney", "Frank", "Bob"].each {
+                new TestEntity(name:it, age: age++).save()
             }
 
             def criteria = TestEntity.createCriteria()
 
         when:
             def result = criteria.count {
-                like('name', 'B%')
+                eq('name', 'Bob')
             }
 
         then:
@@ -161,82 +168,82 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             "Bob" == result.name
     }
 
-    void "Test order by a property name"() {
+    void "Test projection unsupported"() {
         given:
             def age = 40
-            ["Bob", "Fred", "Barney", "Frank"].each {
-                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+            ["Bob"].each {
+                new TestEntity(name:it, age: age++).save()
             }
 
             def criteria = TestEntity.createCriteria()
 
         when:
             def results = criteria.list {
-                like('name', 'B%')
-                order "age"
+                like('name', 'B%')                
             }
 
         then:
-            "Bob" == results[0].name
-            "Barney" == results[1].name
-
+            thrown UnsupportedOperationException
+            
         when:
         criteria = TestEntity.createCriteria()
             results = criteria.list {
-                like('name', 'B%')
-                order "age", "desc"
+                projections {
+                    min "age"
+                }               
             }
 
         then:
-            "Barney" == results[0].name
-            "Bob" == results[1].name
+            thrown UnsupportedOperationException
     }
 
-    void "Test get minimum value with projection"() {
+    void "Test get comparison operators"() {
         given:
             def age = 40
-            ["Bob", "Fred", "Barney", "Frank"].each {
-                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
-            }
-            Thread.sleep 500
+            ["Bob", "Fred", "Barney", "Bob"].each {
+                new TestEntity(name:it, age: age++).save()
+            }           
 
             def criteria = TestEntity.createCriteria()
 
         when:
             def result = criteria.get {
                 projections {
-                    min "age"
+                    eq('name', 'Bob')
+                    lt("age", 41)
                 }
+                allowFiltering true
             }
 
         then:
-            40 == result
+            40 == result.age
 
         when:
             criteria = TestEntity.createCriteria()
             result = criteria.get {
                 projections {
-                    max "age"
+                    eq('name', 'Bob')
+                    gt("age", 42)
                 }
+                allowFiltering true
             }
 
         then:
-            43 == result
+            43 == result.age
 
         when:
             criteria = TestEntity.createCriteria()
             def results = criteria.list {
                 projections {
-                    max "age"
-                    min "age"
+                    eq('name', 'Bob')
+                    between("age", 40, 43)                   
                 }
-        }.flatten()
-
+                allowFiltering true
+            }         
         then:
             2 == results.size()
-            43 == results[0]
-            40 == results[1]
-            [43, 40] == results
+            results.find{ it.age == 40 }
+            results.find{ it.age == 43 }            
     }
 
     void "Test obtain property value using projection"() {
@@ -259,14 +266,12 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             [40, 41, 42, 43] == results.sort()
     }
 
-    void "Test obtain association entity using property projection"() {
+    void "Test obtain association entity using property projection fail"() {
         given:
             def age = 40
             ["Bob", "Fred", "Barney", "Frank"].each {
                 new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
-            }
-
-            4 == ChildEntity.count()
+            }           
 
             def criteria = TestEntity.createCriteria()
 
@@ -278,9 +283,6 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             }
 
         then:
-            results.find { it.name == "Bob Child"}
-            results.find { it.name == "Fred Child"}
-            results.find { it.name == "Barney Child"}
-            results.find { it.name == "Frank Child"}
+            thrown IllegalArgumentException
     }
 }

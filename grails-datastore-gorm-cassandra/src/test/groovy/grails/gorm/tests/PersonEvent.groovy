@@ -1,8 +1,8 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity
+import grails.gorm.CassandraEntity
 
-@Entity
+@CassandraEntity
 class PersonEvent implements Serializable {
     UUID id
     Long version
@@ -63,5 +63,9 @@ class PersonEvent implements Serializable {
 
     void afterLoad() {
         STORE.afterLoad++
+    }
+    
+    void setPersonService(java.lang.Object personService) {
+        this.personService = personService
     }
 }

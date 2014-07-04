@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
+import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
@@ -11,14 +12,14 @@ class GroovyProxySpec extends GormDatastoreSpec {
     void "Test proxying of non-existent instance throws an exception"() {
         given:"A groovy proxy factory"
             session.mappingContext.proxyFactory = new GroovyProxyFactory()
-
+            def uuid = UUIDUtil.getRandomUUID()
         when:"A proxy is loaded for an instance that doesn't exist"
-            def location = Location.proxy(123)
+            def location = Location.proxy(uuid)
 
         then:"The proxy is in a valid state"
 
             location != null
-            123 == location.id
+            uuid == location.id
             false == location.isInitialized()
             false == location.initialized
 

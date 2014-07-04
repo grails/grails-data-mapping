@@ -1,9 +1,12 @@
 package grails.gorm.tests
 
+import spock.lang.Ignore
+
 
 /**
  * @author graemerocher
  */
+@Ignore
 class CircularOneToManySpec extends GormDatastoreSpec{
 
     void "Test circular one-to-many"() {

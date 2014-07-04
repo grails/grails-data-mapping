@@ -1,23 +1,21 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.UUID;
 
-@Entity
-class Publication implements Serializable {
-    UUID id
+import grails.gorm.CassandraEntity
+
+@CassandraEntity
+class Publication implements Serializable {    
     Long version
     String title
     Date datePublished
     Boolean paperback = true
 
     static mapping = {
-        title index:true
-        paperback index:true
-        datePublished index:true
+        id name:"title", primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned"                 
+        datePublished primaryKey:[ordinal:1, type: "clustered"]         
+        paperback index:true        
+        
     }
 
     static namedQueries = {

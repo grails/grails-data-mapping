@@ -1,11 +1,10 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity;
 
-import java.io.Serializable;
-import java.util.UUID;
 
-@Entity
+import grails.gorm.CassandraEntity
+
+@CassandraEntity
 class Location implements Serializable {
     UUID id
     Long version

@@ -1,18 +1,16 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
+import grails.gorm.CassandraEntity
 
-import java.util.UUID;
-
-@Entity
+@CassandraEntity
 class EnumThing {
-    UUID id
-    Long version
-    String name
     TestEnum en
+    String name
+   
 
     static mapping = {
-        name index: true
-        en index: true
+        id name:"en", primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned"
+        name primaryKey:[ordinal:1, type: "clustered"]
     }
+        
 }

@@ -1,11 +1,11 @@
 package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
-import spock.lang.Issue
 
 import org.grails.datastore.mapping.core.Session
 
 import spock.lang.Ignore
+import spock.lang.Issue
 
 /**
  * @author graemerocher
@@ -15,6 +15,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
     def setup() {
         PersonEvent.resetStore()
     }
+    
     @Issue('GPMONGODB-262')
     void "Test that returning false from beforeUpdate evicts the event"() {
         when:"An entity is saved"
@@ -69,10 +70,9 @@ class DomainEventsSpec extends GormDatastoreSpec {
         then:"The event was cancelled"
             PersonEvent.get(p.id)
     }
-
+   
     void "Test modify property before save"() {
-        given:
-            session.datastore.mappingContext.addPersistentEntity(ModifyPerson)
+        given:            
             def p = new ModifyPerson(name:"Bob").save(flush:true)
             session.clear()
 
@@ -155,15 +155,12 @@ class DomainEventsSpec extends GormDatastoreSpec {
             new DetachedCriteria(PersonEvent).build {
                 'in'('id', freds*.id)
             }.deleteAll()
-            session.flush()
-
+            session.flush()            
         then:
             0 == PersonEvent.count()
-            0 == PersonEvent.list().size()
-
-        // removed the below assertions because in the case of batch DML statements neither Hibernate nor JPA triggers delete events for individual entities
-//            3 == PersonEvent.STORE.beforeDelete
-//            3 == PersonEvent.STORE.afterDelete
+            0 == PersonEvent.list().size()      
+            3 == PersonEvent.STORE.beforeDelete
+            3 == PersonEvent.STORE.afterDelete
     }
 
     void "Test before update event"() {
@@ -246,6 +243,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
             1 == PersonEvent.STORE.afterLoad
     }
 
+    @Ignore("Cassandra GORM does not support multi-load events")
     void "Test multi-load events"() {
         given:
             def freds = (1..3).collect {
@@ -255,8 +253,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
         when:
             freds = PersonEvent.findAllByIdInList(freds*.id)
-            for(f in freds) {} // just to trigger load
-
+            for(f in freds) {} // just to trigger load           
         then:
             3 == freds.size()
             if (!'JpaSession'.equals(session.getClass().simpleName)) {
@@ -265,8 +262,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
             }
             3 == PersonEvent.STORE.afterLoad
     }
-
-    @Ignore
+   
     void "Test bean autowiring"() {
         given:
             def personService = new Object()
@@ -283,11 +279,10 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
         then:
             "Fred" == p.name
-            personService.is saved.personService // test Groovy constructor
-            if (!session.datastore.getClass().name.contains('Hibernate')) {
-                // autowiring is added to the real constructor by an AST, so can't test this for Hibernate
-                personService.is p.personService // test constructor called by the datastore
-            }
+            
+            // autowiring is added to the real constructor by an AST
+            personService.is p.personService // test constructor called by the datastore
+            
     }
 
 

@@ -1,13 +1,9 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
 
-import java.util.Set;
+import grails.gorm.CassandraEntity
 
-@Entity
+@CassandraEntity
 class Country extends Location {
-    Integer population
-
-    static hasMany = [residents:Person]
-    Set residents
+    Integer population   
 }

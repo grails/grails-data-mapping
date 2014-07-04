@@ -1,11 +1,9 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
 
-import java.io.Serializable;
-import java.util.UUID;
+import grails.gorm.CassandraEntity
 
-@Entity
+@CassandraEntity
 class OptLockVersioned implements Serializable {
     UUID id
     Long version

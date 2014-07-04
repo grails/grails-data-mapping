@@ -2,6 +2,7 @@ package grails.gorm.tests
 
 
 import org.grails.datastore.mapping.core.Session
+
 import spock.lang.Issue
 
 class EnumSpec extends GormDatastoreSpec {
@@ -10,21 +11,31 @@ class EnumSpec extends GormDatastoreSpec {
         given:
 
             EnumThing t = new EnumThing(name: 'e1', en: TestEnum.V1)
+            EnumGeneratedIdThing p = new EnumGeneratedIdThing(name: 'e2', en: TestEnum.V2)
 
         when:
             t.save(failOnError: true, flush:true)
-
+            p.save(failOnError: true, flush:true)
+            session.clear()
         then:
             t != null
             !t.hasErrors()
+            
+            p != null
+            !p.hasErrors()
 
         when:
-            t = t.get(t.id)
+            t = t.get([en:t.en])
+            p = p.get(p.id)
 
         then:
             t != null
             'e1' == t.name
             TestEnum.V1 == t.en
+            
+            p != null
+            'e2' == p.name
+            TestEnum.V2 == p.en                       
     }
 
 
@@ -54,6 +65,7 @@ class EnumSpec extends GormDatastoreSpec {
 
         instance3 == null
     }
+    
     void "Test findBy()"() {
         given:
 
