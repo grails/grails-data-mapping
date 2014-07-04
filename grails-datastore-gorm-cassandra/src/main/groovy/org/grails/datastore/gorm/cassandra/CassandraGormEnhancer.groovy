@@ -47,6 +47,10 @@ class CassandraGormStaticApi<D> extends GormStaticApi<D> {
             
     CassandraGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
         super(persistentClass, datastore, finders, transactionManager) 
+        def finder =  gormDynamicFinders.find { FinderMethod f -> 
+            "org.grails.datastore.gorm.finders.FindByFinder".equals(f.class.name)            
+        }
+        finder.registerNewMethodExpression(InList.class)
     }
     
     /**
