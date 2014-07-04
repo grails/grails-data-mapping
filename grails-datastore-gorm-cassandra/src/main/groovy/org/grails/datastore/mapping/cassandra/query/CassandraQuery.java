@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.cassandra.query;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,13 +9,16 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.cassandra.CassandraSession;
+import org.grails.datastore.mapping.cassandra.engine.CassandraEntityPersister;
 import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Query.Order.Direction;
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.springframework.cassandra.core.ResultSetExtractor;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.cassandra.core.CassandraTemplate;
@@ -39,47 +43,69 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
     private CassandraSession cassandraSession;
     private CassandraTemplate cassandraTemplate;
     private CassandraPersistentEntity<?> cassandraPersistentEntity;
+    private ConversionService conversionService;
     private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
     private Map arguments = new HashMap();
+    private boolean allowFiltering;
+        
+    public Query allowFiltering(boolean allowFiltering) {
+        this.allowFiltering = allowFiltering;
+        return this;
+    }
+    
     protected static interface QueryHandler<T> {
-        public void handle(PersistentEntity entity, CassandraPersistentEntity<?> cassandraPersistentEntity, T criterion, Where where);
+        public void handle(CassandraQuery cassandraQuery, T criterion, Where where);
     }
 
     static {
+        queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {            
+            public void handle(CassandraQuery cassandraQuery, IdEquals criterion, Where where) { 
+                PersistentProperty property = cassandraQuery.entity.getIdentity();
+                if (property != null) {
+                    where.and(QueryBuilder.eq(property.getName(), criterion.getValue()));
+                }
+            }
+        });
+        
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
-            public void handle(PersistentEntity entity, CassandraPersistentEntity<?> cassandraPersistentEntity, Equals criterion, Where where) {
-                where.and(QueryBuilder.eq(extractPropertyName(cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
+            public void handle(CassandraQuery cassandraQuery, Equals criterion, Where where) {
+                where.and(QueryBuilder.eq(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
-            public void handle(PersistentEntity entity, CassandraPersistentEntity<?> cassandraPersistentEntity, GreaterThan criterion, Where where) {
-                where.and(QueryBuilder.gt(extractPropertyName(cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
+            public void handle(CassandraQuery cassandraQuery, GreaterThan criterion, Where where) {
+                where.and(QueryBuilder.gt(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
             }
         });
         queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
-            public void handle(PersistentEntity entity, CassandraPersistentEntity<?> cassandraPersistentEntity, GreaterThanEquals criterion, Where where) {
-                where.and(QueryBuilder.gte(extractPropertyName(cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
+            public void handle(CassandraQuery cassandraQuery, GreaterThanEquals criterion, Where where) {
+                where.and(QueryBuilder.gte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
             }
         });
         queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
-            public void handle(PersistentEntity entity, CassandraPersistentEntity<?> cassandraPersistentEntity, LessThan criterion, Where where) {
-                where.and(QueryBuilder.lt(extractPropertyName(cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
+            public void handle(CassandraQuery cassandraQuery, LessThan criterion, Where where) {
+                where.and(QueryBuilder.lt(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
             }
         });
         queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
-            public void handle(PersistentEntity entity, CassandraPersistentEntity<?> cassandraPersistentEntity, LessThanEquals criterion, Where where) {
-                where.and(QueryBuilder.lte(extractPropertyName(cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
+            public void handle(CassandraQuery cassandraQuery, LessThanEquals criterion, Where where) {
+                where.and(QueryBuilder.lte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
             }
         });
         queryHandlers.put(Between.class, new QueryHandler<Between>() {
-            public void handle(PersistentEntity entity, CassandraPersistentEntity<?> cassandraPersistentEntity, Between criterion, Where where) {
-                where.and(QueryBuilder.gte(extractPropertyName(cassandraPersistentEntity, criterion.getProperty()), criterion.getFrom()));
-                where.and(QueryBuilder.lte(extractPropertyName(cassandraPersistentEntity, criterion.getProperty()), criterion.getTo()));
+            public void handle(CassandraQuery cassandraQuery, Between criterion, Where where) {
+                where.and(QueryBuilder.gte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), criterion.getFrom()));
+                where.and(QueryBuilder.lte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), criterion.getTo()));
             }
         });
         queryHandlers.put(In.class, new QueryHandler<In>() {
-            public void handle(PersistentEntity entity, CassandraPersistentEntity<?> cassandraPersistentEntity, In criterion, Where where) {
-                where.and(QueryBuilder.in(extractPropertyName(cassandraPersistentEntity, criterion.getProperty()), criterion.getValues().toArray()));
+            public void handle(CassandraQuery cassandraQuery, In criterion, Where where) {
+                List<Object> values = new ArrayList<Object>(criterion.getValues().size());                
+                for (Object value : criterion.getValues()) {
+                    value = CassandraEntityPersister.convertPrimitiveToNative(value, cassandraQuery.conversionService);
+                    values.add(value);
+                }               
+                where.and(QueryBuilder.in(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), values.toArray()));
             }
         });
     }
@@ -89,6 +115,16 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
         cassandraSession = session;
         cassandraTemplate = cassandraSession.getCassandraTemplate();
         cassandraPersistentEntity = cassandraTemplate.getCassandraMappingContext().getPersistentEntity(entity.getJavaClass());
+        conversionService = cassandraTemplate.getConverter().getConversionService();
+    }
+    
+    public void throwUnsupportedOperationException(String name) {
+        throw new UnsupportedOperationException("Queries of type " + name + " are not supported by this implementation");
+    }
+
+    @Override
+    public void setArguments(Map arguments) {
+       this.arguments = arguments;        
     }
 
     @SuppressWarnings("unchecked")
@@ -99,13 +135,12 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
         if (criteria instanceof Disjunction) {
             throw new UnsupportedOperationException("Queries of type Disjunction (OR) are not supported by this implementation");
         } else if (criteria instanceof Conjunction) {
-            final List<Projection> projectionList = projections().getProjectionList();
-            boolean hasCountProjection = false;
+            final List<Projection> projectionList = projections().getProjectionList();            
             Select select = null;
             if (projectionList.isEmpty()) {
                 select = QueryBuilder.select().all().from(getTableName(entity));
             } else {
-                hasCountProjection = validateProjectionsAndCheckIfCountIsPresent(projectionList);
+                validateProjections(projectionList);
                 select = buildQueryForProjections(entity, projectionList);
             }
 
@@ -129,10 +164,9 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
             
             if (max > 0) { 
             	select.limit(max);
-            	select.setFetchSize(max);
             }
             
-            if (arguments.containsKey(ARGUMENT_ALLOW_FILTERING)) {
+            if (arguments.containsKey(ARGUMENT_ALLOW_FILTERING) || allowFiltering) {
                 select.allowFiltering();
             }
             if (LOG.isDebugEnabled()) {
@@ -141,10 +175,27 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
             if (projectionList.isEmpty()) {
                 results = cassandraTemplate.select(select, entity.getJavaClass());
             } else {
-                if (hasCountProjection) {
-                    long count = executeForCount(select);
-                    results.add(count);
-                }
+                for (Projection projection : projectionList) {
+                    if (projection instanceof CountProjection) {
+                        long count = getCountResult(select);
+                        results.add(count);
+                    }
+                    else if (projection instanceof IdProjection) {
+                        PersistentProperty persistentProperty = entity.getIdentity();
+                        if (persistentProperty != null) {
+                            Class type = persistentProperty.getType();
+                            results = cassandraTemplate.queryForList(select, type);
+                        }
+                    }
+                    else if (projection instanceof PropertyProjection) {
+                        PropertyProjection propertyProjection = (PropertyProjection) projection;
+                        CassandraPersistentProperty persistentProperty = getPersistentProperty(cassandraPersistentEntity, propertyProjection.getPropertyName());
+                        Class type = persistentProperty.getActualType();
+                        results = cassandraTemplate.queryForList(select, type);
+                    } else {
+                        throwUnsupportedOperationException(projection.getClass().getSimpleName());
+                    }
+                }               
             }
         } else {
             throwUnsupportedOperationException(criteria.getClass().getSimpleName());
@@ -161,15 +212,16 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
      * the combination of them is meaningful. Throws exception if something is
      * invalid.
      * 
-     * @param projections
-     * @returns true if count projection is present, false otherwise.
+     * @param projections     
      */
-    private boolean validateProjectionsAndCheckIfCountIsPresent(List<Projection> projections) {
+    private void validateProjections(List<Projection> projections) {
         // of the grouping projects Cassandra only supports count(*) projection,
         // nothing else. Other kinds will have to be explicitly coded later...
         boolean hasCountProjection = false;
         for (Projection projection : projections) {
-            if (!(PropertyProjection.class.equals(projection.getClass()) || CountProjection.class.equals(projection.getClass()))) {
+            if (!(PropertyProjection.class.equals(projection.getClass()) || 
+                    CountProjection.class.equals(projection.getClass()) || 
+                    IdProjection.class.equals(projection.getClass()))) {
                 throwUnsupportedOperationException(projection.getClass().getSimpleName());
             }
 
@@ -179,18 +231,23 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
         }
         if (projections.size() > 1 && hasCountProjection) {
             throw new IllegalArgumentException("Can not mix count projection and other types of projections. You requested: " + projections);
-        }
-        return hasCountProjection;
+        }        
     }
 
     private Select buildQueryForProjections(PersistentEntity entity, List<Projection> projectionList) {
         Select select = null;
         Selection selection = QueryBuilder.select();
         for (Projection projection : projectionList) {
-            if (CountProjection.class.equals(projection.getClass())) {
+            if (projection instanceof CountProjection) {
                 selection.countAll();
-            } else if (PropertyProjection.class.equals(projection.getClass())) {
-                String name = extractPropertyName(cassandraPersistentEntity, ((PropertyProjection) projection).getPropertyName());
+            }
+            else if (projection instanceof IdProjection) {
+                PersistentProperty persistentProperty = entity.getIdentity();
+                if (persistentProperty != null) {
+                    selection.column(persistentProperty.getName());
+                }            
+            } else if (projection instanceof PropertyProjection) {
+                String name = getPropertyName(cassandraPersistentEntity, ((PropertyProjection) projection).getPropertyName());
                 selection.column(name);
             }
         }
@@ -204,7 +261,7 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
             if (criterion instanceof PropertyNameCriterion) {
                 QueryHandler queryHandler = queryHandlers.get(criterion.getClass());
                 if (queryHandler != null) {
-                    queryHandler.handle(entity, cassandraPersistentEntity, criterion, where);
+                    queryHandler.handle(this, criterion, where);
                 } else {
                     throwUnsupportedOperationException(criterion.getClass().getSimpleName());
                 }
@@ -219,7 +276,7 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
         }
     }
 
-    private long executeForCount(Select select) {
+    private long getCountResult(Select select) {
         return cassandraTemplate.query(select, new ResultSetExtractor<Long>() {
             @Override
             public Long extractData(ResultSet rs) throws DriverException, DataAccessException {
@@ -245,20 +302,16 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
         return keyspace;
     }
 
-    private static String extractPropertyName(CassandraPersistentEntity<?> cassandraPersistentEntity, String propertyName) {
+    private static CassandraPersistentProperty getPersistentProperty(CassandraPersistentEntity<?> cassandraPersistentEntity, String propertyName) {
         CassandraPersistentProperty property = cassandraPersistentEntity.getPersistentProperty(propertyName);
         if (property == null) {
             throw new IllegalArgumentException("Could not find property '" + propertyName + "' in entity '" + cassandraPersistentEntity.getName() + "'");
         }
+        return property;
+    }
+    
+    private static String getPropertyName(CassandraPersistentEntity<?> cassandraPersistentEntity, String propertyName) {
+        CassandraPersistentProperty property = getPersistentProperty(cassandraPersistentEntity, propertyName);
         return property.getColumnName().toString();
-    }
-
-    public void throwUnsupportedOperationException(String name) {
-        throw new UnsupportedOperationException("Queries of type " + name + " are not supported by this implementation");
-    }
-
-    @Override
-    public void setArguments(Map arguments) {
-       this.arguments = arguments;        
     }
 }
