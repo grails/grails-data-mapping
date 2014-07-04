@@ -43,6 +43,8 @@ import org.grails.datastore.mapping.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 
 /**
@@ -54,10 +56,13 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 
     private static Logger log = LoggerFactory.getLogger(CassandraEntityPersister.class);
     private org.springframework.data.cassandra.mapping.CassandraPersistentEntity<?> springCassandraPersistentEntity;
-
+    private CassandraTemplate cassandraTemplate;
+    private ConversionService conversionService;
     public CassandraEntityPersister(MappingContext context, PersistentEntity entity, CassandraSession cassandraSession, ApplicationEventPublisher applicationEventPublisher) {
         super(context, entity, cassandraSession, applicationEventPublisher);
         springCassandraPersistentEntity = ((CassandraMappingContext) context).getSpringCassandraMappingContext().getExistingPersistentEntity(entity.getJavaClass());
+        cassandraTemplate = getCassandraTemplate();
+        conversionService = cassandraTemplate.getConverter().getConversionService();
     }
 
     protected CassandraTemplate getCassandraTemplate() {
@@ -74,7 +79,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
         if (table == null) {
             table = getPersistentEntity().getJavaClass().getSimpleName();
         }
-        log.trace("table: " + table);
+        
         return table;
     }
 
@@ -145,42 +150,46 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
     @Override
     protected EntityAccess retrieveEntry(PersistentEntity persistentEntity, String family, Serializable nativeKey) {
     	if (!(nativeKey instanceof Map)) {
-            nativeKey = id(persistentEntity.getIdentity().getName(), nativeKey);
+            nativeKey = id(persistentEntity.getIdentity().getName(), (Serializable) convertPrimitiveToNative(nativeKey, conversionService));
         } else {
             Table table = (Table) persistentEntity.getMapping().getMappedForm();
-            for (Entry<String, ?> entry : ((Map<String, ?>) nativeKey).entrySet()) {
+            for (Entry<String, Object> entry : ((Map<String, Object>) nativeKey).entrySet()) {
                 String property = entry.getKey();
+                entry.setValue(convertPrimitiveToNative(entry.getValue(), conversionService));
                 if (!table.isPrimaryKey(property)) {
                     throw new IllegalArgumentException(String.format("unknown property [%s] on entity class [%s]", property, persistentEntity.getName()));
                 }
             }
         }
-        Object entity = getCassandraTemplate().selectOneById(persistentEntity.getJavaClass(), nativeKey);
+        Object entity = cassandraTemplate.selectOneById(persistentEntity.getJavaClass(), nativeKey);
         return entity == null ? null : new CassandraEntityAccess(persistentEntity, entity);
     }
 
     @Override
     protected Object storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object storeId, EntityAccess entry) {
-        getCassandraTemplate().insert(entityAccess.getEntity());
+        cassandraTemplate.insert(entityAccess.getEntity());
         return storeId;
     }
 
     @Override
     protected void updateEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object key, EntityAccess entry) {
-        getCassandraTemplate().update(entityAccess.getEntity());
+        cassandraTemplate.update(entityAccess.getEntity());
     }
 
     @SuppressWarnings("unchecked")
     @Override
     protected void deleteEntries(String family, List<Object> keys) {
-        // should fetch from first level cache
-        List entities = getSession().retrieveAll(getPersistentEntity().getJavaClass(), keys);
-        getCassandraTemplate().delete(entities);
+        for (Object key : keys) {
+            if (!(key instanceof Map)) {
+                key = id(getPersistentEntity().getIdentity().getName(), (Serializable) key);
+            }
+            cassandraTemplate.deleteById(getPersistentEntity().getJavaClass(), key);
+        }
     }
 
     @Override
     protected void deleteEntry(String family, Object key, Object entry) {
-        getCassandraTemplate().delete(entry);
+        cassandraTemplate.delete(entry);
     }
 
     @Override
@@ -211,6 +220,22 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
         return null;
     }
 
+    public static Object convertPrimitiveToNative(Object item, ConversionService conversionService) {
+        Object nativeValue;
+        if (item != null) {             
+            TypeDescriptor itemTypeDescriptor = TypeDescriptor.forObject(item);
+            Class<?> itemTypeClass = itemTypeDescriptor.getObjectType();
+            if (Enum.class.isAssignableFrom(itemTypeClass) && conversionService.canConvert(itemTypeDescriptor, TypeDescriptor.valueOf(String.class))) {
+                nativeValue = conversionService.convert(item, String.class);
+            } else {               
+                nativeValue = item;
+            }
+        } else {
+            nativeValue = null;
+        }
+        return nativeValue;
+    }
+
     protected class CassandraEntityAccess extends NativeEntryModifyingEntityAccess {
 
         public CassandraEntityAccess(PersistentEntity persistentEntity, Object entity) {
@@ -223,7 +248,8 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
         	if (table.isPrimaryKey(name) && value instanceof Map) {
         		value = ((Map)value).get(name);
         	}
-        	setPropertyNoConversion(name, value);
+        	//TODO: change back to setPropertyNoConversion and handle version property separately?
+        	super.setProperty(name, value);
         }
 
     }
