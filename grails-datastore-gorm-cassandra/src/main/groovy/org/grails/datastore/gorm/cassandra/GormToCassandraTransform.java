@@ -512,11 +512,5 @@ public class GormToCassandraTransform implements ASTTransformation {
             }
         }
         return false;
-    }
-    
-    protected static boolean isEnum(PropertyNode propertyNode) {        
-        ClassNode superClass = propertyNode.getType().getSuperClass();
-        return (propertyNode.getType().getModifiers() & PropertyNode.ACC_ENUM) != 0 && 
-                superClass != null && superClass.getName().equals("java.lang.Enum");
-    }
+    }    
 }
