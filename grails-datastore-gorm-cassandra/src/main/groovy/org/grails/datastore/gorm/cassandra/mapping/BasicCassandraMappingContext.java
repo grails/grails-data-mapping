@@ -15,7 +15,10 @@ import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.data.cassandra.mapping.CassandraSimpleTypeHolder;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
 
-
+/**
+ * Spring Cassandra subclass to create CassandraPersistentProperty for GORM types not supported by Spring Cassandra or Cassandra
+ *
+ */
 public class BasicCassandraMappingContext extends org.springframework.data.cassandra.mapping.BasicCassandraMappingContext {
     @Override
     public CassandraPersistentProperty createPersistentProperty(Field field, PropertyDescriptor descriptor, CassandraPersistentEntity<?> owner, SimpleTypeHolder simpleTypeHolder) {

@@ -20,9 +20,11 @@ import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.Row;
 
 /**
- * Overridden classes to: - fix BIGINT/varint bug in Spring Cassandra. TODO:
+ * Overridden classes to: 
+ * - fix BIGINT/varint bug in Spring Cassandra. TODO:
  * Remove readEntityFromRow/BasicCassandraRowValueProvider once fixed in
- * upstream project. - add extra converters for Common GORM properties
+ * upstream project. 
+ * - add extra converters for Common GORM properties
  */
 public class MappingCassandraConverter extends org.springframework.data.cassandra.convert.MappingCassandraConverter {
     public MappingCassandraConverter(CassandraMappingContext cassandraMapping) {
