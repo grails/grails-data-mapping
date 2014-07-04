@@ -105,7 +105,7 @@ public class GormToCassandraTransform implements ASTTransformation {
         try {
             transformEntity(source, classNode);            
         } catch (Exception e) {
-            String message = "Error occured transfoming GORM entity to Cassandra entity: " + ExceptionUtils.getStackTrace(e);
+            String message = "Error occured transfoming GORM entity to Cassandra entity: " + ExceptionUtils.getStackTrace(e).replaceAll("(\\" + System.getProperty("line.separator") + ")", "");
             Token token = Token.newString(classNode.getText(),classNode.getLineNumber(),classNode.getColumnNumber());
             LocatedMessage locatedMessage = new LocatedMessage(message, token, source);                       
             source.getErrorCollector().addFatalError(locatedMessage);
@@ -121,13 +121,8 @@ public class GormToCassandraTransform implements ASTTransformation {
         if (mappingNode != null && mappingNode.isStatic()) {
             populateConfigurationMapFromClosureExpression(classNode, mappingNode, propertyMappings);
         }
-
-        final PropertyNode errorsProperty = classNode.getProperty("errors");
-        if (errorsProperty == null) {
-            if (ClassUtils.isPresent("org.codehaus.groovy.grails.compiler.injection.ASTValidationErrorsHelper", Thread.currentThread().getContextClassLoader())) {
-                addErrorsProperty(classNode);
-            }
-        }
+        
+        addErrorsProperty(classNode);
 
         // annotate properties in mapping closure
         String primaryKeyPropertyName = GrailsDomainClassProperty.IDENTITY;
@@ -161,18 +156,18 @@ public class GormToCassandraTransform implements ASTTransformation {
 
             if (propertyConfig.containsKey("type")) {
                 String type = propertyConfig.get("type").toString();
-                AnnotationNode annotationNode = null;
+                AnnotationNode typeAnnotationNode = null;
                 if (("timeuuid").equals(type)) {
-                    annotationNode = ANNOTATION_CASSANDRA_TIMEUUID;
+                    typeAnnotationNode = ANNOTATION_CASSANDRA_TIMEUUID;
                 } else if (("ascii").equals(type)) {
-                    annotationNode = ANNOTATION_CASSANDRA_ASCII;
+                    typeAnnotationNode = ANNOTATION_CASSANDRA_ASCII;
                 } else if (("varchar").equals(type)) {
-                    annotationNode = ANNOTATION_CASSANDRA_VARCHAR;
+                    typeAnnotationNode = ANNOTATION_CASSANDRA_VARCHAR;
                 } else if (("counter").equals(type)) {
-                    annotationNode = ANNOTATION_CASSANDRA_COUNTER;
+                    typeAnnotationNode = ANNOTATION_CASSANDRA_COUNTER;
                 }
-                if (annotationNode != null) {
-                    annotateProperty(classNode, propertyName, annotationNode);
+                if (typeAnnotationNode != null) {
+                    annotateProperty(classNode, propertyName, typeAnnotationNode);
                 }
             }
 
@@ -204,17 +199,8 @@ public class GormToCassandraTransform implements ASTTransformation {
         }
 
         injectIdPropertyIfNecessary(classNode, primaryKeyPropertyName);
-
-        // annotate existing or newly created id field with @PrimaryKeyColumn if
-        // not already added above
-        PropertyNode primaryKeyProperty = classNode.getProperty(primaryKeyPropertyName);
-        AnnotationNode primaryKeyAnnotation = new AnnotationNode(new ClassNode(PrimaryKeyColumn.class));
-        primaryKeyAnnotation.addMember("type", new PropertyExpression(new ClassExpression(new ClassNode(PrimaryKeyType.class)), new ConstantExpression(PrimaryKeyType.PARTITIONED)));
-        annotateProperty(classNode, primaryKeyProperty.getName(), primaryKeyAnnotation);       
-
-        annotatePropertiesWithDefaultType(classNode);
-        
-        annotateTransientProperties(classNode);
+           
+        annotatePropertiesWithType(classNode);               
 
         annotateIfNecessary(classNode, Table.class);
     }
@@ -229,11 +215,10 @@ public class GormToCassandraTransform implements ASTTransformation {
             if (ClassUtils.isPresent("org.codehaus.groovy.grails.compiler.injection.ASTValidationErrorsHelper", Thread.currentThread().getContextClassLoader())) {
                 new ASTValidationErrorsHelper().injectErrorsCode(classNode);
                 final FieldNode errorsField = classNode.getField(ERRORS);
-                errorsField.addAnnotation(new AnnotationNode(new ClassNode(Transient.class)));
-                int i = 1;
+                annotateField(errorsField, ANNOTATION_TRANSIENT);                
             }
         } else {
-            annotateProperty(classNode, ERRORS, new AnnotationNode(new ClassNode(Transient.class)));
+            annotateProperty(classNode, ERRORS, ANNOTATION_TRANSIENT);
         }
     }
 
@@ -308,25 +293,42 @@ public class GormToCassandraTransform implements ASTTransformation {
         
         if (!hasId) {
             // inject into furthest relative
-            parent.addProperty(GrailsDomainClassProperty.IDENTITY, Modifier.PUBLIC, new ClassNode(UUID.class), null, null, null);
+            parent.addProperty(GrailsDomainClassProperty.IDENTITY, Modifier.PUBLIC, new ClassNode(UUID.class), null, null, null);            
         } 
         
+        PropertyNode primaryKeyProperty = parent.getProperty(GrailsDomainClassProperty.IDENTITY);
+        if (primaryKeyProperty != null) {
+            String type = primaryKeyProperty.getType().getName();
+            if ("java.util.UUID".equals(type)) {    
+                AnnotationNode primaryKeyAnnotation = new AnnotationNode(new ClassNode(PrimaryKeyColumn.class));
+                primaryKeyAnnotation.addMember("type", new PropertyExpression(new ClassExpression(new ClassNode(PrimaryKeyType.class)), new ConstantExpression(PrimaryKeyType.PARTITIONED)));
+                annotateProperty(parent, primaryKeyProperty.getName(), primaryKeyAnnotation);  
+            }
+        }        
+        
+        //for primary key properties not named id, inject a property named id and make it transient so Grails doesn't add one
         if (!primaryKeyPropertyName.equals(GrailsDomainClassProperty.IDENTITY)) {
             PropertyNode idProperty = classNode.getProperty(GrailsDomainClassProperty.IDENTITY);                 
             if (idProperty == null) {
-                parent.addProperty(GrailsDomainClassProperty.IDENTITY, Modifier.PUBLIC, new ClassNode(Long.class), null, null, null);
-                idProperty = classNode.getProperty(GrailsDomainClassProperty.IDENTITY); 
-            }            
+                final FieldNode idField = new FieldNode(GrailsDomainClassProperty.IDENTITY, Modifier.TRANSIENT, new ClassNode(Long.class), parent.redirect(), new ConstantExpression(null));
+                idProperty = new PropertyNode(idField, Modifier.PUBLIC | Modifier.TRANSIENT, null, null);
+                parent.addProperty(idProperty);
+            } 
             if (idProperty != null) {
                 String type = idProperty.getType().getName();
                 if ("long".equals(type) || "java.lang.Long".equals(type)) {            
                     annotateProperty(classNode, GrailsDomainClassProperty.IDENTITY, ANNOTATION_TRANSIENT);
                 }
             }
-        }
+        }    
     }
 
-    private static void annotatePropertiesWithDefaultType(ClassNode classNode) {
+    private static void annotatePropertiesWithType(ClassNode classNode) {
+        final PropertyNode transientsMapping = classNode.getProperty(GrailsDomainClassProperty.TRANSIENT);
+        List<String> transientPropertyNameList = new ArrayList<String>();
+        populateConstantList(transientPropertyNameList, transientsMapping);
+        annotateAllProperties(classNode, transientPropertyNameList, ANNOTATION_TRANSIENT);  
+        
         final List<PropertyNode> properties = classNode.getProperties();
         for (PropertyNode propertyNode : properties) {
             if (!propertyNode.isPublic() || propertyNode.isStatic()) {
@@ -334,6 +336,9 @@ public class GormToCassandraTransform implements ASTTransformation {
             }
 
             final String propertyName = propertyNode.getName();
+            if (transientPropertyNameList.contains(propertyName)) {
+                continue;
+            }
             final String typeName = propertyNode.getType().getName();
             if ((propertyNode.getModifiers() & PropertyNode.ACC_TRANSIENT) != 0) {
                 annotateProperty(classNode, propertyName, ANNOTATION_TRANSIENT);
@@ -343,17 +348,18 @@ public class GormToCassandraTransform implements ASTTransformation {
                 annotateProperty(classNode, propertyName, ANNOTATION_CASSANDRA_TEXT);
             } else if (typeName.equals(long.class.getName()) || typeName.equals(Long.class.getName())) {
                 annotateProperty(classNode, propertyName, ANNOTATION_CASSANDRA_BIG_INT);
-            } else if ( !(MappingFactory.isSimpleType(typeName) || isCollectionOrMap(propertyNode))) {
+            } else if (propertyNode.getType().isEnum()) {
+                continue;                  
+            } else if (Object.class.getName().equals(typeName)) {
+                annotateProperty(classNode, propertyName, ANNOTATION_TRANSIENT);
+            } else if (MappingFactory.isSimpleType(typeName)) {
+                continue;
+            } else if (isCollectionOrMap(propertyNode)) {
+                continue;
+            } else {
                 annotateProperty(classNode, propertyName, ANNOTATION_TRANSIENT);
             }
         }
-    }
-
-    private static void annotateTransientProperties(ClassNode classNode) {
-        final PropertyNode transientsProp = classNode.getProperty(GrailsDomainClassProperty.TRANSIENT);
-        List<String> propertyNameList = new ArrayList<String>();
-        populateConstantList(propertyNameList, transientsProp);
-        annotateAllProperties(classNode, propertyNameList, ANNOTATION_TRANSIENT);    
     }
     
     private static AnnotationNode createCassandraTypeAnnotationNode(Name type) {
@@ -457,13 +463,14 @@ public class GormToCassandraTransform implements ASTTransformation {
         final PropertyNode prop = classNode.getProperty(propertyName);
         if (prop == null) {
             return;
-        }
+        }        
+        annotateField(prop.getField(), annotationNode);
+    }
 
-        final FieldNode fieldNode = prop.getField();
+    public static void annotateField(final FieldNode fieldNode, final AnnotationNode annotationNode) {
         if (fieldNode == null) {
             return;
         }
-
         final List<AnnotationNode> annotations = fieldNode.getAnnotations(annotationNode.getClassNode());
         if (annotations == null || annotations.isEmpty()) {
             fieldNode.addAnnotation(annotationNode);
@@ -505,6 +512,11 @@ public class GormToCassandraTransform implements ASTTransformation {
             }
         }
         return false;
-
+    }
+    
+    protected static boolean isEnum(PropertyNode propertyNode) {        
+        ClassNode superClass = propertyNode.getType().getSuperClass();
+        return (propertyNode.getType().getModifiers() & PropertyNode.ACC_ENUM) != 0 && 
+                superClass != null && superClass.getName().equals("java.lang.Enum");
     }
 }
