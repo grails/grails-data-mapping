@@ -28,7 +28,6 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
 
     @Override
     public Table createMappedForm(PersistentEntity entity) {
-
         Table table = super.createMappedForm(entity);
 
         if (table.getKeyspace() == null) {
@@ -37,13 +36,15 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
 
         Map<String, Column> properties = entityToPropertyMap.get(entity);
         for (Entry<String, Column> entry : properties.entrySet()) {
-            String name = entry.getKey();
-            Column column = entry.getValue();
-            if (column.getName() == null) {
-                column.setName(name);
-            }
-            if (column.isPrimaryKey()) {
-                table.addPrimaryKey(column);
+            if (entry.getValue() instanceof Column) {
+                String name = entry.getKey();
+                Column column = entry.getValue();
+                if (column.getName() == null) {
+                    column.setName(name);
+                }
+                if (column.isPrimaryKey()) {
+                    table.addPrimaryKey(column);
+                }
             }
         }
 
@@ -62,7 +63,7 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
 
     @Override
     protected IdentityMapping getIdentityMappedForm(final ClassMapping classMapping, final Column property) {
-      if (property != null) {
+        if (property != null) {
             final String name = property.getName();
             if (name != null) {
                 final PersistentProperty idProperty = classMapping.getEntity().getPropertyByName(name);
@@ -89,8 +90,9 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
     public Identity<Column> createIdentity(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
         final Table table = (Table) owner.getMapping().getMappedForm();
         if (table.hasCompositePrimaryKeys()) {
-            return new Identity<Column>(owner, context, table.getPrimaryKeyNames()[0], Map.class) {                
+            return new Identity<Column>(owner, context, table.getPrimaryKeyNames()[0], Map.class) {
                 PropertyMapping<Column> propertyMapping = createPropertyMapping(this, owner);
+
                 public PropertyMapping<Column> getMapping() {
                     return propertyMapping;
                 }
