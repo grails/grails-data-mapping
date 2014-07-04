@@ -16,17 +16,15 @@ package org.grails.datastore.mapping.cassandra;
 
 import static org.grails.datastore.mapping.config.utils.ConfigUtils.read;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.grails.datastore.gorm.cassandra.mapping.BasicCassandraMappingContext;
 import org.grails.datastore.gorm.cassandra.mapping.CassandraGormSimpleTypeHolder;
+import org.grails.datastore.gorm.cassandra.mapping.MappingCassandraConverter;
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
@@ -41,21 +39,13 @@ import org.springframework.cassandra.core.SessionCallback;
 import org.springframework.cassandra.core.cql.generator.CreateIndexCqlGenerator;
 import org.springframework.cassandra.core.keyspace.CreateIndexSpecification;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
-import org.springframework.data.cassandra.convert.CassandraConverter;
-import org.springframework.data.cassandra.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.CassandraTemplate;
-import org.springframework.data.cassandra.mapping.BasicCassandraMappingContext;
-import org.springframework.data.cassandra.mapping.BasicCassandraPersistentProperty;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
-import org.springframework.data.cassandra.mapping.CassandraSimpleTypeHolder;
 import org.springframework.data.mapping.PropertyHandler;
-import org.springframework.data.mapping.model.SimpleTypeHolder;
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.Cluster;
@@ -91,17 +81,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
     public CassandraDatastore(CassandraMappingContext mappingContext, Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         super(mappingContext, connectionDetails, ctx);
         this.keyspace = mappingContext.getKeyspace();                
-        springCassandraMappingContext = new BasicCassandraMappingContext() {
-            @Override
-            public CassandraPersistentProperty createPersistentProperty(Field field, PropertyDescriptor descriptor, CassandraPersistentEntity<?> owner, SimpleTypeHolder simpleTypeHolder) {
-                if (field != null && Modifier.isTransient(field.getModifiers())) {
-                    return new BasicCassandraPersistentProperty(field, descriptor, owner, (CassandraSimpleTypeHolder) simpleTypeHolder) {
-                        public boolean isTransient() { return true ;}
-                    };
-                }
-                return super.createPersistentProperty(field, descriptor, owner, simpleTypeHolder);
-            }
-        };
+        springCassandraMappingContext = new BasicCassandraMappingContext();
         springCassandraMappingContext.setSimpleTypeHolder(new CassandraGormSimpleTypeHolder());
         
         mappingContext.setSpringCassandraMappingContext(springCassandraMappingContext);
@@ -109,7 +89,8 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
             mappingContext.addMappingContextListener(this);
         }
 
-        initializeConverters(mappingContext);
+        initializeConverters(mappingContext);              
+        
         log.debug("Initializing Cassandra Datastore for keyspace: " + keyspace);
     }
 
@@ -137,15 +118,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
             GormCassandraSessionFactoryBean cassandraSessionFactory = new GormCassandraSessionFactoryBean();
             cassandraSessionFactory.setCluster(nativeCluster);
             cassandraSessionFactory.setKeyspaceName(this.keyspace);
-            MappingCassandraConverter mappingCassandraConverter = new MappingCassandraConverter(cassandraMapping());
-            DefaultConversionService conversionService = (DefaultConversionService) mappingCassandraConverter.getConversionService();
-            conversionService.addConverter(new Converter<URL, String>() {
-               
-                @Override
-                public String convert(URL source) {
-                    return source.toString();
-                }
-            });
+            MappingCassandraConverter mappingCassandraConverter = new MappingCassandraConverter(cassandraMapping());            
             cassandraSessionFactory.setConverter(mappingCassandraConverter);
             cassandraSessionFactory.setSchemaAction(read(SchemaAction.class, CASSANDRA_SCHEMA_ACTION, connectionDetails, DEFAULT_SCHEMA_ACTION));
             // TODO: startup and shutdown scripts addition
@@ -154,10 +127,10 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
             cassandraTemplate = new CassandraTemplate(nativeSession, mappingCassandraConverter);
         }
         return nativeSession;
-    }
-
+    }      
+    
+    
     public org.springframework.data.cassandra.mapping.CassandraMappingContext cassandraMapping() throws ClassNotFoundException {
-
         Collection<PersistentEntity> persistentEntities = mappingContext.getPersistentEntities();
         Set<Class<?>> entitySet = new HashSet<Class<?>>();
         for (PersistentEntity persistentEntity : persistentEntities) {
@@ -185,7 +158,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 
     @Override
     public void persistentEntityAdded(PersistentEntity entity) {
-        // get adds persistententity
+        // get call here adds a persistententity to springCassandraMappingContext
         springCassandraMappingContext.getPersistentEntity(entity.getJavaClass());
     }
 
@@ -202,13 +175,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
         super.destroy();
         nativeSession.close();
         nativeCluster.close();
-    }
-
-    public static class GormCassandraConverter extends MappingCassandraConverter implements CassandraConverter {
-        public GormCassandraConverter() {
-
-        }
-    }
+    }   
 
     // TODO: replace index creation when spring-data-cassandra has implemented
     // it
