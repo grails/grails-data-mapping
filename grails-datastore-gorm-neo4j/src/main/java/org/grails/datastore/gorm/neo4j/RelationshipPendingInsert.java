@@ -25,10 +25,33 @@ class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long> {
         this.relType = relType;
         this.target = target;
         this.cypherEngine = cypherEngine;
+
+//        validateNonExistingRelationship("constructor");
+
     }
+
+/*
+    private void validateNonExistingRelationship(String phase) {
+        List params = new ArrayList();
+        params.add(getEntityAccess().getIdentifier());
+        params.add(target.getIdentifier());
+
+        String labelFrom = ((GraphPersistentEntity)getEntity()).getLabel();
+        String labelTo = ((GraphPersistentEntity)target.getPersistentEntity()).getLabel();
+        String cypher = String.format("MATCH (from:%s {__id__:{1}})-[r:%s]->(to:%s {__id__:{2}}) RETURN r", labelFrom, relType, labelTo);
+        CypherResult r = cypherEngine.execute(cypher, params);
+        int count = IteratorUtil.count(r);
+        if (count >0) {
+            log.error("oops, relationship already exists during " + phase);
+            //throw new IllegalStateException("oops, relationship already exists");
+        }
+    }
+*/
 
     @Override
     public void run() {
+
+//        validateNonExistingRelationship("execution");
 
         List params = new ArrayList();
         params.add(getEntityAccess().getIdentifier());
@@ -36,7 +59,7 @@ class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long> {
 
         String labelFrom = ((GraphPersistentEntity)getEntity()).getLabel();
         String labelTo = ((GraphPersistentEntity)target.getPersistentEntity()).getLabel();
-        String cypher = String.format("MATCH (from:%s {__id__:{1}}), (to:%s {__id__:{2}}) CREATE (from)-[:%s]->(to)", labelFrom, labelTo, relType);
+        String cypher = String.format("MATCH (from:%s {__id__:{1}}), (to:%s {__id__:{2}}) CREATE UNIQUE (from)-[:%s]->(to)", labelFrom, labelTo, relType);
         cypherEngine.execute(cypher, params);
     }
 

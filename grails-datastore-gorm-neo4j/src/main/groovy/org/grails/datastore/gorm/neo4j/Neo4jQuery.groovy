@@ -72,7 +72,7 @@ class Neo4jQuery extends Query {
 
         def executionResult = cypherEngine.execute(cypherBuilder.build(), cypherBuilder.getParams())
         if (projections.projectionList.empty) {
-            return executionResult.collect { Map<String,Object> map ->
+            return executionResult.collect { Map<String,Object> map ->   // TODO: potential performance problem here: for each instance we unmarshall seperately, better: use one combined statement to get 'em all
 
                 Long id = map.id as Long
                 Collection<String> labels = map.labels as Collection<String>

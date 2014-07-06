@@ -132,7 +132,8 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     }
 
     /**
-     * in case a known instance is modified and not explicitly saved, we track dirty state here and spool them for persisting
+     * in case a
+     * known instance is modified and not explicitly saved, we track dirty state here and spool them for persisting
      */
     private void persistDirtyButUnsavedInstances() {
         Set pendingObjects = new HashSet();
@@ -151,7 +152,7 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
             for (Object obj: cache.values()) {
                 if (obj instanceof DirtyCheckable) {
                     boolean isDirty = ((DirtyCheckable)obj).hasChanged();
-                    if (isDirty && (!pendingObjects.contains(obj))) {
+                    if (isDirty || (!pendingObjects.contains(obj))) {
                         persist(obj);
                     }
                 }
