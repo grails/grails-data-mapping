@@ -5,17 +5,17 @@ package grails.gorm.tests
 import grails.gorm.CassandraEntity
 
 @CassandraEntity
-class Publication implements Serializable {    
-    UUID id
+class PublicationAssignedId implements Serializable {    
     Long version
     String title
     Date datePublished
     Boolean paperback = true
 
     static mapping = {
-        title index:true
-        paperback index:true
-        datePublished index:true
+        id name:"title", primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned"                 
+        datePublished primaryKey:[ordinal:1, type: "clustered"]         
+        paperback index:true        
+        
     }
 
     static namedQueries = {
@@ -28,11 +28,15 @@ class Publication implements Serializable {
 
         recentPublications {
             def now = new Date()
-            gt 'datePublished', now - 365            
+            gt 'datePublished', now - 365
         }
 
-        publicationsWithBookInTitle {
-            like 'title', 'Book%'
+        publicationsByTitles { titles ->
+            'in' 'title', titles
+        }
+        
+        publicationsByTitle { title ->
+            eq 'title', title
         }
 
         recentPublicationsByTitle { title ->
@@ -51,7 +55,6 @@ class Publication implements Serializable {
 
         publishedAfter { date ->
             gt 'datePublished', date
-            allowFiltering true
         }
 
         paperbackOrRecent {
