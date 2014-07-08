@@ -166,6 +166,10 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
             	select.limit(max);
             }
             
+            if (offset > 0) {
+                throw new UnsupportedOperationException("Cassandra does not support offset with pagination");
+            }
+            
             if (arguments.containsKey(ARGUMENT_ALLOW_FILTERING) || allowFiltering) {
                 select.allowFiltering();
             }
