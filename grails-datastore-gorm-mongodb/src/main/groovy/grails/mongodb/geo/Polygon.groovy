@@ -29,7 +29,7 @@ class Polygon extends Shape implements GeoJSON{
     /**
      * The {@link Point} instances that constitute the Polygon
      */
-    final List<Point> points
+    final List<List<Point>> points
 
     /**
      * Constructs a Polygon for the given {@link Point} instances
@@ -48,7 +48,11 @@ class Polygon extends Shape implements GeoJSON{
         def list = []
         list.addAll Arrays.asList(x, y, z)
         list.addAll others
-        this.points = list
+        this.points = [list]
+    }
+
+    private Polygon(List<List<Point>> points){
+        this.points = points
     }
 
     /**
@@ -58,7 +62,11 @@ class Polygon extends Shape implements GeoJSON{
      * @return The list
      */
     public List<List<List<Double>>> asList() {
-         [ points.collect() { Point p -> p.asList() } ]
+         points.collect() { List<Point> ring ->
+            ring.collect { Point p -> 
+                p.asList()
+            }
+        }
     }
 
     @Override
@@ -74,21 +82,61 @@ class Polygon extends Shape implements GeoJSON{
     static Polygon valueOf(List coords) {
         Assert.notNull(coords, "Argument coords cannot be null")
 
-        if(coords.size() == 1) {
-            // possible subcoordinates
-            def o = coords.get(0)
-            if(o instanceof List) {
-                List subCoords = (List)o
-                coords = subCoords
-            }
-        }
+        
+
+        /*
+         * Search for list type - it could be 
+         * (1) List<Point>  - a single ring polygon
+         * (2) List<List<Number>> - a single ring with list as long/lat/alt
+         * (3) List<List<Point> - a multi-ring polygon
+         * (4) List<List<List<Double> - a multi-ring polygon with list as long/lat/alt
+         */
+         try 
+         {
+            if(coords[0] instanceof Point){
+                return new Polygon( [fromSingleCoordsList(coords)] ) // case (1) above
+             }
+             else if(coords[0] instanceof List )
+             {
+                if( ((List)coords[0])[0] instanceof Number) {
+                    return new Polygon( [fromSingleCoordsList(coords)] ) // case (2) above
+                }
+                else if( ((List)coords[0])[0] instanceof Point){
+                    return new Polygon( coords.collect { List<Point> poly_ring ->
+                        // each is a List<Point>
+                        return fromSingleCoordsList(poly_ring)
+                    }) // case (3) above
+                }
+                else if( ((List)coords[0])[0] instanceof List && ((List)((List)coords[0])[0])[0] instanceof Number ){
+                    return new Polygon( coords.collect { List<List<Number>> poly_ring ->
+                        // each is a List<Point>
+                        return fromSingleCoordsList(poly_ring)
+                    } ) // case (4) above
+                }
+                else {
+                    throw new IllegalArgumentException("Coordinate list must be Points or number-lists")
+                }
+             }
+             else {
+                throw new IllegalArgumentException("Coordinate list must be Points or number-lists")
+             }
+         }
+         catch(IndexOutOfBoundsException ioobe){
+            throw new IllegalArgumentException("Coordinate lists cannot be empty")
+         }
+         
+    }
+
+    /**
+     *  A single ring.  This could be a list of Point objects or a List points as number lists.
+     *   E.g. List<Point> or List<List<Number>> 
+     */
+    private static List<Point> fromSingleCoordsList(List coords) {
+        Assert.notNull(coords, "Argument coords cannot be null")
+
         if(coords.size() < 4) throw new IllegalArgumentException("Coordinates should contain at least 4 entries for a Polygon")
 
-        Point x = Point.getPointAtIndex(coords, 0)
-        Point y = Point.getPointAtIndex(coords, 1)
-        Point z = Point.getPointAtIndex(coords, 2)
-
-        List<Point> remaining = (List<Point>)coords.subList(3, coords.size()).collect() {
+        return coords.collect {
             if(it instanceof Point) {
                 return it
             }
@@ -97,8 +145,6 @@ class Polygon extends Shape implements GeoJSON{
             }
             throw new IllegalArgumentException("Invalid coordinates: $coords")
         }
-
-        return new Polygon(x, y, z, remaining as Point[])
     }
 
 }

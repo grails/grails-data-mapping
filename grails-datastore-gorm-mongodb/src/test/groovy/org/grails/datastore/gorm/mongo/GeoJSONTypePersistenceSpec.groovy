@@ -231,6 +231,92 @@ class GeoJSONTypePersistenceSpec extends GormDatastoreSpec {
     }
 
 
+    void "TestPolygonsPersist"(){
+        when:
+            Polygon p = Polygon.valueOf([ Point.valueOf(0,0), Point.valueOf(3,6), Point.valueOf(6,1), Point.valueOf(0,0)  ]) // points
+            Loc l = new Loc(shape:p).save(flush:true)
+
+        then:
+            p.asList() == [ [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0 ] ] ]
+            l.id != null
+
+        
+        when:
+            p = Polygon.valueOf([ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0 ] ]) // number arrays as points
+            l = new Loc(shape:p).save(flush:true)
+
+        then:
+            p.asList() == [ [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0 ] ] ]
+            l.id != null
+
+
+        when:
+            p = Polygon.valueOf([ [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0 ] ] ]) // single ring with number arrays as points
+            l = new Loc(shape:p).save(flush:true)
+
+        then:
+
+            p.asList() == [ [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0 ] ] ]
+            l.id != null
+
+        when:
+            p = Polygon.valueOf( // multi rings with number array as points
+                [
+                    [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0 ] ], // exterior ring
+                    [ [ 2 , 2 ] , [ 3 , 3 ] , [ 4 , 2 ] , [ 2 , 2 ] ]  // interior ring
+                ]
+            )
+            l = new Loc(shape:p).save(flush:true)
+
+        then:
+
+            p.asList() == [
+                                [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0 ] ], // exterior ring
+                                [ [ 2 , 2 ] , [ 3 , 3 ] , [ 4 , 2 ] , [ 2 , 2 ] ]  // interior ring
+                            ]
+            l.id != null
+
+
+        when:
+            p = Polygon.valueOf( // multi rings with number array as points
+                [
+                    [ Point.valueOf(0,0), Point.valueOf(3,6), Point.valueOf(6,1), Point.valueOf(0,0) ], // exterior ring
+                    [ Point.valueOf(2,2), Point.valueOf(3,3), Point.valueOf(4,2), Point.valueOf(2,2) ]  // interior ring
+                ]
+            )
+            l = new Loc(shape:p).save(flush:true)
+
+        then:
+
+            p.asList() == [
+                                [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0 ] ], // exterior ring
+                                [ [ 2 , 2 ] , [ 3 , 3 ] , [ 4 , 2 ] , [ 2 , 2 ] ]  // interior ring
+                            ]
+            l.id != null
+            
+        
+    }
+
+
+    
+    void "Test multi-ring Polygons"() {
+        when:"Define and Save a multi-ring polygon"
+            Polygon multiringPolygon = Polygon.valueOf([
+                                [ [ 0 , 0 ] , [ 20 , 0 ] , [ 20 , 20 ] , [ 0 , 20 ], [ 0 , 0 ] ], // exterior ring
+                                [ [ 5 , 5 ] , [ 15 , 5 ] , [ 15 , 15 ] , [ 5 , 15 ], [ 5 , 5 ] ]  // interior ring
+                            ])
+
+            Loc exampleMultiRingedPoly = new Loc(name:"MultiRingPoly1", shape:multiringPolygon).save(flush:true)
+            session.clear()
+
+        then:
+            Loc.findByShapeGeoIntersects( LineString.valueOf( [[-10,10], [30,10]] ) ).id == exampleMultiRingedPoly.id // test accross the whole poly
+            Loc.findByShapeGeoIntersects( LineString.valueOf( [[-10,10], [10,10]] ) ).id == exampleMultiRingedPoly.id // test over the side
+            Loc.findByShapeGeoIntersects( LineString.valueOf( [[-10,10], [-1,10]] ) )    == null // test outsie the poly
+            Loc.findByShapeGeoIntersects( LineString.valueOf( [[6,6], [9,9]] ) )         == null // test within the exterior cut-out.
+    }
+
+
     /**
      * Creates a data model based on A data model based on
      * https://blog.codecentric.de/en/2013/03/mongodb-geospatial-indexing-search-geojson-point-linestring-polygon
