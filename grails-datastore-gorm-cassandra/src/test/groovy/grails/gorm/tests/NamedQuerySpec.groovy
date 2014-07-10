@@ -31,18 +31,18 @@ class NamedQuerySpec extends GormDatastoreSpec {
     void "Test max and offset parameter"() {
         given:
             (1..25).each {num ->
-                PublicationAssignedId.newInstance(title: "Book Number ${num}",
+                PublicationTitlePartitionKey.newInstance(title: "Book Number ${num}",
                                         datePublished: new Date()).save()
             }
 
         when:
-            def pubs = PublicationAssignedId.recentPublications.list(max: 10, allowFiltering: true)
+            def pubs = PublicationTitlePartitionKey.recentPublications.list(max: 10, allowFiltering: true)
 
         then:
             10 == pubs?.size()
 
         when:
-            pubs = PublicationAssignedId.recentPublications.list(max: '10', offset: '5')
+            pubs = PublicationTitlePartitionKey.recentPublications.list(max: '10', offset: '5')
 
         then:
             thrown UnsupportedOperationException
@@ -71,18 +71,18 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
             //with title and datePublished as compound primary key, need a unique date to create a unique Publication
             6.times { cnt ->
-                PublicationAssignedId.newInstance(title: "Some Book",
+                PublicationTitlePartitionKey.newInstance(title: "Some Book",
                                                datePublished: now - 10 - cnt).save(failOnError: true)
-                PublicationAssignedId.newInstance(title: "Some Other Book",
+                PublicationTitlePartitionKey.newInstance(title: "Some Other Book",
                                                datePublished: now - 10 - cnt).save(failOnError: true)
-                PublicationAssignedId.newInstance(title: "Some Book",
+                PublicationTitlePartitionKey.newInstance(title: "Some Book",
                                                datePublished: now - 900 - cnt, paperback:false).save(failOnError: true)
             }
             session.flush()
             session.clear()
 
         when:
-            def publications = PublicationAssignedId.recentPublications {
+            def publications = PublicationTitlePartitionKey.recentPublications {
                 eq 'title', 'Some Book'
             }
 
@@ -90,7 +90,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             6 == publications?.size()
 
         when:
-            publications = PublicationAssignedId.recentPublications {
+            publications = PublicationTitlePartitionKey.recentPublications {
                 eq 'paperback', true
             }
 
@@ -98,7 +98,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             12 == publications?.size()
 
         when:
-            def cnt = PublicationAssignedId.recentPublications.count {
+            def cnt = PublicationTitlePartitionKey.recentPublications.count {
                 eq 'title', 'Some Book'
             }
 
@@ -106,7 +106,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             6 == cnt
 
         when:
-            publications = PublicationAssignedId.recentPublications(max: 3) {
+            publications = PublicationTitlePartitionKey.recentPublications(max: 3) {
                 eq 'paperback', true
             }
 
@@ -119,16 +119,16 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
 
             6.times { cnt ->
-                new PublicationAssignedId(title: "Some Old Book #${cnt}",
+                new PublicationTitlePartitionKey(title: "Some Old Book #${cnt}",
                                 datePublished: now - 1000, paperback: true).save(failOnError: true).id
-                new PublicationAssignedId(title: "Some New Book #${cnt}",
+                new PublicationTitlePartitionKey(title: "Some New Book #${cnt}",
                                 datePublished: now, paperback: true).save(failOnError: true).id
             }
 
             session?.flush()
 
         when:
-            def results = PublicationAssignedId.publishedAfter(now - 5) {
+            def results = PublicationTitlePartitionKey.publishedAfter(now - 5) {
                 eq 'paperback', true
             }
 
@@ -136,7 +136,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             6 == results?.size()
 
         when:
-            results = PublicationAssignedId.publishedAfter(now - 5, [max: 2]) {
+            results = PublicationTitlePartitionKey.publishedAfter(now - 5, [max: 2]) {
                 eq 'paperback', true
             }
 
@@ -144,7 +144,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             2 == results?.size()
 
         when:
-            results = PublicationAssignedId.publishedBetween(now - 5, now + 1) {
+            results = PublicationTitlePartitionKey.publishedBetween(now - 5, now + 1) {
                 eq 'paperback', true
             }
 
@@ -152,7 +152,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             6 == results?.size()
 
         when:
-            results = PublicationAssignedId.publishedBetween(now - 5, now + 1, [max: 2]) {
+            results = PublicationTitlePartitionKey.publishedBetween(now - 5, now + 1, [max: 2]) {
                 eq 'paperback', true
             }
 
@@ -160,7 +160,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             2 == results?.size()
 
         when:
-            results = PublicationAssignedId.publishedAfter(now - 1005) {
+            results = PublicationTitlePartitionKey.publishedAfter(now - 1005) {
                 eq 'paperback', true
             }
 
@@ -168,7 +168,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             12 == results?.size()
 
         when:
-            results = PublicationAssignedId.publishedAfter(now - 5) {
+            results = PublicationTitlePartitionKey.publishedAfter(now - 5) {
                 eq 'paperback', false
             }
 
@@ -176,7 +176,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             0 == results?.size()
 
         when:
-            results = PublicationAssignedId.publishedAfter(now - 5, [max: 2]) {
+            results = PublicationTitlePartitionKey.publishedAfter(now - 5, [max: 2]) {
                 eq 'paperback', false
             }
 
@@ -184,7 +184,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             0 == results?.size()
 
         when:
-            results = PublicationAssignedId.publishedBetween(now - 5, now + 1) {
+            results = PublicationTitlePartitionKey.publishedBetween(now - 5, now + 1) {
                 eq 'paperback', false
             }
 
@@ -192,7 +192,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             0 == results?.size()
 
         when:
-            results = PublicationAssignedId.publishedBetween(now - 5, now + 1, [max: 2]) {
+            results = PublicationTitlePartitionKey.publishedBetween(now - 5, now + 1, [max: 2]) {
                 eq 'paperback', false
             }
 
@@ -200,7 +200,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             0 == results?.size()
 
         when:
-            results = PublicationAssignedId.publishedAfter(now - 1005) {
+            results = PublicationTitlePartitionKey.publishedAfter(now - 1005) {
                 eq 'paperback', false
             }
 
@@ -251,14 +251,14 @@ class NamedQuerySpec extends GormDatastoreSpec {
 
         given:
             def now = new Date()
-            PublicationAssignedId.newInstance(title: "Book 1", datePublished: now - 900).save(failOnError: true)
-            def recentBookTitle = PublicationAssignedId.newInstance(
+            PublicationTitlePartitionKey.newInstance(title: "Book 1", datePublished: now - 900).save(failOnError: true)
+            def recentBookTitle = PublicationTitlePartitionKey.newInstance(
                 title: "Book 1",
                 datePublished: now - 10).save(flush:true).title
             session.clear()
 
         when:
-            def publication = PublicationAssignedId.recentPublications.findByTitle('Book 1')
+            def publication = PublicationTitlePartitionKey.recentPublications.findByTitle('Book 1')
 
         then:
             publication != null
@@ -269,17 +269,17 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
             3.times {cnt ->
-                new PublicationAssignedId(title: "Some Recent Book",
+                new PublicationTitlePartitionKey(title: "Some Recent Book",
                                        datePublished: now - 10 - cnt).save(failOnError: true)
-                new PublicationAssignedId(title: "Some Other Book",
+                new PublicationTitlePartitionKey(title: "Some Other Book",
                                        datePublished: now - 10 - cnt).save(failOnError: true)
-                new PublicationAssignedId(title: "Some Book",
+                new PublicationTitlePartitionKey(title: "Some Book",
                                        datePublished: now - 900 -cnt).save(flush:true, failOnError: true)
             }
             session.clear()
 
         when:
-            def publications = PublicationAssignedId.recentPublications.findAllByTitle('Some Recent Book')
+            def publications = PublicationTitlePartitionKey.recentPublications.findAllByTitle('Some Recent Book')
 
         then:
             3 == publications?.size()
@@ -399,22 +399,22 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
 
-            def pub1 = new PublicationAssignedId(title: "Ten Day Old Paperback",
+            def pub1 = new PublicationTitlePartitionKey(title: "Ten Day Old Paperback",
                             datePublished: now - 10,
                             paperback: true).save(flush: true)
-            def pub2 = new PublicationAssignedId(title: "One Hundred Day Old Paperback",
+            def pub2 = new PublicationTitlePartitionKey(title: "One Hundred Day Old Paperback",
                             datePublished: now - 100,
                             paperback: true).save(flush: true)
             session.clear()
 
         when:
-            def result = PublicationAssignedId.lastPublishedBefore(now - 200).findByTitleInList([pub1.title, pub2.title])
+            def result = PublicationTitlePartitionKey.lastPublishedBefore(now - 200).findByTitleInList([pub1.title, pub2.title])
 
         then:
             !result
 
         when:
-            result = PublicationAssignedId.lastPublishedBefore(now - 50).findByTitleInList([pub1.title, pub2.title])
+            result = PublicationTitlePartitionKey.lastPublishedBefore(now - 50).findByTitleInList([pub1.title, pub2.title])
 
         then:
             'One Hundred Day Old Paperback' == result?.title
@@ -424,23 +424,23 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
 
-            new PublicationAssignedId(title: "Book 1",
+            new PublicationTitlePartitionKey(title: "Book 1",
                             datePublished: now - 10, paperback: false).save()
-            new PublicationAssignedId(title: "Book 2",
+            new PublicationTitlePartitionKey(title: "Book 2",
                             datePublished: now - 1000, paperback: true).save()
-            new PublicationAssignedId(title: "Book 3",
+            new PublicationTitlePartitionKey(title: "Book 3",
                             datePublished: now - 10, paperback: true).save()
 
-            new PublicationAssignedId(title: "Some Title",
+            new PublicationTitlePartitionKey(title: "Some Title",
                             datePublished: now - 10, paperback: false).save()
-            new PublicationAssignedId(title: "Some Title",
+            new PublicationTitlePartitionKey(title: "Some Title",
                             datePublished: now - 1000, paperback: false).save()
-            new PublicationAssignedId(title: "Some Title",
+            new PublicationTitlePartitionKey(title: "Some Title",
                             datePublished: now - 10, paperback: true).save(flush:true)
             session.clear()
 
         when:
-            def results = PublicationAssignedId.recentPublications().paperbacks().findAllWhere(title: "Some Title")
+            def results = PublicationTitlePartitionKey.recentPublications().paperbacks().findAllWhere(title: "Some Title")
 
         then:
             1 == results?.size()
@@ -450,23 +450,23 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
 
-            new PublicationAssignedId(title: "Some Book",
+            new PublicationTitlePartitionKey(title: "Some Book",
                             datePublished: now - 10, paperback: false).save()
-            new PublicationAssignedId(title: "Some Book",
+            new PublicationTitlePartitionKey(title: "Some Book",
                             datePublished: now - 1000, paperback: true).save()
-            new PublicationAssignedId(title: "Some Book",
+            new PublicationTitlePartitionKey(title: "Some Book",
                             datePublished: now - 2, paperback: true).save()
 
-            new PublicationAssignedId(title: "Some Title",
+            new PublicationTitlePartitionKey(title: "Some Title",
                             datePublished: now - 2, paperback: false).save()
-            new PublicationAssignedId(title: "Some Title",
+            new PublicationTitlePartitionKey(title: "Some Title",
                             datePublished: now - 1000, paperback: false).save()
-            new PublicationAssignedId(title: "Some Title",
+            new PublicationTitlePartitionKey(title: "Some Title",
                             datePublished: now - 2, paperback: true).save(flush:true)
             session.clear()
 
         when:
-            def results = PublicationAssignedId.thisWeeksPaperbacks().list(allowFiltering:true)
+            def results = PublicationTitlePartitionKey.thisWeeksPaperbacks().list(allowFiltering:true)
 
         then:
             2 == results?.size()
@@ -480,22 +480,22 @@ class NamedQuerySpec extends GormDatastoreSpec {
                 4.times { cnt ->
                     cnt = isPaperback ? cnt : cnt + 4
                     
-                    PublicationAssignedId.newInstance(
+                    PublicationTitlePartitionKey.newInstance(
                         title: "Book Some",
                         datePublished: now - 10 - cnt, paperback: isPaperback).save()
-                    PublicationAssignedId.newInstance(
+                    PublicationTitlePartitionKey.newInstance(
                         title: "Book Some Other",
                         datePublished: now - 10 - cnt, paperback: isPaperback).save()
-                    PublicationAssignedId.newInstance(
+                    PublicationTitlePartitionKey.newInstance(
                         title: "Some Other Title",
                         datePublished: now - 10 - cnt, paperback: isPaperback).save()
-                    PublicationAssignedId.newInstance(
+                    PublicationTitlePartitionKey.newInstance(
                         title: "Book Some",
                         datePublished: now - 1000 - cnt, paperback: isPaperback).save()
-                    PublicationAssignedId.newInstance(
+                    PublicationTitlePartitionKey.newInstance(
                         title: "Book Some Other",
                         datePublished: now - 1000 - cnt, paperback: isPaperback).save()
-                    PublicationAssignedId.newInstance(
+                    PublicationTitlePartitionKey.newInstance(
                         title: "Some Other Title",
                         datePublished: now - 1000 - cnt, paperback: isPaperback).save()
                 }
@@ -504,48 +504,48 @@ class NamedQuerySpec extends GormDatastoreSpec {
             session.clear()
 
         when:
-            def results = PublicationAssignedId.recentPublications().paperbacks().list()
+            def results = PublicationTitlePartitionKey.recentPublications().paperbacks().list()
 
         then: "The result size should be 16 when returned from chained queries"
             12 == results?.size()
 
         when:
-            results = PublicationAssignedId.recentPublications().paperbacks().count()
+            results = PublicationTitlePartitionKey.recentPublications().paperbacks().count()
         then:
             12 == results
 
         when:
-            results = PublicationAssignedId.recentPublications.paperbacks.list()
+            results = PublicationTitlePartitionKey.recentPublications.paperbacks.list()
         then:"The result size should be 16 when returned from chained queries"
             12 == results?.size()
 
         when:
-            results = PublicationAssignedId.recentPublications.paperbacks.count()
+            results = PublicationTitlePartitionKey.recentPublications.paperbacks.count()
         then:
             12 == results
 
         when:
-            results = PublicationAssignedId.paperbacks().recentPublications().publicationsByTitle("Book Some").list()
+            results = PublicationTitlePartitionKey.paperbacks().recentPublications().publicationsByTitle("Book Some").list()
         then: "The result size should be 8 when returned from chained queries"
             4 ==  results?.size()
 
         when:
-            results = PublicationAssignedId.paperbacks().recentPublications().publicationsByTitle("Book Some").count()
+            results = PublicationTitlePartitionKey.paperbacks().recentPublications().publicationsByTitle("Book Some").count()
         then:
             4 == results
 
         when:
-            results = PublicationAssignedId.recentPublications().publicationsByTitle("Book Some").findAllByPaperback(true)
+            results = PublicationTitlePartitionKey.recentPublications().publicationsByTitle("Book Some").findAllByPaperback(true)
         then: "The result size should be 8"
             4 == results?.size()
 
         when:
-            results = PublicationAssignedId.paperbacks.recentPublications.publicationsByTitle("Book Some").list()
+            results = PublicationTitlePartitionKey.paperbacks.recentPublications.publicationsByTitle("Book Some").list()
         then:"The result size should be 8 when returned from chained queries"
             4 == results?.size()
 
         when:
-            results = PublicationAssignedId.paperbacks.recentPublications.publicationsByTitle("Book Some").count()
+            results = PublicationTitlePartitionKey.paperbacks.recentPublications.publicationsByTitle("Book Some").count()
         then:
             4 == results
     }
@@ -559,23 +559,23 @@ class NamedQuerySpec extends GormDatastoreSpec {
 			use(TimeCategory) {
 	            2.times { cnt ->
 					cnt = (cnt + 1).hour
-	                PublicationAssignedId.newInstance(title: 'Some Book',
+	                PublicationTitlePartitionKey.newInstance(title: 'Some Book',
 	                                               datePublished: now + cnt).save(failOnError: true)
-	                PublicationAssignedId.newInstance(title: 'Some Title',
+	                PublicationTitlePartitionKey.newInstance(title: 'Some Title',
 	                                               datePublished: now + cnt).save(failOnError: true)
 	            }
 	            3.times { cnt ->
 					cnt = (cnt + 1).hour
-	                PublicationAssignedId.newInstance(title: 'Some Book',
+	                PublicationTitlePartitionKey.newInstance(title: 'Some Book',
 	                                               datePublished: lastWeek + cnt).save(failOnError: true)
-	                PublicationAssignedId.newInstance(title: 'Some Title',
+	                PublicationTitlePartitionKey.newInstance(title: 'Some Title',
 	                                               datePublished: lastWeek + cnt).save(failOnError: true)
 	            }
 	            4.times { cnt ->
 					cnt = (cnt + 1).hour
-	                PublicationAssignedId.newInstance(title: 'Some Book',
+	                PublicationTitlePartitionKey.newInstance(title: 'Some Book',
 	                                               datePublished: longAgo - cnt).save(failOnError: true)
-	                PublicationAssignedId.newInstance(title: 'Some Title',
+	                PublicationTitlePartitionKey.newInstance(title: 'Some Title',
 	                                               datePublished: longAgo - cnt).save(failOnError: true)
 	            }
 			}
@@ -583,23 +583,23 @@ class NamedQuerySpec extends GormDatastoreSpec {
             session.clear()
         
         when:
-            def results = PublicationAssignedId.publicationsByTitle('Some Book').publishedAfter(now - 2).list()
+            def results = PublicationTitlePartitionKey.publicationsByTitle('Some Book').publishedAfter(now - 2).list()
         then: "wrong number of books were returned from chained queries"
              2 == results?.size()
         
         when: 
-            results = PublicationAssignedId.publicationsByTitle('Some Book').publishedAfter(now - 2).count()
+            results = PublicationTitlePartitionKey.publicationsByTitle('Some Book').publishedAfter(now - 2).count()
         then: 
             2 == results
 
         when:
-            results = PublicationAssignedId.publicationsByTitle('Some Book').publishedAfter(lastWeek - 2).list()
+            results = PublicationTitlePartitionKey.publicationsByTitle('Some Book').publishedAfter(lastWeek - 2).list()
         
         then: 'wrong number of books were returned from chained queries'
              5 == results?.size()
 
         when:
-            results = PublicationAssignedId.publicationsByTitle('Some Book').publishedAfter(lastWeek - 2).count()
+            results = PublicationTitlePartitionKey.publicationsByTitle('Some Book').publishedAfter(lastWeek - 2).count()
         
         then:
              5 == results
@@ -619,7 +619,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
          */
         given:
         when:
-            def publications = PublicationAssignedId.recentPublications.list(allowFiltering: true)
+            def publications = PublicationTitlePartitionKey.recentPublications.list(allowFiltering: true)
         then:
             0 == publications.size()
     }
@@ -647,15 +647,15 @@ class NamedQuerySpec extends GormDatastoreSpec {
 
         given:
             def now = new Date()
-            PublicationAssignedId.newInstance(title: "Some New Book",
+            PublicationTitlePartitionKey.newInstance(title: "Some New Book",
                                            datePublished: now - 10).save(failOnError: true)
-            PublicationAssignedId.newInstance(title: "Some Old Book",
+            PublicationTitlePartitionKey.newInstance(title: "Some Old Book",
                                            datePublished: now - 900).save(flush:true, failOnError: true)
 
             session.clear()
 
         when:
-            def publications = PublicationAssignedId.recentPublications.list(allowFiltering: true)
+            def publications = PublicationTitlePartitionKey.recentPublications.list(allowFiltering: true)
 
         then:
             1 == publications?.size()
@@ -667,13 +667,13 @@ class NamedQuerySpec extends GormDatastoreSpec {
             
             def now = new Date()
 
-            PublicationAssignedId.newInstance(title: 'Some Book', datePublished: now - 900, paperback: false).save(failOnError: true)
-            PublicationAssignedId.newInstance(title: 'Some Book', datePublished: now - 901, paperback: false).save(failOnError: true)
-            PublicationAssignedId.newInstance(title: 'Some Book', datePublished: now - 10, paperback: true).save(failOnError: true)
-            PublicationAssignedId.newInstance(title: 'Some Book', datePublished: now - 11, paperback: true).save(failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: 'Some Book', datePublished: now - 900, paperback: false).save(failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: 'Some Book', datePublished: now - 901, paperback: false).save(failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: 'Some Book', datePublished: now - 10, paperback: true).save(failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: 'Some Book', datePublished: now - 11, paperback: true).save(failOnError: true)
 
         when:
-            def publications = PublicationAssignedId.recentPublications.findAllPaperbackByTitle('Some Book')
+            def publications = PublicationTitlePartitionKey.recentPublications.findAllPaperbackByTitle('Some Book')
 
         then:
             2 == publications?.size()
@@ -686,13 +686,13 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
 
-            PublicationAssignedId.newInstance(title: 'Some Book', datePublished: now - 900, paperback: false).save(failOnError: true)
-            PublicationAssignedId.newInstance(title: 'Some Book', datePublished: now - 901, paperback: false).save(failOnError: true)
-            PublicationAssignedId.newInstance(title: 'Some Book', datePublished: now - 10, paperback: true).save(failOnError: true)
-            PublicationAssignedId.newInstance(title: 'Some Book', datePublished: now - 11, paperback: true).save(failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: 'Some Book', datePublished: now - 900, paperback: false).save(failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: 'Some Book', datePublished: now - 901, paperback: false).save(failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: 'Some Book', datePublished: now - 10, paperback: true).save(failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: 'Some Book', datePublished: now - 11, paperback: true).save(failOnError: true)
 
         when:
-            def publication = PublicationAssignedId.recentPublications.findPaperbackByTitle('Some Book')
+            def publication = PublicationTitlePartitionKey.recentPublications.findPaperbackByTitle('Some Book')
 
         then:
             publication.title == 'Some Book'
@@ -702,17 +702,17 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
             3.times { cnt ->
-                PublicationAssignedId.newInstance(title: "Some Book",
+                PublicationTitlePartitionKey.newInstance(title: "Some Book",
                                                datePublished: now - 10 - cnt).save(failOnError: true)
-                PublicationAssignedId.newInstance(title: "Some Other Book",
+                PublicationTitlePartitionKey.newInstance(title: "Some Other Book",
                                                datePublished: now - 10 - cnt).save(failOnError: true)
-                PublicationAssignedId.newInstance(title: "Some Book",
+                PublicationTitlePartitionKey.newInstance(title: "Some Book",
                                                datePublished: now - 900 - cnt).save(flush:true, failOnError: true)
             }
             session.clear()
 
         when:
-            def numberOfNewBooksNamedSomeBook = PublicationAssignedId.recentPublications.countByTitle('Some Book')
+            def numberOfNewBooksNamedSomeBook = PublicationTitlePartitionKey.recentPublications.countByTitle('Some Book')
 
         then:
             3 == numberOfNewBooksNamedSomeBook
@@ -723,15 +723,15 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
 
-            PublicationAssignedId.newInstance(title: "Book 1", datePublished: now).save(failOnError: true)
-            PublicationAssignedId.newInstance(title: "Book 1", datePublished: now - 1).save(failOnError: true)
-            PublicationAssignedId.newInstance(title: "Book 1", datePublished: now - 2).save(failOnError: true)
-            PublicationAssignedId.newInstance(title: "Book 2", datePublished: now).save(failOnError: true)
-            PublicationAssignedId.newInstance(title: "Book 3", datePublished: now - 100).save(flush:true, failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: "Book 1", datePublished: now).save(failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: "Book 1", datePublished: now - 1).save(failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: "Book 1", datePublished: now - 2).save(failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: "Book 2", datePublished: now).save(failOnError: true)
+            PublicationTitlePartitionKey.newInstance(title: "Book 3", datePublished: now - 100).save(flush:true, failOnError: true)
             session.clear()
 
         when:
-            def publications = PublicationAssignedId.publicationsByTitle("Book 1").listOrderByDatePublished()
+            def publications = PublicationTitlePartitionKey.publicationsByTitle("Book 1").listOrderByDatePublished()
 
         then:
             3 == publications?.size()
@@ -808,18 +808,18 @@ class NamedQuerySpec extends GormDatastoreSpec {
 
         given:
             def now = new Date()
-            def newPublication = PublicationAssignedId.newInstance(
+            def newPublication = PublicationTitlePartitionKey.newInstance(
                 title: "Book Some New",
                 datePublished: now - 10).save(failOnError: true)
-            def oldPublication = PublicationAssignedId.newInstance(
+            def oldPublication = PublicationTitlePartitionKey.newInstance(
                 title: "Book Some Old",
                 datePublished: now - 900).save(flush:true, failOnError: true)
 
             session.clear()
 
         when:
-            def publicationsWithBookInTitleCount = PublicationAssignedId.publicationsByTitles(["Book Some New", "Book Some Old"]).count()
-            def recentPublicationsCount = PublicationAssignedId.recentPublications.count{
+            def publicationsWithBookInTitleCount = PublicationTitlePartitionKey.publicationsByTitles(["Book Some New", "Book Some Old"]).count()
+            def recentPublicationsCount = PublicationTitlePartitionKey.recentPublications.count{
 				allowFiltering true
 			}
 
@@ -851,12 +851,12 @@ class NamedQuerySpec extends GormDatastoreSpec {
     void "Test max parameter"() {
         given:
             (1..25).each {num ->
-                PublicationAssignedId.newInstance(title: "Book Number ${num}",
+                PublicationTitlePartitionKey.newInstance(title: "Book Number ${num}",
                                         datePublished: new Date()).save()
             }
 
         when:
-            def pubs = PublicationAssignedId.recentPublications.list(max: 10, allowFiltering: true)
+            def pubs = PublicationTitlePartitionKey.recentPublications.list(max: 10, allowFiltering: true)
         then:
             10 == pubs?.size()
     }
@@ -864,12 +864,12 @@ class NamedQuerySpec extends GormDatastoreSpec {
     void "Test max results"() {
         given:
             (1..25).each {num ->
-                PublicationAssignedId.newInstance(title: 'Book Title',
+                PublicationTitlePartitionKey.newInstance(title: 'Book Title',
                                         datePublished: new Date() + num).save()
             }
 
         when:
-            def pubs = PublicationAssignedId.publicationsByTitle("Book Title").latestBooks.list()
+            def pubs = PublicationTitlePartitionKey.publicationsByTitle("Book Title").latestBooks.list()
 
         then:
             10 == pubs?.size()
@@ -971,12 +971,12 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
             (1..5).each {num ->
-                PublicationAssignedId.newInstance(
+                PublicationTitlePartitionKey.newInstance(
                     title: "Book Number ${num}",
                     datePublished: ++now).save(failOnError: true)
             }
         when:
-            def pubs = PublicationAssignedId.publishedBetween(now-2, now).list(allowFiltering:true)
+            def pubs = PublicationTitlePartitionKey.publishedBetween(now-2, now).list(allowFiltering:true)
 
         then:
             3 == pubs?.size()
@@ -986,16 +986,16 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
             (1..5).each {num ->
-                PublicationAssignedId.newInstance(
+                PublicationTitlePartitionKey.newInstance(
                     title: "Book Number ${num}",
                     datePublished: now + num).save(failOnError: true)
-                PublicationAssignedId.newInstance(
+                PublicationTitlePartitionKey.newInstance(
                     title: "Another Book Number ${num}",
                     datePublished: now + num).save(failOnError: true)
             }
 
         when:
-            def pubs = PublicationAssignedId.publishedBetween(now, now + 2).findAllByTitleInList(['Book Number 1', 'Another Book Number 2'])
+            def pubs = PublicationTitlePartitionKey.publishedBetween(now, now + 2).findAllByTitleInList(['Book Number 1', 'Another Book Number 2'])
 
         then:
             2 == pubs?.size()
@@ -1006,13 +1006,13 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
             (1..10).each {num ->
-                PublicationAssignedId.newInstance(
+                PublicationTitlePartitionKey.newInstance(
                     title: "Book Number ${num}",
                     datePublished: ++now).save(failOnError: true)
             }
 
         when:
-            def pubs = PublicationAssignedId.publishedBetween(now-8, now-2).list(max: 4, allowFiltering: true)
+            def pubs = PublicationTitlePartitionKey.publishedBetween(now-8, now-2).list(max: 4, allowFiltering: true)
 
         then:
             4 == pubs?.size()
@@ -1024,14 +1024,14 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
             (1..5).each {num ->
                 3.times {
-                    PublicationAssignedId.newInstance(
+                    PublicationTitlePartitionKey.newInstance(
                         title: "Book Number ${num}",
                         datePublished: now).save(failOnError: true)
                 }
             }
 
         when:
-            def pub = PublicationAssignedId.recentPublications.findWhere(title: 'Book Number 2')
+            def pub = PublicationTitlePartitionKey.recentPublications.findWhere(title: 'Book Number 2')
         then:
             'Book Number 2' == pub.title
     }

@@ -5,7 +5,7 @@ package grails.gorm.tests
 import grails.gorm.CassandraEntity
 
 @CassandraEntity
-class PublicationAssignedId implements Serializable {    
+class PublicationTitlePartitionKey implements Serializable {    
     Long version
     String title
     Date datePublished
