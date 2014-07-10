@@ -28,11 +28,16 @@ class Publication implements Serializable {
 
         recentPublications {
             def now = new Date()
-            gt 'datePublished', now - 365            
+            gt 'datePublished', now - 365  
+			allowFiltering true
         }
 
-        publicationsWithBookInTitle {
-            like 'title', 'Book%'
+        publicationsByTitles { titles ->
+            'in' 'title', titles
+        }
+        
+        publicationsByTitle { title ->
+            eq 'title', title
         }
 
         recentPublicationsByTitle { title ->
