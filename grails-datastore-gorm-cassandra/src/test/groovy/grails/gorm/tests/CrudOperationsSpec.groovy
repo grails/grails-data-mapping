@@ -26,13 +26,13 @@ class CrudOperationsSpec extends GormDatastoreSpec {
             def p
         when:
             t = TestEntity.get("1")
-            p = PersonAssignedId.get("none")
+            p = PersonLastNamePartitionKey.get("none")
         then:
             t == null
             p == null
         when: 
             t = TestEntity.get(UUIDUtil.randomTimeUUID)
-            p = PersonAssignedId.get([firstName:"none"])
+            p = PersonLastNamePartitionKey.get([lastName:"none"])
         then:
             t == null
             p == null
@@ -42,14 +42,14 @@ class CrudOperationsSpec extends GormDatastoreSpec {
         given:
 
             def t = new TestEntity(name:"Bob")
-            def p = new PersonAssignedId(firstName: "Bob", lastName: "Wilson", age: 25)
+            def p = new PersonLastNamePartitionKey(firstName: "Bob", lastName: "Wilson", age: 25)
             t.save()
             p.save()
         when:
             def results = TestEntity.list()
             t = TestEntity.get(t.id)
-            def results2 = PersonAssignedId.list()
-            p = PersonAssignedId.get([firstName:p.firstName, lastName: p.lastName])
+            def results2 = PersonLastNamePartitionKey.list()
+            p = PersonLastNamePartitionKey.get([firstName:p.firstName, lastName: p.lastName])
 
         then:
             t != null

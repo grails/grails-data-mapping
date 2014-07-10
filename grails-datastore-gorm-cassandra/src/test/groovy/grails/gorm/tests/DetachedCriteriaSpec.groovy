@@ -10,7 +10,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             createPeople()
 
         when:"A detached criteria instance is created and the list method used with the max parameter"
-            def criteria = new DetachedCriteria(PersonAssignedId2)
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey)
             criteria.with {
                 eq 'lastName', 'Simpson'
             }
@@ -24,7 +24,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
         
         
         when:"A detached criteria instance is created and the list method used with the max and offset parameters"
-            criteria = new DetachedCriteria(PersonAssignedId2)
+            criteria = new DetachedCriteria(PersonLastNamePartitionKey)
             criteria.with {
                 eq 'lastName', 'Simpson'
             }
@@ -44,7 +44,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             createPeople()
 
         when:"A detached criteria instance is created that uses a property projection"
-            def criteria = new DetachedCriteria(PersonAssignedId2)
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey)
             criteria.with {
                 eq 'lastName', 'Simpson'
             }
@@ -56,7 +56,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             results == ["Bart", "Homer"]
 
         when:"A detached criteria instance is created that uses a property projection using property missing"
-            criteria = new DetachedCriteria(PersonAssignedId2)
+            criteria = new DetachedCriteria(PersonLastNamePartitionKey)
             criteria.with {
                 eq 'lastName', 'Simpson'
             }
@@ -75,7 +75,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
 
 
         when:"A detached criteria instance is created matching the last name"
-            def criteria = new DetachedCriteria(PersonAssignedId2)
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey)
             criteria.with {
                 eq 'lastName', 'Simpson'
             }
@@ -89,16 +89,16 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             createPeople()
 
         when:"A detached criteria is created that deletes all matching records"
-            def criteria = new DetachedCriteria(PersonAssignedId2).build {
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey).build {
                 eq 'location', 'USA'
             }                       
             int total = criteria.updateAll(location: "Springfield")
 
 
         then:"The number of deletions is correct"
-            PersonAssignedId2.count() == 6
+            PersonLastNamePartitionKey.count() == 6
             criteria.count() == 0
-            PersonAssignedId2.countByLocation("Springfield") == 4
+            PersonLastNamePartitionKey.countByLocation("Springfield") == 4
     }
 
     void "Test deleteAll method"() {
@@ -106,14 +106,14 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             createPeople()
 
         when:"A detached criteria is created that deletes all matching records"
-            def criteria = new DetachedCriteria(PersonAssignedId2).build {
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey).build {
                 eq 'lastName', 'Simpson'
             }
             int total = criteria.deleteAll()
 
 
         then:"The number of deletions is correct"
-            PersonAssignedId2.count() == 2
+            PersonLastNamePartitionKey.count() == 2
     }
 
     void "Test iterate of detached criteria"() {
@@ -121,7 +121,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             createPeople()
 
         when:"A detached criteria is created that matches the last name and then iterated over"
-            def criteria = new DetachedCriteria(PersonAssignedId2).build {
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey).build {
                 eq 'lastName', 'Simpson'
             }
             int total = 0
@@ -138,7 +138,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
 
 
         when:"A detached criteria instance is created matching the last name"
-            def criteria = new DetachedCriteria(PersonAssignedId2)
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey)
             criteria.with {
                 eq 'lastName', 'Simpson'
             }
@@ -155,7 +155,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             createPeople()
 
         when:"A detached criteria instance is created matching the last name"
-            def criteria = new DetachedCriteria(PersonAssignedId2)
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey)
             criteria.with {
                 eq 'lastName', 'Simpson'
             }
@@ -174,7 +174,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
 
 
         when:"A detached criteria instance is created matching the last name"
-            def criteria = new DetachedCriteria(PersonAssignedId2)
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey)
             criteria.with {
                 eq 'lastName', 'Simpson'
             }
@@ -200,7 +200,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
 
 
         when:"A detached criteria instance is created matching the last name and count is called with additional criteria"
-            def criteria = new DetachedCriteria(PersonAssignedId2)
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey)
             criteria.with {
                 eq 'lastName', 'Simpson'
             }
@@ -219,7 +219,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
 
 
         when:"A detached criteria instance is created matching the last name"
-            def criteria = new DetachedCriteria(PersonAssignedId2)
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey)
             criteria.with {
                 eq 'lastName', 'Simpson'
             }
@@ -235,7 +235,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
 
 
         when:"A detached criteria instance is created matching the last name"
-            def criteria = new DetachedCriteria(PersonAssignedId2)
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey)
             criteria.with {
                 eq 'lastName', 'Simpson'
             }
@@ -251,7 +251,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             createPeople()
 
         when:"A detached criteria instance is created matching the last name"
-            def criteria = new DetachedCriteria(PersonAssignedId2).build {
+            def criteria = new DetachedCriteria(PersonLastNamePartitionKey).build {
                 eq 'lastName', 'Simpson'
             }
 
@@ -262,11 +262,11 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
     }
 
     protected void createPeople() {
-        new PersonAssignedId2(firstName: "Homer", lastName: "Simpson", location: "USA").save()
-        new PersonAssignedId2(firstName: "Marge", lastName: "Simpson", location: "USA").save()
-        new PersonAssignedId2(firstName: "Bart", lastName: "Simpson", location: "USA").save()
-        new PersonAssignedId2(firstName: "Lisa", lastName: "Simpson", location: "USA").save()
-        new PersonAssignedId2(firstName: "Barney", lastName: "Rubble", location: "Bedrock ").save()
-        new PersonAssignedId2(firstName: "Fred", lastName: "Flinstone", location: "Bedrock ").save()
+        new PersonLastNamePartitionKey(firstName: "Homer", lastName: "Simpson", location: "USA").save()
+        new PersonLastNamePartitionKey(firstName: "Marge", lastName: "Simpson", location: "USA").save()
+        new PersonLastNamePartitionKey(firstName: "Bart", lastName: "Simpson", location: "USA").save()
+        new PersonLastNamePartitionKey(firstName: "Lisa", lastName: "Simpson", location: "USA").save()
+        new PersonLastNamePartitionKey(firstName: "Barney", lastName: "Rubble", location: "Bedrock ").save()
+        new PersonLastNamePartitionKey(firstName: "Fred", lastName: "Flinstone", location: "Bedrock ").save()
     }
 }

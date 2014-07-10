@@ -10,39 +10,41 @@ class FindByMethodSpec extends GormDatastoreSpec {
     
     void 'Test Using AND Multiple Times In A Dynamic Finder'() {
         given:
-            new PersonAssignedId(firstName: 'Jake', lastName: 'Brown', age: 11).insert()
-            new PersonAssignedId(firstName: 'Zack', lastName: 'Brown', age: 14).insert()
-            new PersonAssignedId(firstName: 'Jeff', lastName: 'Brown', age: 41).insert()
-            new PersonAssignedId(firstName: 'Zack', lastName: 'Galifianakis', age: 41).insert()
+            new PersonLastNamePartitionKey(firstName: 'Jake', lastName: 'Brown', age: 11).insert()
+            new PersonLastNamePartitionKey(firstName: 'Zack', lastName: 'Brown', age: 14).insert()
+            new PersonLastNamePartitionKey(firstName: 'Jeff', lastName: 'Brown', age: 41).insert()
+            new PersonLastNamePartitionKey(firstName: 'Jake', lastName: 'Galifianakis', age: 14).insert()
+            new PersonLastNamePartitionKey(firstName: 'Zack', lastName: 'Galifianakis', age: 41).insert()
+            new PersonLastNamePartitionKey(firstName: 'Jake', lastName: 'Robinson', age: 30).insert()
 
         when:
-            def people = PersonAssignedId.findAllByFirstNameAndLastNameAndAge('Jeff', 'Brown', 1)
+            def people = PersonLastNamePartitionKey.findAllByFirstNameAndLastNameAndAge('Jeff', 'Brown', 1)
 
         then:
             0 == people?.size()
 
         when:
-            people = PersonAssignedId.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 20)
+            people = PersonLastNamePartitionKey.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 20)
 
         then:
             0 == people?.size()
 
         when:
-            people = PersonAssignedId.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 8)
+            people = PersonLastNamePartitionKey.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 8)
 
         then:
             1 == people?.size()
             14 == people[0].age
 
         when:
-            people = PersonAssignedId.findAllByFirstNameAndLastNameAndAgeLessThan('Jake', 'Brown', 14)
+            people = PersonLastNamePartitionKey.findAllByFirstNameAndLastNameAndAgeLessThan('Jake', 'Brown', 14)
 
         then:
             1 == people?.size()
             11 == people[0].age
         
         when:
-            people = PersonAssignedId.findAllByLastNameAndAgeLessThanEquals('Brown', 14, [allowFiltering:true])
+            people = PersonLastNamePartitionKey.findAllByFirstNameAndAgeLessThanEquals('Jake', 14, [allowFiltering:true]).sort{ it.age }
 
         then:
             2 == people?.size()
@@ -50,7 +52,7 @@ class FindByMethodSpec extends GormDatastoreSpec {
             14 == people[1].age
         
         when:
-            people = PersonAssignedId.findAllByLastNameAndAgeGreaterThanEquals('Brown', 14, [allowFiltering:true])
+            people = PersonLastNamePartitionKey.findAllByFirstNameAndAgeGreaterThanEquals('Zack', 14, [allowFiltering:true]).sort{ it.age }
 
         then:
             2 == people?.size()
@@ -58,22 +60,22 @@ class FindByMethodSpec extends GormDatastoreSpec {
             41 == people[1].age
         
         when:
-            people = PersonAssignedId.findAllByLastNameAndAgeBetween('Brown', 11, 42, [allowFiltering:true])
+            people = PersonLastNamePartitionKey.findAllByFirstNameAndAgeBetween('Jake', 11, 42, [allowFiltering:true]).sort{ it.age }
 
         then:
             3 == people?.size()
             11 == people[0].age
             14 == people[1].age
-            41 == people[2].age
+            30 == people[2].age
             
         when:
-            def cnt = PersonAssignedId.countByFirstNameAndLastNameAndAge('Jake', 'Brown', 11)
+            def cnt = PersonLastNamePartitionKey.countByFirstNameAndLastNameAndAge('Jake', 'Brown', 11)
 
         then:
             1 == cnt
 
         when:
-            cnt = PersonAssignedId.countByFirstNameAndLastNameAndAgeInList('Zack', 'Brown', [12, 13, 14, 15])
+            cnt = PersonLastNamePartitionKey.countByFirstNameAndLastNameAndAgeInList('Zack', 'Brown', [12, 13, 14, 15])
 
         then:
             1 == cnt
@@ -81,13 +83,13 @@ class FindByMethodSpec extends GormDatastoreSpec {
 
     void 'Test Using OR exception In A Dynamic Finder'() {
         given:
-            new PersonAssignedId(firstName: 'Jake', lastName: 'Brown', age: 11).save()
-            new PersonAssignedId(firstName: 'Zack', lastName: 'Brown', age: 14).save()
-            new PersonAssignedId(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
-            new PersonAssignedId(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
+            new PersonLastNamePartitionKey(firstName: 'Jake', lastName: 'Brown', age: 11).save()
+            new PersonLastNamePartitionKey(firstName: 'Zack', lastName: 'Brown', age: 14).save()
+            new PersonLastNamePartitionKey(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
+            new PersonLastNamePartitionKey(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
 
         when:
-            def people = PersonAssignedId.findAllByFirstNameOrLastNameOrAge('Zack', 'Tyler', 125)
+            def people = PersonLastNamePartitionKey.findAllByFirstNameOrLastNameOrAge('Zack', 'Tyler', 125)
 
         then:
            thrown UnsupportedOperationException      
@@ -336,7 +338,7 @@ class FindByMethodSpec extends GormDatastoreSpec {
     }
 
     void "Test patterns which shold throw MissingMethodException"() {
-            // Redis doesn't like Like queries...
+            // Cassandra doesn't like Like queries...
         when:
             Book.findOrCreateByAuthorLike('B%')
 

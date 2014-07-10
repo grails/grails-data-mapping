@@ -29,26 +29,26 @@ class RangeQuerySpec extends GormDatastoreSpec {
     void "Test between query"() {
         given:
             int age = 40
-            ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new PersonAssignedId(firstName:it, lastName:"Robinson", age: age--).save() }
+            ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new PersonLastNamePartitionKey(firstName:"A", lastName:it, age: age--).save() }
 
         when:
-            def results = PersonAssignedId.findAllByLastNameAndAgeBetween('Robinson', 38, 40, [allowFiltering:true])
+            def results = PersonLastNamePartitionKey.findAllByFirstNameAndAgeBetween('A', 38, 40, [allowFiltering:true])
 
         then:
             3 == results.size()
 
         when:
-            results = PersonAssignedId.findAllByLastNameAndAgeBetween('Robinson',38, 40, [allowFiltering:true])
+            results = PersonLastNamePartitionKey.findAllByFirstNameAndAgeBetween('A',38, 40, [allowFiltering:true])
 
         then:
             3 == results.size()
 
-            results.find { it.firstName == "Bob" } != null
-            results.find { it.firstName == "Fred" } != null
-            results.find { it.firstName == "Barney" } != null
+            results.find { it.lastName == "Bob" } != null
+            results.find { it.lastName == "Fred" } != null
+            results.find { it.lastName == "Barney" } != null
 
         when:
-            results = PersonAssignedId.findAllByAgeBetweenOrName(38, 40, "Ernie")
+            results = PersonLastNamePartitionKey.findAllByAgeBetweenOrName(38, 40, "Ernie")
 
         then:
             thrown UnsupportedOperationException
@@ -58,10 +58,10 @@ class RangeQuerySpec extends GormDatastoreSpec {
         given:
 
             int age = 40
-            ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new PersonAssignedId(firstName:it, lastName:"Robinson", age: age--).save() }
+            ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new PersonLastNamePartitionKey(firstName:"A", lastName:it, age: age--).save() }
 
         when:
-            def results = PersonAssignedId.findAllByLastNameAndAgeGreaterThanEquals('Robinson', 38, [allowFiltering:true])
+            def results = PersonLastNamePartitionKey.findAllByFirstNameAndAgeGreaterThanEquals('A', 38, [allowFiltering:true])
 
         then:
             3 == results.size()
@@ -70,7 +70,7 @@ class RangeQuerySpec extends GormDatastoreSpec {
             results.find { it.age == 40 } != null
 
         when:
-            results = PersonAssignedId.findAllByLastNameAndAgeLessThanEquals('Robinson', 38, [allowFiltering:true])
+            results = PersonLastNamePartitionKey.findAllByFirstNameAndAgeLessThanEquals('A', 38, [allowFiltering:true])
 
         then:
             4 == results.size()
@@ -82,37 +82,37 @@ class RangeQuerySpec extends GormDatastoreSpec {
 
     void 'Test InRange Dynamic Finder'() {
         given:
-            new PersonAssignedId(firstName: 'Jake', lastName: 'Brown', age: 11).save()
-            new PersonAssignedId(firstName: 'Zack', lastName: 'Brown', age: 14).save()
-            new PersonAssignedId(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
-            new PersonAssignedId(firstName: 'Jack', lastName: 'Brown', age: 41).save()
+            new PersonLastNamePartitionKey(firstName: 'A', lastName: 'Brown', age: 11).save()
+            new PersonLastNamePartitionKey(firstName: 'A', lastName: 'Johnson', age: 14).save()
+            new PersonLastNamePartitionKey(firstName: 'A', lastName: 'Patel', age: 41).save()
+            new PersonLastNamePartitionKey(firstName: 'A', lastName: 'Lee', age: 41).save()
 
         when:
-            int count = PersonAssignedId.countByLastNameAndAgeInRange('Brown', 14..41, [allowFiltering:true])
+            int count = PersonLastNamePartitionKey.countByFirstNameAndAgeInRange('A', 14..41, [allowFiltering:true])
 
         then:
             3 == count
 
         when:
-            count = PersonAssignedId.countByLastNameAndAgeInRange('Brown', 41..14, [allowFiltering:true])
+            count = PersonLastNamePartitionKey.countByFirstNameAndAgeInRange('A', 41..14, [allowFiltering:true])
 
         then:
             3 == count
 
         when:
-            count = PersonAssignedId.countByLastNameAndAgeInRange('Brown', 14..<30, [allowFiltering:true])
+            count = PersonLastNamePartitionKey.countByFirstNameAndAgeInRange('A', 14..<30, [allowFiltering:true])
 
         then:
             1 == count
 
         when:
-            count = PersonAssignedId.countByLastNameAndAgeInRange('Brown', 14..<42, [allowFiltering:true])
+            count = PersonLastNamePartitionKey.countByFirstNameAndAgeInRange('A', 14..<42, [allowFiltering:true])
 
         then:
             3 == count
 
         when:
-            count = PersonAssignedId.countByLastNameAndAgeInRange('Brown', 15..40, [allowFiltering:true])
+            count = PersonLastNamePartitionKey.countByFirstNameAndAgeInRange('A', 15..40, [allowFiltering:true])
 
         then:
             0 == count

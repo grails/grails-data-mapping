@@ -28,7 +28,7 @@ abstract class GormDatastoreSpec extends Specification {
 //         Location, ModifyPerson, Nose, OptLockNotVersioned, OptLockVersioned, Person, PersonEvent,
 //         Pet, PetType, Plant, PlantCategory, Publication, Task, TestEntity]
     static final TEST_CLASSES = [Artist, Book, City, CollectionTypes, CommonTypes, ConstrainedEntity, Country, EnumThing, EnumGeneratedIdThing, Highway, 
-            Location, ModifyPerson, OptLockNotVersioned, OptLockVersioned, Plant, Publication, PublicationAssignedId, Person, PersonAssignedId, PersonAssignedId2,
+            Location, ModifyPerson, OptLockNotVersioned, OptLockVersioned, Plant, Publication, PublicationAssignedId, Person, PersonLastNamePartitionKey,
 			PersonEvent, SimpleWidget, Simples, TestEntity] 
     
     @Shared Class setupClass

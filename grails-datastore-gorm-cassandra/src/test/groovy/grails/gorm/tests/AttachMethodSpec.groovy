@@ -8,7 +8,7 @@ class AttachMethodSpec extends GormDatastoreSpec {
     void "Test attach method"() {
         given:
             def test = new Person(firstName:"Bob", lastName:"Builder").save()
-            def test2 = new PersonAssignedId(firstName:"Bob", lastName:"Builder").save()
+            def test2 = new PersonLastNamePartitionKey(firstName:"Bob", lastName:"Builder").save()
 
         when:
             session.flush()

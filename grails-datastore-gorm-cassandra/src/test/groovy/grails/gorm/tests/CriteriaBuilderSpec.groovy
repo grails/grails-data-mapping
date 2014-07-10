@@ -76,7 +76,7 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             def age = 40
             ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
             age = 40
-            ["Bob", "Fred", "Barney", "Frank"].each { new PersonAssignedId(firstName:it, lastName: 'Brown', age: age++).save() }
+            ["Bob", "Fred", "Barney", "Frank"].each { new PersonLastNamePartitionKey(firstName:it, lastName: 'Brown', age: age++).save() }
             
             def criteria = TestEntity.createCriteria()            
 
@@ -91,11 +91,11 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             1 == results.size()
         
         when:
-            criteria = PersonAssignedId.createCriteria()
+            criteria = PersonLastNamePartitionKey.createCriteria()
             results = criteria.list {
                 and {
-                    eq('firstName', 'Bob')
-                    eq('age', 40)
+                    eq('lastName', 'Brown')
+                    eq('firstName', 'Bob')                   
                 }
             }
         then:

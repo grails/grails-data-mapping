@@ -18,14 +18,14 @@ class DeleteAllSpec extends GormDatastoreSpec {
     
     def "Test that objects with assigned id can be deleted at once using multiple arguments"() {
         given:
-            def bob = new PersonAssignedId(firstName:"Bob", lastName:"Builder").save(flush: true)
-            def fred = new PersonAssignedId(firstName:"Fred", lastName:"Flintstone").save(flush: true)
-            def joe = new PersonAssignedId(firstName:"Joe", lastName:"Doe").save(flush: true)
-            PersonAssignedId.deleteAll(bob, fred, joe)
+            def bob = new PersonLastNamePartitionKey(firstName:"Bob", lastName:"Builder").save(flush: true)
+            def fred = new PersonLastNamePartitionKey(firstName:"Fred", lastName:"Flintstone").save(flush: true)
+            def joe = new PersonLastNamePartitionKey(firstName:"Joe", lastName:"Doe").save(flush: true)
+            PersonLastNamePartitionKey.deleteAll(bob, fred, joe)
             session.flush()
 
         when:
-            def total = PersonAssignedId.count()
+            def total = PersonLastNamePartitionKey.count()
         then:
             total == 0
     }
