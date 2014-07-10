@@ -152,7 +152,7 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
             for (Object obj: cache.values()) {
                 if (obj instanceof DirtyCheckable) {
                     boolean isDirty = ((DirtyCheckable)obj).hasChanged();
-                    if (isDirty || (!pendingObjects.contains(obj))) {
+                    if (isDirty) {
                         persist(obj);
                     }
                 }

@@ -193,7 +193,8 @@ class ManyToManySpec extends GormDatastoreSpec {
         session.clear()
 
         when: "we change a object after save"
-        def role = new Role(role:'myRole').save()
+        def role = new Role(role:'myRole').save(flush:true)
+        role = Role.get(role.id)
         role.people = [foo, bar]
         session.flush()
         session.clear()
