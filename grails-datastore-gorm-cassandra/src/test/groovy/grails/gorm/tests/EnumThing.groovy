@@ -4,13 +4,14 @@ import grails.gorm.CassandraEntity
 
 @CassandraEntity
 class EnumThing {
-    TestEnum en
+    
+    UUID id
+    Long version
     String name
-   
+    TestEnum en
 
     static mapping = {
-        id name:"en", primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned"
-        name primaryKey:[ordinal:1, type: "clustered"]
+        name index: true
+        en index: true
     }
-        
 }
