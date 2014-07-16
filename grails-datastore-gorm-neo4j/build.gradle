@@ -1,4 +1,4 @@
-version = "2.0.0-SNAPSHOT"
+ version = "2.0.0-SNAPSHOT"
 //version = "2.0.0-M02"
 
 ext.neo4jVersion = "2.0.3"
@@ -21,9 +21,9 @@ repositories {
 dependencies {
     compile "org.neo4j:neo4j-community:$neo4jVersion",
         "org.neo4j:neo4j-graphviz:$neo4jVersion",
-        'org.codehaus.groovy:groovy-all:2.1.9'
-
-    runtime "org.neo4j:neo4j-jdbc:2.0.2"
+        'org.codehaus.groovy:groovy-all:2.1.9',
+        "org.neo4j:neo4j-jdbc:2.0.2",
+        'org.apache.tomcat:tomcat-jdbc:8.0.8'
 
     // during development (aka snapshot version), use project dependencies
     // during release, use 'regular' dependencies
@@ -47,7 +47,7 @@ dependencies {
             [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion],
             "org.neo4j:neo4j-graphviz:$neo4jVersion",
             "org.neo4j:neo4j-management:$neo4jVersion",
-            'org.apache.tomcat:tomcat-jdbc:8.0.8',
+            "org.neo4j:neo4j-ha:$neo4jVersion",
             'com.sun.jersey:jersey-server:1.9',
             'com.sun.jersey:jersey-core:1.9',
             'com.sun.jersey:jersey-client:1.9',
@@ -65,7 +65,6 @@ dependencies {
 
 /*
 test {
-    jvmArgs '-Xmx1024m', '-Xdebug', '-Xnoagent', '-Dgrails.full.stacktrace=true', '-Djava.compiler=NONE',
-            '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
-}
-*/
+//    jvmArgs "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
+//    jvmArgs "-agentpath:/home/stefan/packages/yjp/bin/linux-x86-64/libyjpagent.so"
+}*/

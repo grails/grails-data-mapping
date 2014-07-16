@@ -14,11 +14,13 @@
  */
 package org.grails.datastore.gorm.neo4j.plugin.support
 
+import org.apache.tomcat.jdbc.pool.PoolProperties
 import org.grails.datastore.gorm.neo4j.engine.JdbcCypherEngine
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
-import org.neo4j.graphdb.factory.GraphDatabaseFactory
+
+import org.apache.tomcat.jdbc.pool.DataSource
 
 /**
  * Spring configurer for Neo4j
@@ -29,6 +31,8 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory
 class Neo4jSpringConfigurer extends SpringConfigurer {
 
     static neo4jDefaultLocation = "data/neo4j"
+    public static final String JDBC_NEO4J_PREFIX = "jdbc:neo4j:instance:"
+
 
     @Override
     String getDatastoreType() {
@@ -39,30 +43,54 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
     Closure getSpringCustomizer() {
         return {
 
-            def url = application.config.dataSource.url
-            if (url.startsWith(JDBCConfigurationInterceptor.JDBC_NEO4J_PREFIX)) {
+            def config = application.config?.grails?.neo4j ?: new ConfigObject()
 
-                graphDbFactory(GraphDatabaseFactory)
-                graphDbBuilder(graphDbFactory : "newEmbeddedDatabaseBuilder",  /*neo4jConfig.location ?: */ neo4jDefaultLocation)
+            def neo4jUrl = config?.url ?: "jdbc:neo4j:mem"
+            def neo4jProperties = [:]
 
-                graphDbBuilderFinal(graphDbBuilder: "setConfig", /*neo4jConfig.params ?:*/ [:])
+
+            def m = neo4jUrl =~ /$JDBC_NEO4J_PREFIX(\w+)/
+
+            if (m.matches()) {
+
+                def instanceName = m[0][1]
+                def isHaMode = config.ha ?: false
+
+                def factoryClassName = isHaMode ? "org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory" : "org.neo4j.graphdb.factory.GraphDatabaseFactory"
+                def factoryMethodName = isHaMode ? "newHighlyAvailableDatabaseBuilder" : "newEmbeddedDatabaseBuilder"
+
+                graphDbFactory(factoryClassName as Class)
+                graphDbBuilder(graphDbFactory : factoryMethodName,  config.location ?: neo4jDefaultLocation)
+
+                graphDbBuilderFinal(graphDbBuilder: "setConfig", config.dbProperties ?: [:])
                 graphDatabaseService(graphDbBuilderFinal: "newGraphDatabase") { bean ->
                     bean.destroyMethod = 'shutdown'
                 }
 
-                // create dummy entry for datasource's dbProperties
-                // gets overridden by jdbcConfigurationInterceptor
-                Properties props = new Properties();
-                props.put("dataSource.properties.dbProperties.dummy", "dummy");
-                application.config.merge(new ConfigSlurper().parse(props));
+                neo4jProperties[instanceName] = ref('graphDatabaseService')
 
-                jdbcConfigurationInterceptor(JDBCConfigurationInterceptor) {
-                    graphDatabaseService = graphDatabaseService
-                    config = application.config
+            }
+            neo4jProperties.putAll(config.dbProperties)
+
+
+            neo4jPoolConfiguration(PoolProperties) {
+                url = neo4jUrl
+                driverClassName = "org.neo4j.jdbc.Driver"
+                if (config.username) {
+                    username = config.username
                 }
+                if (config.password) {
+                    password = config.password
+                }
+                defaultAutoCommit = false  // important one!
+                dbProperties = neo4jProperties
             }
 
-            cypherEngine(JdbcCypherEngine, ref('dataSource'))
+            neo4jDataSource(DataSource, neo4jPoolConfiguration) { bean ->
+                bean.destroyMethod = 'close'
+            }
+
+            cypherEngine(JdbcCypherEngine, neo4jDataSource)
 
             neo4jMappingContext(Neo4jMappingContextFactoryBean) {
                 grailsApplication = ref('grailsApplication')
@@ -73,14 +101,6 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                 mappingContext = neo4jMappingContext
 
             }
-
-/*        if (manager?.hasGrailsPlugin("controllers")) {
-
-            neo4jOpenSessionInViewInterceptor(Neo4jOpenSessionInViewInterceptor) {
-                datastore = ref("neo4jDatastore")
-            }
-
-        }*/
 
         }
     }

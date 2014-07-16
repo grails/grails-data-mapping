@@ -22,7 +22,7 @@ class Neo4jGrailsPlugin {
     def version = "2.0.0-SNAPSHOT"
     def grailsVersion = "2.3 > *"
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry', 'converters']
-    def loadBefore = ['dataSource']
+    //def loadBefore = ['dataSource']
     def observe = ['services', 'domainClass']
         
     def author = "Stefan Armbruster"

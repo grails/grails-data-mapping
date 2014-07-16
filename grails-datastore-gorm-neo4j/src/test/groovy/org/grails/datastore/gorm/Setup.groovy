@@ -63,12 +63,14 @@ class Setup {
 
         def poolprops = [
                 driverClassName: 'org.neo4j.jdbc.Driver',
-                defaultAutoCommit: false
+                defaultAutoCommit: false,
         ]
 
         switch (testMode) {
             case "embedded":
-                graphDb = new TestGraphDatabaseFactory().newImpermanentDatabase()
+                graphDb = new TestGraphDatabaseFactory().newImpermanentDatabaseBuilder()
+                        .setConfig("cache_type", "soft") // prevent hpc cache during tests, potentially leaking memory due to many restarts
+                        .newGraphDatabase()
                 def instanceName = ManagementFactory.runtimeMXBean.name
                 poolprops.url = "jdbc:neo4j:instance:${instanceName}"
                         //url: 'jdbc:neo4j:mem',
