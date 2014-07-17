@@ -31,29 +31,29 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
      * recursively join all discriminators up the class hierarchy
      * @return
      */
-    public String getLabelsWithInheritance() {
+    public String getLabelsWithInheritance(domainInstance) {
         StringBuilder sb = new StringBuilder();
-        appendRecursive(sb);
+        appendRecursive(sb, domainInstance);
         return sb.toString();
     }
 
-    private void appendRecursive(StringBuilder sb){
-        sb.append(getLabelsAsString());
+    private void appendRecursive(StringBuilder sb, domainInstance){
+        sb.append(getLabelsAsString(domainInstance));
         if (getParentEntity()!=null) {
-            ((GraphPersistentEntity)getParentEntity()).appendRecursive(sb);
+            ((GraphPersistentEntity)getParentEntity()).appendRecursive(sb, domainInstance);
         }
     }
 
-    public Collection<String> getLabels() {
+    public Collection<String> getLabels(domainInstance=null) {
         Object objs = mappedForm.getLabels();
         if (objs instanceof Object[]) {
-            objs.collect { getLabelFor(it) }
+            objs.collect { getLabelFor(it, domainInstance) }
         } else {
-            [getLabelFor(objs)]
+            [getLabelFor(objs, domainInstance)]
         }
     }
 
-    private Object getLabelFor(Object obj) {
+    private Object getLabelFor(Object obj, domainInstance) {
         switch (obj) {
             case null:
                 discriminator
@@ -62,7 +62,8 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
                 obj
                 break
             case Closure:
-                ((Closure)obj).call(this)
+                Closure closure = (Closure)obj
+                closure.call(closure.maximumNumberOfParameters == 2 ? [this, domainInstance]: this)
                 break
             default:
                 throw new IllegalArgumentException("dunno know how to handle " + obj?.getClass().getName() + " " + obj + " for labels mapping");
@@ -77,9 +78,9 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
      * return all labels as string usable for cypher, concatenated by ":"
      * @return
      */
-    public String getLabelsAsString() {
+    public String getLabelsAsString(domainInstance = null) {
         StringBuilder sb = new StringBuilder();
-        for (String label: getLabels()) {
+        for (String label: getLabels(domainInstance)) {
             sb.append(':').append(label);
         }
         return sb.toString();

@@ -12,7 +12,7 @@ class LabelStrategySpec extends GormDatastoreSpec {
 
     @Override
         List getDomainClasses() {
-            [Default, StaticLabel, StaticLabels, DynamicLabel, MixedLabels]
+            [Default, StaticLabel, StaticLabels, DynamicLabel, MixedLabels, InstanceDependentLabels ]
         }
 
 
@@ -56,6 +56,14 @@ class LabelStrategySpec extends GormDatastoreSpec {
 
         then:
         verifyLabelsForId(s.id, ["MyLabel", s.class.name])
+    }
+
+    def "should instance dependent labels mapping work"() {
+        when:
+        def s = new InstanceDependentLabels(name:'dummy').save(flush:true)
+
+        then:
+        verifyLabelsForId(s.id, ["MyLabel", "${s.class.name}_${s.name}"])
     }
 
     private def verifyLabelsForId(id, labelz) {
@@ -117,3 +125,16 @@ class MixedLabels {
     }
 }
 
+
+@Entity
+class InstanceDependentLabels {
+    Long id
+    Long version
+    String name
+
+    static mapping = {
+        labels "MyLabel", { GraphPersistentEntity pe, instance ->  // 2 arguments: instance dependent label
+            "`${pe.javaClass.name}_${instance.name}`"
+        }
+    }
+}

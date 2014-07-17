@@ -42,7 +42,7 @@ class NodePendingInsert extends PendingInsertAdapter<Object, Long> {
 
         Neo4jGormEnhancer.amendMapWithUndeclaredProperties(simpleProps, getNativeEntry(), mappingContext);
 
-        String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance();
+        String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance(getEntityAccess().getEntity());
         String cypher = String.format("CREATE (n%s {1})", labels);
 
         cypherEngine.execute(cypher, Collections.singletonList(simpleProps));

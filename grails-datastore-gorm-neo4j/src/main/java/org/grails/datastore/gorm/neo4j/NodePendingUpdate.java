@@ -56,7 +56,7 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
         }
         Neo4jGormEnhancer.amendMapWithUndeclaredProperties(simpleProps, getNativeEntry(), mappingContext);
 
-        String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance();
+        String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance(getEntityAccess().getEntity());
 
         List params = new ArrayList(2);
         params.add(id);
