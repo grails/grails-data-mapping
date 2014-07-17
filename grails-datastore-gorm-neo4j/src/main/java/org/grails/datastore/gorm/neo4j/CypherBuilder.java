@@ -14,15 +14,15 @@ public class CypherBuilder {
     public final static String START = "start";
 
 
-    private String forLabel;
+    private String forLabels;
     private Set<String> matches = new HashSet<String>();
     private String conditions;
     private String orderAndLimits;
     private List<String> returnColumns = new ArrayList<String>();
     private List<Object> params = new ArrayList<Object>();
 
-    public CypherBuilder(String forLabel) {
-        this.forLabel = forLabel;
+    public CypherBuilder(String forLabels) {
+        this.forLabels = forLabels;
     }
 
     public void addMatch(String match) {
@@ -69,7 +69,7 @@ public class CypherBuilder {
 
     public String build() {
         StringBuilder cypher = new StringBuilder();
-        cypher.append("MATCH (n:").append(forLabel).append(")");
+        cypher.append("MATCH (n").append(forLabels).append(")");
 
         for (String m : matches) {
             cypher.append(", ").append(m);
@@ -108,8 +108,8 @@ public class CypherBuilder {
 
         StringBuilder sb = new StringBuilder();
         GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) (association.getOwner());
-        String label = graphPersistentEntity.getLabel();
-        sb.append("MATCH (me:").append(label).append(" {__id__:{1}})");
+        String labels = graphPersistentEntity.getLabelsAsString();
+        sb.append("MATCH (me").append(labels).append(" {__id__:{1}})");
         if (reversed) {
             sb.append("<");
         }

@@ -109,7 +109,7 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     private PersistentEntity findPersistentEntityWithLabel(String label) {
         for (PersistentEntity pe: getMappingContext().getPersistentEntities()) {
-            if (((GraphPersistentEntity)pe).getLabel().equals(label)) {
+            if (((GraphPersistentEntity)pe).getLabels().contains(label)) {
                 return pe;
             }
         }
@@ -337,8 +337,8 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
 
         getCypherEngine().execute(
-                String.format("MATCH (n:%s) WHERE n.__id__={1} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
-                        ((GraphPersistentEntity)pe).getLabel()),
+                String.format("MATCH (n%s) WHERE n.__id__={1} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
+                        ((GraphPersistentEntity)pe).getLabelsAsString()),
                 Collections.singletonList(entityAccess.getIdentifier()));
 
         firePostDeleteEvent(pe, entityAccess);
@@ -388,8 +388,8 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
 
         getCypherEngine().execute(
-                String.format("MATCH (n:%s) WHERE n.__id__ in {1} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
-                        ((GraphPersistentEntity)pe).getLabel()), Collections.singletonList(ids));
+                String.format("MATCH (n%s) WHERE n.__id__ in {1} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
+                        ((GraphPersistentEntity)pe).getLabelsAsString()), Collections.singletonList(ids));
 
         for (EntityAccess entityAccess: entityAccesses) {
             firePostDeleteEvent(pe, entityAccess);

@@ -30,18 +30,18 @@ class RelationshipPendingDelete extends PendingInsertAdapter<Object, Long> {
 
     @Override
     public void run() {
-        String labelFrom = ((GraphPersistentEntity)getEntity()).getLabel();
-        String labelTo = null;
+        String labelsFrom = ((GraphPersistentEntity)getEntity()).getLabelsAsString();
+        String labelsTo = null;
         String cypher;
 
         List params =  new ArrayList(2);
         params.add(getEntityAccess().getIdentifier());
         if (target!=null) {
             params.add(target.getIdentifier());
-            labelTo = ((GraphPersistentEntity)target.getPersistentEntity()).getLabel();
-            cypher = String.format("MATCH (from:%s {__id__: {1}})-[r:%s]->(to:%s {__id__: {2}}) DELETE r", labelFrom, relType, labelTo);
+            labelsTo = ((GraphPersistentEntity)target.getPersistentEntity()).getLabelsAsString();
+            cypher = String.format("MATCH (from%s {__id__: {1}})-[r:%s]->(to%s {__id__: {2}}) DELETE r", labelsFrom, relType, labelsTo);
         } else {
-            cypher = String.format("MATCH (from:%s {__id__: {1}})-[r:%s]->() DELETE r", labelFrom, relType);
+            cypher = String.format("MATCH (from%s {__id__: {1}})-[r:%s]->() DELETE r", labelsFrom, relType);
 
         }
         cypherEngine.execute(cypher, params);

@@ -4,16 +4,17 @@ import org.grails.datastore.mapping.config.Entity;
 
 /**
  * Created by stefan on 10.04.14.
+ * @author Stefan Armbruster
  */
 public class Neo4jEntity extends Entity {
 
-    private String label;
+    private Object labels;
 
-    public String getLabel() {
-        return label;
+    public Object getLabels() {
+        return labels;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setLabels(Object labels) {
+        this.labels = labels;
     }
 }

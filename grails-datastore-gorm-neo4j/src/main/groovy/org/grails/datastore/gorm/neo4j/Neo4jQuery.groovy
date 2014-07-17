@@ -62,7 +62,7 @@ class Neo4jQuery extends Query {
     @Override
     protected List executeQuery(PersistentEntity persistentEntity, Junction criteria) {
 
-        CypherBuilder cypherBuilder = new CypherBuilder(((GraphPersistentEntity)persistentEntity).getLabel());
+        CypherBuilder cypherBuilder = new CypherBuilder(((GraphPersistentEntity)persistentEntity).getLabelsAsString());
         def conditions = buildConditions(criteria, cypherBuilder, "n")
         cypherBuilder.setConditions(conditions)
         cypherBuilder.setOrderAndLimits(applyOrderAndLimits(cypherBuilder))

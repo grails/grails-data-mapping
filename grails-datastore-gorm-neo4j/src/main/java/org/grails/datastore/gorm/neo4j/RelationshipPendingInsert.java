@@ -57,9 +57,9 @@ class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long> {
         params.add(getEntityAccess().getIdentifier());
         params.add(target.getIdentifier());
 
-        String labelFrom = ((GraphPersistentEntity)getEntity()).getLabel();
-        String labelTo = ((GraphPersistentEntity)target.getPersistentEntity()).getLabel();
-        String cypher = String.format("MATCH (from:%s {__id__:{1}}), (to:%s {__id__:{2}}) CREATE UNIQUE (from)-[:%s]->(to)", labelFrom, labelTo, relType);
+        String labelsFrom = ((GraphPersistentEntity)getEntity()).getLabelsAsString();
+        String labelsTo = ((GraphPersistentEntity)target.getPersistentEntity()).getLabelsAsString();
+        String cypher = String.format("MATCH (from%s {__id__:{1}}), (to%s {__id__:{2}}) MERGE (from)-[:%s]->(to)", labelsFrom, labelsTo, relType);
         cypherEngine.execute(cypher, params);
     }
 
