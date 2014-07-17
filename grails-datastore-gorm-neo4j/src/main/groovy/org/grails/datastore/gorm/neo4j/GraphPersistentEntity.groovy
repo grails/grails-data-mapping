@@ -44,40 +44,28 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
         }
     }
 
-    public String getLabel() {
-        String localLabel = (String) mappedForm.getLabels();
-        if (localLabel==null) {
-            localLabel = getDiscriminator();
-        }
-        return localLabel;
-    }
-
     public Collection<String> getLabels() {
         Object objs = mappedForm.getLabels();
-        if (objs == null) {
-            return Collections.singleton(getDiscriminator());
-        } else if (objs instanceof String) {
-            String s = (String) objs;
-            return Collections.singleton(s);
-        } else if (objs instanceof Object[]) {
-            Object[] labels = (Object[]) objs;
-
-            Collection<String> retVal = new ArrayList<String>();
-
-            for (int i = 0; i < labels.length; i++) {
-                if (labels[i] instanceof String) {
-                    retVal.add((String)labels[i]);
-//                } else {
-
-                } else {
-                    throw new IllegalArgumentException("dunno know how to handle " + labels[i].getClass().getName() + "=" + labels[i] + " for labels mapping");
-                }
-
-            }
-            return retVal;
-
+        if (objs instanceof Object[]) {
+            objs.collect { getLabelFor(it) }
         } else {
-            throw new IllegalArgumentException("dunno know how to handle " + objs.getClass().getName() + " " + objs + " for labels mapping");
+            [getLabelFor(objs)]
+        }
+    }
+
+    private Object getLabelFor(Object obj) {
+        switch (obj) {
+            case null:
+                discriminator
+                break
+            case String:
+                obj
+                break
+            case Closure:
+                ((Closure)obj).call(this)
+                break
+            default:
+                throw new IllegalArgumentException("dunno know how to handle " + obj?.getClass().getName() + " " + obj + " for labels mapping");
         }
     }
 

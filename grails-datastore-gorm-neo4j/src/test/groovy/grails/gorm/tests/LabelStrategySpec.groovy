@@ -1,8 +1,7 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
-import org.grails.datastore.gorm.Setup
-import org.neo4j.graphdb.DynamicLabel
+import org.grails.datastore.gorm.neo4j.GraphPersistentEntity
 import org.neo4j.helpers.collection.IteratorUtil
 
 /**
@@ -13,7 +12,7 @@ class LabelStrategySpec extends GormDatastoreSpec {
 
     @Override
         List getDomainClasses() {
-            [Default, StaticLabel, StaticLabels]
+            [Default, StaticLabel, StaticLabels, DynamicLabel, MixedLabels]
         }
 
 
@@ -32,8 +31,6 @@ class LabelStrategySpec extends GormDatastoreSpec {
         then:
         verifyLabelsForId(s.id, ["MyLabel"])
 
-//        and:
-        // IteratorUtil.count(Setup.graphDb.schema().getConstraints(DynamicLabel.label("MyLabel"))) == 1 // test run without indexes
     }
 
     def "should static label mapping work for multiple labels"() {
@@ -43,8 +40,22 @@ class LabelStrategySpec extends GormDatastoreSpec {
         then:
         verifyLabelsForId(s.id, ["MyLabel1", "MyLabel2"])
 
-//        and:
-        // IteratorUtil.count(Setup.graphDb.schema().getConstraints(DynamicLabel.label("MyLabel"))) == 1 // test run without indexes
+    }
+
+    def "should dynamic label mapping work"() {
+        when:
+        def s = new DynamicLabel(name:'dummy').save(flush:true)
+
+        then:
+        verifyLabelsForId(s.id, [s.class.name])
+    }
+
+    def "should mixed labels mapping work"() {
+        when:
+        def s = new MixedLabels(name:'dummy').save(flush:true)
+
+        then:
+        verifyLabelsForId(s.id, ["MyLabel", s.class.name])
     }
 
     private def verifyLabelsForId(id, labelz) {
@@ -82,5 +93,27 @@ class StaticLabels {
         labels "MyLabel1", "MyLabel2"
     }
 
+}
+
+@Entity
+class DynamicLabel {
+    Long id
+    Long version
+    String name
+
+    static mapping = {
+        labels { GraphPersistentEntity pe -> "`${pe.javaClass.name}`" }
+    }
+}
+
+@Entity
+class MixedLabels {
+    Long id
+    Long version
+    String name
+
+    static mapping = {
+        labels "MyLabel", { GraphPersistentEntity pe -> "`${pe.javaClass.name}`" }
+    }
 }
 
