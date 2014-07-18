@@ -1,7 +1,10 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
+import org.grails.datastore.gorm.Setup
 import org.grails.datastore.gorm.neo4j.GraphPersistentEntity
+import org.grails.datastore.mapping.core.Session
+import org.neo4j.graphdb.DynamicLabel
 import org.neo4j.helpers.collection.IteratorUtil
 
 /**
@@ -11,40 +14,62 @@ import org.neo4j.helpers.collection.IteratorUtil
 class LabelStrategySpec extends GormDatastoreSpec {
 
     @Override
-        List getDomainClasses() {
-            [Default, StaticLabel, StaticLabels, DynamicLabel, MixedLabels, InstanceDependentLabels ]
-        }
+    List getDomainClasses() {
+        [Default, StaticLabel, StaticLabels, DynLabel, MixedLabels, InstanceDependentLabels]
+    }
 
+    def setupSpec() {
+        setupClass = LocalSetup
+    }
+
+    public class LocalSetup extends Setup {
+        static Session setup(classes) {
+            skipIndexSetup = false
+            Setup.setup(classes)
+        }
+    }
 
     def "should default label mapping use simple class name"() {
         when:
-        def d = new Default(name:'dummy').save(flush:true)
+        def d = new Default(name: 'dummy').save(flush: true)
+        def labelName = d.class.simpleName
 
         then:
-        verifyLabelsForId(d.id, [d.class.simpleName])
+        verifyLabelsForId(d.id, [labelName])
+
+        and:
+        Setup.graphDb.schema().getIndexes(DynamicLabel.label(labelName))*.propertyKeys == [['__id__']]
     }
 
     def "should static label mapping work"() {
         when:
         def s = new StaticLabel(name:'dummy').save(flush:true)
+        def labelName = "MyLabel"
 
         then:
-        verifyLabelsForId(s.id, ["MyLabel"])
+        verifyLabelsForId(s.id, [labelName])
 
+        and:
+        Setup.graphDb.schema().getIndexes(DynamicLabel.label(labelName))*.propertyKeys == [['__id__']]
     }
 
     def "should static label mapping work for multiple labels"() {
         when:
         def s = new StaticLabels(name:'dummy').save(flush:true)
+        def labels = ["MyLabel1", "MyLabel2"]
 
         then:
-        verifyLabelsForId(s.id, ["MyLabel1", "MyLabel2"])
+        verifyLabelsForId(s.id, labels)
 
+        and:
+        labels.every {
+            Setup.graphDb.schema().getIndexes(DynamicLabel.label(it))*.propertyKeys == [['__id__']]
+        }
     }
 
     def "should dynamic label mapping work"() {
         when:
-        def s = new DynamicLabel(name:'dummy').save(flush:true)
+        def s = new DynLabel(name:'dummy').save(flush:true)
 
         then:
         verifyLabelsForId(s.id, [s.class.name])
@@ -60,10 +85,19 @@ class LabelStrategySpec extends GormDatastoreSpec {
 
     def "should instance dependent labels mapping work"() {
         when:
-        def s = new InstanceDependentLabels(name:'dummy').save(flush:true)
+        def s = new InstanceDependentLabels(name:'Sam', profession: 'Fireman').save(flush:true)
 
         then:
-        verifyLabelsForId(s.id, ["MyLabel", "${s.class.name}_${s.name}"])
+        verifyLabelsForId(s.id, ["MyLabel", "${s.name}"])
+
+        and:
+        Setup.graphDb.schema().getIndexes(DynamicLabel.label("MyLabel"))*.propertyKeys == [['__id__']]
+
+        and: "no index on instance label"
+        !Setup.graphDb.schema().getIndexes(DynamicLabel.label(s.name)).iterator().hasNext()
+
+        and: "there are no indexes on null"
+        Setup.graphDb.schema().getIndexes().every { it.label.name() != 'null'}
     }
 
     private def verifyLabelsForId(id, labelz) {
@@ -104,7 +138,7 @@ class StaticLabels {
 }
 
 @Entity
-class DynamicLabel {
+class DynLabel {
     Long id
     Long version
     String name
@@ -131,10 +165,14 @@ class InstanceDependentLabels {
     Long id
     Long version
     String name
+    String profession
 
+    static constraints = {
+        name unique:true
+    }
     static mapping = {
         labels "MyLabel", { GraphPersistentEntity pe, instance ->  // 2 arguments: instance dependent label
-            "`${pe.javaClass.name}_${instance.name}`"
+            "`${instance.name}`"
         }
     }
 }

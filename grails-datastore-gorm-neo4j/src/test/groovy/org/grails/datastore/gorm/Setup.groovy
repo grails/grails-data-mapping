@@ -30,6 +30,7 @@ import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
 import java.lang.management.ManagementFactory
+import java.util.concurrent.TimeUnit
 
 class Setup {
 
@@ -39,6 +40,7 @@ class Setup {
     static GraphDatabaseService graphDb
     static DataSource dataSource
     static WebServer webServer
+    static skipIndexSetup = true
 
     static destroy() {
         dataSource.close()
@@ -96,7 +98,7 @@ class Setup {
                 ctx,
                 new JdbcCypherEngine(dataSource)
         )
-        datastore.skipIndexSetup = true
+        datastore.skipIndexSetup = skipIndexSetup
         //datastore.mappingContext.proxyFactory = new GroovyProxyFactory()
 
         for (Class cls in classes) {
@@ -135,6 +137,8 @@ class Setup {
 
         datastore.afterPropertiesSet()
 
+        waitForIndexesBeingOnline(graphDb)
+
         mappingContext.addMappingContextListener({ e ->
             enhancer.enhance e
         } as MappingContext.Listener)
@@ -149,6 +153,18 @@ class Setup {
 //        }
 
         datastore.connect()
+    }
+
+    private static void waitForIndexesBeingOnline(GraphDatabaseService graphDb) {
+        if (graphDb && (skipIndexSetup==false)) {
+            def tx = graphDb.beginTx()
+            try {
+                graphDb.schema().awaitIndexesOnline(10, TimeUnit.SECONDS)
+                tx.success()
+            } finally {
+                tx.close()
+            }
+        }
     }
 
 }

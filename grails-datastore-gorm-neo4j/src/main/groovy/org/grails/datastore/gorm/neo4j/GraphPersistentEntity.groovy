@@ -46,11 +46,10 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
 
     public Collection<String> getLabels(domainInstance=null) {
         Object objs = mappedForm.getLabels();
-        if (objs instanceof Object[]) {
-            objs.collect { getLabelFor(it, domainInstance) }
-        } else {
-            [getLabelFor(objs, domainInstance)]
-        }
+        def result = objs instanceof Object[] ?
+                objs.collect { getLabelFor(it, domainInstance) } :
+                [getLabelFor(objs, domainInstance)]
+        result.findAll { it }  // remove nulls
     }
 
     private Object getLabelFor(Object obj, domainInstance) {
@@ -63,15 +62,22 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
                 break
             case Closure:
                 Closure closure = (Closure)obj
-                closure.call(closure.maximumNumberOfParameters == 2 ? [this, domainInstance]: this)
+                Object result = null
+                switch (closure.maximumNumberOfParameters) {
+                    case 1:
+                        result = closure(this)
+                        break
+                    case 2:
+                        result = domainInstance == null ? null : closure(this, domainInstance)
+                        break
+                    default:
+                        throw new IllegalArgumentException("closure specified in labels is unsupported, it expects $closure.maximumNumberOfParameters parameters.")
+                }
+                return result instanceof GString ? result.toString() : result
                 break
             default:
                 throw new IllegalArgumentException("dunno know how to handle " + obj?.getClass().getName() + " " + obj + " for labels mapping");
         }
-    }
-
-    public String getFirstLabel() {
-        return getLabels().iterator().next();
     }
 
     /**
