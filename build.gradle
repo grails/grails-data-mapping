@@ -1,6 +1,6 @@
 project.ext {
     springVersion = "3.2.8.RELEASE"
-    grailsVersion = "2.3.8"
+    grailsVersion = "2.3.9"
     slf4jVersion = "1.7.5"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.1.9'
 }
@@ -28,6 +28,7 @@ apply plugin: 'project-report'
 
 ext {
     isCiBuild = project.hasProperty("isCiBuild")
+
 }
 allprojects {
     repositories {
@@ -54,13 +55,14 @@ task wrapper(type: Wrapper) {
 subprojects {
     if(project.name.endsWith("spring-boot")) return
     ext {
-        releaseType = "RELEASE"
-//        releaseType = "BUILD-SNAPSHOT"
+        projectVersion = "3.1.2"
+//        releaseType = "RELEASE"
+        releaseType = "BUILD-SNAPSHOT"
         isCiBuild = project.hasProperty("isCiBuild")
         isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
     }
 
-    version = "3.1.1.${releaseType}"
+    version = "${projectVersion}.${releaseType}"
     group = "org.grails"
 
 
@@ -324,7 +326,24 @@ dependencies {
     build "org.apache.ant:ant-nodeps:1.8.1"
 }
 
-task allDocs(dependsOn: getTasksByName("docs", true)) << {
+task coreApiDocs(type: Groovydoc) {
+   def coreDocs = [ 'grails-datastore-core', 
+                    'grails-datastore-gorm', 
+                    'grails-datastore-gorm-hibernate-core', 
+                    'grails-datastore-gorm-hibernate4', 
+                    'grails-datastore-simple', 
+                    'grails-datastore-web', 
+                    'grails-datastore-gorm-test']
+   def projs = subprojects.findAll { project -> coreDocs.contains(project.name) }
+   source projs.collect { project -> project.sourceSets.main.allGroovy } + projs.collect { project -> project.sourceSets.main.allJava }
+   destinationDir = new File(buildDir, 'docs/api')
+   // Might need a classpath
+   classpath = files(projs.collect {project -> project.sourceSets.main.compileClasspath})
+   groovyClasspath = files(projs.collect {project -> project.sourceSets.main.compileClasspath})
+}
+
+
+task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
     def docTasks = getTasksByName("docs", true)
     def groovydocTasks = getTasksByName("groovydoc", true)
     allDocsDir = "$buildDir/docs"
@@ -336,14 +355,7 @@ task allDocs(dependsOn: getTasksByName("docs", true)) << {
         if (projectName.endsWith("-core")) {
             mkdir "$allDocsDir/manual"
 
-            fileTree { from dir }.copy { into "$allDocsDir/manual" }
-            def groovydocTask = groovydocTasks.find { it.project.name.endsWith "datastore-core" }
-            if (groovydocTask != null) {
-                mkdir "$allDocsDir/api"
-                groovydocTask.actions.each { it.execute(groovydocTask) }
-
-                fileTree { from groovydocTask.destinationDir }.copy { into "$allDocsDir/api"}
-            }
+            fileTree { from dir }.copy { into "$allDocsDir/manual" }            
         }
         else {
             def storeName = projectName["grails-documentation-".size()..-1]
@@ -363,7 +375,7 @@ task allDocs(dependsOn: getTasksByName("docs", true)) << {
 
         def engine = new groovy.text.SimpleTemplateEngine()
         def binding = [
-            datastores:stores.collect { "<li><a href=\"$it/index.html\">GORM for ${it[0].toUpperCase()}${it[1..-1]}</a></li>" }.join(System.getProperty("line.separator"))
+            datastores:stores.collect { "<li><a href=\"http://grails.github.io/grails-data-mapping/$it/index.html\">GORM for ${it[0].toUpperCase()}${it[1..-1]}</a></li>" }.join(System.getProperty("line.separator"))
         ]
         def template = engine.createTemplate(new File("src/docs/resources/core.template")).make(binding)
         new File("$allDocsDir/index.html").text = template.toString()

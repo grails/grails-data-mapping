@@ -32,6 +32,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter
 import org.springframework.util.ClassUtils
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
@@ -286,6 +287,10 @@ class RestBuilder {
         final mappingJackson2HttpMessageConverter = messageConverters.find { HttpMessageConverter httpMessageConverter -> httpMessageConverter instanceof MappingJackson2HttpMessageConverter }
         if(mappingJackson2HttpMessageConverter) {
             messageConverters.remove(mappingJackson2HttpMessageConverter)
+        }
+        final mappingJacksonHttpMessageConverter = messageConverters.find { HttpMessageConverter httpMessageConverter -> httpMessageConverter instanceof MappingJacksonHttpMessageConverter }
+        if(mappingJacksonHttpMessageConverter) {
+            messageConverters.remove(mappingJacksonHttpMessageConverter)
         }
         if(ClassUtils.isPresent("com.google.gson.Gson", getClass().getClassLoader())) {
             messageConverters.add(new GsonHttpMessageConverter())

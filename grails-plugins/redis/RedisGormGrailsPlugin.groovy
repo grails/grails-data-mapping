@@ -26,9 +26,9 @@ class RedisGormGrailsPlugin {
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPREDIS" ]
     def scm = [ url: "https://github.com/grails/grails-data-mapping" ]
 
-    def version = "1.0.0"
+    def version = "1.0.1"
     def grailsVersion = "2.3.0 > *"
-    def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
+    def loadAfter = ['domainClass', 'hibernate', 'hibernate4', 'services', 'cloudFoundry']
     def observe = ['services', 'domainClass']
     
     def author = "Graeme Rocher"
@@ -50,7 +50,7 @@ class RedisGormGrailsPlugin {
         def datastore = ctx.redisDatastore
         def transactionManager = ctx.redisDatastoreTransactionManager
         def methodsConfigurer = new RedisMethodsConfigurer(datastore, transactionManager)    
-        methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")        
+        methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")        
         def foe = application?.config?.grails?.gorm?.failOnError
         methodsConfigurer.failOnError = foe instanceof Boolean ? foe : false        
         methodsConfigurer.configure()

@@ -28,15 +28,14 @@ grails.project.dependency.resolution = {
         def datastoreVersion = "3.1.1.RELEASE"
         def redisDatastoreVersion = "1.0.0.RELEASE"
 
-        compile("org.grails:grails-datastore-gorm-redis:$redisDatastoreVersion", excludes)
-
-        compile("org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",        
-                "org.grails:grails-datastore-gorm:$datastoreVersion",
-                "org.grails:grails-datastore-core:$datastoreVersion",                
-                "org.grails:grails-datastore-web:$datastoreVersion", excludes)
-
-        test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
-             "org.grails:grails-datastore-simple:$datastoreVersion", excludes)
+        compile("org.grails:grails-datastore-gorm-redis:$redisDatastoreVersion") {
+            exclude group:"org.grails", name:'grails-core'
+            exclude group:"org.grails", name:'grails-bootstrap'
+            exclude group:"org.grails", name:'grails-test'
+            exclude group:"org.springframework", name:'spring-tx'
+            exclude group:"org.springframework", name:'spring-core'
+            exclude group:"org.springframework", name:'spring-beans'
+        }
     }
 
     plugins {

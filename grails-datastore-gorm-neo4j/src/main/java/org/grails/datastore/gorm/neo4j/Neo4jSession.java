@@ -119,8 +119,6 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     public void flush() {
         persistDirtyButUnsavedInstances();
         super.flush();
-        cypherEngine.commit();
-        cypherEngine.beginTx();
     }
 
     @Override
@@ -130,10 +128,12 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
         if (publisher!=null) {
             publisher.publishEvent(new SessionFlushedEvent(this));
         }
+        cypherEngine.commit();
     }
 
     /**
-     * in case a known instance is modified and not explicitly saved, we track dirty state here and spool them for persisting
+     * in case a
+     * known instance is modified and not explicitly saved, we track dirty state here and spool them for persisting
      */
     private void persistDirtyButUnsavedInstances() {
         Set pendingObjects = new HashSet();
@@ -152,7 +152,7 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
             for (Object obj: cache.values()) {
                 if (obj instanceof DirtyCheckable) {
                     boolean isDirty = ((DirtyCheckable)obj).hasChanged();
-                    if (isDirty && (!pendingObjects.contains(obj))) {
+                    if (isDirty) {
                         persist(obj);
                     }
                 }

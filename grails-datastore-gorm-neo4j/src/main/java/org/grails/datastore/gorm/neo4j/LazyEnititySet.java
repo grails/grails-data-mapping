@@ -1,8 +1,10 @@
 package org.grails.datastore.gorm.neo4j;
 
 import org.grails.datastore.gorm.neo4j.engine.CypherResult;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.ManyToMany;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 
 import java.util.*;
@@ -34,8 +36,7 @@ public class LazyEnititySet<T> implements Set<T> {
         if (!initialized) {
             initialized = true;
             String cypher = CypherBuilder.findRelationshipEndpointIdsFor(association);
-            CypherResult result = session.getNativeInterface().execute(cypher,
-                    Collections.singletonMap("id", owner.getIdentifier()));
+            CypherResult result = session.getNativeInterface().execute(cypher, Collections.singletonList(owner.getIdentifier()));
 
             Class<T> clazz = association.getAssociatedEntity().getJavaClass();
             for (Map<String, Object> row : result) {
@@ -83,7 +84,12 @@ public class LazyEnititySet<T> implements Set<T> {
             EntityAccess target = new EntityAccess(association.getAssociatedEntity(), o);
 
             if (association.isBidirectional()) {
-                target.setProperty(association.getReferencedPropertyName(), owner.getEntity()); // TODO: might fail on many2many
+                if (association instanceof ManyToMany) {
+                    Collection coll = (Collection) target.getProperty(association.getReferencedPropertyName());
+                    coll.add(owner.getEntity());
+                } else {
+                    target.setProperty(association.getReferencedPropertyName(), owner.getEntity());
+                }
             }
 
             if (target.getIdentifier()==null) { // non-persistent instance
@@ -93,6 +99,8 @@ public class LazyEnititySet<T> implements Set<T> {
             if (!reversed) { // prevent duplicated rels
                 session.addPendingInsert(new RelationshipPendingInsert(owner, relType, target, session.getNativeInterface()));
             }
+
+            markDirty();
 
         }
         return isNew;
@@ -105,6 +113,9 @@ public class LazyEnititySet<T> implements Set<T> {
             session.addPendingInsert(new RelationshipPendingDelete(owner, relType,
                     new EntityAccess(association.getAssociatedEntity(), o),
                     session.getNativeInterface()));
+        }
+        if (isDeleted) {
+            markDirty();
         }
         return isDeleted;
     }
@@ -151,4 +162,12 @@ public class LazyEnititySet<T> implements Set<T> {
         }
         return hasChanged;
     }
+
+    private void markDirty() {
+        Object entity = owner.getEntity();
+        if (entity instanceof DirtyCheckable) {
+            ((DirtyCheckable) entity).markDirty(association.getName());
+        }
+    }
+
 }

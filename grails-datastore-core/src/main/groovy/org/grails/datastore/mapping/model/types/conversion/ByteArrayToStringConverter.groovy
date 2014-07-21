@@ -12,15 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.neo4j
+package org.grails.datastore.mapping.model.types.conversion
 
-import org.neo4j.graphdb.RelationshipType
+import groovy.transform.CompileStatic
+
+import org.springframework.core.convert.converter.Converter
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
-enum GrailsRelationshipTypes implements RelationshipType {
-    SUBREFERENCE,
-    INSTANCE,
-    SUBSUBREFERENCE
+@CompileStatic
+class ByteArrayToStringConverter implements Converter<byte[], String> {
+    @Override
+    String convert(byte[] source) {
+        source.encodeBase64().toString()
+    }
 }

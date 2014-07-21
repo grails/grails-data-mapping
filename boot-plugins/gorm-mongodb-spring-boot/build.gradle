@@ -1,7 +1,7 @@
 apply from:'../gradle/maven-central-build.gradle'
 
 group = 'org.grails'
-version = "1.0.0.RELEASE"
+version = "1.1.0.RELEASE"
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
@@ -13,20 +13,20 @@ repositories {
 }
 
 dependencies {
-    def springBootVersion = '1.0.2.RELEASE'
+    def springBootVersion = '1.1.1.RELEASE'
     compile "org.springframework.boot:spring-boot-cli:$springBootVersion", {
         exclude group:'org.codehaus.groovy', module:'groovy'
     }
     
     compile "org.springframework.boot:spring-boot-autoconfigure:$springBootVersion"
 
-    compile 'org.codehaus.groovy:groovy-all:2.2.1'
+    compile 'org.codehaus.groovy:groovy-all:2.3.2'
     compile "org.grails:grails-datastore-gorm-mongodb:3.0.1.RELEASE", {
         exclude group:'org.grails', module:'grails-datastore-gorm-plugin-support'
         exclude group:"org.springframework.data", module:"spring-data-mongodb"
     }
-    compile "org.mongodb:mongo-java-driver:2.12.1"
-    compile "org.springframework.data:spring-data-mongodb:1.4.2.RELEASE", {
+    compile "org.mongodb:mongo-java-driver:2.12.2"
+    compile "org.springframework.data:spring-data-mongodb:1.5.0.RELEASE", {
         exclude group:"org.mongodb", module:"mongo-java-driver"
     }
     compile "org.springframework:spring-tx:4.0.5.RELEASE"

@@ -20,6 +20,7 @@ import org.codehaus.groovy.grails.compiler.gorm.GormTransformer
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
 import org.grails.datastore.gorm.GormEnhancer
+import org.hibernate.SessionFactory
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
@@ -104,12 +105,12 @@ class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoader
     static class EagerInitProcessor implements BeanPostProcessor, ApplicationContextAware {
 
         ApplicationContext applicationContext
-        private MessageSource messageSource
+        private SessionFactory sessionFactory
         private Map enhancers
 
         @Override
         Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-            if(messageSource != null && enhancers == null) {
+            if(sessionFactory != null && enhancers == null) {
                 // force GORM enhancer initialisation
                 applicationContext.getBean(HibernateDatastoreSpringInitializer.PostInitializationHandling)
                 enhancers = applicationContext.getBeansOfType(GormEnhancer)
@@ -119,8 +120,8 @@ class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoader
 
         @Override
         Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-            if(bean instanceof MessageSource) {
-                messageSource = (MessageSource)bean
+            if(bean instanceof SessionFactory) {
+                sessionFactory = (SessionFactory)bean
             }
             return bean
         }

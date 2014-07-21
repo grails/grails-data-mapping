@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.redis.engine;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
 
+import redis.clients.jedis.Protocol;
 import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.util.SafeEncoder;
 
@@ -81,6 +83,30 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPersister<Map, L
     @Override
     protected Object getEntryValue(Map nativeEntry, String property) {
         return nativeEntry.get(property);
+    }
+
+    @Override
+    protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, Map nativeEntry) {
+        final NativeEntryModifyingEntityAccess ea = new NativeEntryModifyingEntityAccess(persistentEntity, obj) {
+            public void setProperty(String name, Object value) {
+                Class type = getPropertyType(name);
+                if(type.isArray() && byte.class.isAssignableFrom(type.getComponentType()) && value instanceof CharSequence) {
+                    try {
+                        super.setProperty(name, value.toString().getBytes(Protocol.CHARSET));
+                    } catch (UnsupportedEncodingException e) {
+                        // ignore
+                    }
+                }
+                else {
+                    super.setProperty(name, value);
+                }
+
+            }
+        };
+        ea.setConversionService(getMappingContext().getConversionService());
+        ea.setNativeEntry(nativeEntry);
+        return ea;
+
     }
 
     @Override

@@ -1,40 +1,70 @@
 grails {
     neo4j {
-        // define a Neo4j datasource
-        // type is either "embedded", "rest", "ha", or any custom class implementing GraphDatabaseService
 
-        // 1) embedded
-        // when using embedded, Neo4j runs inside the same JVM like the Grails application
-        // options:
-        // location: the path where Neo4j is stored, defaults to "data/neo4j"
-        // params: optional map passed to EmbeddedGraphDatabase
-        type = "embedded"
-        // location = "data/neo4j"
-        params = [ enable_remote_shell: true]
+        // neo4j jdbc url, see https://github.com/neo4j-contrib/neo4j-jdbc for syntax
+        // this configures a embedded instance
+        url = "jdbc:neo4j:instance:dummy"
 
+        // for remote usage:
+        // url = "jdbc:neo4j://localhost:7474/"
+        // optional: if authentication extension is used on Neo4j server, provide credentials:
+        //    username = "neo4j"
+        //    password = "<mypasswd>"
 
-        // 2) rest
-        // when using a Neo4j server via rest REST uncomment the following line
-        // type = "rest"
-        // options:
-        // location: URL of rest server, defaults to http://localhost:7474/db/data/
-        // NB: if heroku is used just omit location, the plugin tries to use env.NEO4J_URL in this case
-        // NB: params are not allowed when using REST
+        // any other stuff below is just for embedded instances
 
-        // type="rest
-        // location = "http://localhost:7474/db/data/"
+        // configure embedded mode, if true HA is used, false refers to single instance
+        // NB: for HA you need to configure dbProperties
+        // NB: for HA you need to add dependencies
+        // ha = false
 
-        // 3) HA embedded
-        // use a in-JVM Neo4j instance being part of a HA cluster
-        // options:
-        // location: directory where Neo4j stores the db
-        // options: parameters for HA setup, see http://docs.neo4j.org/chunked/stable/ha-configuration.html#_installation_notes
-        // type = "ha"
-        // location = "data/neo4j"
-        // params = [
-        //    ha.server_id = 1
-        //    ha.coordinators = " localhost:2181,localhost:2182,localhost:2183"
-        // ]
+        // set graph.db location, defaults to data/graph.db
+        // location = "<path for graph.db>"
 
+        // put any Neo4j config options (normally residing in neo4j.properties) here
+        // NB: this does of course not work if url is a remote connection
+        dbProperties = [
+
+            // allow_store_upgrade: true,
+            // remote_shell_enabled: true,
+
+            // minimum required sample settings for ha=true
+            // see http://docs.neo4j.org/chunked/stable/ha-configuration.html#_database_configuration for full list
+            // 'ha.server_id': 1,
+            // 'ha.initial_hosts': "localhost:5001-5003",
+        ]
+    }
+}
+
+// environment specific settings
+environments {
+    development {
+        dataSource {
+            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
+        }
+    }
+    test {
+        dataSource {
+            dbCreate = "update"
+            url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
+        }
+    }
+    production {
+        dataSource {
+            dbCreate = "update"
+            url = "jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
+            properties {
+               maxActive = -1
+               minEvictableIdleTimeMillis=1800000
+               timeBetweenEvictionRunsMillis=1800000
+               numTestsPerEvictionRun=3
+               testOnBorrow=true
+               testWhileIdle=true
+               testOnReturn=false
+               validationQuery="SELECT 1"
+               jdbcInterceptors="ConnectionState"
+            }
+        }
     }
 }

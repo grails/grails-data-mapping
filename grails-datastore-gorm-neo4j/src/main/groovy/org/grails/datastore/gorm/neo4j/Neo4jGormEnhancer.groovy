@@ -18,14 +18,10 @@ import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.MappingContext
-import org.neo4j.graphdb.Node
-import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.core.Session
-import org.grails.datastore.mapping.core.SessionCallback
 import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.util.ClassUtils
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -151,9 +147,18 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param params
      * @return
      */
-    def cypher(instance, String queryString, Map params = [:]) {
+    def cypher(instance, String queryString, Map params ) {
         params['this'] = instance.id
         ((Neo4jDatastore)datastore).cypherEngine.execute(queryString, params)
+    }
+
+    def cypher(instance, String queryString, List params ) {
+        params.add(0, instance.id)
+        ((Neo4jDatastore)datastore).cypherEngine.execute(queryString, params)
+    }
+
+    def cypher(instance, String queryString) {
+        ((Neo4jDatastore)datastore).cypherEngine.execute(queryString, Collections.singletonList(instance.id))
     }
 
 }
@@ -164,8 +169,16 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
         super(persistentClass, datastore, finders, transactionManager)
     }
 
-    def cypherStatic(String queryString, Map params = [:]) {
+    def cypherStatic(String queryString, Map params) {
         ((Neo4jDatastore)datastore).cypherEngine.execute(queryString, params)
+    }
+
+    def cypherStatic(String queryString, List params) {
+        ((Neo4jDatastore)datastore).cypherEngine.execute(queryString, params)
+    }
+
+    def cypherStatic(String queryString) {
+        ((Neo4jDatastore)datastore).cypherEngine.execute(queryString)
     }
 
 }

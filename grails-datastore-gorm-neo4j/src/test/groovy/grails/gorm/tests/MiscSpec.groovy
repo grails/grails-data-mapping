@@ -4,15 +4,12 @@ import grails.persistence.Entity
 import groovy.beans.Bindable
 import groovyx.gpars.GParsPool
 import org.grails.datastore.gorm.Setup
-import org.grails.datastore.gorm.neo4j.GrailsRelationshipTypes
-import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.DynamicLabel
-import org.neo4j.graphdb.Node
 import org.neo4j.helpers.collection.IteratorUtil
 import spock.lang.Ignore
-import spock.lang.IgnoreRest
 import spock.lang.Issue
-import spock.lang.Unroll
+
+import java.util.concurrent.TimeUnit
 
 /**
  * some more unrelated testcases, in more belong together logically, consider refactoring them into a seperate spec
@@ -149,9 +146,37 @@ class MiscSpec extends GormDatastoreSpec {
         tournament.teams[0].club.name == 'club'
     }
 
+    void "test concurrent accesses"() {
+        when:
+        GParsPool.withPool(concurrency) {
+            (1..count).eachParallel { counter ->
+                new Team(name: "Team $counter").save(flush:true, failOnError: true)
+            }
+        }
+
+        then:
+        Team.count() == count
+
+        where:
+        count | concurrency
+        100   | 4
+        100   | 16
+        100   | 100
+
+    }
+
     void "test indexing"() {
         setup: "by default test suite runs without indexes, so we need to build them"
+
         Thread.start {
+/*  TODO: withNewTransaction seems not work as expected
+            Book.withNewTransaction {
+                session.datastore.setupIndexing()
+            }
+            Book.withNewTransaction {
+                Setup.graphDb.schema().awaitIndexesOnline(10, TimeUnit.SECONDS)
+            }
+*/
             def tx = Setup.graphDb.beginTx()
             try {
                 session.datastore.setupIndexing()
@@ -159,16 +184,32 @@ class MiscSpec extends GormDatastoreSpec {
             } finally {
                 tx.close()
             }
-
+            tx = Setup.graphDb.beginTx()
+            try {
+                Setup.graphDb.schema().awaitIndexesOnline(10, TimeUnit.SECONDS)
+                tx.success()
+            } finally {
+                tx.close()
+            }
         }.join()
+
+
         def task1 = new Task(name: 'task1')
         task1.save()
-        new Task(name: 'task2').save(flush: true)
+//        new Task(name: 'task2').save(flush: true)
         session.clear()
 
         when:
-        def indexedProperties = Setup.graphDb.schema().getIndexes(DynamicLabel.label("Task")).collect {
-            IteratorUtil.single(it.propertyKeys)
+
+        def indexedProperties
+        def tx = Setup.graphDb.beginTx()
+        try {
+            indexedProperties = Setup.graphDb.schema().getIndexes(DynamicLabel.label("Task")).collect {
+                IteratorUtil.single(it.propertyKeys)
+            }
+            tx.success()
+        } finally {
+            tx.close()
         }
 
         then:
@@ -248,45 +289,12 @@ class MiscSpec extends GormDatastoreSpec {
 
     }
 
-    @Ignore
-    def "manual perf test"() {
-        when:
-
-        Node subRef
-        Team.withNewTransaction {
-            subRef = session.nativeInterface.createNode()
-        }
-        def start = System.currentTimeMillis()
-        Team.withNewTransaction {
-            for (i in 1..10000) {
-                Node node = session.nativeInterface.createNode()
-                node.setProperty("name", "Team $i".toString())
-                subRef.createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
-            }
-        }
-        def delta = System.currentTimeMillis() - start
-        println "create 10000 in $delta msec"
-
-        then:
-        delta > 0
-
-        when:
-        start = System.currentTimeMillis()
-        def count = IteratorUtil.count((Iterator)subRef.getRelationships(Direction.OUTGOING, GrailsRelationshipTypes.INSTANCE))
-        delta = System.currentTimeMillis() - start
-        println "count is $count, delta $delta"
-
-        then:
-        delta > 0
-
-    }
-
     @Issue("https://github.com/SpringSource/grails-data-mapping/issues/52")
     def "check that date properties are stored natively as longs"() {
         when:
             def pet = new Pet(birthDate: new Date(), name: 'Cosima').save(flush: true)
         then:
-            IteratorUtil.single(session.nativeInterface.execute("MATCH (p:Pet {name:{name}}) RETURN p.birthDate as birthDate", [name: 'Cosima'])).birthDate instanceof Long
+            IteratorUtil.single(session.nativeInterface.execute("MATCH (p:Pet {name:{1}}) RETURN p.birthDate as birthDate", ['Cosima'])).birthDate instanceof Long
     }
 
     @Issue("https://github.com/SpringSource/grails-data-mapping/issues/52")
@@ -296,19 +304,20 @@ class MiscSpec extends GormDatastoreSpec {
             def pet = new Pet(birthDate: date, name:'Cosima').save(flush: true)
 
         when: "write birthDate as a String"
-            session.nativeInterface.execute("MATCH (p:Pet {name:{name}}) SET p.birthDate={birthDate}",
-                [name: 'Cosima', birthDate: date.time.toString()])
+            session.nativeInterface.execute("MATCH (p:Pet {name:{}}) SET p.birthDate={}",
+                ['Cosima', date.time.toString()])
             pet = Pet.get(pet.id)
         then: "the string stored date gets parsed correctly"
             pet.birthDate == date
     }
 
+    @Ignore("this test no longer makes sense as we're storing base64 encoded strings for byte[] props")
     def "byte arrays work as domain class properties"() {
         when:
         def team = new Team(name: 'name', binaryData: 'abc'.bytes)
         team.save(flush: true)
-        def value = IteratorUtil.single(session.nativeInterface.execute("MATCH (p:Team {name:{name}}) RETURN p.binaryData as binaryData",
-            [name: 'name'])).binaryData
+        def value = IteratorUtil.single(session.nativeInterface.execute("MATCH (p:Team {name:{1}}) RETURN p.binaryData as binaryData",
+            ['name'])).binaryData
 
         then:
         value.class == byte[].class
@@ -380,17 +389,6 @@ class MiscSpec extends GormDatastoreSpec {
         c.save(flush: true)
     }
 
-    def "we can customize label being used"() {
-        setup:
-            def club = new Club(name: 'club')
-            club.save(flush: true)
-        when:
-            def result = session.nativeInterface.execute("MATCH (c:MyCustomLabel {name:{name}}) RETURN c",
-                        [name: 'club'])
-        then:
-            IteratorUtil.count(result) == 1
-    }
-
 }
 
 @Entity
@@ -424,10 +422,6 @@ class Club implements Serializable {
     String name
     List teams
     static hasMany = [teams: Team ]
-
-    static mapping = {
-        label "MyCustomLabel"
-    }
 
     // TODO: maybe refactor this into a AST
     protected Object writeReplace()
