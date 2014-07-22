@@ -27,14 +27,7 @@ public abstract class AbstractFindByFinder extends DynamicFinder {
     }
 
     protected Object invokeQuery(Query q) {
-        q.max(1);
-
-        List<?> results = q.list();
-        if (results.isEmpty()) {
-            return null;
-        }
-
-        return results.get(0);
+        return q.singleResult();
     }
 
     public boolean firstExpressionIsRequiredBoolean() {

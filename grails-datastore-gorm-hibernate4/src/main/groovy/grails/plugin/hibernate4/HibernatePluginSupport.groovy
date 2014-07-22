@@ -261,7 +261,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'""",t
 
                 hibernateProperties = ref("hibernateProperties$suffix")
 
-                grailsApplication = ref("grailsApplication", true)
+                grailsApplication = ref("grailsApplication")
 
                 entityInterceptor = ref("entityInterceptor$suffix")
 

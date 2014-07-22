@@ -24,6 +24,7 @@ public class Entity {
 
     private boolean stateless = false;
     private boolean autoTimestamp = true;
+    private Object defaultSort = null;
 
     /**
      * @return Whether automatic time stamps should be applied to 'lastUpdate' and 'dateCreated' properties
@@ -45,5 +46,16 @@ public class Entity {
 
     public void setStateless(boolean stateless) {
         this.stateless = stateless;
+    }
+
+    /**
+     * @return The default sort order definition, could be a string or a map
+     */
+    public Object getSort() {
+        return defaultSort;
+    }
+
+    public void setSort(Object defaultSort) {
+        this.defaultSort = defaultSort;
     }
 }

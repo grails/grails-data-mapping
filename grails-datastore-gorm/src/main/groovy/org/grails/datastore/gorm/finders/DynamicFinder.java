@@ -19,16 +19,13 @@ import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.FetchType;
 
+import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.finders.MethodExpression.Between;
 import org.grails.datastore.gorm.finders.MethodExpression.Equal;
@@ -384,8 +381,13 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             }
         }
 
-        final String sort = (String)argMap.get(ARGUMENT_SORT);
-        final String order = ORDER_DESC.equalsIgnoreCase(orderParam) ? ORDER_DESC : ORDER_ASC;
+        if(argMap.containsKey(ARGUMENT_CACHE)) {
+            q.cache(GrailsClassUtils.getBooleanFromMap(ARGUMENT_CACHE, argMap));
+        }
+        if(argMap.containsKey(ARGUMENT_LOCK)) {
+            q.lock(GrailsClassUtils.getBooleanFromMap(ARGUMENT_LOCK, argMap));
+        }
+
         final int max = maxParam == null ? -1 : maxParam;
         final int offset = offsetParam == null ? -1 : offsetParam;
         if (max > -1) {
@@ -394,16 +396,49 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         if (offset > -1) {
             q.offset(offset);
         }
-        if (sort != null) {
-            if (ORDER_DESC.equalsIgnoreCase(order)) {
-                q.order(Query.Order.desc(sort));
+        Object sortObject = argMap.get(ARGUMENT_SORT);
+        boolean ignoreCase = !argMap.containsKey(ARGUMENT_IGNORE_CASE) || GrailsClassUtils.getBooleanFromMap(ARGUMENT_IGNORE_CASE, argMap);
+
+        if (sortObject != null) {
+            if(sortObject instanceof CharSequence) {
+                final String sort = sortObject.toString();
+                final String order = ORDER_DESC.equalsIgnoreCase(orderParam) ? ORDER_DESC : ORDER_ASC;
+                addSimpleSort(q, sort, order, ignoreCase);
             }
-            else {
-                q.order(Query.Order.asc(sort));
+            else if(sortObject instanceof Map) {
+                Map sortMap = (Map)sortObject;
+                applySortForMap(q, sortMap, ignoreCase);
+
             }
         }
+
         if (q instanceof QueryArgumentsAware) {
             ((QueryArgumentsAware)q).setArguments(argMap);
+        }
+    }
+
+
+    private static void addSimpleSort(Query q, String sort, String order, boolean ignoreCase) {
+        Query.Order o;
+        if (ORDER_DESC.equalsIgnoreCase(order)) {
+            o = Query.Order.desc(sort);
+        }
+        else {
+            o = Query.Order.asc(sort);
+        }
+
+        if(ignoreCase) o = o.ignoreCase();
+
+        q.order(o);
+    }
+
+    public static void applySortForMap(Query q, Map sortMap, boolean ignoreCase) {
+        for (Object key : sortMap.keySet()) {
+            Object value = sortMap.get(key);
+            String sort = key.toString();
+            String order = value != null ? value.toString() : ORDER_ASC;
+
+            addSimpleSort(q, sort, order, ignoreCase);
         }
     }
 
@@ -426,6 +461,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
     protected void configureQueryWithArguments(Class clazz, Query query, Object[] arguments) {
         if (arguments.length == 0 || !(arguments[0] instanceof Map)) {
+            populateArgumentsForCriteria(clazz, query, Collections.emptyMap());
             return;
         }
 

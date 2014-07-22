@@ -61,7 +61,8 @@ public abstract class Query implements Cloneable{
     protected Session session;
     protected boolean uniqueResult;
     protected Map<String, FetchType> fetchStrategies = new HashMap<String,FetchType>();
-    protected boolean queryCache;
+    protected Boolean queryCache;
+    protected Boolean lockResult;
 
     protected Query(Session session, PersistentEntity entity) {
         this.entity = entity;
@@ -113,7 +114,18 @@ public abstract class Query implements Cloneable{
      * @return The query
      */
     public Query cache(boolean cache) {
-        queryCache = true;
+        queryCache = cache;
+        return this;
+    }
+
+    /**
+     * Specifies whether the query should obtain a pessimistic lock
+     *
+     * @param lock True if a lock should be obtained
+     * @return The query
+     */
+    public Query lock(boolean lock) {
+        lockResult = lock;
         return this;
     }
 
@@ -675,6 +687,7 @@ public abstract class Query implements Cloneable{
     public static class Order {
         private Direction direction = Direction.ASC;
         private String property;
+        private boolean ignoreCase = false;
 
         public Order(String property) {
             this.property = property;
@@ -685,22 +698,57 @@ public abstract class Query implements Cloneable{
             this.property = property;
         }
 
+        /**
+         * Whether to ignore the case for this order definition
+         *
+         * @return This order instance
+         */
+        public Order ignoreCase() {
+            this.ignoreCase = true;
+            return this;
+        }
+
+        public boolean isIgnoreCase() {
+            return ignoreCase;
+        }
+
+        /**
+         * @return The direction order by
+         */
         public Direction getDirection() {
             return direction;
         }
 
+        /**
+         * @return The property name to order by
+         */
         public String getProperty() {
             return property;
         }
 
+        /**
+         * Creates a new order for the given property in descending order
+         *
+         * @param property The property
+         * @return The order instance
+         */
         public static Order desc(String property) {
             return new Order(property, Direction.DESC);
         }
 
+        /**
+         * Creates a new order for the given property in ascending order
+         *
+         * @param property The property
+         * @return The order instance
+         */
         public static Order asc(String property) {
             return new Order(property, Direction.ASC);
         }
 
+        /**
+         * Represents the direction of the ordering
+         */
         public static enum Direction {
             ASC, DESC
         }

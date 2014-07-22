@@ -42,7 +42,7 @@ import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.springframework.util.Assert;
 
 /**
- * Criteria builder implementation that operates against Spring datastore abstraction.
+ * Criteria builder implementation that operates against DataStore abstraction.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -305,9 +305,9 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     public Object invokeMethod(String name, Object obj) {
         Object[] args = obj.getClass().isArray() ? (Object[])obj : new Object[]{obj};
 
+        initializeQuery();
         if (isCriteriaConstructionMethod(name, args)) {
 
-            initializeQuery();
 
             uniqueResult = false;
 

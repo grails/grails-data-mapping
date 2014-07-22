@@ -16,15 +16,8 @@
 package org.codehaus.groovy.grails.orm.hibernate.proxy;
 
 
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.codehaus.groovy.grails.support.proxy.EntityProxyHandler;
-import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
-import org.hibernate.Hibernate;
 import org.hibernate.collection.AbstractPersistentCollection;
 import org.hibernate.collection.PersistentCollection;
-import org.hibernate.proxy.HibernateProxy;
-import org.hibernate.proxy.HibernateProxyHelper;
-import org.hibernate.proxy.LazyInitializer;
 
 /**
  * Implementation of the ProxyHandler interface for Hibernate.
@@ -32,96 +25,36 @@ import org.hibernate.proxy.LazyInitializer;
  * @author Graeme Rocher
  * @since 1.2.2
  */
-public class HibernateProxyHandler implements EntityProxyHandler {
+public class HibernateProxyHandler extends SimpleHibernateProxyHandler {
 
     public boolean isInitialized(Object o) {
-        if (o instanceof HibernateProxy) {
-            return !((HibernateProxy)o).getHibernateLazyInitializer().isUninitialized();
-        }
-
         if (o instanceof PersistentCollection) {
             return ((PersistentCollection)o).wasInitialized();
         }
 
-        return true;
-    }
-
-    public boolean isInitialized(Object obj, String associationName) {
-        try {
-            Object proxy = ClassPropertyFetcher.forClass(obj.getClass()).getPropertyValue(obj, associationName);
-            return Hibernate.isInitialized(proxy);
-        }
-        catch (RuntimeException e) {
-            return false;
-        }
+        return super.isInitialized(o);
     }
 
     public Object unwrapIfProxy(Object instance) {
-        if (instance instanceof HibernateProxy) {
-            final HibernateProxy proxy = (HibernateProxy)instance;
-            return unwrapProxy(proxy);
-        }
-
         if (instance instanceof AbstractPersistentCollection) {
             initialize(instance);
             return instance;
         }
 
-        return instance;
-    }
-
-    public Object unwrapProxy(final HibernateProxy proxy) {
-        final LazyInitializer lazyInitializer = proxy.getHibernateLazyInitializer();
-        if (lazyInitializer.isUninitialized()) {
-            lazyInitializer.initialize();
-        }
-        final Object obj = lazyInitializer.getImplementation();
-        if (obj != null) {
-            GrailsHibernateUtil.ensureCorrectGroovyMetaClass(obj,obj.getClass());
-        }
-        return obj;
-    }
-
-    public HibernateProxy getAssociationProxy(Object obj, String associationName) {
-        try {
-            Object proxy = ClassPropertyFetcher.forClass(obj.getClass()).getPropertyValue(obj, associationName);
-            if (proxy instanceof HibernateProxy) {
-                return (HibernateProxy) proxy;
-            }
-            return null;
-        }
-        catch (RuntimeException e) {
-            return null;
-        }
+        return super.unwrapIfProxy(instance);
     }
 
     public boolean isProxy(Object o) {
-        return (o instanceof HibernateProxy) || (o instanceof AbstractPersistentCollection);
+        return super.isProxy(o) || (o instanceof AbstractPersistentCollection);
     }
 
     public void initialize(Object o) {
-        if (o instanceof HibernateProxy) {
-            final LazyInitializer hibernateLazyInitializer = ((HibernateProxy)o).getHibernateLazyInitializer();
-            if (hibernateLazyInitializer.isUninitialized()) {
-                hibernateLazyInitializer.initialize();
-            }
-        }
-        else if (o instanceof AbstractPersistentCollection) {
+        if (o instanceof AbstractPersistentCollection) {
             final AbstractPersistentCollection col = (AbstractPersistentCollection)o;
             if (!col.wasInitialized()) {
                 col.forceInitialization();
             }
         }
-    }
-
-    public Object getProxyIdentifier(Object o) {
-        if (o instanceof HibernateProxy) {
-            return ((HibernateProxy)o).getHibernateLazyInitializer().getIdentifier();
-        }
-        return null;
-    }
-
-    public Class<?> getProxiedClass(Object o) {
-        return HibernateProxyHelper.getClassWithoutInitializingProxy(o);
+        super.initialize(o);
     }
 }

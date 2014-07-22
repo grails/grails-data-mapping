@@ -1,5 +1,5 @@
 project.ext {
-    springVersion = "3.2.8.RELEASE"
+    springVersion = "4.0.5.RELEASE"
     grailsVersion = "2.3.9"
     slf4jVersion = "1.7.5"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.1.9'
@@ -55,7 +55,7 @@ task wrapper(type: Wrapper) {
 subprojects {
     if(project.name.endsWith("spring-boot")) return
     ext {
-        projectVersion = "3.1.2"
+        projectVersion = "4.0.0"
 //        releaseType = "RELEASE"
         releaseType = "BUILD-SNAPSHOT"
         isCiBuild = project.hasProperty("isCiBuild")

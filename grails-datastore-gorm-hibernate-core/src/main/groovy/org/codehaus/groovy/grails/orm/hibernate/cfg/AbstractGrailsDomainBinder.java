@@ -1328,7 +1328,7 @@ public abstract class AbstractGrailsDomainBinder {
      * @param theClass The domain class in question
      * @return A Mapping object or null
      */
-    public Mapping getMapping(Class<?> theClass) {
+    public static Mapping getMapping(Class<?> theClass) {
         return theClass == null ? null : MAPPING_CACHE.get(theClass);
     }
 
@@ -1338,7 +1338,7 @@ public abstract class AbstractGrailsDomainBinder {
      * @param domainClass The domain class in question
      * @return A Mapping object or null
      */
-    public Mapping getMapping(GrailsDomainClass domainClass) {
+    public static Mapping getMapping(GrailsDomainClass domainClass) {
         return domainClass == null ? null : MAPPING_CACHE.get(domainClass.getClazz());
     }
 
