@@ -308,7 +308,7 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
         assertEquals 1, returnList.size()
 
         // and case when automatic conversion cannot be applied
-        shouldFail(MissingPropertyException) {
+        shouldFail(MissingMethodException) {
             returnList = domainClass.findAllById("1.1")
         }
 
