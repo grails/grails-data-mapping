@@ -18,7 +18,6 @@ class NamedCriteriaTests extends AbstractGrailsHibernateTests {
     }
 
     @Test
-    @Ignore // TODO investigate
     void testDynamicFinderAppendedToNamedQueryWhichCallsAnotherNamedQuery() {
         // GRAILS-7253
 
