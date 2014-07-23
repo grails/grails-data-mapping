@@ -14,6 +14,7 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.validation;
 
+import org.codehaus.groovy.grails.orm.hibernate.IHibernateTemplate;
 import org.codehaus.groovy.grails.validation.Constraint;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -31,5 +32,5 @@ public interface PersistentConstraint extends Constraint, ApplicationContextAwar
      *
      * @return the template
      */
-    HibernateTemplate getHibernateTemplate();
+    IHibernateTemplate getHibernateTemplate();
 }

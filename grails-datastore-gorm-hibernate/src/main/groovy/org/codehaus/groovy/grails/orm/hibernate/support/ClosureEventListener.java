@@ -28,11 +28,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateGormValidationApi;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.Mapping;
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractDynamicPersistentMethod;
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractSavePersistentMethod;
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.ValidatePersistentMethod;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
 import org.grails.datastore.gorm.support.BeforeValidateHelper.BeforeValidateEventTriggerCaller;
@@ -120,11 +120,11 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
         }
 
         validateParams = new HashMap();
-        validateParams.put(ValidatePersistentMethod.ARGUMENT_DEEP_VALIDATE, Boolean.FALSE);
+        validateParams.put(AbstractHibernateGormValidationApi.ARGUMENT_DEEP_VALIDATE, Boolean.FALSE);
 
         errorsProperty = domainMetaClass.getMetaProperty(AbstractDynamicPersistentMethod.ERRORS_PROPERTY);
 
-        validateMethod = domainMetaClass.getMetaMethod(ValidatePersistentMethod.METHOD_SIGNATURE,
+        validateMethod = domainMetaClass.getMetaMethod("validate",
                 new Object[] { Map.class });
         
         try {

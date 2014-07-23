@@ -46,6 +46,14 @@ abstract class AbstractHibernateGormEnhancer extends GormEnhancer {
     }
 
     @Override
+    void enhance(PersistentEntity e, boolean onlyExtendedMethods) {
+        super.enhance(e, onlyExtendedMethods)
+
+        GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, e.name)
+        datastore.mappingContext.addEntityValidator(e, domainClass.validator)
+    }
+
+    @Override
     protected void registerConstraints(Datastore datastore) {
         // no-op
     }

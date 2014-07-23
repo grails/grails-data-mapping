@@ -17,22 +17,10 @@ package org.codehaus.groovy.grails.orm.hibernate
 
 import groovy.transform.CompileStatic
 
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.ValidatePersistentMethod
-
 @CompileStatic
 class HibernateGormValidationApi<D> extends AbstractHibernateGormValidationApi<D> {
 
-    ValidatePersistentMethod validateMethod
-
     HibernateGormValidationApi(Class<D> persistentClass, HibernateDatastore datastore, ClassLoader classLoader) {
         super(persistentClass, datastore, classLoader)
-
-        def mappingContext = datastore.mappingContext
-        def grailsApplication = datastore.grailsApplication
-        if (grailsApplication) {
-            def validator = mappingContext.getEntityValidator(mappingContext.getPersistentEntity(persistentClass.name))
-            validateMethod = new ValidatePersistentMethod(datastore.getSessionFactory(),
-                classLoader, grailsApplication, validator, datastore)
-        }
     }
 }

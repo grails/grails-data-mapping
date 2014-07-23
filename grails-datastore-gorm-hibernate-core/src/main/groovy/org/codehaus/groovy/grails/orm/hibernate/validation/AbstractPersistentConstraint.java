@@ -1,5 +1,4 @@
-/*
- * Copyright 2004-2005 Graeme Rocher
+/* Copyright 2004-2005 Graeme Rocher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +18,8 @@ import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsDomainClass;
 import org.codehaus.groovy.grails.lifecycle.ShutdownOperations;
-import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateDomainClass;
-import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
+import org.codehaus.groovy.grails.orm.hibernate.AbstractGrailsHibernateDomainClass;
+import org.codehaus.groovy.grails.orm.hibernate.IHibernateTemplate;
 import org.codehaus.groovy.grails.validation.AbstractConstraint;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.BeansException;
@@ -50,14 +49,7 @@ public abstract class AbstractPersistentConstraint extends AbstractConstraint im
         this.applicationContext = applicationContext;
     }
 
-    public GrailsHibernateTemplate getHibernateTemplate() {
-        SessionFactory sf = sessionFactory.get();
-        if (sf == null) {
-            sf = applicationContext.getBean("sessionFactory", SessionFactory.class);
-        }
-        GrailsApplication app = applicationContext.getBean("grailsApplication", GrailsApplication.class);
-        return new GrailsHibernateTemplate(sf, app);
-    }
+    public abstract IHibernateTemplate getHibernateTemplate();
 
     /**
      * Returns whether the constraint supports being applied against the specified type;
@@ -74,7 +66,6 @@ public abstract class AbstractPersistentConstraint extends AbstractConstraint im
      *
      * @return true if it is
      */
-    @Override
     public boolean isValid() {
         if (applicationContext.containsBean("sessionFactory")) {
             GrailsApplication grailsApplication = applicationContext.getBean(
@@ -83,8 +74,8 @@ public abstract class AbstractPersistentConstraint extends AbstractConstraint im
                     DomainClassArtefactHandler.TYPE, constraintOwningClass.getName());
             if (domainClass != null) {
                 String mappingStrategy = domainClass.getMappingStrategy();
-                return mappingStrategy.equals(GrailsDomainClass.GORM) ||
-                       mappingStrategy.equals(GrailsHibernateDomainClass.HIBERNATE);
+                return mappingStrategy.equals(GrailsDomainClass.GORM)
+                    || mappingStrategy.equals(AbstractGrailsHibernateDomainClass.HIBERNATE);
             }
         }
         return false;
