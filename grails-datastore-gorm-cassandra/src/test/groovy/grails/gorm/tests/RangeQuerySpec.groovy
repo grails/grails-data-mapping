@@ -11,14 +11,14 @@ class RangeQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
             use(TimeCategory) {
-                new Publication(title:"The Guardian", datePublished: now - 5.minutes).save()
-                new Publication(title:"The Guardian", datePublished: now - 5.days).save()
-                new Publication(title:"The Guardian", datePublished: now - 10.days).save()
+                new PublicationTitlePartitionKey(title:"The Guardian", datePublished: now - 5.minutes).save()
+                new PublicationTitlePartitionKey(title:"The Guardian", datePublished: now - 5.days).save()
+                new PublicationTitlePartitionKey(title:"The Guardian", datePublished: now - 10.days).save()
             }
 
         when:
             def results = use(TimeCategory) {
-                Publication.findAllByTitleAndDatePublishedBetween("The Guardian", now-6.days, now)
+                PublicationTitlePartitionKey.findAllByTitleAndDatePublishedBetween("The Guardian", now-6.days, now)
             }
 
         then:
