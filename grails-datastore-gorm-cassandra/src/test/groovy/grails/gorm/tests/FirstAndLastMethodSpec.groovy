@@ -2,7 +2,7 @@ package grails.gorm.tests
 
 import org.junit.Ignore
 
-@Ignore
+@Ignore("Cassandra GORM does not support first() and last() at present as orderby currently only supported by Cassandra on a clustered key restricted by a primary key ")
 class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
     void "Test first and last method with empty datastore"() {
