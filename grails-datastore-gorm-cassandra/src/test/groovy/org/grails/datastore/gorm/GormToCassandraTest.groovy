@@ -15,7 +15,11 @@ class GormToCassandraTest {
     
     @CassandraEntity
     static class ABasic {        
-        ATestEnum testEnum       
+       String name
+       
+       static mapping = {
+            name unique:true, index:true
+       }  
     }
 
     @CassandraEntity
@@ -30,7 +34,8 @@ class GormToCassandraTest {
         boolean transientBoolean
         String transientString
         def service
-
+        ATestEnum testEnum
+        
         static mapping = {
             id type:"timeuuid"
             ascii type:'ascii'
