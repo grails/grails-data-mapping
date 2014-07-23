@@ -1,17 +1,19 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
+import grails.gorm.CassandraEntity
 
-import java.io.Serializable;
-import java.util.UUID;
-
-@Entity
+@CassandraEntity
 class GroupWithin implements Serializable {
     UUID id
     String name
     String org
+    
     static constraints = {
-        name unique:"org", index:true
-        org index:true
+        name unique:"org"        
+    }
+    
+    static mapping = {
+        name index:true
+        org index:true        
     }
 }
