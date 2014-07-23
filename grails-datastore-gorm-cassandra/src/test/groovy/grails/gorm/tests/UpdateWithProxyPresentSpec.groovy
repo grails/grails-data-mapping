@@ -3,15 +3,10 @@ package grails.gorm.tests
 
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 
-/**
- * @author graemerocher
- */
-class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
+import spock.lang.Ignore
 
-    @Override
-    List getDomainClasses() {
-        [Pet, Person, PetType, Parent, Child]
-    }
+@Ignore("Cassandra GORM does not support associations at present")
+class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
 
     void "Test update entity with association proxies"() {
         given:
