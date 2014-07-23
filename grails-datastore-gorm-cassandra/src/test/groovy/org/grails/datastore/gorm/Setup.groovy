@@ -71,7 +71,7 @@ class Setup {
         }
         
         def txMgr = new DatastoreTransactionManager(datastore: cassandraDatastore)
-        CassandraMethodsConfigurer methodsConfigurer = new CassandraMethodsConfigurer(cassandraDatastore)
+        CassandraMethodsConfigurer methodsConfigurer = new CassandraMethodsConfigurer(cassandraDatastore, txMgr)
         methodsConfigurer.configure()
         
         def cassandraSession = cassandraDatastore.connect()
