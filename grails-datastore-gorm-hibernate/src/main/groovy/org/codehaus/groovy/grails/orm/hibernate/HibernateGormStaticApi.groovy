@@ -22,7 +22,6 @@ import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.query.GrailsHibernateQueryUtils
 import org.grails.datastore.gorm.finders.DynamicFinder
@@ -32,7 +31,6 @@ import org.hibernate.Criteria
 import org.hibernate.LockMode
 import org.hibernate.Session
 import org.hibernate.SessionFactory
-import org.hibernate.transform.ResultTransformer
 import org.springframework.core.convert.ConversionService
 import org.springframework.orm.hibernate3.HibernateCallback
 import org.springframework.orm.hibernate3.HibernateTemplate

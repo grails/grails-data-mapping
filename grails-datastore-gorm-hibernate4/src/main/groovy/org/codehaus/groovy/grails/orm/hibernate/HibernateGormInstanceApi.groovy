@@ -43,7 +43,7 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
     protected InstanceApiHelper instanceApiHelper
 
     HibernateGormInstanceApi(Class<D> persistentClass, HibernateDatastore datastore, ClassLoader classLoader) {
-        super(persistentClass, datastore, classLoader)
+        super(persistentClass, datastore, classLoader, new GrailsHibernateTemplate(datastore.sessionFactory))
 
         def grailsApplication = datastore.getGrailsApplication()
         if (grailsApplication) {
@@ -140,17 +140,6 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
     }
 
     @Override
-    D lock(D instance) {
-        hibernateTemplate.lock(instance, LockMode.PESSIMISTIC_WRITE)
-    }
-
-    @Override
-    D refresh(D instance) {
-        hibernateTemplate.refresh(instance)
-        return instance
-    }
-
-    @Override
     D save(D instance) {
         if (saveMethod) {
             return (D)saveMethod.invoke(instance, "save", EMPTY_ARRAY)
@@ -199,51 +188,6 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
         }
     }
 
-    @Override
-    D attach(D instance) {
-        hibernateTemplate.lock(instance, LockMode.NONE)
-        return instance
-    }
-
-    @Override
-    void discard(D instance) {
-        hibernateTemplate.evict instance
-    }
-
-    @Override
-    void delete(D instance) {
-        boolean flush = shouldFlush()
-        try {
-            instanceApiHelper.delete instance, flush
-        }
-        catch (DataAccessException e) {
-            handleDataAccessException(hibernateTemplate, e)
-        }
-    }
-
-    @Override
-    void delete(D instance, Map params) {
-        boolean flush = shouldFlush(params)
-        try {
-            instanceApiHelper.delete instance, flush
-        }
-        catch (DataAccessException e) {
-            handleDataAccessException(hibernateTemplate, e)
-        }
-    }
-
-    @Override
-    boolean instanceOf(D instance, Class cls) {
-        if (instance instanceof HibernateProxy) {
-            return GrailsHibernateUtil.unwrapProxy(instance) in cls
-        }
-        return instance in cls
-    }
-
-    @Override
-    boolean isAttached(D instance) {
-        hibernateTemplate.contains instance
-    }
 
     protected EntityEntry findEntityEntry(D instance, SessionImplementor session, boolean forDirtyCheck = true) {
         def entry = session.persistenceContext.getEntry(instance)
@@ -258,22 +202,5 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
         entry
     }
 
-    /**
-     * Session should no longer be flushed after a data access exception occurs (such a constriant violation)
-     */
-    protected void handleDataAccessException(GrailsHibernateTemplate template, DataAccessException e) {
-        try {
-            instanceApiHelper.setFlushModeManual()
-        }
-        finally {
-            throw e
-        }
-    }
 
-    boolean shouldFlush(Map map = [:]) {
-        if (map?.containsKey('flush')) {
-            return Boolean.TRUE == map.flush
-        }
-        return config?.autoFlush instanceof Boolean ? config.autoFlush : false
-    }
 }
