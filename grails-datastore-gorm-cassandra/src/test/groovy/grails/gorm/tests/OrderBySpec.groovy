@@ -53,6 +53,22 @@ class OrderBySpec extends GormDatastoreSpec {
             'HTC' == results[2].name
     }
     
+    void "Test default sort order with criteria"() {
+        given:
+            ["IPhone", "Samsung", "LG", "HTC", "Nokia", "Blackberry"].each {
+                new SimpleWidgetDefaultOrderName(category: "phone", name:it).save()
+            }           
+
+        when:
+            def results = SimpleWidgetDefaultOrderName.createCriteria().list {
+                eq "category", "phone"                
+            }
+        then:
+            'Samsung' == results[0].name
+            'Nokia' == results[1].name
+            'LG' == results[2].name
+    }
+    
     void "Test order by with list() method throw invalid query exception"() {
         given:
             ["IPhone", "Samsung", "LG", "HTC", "Nokia", "Blackberry"].each {
