@@ -14,6 +14,7 @@ import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
 import org.hibernate.Criteria
+import org.hibernate.FlushMode
 import org.hibernate.Query
 import org.hibernate.Session
 import org.hibernate.criterion.Example
@@ -168,6 +169,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
         }
 
+        args = new HashMap(args)
         def template = hibernateTemplate
         return (D) template.execute { Session session ->
             def q = session.createQuery(query)
@@ -192,6 +194,8 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
         }
 
+        args = new HashMap(args)
+        params = new HashMap(params)
         def template = hibernateTemplate
         return (List<D>) template.execute { Session session ->
             def q = session.createQuery(query)
@@ -210,6 +214,8 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         if (!queryPattern.matcher(query).matches()) {
             throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
         }
+
+        args = new HashMap(args)
 
         def template = hibernateTemplate
         return (List<D>) template.execute { Session session ->
@@ -280,8 +286,45 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
     }
 
+    @Override
+    List<D> executeQuery(String query, Map params, Map args) {
+        def template = hibernateTemplate
+        args = new HashMap(args)
+        params = new HashMap(params)
 
+        return (List<D>) template.execute { Session session ->
+            def q = session.createQuery(query)
+            template.applySettings(q)
 
+            populateQueryArguments(q, params)
+            populateQueryArguments(q, args)
+            populateQueryWithNamedArguments(q, params)
+
+            return q.list()
+        }
+    }
+
+    @Override
+    List<D> executeQuery(String query, Collection params, Map args) {
+        def template = hibernateTemplate
+        args = new HashMap(args)
+
+        return (List<D>) template.execute { Session session ->
+            def q = session.createQuery(query)
+            template.applySettings(q)
+
+            params.eachWithIndex { val, int i ->
+                if (val instanceof CharSequence) {
+                    q.setParameter i, val.toString()
+                }
+                else {
+                    q.setParameter i, val
+                }
+            }
+            populateQueryArguments(q, args)
+            return q.list()
+        }
+    }
 
     @Override
     D findWhere(Map queryMap, Map args) {
@@ -418,6 +461,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         Integer offset = intValue(args, DynamicFinder.ARGUMENT_OFFSET)
         args.remove(DynamicFinder.ARGUMENT_OFFSET)
 
+        //
         if (max != null) {
             q.maxResults = max
         }
@@ -428,6 +472,21 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         if (args.containsKey(DynamicFinder.ARGUMENT_CACHE)) {
             q.cacheable = GrailsClassUtils.getBooleanFromMap(DynamicFinder.ARGUMENT_CACHE, args)
         }
+        if (args.containsKey(DynamicFinder.ARGUMENT_FETCH_SIZE)) {
+            Integer fetchSizeParam = conversionService.convert(args.remove(DynamicFinder.ARGUMENT_FETCH_SIZE), Integer.class);
+            q.setFetchSize(fetchSizeParam.intValue());
+        }
+        if (args.containsKey(DynamicFinder.ARGUMENT_TIMEOUT)) {
+            Integer timeoutParam = conversionService.convert(args.remove(DynamicFinder.ARGUMENT_TIMEOUT), Integer.class);
+            q.setTimeout(timeoutParam.intValue());
+        }
+        if (args.containsKey(DynamicFinder.ARGUMENT_READ_ONLY)) {
+            q.setReadOnly((Boolean)args.remove(DynamicFinder.ARGUMENT_READ_ONLY));
+        }
+        if (args.containsKey(DynamicFinder.ARGUMENT_FLUSH_MODE)) {
+            q.setFlushMode((FlushMode)args.remove(DynamicFinder.ARGUMENT_FLUSH_MODE));
+        }
+
         args.remove(DynamicFinder.ARGUMENT_CACHE)
     }
 }

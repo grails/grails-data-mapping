@@ -868,7 +868,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     List<D> executeQuery(String query, Map args) {
-        executeQuery(query, Collections.emptyMap(), args)
+        executeQuery(query, args, args)
     }
 
     List<D> executeQuery(String query, Map params, Map args) {
@@ -877,6 +877,10 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
     List<D> executeQuery(String query, Collection params) {
         executeQuery(query, params, Collections.emptyMap())
+    }
+
+    List<D> executeQuery(String query, Object...params) {
+        executeQuery(query, params.toList(), Collections.emptyMap())
     }
 
     List<D> executeQuery(String query, Collection params, Map args) {
@@ -888,7 +892,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     Integer executeUpdate(String query, Map args) {
-        executeUpdate(query, Collections.emptyMap(), args)
+        executeUpdate(query, args, args)
     }
 
     Integer executeUpdate(String query, Map params, Map args) {
@@ -897,6 +901,10 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
     Integer executeUpdate(String query, Collection params) {
         executeUpdate(query, params, Collections.emptyMap())
+    }
+
+    Integer executeUpdate(String query, Object...params) {
+        executeUpdate(query, params.toList(), Collections.emptyMap())
     }
 
     Integer executeUpdate(String query, Collection params, Map args) {

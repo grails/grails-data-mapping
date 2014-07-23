@@ -18,28 +18,17 @@ package org.codehaus.groovy.grails.orm.hibernate
 import grails.orm.HibernateCriteriaBuilder
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.orm.hibernate.cfg.CompositeIdentity
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateUtils
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.ExecuteQueryPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.ExecuteUpdatePersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
-import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.query.api.Criteria as GrailsCriteria
-import org.hibernate.Criteria
 import org.hibernate.LockMode
 import org.hibernate.Session
 import org.hibernate.SessionFactory
-import org.hibernate.criterion.CriteriaSpecification
-import org.hibernate.criterion.Projections
-import org.hibernate.criterion.Restrictions
 import org.springframework.core.convert.ConversionService
 import org.springframework.orm.hibernate4.SessionFactoryUtils
 import org.springframework.orm.hibernate4.SessionHolder
@@ -61,8 +50,6 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
     protected ConversionService conversionService
     protected Class identityType
     protected ListPersistentMethod listMethod
-    protected ExecuteQueryPersistentMethod executeQueryMethod
-    protected ExecuteUpdatePersistentMethod executeUpdateMethod
     protected MergePersistentMethod mergeMethod
     protected ClassLoader classLoader
     protected GrailsApplication grailsApplication
@@ -91,9 +78,6 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
         } else {
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
         }
-
-        executeQueryMethod = new ExecuteQueryPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
-        executeUpdateMethod = new ExecuteUpdatePersistentMethod(sessionFactory, classLoader, grailsApplication)
     }
 
 
@@ -126,6 +110,52 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
         (List<D>)listMethod.invoke(persistentClass, "list", EMPTY_ARRAY)
     }
 
+    @Override
+    Integer executeUpdate(String query, Map params, Map args) {
+        def template = hibernateTemplate
+        SessionFactory sessionFactory = this.sessionFactory
+        return (Integer) template.execute { Session session ->
+            def q = session.createQuery(query)
+            template.applySettings(q)
+            def sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource( sessionFactory )
+            if (sessionHolder && sessionHolder.hasTimeout()) {
+                q.timeout = sessionHolder.timeToLiveInSeconds
+            }
+
+            populateQueryArguments(q, params)
+            populateQueryArguments(q, args)
+            populateQueryWithNamedArguments(q, params)
+
+            return q.executeUpdate()
+        }
+    }
+
+    @Override
+    Integer executeUpdate(String query, Collection params, Map args) {
+        def template = hibernateTemplate
+        SessionFactory sessionFactory = this.sessionFactory
+
+        return (Integer) template.execute { Session session ->
+            def q = session.createQuery(query)
+            template.applySettings(q)
+            def sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource( sessionFactory )
+            if (sessionHolder && sessionHolder.hasTimeout()) {
+                q.timeout = sessionHolder.timeToLiveInSeconds
+            }
+
+
+            params.eachWithIndex { val, int i ->
+                if (val instanceof CharSequence) {
+                    q.setParameter i, val.toString()
+                }
+                else {
+                    q.setParameter i, val
+                }
+            }
+            populateQueryArguments(q, args)
+            return q.executeUpdate()
+        }
+    }
 
     @Override
     Object withSession(Closure callable) {
@@ -182,57 +212,5 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
         }
     }
 
-    @Override
-    List<D> executeQuery(String query) {
-        (List<D>)executeQueryMethod.invoke(persistentClass, "executeQuery", [query] as Object[])
-    }
 
-    List<D> executeQuery(String query, arg) {
-        (List<D>)executeQueryMethod.invoke(persistentClass, "executeQuery", [query, arg] as Object[])
-    }
-
-    @Override
-    List<D> executeQuery(String query, Map args) {
-        (List<D>)executeQueryMethod.invoke(persistentClass, "executeQuery", [query, args] as Object[])
-    }
-
-    @Override
-    List<D> executeQuery(String query, Map params, Map args) {
-        (List<D>)executeQueryMethod.invoke(persistentClass, "executeQuery", [query, params, args] as Object[])
-    }
-
-    @Override
-    List<D> executeQuery(String query, Collection params) {
-        (List<D>)executeQueryMethod.invoke(persistentClass, "executeQuery", [query, params] as Object[])
-    }
-
-    @Override
-    List<D> executeQuery(String query, Collection params, Map args) {
-        (List<D>)executeQueryMethod.invoke(persistentClass, "executeQuery", [query, params, args] as Object[])
-    }
-
-    @Override
-    Integer executeUpdate(String query) {
-        (Integer)executeUpdateMethod.invoke(persistentClass, "executeUpdate", [query] as Object[])
-    }
-
-    @Override
-    Integer executeUpdate(String query, Map args) {
-        (Integer)executeUpdateMethod.invoke(persistentClass, "executeUpdate", [query, args] as Object[])
-    }
-
-    @Override
-    Integer executeUpdate(String query, Map params, Map args) {
-        (Integer)executeUpdateMethod.invoke(persistentClass, "executeUpdate", [query, params, args] as Object[])
-    }
-
-    @Override
-    Integer executeUpdate(String query, Collection params) {
-        (Integer)executeUpdateMethod.invoke(persistentClass, "executeUpdate", [query, params] as Object[])
-    }
-
-    @Override
-    Integer executeUpdate(String query, Collection params, Map args) {
-        (Integer)executeUpdateMethod.invoke(persistentClass, "executeUpdate", [query, params, args] as Object[])
-    }
 }

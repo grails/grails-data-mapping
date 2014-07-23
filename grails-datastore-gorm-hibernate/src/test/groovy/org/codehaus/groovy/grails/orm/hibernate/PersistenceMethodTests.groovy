@@ -773,12 +773,12 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
             domainClass.executeQuery()
         }
 
-        shouldFail(MissingMethodException) {
+        shouldFail(IllegalArgumentException) {
             domainClass.executeQuery("query", "param", [:], "4")
         }
 
         // test query with wrong third param type (must be Map)
-        shouldFail(MissingMethodException) {
+        shouldFail(IllegalArgumentException) {
             domainClass.executeQuery("query", "param", "wrong third param")
         }
 
@@ -853,10 +853,6 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
         assertEquals 1, listResult.size()
         assertEquals "fred", listResult[0].getProperty("firstName")
 
-        def msg = shouldFail(IllegalArgumentException) {
-            domainClass.executeQuery 'select distinct p from PersistentMethodTests as p where p.firstName = :firstName and p.lastName = :lastName', [firstName: null, lastName: 'King']
-        }
-        assertEquals 'Named parameter [firstName] value may not be null', msg
 
         // Test that executeQuery does not mutate List and Map arguments (GRAILS-7841)
         paginateParams = [max: 1]
