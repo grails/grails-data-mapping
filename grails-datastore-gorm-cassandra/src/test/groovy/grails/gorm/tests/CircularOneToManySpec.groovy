@@ -6,7 +6,7 @@ import spock.lang.Ignore
 /**
  * @author graemerocher
  */
-@Ignore
+@Ignore("Cassandra GORM does not support associations at present")
 class CircularOneToManySpec extends GormDatastoreSpec{
 
     void "Test circular one-to-many"() {
