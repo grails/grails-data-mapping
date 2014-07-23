@@ -51,7 +51,6 @@ import org.springframework.orm.hibernate3.HibernateCallback;
  */
 public class ExecuteQueryPersistentMethod extends AbstractStaticPersistentMethod {
     private static final String METHOD_SIGNATURE = "executeQuery";
-    private static final Pattern METHOD_PATTERN = Pattern.compile("^executeQuery$");
 
     private static final List<String> QUERY_META_PARAMS = Arrays.asList(
             GrailsHibernateUtil.ARGUMENT_MAX,
@@ -65,8 +64,14 @@ public class ExecuteQueryPersistentMethod extends AbstractStaticPersistentMethod
     private final ConversionService conversionService;
 
     public ExecuteQueryPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, ConversionService conversionService) {
-        super(sessionFactory, classLoader, METHOD_PATTERN, application);
+        super(sessionFactory, classLoader, application);
         this.conversionService = conversionService;
+        setPattern(METHOD_SIGNATURE);
+    }
+
+    @Override
+    public boolean isMethodMatch(String methodName) {
+        return METHOD_SIGNATURE.equals(methodName);
     }
 
     @SuppressWarnings("rawtypes")

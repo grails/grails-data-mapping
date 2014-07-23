@@ -44,12 +44,17 @@ import org.springframework.orm.hibernate3.HibernateCallback;
  */
 public class ListPersistentMethod extends AbstractStaticPersistentMethod {
 
-    private static final String METHOD_PATTERN = "^list$";
+    private static final String METHOD_PATTERN = "list";
     private final ConversionService conversionService;
 
     public ListPersistentMethod(GrailsApplication grailsApplication, SessionFactory sessionFactory, ClassLoader classLoader, ConversionService conversionService) {
-        super(sessionFactory, classLoader, Pattern.compile(METHOD_PATTERN), grailsApplication);
+        super(sessionFactory, classLoader, grailsApplication);
         this.conversionService = conversionService;
+    }
+
+    @Override
+    public boolean isMethodMatch(String methodName) {
+        return METHOD_PATTERN.equals(methodName);
     }
 
     @Override

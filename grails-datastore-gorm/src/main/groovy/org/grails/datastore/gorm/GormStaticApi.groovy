@@ -424,8 +424,8 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      *
      * @return The list of all entities
      */
-    List<D> findAll() {
-        list()
+    List<D> findAll(Map params = Collections.emptyMap()) {
+        list(params)
     }
 
     /**
@@ -863,13 +863,12 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         (Map<D, Boolean>)AbstractDatastore.getValidationSkipMap()
     }
 
-    // TODO: In the first version no support will exist for String-based queries
     List<D> executeQuery(String query) {
-        unsupported("executeQuery")
+        executeQuery(query, Collections.emptyMap(), Collections.emptyMap())
     }
 
     List<D> executeQuery(String query, Map args) {
-        unsupported("executeQuery")
+        executeQuery(query, Collections.emptyMap(), args)
     }
 
     List<D> executeQuery(String query, Map params, Map args) {
@@ -877,7 +876,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     List<D> executeQuery(String query, Collection params) {
-        unsupported("executeQuery")
+        executeQuery(query, params, Collections.emptyMap())
     }
 
     List<D> executeQuery(String query, Collection params, Map args) {
@@ -885,11 +884,11 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     Integer executeUpdate(String query) {
-        unsupported("executeUpdate")
+        executeUpdate(query, Collections.emptyMap(), Collections.emptyMap())
     }
 
     Integer executeUpdate(String query, Map args) {
-        unsupported("executeUpdate")
+        executeUpdate(query, Collections.emptyMap(), args)
     }
 
     Integer executeUpdate(String query, Map params, Map args) {
@@ -897,7 +896,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     Integer executeUpdate(String query, Collection params) {
-        unsupported("executeUpdate")
+        executeUpdate(query, params, Collections.emptyMap())
     }
 
     Integer executeUpdate(String query, Collection params, Map args) {
@@ -905,11 +904,11 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     D find(String query) {
-        unsupported("find")
+        find(query, Collections.emptyMap())
     }
 
     D find(String query, Map args) {
-        unsupported("find")
+        find(query, args, args)
     }
 
     D find(String query, Map params, Map args) {
@@ -917,7 +916,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     D find(String query, Collection params) {
-        unsupported("find")
+        find(query, params, Collections.emptyMap())
     }
 
     D find(String query, Collection params, Map args) {
@@ -925,11 +924,11 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     List<D> findAll(String query) {
-        unsupported("findAll")
+        findAll(query, Collections.emptyMap(), Collections.emptyMap())
     }
 
-    List<D> findAll(String query, Map args) {
-        unsupported("findAll")
+    List<D> findAll(String query, Map params) {
+        findAll(query, params, params)
     }
 
     List<D> findAll(String query, Map params, Map args) {
@@ -937,7 +936,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     List<D> findAll(String query, Collection params) {
-        unsupported("find")
+        findAll(query, params, Collections.emptyMap())
     }
 
     List<D> findAll(String query, Collection params, Map args) {

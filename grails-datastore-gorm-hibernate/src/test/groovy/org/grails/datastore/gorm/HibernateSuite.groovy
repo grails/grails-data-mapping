@@ -8,6 +8,7 @@ import grails.gorm.tests.CrudOperationsSpec
 import grails.gorm.tests.DetachedCriteriaSpec
 import grails.gorm.tests.DomainEventsSpec
 import grails.gorm.tests.EnumSpec
+import grails.gorm.tests.FindByExampleSpec
 import grails.gorm.tests.FindByMethodSpec
 import grails.gorm.tests.FindWhereSpec
 import grails.gorm.tests.GormEnhancerSpec
@@ -63,6 +64,6 @@ import org.junit.runners.Suite.SuiteClasses
 //    FindWhereSpec
 //DetachedCriteriaSpec
 //SizeQuerySpec
-    FindByMethodSpec
+    FindByExampleSpec
 ])
 class HibernateSuite {}

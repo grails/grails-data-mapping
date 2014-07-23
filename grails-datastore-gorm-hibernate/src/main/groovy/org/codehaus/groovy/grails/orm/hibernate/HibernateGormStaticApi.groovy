@@ -27,8 +27,6 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateUtils
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ExecuteQueryPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ExecuteUpdatePersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindAllPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
 import org.grails.datastore.gorm.GormStaticApi
@@ -56,7 +54,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @since 1.0
  */
 @CompileStatic
-class HibernateGormStaticApi<D> extends GormStaticApi<D> {
+class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
     protected static final EMPTY_ARRAY = [] as Object[]
 
     protected GrailsHibernateTemplate hibernateTemplate
@@ -64,8 +62,6 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     protected ConversionService conversionService
     protected Class identityType
     protected ListPersistentMethod listMethod
-    protected FindAllPersistentMethod findAllMethod
-    protected FindPersistentMethod findMethod
     protected ExecuteQueryPersistentMethod executeQueryMethod
     protected ExecuteUpdatePersistentMethod executeUpdateMethod
     protected MergePersistentMethod mergeMethod
@@ -76,7 +72,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     HibernateGormStaticApi(Class<D> persistentClass, HibernateDatastore datastore, List<FinderMethod> finders,
                 ClassLoader classLoader, PlatformTransactionManager transactionManager) {
-        super(persistentClass, datastore, finders, transactionManager)
+        super(persistentClass, datastore, finders, transactionManager, new GrailsHibernateTemplate(datastore.sessionFactory))
         this.classLoader = classLoader
         sessionFactory = datastore.getSessionFactory()
         conversionService = datastore.mappingContext.conversionService
@@ -99,8 +95,6 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
 
         executeQueryMethod = new ExecuteQueryPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
         executeUpdateMethod = new ExecuteUpdatePersistentMethod(sessionFactory, classLoader, grailsApplication)
-        findMethod = new FindPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
-        findAllMethod = new FindAllPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
     }
 
 
@@ -177,29 +171,6 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         getAllInternal(ids as List)
     }
 
-    protected List getAllInternal(List ids) {
-        if (!ids) return []
-
-        ids = ids.collect { convertIdentifier((Serializable)it) }
-
-        (List)hibernateTemplate.execute({Session session ->
-            def criteria = session.createCriteria(persistentClass)
-            hibernateTemplate.applySettings(criteria)
-            def identityName = persistentEntity.identity.name
-            criteria.add(Restrictions.'in'(identityName, ids))
-            def results = criteria.list()
-            def idsMap = [:]
-            for (object in results) {
-                idsMap[object[identityName]] = object
-            }
-            results.clear()
-            for (id in ids) {
-                results << idsMap[id]
-            }
-            results
-        } as HibernateCallback)
-    }
-
     @Override
     GrailsCriteria createCriteria() {
         def builder = new HibernateCriteriaBuilder(persistentClass, sessionFactory)
@@ -252,16 +223,6 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         (List<D>)listMethod.invoke(persistentClass, "list", EMPTY_ARRAY)
     }
 
-    @Override
-    List<D> findAll(example, Map args) {
-        (List<D>)findAllMethod.invoke(persistentClass, "findAll", [example, args] as Object[])
-    }
-
-    @Override
-    D find(example, Map args) {
-        (D)findMethod.invoke(persistentClass, "find", [example, args] as Object[])
-    }
-
     D first(Map m) {
         def entityMapping = grailsDomainBinder.getMapping(persistentEntity.javaClass)
         if (entityMapping?.identity instanceof CompositeIdentity) {
@@ -276,126 +237,6 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
             throw new UnsupportedOperationException('The last() method is not supported for domain classes that have composite keys.')
         }
         super.last(m)
-    }
-
-    /**
-     * Finds a single result for the given query and arguments and a maximum results to return value
-     *
-     * @param query The query
-     * @param args The arguments
-     * @param max The maximum to return
-     * @return A single result or null
-     *
-     * @deprecated Use Book.find('..', [foo:'bar], [max:10]) instead
-     */
-    @Deprecated
-    D find(String query, Map args, Integer max) {
-        (D)findMethod.invoke(persistentClass, "find", [query, args, max] as Object[])
-    }
-
-    /**
-     * Finds a single result for the given query and arguments and a maximum results to return value
-     *
-     * @param query The query
-     * @param args The arguments
-     * @param max The maximum to return
-     * @param offset The offset
-     * @return A single result or null
-     *
-     * @deprecated Use Book.find('..', [foo:'bar], [max:10, offset:5]) instead
-     */
-    @Deprecated
-    D find(String query, Map args, Integer max, Integer offset) {
-        (D)findMethod.invoke(persistentClass, "find", [query, args, max, offset] as Object[])
-    }
-
-    /**
-     * Finds a single result for the given query and a maximum results to return value
-     *
-     * @param query The query
-     * @param max The maximum to return
-     * @return A single result or null
-     *
-     * @deprecated Use Book.find('..', [max:10]) instead
-     */
-    @Deprecated
-    D find(String query, Integer max) {
-        (D)findMethod.invoke(persistentClass, "find", [query, max] as Object[])
-    }
-
-    /**
-     * Finds a single result for the given query and a maximum results to return value
-     *
-     * @param query The query
-     * @param max The maximum to return
-     * @param offset The offset to use
-     * @return A single result or null
-     *
-     * @deprecated Use Book.find('..', [max:10, offset:5]) instead
-     */
-    @Deprecated
-    D find(String query, Integer max, Integer offset) {
-        (D)findMethod.invoke(persistentClass, "find", [query, max, offset] as Object[])
-    }
-
-    /**
-     * Finds a list of results for the given query and arguments and a maximum results to return value
-     *
-     * @param query The query
-     * @param args The arguments
-     * @param max The maximum to return
-     * @return A list of results
-     *
-     * @deprecated Use findAll('..', [foo:'bar], [max:10]) instead
-     */
-    @Deprecated
-    List<D> findAll(String query, Map args, Integer max) {
-        (List<D>)findAllMethod.invoke(persistentClass, "findAll", [query, args, max] as Object[])
-    }
-
-    /**
-     * Finds a list of results for the given query and arguments and a maximum results to return value
-     *
-     * @param query The query
-     * @param args The arguments
-     * @param max The maximum to return
-     * @param offset The offset
-     *
-     * @return A list of results
-     *
-     * @deprecated Use findAll('..', [foo:'bar], [max:10, offset:5]) instead
-     */
-    @Deprecated
-    List<D> findAll(String query, Map args, Integer max, Integer offset) {
-        (List<D>)findAllMethod.invoke(persistentClass, "findAll", [query, args, max, offset] as Object[])
-    }
-
-    /**
-     * Finds a list of results for the given query and a maximum results to return value
-     *
-     * @param query The query
-     * @param max The maximum to return
-     * @return A list of results
-     *
-     * @deprecated Use findAll('..', [max:10]) instead
-     */
-    @Deprecated
-    List<D> findAll(String query, Integer max) {
-        (List<D>)findAllMethod.invoke(persistentClass, "findAll", [query, max] as Object[])
-    }
-
-    /**
-     * Finds a list of results for the given query and a maximum results to return value
-     *
-     * @param query The query
-     * @param max The maximum to return
-     * @return A list of results
-     *
-     * @deprecated Use findAll('..', [max:10, offset:5]) instead
-     */
-    @Deprecated
-    List<D> findAll(String query, Integer max, Integer offset) {
-        (List<D>)findAllMethod.invoke(persistentClass, "findAll", [query, max, offset] as Object[])
     }
 
     @Override
@@ -417,6 +258,9 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         } as HibernateCallback)
     }
 
+
+
+
     @Override
     D findWhere(Map queryMap, Map args) {
         if (!queryMap) return null
@@ -434,31 +278,6 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
             criteria.setMaxResults(1)
             GrailsHibernateUtil.unwrapIfProxy(criteria.uniqueResult())
         } as HibernateCallback)
-    }
-
-    protected Map filterQueryArgumentMap(Map query) {
-        def queryArgs = [:]
-        for (entry in query.entrySet()) {
-            if (entry.value instanceof CharSequence) {
-                queryArgs[entry.key] = entry.value.toString()
-            }
-            else {
-                queryArgs[entry.key] = entry.value
-            }
-        }
-        return queryArgs
-    }
-
-    protected List<String> removeNullNames(Map query) {
-        List<String> nullNames = []
-        Set<String> allNames = new HashSet(query.keySet())
-        for (String name in allNames) {
-            if (query[name] == null) {
-                query.remove name
-                nullNames << name
-            }
-        }
-        nullNames
     }
 
     @Override
@@ -561,58 +380,58 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         (Integer)executeUpdateMethod.invoke(persistentClass, "executeUpdate", [query, params, args] as Object[])
     }
 
-    @Override
-    D find(String query) {
-        (D)findMethod.invoke(persistentClass, "find", [query] as Object[])
-    }
-
     D find(String query, Object[] params) {
-        (D)findMethod.invoke(persistentClass, "find", [query, params] as Object[])
+        super.find(query, params.toList(), Collections.emptyMap())
     }
 
-    @Override
-    D find(String query, Map args) {
-        (D)findMethod.invoke(persistentClass, "find", [query, args] as Object[])
+    protected Map filterQueryArgumentMap(Map query) {
+        def queryArgs = [:]
+        for (entry in query.entrySet()) {
+            if (entry.value instanceof CharSequence) {
+                queryArgs[entry.key] = entry.value.toString()
+            }
+            else {
+                queryArgs[entry.key] = entry.value
+            }
+        }
+        return queryArgs
     }
 
-    @Override
-    D find(String query, Map params, Map args) {
-        (D)findMethod.invoke(persistentClass, "find", [query, params, args] as Object[])
+
+    protected List<String> removeNullNames(Map query) {
+        List<String> nullNames = []
+        Set<String> allNames = new HashSet(query.keySet())
+        for (String name in allNames) {
+            if (query[name] == null) {
+                query.remove name
+                nullNames << name
+            }
+        }
+        nullNames
     }
 
-    @Override
-    Object find(String query, Collection params) {
-        findMethod.invoke(persistentClass, "find", [query, params] as Object[])
+    protected List getAllInternal(List ids) {
+        if (!ids) return []
+
+        ids = ids.collect { convertIdentifier((Serializable)it) }
+
+        (List)hibernateTemplate.execute({Session session ->
+            def criteria = session.createCriteria(persistentClass)
+            hibernateTemplate.applySettings(criteria)
+            def identityName = persistentEntity.identity.name
+            criteria.add(Restrictions.'in'(identityName, ids))
+            def results = criteria.list()
+            def idsMap = [:]
+            for (object in results) {
+                idsMap[object[identityName]] = object
+            }
+            results.clear()
+            for (id in ids) {
+                results << idsMap[id]
+            }
+            results
+        } as HibernateCallback)
     }
 
-    @Override
-    D find(String query, Collection params, Map args) {
-        (D)findMethod.invoke(persistentClass, "find", [query, params, args] as Object[])
-    }
-
-    @Override
-    List<D> findAll(String query) {
-        (List<D>)findAllMethod.invoke(persistentClass, "findAll", [query] as Object[])
-    }
-
-    @Override
-    List<D> findAll(String query, Map args) {
-        (List<D>)findAllMethod.invoke(persistentClass, "findAll", [query, args] as Object[])
-    }
-
-    @Override
-    List<D> findAll(String query, Map params, Map args) {
-        (List<D>)findAllMethod.invoke(persistentClass, "findAll", [query, params, args] as Object[])
-    }
-
-    @Override
-    List<D> findAll(String query, Collection params) {
-        (List<D>)findAllMethod.invoke(persistentClass, "findAll", [query, params] as Object[])
-    }
-
-    @Override
-    List<D> findAll(String query, Collection params, Map args) {
-        (List<D>)findAllMethod.invoke(persistentClass, "findAll", [query, params, args] as Object[])
-    }
 
 }

@@ -42,21 +42,26 @@ import org.springframework.util.Assert;
  * @author Graeme Rocher
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractStaticPersistentMethod extends AbstractStaticMethodInvocation implements FinderMethod {
+public abstract class AbstractStaticPersistentMethod implements FinderMethod {
 
     private ClassLoader classLoader;
     private GrailsHibernateTemplate hibernateTemplate;
     private SessionFactory sessionFactory;
     protected final GrailsApplication application;
+    private String pattern;
 
-    protected AbstractStaticPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, Pattern pattern, GrailsApplication application) {
+    protected AbstractStaticPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application) {
         Assert.notNull(sessionFactory, "Session factory is required!");
         Assert.notNull(application, "Constructor argument 'application' cannot be null");
         this.application = application;
-        setPattern(pattern);
         this.classLoader = classLoader;
         this.sessionFactory = sessionFactory;
         hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, application);
+    }
+
+    @Override
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
     }
 
     protected SessionFactory getSessionFactory() {

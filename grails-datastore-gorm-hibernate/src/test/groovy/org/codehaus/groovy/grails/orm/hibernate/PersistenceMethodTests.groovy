@@ -596,14 +596,14 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
         // test find with max result
         namedArgs.clear()
         namedArgs.namesList = ["wilma","fred"] as Object[]
-        returnValue = domainClass.findAll("from PersistentMethodTests as p where p.firstName in (:namesList)", namedArgs, 1)
+        returnValue = domainClass.findAll("from PersistentMethodTests as p where p.firstName in (:namesList)", namedArgs, [max:1])
         assertNotNull returnValue
         assertEquals ArrayList, returnValue.getClass()
         listResult = returnValue
         assertEquals 1, listResult.size()
 
         // test find with max result without params
-        returnValue = domainClass.findAll("from PersistentMethodTests as p", 1)
+        returnValue = domainClass.findAll("from PersistentMethodTests as p", [max:1])
         assertNotNull returnValue
         assertEquals ArrayList, returnValue.getClass()
         listResult = returnValue
@@ -633,7 +633,7 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
         // test find with offset
         namedArgs.clear()
         namedArgs.namesList = ["wilma","fred"] as Object[]
-        returnValue = domainClass.findAll("from PersistentMethodTests as p where p.firstName in (:namesList)", namedArgs, 2, 1)
+        returnValue = domainClass.findAll("from PersistentMethodTests as p where p.firstName in (:namesList)", namedArgs, [max:1, offset:1])
         assertNotNull returnValue
         assertEquals ArrayList, returnValue.getClass()
         listResult = returnValue
@@ -641,7 +641,7 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
         assertEquals 1, listResult.size()
 
         // test find with offset without params
-        returnValue = domainClass.findAll("from PersistentMethodTests as p", 2, 1)
+        returnValue = domainClass.findAll("from PersistentMethodTests as p", [max:1, offset:1])
         assertNotNull returnValue
         assertEquals ArrayList, returnValue.getClass()
         listResult = returnValue

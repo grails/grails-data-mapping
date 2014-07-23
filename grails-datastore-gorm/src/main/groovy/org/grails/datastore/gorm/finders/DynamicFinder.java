@@ -57,6 +57,11 @@ import org.springframework.util.StringUtils;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class DynamicFinder extends AbstractFinder implements QueryBuildingFinder {
 
+
+    public static final String ARGUMENT_FETCH_SIZE = "fetchSize";
+    public static final String ARGUMENT_TIMEOUT = "timeout";
+    public static final String ARGUMENT_READ_ONLY = "readOnly";
+    public static final String ARGUMENT_FLUSH_MODE = "flushMode";
     public static final String ARGUMENT_MAX = "max";
     public static final String ARGUMENT_OFFSET = "offset";
     public static final String ARGUMENT_ORDER = "order";
@@ -67,6 +72,8 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
     public static final String ARGUMENT_IGNORE_CASE = "ignoreCase";
     public static final String ARGUMENT_CACHE = "cache";
     public static final String ARGUMENT_LOCK = "lock";
+
+
 
     protected Pattern pattern;
     private Pattern[] operatorPatterns;

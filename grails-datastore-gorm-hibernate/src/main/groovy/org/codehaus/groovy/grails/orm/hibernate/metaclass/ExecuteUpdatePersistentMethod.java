@@ -49,10 +49,14 @@ import org.springframework.orm.hibernate3.SessionFactoryUtils;
 public class ExecuteUpdatePersistentMethod extends AbstractStaticPersistentMethod {
 
     private static final String METHOD_SIGNATURE = "executeUpdate";
-    private static final Pattern METHOD_PATTERN = Pattern.compile("^executeUpdate$");
 
     public ExecuteUpdatePersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application) {
-        super(sessionFactory, classLoader, METHOD_PATTERN, application);
+        super(sessionFactory, classLoader, application);
+    }
+
+    @Override
+    public boolean isMethodMatch(String methodName) {
+        return METHOD_SIGNATURE.equals(methodName);
     }
 
     @Override
