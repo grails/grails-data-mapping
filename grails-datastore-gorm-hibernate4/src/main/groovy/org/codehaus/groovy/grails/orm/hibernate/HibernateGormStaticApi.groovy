@@ -96,111 +96,6 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
         executeUpdateMethod = new ExecuteUpdatePersistentMethod(sessionFactory, classLoader, grailsApplication)
     }
 
-//    /**
-//     * Property missing handling used to relay property access onto target entity for named queries etc.
-//     *
-//     * @param property The name of the property
-//     */
-//    @CompileStatic(TypeCheckingMode.SKIP)
-//    def propertyMissing(String property) {
-//        if(persistentClass.hasProperty(property)) {
-//            return this.persistentClass."$property"
-//        }
-//        else {
-//            throw new MissingPropertyException(property, HibernateGormStaticApi)
-//        }
-//    }
-
-
-    @Override
-    D get(Serializable id) {
-        doGetInstance(id)
-    }
-
-    private D doGetInstance(Serializable id) {
-        if (id || (id instanceof Number)) {
-            id = convertIdentifier(id)
-            D result = (D)hibernateTemplate.get((Class)persistentClass, id)
-            return (D)GrailsHibernateUtil.unwrapIfProxy(result)
-        } else {
-            return null
-        }
-    }
-
-    Serializable convertIdentifier(Object id) {
-        (Serializable)HibernateUtils.convertValueToType(id, identityType, conversionService)
-    }
-
-    @Override
-    D read(Serializable id) {
-        if (id == null) {
-            return null
-        }
-
-        hibernateTemplate.execute(  { Session session ->
-           D o = doGetInstance((Serializable)id)
-           if (o && session.contains(o)) {
-               session.setReadOnly(o, true)
-           }
-           return o
-        } as GrailsHibernateTemplate.HibernateCallback )
-    }
-
-    @Override
-    D load(Serializable id) {
-        id = convertIdentifier(id)
-        if (id != null) {
-            return (D) hibernateTemplate.load((Class)persistentClass, id)
-        }
-    }
-
-    @Override
-    List<D> getAll() {
-        (List<D>)hibernateTemplate.execute(new GrailsHibernateTemplate.HibernateCallback() {
-            def doInHibernate(Session session) {
-                Criteria criteria = session.createCriteria(persistentClass)
-                hibernateTemplate.applySettings criteria
-                criteria.list()
-            }
-        })
-    }
-
-    List<D> getAll(List ids) {
-        getAllInternal(ids)
-    }
-
-    List<D> getAll(Long... ids) {
-        getAllInternal(ids as List)
-    }
-
-    @Override
-    List<D> getAll(Serializable... ids) {
-        getAllInternal(ids as List)
-    }
-
-    private List getAllInternal(List ids) {
-        if (!ids) return []
-
-        (List)hibernateTemplate.execute(new GrailsHibernateTemplate.HibernateCallback() {
-            def doInHibernate(Session session) {
-                ids = ids.collect { HibernateUtils.convertValueToType((Serializable)it, identityType, conversionService) }
-                def criteria = session.createCriteria(persistentClass)
-                hibernateTemplate.applySettings(criteria)
-                def identityName = persistentEntity.identity.name
-                criteria.add(Restrictions.'in'(identityName, ids))
-                def results = criteria.list()
-                def idsMap = [:]
-                for (object in results) {
-                    idsMap[object[identityName]] = object
-                }
-                results.clear()
-                for (id in ids) {
-                    results << idsMap[id]
-                }
-                results
-            }
-        })
-    }
 
     @Override
     GrailsCriteria createCriteria() {
@@ -220,32 +115,6 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
         (D)mergeMethod.invoke(o, "merge", [] as Object[])
     }
 
-    @Override
-    Integer count() {
-        (Integer)hibernateTemplate.execute(new GrailsHibernateTemplate.HibernateCallback() {
-            def doInHibernate(Session session) {
-                def criteria = session.createCriteria(persistentClass)
-                hibernateTemplate.applySettings(criteria)
-                criteria.setProjection(Projections.rowCount())
-                def num = criteria.uniqueResult()
-                num == null ? 0 : num
-            }
-        })
-    }
-
-    @Override
-    boolean exists(Serializable id) {
-        id = convertIdentifier(id)
-        hibernateTemplate.execute new GrailsHibernateTemplate.HibernateCallback() {
-            def doInHibernate(Session session) {
-                Criteria criteria = session.createCriteria(persistentEntity.javaClass)
-                hibernateTemplate.applySettings(criteria)
-                criteria.add(Restrictions.idEq(id))
-                    .setProjection(Projections.rowCount())
-                    .uniqueResult()
-            }
-        }
-    }
 
     @Override
     List<D> list(Map params) {
@@ -257,88 +126,6 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
         (List<D>)listMethod.invoke(persistentClass, "list", EMPTY_ARRAY)
     }
 
-    D first(Map m) {
-        def entityMapping = grailsDomainBinder.getMapping(persistentEntity.javaClass)
-        if (entityMapping?.identity instanceof CompositeIdentity) {
-            throw new UnsupportedOperationException('The first() method is not supported for domain classes that have composite keys.')
-        }
-        super.first(m)
-    }
-
-    D last(Map m) {
-        def entityMapping = grailsDomainBinder.getMapping(persistentEntity.javaClass)
-        if (entityMapping?.identity instanceof CompositeIdentity) {
-            throw new UnsupportedOperationException('The last() method is not supported for domain classes that have composite keys.')
-        }
-        super.last(m)
-    }
-
-    @Override
-    List<D> findAllWhere(Map queryMap, Map args) {
-        if (!queryMap) return null
-
-        (List<D>)hibernateTemplate.execute( { Session session ->
-                Map<String, Object> processedQueryMap = [:]
-                queryMap.each{ key, value -> processedQueryMap[key.toString()] = value }
-                Map queryArgs = filterQueryArgumentMap(processedQueryMap)
-
-                List<String> nullNames = removeNullNames(queryArgs)
-                Criteria criteria = session.createCriteria(persistentClass)
-                hibernateTemplate.applySettings(criteria)
-                criteria.add(Restrictions.allEq(queryArgs))
-                for (name in nullNames) {
-                    criteria.add Restrictions.isNull(name)
-                }
-                criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
-                criteria.list()
-        } as GrailsHibernateTemplate.HibernateCallback)
-    }
-
-    @Override
-    D findWhere(Map queryMap, Map args) {
-        if (!queryMap) return null
-
-        (D)hibernateTemplate.execute( { Session session ->
-                Map<String, Object> processedQueryMap = [:]
-                queryMap.each{ key, value -> processedQueryMap[key.toString()] = value }
-                Map queryArgs = filterQueryArgumentMap(processedQueryMap)
-                List<String> nullNames = removeNullNames(queryArgs)
-                Criteria criteria = session.createCriteria(persistentClass)
-                hibernateTemplate.applySettings(criteria)
-                criteria.add(Restrictions.allEq(queryArgs))
-                for (name in nullNames) {
-                    criteria.add Restrictions.isNull(name)
-                }
-                criteria.setMaxResults(1)
-                GrailsHibernateUtil.unwrapIfProxy(criteria.uniqueResult())
-        } as GrailsHibernateTemplate.HibernateCallback)
-    }
-
-    private Map filterQueryArgumentMap(Map query) {
-        def queryArgs = [:]
-        for (entry in query.entrySet()) {
-            if (entry.value instanceof CharSequence) {
-                queryArgs[entry.key] = entry.value.toString()
-            }
-            else {
-                queryArgs[entry.key] = entry.value
-            }
-        }
-        return queryArgs
-    }
-
-    private List<String> removeNullNames(Map query) {
-        List<String> nullNames = []
-        Set<String> allNames = new HashSet(query.keySet())
-        for (String name in allNames) {
-            def value = query[name]
-            if (value == null) {
-                query.remove name
-                nullNames << name
-            }
-        }
-        nullNames
-    }
 
     @Override
     Object withSession(Closure callable) {
@@ -447,10 +234,5 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
     @Override
     Integer executeUpdate(String query, Collection params, Map args) {
         (Integer)executeUpdateMethod.invoke(persistentClass, "executeUpdate", [query, params, args] as Object[])
-    }
-
-    @Override
-    D create() {
-        return (D)super.create()
     }
 }

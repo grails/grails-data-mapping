@@ -919,6 +919,10 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         find(query, params, Collections.emptyMap())
     }
 
+    D find(String query, Object[] params) {
+        find(query, params.toList(), Collections.emptyMap())
+    }
+
     D find(String query, Collection params, Map args) {
         unsupported("find")
     }
@@ -937,6 +941,10 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
     List<D> findAll(String query, Collection params) {
         findAll(query, params, Collections.emptyMap())
+    }
+
+    List<D> findAll(String query, Object[] params) {
+        findAll(query, params.toList(), Collections.emptyMap())
     }
 
     List<D> findAll(String query, Collection params, Map args) {

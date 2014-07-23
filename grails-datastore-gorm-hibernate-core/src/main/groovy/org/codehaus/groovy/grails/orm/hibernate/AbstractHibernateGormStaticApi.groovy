@@ -2,9 +2,12 @@ package org.codehaus.groovy.grails.orm.hibernate
 
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
+import org.codehaus.groovy.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder
+import org.codehaus.groovy.grails.orm.hibernate.cfg.CompositeIdentity
 import org.codehaus.groovy.grails.orm.hibernate.exceptions.GrailsQueryException
 import org.codehaus.groovy.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler
 import org.codehaus.groovy.grails.orm.hibernate.query.GrailsHibernateQueryUtils
+import org.codehaus.groovy.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.codehaus.groovy.grails.support.proxy.ProxyHandler
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
@@ -14,7 +17,11 @@ import org.hibernate.Criteria
 import org.hibernate.Query
 import org.hibernate.Session
 import org.hibernate.criterion.Example
+import org.hibernate.criterion.Projections
+import org.hibernate.criterion.Restrictions
+import org.hibernate.transform.DistinctRootEntityResultTransformer
 import org.springframework.core.convert.ConversionService
+import org.springframework.orm.hibernate3.HibernateCallback
 import org.springframework.transaction.PlatformTransactionManager
 
 import java.util.regex.Pattern
@@ -42,6 +49,89 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         this.hibernateTemplate = hibernateTemplate
         this.queryPattern = ~/(?i)from(?-i)\s+[${persistentEntity.name}|${persistentEntity.javaClass.simpleName}].*/
         this.conversionService = datastore.mappingContext.conversionService
+    }
+
+    @Override
+    D get(Serializable id) {
+        if (id || (id instanceof Number)) {
+            id = convertIdentifier(id)
+            D result = (D)hibernateTemplate.get((Class)persistentClass, id)
+            return (D)proxyHandler.unwrapIfProxy(result)
+        }
+    }
+
+    @Override
+    D read(Serializable id) {
+        if (id == null) {
+            return null
+        }
+
+        hibernateTemplate.execute(  { Session session ->
+
+            def criteria = session.createCriteria(persistentEntity.javaClass)
+            criteria.add Restrictions.idEq(convertIdentifier(id))
+            criteria.readOnly = true
+            def result = (D) criteria.uniqueResult()
+            if(result)
+                session.setReadOnly(result, true)
+            return proxyHandler.unwrapIfProxy( result )
+        } )
+    }
+
+    @Override
+    D load(Serializable id) {
+        id = convertIdentifier(id)
+        if (id != null) {
+            return (D) hibernateTemplate.load((Class)persistentClass, id)
+        }
+    }
+
+    @Override
+    List<D> getAll() {
+        (List<D>)hibernateTemplate.execute({ Session session ->
+            Criteria criteria = session.createCriteria(persistentClass)
+            hibernateTemplate.applySettings(criteria)
+            criteria.list()
+        })
+    }
+
+    @Override
+    Integer count() {
+        (Integer)hibernateTemplate.execute({ Session session ->
+            def criteria = session.createCriteria(persistentClass)
+            hibernateTemplate.applySettings(criteria)
+            criteria.setProjection(Projections.rowCount())
+            def num = criteria.uniqueResult()
+            num == null ? 0 : num
+        })
+    }
+
+    @Override
+    boolean exists(Serializable id) {
+        id = convertIdentifier(id)
+        hibernateTemplate.execute  { Session session ->
+            Criteria criteria = session.createCriteria(persistentEntity.javaClass)
+            hibernateTemplate.applySettings(criteria)
+            criteria.add(Restrictions.idEq(id))
+                    .setProjection(Projections.rowCount())
+                    .uniqueResult()
+        }
+    }
+
+    D first(Map m) {
+        def entityMapping = AbstractGrailsDomainBinder.getMapping(persistentEntity.javaClass)
+        if (entityMapping?.identity instanceof CompositeIdentity) {
+            throw new UnsupportedOperationException('The first() method is not supported for domain classes that have composite keys.')
+        }
+        super.first(m)
+    }
+
+    D last(Map m) {
+        def entityMapping = AbstractGrailsDomainBinder.getMapping(persistentEntity.javaClass)
+        if (entityMapping?.identity instanceof CompositeIdentity) {
+            throw new UnsupportedOperationException('The last() method is not supported for domain classes that have composite keys.')
+        }
+        super.last(m)
     }
 
     /**
@@ -171,12 +261,121 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
     }
 
+    @Override
+    List<D> findAllWhere(Map queryMap, Map args) {
+        if (!queryMap) return null
+        (List<D>)hibernateTemplate.execute { Session session ->
+            Map<String, Object> processedQueryMap = [:]
+            queryMap.each{ key, value -> processedQueryMap[key.toString()] = value }
+            Map queryArgs = filterQueryArgumentMap(processedQueryMap)
+            List<String> nullNames = removeNullNames(queryArgs)
+            Criteria criteria = session.createCriteria(persistentClass)
+            hibernateTemplate.applySettings(criteria)
+            criteria.add(Restrictions.allEq(queryArgs))
+            for (name in nullNames) {
+                criteria.add Restrictions.isNull(name)
+            }
+            criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE)
+            criteria.list()
+        }
+    }
+
+
+
+
+    @Override
+    D findWhere(Map queryMap, Map args) {
+        if (!queryMap) return null
+        (D)hibernateTemplate.execute { Session session ->
+            Map<String, Object> processedQueryMap = [:]
+            queryMap.each{ key, value -> processedQueryMap[key.toString()] = value }
+            Map queryArgs = filterQueryArgumentMap(processedQueryMap)
+            List<String> nullNames = removeNullNames(queryArgs)
+            Criteria criteria = session.createCriteria(persistentClass)
+            hibernateTemplate.applySettings(criteria)
+            criteria.add(Restrictions.allEq(queryArgs))
+            for (name in nullNames) {
+                criteria.add Restrictions.isNull(name)
+            }
+            criteria.setMaxResults(1)
+            proxyHandler.unwrapIfProxy(criteria.uniqueResult())
+        }
+    }
+
+
+
+    List<D> getAll(List ids) {
+        getAllInternal(ids)
+    }
+
+    List<D> getAll(Long... ids) {
+        getAllInternal(ids as List)
+    }
+
+    @Override
+    List<D> getAll(Serializable... ids) {
+        getAllInternal(ids as List)
+    }
+
+    private List getAllInternal(List ids) {
+        if (!ids) return []
+
+        (List)hibernateTemplate.execute { Session session ->
+            def identityType = persistentEntity.identity.type
+            ids = ids.collect { HibernateRuntimeUtils.convertValueToType((Serializable)it, identityType, conversionService) }
+            def criteria = session.createCriteria(persistentClass)
+            hibernateTemplate.applySettings(criteria)
+            def identityName = persistentEntity.identity.name
+            criteria.add(Restrictions.'in'(identityName, ids))
+            def results = criteria.list()
+            def idsMap = [:]
+            for (object in results) {
+                idsMap[object[identityName]] = object
+            }
+            results.clear()
+            for (id in ids) {
+                results << idsMap[id]
+            }
+            results
+        }
+    }
+
+    protected Map filterQueryArgumentMap(Map query) {
+        def queryArgs = [:]
+        for (entry in query.entrySet()) {
+            if (entry.value instanceof CharSequence) {
+                queryArgs[entry.key] = entry.value.toString()
+            }
+            else {
+                queryArgs[entry.key] = entry.value
+            }
+        }
+        return queryArgs
+    }
+
+
+    protected List<String> removeNullNames(Map query) {
+        List<String> nullNames = []
+        Set<String> allNames = new HashSet(query.keySet())
+        for (String name in allNames) {
+            if (query[name] == null) {
+                query.remove name
+                nullNames << name
+            }
+        }
+        nullNames
+    }
+
     protected D executeHibernateQuery(Query q, Map args) {
         q.maxResults = 1
         List results = q.list()
         if (results) {
             return (D)proxyHandler.unwrapIfProxy(results.get(0))
         }
+    }
+
+    protected Serializable convertIdentifier(Serializable id) {
+        (Serializable)HibernateRuntimeUtils.convertValueToType(id, persistentEntity.identity.type, conversionService)
     }
 
     protected void populateQueryWithNamedArguments(Query q, Map queryNamedArgs) {
