@@ -22,7 +22,6 @@ import org.hibernate.criterion.Projections
 import org.hibernate.criterion.Restrictions
 import org.hibernate.transform.DistinctRootEntityResultTransformer
 import org.springframework.core.convert.ConversionService
-import org.springframework.orm.hibernate3.HibernateCallback
 import org.springframework.transaction.PlatformTransactionManager
 
 import java.util.regex.Pattern

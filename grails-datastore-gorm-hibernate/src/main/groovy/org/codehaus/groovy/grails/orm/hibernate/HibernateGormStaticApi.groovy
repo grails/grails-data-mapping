@@ -16,18 +16,23 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
 import grails.orm.HibernateCriteriaBuilder
+import grails.orm.PagedResultList
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
+import org.codehaus.groovy.grails.orm.hibernate.query.GrailsHibernateQueryUtils
+import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.query.api.Criteria as GrailsCriteria
+import org.hibernate.Criteria
 import org.hibernate.LockMode
 import org.hibernate.Session
 import org.hibernate.SessionFactory
+import org.hibernate.transform.ResultTransformer
 import org.springframework.core.convert.ConversionService
 import org.springframework.orm.hibernate3.HibernateCallback
 import org.springframework.orm.hibernate3.HibernateTemplate
@@ -44,18 +49,14 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 @CompileStatic
 class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
-    protected static final EMPTY_ARRAY = [] as Object[]
-
     protected GrailsHibernateTemplate hibernateTemplate
     protected SessionFactory sessionFactory
     protected ConversionService conversionService
     protected Class identityType
-    protected ListPersistentMethod listMethod
     protected MergePersistentMethod mergeMethod
     protected ClassLoader classLoader
     protected GrailsApplication grailsApplication
     protected boolean cacheQueriesByDefault = false
-    protected GrailsDomainBinder grailsDomainBinder = new GrailsDomainBinder()
 
     HibernateGormStaticApi(Class<D> persistentClass, HibernateDatastore datastore, List<FinderMethod> finders,
                 ClassLoader classLoader, PlatformTransactionManager transactionManager) {
@@ -66,19 +67,43 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
 
         identityType = persistentEntity.identity?.type
 
-        def mappingContext = datastore.mappingContext
         grailsApplication = datastore.getGrailsApplication()
         if (grailsApplication != null) {
             GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
             identityType = domainClass.identifier?.type
 
             mergeMethod = new MergePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
-            listMethod = new ListPersistentMethod(grailsApplication, sessionFactory, classLoader, mappingContext.conversionService)
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
             hibernateTemplate.setCacheQueries(cacheQueriesByDefault)
         } else {
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
         }
+    }
+
+    @Override
+    List<D> list(Map params = Collections.emptyMap()) {
+        hibernateTemplate.execute { Session session ->
+            Criteria c = session.createCriteria(persistentEntity.javaClass)
+            hibernateTemplate.applySettings c
+
+            params = params ? new HashMap(params) : Collections.emptyMap()
+            setResultTransformer(c)
+            if(params.containsKey(DynamicFinder.ARGUMENT_MAX)) {
+
+                c.setMaxResults(Integer.MAX_VALUE)
+                GrailsHibernateQueryUtils.populateArgumentsForCriteria(persistentEntity, c, params, datastore.mappingContext.conversionService, true)
+                return new PagedResultList(hibernateTemplate, c)
+            }
+            else {
+                GrailsHibernateQueryUtils.populateArgumentsForCriteria(persistentEntity, c, params, datastore.mappingContext.conversionService, true)
+                return c.list()
+            }
+        }
+    }
+
+    @CompileDynamic
+    protected void setResultTransformer(Criteria c) {
+        c.resultTransformer = Criteria.DISTINCT_ROOT_ENTITY
     }
 
     @Override
@@ -99,17 +124,6 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
     D merge(o) {
         (D)mergeMethod.invoke(o, "merge", [] as Object[])
     }
-
-    @Override
-    List<D> list(Map params) {
-        (List<D>)listMethod.invoke(persistentClass, "list", [params] as Object[])
-    }
-
-    @Override
-    List<D> list() {
-        (List<D>)listMethod.invoke(persistentClass, "list", EMPTY_ARRAY)
-    }
-
 
     @Override
     Object withSession(Closure callable) {
