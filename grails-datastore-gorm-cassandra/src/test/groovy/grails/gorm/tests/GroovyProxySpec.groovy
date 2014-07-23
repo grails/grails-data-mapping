@@ -35,11 +35,12 @@ class GroovyProxySpec extends GormDatastoreSpec {
         given:
             session.mappingContext.proxyFactory = new GroovyProxyFactory()
             def id = new Location(name:"United Kingdom", code:"UK").save(flush:true)?.id
+            def p = new PersonLastNamePartitionKey(firstName: "Bob", lastName: "Wilson", age: 25).save(flush:true)
             session.clear()
 
         when:
             def location = Location.proxy(id)
-
+            def person = PersonLastNamePartitionKey.load([firstName: "Bob", lastName: "Wilson"])
         then:
 
             location != null
@@ -52,5 +53,14 @@ class GroovyProxySpec extends GormDatastoreSpec {
             true == location.isInitialized()
             true == location.initialized
             null != location.target
+            
+            person != null
+            false == person.isInitialized()
+            false == person.initialized
+            
+            "Bob" == person.firstName
+            "Wilson" == person.lastName
+            true == person.isInitialized()
+            true == person.initialized
     }
 }
