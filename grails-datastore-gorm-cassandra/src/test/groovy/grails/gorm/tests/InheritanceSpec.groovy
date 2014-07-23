@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import spock.lang.Ignore
+
 
 /**
  * @author graemerocher
@@ -29,6 +31,7 @@ class InheritanceSpec extends GormDatastoreSpec {
             "United Kingdom" == countries[0].name
     }
 
+    @Ignore("Cassandra GORM does not support table-per-hierarchy mapping at present")
     void "Test querying with inheritance"() {
 
         given:
