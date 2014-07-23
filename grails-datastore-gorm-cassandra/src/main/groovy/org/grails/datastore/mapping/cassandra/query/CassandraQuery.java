@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.cassandra.CassandraSession;
+import org.grails.datastore.mapping.cassandra.config.Table;
 import org.grails.datastore.mapping.cassandra.engine.CassandraEntityPersister;
 import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
 import org.grails.datastore.mapping.model.ClassMapping;
@@ -160,6 +161,15 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
                     }
                 }
                 select.orderBy(orderings);
+            } else {
+                Order orderBy = ((Table) entity.getMapping().getMappedForm()).getOrderBy();
+                if (orderBy != null) {
+                    if (orderBy.getDirection() == Direction.ASC) {
+                        select.orderBy(QueryBuilder.asc(orderBy.getProperty()));
+                    } else {
+                        select.orderBy(QueryBuilder.desc(orderBy.getProperty()));
+                    }
+                }
             }
             
             if (max > 0) { 
