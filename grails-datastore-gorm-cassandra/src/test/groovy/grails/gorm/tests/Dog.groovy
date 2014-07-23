@@ -1,11 +1,9 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
+import grails.gorm.CassandraEntity
+import grails.persistence.Entity
 
-import java.io.Serializable;
-import java.util.UUID;
-
-@Entity
+@CassandraEntity
 class Dog implements Serializable{
     UUID id
     int age

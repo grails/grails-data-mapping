@@ -1,8 +1,8 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity
+import grails.gorm.CassandraEntity
 
-@Entity
+@CassandraEntity
 class ClassWithNoArgBeforeValidate implements Serializable {
     UUID id
     Long version
