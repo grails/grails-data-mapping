@@ -238,7 +238,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      * @return The result list
      */
     public List list(Closure callable) {
-        initializeQuery();
+        ensureQueryIsInitialized();
         invokeClosureNode(callable);
 
         return query.list();
@@ -253,7 +253,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      * @return A single result
      */
     public Object get(Closure callable) {
-        initializeQuery();
+        ensureQueryIsInitialized();
         invokeClosureNode(callable);
 
         uniqueResult = true;
@@ -267,7 +267,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      * @return The result list
      */
     public List listDistinct(Closure callable) {
-        initializeQuery();
+        ensureQueryIsInitialized();
         invokeClosureNode(callable);
 
         query.projections().distinct();
@@ -275,7 +275,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     }
 
     public List list(Map paginateParams, Closure callable) {
-        initializeQuery();
+        ensureQueryIsInitialized();
 
         paginationEnabledList = true;
         orderEntries = new ArrayList<Query.Order>();
@@ -294,7 +294,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      * @return The result count
      */
     public Number count(Closure callable) {
-        initializeQuery();
+        ensureQueryIsInitialized();
         invokeClosureNode(callable);
         uniqueResult = true;
         query.projections().count();
@@ -305,7 +305,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     public Object invokeMethod(String name, Object obj) {
         Object[] args = obj.getClass().isArray() ? (Object[])obj : new Object[]{obj};
 
-        initializeQuery();
+        ensureQueryIsInitialized();
         if (isCriteriaConstructionMethod(name, args)) {
 
 
@@ -1074,9 +1074,13 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         }
     }
 
-    private void initializeQuery() {
-        query = session.createQuery(targetClass);
-        queryMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(query.getClass());
+    private void ensureQueryIsInitialized() {
+    	if(query == null) {
+    		query = session.createQuery(targetClass);
+    	}
+    	if(queryMetaClass == null) {
+    		queryMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(query.getClass());
+    	}
     }
 
     private boolean isCriteriaConstructionMethod(String name, Object[] args) {
@@ -1125,7 +1129,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         }
         else {
             if (query == null) {
-                initializeQuery();
+                ensureQueryIsInitialized();
             }
             query.add(c);
         }

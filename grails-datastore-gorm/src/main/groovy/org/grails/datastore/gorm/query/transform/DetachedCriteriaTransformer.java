@@ -85,8 +85,6 @@ import org.grails.datastore.mapping.reflect.NameUtils;
 public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private static final Class<?>[] EMPTY_JAVA_CLASS_ARRAY = {};
-    private static final VariableExpression THIS_EXPRESSION = new VariableExpression("this");
-    private static final VariableExpression DELEGATE_EXPRESSION = new VariableExpression("delegate");
     public static final String AND_OPERATOR = "&";
     public static final String OR_OPERATOR = "|";
     public static final ClassNode DETACHED_CRITERIA_CLASS_NODE = ClassHelper.make(DetachedCriteria.class);
@@ -362,7 +360,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 if (varType != null && isCandidateWhereMethod(method, arguments)) {
                     this.currentClassNode = varType;
                     visitMethodCall(varType, arguments);
-                } else if (THIS_EXPRESSION.getName().equals(varName) && currentClassNode != null && isCandidateWhereMethod(method.getText(), arguments)) {
+                } else if (var.isThisExpression() &&
+                           currentClassNode != null &&
+                           isCandidateWhereMethod(method.getText(), arguments)) {
                     if (isDomainClass(currentClassNode)) {
                         visitMethodCall(this.currentClassNode, arguments);
                         call.setMethod(WHERE_LAZY);
@@ -398,7 +398,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
         } else if (objectExpression instanceof VariableExpression) {
             VariableExpression ve = (VariableExpression) objectExpression;
-            if (ve.getName().equals(THIS_EXPRESSION.getName()) && isDomainClass(this.currentClassNode)) {
+            if (ve.isThisExpression() &&
+                isDomainClass(this.currentClassNode)) {
                 return new ClassExpression(this.currentClassNode);
             }
         }
@@ -745,7 +746,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             ClosureExpression associationQuery = (ClosureExpression) arguments.getExpression(0);
             BlockStatement currentBody = closureAndArguments.getCurrentBody();
             ArgumentListExpression argList = closureAndArguments.getArguments();
-            newCode.addStatement(new ExpressionStatement(new MethodCallExpression(DELEGATE_EXPRESSION, methodName, argList)));
+            newCode.addStatement(new ExpressionStatement(new MethodCallExpression(new VariableExpression("delegate"), methodName, argList)));
             Statement associationCode = associationQuery.getCode();
             if (associationCode instanceof BlockStatement) {
 
@@ -860,7 +861,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             arguments.addExpression(newClosureExpression);
             addBinaryExpressionToNewBody(propertyNames, currentBody, (BinaryExpression) subExpression, false, variableScope);
 
-            newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "not", arguments)));
+            newCode.addStatement(new ExpressionStatement(new MethodCallExpression(new VariableExpression("this"), "not", arguments)));
         } else {
             sourceUnit.getErrorCollector().addError(new LocatedMessage("You can only negate a binary expressions in queries.", Token.newString(not.getText(), not.getLineNumber(), not.getColumnNumber()), sourceUnit));
         }
@@ -938,7 +939,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             newClosureExpression.setVariableScope(variableScope);
             arguments.addExpression(newClosureExpression);
             if (methodNameToCall != null) {
-                newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodNameToCall, arguments)));
+                newCode.addStatement(new ExpressionStatement(new MethodCallExpression(new VariableExpression("this"), methodNameToCall, arguments)));
             } else {
                 List<Statement> statements = currentBody.getStatements();
                 for (Statement statement : statements) {
@@ -977,7 +978,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             constructorArgs.addExpression(new ConstructorCallExpression(criterionClassNode, criterionConstructorArguments));
             ConstructorCallExpression constructorCallExpression = new ConstructorCallExpression(FUNCTION_CALL_CRITERION, constructorArgs);
             newArgs.addExpression(constructorCallExpression);
-            newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "add", newArgs)));
+            newCode.addStatement(new ExpressionStatement(new MethodCallExpression(new VariableExpression("this"), "add", newArgs)));
         } else {
             sourceUnit.getErrorCollector().addError(new LocatedMessage("Unsupported operator [" + operator + "] used with function call [" + functionName + "] in query", Token.newString(functionName, rightExpression.getLineNumber(), rightExpression.getColumnNumber()), sourceUnit));
         }
@@ -1022,6 +1023,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 ClassNode currentType = currentClassNode;
                 BlockStatement currentBody = newCode;
 
+                VariableExpression delegateExpression = new VariableExpression("delegate");
                 for (Iterator<String> iterator = associationMethodCalls.iterator(); iterator.hasNext(); ) {
                     String associationMethodCall = iterator.next();
 
@@ -1033,7 +1035,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     if (type == null) break;
 
                     currentType = type;
-                    currentBody.addStatement(new ExpressionStatement(new MethodCallExpression(DELEGATE_EXPRESSION, associationMethodCall, arguments)));
+                    currentBody.addStatement(new ExpressionStatement(new MethodCallExpression(delegateExpression, associationMethodCall, arguments)));
                     currentBody = closureAndArguments.getCurrentBody();
 
                     if (!iterator.hasNext()) {
@@ -1088,7 +1090,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 } finally {
                     this.currentClassNode = existing;
                 }
-                newCode.addStatement(new ExpressionStatement(new MethodCallExpression(DELEGATE_EXPRESSION, actualPropertyName, arguments)));
+                newCode.addStatement(new ExpressionStatement(new MethodCallExpression(new VariableExpression("delegate"), actualPropertyName, arguments)));
             } else if((aliased instanceof ClassNode) && (oppositeSide instanceof PropertyExpression)) {
                 String rootReference = pe.getText();
                 PropertyExpression oppositeProperty = (PropertyExpression) oppositeSide;
@@ -1098,7 +1100,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     ArgumentListExpression args = new ArgumentListExpression();
                     args.addExpression(new ConstantExpression(rootReference));
                     args.addExpression(new ConstantExpression(oppositeProperty.getText()));
-                    newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodToCall, args)));
+                    newCode.addStatement(new ExpressionStatement(new MethodCallExpression(new VariableExpression("this"), methodToCall, args)));
                 }
 
             } else if (!variableScope.isReferencedLocalVariable(propertyName)) {
@@ -1167,7 +1169,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     }
                 }
             } else if (aggregateFunctionName != null) {
-                if((methodTarget instanceof VariableExpression) && ((VariableExpression)methodTarget).getName().equals(THIS_EXPRESSION.getName()) ) {
+                if((methodTarget instanceof VariableExpression) &&
+                    ((VariableExpression)methodTarget).isThisExpression()) {
                     Expression arguments = aggregateMethodCall.getArguments();
                     if (arguments instanceof ArgumentListExpression) {
                         ArgumentListExpression argList = (ArgumentListExpression) arguments;
@@ -1293,15 +1296,16 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             arguments.addExpression(new ConstantExpression(propertyName))
                     .addExpression(rightExpression);
         }
-        newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodToCall, arguments)));
+        newCode.addStatement(new ExpressionStatement(new MethodCallExpression(new VariableExpression("this"), methodToCall, arguments)));
     }
 
     private void addProjectionToCurrentBody(BlockStatement currentBody, String functionName, String aggregatePropertyName, VariableScope variableScope) {
         ClosureAndArguments projectionsBody = new ClosureAndArguments(variableScope);
         ArgumentListExpression aggregateArgs = new ArgumentListExpression();
         aggregateArgs.addExpression(new ConstantExpression(aggregatePropertyName));
-        projectionsBody.getCurrentBody().addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, functionName, aggregateArgs)));
-        currentBody.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "projections", projectionsBody.getArguments())));
+        VariableExpression thisExpression = new VariableExpression("this");
+        projectionsBody.getCurrentBody().addStatement(new ExpressionStatement(new MethodCallExpression(thisExpression, functionName, aggregateArgs)));
+        currentBody.addStatement(new ExpressionStatement(new MethodCallExpression(thisExpression, "projections", projectionsBody.getArguments())));
     }
 
     protected boolean isDomainClass(ClassNode classNode) {
