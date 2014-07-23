@@ -1,18 +1,15 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity
+import grails.gorm.CassandraEntity
 
-@Entity
+@CassandraEntity
 class Task implements Serializable {
 	UUID id
-	Long version
-	Set tasks
-	Task task
+	Long version	
 	String name
 
 	static mapping = {
 		name index:true
 	}
-
-	static hasMany = [tasks:Task]
+	
 }
