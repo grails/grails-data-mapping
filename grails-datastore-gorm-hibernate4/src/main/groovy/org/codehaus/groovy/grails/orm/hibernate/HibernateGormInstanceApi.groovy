@@ -20,13 +20,8 @@ import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.SavePersistentMethod
-import org.hibernate.LockMode
 import org.hibernate.engine.spi.EntityEntry
 import org.hibernate.engine.spi.SessionImplementor
-import org.hibernate.proxy.HibernateProxy
-import org.springframework.dao.DataAccessException
 
 /**
  * The implementation of the GORM instance API contract for Hibernate.
@@ -37,8 +32,6 @@ import org.springframework.dao.DataAccessException
 @CompileStatic
 class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
 
-    protected SavePersistentMethod saveMethod
-    protected MergePersistentMethod mergeMethod
     protected GrailsHibernateTemplate hibernateTemplate
     protected InstanceApiHelper instanceApiHelper
 
@@ -49,8 +42,6 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
         if (grailsApplication) {
             GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
             config = (Map)grailsApplication.getFlatConfig().get('grails.gorm')
-            saveMethod = new SavePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
-            mergeMethod = new MergePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication)
             cacheQueriesByDefault = GrailsHibernateUtil.isCacheQueriesByDefault(grailsApplication)
         }
@@ -139,55 +130,6 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
         return fieldIndex == -1 ? null : entry.loadedState[fieldIndex]
     }
 
-    @Override
-    D save(D instance) {
-        if (saveMethod) {
-            return (D)saveMethod.invoke(instance, "save", EMPTY_ARRAY)
-        }
-        else {
-            return super.save(instance)
-        }
-    }
-
-    D save(D instance, boolean validate) {
-        if (saveMethod) {
-            return (D)saveMethod.invoke(instance, "save", [validate] as Object[])
-        }
-        else {
-            return super.save(instance, validate)
-        }
-    }
-
-    @Override
-    D merge(D instance) {
-        if (mergeMethod) {
-            return (D)mergeMethod.invoke(instance, "merge", EMPTY_ARRAY)
-        }
-        else {
-            return super.merge(instance)
-        }
-    }
-
-    @Override
-    D merge(D instance, Map params) {
-        if (mergeMethod) {
-            return (D)mergeMethod.invoke(instance, "merge", [params] as Object[])
-        }
-        else {
-            return super.merge(instance, params)
-        }
-    }
-
-    @Override
-    D save(D instance, Map params) {
-        if (saveMethod) {
-            return (D)saveMethod.invoke(instance, "save", [params] as Object[])
-        }
-        else {
-            return super.save(instance, params)
-        }
-    }
-
 
     protected EntityEntry findEntityEntry(D instance, SessionImplementor session, boolean forDirtyCheck = true) {
         def entry = session.persistenceContext.getEntry(instance)
@@ -202,5 +144,8 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
         entry
     }
 
-
+    @Override
+    void setObjectToReadWrite(Object target) {
+        GrailsHibernateUtil.setObjectToReadWrite(target, sessionFactory)
+    }
 }

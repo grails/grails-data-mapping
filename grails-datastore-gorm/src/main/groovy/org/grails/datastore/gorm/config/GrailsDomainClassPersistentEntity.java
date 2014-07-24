@@ -271,6 +271,10 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
         association.setAssociatedEntity(getMappingContext().addPersistentEntity(grailsDomainClassProperty.getReferencedPropertyType()));
         association.setOwningSide(grailsDomainClassProperty.isOwningSide());
         association.setReferencedPropertyName(grailsDomainClassProperty.getReferencedPropertyName());
+        GrailsDomainClassProperty otherSide = grailsDomainClassProperty.getOtherSide();
+        if(otherSide != null) {
+            association.setReferencedPropertyName(otherSide.getName());
+        }
     }
 
     private PersistentProperty createEmbedded(

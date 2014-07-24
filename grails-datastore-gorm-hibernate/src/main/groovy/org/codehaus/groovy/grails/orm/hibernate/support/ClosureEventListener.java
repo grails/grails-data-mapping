@@ -28,11 +28,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateGormValidationApi;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.Mapping;
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractDynamicPersistentMethod;
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractSavePersistentMethod;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
 import org.grails.datastore.gorm.support.BeforeValidateHelper.BeforeValidateEventTriggerCaller;
@@ -122,7 +121,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
         validateParams = new HashMap();
         validateParams.put(AbstractHibernateGormValidationApi.ARGUMENT_DEEP_VALIDATE, Boolean.FALSE);
 
-        errorsProperty = domainMetaClass.getMetaProperty(AbstractDynamicPersistentMethod.ERRORS_PROPERTY);
+        errorsProperty = domainMetaClass.getMetaProperty(GrailsDomainClassProperty.ERRORS);
 
         validateMethod = domainMetaClass.getMetaMethod("validate",
                 new Object[] { Map.class });
@@ -225,7 +224,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
 
     public void onPostInsert(PostInsertEvent event) {
         final Object entity = event.getEntity();
-        AbstractSavePersistentMethod.clearDisabledValidations(entity);
+        AbstractHibernateGormInstanceApi.clearDisabledValidations(entity);
         if (postInsertEventListener == null) {
             return;
         }
@@ -241,7 +240,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
 
     public void onPostUpdate(PostUpdateEvent event) {
         final Object entity = event.getEntity();
-        AbstractSavePersistentMethod.clearDisabledValidations(entity);
+        AbstractHibernateGormInstanceApi.clearDisabledValidations(entity);
         if (postUpdateEventListener == null) {
             return;
         }
@@ -257,7 +256,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
 
     public void onPostDelete(PostDeleteEvent event) {
         final Object entity = event.getEntity();
-        AbstractSavePersistentMethod.clearDisabledValidations(entity);
+        AbstractHibernateGormInstanceApi.clearDisabledValidations(entity);
         if (postDeleteEventListener == null) {
             return;
         }
@@ -307,7 +306,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                         event.getState()[ Arrays.asList(propertyNames).indexOf( GrailsDomainClassProperty.LAST_UPDATED) ] = now;
                     }
                 }
-                if (!AbstractSavePersistentMethod.isAutoValidationDisabled(entity)
+                if (!AbstractHibernateGormInstanceApi.isAutoValidationDisabled(entity)
                         && !DefaultTypeTransformation.castToBoolean(validateMethod.invoke(entity, new Object[] { validateParams }))) {
                     evict = true;
                     if (failOnErrorEnabled) {
@@ -361,7 +360,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                 }
 
                 boolean evict = false;
-                if (!AbstractSavePersistentMethod.isAutoValidationDisabled(entity)
+                if (!AbstractHibernateGormInstanceApi.isAutoValidationDisabled(entity)
                         && !DefaultTypeTransformation.castToBoolean(validateMethod.invoke(entity,
                                 new Object[] { validateParams }))) {
                     evict = true;

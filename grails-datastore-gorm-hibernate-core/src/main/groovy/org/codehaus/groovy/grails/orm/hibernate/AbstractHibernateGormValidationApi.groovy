@@ -19,6 +19,7 @@ import grails.validation.ValidationErrors
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.codehaus.groovy.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.codehaus.groovy.grails.orm.hibernate.validation.AbstractPersistentConstraint
 import org.codehaus.groovy.grails.validation.CascadingValidator
 import org.grails.datastore.gorm.GormValidationApi
@@ -145,25 +146,6 @@ abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D
      * @return the new Errors object
      */
     protected Errors setupErrorsProperty(Object target) {
-        MetaClass mc = GroovySystem.metaClassRegistry.getMetaClass(target.getClass())
-
-        def errors = new ValidationErrors(target)
-
-        Errors originalErrors = (Errors) mc.getProperty(target, GrailsDomainClassProperty.ERRORS)
-        for (Object o in originalErrors.fieldErrors) {
-            FieldError fe = (FieldError)o
-            if (fe.isBindingFailure()) {
-                errors.addError(new FieldError(fe.getObjectName(),
-                        fe.field,
-                        fe.rejectedValue,
-                        fe.bindingFailure,
-                        fe.codes,
-                        fe.arguments,
-                        fe.defaultMessage))
-            }
-        }
-
-        mc.setProperty(target, GrailsDomainClassProperty.ERRORS, errors);
-        return errors;
+        HibernateRuntimeUtils.setupErrorsProperty target
     }
 }

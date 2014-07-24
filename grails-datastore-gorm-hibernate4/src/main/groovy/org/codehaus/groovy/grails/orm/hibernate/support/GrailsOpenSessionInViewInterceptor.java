@@ -15,9 +15,9 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
+import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractSavePersistentMethod;
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -112,7 +112,7 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
             }
         }
         finally {
-            AbstractSavePersistentMethod.clearDisabledValidations();
+            AbstractHibernateGormInstanceApi.clearDisabledValidations();
         }
     }
 

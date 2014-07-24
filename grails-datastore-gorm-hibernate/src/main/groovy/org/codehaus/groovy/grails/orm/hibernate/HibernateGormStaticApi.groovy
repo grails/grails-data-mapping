@@ -22,7 +22,6 @@ import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.query.GrailsHibernateQueryUtils
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
@@ -51,10 +50,10 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
     protected SessionFactory sessionFactory
     protected ConversionService conversionService
     protected Class identityType
-    protected MergePersistentMethod mergeMethod
     protected ClassLoader classLoader
     protected GrailsApplication grailsApplication
     protected boolean cacheQueriesByDefault = false
+    private HibernateGormInstanceApi<D> instanceApi
 
     HibernateGormStaticApi(Class<D> persistentClass, HibernateDatastore datastore, List<FinderMethod> finders,
                 ClassLoader classLoader, PlatformTransactionManager transactionManager) {
@@ -70,12 +69,13 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
             GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
             identityType = domainClass.identifier?.type
 
-            mergeMethod = new MergePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
             hibernateTemplate.setCacheQueries(cacheQueriesByDefault)
         } else {
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
         }
+
+        instanceApi = new HibernateGormInstanceApi<>(persistentClass, datastore, classLoader)
     }
 
     @Override
@@ -119,8 +119,8 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
     }
 
     @Override
-    D merge(o) {
-        (D)mergeMethod.invoke(o, "merge", [] as Object[])
+    D merge( D o ) {
+        instanceApi.merge(o)
     }
 
     @Override
