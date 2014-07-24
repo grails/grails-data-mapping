@@ -2,6 +2,7 @@ package org.codehaus.groovy.grails.orm.hibernate.query;
 
 import grails.util.CollectionUtils;
 import groovy.lang.*;
+
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.grails.datastore.mapping.query.api.*;
@@ -26,7 +27,7 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 3.0.7
  */
-public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSupport implements org.grails.datastore.mapping.query.api.Criteria, org.grails.datastore.mapping.query.api.ProjectionList  {
+public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSupport implements org.grails.datastore.mapping.query.api.BuildableCriteria, org.grails.datastore.mapping.query.api.ProjectionList  {
 
     public static final String AND = "and"; // builder
     public static final String IS_NULL = "isNull"; // builder
@@ -1500,6 +1501,11 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
 
     protected boolean validateSimpleExpression() {
         return criteria != null;
+    }
+
+    @Override
+    public List list(@DelegatesTo(Criteria.class) Closure c) {
+    	return (List)invokeMethod(LIST_CALL, new Object[]{c});
     }
 
     @SuppressWarnings("rawtypes")
