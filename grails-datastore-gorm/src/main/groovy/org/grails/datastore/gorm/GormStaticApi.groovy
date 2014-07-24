@@ -34,7 +34,7 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.query.Query
-import org.grails.datastore.mapping.query.api.Criteria
+import org.grails.datastore.mapping.query.api.BuildableCriteria
 import org.springframework.beans.PropertyAccessorFactory
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.transaction.PlatformTransactionManager
@@ -292,7 +292,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     /**
      * Creates a criteria builder instance
      */
-    Criteria createCriteria() {
+    BuildableCriteria createCriteria() {
         new CriteriaBuilder(persistentClass, datastore.currentSession)
     }
 

@@ -34,7 +34,7 @@ import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.mapping.query.api.Criteria as GrailsCriteria
+import org.grails.datastore.mapping.query.api.BuildableCriteria as GrailsCriteria
 import org.hibernate.Criteria
 import org.hibernate.LockMode
 import org.hibernate.Session

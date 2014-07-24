@@ -36,6 +36,7 @@ import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
+import org.grails.datastore.mapping.query.api.BuildableCriteria;
 import org.grails.datastore.mapping.query.api.Criteria;
 import org.grails.datastore.mapping.query.api.ProjectionList;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
@@ -48,7 +49,7 @@ import org.springframework.util.Assert;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, ProjectionList {
+public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCriteria, ProjectionList {
 
     public static final String ORDER_DESCENDING = "desc";
     public static final String ORDER_ASCENDING = "asc";
