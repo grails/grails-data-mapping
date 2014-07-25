@@ -20,6 +20,7 @@ import grails.orm.RlikeExpression;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 import groovy.lang.Range;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.*;
@@ -187,13 +188,17 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             arguments = args;
         }
 
-        private void convertArgumentList(GrailsDomainClassProperty prop, List argList) {
-            ListIterator listIterator = argList.listIterator();
-            while (listIterator.hasNext()) {
-                Object next = listIterator.next();
-                listIterator.set( conversionService.convert(next, prop.getType()));
+        private List convertArgumentList(GrailsDomainClassProperty prop, List argList) {
+            List convertedList = new ArrayList(argList.size());
+            for (Object item : argList) {
+                if(item instanceof CharSequence) {
+                    item = item.toString();
+                }
+                convertedList.add(conversionService.convert(item, prop.getType()));
             }
+            return convertedList;
         }
+        
         abstract Criterion createCriterion();
 
         protected Criterion getCriterion() {

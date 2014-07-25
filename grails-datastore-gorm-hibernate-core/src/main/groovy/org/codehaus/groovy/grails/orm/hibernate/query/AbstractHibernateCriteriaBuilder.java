@@ -1222,20 +1222,22 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         propertyName = calculatePropertyName(propertyName);
 
         if(values instanceof List) {
-            convertArgumentList((List)values);
+            values = convertArgumentList((List)values);
         }
         addToCriteria(Restrictions.in(propertyName, values == null ? Collections.EMPTY_LIST : values));
         return this;
     }
 
-    private void convertArgumentList(List argList) {
-        ListIterator listIterator = argList.listIterator();
-        while (listIterator.hasNext()) {
-            Object next = listIterator.next();
-            if(next instanceof CharSequence) {
-                listIterator.set( next.toString() );
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected List convertArgumentList(List argList) {
+        List convertedList = new ArrayList(argList.size());
+        for (Object item : argList) {
+            if(item instanceof CharSequence) {
+                item = item.toString();
             }
+            convertedList.add(item);
         }
+        return convertedList;
     }
     /**
      * Delegates to in as in is a Groovy keyword

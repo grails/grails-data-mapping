@@ -19,6 +19,7 @@ import grails.async.Promise
 import grails.async.Promises
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
+
 import org.grails.datastore.mapping.query.api.QueryAliasAwareSession
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware
 
@@ -336,14 +337,15 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return this
     }
 
-    private void convertArgumentList(List argList) {
-        ListIterator listIterator = argList.listIterator();
-        while (listIterator.hasNext()) {
-            Object next = listIterator.next();
-            if(next instanceof CharSequence) {
-                listIterator.set( next.toString() )
+    protected List convertArgumentList(List argList) {
+        List convertedList = new ArrayList(argList.size());
+        for (Object item : argList) {
+            if(item instanceof CharSequence) {
+                item = item.toString();
             }
+            convertedList.add(item);
         }
+        return convertedList;
     }
     /**
      * @see Criteria
