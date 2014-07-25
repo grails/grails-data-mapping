@@ -129,20 +129,6 @@ class QueryAssociationSpec extends GormDatastoreSpec {
             results.size() == 2
             results[0].name == "Bob"
             results[1].name == "Charlie"
-            
-        when: "An in query is used with immutable list containing GStrings"
-            results = TestEntity.withCriteria {
-                child {
-                    inList 'name', ["Nick", "${'Rosie'}"].asImmutable()
-                }
-                order  "name"
-            }
-
-        then: "We get Bob and Charlie back"
-
-            results.size() == 2
-            results[0].name == "Bob"
-            results[1].name == "Charlie"
 
         when: "Multiple child criterion are used"
             results = TestEntity.withCriteria {
