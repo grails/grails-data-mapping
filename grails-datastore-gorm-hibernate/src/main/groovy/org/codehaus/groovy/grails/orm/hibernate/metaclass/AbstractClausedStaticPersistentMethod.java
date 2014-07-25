@@ -153,10 +153,10 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
                 else if (!prop.getType().isAssignableFrom(currentArg.getClass()) && !(GrailsClassUtils.isMatchBetweenPrimativeAndWrapperTypes(prop.getType(), currentArg.getClass()))) {
                     try {
                         if (type.equals(IN_LIST)) {
-                            args[i] = conversionService.convert(currentArg, Collection.class);
-                            if(currentArg instanceof List) {
-                                convertArgumentList(prop, (List)currentArg);
+                            if(currentArg instanceof Collection) {
+                                currentArg = convertArgumentList(prop, (Collection)currentArg);
                             }
+                            args[i] = conversionService.convert(currentArg, Collection.class);
                         }
                         else {
                             args[i] = conversionService.convert(currentArg, prop.getType());
@@ -178,15 +178,15 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
                         }
                     }
                 }
-                else if(type.equals(IN_LIST) && (currentArg instanceof List)) {
-                    convertArgumentList(prop, (List) currentArg);
+                else if(type.equals(IN_LIST) && (currentArg instanceof Collection)) {
+                    currentArg = convertArgumentList(prop, (Collection) currentArg);
                 }
             }
 
             arguments = args;
         }
 
-        private List convertArgumentList(GrailsDomainClassProperty prop, List argList) {
+        protected List convertArgumentList(GrailsDomainClassProperty prop, Collection argList) {
             List convertedList = new ArrayList(argList.size());
             for (Object item : argList) {
                 if(item instanceof CharSequence) {

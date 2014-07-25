@@ -329,15 +329,11 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @see Criteria
      */
     Criteria inList(String propertyName, Collection values) {
-
-        if(values instanceof List) {
-            convertArgumentList((List)values);
-        }
-        add Restrictions.in(propertyName, values)
+        add Restrictions.in(propertyName, convertArgumentList(values))
         return this
     }
 
-    protected List convertArgumentList(List argList) {
+    protected List convertArgumentList(Collection argList) {
         List convertedList = new ArrayList(argList.size());
         for (Object item : argList) {
             if(item instanceof CharSequence) {
@@ -351,7 +347,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @see Criteria
      */
     Criteria inList(String propertyName, Object[] values) {
-        add Restrictions.in(propertyName, Arrays.asList(values))
+        add Restrictions.in(propertyName, convertArgumentList(Arrays.asList(values)))
         return this
     }
 
