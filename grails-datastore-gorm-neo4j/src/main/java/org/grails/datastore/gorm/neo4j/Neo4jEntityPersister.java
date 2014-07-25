@@ -96,31 +96,43 @@ public class Neo4jEntityPersister extends EntityPersister {
         int longestInheritenceChain = -1;
 
         for (String l: labels) {
-            PersistentEntity persistentEntity = findPersistentEntityWithLabel(l);
-
-            int inheritenceChain = calcInheritenceChain(persistentEntity);
-            if (inheritenceChain > longestInheritenceChain) {
-                longestInheritenceChain = inheritenceChain;
-                result = persistentEntity;
+            PersistentEntity persistentEntity = findDerivedPersistentEntityWithLabel(pe, l);
+            if (persistentEntity!=null) {
+                int inheritenceChain = calcInheritenceChain(persistentEntity);
+                if (inheritenceChain > longestInheritenceChain) {
+                    longestInheritenceChain = inheritenceChain;
+                    result = persistentEntity;
+                }
             }
         }
         return result;
     }
 
-    private PersistentEntity findPersistentEntityWithLabel(String label) {
+    private PersistentEntity findDerivedPersistentEntityWithLabel(PersistentEntity parent, String label) {
         for (PersistentEntity pe: getMappingContext().getPersistentEntities()) {
-            if (((GraphPersistentEntity)pe).getLabels().contains(label)) {
-                return pe;
+            if (isInParentsChain(parent, pe)) {
+                if (((GraphPersistentEntity)pe).getLabels().contains(label)) {
+                    return pe;
+                }
             }
         }
-        throw new IllegalStateException("no persistententity with discriminator " + label);
+        return null;
     }
 
-    int calcInheritenceChain(PersistentEntity pe) {
-        if (pe == null) {
+
+    private boolean isInParentsChain(PersistentEntity parent, PersistentEntity it) {
+        if (it==null) {
+            return false;
+        } else if (it.equals(parent)) {
+            return true;
+        } else return isInParentsChain(parent, it.getParentEntity());
+    }
+
+    private int calcInheritenceChain(PersistentEntity current) {
+        if (current == null) {
             return 0;
         } else {
-            return calcInheritenceChain(pe.getParentEntity()) + 1;
+            return calcInheritenceChain(current.getParentEntity()) + 1;
         }
     }
 
