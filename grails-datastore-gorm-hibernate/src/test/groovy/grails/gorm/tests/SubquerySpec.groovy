@@ -177,7 +177,7 @@ class SubquerySpec extends GormDatastoreSpec {
             }.id()
 
             results = new DetachedCriteria(Sale).build {
-                inList 'employee', (employees as List).asImmutable()
+                inList 'employee', employees
                 gt 'total', 100000
             }.employee.list()
 
