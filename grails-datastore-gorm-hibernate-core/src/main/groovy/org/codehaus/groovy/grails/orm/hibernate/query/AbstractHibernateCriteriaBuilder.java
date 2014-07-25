@@ -1505,7 +1505,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
 
     @Override
     public List list(@DelegatesTo(Criteria.class) Closure c) {
-    	return (List)invokeMethod(LIST_CALL, new Object[]{c});
+        return (List)invokeMethod(LIST_CALL, new Object[]{c});
     }
 
     @SuppressWarnings("rawtypes")
