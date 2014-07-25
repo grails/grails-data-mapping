@@ -6,6 +6,7 @@ import org.grails.datastore.gorm.neo4j.GraphPersistentEntity
 import org.grails.datastore.mapping.core.Session
 import org.neo4j.graphdb.DynamicLabel
 import org.neo4j.helpers.collection.IteratorUtil
+import spock.lang.Issue
 
 /**
  * test for various strategies to define Neo4j labels on domain classes and instances
@@ -23,8 +24,12 @@ class LabelStrategySpec extends GormDatastoreSpec {
     }
 
     public class LocalSetup extends Setup {
+        @Override
         static Session setup(classes) {
             skipIndexSetup = false
+            extendedValidatorSetup = { mappingContext, grailsApplication ->
+                setupValidator(mappingContext, grailsApplication, InstanceDependentLabels.simpleName)
+            }
             Setup.setup(classes)
         }
     }
@@ -80,15 +85,19 @@ class LabelStrategySpec extends GormDatastoreSpec {
         def s = new MixedLabels(name:'dummy').save(flush:true)
 
         then:
-        verifyLabelsForId(s.id, ["MyLabel", s.class.name])
+        verifyLabelsForId(s.id, ["MixedLabel", s.class.name])
     }
 
+    @Issue("https://jira.grails.org/browse/GPNEO4J-17")
     def "should instance dependent labels mapping work"() {
+
         when:
-        def s = new InstanceDependentLabels(name:'Sam', profession: 'Fireman').save(flush:true)
+        def s = new InstanceDependentLabels(name:'Sam', profession: 'Fireman')
+        s.save(flush:true)
 
         then:
-        verifyLabelsForId(s.id, ["MyLabel", "${s.name}"])
+        s.hasErrors() == false
+        verifyLabelsForId(s.id, ["InstanceDependentLabel", "${s.profession}"])
 
         and:
         Setup.graphDb.schema().getIndexes(DynamicLabel.label("MyLabel"))*.propertyKeys == [['__id__']]
@@ -98,6 +107,16 @@ class LabelStrategySpec extends GormDatastoreSpec {
 
         and: "there are no indexes on null"
         Setup.graphDb.schema().getIndexes().every { it.label.name() != 'null'}
+
+        when: "create Sam again, now as policeman"
+        def d = new InstanceDependentLabels(name:'Sam', profession: 'Policeman')
+        d.save(flush:true)
+
+        then: "we've violated unique constraint"
+        d.hasErrors() == true
+        d.errors.allErrors[0].code == "unique"
+        d.errors
+
     }
 
     private def verifyLabelsForId(id, labelz) {
@@ -155,7 +174,7 @@ class MixedLabels {
     String name
 
     static mapping = {
-        labels "MyLabel", { GraphPersistentEntity pe -> "`${pe.javaClass.name}`" }
+        labels "MixedLabel", { GraphPersistentEntity pe -> "`${pe.javaClass.name}`" }
     }
 }
 
@@ -171,8 +190,9 @@ class InstanceDependentLabels {
         name unique:true
     }
     static mapping = {
-        labels "MyLabel", { GraphPersistentEntity pe, instance ->  // 2 arguments: instance dependent label
-            "`${instance.name}`"
+        labels "InstanceDependentLabel", { GraphPersistentEntity pe, instance ->  // 2 arguments: instance dependent label
+            "`${instance.profession}`"
         }
     }
 }
+
