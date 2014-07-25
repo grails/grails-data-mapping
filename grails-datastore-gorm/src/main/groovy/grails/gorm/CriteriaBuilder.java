@@ -17,6 +17,7 @@ package grails.gorm;
 
 import static org.grails.datastore.gorm.finders.DynamicFinder.populateArgumentsForCriteria;
 import groovy.lang.Closure;
+import groovy.lang.DelegatesTo;
 import groovy.lang.GroovyObjectSupport;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaMethod;
@@ -301,7 +302,12 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
         query.projections().count();
         return (Number) query.singleResult();
     }
-
+    
+    @Override
+    public Object scroll(@DelegatesTo(Criteria.class) Closure c) {
+        return invokeMethod(SCROLL_CALL, new Object[]{c});
+    }
+    
     @Override
     public Object invokeMethod(String name, Object obj) {
         Object[] args = obj.getClass().isArray() ? (Object[])obj : new Object[]{obj};

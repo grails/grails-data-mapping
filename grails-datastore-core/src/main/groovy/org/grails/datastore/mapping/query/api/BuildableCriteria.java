@@ -18,7 +18,7 @@ package org.grails.datastore.mapping.query.api;
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -28,4 +28,8 @@ import java.util.List;
  */
 public interface BuildableCriteria extends Criteria {
     Object list(@DelegatesTo(Criteria.class) Closure closure);
+    Object list(Map params, @DelegatesTo(Criteria.class) Closure closure);
+    Object listDistinct(@DelegatesTo(Criteria.class) Closure closure);
+    Object scroll(@DelegatesTo(Criteria.class) Closure closure);
+    Object get(@DelegatesTo(Criteria.class) Closure closure);
 }

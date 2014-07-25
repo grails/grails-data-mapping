@@ -1510,6 +1510,26 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         return invokeMethod(LIST_CALL, new Object[]{c});
     }
 
+    @Override
+    public Object list(Map params, @DelegatesTo(Criteria.class) Closure c) {
+        return invokeMethod(LIST_CALL, new Object[]{params, c});
+    }
+    
+    @Override
+    public Object listDistinct(@DelegatesTo(Criteria.class) Closure c) {
+        return invokeMethod(LIST_DISTINCT_CALL, new Object[]{c});
+    }
+
+    @Override
+    public Object get(@DelegatesTo(Criteria.class) Closure c) {
+        return invokeMethod(GET_CALL, new Object[]{c});
+    }
+    
+    @Override
+    public Object scroll(@DelegatesTo(Criteria.class) Closure c) {
+        return invokeMethod(SCROLL_CALL, new Object[]{c});
+    }
+    
     @SuppressWarnings("rawtypes")
     @Override
     public Object invokeMethod(String name, Object obj) {
