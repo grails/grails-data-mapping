@@ -27,5 +27,5 @@ import java.util.List;
  *
  */
 public interface BuildableCriteria extends Criteria {
-    List list(@DelegatesTo(Criteria.class) Closure closure);
+    Object list(@DelegatesTo(Criteria.class) Closure closure);
 }
