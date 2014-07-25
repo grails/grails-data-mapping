@@ -27,9 +27,48 @@ import java.util.Map;
  *
  */
 public interface BuildableCriteria extends Criteria {
+    
+    /**
+     * Defines an executes a list query in a single call. Example: Foo.createCriteria().list { }
+     * @param closure The closure to execute
+     *
+     * @return The result
+     */
     Object list(@DelegatesTo(Criteria.class) Closure closure);
+
+    /**
+     * Defines an executes a list query in a single call. Example: Foo.createCriteria().list { }
+     * 
+     * @param params pagination parameters (max, offset, etc...)
+     * @param closure The closure to execute
+     *
+     * @return The result
+     */
     Object list(Map params, @DelegatesTo(Criteria.class) Closure closure);
+    
+    /**
+     * Defines an executes a list distinct query in a single call. Example: Foo.createCriteria().listDistinct { }
+     * @param closure The closure to execute
+     *
+     * @return The result 
+     */
     Object listDistinct(@DelegatesTo(Criteria.class) Closure closure);
+    
+    /**
+     * Defines an executes a list query in a single call. Example: Foo.createCriteria().scroll { }
+     * 
+     * @param closure The closure to execute
+     *
+     * @return A scrollable result set
+     */
     Object scroll(@DelegatesTo(Criteria.class) Closure closure);
+    
+    /**
+     * Defines an executes a get query ( a single result) in a single call. Example: Foo.createCriteria().get { }
+     *
+     * @param closure The closure to execute
+     *
+     * @return A single result
+     */
     Object get(@DelegatesTo(Criteria.class) Closure closure);
 }
