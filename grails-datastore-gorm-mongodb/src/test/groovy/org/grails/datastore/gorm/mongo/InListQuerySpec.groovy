@@ -73,7 +73,7 @@ class InListQuerySpec extends GormDatastoreSpec {
 
 
         when:"Querying a property in a given immutable list of GStrings"
-        def results = PetType.withCriteria {
+        results = PetType.withCriteria {
             inList 'name', ["${'Tyrannosaur'}", "${'Saurapod'}"].asImmutable()
             order "name"
         }
