@@ -56,7 +56,8 @@ import grails.gorm.tests.*
 //ApiExtensionsSpec,
 //RelationshipUtilsSpec,
 //CascadingDeleteSpec,
-//NonDeclaredPropertiesSpec
+//NonDeclaredPropertiesSpec,
+//LabelStrategySpec,
 
 ])
 class Neo4jSuite {
