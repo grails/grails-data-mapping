@@ -1,5 +1,6 @@
 package grails.gorm.tests
 
+import grails.gorm.dirty.checking.DirtyCheck
 import grails.persistence.Entity
 import groovy.beans.Bindable
 import groovyx.gpars.GParsPool
@@ -391,6 +392,33 @@ class MiscSpec extends GormDatastoreSpec {
         c.save(flush: true)
     }
 
+    def "changing one2many is consistent"() {
+        setup:
+        def argentina = new Team(name: 'Argentina').save()
+        def germany = new Team(name: 'Germany').save()
+        session.flush()
+        session.clear()
+
+        when: "by error we put Manual Neuer to Argentina"
+        def manuel = new Player(name: 'Manuel Neuer', team: argentina).save(flush:true)
+
+        then:
+        Team.findByName('Argentina').players.size()==1
+
+        when:
+        session.flush()
+        session.clear()
+        manuel = Player.findByName('Manuel Neuer')
+        manuel.team = germany
+        manuel.save()
+
+        session.flush()
+        session.clear()
+
+        then:
+        Team.findByName('Germany').players.size()==1
+        Team.findByName('Argentina').players.size()==0
+    }
 }
 
 @Entity
@@ -407,12 +435,15 @@ class Tournament implements Serializable {
 
 @Bindable
 @Entity
+@DirtyCheck
 class Team implements Serializable {
     Long id
     Long version
     String name
     Club club
     byte[] binaryData
+    Set players
+    static hasMany = [players: Player]
 
     static belongsTo = Club
 }
@@ -430,4 +461,13 @@ class Club implements Serializable {
                            throws ObjectStreamException {
         return get(id)
     }
+}
+
+@Entity
+@DirtyCheck
+class Player {
+    Long id
+    Long version
+    String name
+    Team team
 }
