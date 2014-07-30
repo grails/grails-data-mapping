@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4 Low-level API 3.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/3.%20Mapping%20Domain%20Classes%20to%20MongoDB%20Collections.html"><strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20Low-level%20API.html"><strong>4</strong><span>Low-level API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Transactions.html"><strong>5</strong><span>Transactions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/6.%20Unit%20Testing.html"><strong>6</strong><span>Unit Testing</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/3.%20Mapping%20Domain%20Classes%20to%20MongoDB%20Collections.html">&lt;&lt; <strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/5.%20Transactions.html"><strong>5</strong><span>Transactions</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>4 Low-level API - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
+
+                    <p><strong>Version:</strong> 3.0.0</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h1 id="4. Low-level API">4 Low-level API</h1>
+A lower level API is provided by the plugin that is based on the <a href="http://github.com/poiati/gmongo" target="blank">GMongo</a> project.<p class="paragraph"/>GMongo is a simple Groovy wrapper around the regular <a href="http://www.mongodb.org/display/DOCS/Java+Language+Center" target="blank">Mongo Java Driver</a>. In general you can refer to the Mongo Java Drivers <a href="http://api.mongodb.org/java/current/index.html" target="blank">Javadoc API</a> when using GMongo.<p class="paragraph"/>GMongo provides some nice enhancements like easy access to collections using the dot operator and support for Groovy operator overloading.<p class="paragraph"/><blockquote class="note">
+There is an excellent tutorial on how to use the Mongo Java driver's API directly in the <a href="http://www.mongodb.org/display/DOCS/Java+Tutorial" target="blank">Mongo documentation</a>
+</blockquote><p class="paragraph"/>An example of GMongo usage can be seen below:<p class="paragraph"/><div class="code"><pre>// Get a db reference in the old fashion way
+def db = mongo.getDB(<span class="java&#45;quote">"gmongo"</span>)<p class="paragraph"/>// Collections can be accessed as a db property (like the javascript API)
+assert db.myCollection <span class="java&#45;keyword">instanceof</span> com.mongodb.DBCollection
+// They also can be accessed with array notation
+assert db&#91;'my.collection'&#93; <span class="java&#45;keyword">instanceof</span> com.mongodb.DBCollection<p class="paragraph"/>// Insert a document
+db.languages.insert(&#91;name: 'Groovy'&#93;)
+// A less verbose way to <span class="java&#45;keyword">do</span> it
+db.languages.insert(name: 'Ruby')
+// Yet another way
+db.languages &#60;&#60; &#91;name: 'Python'&#93;<p class="paragraph"/>// Insert a list of documents
+db.languages &#60;&#60; &#91;&#91;name: 'Javascript', type: 'prototyped'&#93;, &#91;name: 'Ioke', type: 'prototyped'&#93;&#93;</pre></div><p class="paragraph"/>
+To get hold of the <code>mongo</code> instance (which is an of the <a href="http://api.mongodb.org/java/current/com/mongodb/Mongo.html" target="blank">com.mongodb.Mongo</a> class) inside a controller or service simple define a <code>mongo</code> property:<p class="paragraph"/><div class="code"><pre>def mongo
+def myAction = &#123;
+    def db = mongo.getDB(<span class="java&#45;quote">"mongo"</span>)
+    db.languages.insert(&#91;name: 'Groovy'&#93;)
+&#125;</pre></div><p class="paragraph"/>A request scoped bean is also available for the default database (typically the name of your application, unless specified by the <code>databaseName</code> config option, plus the suffix "DB").<p class="paragraph"/><div class="code"><pre>def peopleDB
+def myAction = &#123;
+    peopleDB.languages.insert(&#91;name: 'Fred'&#93;)
+&#125;</pre></div><p class="paragraph"/>Each domain class you define also has a <code>collection</code> property that allows easy access to the underlying <code>DBCollection</code> instance and hence the GMongo API:<p class="paragraph"/><div class="code"><pre>Person.collection.count() == 1
+Person.collection.findOne(firstName:<span class="java&#45;quote">"Fred"</span>).lastName == <span class="java&#45;quote">"Flintstone"</span></pre></div><p class="paragraph"/><blockquote class="note">
+If you are using Hibernate entities with Mongo then the collection will be scoped in the <code>mongo</code> namespace. Example: Person.mongo.collection.count()
+</blockquote><p class="paragraph"/>You can easily convert from a native MongoDB <code>DBObject</code> into an entity using a cast:<p class="paragraph"/><div class="code"><pre>def fred = Person.collection.findOne(firstName:<span class="java&#45;quote">"Fred"</span>) as Person</pre></div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/3.%20Mapping%20Domain%20Classes%20to%20MongoDB%20Collections.html">&lt;&lt; <strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/5.%20Transactions.html"><strong>5</strong><span>Transactions</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Beans/mongo.html">mongo</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/DB.html">DB</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/collection.html">collection</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/collectionName.html">collectionName</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/countHits.html">countHits</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/dbo.html">dbo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByGeoIntersects.html">findByGeoIntersects</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByGeoWithin.html">findByGeoWithin</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByNear.html">findByNear</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByNearSphere.html">findByNearSphere</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByWithinBox.html">findByWithinBox</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByWithinCircle.html">findByWithinCircle</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/search.html">search</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/searchTop.html">searchTop</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/useCollection.html">useCollection</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/useDatabase.html">useDatabase</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/withCollection.html">withCollection</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/withDatabase.html">withDatabase</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Testing/MongoDbTestMixin.html">MongoDbTestMixin</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

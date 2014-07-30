@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>1 Introduction 0.1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/mapping.html"><strong>3</strong><span>Mapping Domain Classes to DynamoDB</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/transactions.html"><strong>4</strong><span>Transactions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/releaseNotes.html"><strong>5</strong><span>Release Notes</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>1 Introduction - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Roman Stepanenko</p>
+
+                    <p><strong>Version:</strong> 0.1</p>
+
+                    
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#currentFeatureSet"><strong>1.1</strong><span>Current Feature Set</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#dynamoDBSpecifics"><strong>1.2</strong><span>DynamoDB Specifics</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="introduction">1 Introduction</h1>
+DynamoDB is a web service providing structured data storage in the cloud and backed by clusters
+of Amazon-managed database servers using SSD drives for storage.<p class="paragraph"/>The dynamodb plugin aims to provide an object-mapping layer on top of DynamoDB to ease common activities such as:
+<ul class="star">
+<li>Marshalling from DynamoDB to Groovy/Java types and back again</li>
+<li>Support for GORM dynamic finders, criteria and named queries</li>
+<li>Session-managed transactions</li>
+<li>Validating domain instances backed by the DynamoDB datastore</li>
+</ul><p class="paragraph"/>For example, this is all that is needed to persist a domain class in DynamoDB:<p class="paragraph"/><div class="code"><pre>class Book  &#123;
+    <span class="java&#45;object">String</span> id
+    <span class="java&#45;object">String</span> title
+    <span class="java&#45;object">int</span> pages<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"dynamodb"</span>
+&#125;</pre></div>
+
+
+
+<h2 id="currentFeatureSet">1.1 Current Feature Set</h2>
+This implementation tries to be as compatible as possible with GORM for Hibernate. 
+In general you can refer to the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html" target="blank">GORM documentation</a>
+for usage information.<p class="paragraph"/>The following key features are supported by the current version dynamodb plugin:
+<ul class="star">
+<li>Simple persistence methods</li>
+<li>Dynamic finders</li>
+<li>Criteria queries</li>
+<li>Named queries</li>
+<li>Inheritance of domain classes (parent properties are stored in the child)</li>
+<li>Query by example</li>
+<li>Customizable AWS DynamoDB table name per domain object</li>
+<li>Customizable AWS DynamoDB attribute name per attribute in domain object</li>
+<li>Customizable (optional) prefix for all AWS DynamoDB table - useful when same AWS account is used for more than one environment (DEV and QA)</li>
+<li>Hilo numeric id generator to use as alternative to default UUID</li>
+<li>Enum fields are supported</li>
+<li>Declaration of provisioned read and write throughput on per-domain class level (and ability to use application-wide default values as well)</li>
+</ul><p class="paragraph"/>The current version of dynamodb plugin has the following limitations:
+<ul class="star">
+<li>Does not support Embedded types</li>
+<li>Does not support HQL queries</li>
+<li>Does not support Dirty checking methods</li>
+<li>Does not support Range keys (feature of DynamoDB)</li>
+<li>Does not support Many-to-many associations (these can be modelled with a mapping class)</li>
+<li>Does not support Any direct interaction with the Hibernate API</li>
+<li>Does not support Custom Hibernate user types</li>
+</ul><p class="paragraph"/>There may be other limitations not mentioned here so in general it shouldn't be 
+expected that an application based on GORM for Hibernate will work without some tweaking involved.
+Furthermore, migration from SQL to NoSQL storage with eventual consistency (such as DynamoDB)
+will require a re-design of the application
+at the fundamental level (see 'eventual consistency' in the next chapter).
+Having said that, the large majority of common GORM functionality is supported, and this dynamodb plugin is a good option
+(in author's eyes) for a from-scratch rapid project development. In this scenario AWS DynamoDB allows developer to
+focus purely on the grails application without setting up and managing a dev/production cluster of database server instances.<p class="paragraph"/>
+
+
+<h2 id="dynamoDBSpecifics">1.2 DynamoDB Specifics</h2>
+AWS DynamoDB imposes several critical restrictions.<p class="paragraph"/><h3>Eventual consistency model</h3><p class="paragraph"/>DynamoDB is based on the premise of eventual consistency model.
+With eventual consistency, when you submit an update to DynamoDB, the database server handling your
+request will forward the update to the other database servers where that table
+is replicated. The full update of all replicas does not happen before your update 
+request returns. The replication continues in the background while other requests are handled. 
+In other words, 
+if you update an object and do a query right after 
+updating it, you might get an old value back. There are ways to force strong consistency behavior but they go against the 
+whole premise of choosing DynamoDB in the first place - DynamoDB is best used by applications able to deal with
+eventual consistency and benefit from the ability to remain available in the midst of a failure. Future
+versions of the plugin might add support for strong consistency though.<p class="paragraph"/>The best way to fight eventual consistency in the application is <strong class="bold">not</strong> to assume that the information is
+available right after create/update/delete and store the objects you just modified or created in the cache. Generally,
+information becomes visible within a couple of seconds, however it is a really bad idea to try to 
+implement artificial delay in the application layer because when AWS experiences some problems the 
+eventually consistency window might be 
+drastically increased. Design for failure and you will get fewer surprises when they happen.<p class="paragraph"/>DynamoDB does allow enforcing consistent behavior but it is not currently supported by the plugin.<p class="paragraph"/><h3>No indexes</h3>
+Unlike SimpleDB, DynamoDB does not index non-primary key columns and so the only way GORM queries can work is by scanning all
+records in the table to match specified criteria, which can have potential performance impact when the number of records grows.<p class="paragraph"/><h3>No OR</h3>
+All scan filters in DynamoDB assume 'AND' behavior, which means the only way for plugin to implement
+GORM finder (name = 'Mike' OR name = 'Bob') is internally to execute two scans and then build unique list of items in memory.<p class="paragraph"/><strong class="bold">It is highly adivisable to avoid or minimize using OR clauses in your queries</strong> for the sake of performance.<p class="paragraph"/><h3>No Negation clause</h3>
+DynamoDB does provide NE (not equals) comparison operator but does not provide support for negation clause. Current plugin implementation
+does not support negation clause either ('not equals' comparison is supported though).<p class="paragraph"/><h3>No ordering</h3>
+DynamoDB does not support ordering or results, which means plugin has to order results in memory.<p class="paragraph"/><h3>Transactions</h3>
+AWS DynamoDB doesn't support explicit transactional boundaries or isolation levels. There is no notion of
+a commit or a rollback. There is some implicit support for atomic writes, but it only applies within the 
+scope of each individual item being written.<p class="paragraph"/>However, GORM for DynamoDB does batch up inserts
+and updates until the session is flushed. This makes it possible to support some rollback options. See more details
+in 'Transactions' chapter
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    Official production and development support for plugin is available via OSMoss: <a href="http://www.osmoss.com/project/grails-gorm-dynamodb">http://www.osmoss.com/project/grails-gorm-dynamodb</a>
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

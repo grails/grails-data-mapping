@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.3 Secondary Indices 1.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/3.%20Understanding%20the%20Low-level%20API.html"><strong>3</strong><span>Understanding the Low-level API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/4.%20GORM%20Enhancer.html"><strong>4</strong><span>GORM Enhancer</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/5.%20Using%20the%20Test%20Compatibility%20Kit.html"><strong>5</strong><span>Using the Test Compatibility Kit</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/6.%20Creating%20a%20GORM%20implementatio%20Step%20by%20Step.html"><strong>6</strong><span>Creating a GORM implementatio Step by Step</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/2.%20Getting%20Started.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/4.%20GORM%20Enhancer.html"><strong>4</strong><span>GORM Enhancer</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3.3 Secondary Indices - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher</p>
+
+                    <p><strong>Version:</strong> 1.0.0</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h2 id="3.3 Secondary Indices">3.3 Secondary Indices</h2>
+Many datastores do not support secondary indices or require you to build your own. In cases like this you will need to implement a <code>PropertyIndexer</code>.<p class="paragraph"/><blockquote class="note">
+If the underlying datastore supports secondary indexes then it is ok to just return a <code>null</code> PropertyIndexer and let the datastore handle the indexing
+</blockquote><p class="paragraph"/>For example the <code>ConcurrentHashMap</code> implementation creates secondary indices by populating another <code>Map</code> containing the indices:<p class="paragraph"/><div class="code"><pre>void index(value, primaryKey) &#123;<p class="paragraph"/>    def index = getIndexName(value)
+    def indexed = indices&#91;index&#93;
+    <span class="java&#45;keyword">if</span> (indexed == <span class="java&#45;keyword">null</span>) &#123;
+        indexed = &#91;&#93;
+        indices&#91;index&#93; = indexed
+    &#125;
+    <span class="java&#45;keyword">if</span> (!indexed.contains(primaryKey)) &#123;
+        indexed &#60;&#60; primaryKey
+    &#125;
+&#125;</pre></div><p class="paragraph"/>The implementation for Redis is very similar and stores the primary key in a Redis set:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">public</span> void index(<span class="java&#45;keyword">final</span> <span class="java&#45;object">Object</span> value, <span class="java&#45;keyword">final</span> <span class="java&#45;object">Long</span> primaryKey) &#123;
+      <span class="java&#45;keyword">if</span> (value == <span class="java&#45;keyword">null</span>) &#123;
+          <span class="java&#45;keyword">return</span>;
+      &#125;
+      <span class="java&#45;keyword">final</span> <span class="java&#45;object">String</span> primaryIndex = createRedisKey(value);
+      redisTemplate.sadd(primaryIndex, primaryKey);
+&#125;</pre></div><p class="paragraph"/>An index name is typically built from the entity name, property name and property value. The primary key of the entity is stored in this index for later querying. In fact there is a <code>query</code> method that needs to be implemented on <code>PropertyIndexer</code>. The <code>ConcurrentHashMap</code> implementation looks like this:<p class="paragraph"/><div class="code"><pre>List query(value, <span class="java&#45;object">int</span> offset, <span class="java&#45;object">int</span> max) &#123;
+    def index = getIndexName(value)<p class="paragraph"/>    def indexed = indices&#91;index&#93;
+    <span class="java&#45;keyword">if</span> (!indexed) &#123;
+        <span class="java&#45;keyword">return</span> Collections.emptyList()
+    &#125;
+    <span class="java&#45;keyword">return</span> indexed&#91;offset..max&#93;
+&#125;</pre></div><p class="paragraph"/>Depending on the characteristics of the underlying database you may want to do the indexing asynchronously or you may want to index into a search library such as Lucene. For datastores that are eventually consistent for example it makes sense to do all indexing asynchronously.<p class="paragraph"/>Finally, when an object is deleted it will need to removed from the indices. This can be done with the <code>deindex</code> method:<p class="paragraph"/><div class="code"><pre>void deindex(value, primaryKey) &#123;
+    def index = getIndexName(value)
+    def indexed = indices&#91;index&#93;
+    <span class="java&#45;keyword">if</span> (indexed) &#123;
+        indexed.remove(primaryKey)
+    &#125;
+&#125;</pre></div><p class="paragraph"/>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/2.%20Getting%20Started.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/4.%20GORM%20Enhancer.html"><strong>4</strong><span>GORM Enhancer</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Implementations</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Implementations/ConcurrentHashMap.html">ConcurrentHashMap</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Implementations/Hibernate.html">Hibernate</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Implementations/JPA.html">JPA</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Implementations/MongoDB.html">MongoDB</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Implementations/Neo4j.html">Neo4j</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Implementations/Redis.html">Redis</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Implementations/Riak.html">Riak</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Implementations/SimpleDB.html">SimpleDB</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
