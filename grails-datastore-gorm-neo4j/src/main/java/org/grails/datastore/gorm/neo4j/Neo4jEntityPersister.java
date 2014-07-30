@@ -309,6 +309,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                         String relType = RelationshipUtils.relationshipTypeUsedFor(to);
 
                         if (!reversed) {
+                            getSession().addPendingInsert(new RelationshipPendingDelete(entityAccess, relType, null , getCypherEngine()));
                             getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, relType,
                                     new EntityAccess(to.getAssociatedEntity(), propertyValue),
                                     getCypherEngine()));

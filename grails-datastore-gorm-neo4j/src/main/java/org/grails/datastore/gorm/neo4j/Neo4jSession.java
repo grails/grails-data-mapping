@@ -77,7 +77,8 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
                 if (pendingInsert instanceof NodePendingInsert) {
                     nodes.add(pendingInsert);
                 }
-                if (pendingInsert instanceof RelationshipPendingInsert) {
+                if ((pendingInsert instanceof RelationshipPendingInsert) ||
+                    (pendingInsert instanceof RelationshipPendingDelete)) {
                     relationships.add(pendingInsert);
                 }
 

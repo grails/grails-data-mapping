@@ -7,6 +7,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
+import org.grails.datastore.gorm.neo4j.DumpGraphOnSessionFlushListener
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
