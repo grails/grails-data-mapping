@@ -55,9 +55,9 @@ task wrapper(type: Wrapper) {
 subprojects {
     if(project.name.endsWith("spring-boot")) return
     ext {
-        projectVersion = "3.1.2"
-        releaseType = "RELEASE"
-        // releaseType = "BUILD-SNAPSHOT"
+        projectVersion = "3.1.3"
+//        releaseType = "RELEASE"
+        releaseType = "BUILD-SNAPSHOT"
         isCiBuild = project.hasProperty("isCiBuild")
         isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
     }
