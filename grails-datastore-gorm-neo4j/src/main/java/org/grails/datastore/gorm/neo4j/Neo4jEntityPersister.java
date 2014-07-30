@@ -119,7 +119,6 @@ public class Neo4jEntityPersister extends EntityPersister {
         return null;
     }
 
-
     private boolean isInParentsChain(PersistentEntity parent, PersistentEntity it) {
         if (it==null) {
             return false;

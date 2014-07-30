@@ -45,11 +45,16 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
     }
 
     public Collection<String> getLabels(domainInstance=null) {
-        Object objs = mappedForm.getLabels();
-        def result = objs instanceof Object[] ?
-                objs.collect { getLabelFor(it, domainInstance) } :
-                [getLabelFor(objs, domainInstance)]
-        result.findAll { it }  // remove nulls
+        Object labels = mappedForm.getLabels();
+
+        List objs = labels instanceof Object[] ? labels as List : [labels]
+
+        // if labels consists solely of instance-dependent labels, add default label based on class name
+        if ( objs.every { (it instanceof Closure) && (it.maximumNumberOfParameters==2) }) {
+            objs << null // adding -> label defaults to discriminator
+        }
+
+        objs.collect { getLabelFor(it, domainInstance) }.findAll { it }  // remove nulls
     }
 
     private Object getLabelFor(Object obj, domainInstance) {

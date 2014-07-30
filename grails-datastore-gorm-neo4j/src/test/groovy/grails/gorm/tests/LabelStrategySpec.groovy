@@ -1,5 +1,6 @@
 package grails.gorm.tests
 
+import grails.gorm.dirty.checking.DirtyCheck
 import grails.persistence.Entity
 import org.grails.datastore.gorm.Setup
 import org.grails.datastore.gorm.neo4j.GraphPersistentEntity
@@ -70,7 +71,13 @@ class LabelStrategySpec extends GormDatastoreSpec {
         labels.every {
             Setup.graphDb.schema().getIndexes(DynamicLabel.label(it))*.propertyKeys == [['__id__']]
         }
-    }
+
+        when:
+        def d = StaticLabels.findByName("dummy")
+
+        then:
+        d!=null
+        d.id == s.id}
 
     def "should dynamic label mapping work"() {
         when:
@@ -78,6 +85,13 @@ class LabelStrategySpec extends GormDatastoreSpec {
 
         then:
         verifyLabelsForId(s.id, [s.class.name])
+
+        when:
+        def d = DynLabel.findByName("dummy")
+
+        then:
+        d!=null
+        d.id == s.id
     }
 
     def "should mixed labels mapping work"() {
@@ -86,6 +100,13 @@ class LabelStrategySpec extends GormDatastoreSpec {
 
         then:
         verifyLabelsForId(s.id, ["MixedLabel", s.class.name])
+
+        when:
+        def d = MixedLabels.findByName("dummy")
+
+        then:
+        d!=null
+        d.id == s.id
     }
 
     @Issue("https://jira.grails.org/browse/GPNEO4J-17")
@@ -97,7 +118,7 @@ class LabelStrategySpec extends GormDatastoreSpec {
 
         then:
         s.hasErrors() == false
-        verifyLabelsForId(s.id, ["InstanceDependentLabel", "${s.profession}"])
+        verifyLabelsForId(s.id, ["InstanceDependentLabels", "${s.profession}"])
 
         and:
         Setup.graphDb.schema().getIndexes(DynamicLabel.label("MyLabel"))*.propertyKeys == [['__id__']]
@@ -117,6 +138,14 @@ class LabelStrategySpec extends GormDatastoreSpec {
         d.errors.allErrors[0].code == "unique"
         d.errors
 
+        when: "unmarshall Sam instance"
+        def sam = InstanceDependentLabels.findByName("Sam")
+
+        then:
+        sam != null
+        sam.profession == "Fireman"
+        s.id == sam.id
+
     }
 
     private def verifyLabelsForId(id, labelz) {
@@ -126,6 +155,7 @@ class LabelStrategySpec extends GormDatastoreSpec {
     }
 }
 
+@DirtyCheck
 @Entity
 class Default {
     Long id
@@ -133,17 +163,7 @@ class Default {
     String name
 }
 
-@Entity
-class StaticLabel {
-    Long id
-    Long version
-    String name
-
-    static mapping = {
-        labels "MyLabel"
-    }
-}
-
+@DirtyCheck
 @Entity
 class StaticLabels {
     Long id
@@ -156,6 +176,19 @@ class StaticLabels {
 
 }
 
+@DirtyCheck
+@Entity
+class StaticLabel {
+    Long id
+    Long version
+    String name
+
+    static mapping = {
+        labels "MyLabel"
+    }
+}
+
+@DirtyCheck
 @Entity
 class DynLabel {
     Long id
@@ -167,6 +200,7 @@ class DynLabel {
     }
 }
 
+@DirtyCheck
 @Entity
 class MixedLabels {
     Long id
@@ -178,7 +212,7 @@ class MixedLabels {
     }
 }
 
-
+@DirtyCheck
 @Entity
 class InstanceDependentLabels {
     Long id
@@ -190,9 +224,8 @@ class InstanceDependentLabels {
         name unique:true
     }
     static mapping = {
-        labels "InstanceDependentLabel", { GraphPersistentEntity pe, instance ->  // 2 arguments: instance dependent label
+        labels { GraphPersistentEntity pe, instance ->  // 2 arguments: instance dependent label
             "`${instance.profession}`"
         }
     }
 }
-
