@@ -8,6 +8,10 @@ import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
 
+/**
+ * Extends the default {@link GormEnhancer} adding supporting for passing arguments and Cassandra specific methods
+ *
+ */
 class CassandraGormEnhancer extends GormEnhancer {
 
     CassandraGormEnhancer(Datastore datastore) {
