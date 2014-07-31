@@ -17,10 +17,14 @@ package org.grails.datastore.mapping.cassandra.engine;
 import static org.springframework.data.cassandra.repository.support.BasicMapId.id;
 
 import java.io.Serializable;
+import java.net.URL;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import org.grails.datastore.mapping.cassandra.CassandraSession;
@@ -286,6 +290,10 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
             Class<?> itemTypeClass = itemTypeDescriptor.getObjectType();
             if (Enum.class.isAssignableFrom(itemTypeClass) && conversionService.canConvert(itemTypeDescriptor, TypeDescriptor.valueOf(String.class))) {
                 nativeValue = conversionService.convert(item, String.class);
+            }
+            else if (Currency.class.isAssignableFrom(itemTypeClass) || Locale.class.isAssignableFrom(itemTypeClass) || 
+                    TimeZone.class.isAssignableFrom(itemTypeClass) || URL.class.isAssignableFrom(itemTypeClass)) {
+                nativeValue = conversionService.convert(item, String.class);    
             } else {               
                 nativeValue = item;
             }
