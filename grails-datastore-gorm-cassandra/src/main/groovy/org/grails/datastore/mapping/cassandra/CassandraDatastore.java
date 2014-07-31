@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.grails.datastore.gorm.cassandra.mapping.BasicCassandraMappingContext;
-import org.grails.datastore.gorm.cassandra.mapping.CassandraGormSimpleTypeHolder;
 import org.grails.datastore.gorm.cassandra.mapping.MappingCassandraConverter;
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
 import org.grails.datastore.mapping.core.AbstractDatastore;
@@ -81,8 +80,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
     public CassandraDatastore(CassandraMappingContext mappingContext, Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         super(mappingContext, connectionDetails, ctx);
         this.keyspace = mappingContext.getKeyspace();                
-        springCassandraMappingContext = new BasicCassandraMappingContext();
-        springCassandraMappingContext.setSimpleTypeHolder(new CassandraGormSimpleTypeHolder());
+        springCassandraMappingContext = new BasicCassandraMappingContext();        
         
         mappingContext.setSpringCassandraMappingContext(springCassandraMappingContext);
         if (mappingContext != null) {
