@@ -4,6 +4,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
 import org.grails.datastore.mapping.config.Property;
@@ -14,7 +15,6 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.PropertyMapping;
 import org.grails.datastore.mapping.model.types.Identity;
-import org.grails.datastore.mapping.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,18 +60,7 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
                 }
             }
         }
-        
-        Map<String, String> sort = table.getSort();
-        if (sort != null && sort.size() > 0) {
-            Entry<String, String> entry = sort.entrySet().iterator().next();
-            String property = entry.getKey();
-            if (properties.containsKey(property)) {
-                String direction = entry.getValue();
-                Query.Order orderBy = "desc".equals(direction) ? Query.Order.desc(property) : Query.Order.asc(property);
-                table.setOrderBy(orderBy);                
-            }
-        }
-        
+               
         return table;
     }
 
@@ -123,5 +112,14 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
             };
         }
         return super.createIdentity(owner, context, pd);
+    }
+    
+    @Override
+    public boolean isSimpleType(Class propType) {     
+        return isCassandraNativeType(propType) ||  super.isSimpleType(propType);
+    }
+    
+    public static boolean isCassandraNativeType(Class clazz) {
+        return UUID.class.getName().equals(clazz.getName());
     }
 }
