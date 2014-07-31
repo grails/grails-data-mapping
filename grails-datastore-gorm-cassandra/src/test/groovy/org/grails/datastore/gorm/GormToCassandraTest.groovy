@@ -5,8 +5,8 @@ import grails.gorm.CassandraEntity
 import org.springframework.data.cassandra.mapping.CassandraType
 
 class GormToCassandraTest {
-    public static void main(String[] a) {        
-        println "ok"
+    public static void main(String[] a) {
+        
     }
     
     static enum ATestEnum {
@@ -16,7 +16,7 @@ class GormToCassandraTest {
     @CassandraEntity
     static class ABasic {        
        String name
-       
+       Long version
        static mapping = {
             name unique:true, index:true
        }  
@@ -35,12 +35,14 @@ class GormToCassandraTest {
         String transientString
         def service
         ATestEnum testEnum
+        UUID timeuuid
         
         static mapping = {
             id type:"timeuuid"
             ascii type:'ascii'
             varchar type:'varchar'
             counter type:'counter'
+            timeuuid type:"timeuuid"
         }
         static transients = [
             'transientBoolean',
