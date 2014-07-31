@@ -21,9 +21,8 @@ import com.datastax.driver.core.Row;
 
 /**
  * Overridden classes to: 
- * - fix BIGINT/varint bug in Spring Cassandra. TODO:
- * Remove readEntityFromRow/BasicCassandraRowValueProvider once fixed in
- * upstream project. 
+ * - workaround BIGINT/varint bug in Spring Data Cassandra. 
+ * TODO: Remove readEntityFromRow/BasicCassandraRowValueProvider once fixed in Spring Data Cassandra project. 
  * - add extra converters for Common GORM properties
  */
 public class MappingCassandraConverter extends org.springframework.data.cassandra.convert.MappingCassandraConverter {
@@ -38,6 +37,9 @@ public class MappingCassandraConverter extends org.springframework.data.cassandr
         registrar.register(conversionService);
     }
 
+    /**
+     * TODO: remove once BIGINT/varint bug fixed in Spring Data Cassandra. 
+     */
     @Override
     protected <S> S readEntityFromRow(CassandraPersistentEntity<S> entity, Row row) {
         DefaultSpELExpressionEvaluator evaluator = new DefaultSpELExpressionEvaluator(row, spELContext);
@@ -56,6 +58,9 @@ public class MappingCassandraConverter extends org.springframework.data.cassandr
         return wrapper.getBean();
     }
 
+    /**
+     *  TODO: remove once BIGINT/varint bug fixed in Spring Data Cassandra.          
+     */
     private static class BasicCassandraRowValueProvider extends org.springframework.data.cassandra.convert.BasicCassandraRowValueProvider {
 
         private final ColumnReader reader;
