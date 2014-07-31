@@ -20,5 +20,26 @@ class CommonTypes implements Serializable {
     Float f
     TimeZone tz
     Locale loc
-    Currency cur    
+    Currency cur   
+    UUID uuid
+    UUID timeuuid
+    String text
+    String ascii
+    String varchar
+    TestEnum testEnum
+    boolean transientBoolean
+    String transientString
+    transient long tran
+    def service
+        
+    static mapping = {
+        timeuuid type:"timeuuid"
+        ascii type:'ascii'
+        varchar type:'varchar'               
+    }
+    
+    static transients = [
+        'transientBoolean',
+        'transientString'
+    ]
 }
