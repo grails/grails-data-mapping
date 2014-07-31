@@ -4,6 +4,10 @@ import java.util.Map;
 
 import org.grails.datastore.mapping.config.Property;
 
+/**
+ * Provides configuration options for mapping Cassandra columns
+ *
+ */
 public class Column extends Property{
     private String type;
     private Map primaryKey;

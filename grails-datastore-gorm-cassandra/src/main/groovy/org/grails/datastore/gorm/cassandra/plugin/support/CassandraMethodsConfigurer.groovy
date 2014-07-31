@@ -11,6 +11,10 @@ import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
 
+/**
+ * Cassandra specific dynamic methods configurer
+ *
+ */
 class CassandraMethodsConfigurer extends DynamicMethodsConfigurer {
 
     CassandraMethodsConfigurer(Datastore datastore) {
