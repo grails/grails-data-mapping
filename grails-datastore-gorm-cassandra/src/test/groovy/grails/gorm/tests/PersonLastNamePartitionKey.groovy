@@ -13,10 +13,10 @@ class PersonLastNamePartitionKey  {
     String location   
 
     static mapping = {
-        id name:"lastName", primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned"       
+        id name:"lastName", primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned", column: "surname"       
         firstName index:true, primaryKey:[ordinal:1, type: "clustered"]   
-        age index:true, primaryKey:[ordinal:2, type: "clustered"]
-        location index:true     
+        age index:true, primaryKey:[ordinal:2, type: "clustered"], column: "person_age"
+        location index:true  
     }
 
   
