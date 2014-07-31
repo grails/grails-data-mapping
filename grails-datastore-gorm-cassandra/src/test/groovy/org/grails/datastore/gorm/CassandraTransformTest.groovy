@@ -5,6 +5,7 @@ import grails.gorm.CassandraEntity
 import org.springframework.cassandra.core.PrimaryKeyType
 import org.springframework.data.annotation.Transient
 import org.springframework.data.cassandra.mapping.CassandraType
+import org.springframework.data.cassandra.mapping.Column
 import org.springframework.data.cassandra.mapping.Indexed
 import org.springframework.data.cassandra.mapping.PrimaryKeyColumn
 import org.springframework.data.cassandra.mapping.Table
@@ -45,6 +46,17 @@ class CassandraTransformTest extends GroovyTestCase {
         assertCassandraTypeAnnotation(BasicWithIdAndTypes.class.getDeclaredField("anotherLong"), Name.BIGINT)
         assertCassandraTypeAnnotation(BasicWithIdAndTypes.class.getDeclaredField("counter"), Name.COUNTER)
         assertNonTransientField(BasicWithIdAndTypes.class.getDeclaredField("testEnum"))
+        
+        field = BasicWithIdAndTypes.class.getDeclaredField("varchar")
+        anno = field.getAnnotation(Column)
+        assert anno != null
+        assert anno.value() == "varcharcustom"
+        
+        field = BasicWithIdAndTypes.class.getDeclaredField("oneLong")
+        anno = field.getAnnotation(Column)
+        assert anno != null
+        assert anno.value() == "oneLongObject"
+        
         
         assertTransientField(BasicWithIdAndTypes.class.getDeclaredField('transientBoolean'))        
         assertTransientField(BasicWithIdAndTypes.class.getDeclaredField('transientString'))        
@@ -184,10 +196,11 @@ class BasicWithIdAndTypes {
     static mapping = {
         id type:"timeuuid"
         ascii type:'ascii'
-        varchar type:'varchar'
+        varchar type:'varchar', column:'varcharcustom'
         counter type:'counter'
-       
+        oneLong column: 'oneLongObject'       
     }
+    
     static transients = ['transientBoolean', 'transientString']
 }
 
