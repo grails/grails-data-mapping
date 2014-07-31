@@ -35,6 +35,10 @@ import com.datastax.driver.core.querybuilder.Select;
 import com.datastax.driver.core.querybuilder.Select.Selection;
 import com.datastax.driver.core.querybuilder.Select.Where;
 
+/**
+ * A {@link org.grails.datastore.mapping.query.Query} implementation for Cassandra
+ *
+ */
 @SuppressWarnings("rawtypes")
 public class CassandraQuery extends Query implements QueryArgumentsAware{
 
@@ -63,40 +67,48 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
             public void handle(CassandraQuery cassandraQuery, IdEquals criterion, Where where) { 
                 PersistentProperty property = cassandraQuery.entity.getIdentity();
                 if (property != null) {
-                    where.and(QueryBuilder.eq(property.getName(), criterion.getValue()));
+                    where.and(QueryBuilder.eq(property.getName(), 
+                            CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
                 }
             }
         });
         
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
             public void handle(CassandraQuery cassandraQuery, Equals criterion, Where where) {
-                where.and(QueryBuilder.eq(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
+                where.and(QueryBuilder.eq(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
             public void handle(CassandraQuery cassandraQuery, GreaterThan criterion, Where where) {
-                where.and(QueryBuilder.gt(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
+                where.and(QueryBuilder.gt(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
             public void handle(CassandraQuery cassandraQuery, GreaterThanEquals criterion, Where where) {
-                where.and(QueryBuilder.gte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
+                where.and(QueryBuilder.gte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
             public void handle(CassandraQuery cassandraQuery, LessThan criterion, Where where) {
-                where.and(QueryBuilder.lt(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
+                where.and(QueryBuilder.lt(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
             public void handle(CassandraQuery cassandraQuery, LessThanEquals criterion, Where where) {
-                where.and(QueryBuilder.lte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), criterion.getValue()));
+                where.and(QueryBuilder.lte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(Between.class, new QueryHandler<Between>() {
             public void handle(CassandraQuery cassandraQuery, Between criterion, Where where) {
-                where.and(QueryBuilder.gte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), criterion.getFrom()));
-                where.and(QueryBuilder.lte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), criterion.getTo()));
+                where.and(QueryBuilder.gte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getFrom(), cassandraQuery.conversionService)));
+                where.and(QueryBuilder.lte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getTo(), cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(In.class, new QueryHandler<In>() {
@@ -131,7 +143,7 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
     @SuppressWarnings("unchecked")
     @Override
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
-
+        //TODO: validate criteria values not map or array, or rethrow driver exception with more information
         List<Object> results = new LinkedList<Object>();
         if (criteria instanceof Disjunction) {
             throw new UnsupportedOperationException("Queries of type Disjunction (OR) are not supported by this implementation");
@@ -162,7 +174,7 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
                 }
                 select.orderBy(orderings);
             } else {
-                Order orderBy = ((Table) entity.getMapping().getMappedForm()).getOrderBy();
+                Order orderBy = ((Table) entity.getMapping().getMappedForm()).getSort();
                 if (orderBy != null) {
                     if (orderBy.getDirection() == Direction.ASC) {
                         select.orderBy(QueryBuilder.asc(orderBy.getProperty()));
