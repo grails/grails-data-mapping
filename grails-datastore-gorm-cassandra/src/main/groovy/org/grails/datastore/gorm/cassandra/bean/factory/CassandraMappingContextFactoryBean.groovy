@@ -22,7 +22,6 @@ import org.grails.datastore.mapping.model.MappingContext
 /**
  * Factory bean for construction the Cassandra MappingContext.
  *
- * Forked from Mongo version
  */
 class CassandraMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
 	String keyspace
