@@ -2,8 +2,10 @@ package grails.gorm.tests
 
 import grails.gorm.dirty.checking.DirtyCheck
 import grails.persistence.Entity
+import org.neo4j.helpers.collection.IteratorUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import spock.lang.Issue
 
 class ManyToManySpec extends GormDatastoreSpec {
 
@@ -11,7 +13,7 @@ class ManyToManySpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
-        [Role, User, MBook, MBookworm]
+        [Role, User, MBook, MBookworm, BidirectionalFriends]
     }
 
     /*def setupSpec() {
@@ -204,6 +206,34 @@ class ManyToManySpec extends GormDatastoreSpec {
 
     }
 
+    @Issue("GPNEO4J-20")
+    def "should version not increase when adding relationships"() {
+        setup:
+        def felix = new BidirectionalFriends(name: 'felix').save(flush: true)
+        session.clear()
+
+        when: "adding 100 people being friend with felix"
+        (0..<100).each {
+            new BidirectionalFriends(name: "buddy$it", friends: [felix]).save()
+        }
+        session.flush()
+        session.clear()
+        def fetchedFelix = BidirectionalFriends.findByName("felix")
+
+        then:
+        fetchedFelix.version == felix.version
+
+//        and: "inverse side has correct number of friends"
+//        fetchedFelix.friends.size() == 100 // TODO: investigate why this domain class is not bidirectional
+
+        when: "we have 100 relationships"
+        def result = session.nativeInterface.execute("MATCH (:BidirectionalFriends {name:{1}})-[:FRIENDS]-(o) return count(o) as c", ["felix"])
+
+        then:
+        IteratorUtil.single(result)["c"] == 100
+
+    }
+
 }
 
 @DirtyCheck
@@ -298,4 +328,16 @@ class MBookworm implements Serializable {
     public String toString() {
         return "Bookworm: [name: ${this.name}, favoriteBook: ${this.favoriteBook?.name}]"
     }
+}
+
+@DirtyCheck
+@Entity
+class BidirectionalFriends {
+    Long id
+    Long version
+    String name
+    Set friends
+
+    static hasMany = [ friends: BidirectionalFriends ]
+    static mappedBy = [ friends: "friends" ]
 }
