@@ -17,7 +17,8 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
 
             def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person)
             def applicationContext = new GenericApplicationContext()
-            def dataSource = new DriverManagerDataSource(Driver.name, "jdbc:h2:mem:grailsDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+            def dataSource = new DriverManagerDataSource("jdbc:h2:mem:grailsDb1;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+            dataSource.driverClassName = Driver.name
             applicationContext.beanFactory.registerSingleton("dataSource", dataSource)
 
 
@@ -60,7 +61,9 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         given:"An initializer instance"
 
             def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person)
-            def dataSource = new DriverManagerDataSource(Driver.name, "jdbc:h2:mem:grailsDb2;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+            def dataSource = new DriverManagerDataSource("jdbc:h2:mem:grailsDb2;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+            dataSource.driverClassName = Driver.name
+
 
         when:"The application context is configured"
             datastoreInitializer.configureForDataSource(dataSource)

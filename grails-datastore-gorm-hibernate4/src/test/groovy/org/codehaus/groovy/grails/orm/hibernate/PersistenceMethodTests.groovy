@@ -5,7 +5,6 @@ import grails.persistence.Entity
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.orm.hibernate.exceptions.GrailsQueryException
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindByPersistentMethod
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import org.springframework.core.convert.ConversionFailedException
 import org.springframework.validation.Errors
@@ -21,15 +20,6 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
 
     protected getDomainClasses() {
         [PersistentMethodTests, PersistentMethodTestsDescendent]
-    }
-
-    @Test
-    void testMethodSignatures() {
-        FindByPersistentMethod findBy = new FindByPersistentMethod(grailsApplication.mainContext.hibernateDatastore,
-            grailsApplication, sessionFactory, new GroovyClassLoader())
-        assertTrue findBy.isMethodMatch("findByFirstName")
-        assertTrue findBy.isMethodMatch("findByFirstNameAndLastName")
-        assertFalse findBy.isMethodMatch("rubbish")
     }
 
     @Test
@@ -317,7 +307,7 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
         assertEquals 1, returnList.size()
 
         // and case when automatic conversion cannot be applied
-        shouldFail(ConversionFailedException) {
+        shouldFail(MissingMethodException) {
             returnList = domainClass.findAllById("1.1")
         }
 
@@ -606,14 +596,14 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
         // test find with max result
         namedArgs.clear()
         namedArgs.namesList = ["wilma","fred"] as Object[]
-        returnValue = domainClass.findAll("from PersistentMethodTests as p where p.firstName in (:namesList)", namedArgs, 1)
+        returnValue = domainClass.findAll("from PersistentMethodTests as p where p.firstName in (:namesList)", namedArgs, [max:1])
         assertNotNull returnValue
         assertEquals ArrayList, returnValue.getClass()
         listResult = returnValue
         assertEquals 1, listResult.size()
 
         // test find with max result without params
-        returnValue = domainClass.findAll("from PersistentMethodTests as p", 1)
+        returnValue = domainClass.findAll("from PersistentMethodTests as p", [max:1])
         assertNotNull returnValue
         assertEquals ArrayList, returnValue.getClass()
         listResult = returnValue
@@ -643,7 +633,7 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
         // test find with offset
         namedArgs.clear()
         namedArgs.namesList = ["wilma","fred"] as Object[]
-        returnValue = domainClass.findAll("from PersistentMethodTests as p where p.firstName in (:namesList)", namedArgs, 2, 1)
+        returnValue = domainClass.findAll("from PersistentMethodTests as p where p.firstName in (:namesList)", namedArgs, [max:1, offset:1])
         assertNotNull returnValue
         assertEquals ArrayList, returnValue.getClass()
         listResult = returnValue
@@ -651,7 +641,7 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
         assertEquals 1, listResult.size()
 
         // test find with offset without params
-        returnValue = domainClass.findAll("from PersistentMethodTests as p", 2, 1)
+        returnValue = domainClass.findAll("from PersistentMethodTests as p", [max:1, offset:1])
         assertNotNull returnValue
         assertEquals ArrayList, returnValue.getClass()
         listResult = returnValue
@@ -783,12 +773,12 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
             domainClass.executeQuery()
         }
 
-        shouldFail(MissingMethodException) {
+        shouldFail(IllegalArgumentException) {
             domainClass.executeQuery("query", "param", [:], "4")
         }
 
         // test query with wrong third param type (must be Map)
-        shouldFail(MissingMethodException) {
+        shouldFail(IllegalArgumentException) {
             domainClass.executeQuery("query", "param", "wrong third param")
         }
 
@@ -858,15 +848,10 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
 
         // test with multiple positional parameters
         listResult = domainClass.executeQuery(
-            "select distinct p from PersistentMethodTests as p " +
-            "where p.firstName=? and p.lastName=?", ["fred", "flintstone"])
+                "select distinct p from PersistentMethodTests as p " +
+                        "where p.firstName=? and p.lastName=?", ["fred", "flintstone"])
         assertEquals 1, listResult.size()
         assertEquals "fred", listResult[0].getProperty("firstName")
-
-        def msg = shouldFail(IllegalArgumentException) {
-            domainClass.executeQuery 'select distinct p from PersistentMethodTests as p where p.firstName = :firstName and p.lastName = :lastName', [firstName: null, lastName: 'King']
-        }
-        assertEquals 'Named parameter [firstName] value may not be null', msg
 
         // Test that executeQuery does not mutate List and Map arguments (GRAILS-7841)
         paginateParams = [max: 1]

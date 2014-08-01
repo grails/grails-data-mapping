@@ -47,7 +47,7 @@ import grails.gorm.tests.*
 //UpdateWithProxyPresentSpec,
 //ValidationSpec,
 //WithTransactionSpec,
-
+//
 //// non TCK - specs, locally to neo4j
 //FindWhereSpec,
 //JoinCriteriaSpec,
@@ -56,7 +56,8 @@ import grails.gorm.tests.*
 //ApiExtensionsSpec,
 //RelationshipUtilsSpec,
 //CascadingDeleteSpec,
-//NonDeclaredPropertiesSpec
+//NonDeclaredPropertiesSpec,
+//LabelStrategySpec,
 
 ])
 class Neo4jSuite {

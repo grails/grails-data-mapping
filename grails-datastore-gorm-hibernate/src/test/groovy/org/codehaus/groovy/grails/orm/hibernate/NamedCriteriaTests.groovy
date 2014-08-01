@@ -3,6 +3,7 @@ package org.codehaus.groovy.grails.orm.hibernate
 import grails.orm.PagedResultList
 
 import org.hibernate.NonUniqueResultException
+import org.junit.Ignore
 
 import static junit.framework.Assert.*
 import org.junit.Test

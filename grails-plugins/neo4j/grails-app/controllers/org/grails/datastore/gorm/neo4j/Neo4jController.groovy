@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.neo4j
 
+import org.grails.datastore.gorm.neo4j.engine.CypherEngine
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Label
 import org.neo4j.graphdb.Node
@@ -14,6 +15,7 @@ import org.neo4j.tooling.GlobalGraphOperations
 class Neo4jController {
 
 	GraphDatabaseService graphDatabaseService
+    CypherEngine cypherEngine
 
     static defaultAction = "node"
 
@@ -89,5 +91,10 @@ class Neo4jController {
 
     def doforward() {
         forward action:"node"
+    }
+
+    def cypher = {
+        cypherEngine.execute( "CREATE (n:Dummy) return n")
+        cypherEngine.commit(  )
     }
 }

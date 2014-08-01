@@ -15,55 +15,137 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.validation.ValidationErrors
 import groovy.transform.CompileStatic
-
+import org.codehaus.groovy.grails.commons.GrailsClassUtils
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.codehaus.groovy.grails.orm.hibernate.support.HibernateRuntimeUtils
+import org.codehaus.groovy.grails.orm.hibernate.validation.AbstractPersistentConstraint
+import org.codehaus.groovy.grails.validation.CascadingValidator
 import org.grails.datastore.gorm.GormValidationApi
-import groovy.transform.CompileStatic
-
-import org.codehaus.groovy.grails.commons.metaclass.DynamicMethodInvocation
-import org.grails.datastore.gorm.GormValidationApi
+import org.grails.datastore.mapping.engine.event.ValidationEvent
+import org.springframework.validation.Errors
+import org.springframework.validation.FieldError
+import org.springframework.validation.ObjectError
 
 @CompileStatic
 abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D> {
 
+    public static final String ARGUMENT_DEEP_VALIDATE = "deepValidate";
+    private static final String ARGUMENT_EVICT = "evict";
+
+
     protected ClassLoader classLoader
+    protected AbstractHibernateDatastore datastore
+    protected IHibernateTemplate hibernateTemplate
 
     protected AbstractHibernateGormValidationApi(Class<D> persistentClass, AbstractHibernateDatastore datastore, ClassLoader classLoader) {
         super(persistentClass, datastore)
         this.classLoader = classLoader
+        this.datastore = datastore
     }
 
-    protected abstract DynamicMethodInvocation getValidateMethod()
 
     @Override
-    boolean validate(D instance) {
-        if (getValidateMethod()) {
-            return getValidateMethod().invoke(instance, "validate", [] as Object[])
-        }
-        return super.validate(instance)
+    boolean validate(D instance, Map arguments = Collections.emptyMap()) {
+        validate(instance, null, arguments)
     }
 
-    @Override
-    boolean validate(D instance, boolean evict) {
-        if (getValidateMethod()) {
-            return getValidateMethod().invoke(instance, "validate", [evict] as Object[])
+    boolean validate(D instance, List validatedFieldsList, Map arguments = Collections.emptyMap()) {
+        Errors errors = setupErrorsProperty(instance);
+        if(validator == null) return true
+
+        Boolean valid = Boolean.TRUE
+        // should evict?
+        boolean evict = false
+        boolean deepValidate = true
+        Set validatedFields = null
+        if(validatedFieldsList != null) {
+            validatedFields = new HashSet(validatedFieldsList)
         }
-        return super.validate(instance, evict)
+
+        if (arguments.containsKey(ARGUMENT_DEEP_VALIDATE)) {
+            deepValidate = GrailsClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments)
+        }
+
+        evict = GrailsClassUtils.getBooleanFromMap(ARGUMENT_EVICT, arguments);
+
+        fireEvent instance, validatedFieldsList
+
+        AbstractPersistentConstraint.sessionFactory.set datastore.sessionFactory
+        try {
+            if (deepValidate && (validator instanceof CascadingValidator)) {
+                ((CascadingValidator)validator).validate instance, errors, deepValidate
+            }
+            else {
+                validator.validate instance, errors
+            }
+        }
+        finally {
+            AbstractPersistentConstraint.sessionFactory.remove()
+        }
+
+        int oldErrorCount = errors.errorCount
+        errors = filterErrors(errors, validatedFields, instance)
+
+        if (errors.hasErrors()) {
+            valid = Boolean.FALSE
+            if (evict) {
+                // if an boolean argument 'true' is passed to the method
+                // and validation fails then the object will be evicted
+                // from the session, ensuring it is not saved later when
+                // flush is called
+                if (hibernateTemplate.contains(instance)) {
+                    hibernateTemplate.evict(instance)
+                }
+            }
+        }
+
+        // If the errors have been filtered, update the 'errors' object attached to the target.
+        if (errors.errorCount != oldErrorCount) {
+            MetaClass metaClass = GroovySystem.metaClassRegistry.getMetaClass(instance.getClass())
+            metaClass.setProperty( instance, GrailsDomainClassProperty.ERRORS, errors)
+        }
+
+        return valid
     }
 
-    @Override
-    boolean validate(D instance, Map arguments) {
-        if (getValidateMethod()) {
-            return getValidateMethod().invoke(instance, "validate", [arguments] as Object[])
-        }
-        return super.validate(instance, arguments)
+    private void fireEvent(Object target, List<?> validatedFieldsList) {
+        ValidationEvent event = new ValidationEvent(datastore, target);
+        event.setValidatedFields(validatedFieldsList);
+        datastore.getApplicationContext().publishEvent(event);
     }
 
-    @Override
-    boolean validate(D instance, List fields) {
-        if (getValidateMethod()) {
-            return getValidateMethod().invoke(instance, "validate", [fields] as Object[])
+    @SuppressWarnings("rawtypes")
+    private Errors filterErrors(Errors errors, Set validatedFields, Object target) {
+        if (validatedFields == null) return errors;
+
+        ValidationErrors result = new ValidationErrors(target);
+
+        final List allErrors = errors.getAllErrors();
+        for (Object allError : allErrors) {
+            ObjectError error = (ObjectError) allError;
+
+            if (error instanceof FieldError) {
+                FieldError fieldError = (FieldError) error;
+                if (!validatedFields.contains(fieldError.getField())) continue;
+            }
+
+            result.addError(error);
         }
-        return super.validate(instance, fields)
+
+        return result;
+    }
+
+    /**
+     * Initializes the Errors property on target.  The target will be assigned a new
+     * Errors property.  If the target contains any binding errors, those binding
+     * errors will be copied in to the new Errors property.
+     *
+     * @param target object to initialize
+     * @return the new Errors object
+     */
+    protected Errors setupErrorsProperty(Object target) {
+        HibernateRuntimeUtils.setupErrorsProperty target
     }
 }

@@ -69,7 +69,7 @@ public class FindAllByFinder extends DynamicFinder {
             Query.Junction disjunction = q.disjunction();
 
             for (MethodExpression expression : invocation.getExpressions()) {
-                disjunction.add(expression.createCriterion());
+                q.add(disjunction, expression.createCriterion());
             }
         }
         else {

@@ -15,12 +15,15 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
+import groovy.lang.Closure;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -45,6 +48,12 @@ public class GrailsHibernateTemplate extends HibernateTemplate implements IHiber
     public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application) {
         super(sessionFactory);
         initialize(application);
+    }
+
+    @Override
+    public <T> T execute(Closure<T> callable) {
+        HibernateCallback<T> hibernateCallback = DefaultGroovyMethods.asType(callable, HibernateCallback.class);
+        return execute(hibernateCallback);
     }
 
     private void initialize(GrailsApplication application) {

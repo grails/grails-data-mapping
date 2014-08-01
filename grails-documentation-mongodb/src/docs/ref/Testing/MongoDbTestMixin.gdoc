@@ -31,6 +31,15 @@ class PersonSpec extends Specification{
 }
 {code}
 
+
+This library dependency is required in grails-app/conf/BuildConfig.groovy for adding support for @MongoDbTestMixin@.
+
+{code}
+    dependencies {
+        test 'org.grails:grails-datastore-test-support:1.0.1-grails-2.4'
+    }
+{code}
+
 h2. Description
 
 @MongoDbTestMixin@ allows you to test interactions with GORM for MongoDB against a running MongoDB instance or a Mock instance such as one provided by the [Fongo|https://github.com/fakemongo/fongo] project.

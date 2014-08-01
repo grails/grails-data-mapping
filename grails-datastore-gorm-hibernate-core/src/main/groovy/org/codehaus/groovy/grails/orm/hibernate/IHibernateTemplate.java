@@ -18,11 +18,17 @@ package org.codehaus.groovy.grails.orm.hibernate;
 import java.io.Serializable;
 import java.util.Collection;
 
+import groovy.lang.Closure;
+import org.hibernate.Criteria;
 import org.hibernate.LockMode;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 /**
+ * Template interface that can be used with both Hibernate 3 and Hibernate 4
+ *
  * @author Burt Beckwith
+ * @author Graeme Rocher
  */
 public interface IHibernateTemplate {
 
@@ -46,6 +52,10 @@ public interface IHibernateTemplate {
 
     void deleteAll(Collection<?> list);
 
+    void applySettings(Query query);
+
+    void applySettings(Criteria criteria);
+
     <T> T get(Class<T> type, Serializable key);
 
     <T> T get(Class<T> type, Serializable key, LockMode mode);
@@ -55,4 +65,6 @@ public interface IHibernateTemplate {
     void delete(Object o);
 
     SessionFactory getSessionFactory();
+
+    <T> T execute(Closure<T> callable);
 }

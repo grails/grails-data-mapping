@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory
 import org.grails.datastore.mapping.transactions.Transaction
 
 /**
- * wrapping a Neo4j {@link org.neo4j.graphdb.Transaction} into a Spring data mapping {@link Transaction}
+ * delegate tx methods to cypherEngine
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
 class Neo4jTransaction implements Transaction {
@@ -28,34 +28,20 @@ class Neo4jTransaction implements Transaction {
     protected final Logger log = LoggerFactory.getLogger(getClass())
 
     CypherEngine cypherEngine
-    org.neo4j.graphdb.Transaction nativeTransaction
     boolean active = true
 
     Neo4jTransaction(CypherEngine cypherEngine) {
         this.cypherEngine = cypherEngine
-        // nativeTransaction = cypherEngine.beginTx()
-        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
-            log.debug "new: $nativeTransaction"
-        }
+        cypherEngine.beginTx()
     }
 
     void commit() {
-        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
-            log.debug "commit $nativeTransaction"
-        }
-        /*nativeTransaction.success()
-        nativeTransaction.finish()*/
+        cypherEngine.commit()
         active = false
     }
 
     void rollback() {
-        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
-            log.debug "rollback $nativeTransaction"
-        }
-/*
-        nativeTransaction.failure()
-        nativeTransaction.finish()
-*/
+        cypherEngine.rollback()
         active = false
     }
 

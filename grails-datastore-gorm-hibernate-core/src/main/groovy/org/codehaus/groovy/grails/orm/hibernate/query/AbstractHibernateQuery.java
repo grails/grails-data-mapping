@@ -21,22 +21,27 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.FetchType;
 
 import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateSession;
 import org.codehaus.groovy.grails.orm.hibernate.IHibernateTemplate;
+import org.codehaus.groovy.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder;
+import org.codehaus.groovy.grails.orm.hibernate.cfg.Mapping;
+import org.codehaus.groovy.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler;
+import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
+import org.grails.datastore.gorm.finders.DynamicFinder;
 import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.Embedded;
 import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.criterion.*;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.function.SQLFunction;
@@ -63,6 +68,7 @@ public abstract class AbstractHibernateQuery extends Query {
     protected static final String ALIAS = "_alias";
     protected static ConversionService conversionService = new DefaultConversionService();
     protected static Field opField = ReflectionUtils.findField(SimpleExpression.class, "op");
+    private static final Map<String, Boolean> JOIN_STATUS_CACHE = new ConcurrentHashMap<String, Boolean>();
     static {
         ReflectionUtils.makeAccessible(opField);
     }
@@ -77,15 +83,30 @@ public abstract class AbstractHibernateQuery extends Query {
     protected LinkedList<PersistentEntity> entityStack = new LinkedList<PersistentEntity>();
     protected LinkedList<Association> associationStack = new LinkedList<Association>();
     protected LinkedList aliasInstanceStack = new LinkedList();
+    private boolean hasJoins = false;
+    protected ProxyHandler proxyHandler = new SimpleHibernateProxyHandler();
 
     protected AbstractHibernateQuery(Criteria criteria, AbstractHibernateSession session, PersistentEntity entity) {
         super(session, entity);
         this.criteria = criteria;
+        if(entity != null) {
+            initializeJoinStatus();
+        }
     }
 
     protected AbstractHibernateQuery(DetachedCriteria criteria) {
         super(null, null);
         this.detachedCriteria = criteria;
+    }
+
+    private void initializeJoinStatus() {
+        Boolean cachedStatus = JOIN_STATUS_CACHE.get(entity.getName());
+        if(cachedStatus != null) hasJoins = cachedStatus;
+        else {
+            for(Association a : entity.getAssociations()) {
+                if( a.getFetchStrategy() == FetchType.EAGER ) hasJoins = true;
+            }
+        }
     }
 
     protected AbstractHibernateQuery(Criteria subCriteria, AbstractHibernateSession session, PersistentEntity associatedEntity, String newAlias) {
@@ -479,24 +500,88 @@ public abstract class AbstractHibernateQuery extends Query {
     }
 
     @Override
+    public Query cache(boolean cache) {
+        criteria.setCacheable(true);
+
+        return super.cache(cache);
+    }
+
+    @Override
+    public Query lock(boolean lock) {
+        criteria.setCacheable(false);
+        criteria.setLockMode(LockMode.PESSIMISTIC_WRITE);
+        return super.lock(lock);
+    }
+
+    @Override
     public Query order(Order order) {
         super.order(order);
-        if(criteria != null) {
 
-            criteria.addOrder(order.getDirection() == Order.Direction.ASC ?
-                    org.hibernate.criterion.Order.asc(calculatePropertyName(order.getProperty())) :
-                    org.hibernate.criterion.Order.desc(calculatePropertyName(order.getProperty())));
-        }else if(detachedCriteria != null) {
-            detachedCriteria.addOrder(order.getDirection() == Order.Direction.ASC ?
-                    org.hibernate.criterion.Order.asc(calculatePropertyName(order.getProperty())) :
-                    org.hibernate.criterion.Order.desc(calculatePropertyName(order.getProperty())));
+        String property = order.getProperty();
+
+        int i = property.indexOf('.');
+        if(i > -1) {
+            String sortHead = property.substring(0,i);
+            String sortTail = property.substring(i + 1);
+
+            PersistentProperty persistentProperty = entity.getPropertyByName(sortHead);
+
+            if(persistentProperty instanceof Association) {
+                Association a = (Association) persistentProperty;
+                if(persistentProperty instanceof Embedded) {
+                    addSimpleOrder(order, property);
+                }
+                else {
+                    if(criteria != null) {
+                        Criteria subCriteria = criteria.createCriteria(sortHead);
+                        addOrderToCriteria(subCriteria, sortTail, order);
+                    }
+                    else if(detachedCriteria != null) {
+                        DetachedCriteria subDetachedCriteria = detachedCriteria.createCriteria(sortHead);
+                        addOrderToDetachedCriteria(subDetachedCriteria, sortTail, order);
+                    }
+                }
+            }
 
         }
+        else {
+            addSimpleOrder(order, property);
+        }
+
         return this;
+    }
+
+    private void addSimpleOrder(Order order, String property) {
+        Criteria c = criteria;
+        if(c != null) {
+            addOrderToCriteria(c, property, order);
+        }else {
+            DetachedCriteria dc = detachedCriteria;
+            addOrderToDetachedCriteria(dc, property, order);
+        }
+    }
+
+    private void addOrderToDetachedCriteria(DetachedCriteria dc, String property, Order order) {
+        if(dc != null) {
+            org.hibernate.criterion.Order hibernateOrder = order.getDirection() == Order.Direction.ASC ?
+                    org.hibernate.criterion.Order.asc(calculatePropertyName(property)) :
+                    org.hibernate.criterion.Order.desc(calculatePropertyName(property));
+            dc.addOrder(order.isIgnoreCase() ? hibernateOrder.ignoreCase() : hibernateOrder);
+
+        }
+    }
+
+    private void addOrderToCriteria(Criteria c, String property, Order order) {
+        org.hibernate.criterion.Order hibernateOrder = order.getDirection() == Order.Direction.ASC ?
+                org.hibernate.criterion.Order.asc(calculatePropertyName(property)) :
+                org.hibernate.criterion.Order.desc(calculatePropertyName(property));
+
+        c.addOrder(order.isIgnoreCase() ? hibernateOrder.ignoreCase() : hibernateOrder);
     }
 
     @Override
     public Query join(String property) {
+        this.hasJoins = true;
         if(criteria != null)
             criteria.setFetchMode(property, FetchMode.JOIN);
         else if(detachedCriteria != null)
@@ -506,6 +591,7 @@ public abstract class AbstractHibernateQuery extends Query {
 
     @Override
     public Query select(String property) {
+        this.hasJoins = true;
         if(criteria != null)
             criteria.setFetchMode(property, FetchMode.SELECT);
         else if(detachedCriteria != null)
@@ -521,15 +607,35 @@ public abstract class AbstractHibernateQuery extends Query {
         if (hibernateProjectionList != null) {
             org.hibernate.criterion.ProjectionList projectionList = hibernateProjectionList.getHibernateProjectionList();
             projectionLength = projectionList.getLength();
-            criteria.setProjection(projectionList);
+            if(projectionLength > 0) {
+                criteria.setProjection(projectionList);
+            }
         }
 
         if (projectionLength < 2) {
             criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         }
 
+        applyDefaultSortOrderAndCaching();
         applyFetchStrategies();
+
+
         return criteria.list();
+    }
+
+    protected void applyDefaultSortOrderAndCaching() {
+        if(this.orderBy.isEmpty() && entity != null) {
+            Mapping mapping = AbstractGrailsDomainBinder.getMapping(entity.getJavaClass());
+            if(mapping != null) {
+                if(queryCache == null && mapping.getCache() != null && mapping.getCache().isEnabled()) {
+                    criteria.setCacheable(true);
+                }
+
+                Map sortMap = mapping.getSort().getNamesAndDirections();
+                DynamicFinder.applySortForMap(this, sortMap, true);
+
+            }
+        }
     }
 
     protected void applyFetchStrategies() {
@@ -564,9 +670,30 @@ public abstract class AbstractHibernateQuery extends Query {
             criteria.setProjection(hibernateProjectionList.getHibernateProjectionList());
         }
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        applyDefaultSortOrderAndCaching();
         applyFetchStrategies();
-        return criteria.uniqueResult();
+
+        if(hasJoins) {
+            try {
+                return proxyHandler.unwrapIfProxy(criteria.uniqueResult());
+            } catch (NonUniqueResultException e) {
+                return singleResultViaListCall();
+            }
+        }
+        else {
+            return singleResultViaListCall();
+        }
     }
+
+    private Object singleResultViaListCall() {
+        criteria.setMaxResults(1);
+        List results = criteria.list();
+        if(results.size()>0) {
+            return proxyHandler.unwrapIfProxy(results.get(0));
+        }
+        return null;
+    }
+
 
     @Override
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
@@ -761,6 +888,19 @@ public abstract class AbstractHibernateQuery extends Query {
             super(session, associatedEntity, association);
             this.alias = alias;
             detachedAssocationCriteria = criteria;
+        }
+
+        @Override
+        public Query order(Order order) {
+
+            Order.Direction direction = order.getDirection();
+            switch(direction) {
+                case ASC:
+                    assocationCriteria.addOrder(org.hibernate.criterion.Order.asc(order.getProperty()));
+                case DESC:
+                    assocationCriteria.addOrder(org.hibernate.criterion.Order.desc(order.getProperty()));
+            }
+            return super.order(order);
         }
 
         @Override

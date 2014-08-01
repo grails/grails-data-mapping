@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore;
 import org.codehaus.groovy.grails.orm.hibernate.SessionFactoryProxy;
 import org.grails.datastore.mapping.core.Datastore;
@@ -91,7 +92,6 @@ public class ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventL
     private ApplicationContext ctx;
     private Map<SessionFactory, HibernateDatastore> datastores;
 
-    private static final ThreadLocal<Boolean> insertActiveThreadLocal = new ThreadLocal<Boolean>();
 
 /*    public ClosureEventTriggeringInterceptor() {
         try {
@@ -226,7 +226,7 @@ public class ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventL
      */
     @Override
     protected Boolean getAssumedUnsaved() {
-        return insertActiveThreadLocal.get();
+        return AbstractHibernateGormInstanceApi.getAssumedUnsaved();
     }
 
     /**
@@ -234,13 +234,13 @@ public class ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventL
      * to set a ThreadLocal variable that determines the value for getAssumedUnsaved().
      */
     public static void markInsertActive() {
-        insertActiveThreadLocal.set(true);
+        AbstractHibernateGormInstanceApi.markInsertActive();
     }
 
     /**
      * Clears the ThreadLocal variable set by markInsertActive().
      */
     public static void resetInsertActive() {
-        insertActiveThreadLocal.remove();
+        AbstractHibernateGormInstanceApi.resetInsertActive();
     }
 }

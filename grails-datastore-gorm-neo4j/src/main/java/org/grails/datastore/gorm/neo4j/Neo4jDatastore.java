@@ -14,8 +14,6 @@
  */
 package org.grails.datastore.gorm.neo4j;
 
-import com.fasterxml.uuid.Generators;
-import com.fasterxml.uuid.NoArgGenerator;
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.core.AbstractDatastore;
@@ -31,8 +29,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 
+import java.util.HashSet;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
 
 /**
  * Datastore implementation for Neo4j backend
@@ -76,20 +75,28 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     }
 
     public void setupIndexing() {
+        Set<String> schemaStrings = new HashSet<String>(); // using set to avoid duplicate index creation
+
         for (PersistentEntity persistentEntity:  mappingContext.getPersistentEntities()) {
-            StringBuilder sb = new StringBuilder();
-            String label = ((GraphPersistentEntity)persistentEntity).getLabel();
-            sb.append("CREATE INDEX ON :").append(label).append("(__id__)");
-            cypherEngine.execute(sb.toString());
-            for (PersistentProperty persistentProperty: persistentEntity.getPersistentProperties()) {
-                Property mappedForm = persistentProperty.getMapping().getMappedForm();
-                if ((persistentProperty instanceof Simple) && (mappedForm !=null) && (mappedForm.isIndex())) {
-                    sb = new StringBuilder();
-                    sb.append("CREATE INDEX ON :").append(label).append("(").append(persistentProperty.getName()).append(")");
-                    cypherEngine.execute(sb.toString());
-                    log.debug("setting up indexing for " + label + " property " + persistentProperty.getName());
+            for (String label: ((GraphPersistentEntity)persistentEntity).getLabels()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("CREATE INDEX ON :").append(label).append("(__id__)");
+                schemaStrings.add(sb.toString());
+                for (PersistentProperty persistentProperty : persistentEntity.getPersistentProperties()) {
+                    Property mappedForm = persistentProperty.getMapping().getMappedForm();
+                    if ((persistentProperty instanceof Simple) && (mappedForm != null) && (mappedForm.isIndex())) {
+                        sb = new StringBuilder();
+                        sb.append("CREATE INDEX ON :").append(label).append("(").append(persistentProperty.getName()).append(")");
+                        schemaStrings.add(sb.toString());
+                        log.debug("setting up indexing for " + label + " property " + persistentProperty.getName());
+                    }
                 }
             }
         }
+
+        for (String cypher: schemaStrings) {
+            cypherEngine.execute(cypher);
+        }
+        cypherEngine.commit();
     }
 }
