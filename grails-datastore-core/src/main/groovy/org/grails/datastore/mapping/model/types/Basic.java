@@ -30,6 +30,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 public abstract class Basic extends Association {
 
     private CustomTypeMarshaller customTypeMarshaller;
+    private Class<Object> collectionType;
 
     public Basic(PersistentEntity owner, MappingContext context,
             PropertyDescriptor descriptor) {
@@ -70,5 +71,17 @@ public abstract class Basic extends Association {
 
     public void setCustomTypeMarshaller(CustomTypeMarshaller customTypeMarshaller) {
         this.customTypeMarshaller = customTypeMarshaller;
+    }
+
+    public Class<Object> getCollectionType() {
+        return collectionType;
+    }
+
+    public boolean isEnumTypeCollection() {
+        return (collectionType != null && collectionType.isEnum());
+    }
+
+    public void setCollectionType(Class<Object> collectionType) {
+        this.collectionType = collectionType;
     }
 }
