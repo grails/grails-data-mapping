@@ -123,12 +123,24 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
     private static Map<Class, CustomTypeMarshaller> typeConverterMap = new ConcurrentHashMap<Class, CustomTypeMarshaller>();
 
     public static void registerCustomType(CustomTypeMarshaller marshallerCustom) {
+        System.out.println("Register custom type: " + marshallerCustom.getTargetType() + " >><< " + marshallerCustom);
         typeConverterMap.put(marshallerCustom.getTargetType(), marshallerCustom);
     }
 
     public boolean isSimpleType(Class propType) {
+        System.out.println("Is simple type: " + propType);
         if (propType == null) return false;
-        if (propType.isEnum()) return true;
+        if (propType.isEnum()) {
+            System.out.println(propType + " is simple type.....");
+            if (isCustomType(propType)) {
+                return false;
+            }
+            if (isCustomType(Enum.class)) {
+                return false;
+            }
+            System.out.println(propType + " is simple type: okay boss");
+            return true;
+        }
         if (propType.isArray()) {
             return isSimpleType(propType.getComponentType());
         }
@@ -181,7 +193,11 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
      * @return A custom property type
      */
     public Custom<T> createCustom(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
+        System.out.println("Create custom " + pd.getPropertyType());
         CustomTypeMarshaller customTypeMarshaller = typeConverterMap.get(pd.getPropertyType());
+        if (customTypeMarshaller == null && pd.getPropertyType().isEnum()) {
+            customTypeMarshaller = typeConverterMap.get(Enum.class);
+        }
         if (customTypeMarshaller == null) {
             throw new IllegalStateException("Cannot create a custom type without a type converter for type " + pd.getPropertyType());
         }
@@ -202,6 +218,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
      * @return A Simple property type
      */
     public Simple<T> createSimple(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
+        System.out.println("Create simple " + pd.getPropertyType());
         return new Simple<T>(owner, context, pd) {
             PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping<T> getMapping() {
@@ -337,7 +354,8 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
      * @return The Basic collection type
      */
     public Basic createBasicCollection(PersistentEntity entity,
-            MappingContext context, PropertyDescriptor property) {
+            MappingContext context, PropertyDescriptor property, Class collectionType) {
+        System.out.println("Create basic collection " + property.getPropertyType() + " with type " + collectionType);
         Basic basic = new Basic(entity, context, property) {
             PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
 
@@ -345,8 +363,20 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
                 return propertyMapping;
             }
         };
+        basic.setCollectionType(collectionType);
 
         CustomTypeMarshaller customTypeMarshaller = typeConverterMap.get(property.getPropertyType());
+        System.out.println("CTM " + customTypeMarshaller);
+
+        if(collectionType != null && collectionType.isEnum()) {
+            customTypeMarshaller = typeConverterMap.get(collectionType);
+            System.out.println("CTM " + customTypeMarshaller);
+            if(customTypeMarshaller == null) {
+                customTypeMarshaller = typeConverterMap.get(Enum.class);
+                System.out.println("CTM " + customTypeMarshaller);
+            }
+        }
+
         if(customTypeMarshaller != null) {
             basic.setCustomTypeMarshaller(customTypeMarshaller);
         }
@@ -354,8 +384,19 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
         return basic;
     }
 
+    public Basic createBasicCollection(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
+        return createBasicCollection(entity, context, property, null);
+    }
+
     public static boolean isCustomType(Class<?> propertyType) {
-        return typeConverterMap.containsKey(propertyType);
+        System.out.println("Is custom type: " + propertyType + " = " + typeConverterMap.containsKey(propertyType));
+        if(typeConverterMap.containsKey(propertyType)) {
+            return true;
+        }
+        if(propertyType.isEnum()) {
+            return typeConverterMap.containsKey(Enum.class);
+        }
+        return false;
     }
 
     public IdentityMapping createIdentityMapping(final ClassMapping classMapping) {
