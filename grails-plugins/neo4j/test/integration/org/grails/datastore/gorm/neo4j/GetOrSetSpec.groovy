@@ -5,10 +5,20 @@ import grails.test.spock.IntegrationSpec
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.graphdb.Transaction
 
 class GetOrSetSpec extends IntegrationSpec {
 
     GraphDatabaseService graphDatabaseService
+    Transaction tx
+
+    def setup() {
+        tx = graphDatabaseService.beginTx()
+    }
+
+    def cleanup() {
+        tx.close()
+    }
 
     def "test getOrSet method on nodes"() {
         setup:
@@ -66,4 +76,7 @@ class GetOrSetSpec extends IntegrationSpec {
         (object as JSON).render(sw)
         JSON.parse(sw.toString())
     }
+
+
+
 }

@@ -5,7 +5,7 @@ grails.project.test.reports.dir = "target/test-reports"
 grails.project.dependency.resolution = {
 
     inherits("global") {
-        excludes 'xml-apis', 'netty'//, 'xercesImpl'
+        excludes 'xml-apis', 'netty', 'logback-classic' //, 'xercesImpl'
     }
     log "warn"
     checksums true
@@ -63,6 +63,7 @@ grails.project.dependency.resolution = {
         }
         test "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
         test "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
 
         // htmlunit seems to be broken
 /*        test("org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumVersion") {
