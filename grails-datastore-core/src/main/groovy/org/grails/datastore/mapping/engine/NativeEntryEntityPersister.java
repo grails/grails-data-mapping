@@ -901,19 +901,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
             }
             if (key == null) key = prop.getName();
-            System.out.println("Persist with key " + key);
             final boolean indexed = isPropertyIndexed(mappedProperty);
             if ((prop instanceof Simple) ) {
-                System.out.println(key + " is simple");
-                /*Simple simple = (Simple) prop;
-                CustomTypeMarshaller customTypeMarshaller = simple.getCustomTypeMarshaller();
 
-                Object propValue;
-                if(prop.getType().isEnum() && customTypeMarshaller != null && customTypeMarshaller.supports(getSession().getDatastore())) {
-                    Object value = entityAccess.getProperty(prop.getName());
-                    propValue = customTypeMarshaller.write(prop, value, e);
-                } else {
-                }*/
                 Object propValue = entityAccess.getProperty(prop.getName());
 
                 handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, propValue);
@@ -924,10 +914,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 setEntryValue(e, key, propValue);
             }
             else if((prop instanceof Basic)) {
-                System.out.println(key + " is basic");
                 Basic basic = (Basic) prop;
                 CustomTypeMarshaller customTypeMarshaller = basic.getCustomTypeMarshaller();
-                System.out.println("CTM " + customTypeMarshaller);
                 if (customTypeMarshaller != null && customTypeMarshaller.supports(getSession().getDatastore())) {
                     Object propValue = entityAccess.getProperty(prop.getName());
                     Object customValue = customTypeMarshaller.write(prop, propValue, e);
@@ -941,7 +929,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
             }
             else if ((prop instanceof Custom)) {
-                System.out.println(key + " is custom");
                 CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();
                 if (customTypeMarshaller.supports(getSession().getDatastore())) {
                     Object propValue = entityAccess.getProperty(prop.getName());
@@ -950,7 +937,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
             }
             else if (prop instanceof OneToMany) {
-                System.out.println(key + " is one to manuy");
                 final OneToMany oneToMany = (OneToMany) prop;
 
                 final Object propValue = entityAccess.getProperty(oneToMany.getName());
@@ -998,7 +984,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
             }
             else if (prop instanceof ToOne) {
-                System.out.println(key + " is to one");
                 ToOne association = (ToOne) prop;
                 if (prop instanceof Embedded) {
                     // For embedded properties simply set the entry value, the underlying implementation
@@ -1096,7 +1081,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
             }
             else if (prop instanceof EmbeddedCollection) {
-                System.out.println(key + " is embedd");
                 handleEmbeddedToMany(entityAccess, e, prop, key);
             }
         }
@@ -1184,17 +1168,11 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return associationId;
     }
 
-    static void p(String msg) {
-        System.out.println(msg);
-    }
-
     protected void handleEmbeddedToMany(EntityAccess entityAccess, T e, PersistentProperty prop, String key) {
-        System.out.println("handleEmbeddedToMany() for " + prop.getName() + " or " +key);
         // For embedded properties simply set the entry value, the underlying implementation
         // will have to store the embedded entity in an appropriate way (as a sub-document in a document store for example)
         Object embeddedInstances = entityAccess.getProperty(prop.getName());
         if(embeddedInstances instanceof Map) {
-            p(key + " is map");
             Map instances = (Map)embeddedInstances;
             Map<Object, T> embeddedEntries = new HashMap<Object, T>();
             for (Object k : instances.keySet()) {
@@ -1204,25 +1182,18 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
         }
         else if (!(embeddedInstances instanceof Collection) || ((Collection)embeddedInstances).isEmpty()) {
-            p(key + " is not collection or empty " + !(embeddedInstances instanceof Collection));
-            if (embeddedInstances == null) {
-                p("if null");
+            if (embeddedInstances == null)
                 setEmbeddedCollection(e, key, null, null);
-            } else {
-                p("else");
+            else
                 setEmbeddedCollection(e, key, MappingUtils.createConcreteCollection(prop.getType()), new ArrayList<T>());
-            }
         }
         else {
-            p(key + " is else type");
             Collection instances = (Collection)embeddedInstances;
             List<T> embeddedEntries = new ArrayList<T>();
             for (Object instance : instances) {
-                p("for in " + instance);
                 T entry = handleEmbeddedInstance((Association)prop, instance);
                 embeddedEntries.add(entry);
             }
-            p(key + " values " + embeddedEntries);
 
             setEmbeddedCollection(e, key, instances, embeddedEntries);
         }
@@ -1250,7 +1221,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return handleEmbeddedInstance(association, embeddedInstance, true);
     }
     protected T handleEmbeddedInstance(Association association, Object embeddedInstance, boolean includeNulls) {
-        p("handleEmbeddedInstance " + embeddedInstance);
         NativeEntryEntityPersister<T,K> embeddedPersister = (NativeEntryEntityPersister<T,K>) session.getPersister(embeddedInstance);
 
         // embeddedPersister would be null if the associated entity is a EmbeddedPersistentEntity
@@ -1264,29 +1234,23 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
         final PersistentEntity associatedEntity = embeddedPersister == null ? association.getAssociatedEntity() : embeddedPersister.getPersistentEntity();
         if (associatedEntity != null) {
-            p("if not null associua");
             final List<PersistentProperty> embeddedProperties = associatedEntity.getPersistentProperties();
             final EntityAccess embeddedEntityAccess = createEntityAccess(associatedEntity, embeddedInstance);
             PersistentProperty identity = associatedEntity.getIdentity();
             if (identity != null) {
-                p("nested 2nd if");
                 Object embeddedId = embeddedEntityAccess.getProperty(identity.getName());
                 if (embeddedId != null) {
-                    p("nested 3rd if");
                     setEntryValue(embeddedEntry, getPropertyKey(identity), embeddedId);
                 }
             }
             for (PersistentProperty persistentProperty : embeddedProperties) {
-                System.out.println("handle embedded instance for " + persistentProperty.getName());
                 if (persistentProperty instanceof Simple) {
-                    System.out.println(persistentProperty.getName() + " is simpleeeeee");
                     Object value = embeddedEntityAccess.getProperty(persistentProperty.getName());
                     if(value == null && !includeNulls) continue;
 
                     setEntryValue(embeddedEntry, getPropertyKey(persistentProperty), value);
                 }
                 else if (persistentProperty instanceof Custom) {
-                    System.out.println(persistentProperty.getName() + " is custommmmmmmm");
                     CustomTypeMarshaller customTypeMarshaller = ((Custom) persistentProperty).getCustomTypeMarshaller();
                     if (customTypeMarshaller.supports(getSession().getDatastore())) {
                         customTypeMarshaller.write(persistentProperty, embeddedEntityAccess.getProperty(persistentProperty.getName()), embeddedEntry);

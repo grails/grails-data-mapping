@@ -81,7 +81,6 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
         if(!initialized) {
 
             initialized = true;
-            System.out.println("AbstractPersistentEntity . initiaze" + javaClass);
             initializeMappingProperties();
             owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);
             persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(this, context, getMapping());
@@ -90,15 +89,11 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
             associations = new ArrayList();
 
             for (PersistentProperty persistentProperty : persistentProperties) {
-                System.out.println("for each in " + persistentProperty.getName());
                 if (!(persistentProperty instanceof OneToMany)) {
-                    System.out.println("not one to many");
                     persistentPropertyNames.add(persistentProperty.getName());
                 }
 
                 if (persistentProperty instanceof Association) {
-                    System.out.println("is associationnnn");
-                    System.out.println("not one to many");
                     associations.add((Association) persistentProperty);
                 }
 

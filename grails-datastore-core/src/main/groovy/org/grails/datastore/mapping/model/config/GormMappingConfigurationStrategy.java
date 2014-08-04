@@ -164,7 +164,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         // hasOne for declaring a one-to-one association with the foreign key in the child
         Map hasOneMap = getAssociationMap(cpf, HAS_ONE);
 
-        System.out.println("getPersistentPropertiesssssss" + cpf.getPropertyDescriptors());
         for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
             if (descriptor.getPropertyType() == null || descriptor.getPropertyType() == Object.class) {
                 // indexed property
@@ -186,21 +185,17 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             if (isExcludedProperty(propertyName, classMapping, transients)) continue;
             Class<?> propertyType = descriptor.getPropertyType();
             Class currentPropType = propertyType;
-            System.out.println(">>>> getPersistentPropertiesssssss " + currentPropType + ", property " + propertyName);
             // establish if the property is a one-to-many
             // if it is a Set and there are relationships defined
             // and it is defined as persistent
             if (embedded.contains(propertyName)) {
-                System.out.println("is embedded typeeeeeee" + propertyType);
                 if (isCollectionType(currentPropType)) {
-                    System.out.println("is embedded collection typeeeeeee" + propertyType);
                     final Association association = establishRelationshipForCollection(descriptor, entity, context, hasManyMap, mappedByMap, true);
                     if (association != null) {
                         persistentProperties.add(association);
                     }
                 }
                 else {
-                    System.out.println("is not embedded collection typeeeeeee" + propertyType);
                     final ToOne association = establishDomainClassRelationship(entity, descriptor, context, hasOneMap, true);
                     if (association != null) {
                         persistentProperties.add(association);
@@ -208,7 +203,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 }
             }
             else if (isCollectionType(currentPropType)) {
-                System.out.println("is collection typeeeeeee" + propertyType);
                 final Association association = establishRelationshipForCollection(descriptor, entity, context, hasManyMap, mappedByMap, false);
                 if (association != null) {
                     configureOwningSide(association);
@@ -217,7 +211,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             }
             // otherwise if the type is a domain class establish relationship
             else if (isPersistentEntity(currentPropType)) {
-                System.out.println("is not collection typeeeeeee" + propertyType);
                 final ToOne association = establishDomainClassRelationship(entity, descriptor, context, hasOneMap, false);
                 if (association != null) {
                     configureOwningSide(association);
@@ -225,11 +218,9 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 }
             }
             else if (propertyFactory.isSimpleType(propertyType)) {
-                System.out.println("is simple typeeeeeee" + propertyType);
                 persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
             }
             else if (MappingFactory.isCustomType(propertyType)) {
-                System.out.println("is custom typeeeeeee" + propertyType);
                 persistentProperties.add(propertyFactory.createCustom(entity, context, descriptor));
             }
         }
@@ -304,32 +295,25 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         Class relatedClassType = hasManyMap.get(property.getName());
         // try a bit harder for embedded collections (could make this the default, rendering 'hasMany' optional
         // if generics are used)
-        System.out.println("establishRelationshipForCollection forrrr: " + relatedClassType + " for prop " + property.getName());
         if (relatedClassType == null && embedded) {
-            System.out.println("first if");
             Class javaClass = entity.getJavaClass();
 
             Class genericClass = MappingUtils.getGenericTypeForProperty(javaClass, property.getName());
 
             if (genericClass != null) {
-                System.out.println("nested insilde first if " + genericClass);
                 relatedClassType = genericClass;
             }
         }
 
         if (relatedClassType == null) {
-            System.out.println("second if");
             return propertyFactory.createBasicCollection(entity, context, property);
         }
 
         if (embedded) {
-            System.out.println("third if");
             if (propertyFactory.isSimpleType(relatedClassType)) {
-                System.out.println("nested inside third if");
                 return propertyFactory.createBasicCollection(entity, context, property, relatedClassType);
             }
             else if (!isPersistentEntity(relatedClassType)) {
-                System.out.println("else if inside third if");
                 // no point in setting up bidirectional link here, since target isn't an entity.
                 EmbeddedCollection association = propertyFactory.createEmbeddedCollection(entity, context, property);
                 PersistentEntity associatedEntity = getOrCreateEmbeddedEntity(entity, context, relatedClassType);
@@ -338,7 +322,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             }
         }
         else if (!isPersistentEntity(relatedClassType)) {
-            System.out.println("third else if");
             // otherwise set it to not persistent as you can't persist
             // relationships to non-domain classes
             return propertyFactory.createBasicCollection(entity, context, property, relatedClassType);
