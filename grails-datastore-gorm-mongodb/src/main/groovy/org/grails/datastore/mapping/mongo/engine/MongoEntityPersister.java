@@ -130,7 +130,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
     protected void setEmbeddedCollection(final DBObject nativeEntry, final String key, Collection<?> instances, List<DBObject> embeddedEntries) {
-        System.out.println("setEmbeddedCollection size" + instances.size());
         if (instances == null || instances.isEmpty()) {
             nativeEntry.put(key, null);
             return;

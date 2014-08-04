@@ -74,10 +74,8 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
         PropertyDescriptor[] descriptors = cpf.getPropertyDescriptors();
         final ArrayList<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
 
-        System.out.println("getPersistentProperties >> " + descriptors);
         for (PropertyDescriptor descriptor : descriptors) {
             final String propertyName = descriptor.getName();
-            System.out.println("getPersistentProperty >>>> " + propertyName);
             if (isExcludedProperty(propertyName, classMapping, Collections.emptyList())) continue;
             Class<?> propertyType = descriptor.getPropertyType();
             if (propertyFactory.isSimpleType(propertyType)) {

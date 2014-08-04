@@ -70,7 +70,6 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
     }
 
     public void initialize() {
-        System.out.println("GrailsDomainClassPersistentEntity init " + domainClass.getName());
         identifier = new GrailsDomainClassPersistentProperty(this, domainClass.getIdentifier());
         propertiesByName.put(identifier.getName(), identifier);
         version = new GrailsDomainClassPersistentProperty(this, domainClass.getVersion());
@@ -81,11 +80,8 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
         final GrailsDomainClassProperty[] persistentProperties = domainClass.getPersistentProperties();
         for (GrailsDomainClassProperty grailsDomainClassProperty : persistentProperties) {
             PersistentProperty persistentProperty;
-            System.out.println(">> init for " + grailsDomainClassProperty.getName());
             if (grailsDomainClassProperty.isAssociation()) {
-                System.out.println(grailsDomainClassProperty.getName() + " is association");
                 if (grailsDomainClassProperty.isEmbedded()) {
-                    System.out.println(grailsDomainClassProperty.getName() + " is embedded");
                     persistentProperty = createEmbedded(mappingContext,grailsDomainClassProperty);
                 }
                 else if (grailsDomainClassProperty.isOneToMany()) {
@@ -98,19 +94,16 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
                     persistentProperty = createOneToOne(mappingContext, grailsDomainClassProperty);
                 }
                 else if (grailsDomainClassProperty.isManyToOne()) {
-                    System.out.println(grailsDomainClassProperty.getName() + " is many to one");
                     persistentProperty = createManyToOne(mappingContext, grailsDomainClassProperty);
                 }
                 else if (grailsDomainClassProperty.isManyToMany()) {
                     persistentProperty = createManyToMany(mappingContext, grailsDomainClassProperty);
                 }
                 else {
-                    System.out.println(grailsDomainClassProperty.getName() + " is else");
                     persistentProperty = new GrailsDomainClassPersistentProperty(this, grailsDomainClassProperty);
                 }
             }
             else {
-                System.out.println(grailsDomainClassProperty.getName() + " is not association");
                 persistentProperty = new GrailsDomainClassPersistentProperty(this, grailsDomainClassProperty);
             }
             propertiesByName.put(grailsDomainClassProperty.getName(), persistentProperty);
