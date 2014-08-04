@@ -30,6 +30,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 public abstract class Basic extends Association {
 
     private CustomTypeMarshaller customTypeMarshaller;
+    // Used to hold related type of collection, like String for a list of string.
     private Class<Object> collectionType;
 
     public Basic(PersistentEntity owner, MappingContext context,

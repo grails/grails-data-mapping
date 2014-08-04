@@ -1184,8 +1184,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         else if (!(embeddedInstances instanceof Collection) || ((Collection)embeddedInstances).isEmpty()) {
             if (embeddedInstances == null)
                 setEmbeddedCollection(e, key, null, null);
-            else
+            else {
                 setEmbeddedCollection(e, key, MappingUtils.createConcreteCollection(prop.getType()), new ArrayList<T>());
+            }
         }
         else {
             Collection instances = (Collection)embeddedInstances;

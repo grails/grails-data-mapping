@@ -81,6 +81,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
         if(!initialized) {
 
             initialized = true;
+
             initializeMappingProperties();
             owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);
             persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(this, context, getMapping());
@@ -89,6 +90,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
             associations = new ArrayList();
 
             for (PersistentProperty persistentProperty : persistentProperties) {
+
                 if (!(persistentProperty instanceof OneToMany)) {
                     persistentPropertyNames.add(persistentProperty.getName());
                 }

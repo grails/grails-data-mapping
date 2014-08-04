@@ -129,10 +129,8 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
     public boolean isSimpleType(Class propType) {
         if (propType == null) return false;
         if (propType.isEnum()) {
+            // Check if prop (any enum) supports custom type marshaller.
             if (isCustomType(propType)) {
-                return false;
-            }
-            if (isCustomType(Enum.class)) {
                 return false;
             }
             return true;
@@ -191,6 +189,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
     public Custom<T> createCustom(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
         CustomTypeMarshaller customTypeMarshaller = typeConverterMap.get(pd.getPropertyType());
         if (customTypeMarshaller == null && pd.getPropertyType().isEnum()) {
+            // If there is no custom type marshaller for current enum, lookup marshaller for enum itself.
             customTypeMarshaller = typeConverterMap.get(Enum.class);
         }
         if (customTypeMarshaller == null) {
@@ -360,9 +359,13 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
 
         CustomTypeMarshaller customTypeMarshaller = typeConverterMap.get(property.getPropertyType());
 
+        // This is to allow using custom marshaller for list of enum.
+        // If no custom type marshaller for current enum.
         if(collectionType != null && collectionType.isEnum()) {
+            // First look custom marshaller for related type of collection.
             customTypeMarshaller = typeConverterMap.get(collectionType);
             if(customTypeMarshaller == null) {
+                // If null, look for enum class itself.
                 customTypeMarshaller = typeConverterMap.get(Enum.class);
             }
         }
@@ -383,6 +386,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             return true;
         }
         if(propertyType.isEnum()) {
+            // Check if enum itself supports custom type.
             return typeConverterMap.containsKey(Enum.class);
         }
         return false;
