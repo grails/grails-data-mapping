@@ -44,7 +44,7 @@ class OrderBySpec extends GormDatastoreSpec {
                 order "name"
 		//have to disable paging as cannot page queries with both order by and a IN 
 		//see https://issues.apache.org/jira/browse/CASSANDRA-6722
-		max Integer.MAX_VALUE
+		fetchSize Integer.MAX_VALUE
             }
 
         then:
