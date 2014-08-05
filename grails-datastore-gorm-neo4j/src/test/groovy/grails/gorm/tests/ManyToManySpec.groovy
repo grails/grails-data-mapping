@@ -2,17 +2,13 @@ package grails.gorm.tests
 
 import grails.gorm.dirty.checking.DirtyCheck
 import grails.persistence.Entity
-import org.grails.datastore.gorm.Setup
-import org.grails.datastore.gorm.neo4j.Neo4jUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import spock.lang.Ignore
 
 class ManyToManySpec extends GormDatastoreSpec {
 
     private static Logger log = LoggerFactory.getLogger(ManyToManySpec.class);
 
-    
     @Override
     List getDomainClasses() {
         [Role, User, MBook, MBookworm]
@@ -78,8 +74,6 @@ class ManyToManySpec extends GormDatastoreSpec {
             2 == Role.findByRole('ROLE_ADMIN').people.size()
     }
 
-    @Ignore("""test runs fine in IntelliJ but fails upon execution with gradle. Theory:
-when running gradle the DirtyCheckable interface is not injected into User by an AST. """)
     def "test if setter on m2m property also updates reverse collection"() {
         setup:
             def roleAdmin = new Role(role:'ROLE_ADMIN').save()
@@ -191,6 +185,25 @@ when running gradle the DirtyCheckable interface is not injected into User by an
 
     }
 
+    def "should adding many2many create relationships when non owningside is added"() {
+        setup:
+        def foo = new User(username: 'foo').save()
+        def bar = new User(username: 'bar').save()
+        session.flush()
+        session.clear()
+
+        when: "we change a object after save"
+        def role = new Role(role:'myRole').save(flush:true)
+        role = Role.get(role.id)
+        role.people = [foo, bar]
+        session.flush()
+        session.clear()
+
+        then:
+        Role.findById(role.id).people.size() == 2
+
+    }
+
 }
 
 @DirtyCheck
@@ -224,6 +237,7 @@ class User {
     }
 }
 
+@DirtyCheck
 @Entity
 class Role {
     Long id

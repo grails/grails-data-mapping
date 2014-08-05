@@ -55,9 +55,13 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected List<Serializable> persistEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objs) {
+        return persistEntities(pe, objs, new HashSet());
+    }
+
+    protected List<Serializable> persistEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objs, Collection persistingColl) {
         List<Serializable> result = new ArrayList<Serializable>();
         for (Object obj: objs) {
-            result.add(persistEntity(pe, obj));
+            result.add(persistEntity(pe, obj, persistingColl));
         }
         return result;
     }
@@ -74,11 +78,12 @@ public class Neo4jEntityPersister extends EntityPersister {
                                         Map<String, Object> data) {
 
         PersistentEntity persistentEntity = mostSpecificPersistentEntity(defaultPersistentEntity, labels);
-        Object instance = getSession().getCachedEntry(persistentEntity, id);
+
+        Object instance = getSession().getCachedInstance(persistentEntity.getJavaClass(), id);
 
         if (instance == null) {
             instance = unmarshall(persistentEntity, id, data);
-            getSession().cacheEntry(persistentEntity, id, instance);
+            getSession().cacheInstance(persistentEntity.getJavaClass(), id, instance);
         }
         return instance;
     }
@@ -91,31 +96,42 @@ public class Neo4jEntityPersister extends EntityPersister {
         int longestInheritenceChain = -1;
 
         for (String l: labels) {
-            PersistentEntity persistentEntity = findPersistentEntityWithLabel(l);
-
-            int inheritenceChain = calcInheritenceChain(persistentEntity);
-            if (inheritenceChain > longestInheritenceChain) {
-                longestInheritenceChain = inheritenceChain;
-                result = persistentEntity;
+            PersistentEntity persistentEntity = findDerivedPersistentEntityWithLabel(pe, l);
+            if (persistentEntity!=null) {
+                int inheritenceChain = calcInheritenceChain(persistentEntity);
+                if (inheritenceChain > longestInheritenceChain) {
+                    longestInheritenceChain = inheritenceChain;
+                    result = persistentEntity;
+                }
             }
         }
         return result;
     }
 
-    private PersistentEntity findPersistentEntityWithLabel(String label) {
+    private PersistentEntity findDerivedPersistentEntityWithLabel(PersistentEntity parent, String label) {
         for (PersistentEntity pe: getMappingContext().getPersistentEntities()) {
-            if (((GraphPersistentEntity)pe).getLabel().equals(label)) {
-                return pe;
+            if (isInParentsChain(parent, pe)) {
+                if (((GraphPersistentEntity)pe).getLabels().contains(label)) {
+                    return pe;
+                }
             }
         }
-        throw new IllegalStateException("no persistententity with discriminator " + label);
+        return null;
     }
 
-    int calcInheritenceChain(PersistentEntity pe) {
-        if (pe == null) {
+    private boolean isInParentsChain(PersistentEntity parent, PersistentEntity it) {
+        if (it==null) {
+            return false;
+        } else if (it.equals(parent)) {
+            return true;
+        } else return isInParentsChain(parent, it.getParentEntity());
+    }
+
+    private int calcInheritenceChain(PersistentEntity current) {
+        if (current == null) {
             return 0;
         } else {
-            return calcInheritenceChain(pe.getParentEntity()) + 1;
+            return calcInheritenceChain(current.getParentEntity()) + 1;
         }
     }
 
@@ -137,7 +153,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             } else if (property instanceof ToOne) {
                 ToOne to = (ToOne) property;
 
-                CypherResult cypherResult = getSession().getNativeInterface().execute(CypherBuilder.findRelationshipEndpointIdsFor(to), Collections.singletonMap("id", id));
+                CypherResult cypherResult = getSession().getNativeInterface().execute(CypherBuilder.findRelationshipEndpointIdsFor(to), Collections.singletonList(id));
 
                 Map<String,Object> row = IteratorUtil.singleOrNull(cypherResult);
                 if (row != null) {
@@ -177,7 +193,25 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected Serializable persistEntity(PersistentEntity pe, Object obj) {
-        if ((obj == null) || (getSession().containsPersistingInstance(obj))) {
+        if (obj == null) {
+            log.error("obj is null");
+            throw new IllegalStateException("obj is null");
+//            return null;
+        }
+        return persistEntity(pe, obj, new HashSet());
+    }
+
+    protected Serializable persistEntity(PersistentEntity pe, Object obj, Collection persistingColl ) {
+
+        if (persistingColl.contains(obj)) {
+            return null;
+        } else {
+            persistingColl.add(obj);
+        }
+
+        boolean isDirty = obj instanceof DirtyCheckable ? ((DirtyCheckable)obj).hasChanged() : true;
+
+        if (getSession().containsPersistingInstance(obj) && (!isDirty)) {
             return null;
         }
 
@@ -185,6 +219,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         if (getMappingContext().getProxyFactory().isProxy(obj)) {
             return (Serializable) entityAccess.getIdentifier();
         }
+
 
         getSession().addPersistingInstance(obj);
 
@@ -195,7 +230,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                 return null;
             }
             getSession().addPendingUpdate(new NodePendingUpdate(entityAccess, getCypherEngine(), getMappingContext()));
-            persistAssociationsOfEntity(pe, entityAccess, true);
+            persistAssociationsOfEntity(pe, entityAccess, true, persistingColl);
             firePostUpdateEvent(pe, entityAccess);
 
         } else {
@@ -203,14 +238,14 @@ public class Neo4jEntityPersister extends EntityPersister {
                 return null;
             }
             getSession().addPendingInsert(new NodePendingInsert(getSession().getDatastore().nextIdForType(pe), entityAccess, getCypherEngine(), getMappingContext()));
-            persistAssociationsOfEntity(pe, entityAccess, false);
+            persistAssociationsOfEntity(pe, entityAccess, false, persistingColl);
             firePostInsertEvent(pe, entityAccess);
         }
 
         return (Serializable) entityAccess.getIdentifier();
     }
 
-    private void persistAssociationsOfEntity(PersistentEntity pe, EntityAccess entityAccess, boolean isUpdate) {
+    private void persistAssociationsOfEntity(PersistentEntity pe, EntityAccess entityAccess, boolean isUpdate, Collection persistingColl) {
 
         Object obj = entityAccess.getEntity();
         DirtyCheckable dirtyCheckable = null;
@@ -236,7 +271,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                         }
 
                         Iterable targets = (Iterable) propertyValue;
-                        persistEntities(association.getAssociatedEntity(), targets);
+                        persistEntities(association.getAssociatedEntity(), targets, persistingColl);
 
                         boolean reversed = RelationshipUtils.useReversedMappingFor(association);
 
@@ -268,12 +303,13 @@ public class Neo4jEntityPersister extends EntityPersister {
                             }
                         }
 
-                        persistEntity(to.getAssociatedEntity(), propertyValue);
+                        persistEntity(to.getAssociatedEntity(), propertyValue, persistingColl);
 
                         boolean reversed = RelationshipUtils.useReversedMappingFor(to);
                         String relType = RelationshipUtils.relationshipTypeUsedFor(to);
 
                         if (!reversed) {
+                            getSession().addPendingInsert(new RelationshipPendingDelete(entityAccess, relType, null , getCypherEngine()));
                             getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, relType,
                                     new EntityAccess(to.getAssociatedEntity(), propertyValue),
                                     getCypherEngine()));
@@ -313,9 +349,9 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
 
         getCypherEngine().execute(
-                String.format("MATCH (n:%s) WHERE n.__id__={id} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
-                        ((GraphPersistentEntity)pe).getLabel()),
-                Collections.singletonMap("id", entityAccess.getIdentifier()));
+                String.format("MATCH (n%s) WHERE n.__id__={1} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
+                        ((GraphPersistentEntity)pe).getLabelsAsString()),
+                Collections.singletonList(entityAccess.getIdentifier()));
 
         firePostDeleteEvent(pe, entityAccess);
     }
@@ -364,8 +400,8 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
 
         getCypherEngine().execute(
-                String.format("MATCH (n:%s) WHERE n.__id__ in {ids} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
-                        ((GraphPersistentEntity)pe).getLabel()), Collections.singletonMap("ids", ids));
+                String.format("MATCH (n%s) WHERE n.__id__ in {1} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
+                        ((GraphPersistentEntity)pe).getLabelsAsString()), Collections.singletonList(ids));
 
         for (EntityAccess entityAccess: entityAccesses) {
             firePostDeleteEvent(pe, entityAccess);

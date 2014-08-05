@@ -15,10 +15,13 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
+import groovy.lang.Closure;
+import groovy.util.ProxyGenerator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.hibernate.*;
 import org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
@@ -95,16 +98,25 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
         this.passReadOnlyToHibernate = GrailsHibernateUtil.isPassReadOnlyToHibernate(application);
     }
 
+
+    @Override
+    public <T> T execute(Closure<T> callable) {
+        HibernateCallback<T> hibernateCallback = DefaultGroovyMethods.asType(callable, HibernateCallback.class);
+        return execute(hibernateCallback);
+    }
+
     public SessionFactory getSessionFactory() {
         return sessionFactory;
     }
 
+    @Override
     public void applySettings(Query query) {
         if (exposeNativeSession) {
             prepareQuery(query);
         }
     }
 
+    @Override
     public void applySettings(Criteria criteria) {
         if (exposeNativeSession) {
             prepareCriteria(criteria);

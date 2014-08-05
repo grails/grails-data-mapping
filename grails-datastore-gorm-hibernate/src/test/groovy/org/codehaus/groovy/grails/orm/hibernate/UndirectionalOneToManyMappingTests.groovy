@@ -22,7 +22,7 @@ class UndirectionalOneToManyMappingTests extends AbstractGrailsHibernateTests {
 
         a.addToBooks(MappedU2mBook.newInstance(title:"The Shining"))
          .addToBooks(MappedU2mBook.newInstance(title:"The Stand"))
-         .save(true)
+         .save(flush:true)
         assertEquals 2, MappedU2mBook.list().size()
 
         // now let's test the database state

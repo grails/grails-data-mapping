@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import groovy.lang.Closure;
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
@@ -25,14 +26,11 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClass;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.exceptions.GrailsRuntimeException;
 import org.codehaus.groovy.grails.lifecycle.ShutdownOperations;
+import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
+import org.codehaus.groovy.grails.orm.hibernate.IHibernateTemplate;
 import org.codehaus.groovy.grails.validation.ConstrainedProperty;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.hibernate.Criteria;
-import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
-import org.hibernate.LockMode;
-import org.hibernate.Session;
-import org.hibernate.TransientObjectException;
+import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.metadata.ClassMetadata;
 import org.springframework.beans.BeanWrapper;
@@ -149,11 +147,12 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                   "domain classes and not custom user types or embedded instances");
         }
 
-        HibernateTemplate hibernateTemplate = getHibernateTemplate();
-        Assert.state(hibernateTemplate != null,
-              "Unable use [unique] constraint, no Hibernate SessionFactory found!");
-        List<?> results = hibernateTemplate.executeFind(new HibernateCallback<List<?>>() {
-            public List<?> doInHibernate(Session session) throws HibernateException {
+        IHibernateTemplate hibernateTemplate = getHibernateTemplate();
+        List<?> results = hibernateTemplate.execute(new Closure<List<?>>(this) {
+
+
+            public List<?> call(Object... args) {
+                Session session = (Session)args[0];
                 session.setFlushMode(FlushMode.MANUAL);
                 try {
                     boolean shouldValidate = true;
@@ -162,13 +161,13 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                         shouldValidate = session.contains(propertyValue);
                     }
                     if (shouldValidate) {
-                        GrailsApplication application  = (GrailsApplication) applicationContext.getBean(GrailsApplication.APPLICATION_ID);
-                        GrailsDomainClass domainClass = (GrailsDomainClass) application.getArtefact(DomainClassArtefactHandler.TYPE,constraintClass.getName());
+                        GrailsApplication application = (GrailsApplication) applicationContext.getBean(GrailsApplication.APPLICATION_ID);
+                        GrailsDomainClass domainClass = (GrailsDomainClass) application.getArtefact(DomainClassArtefactHandler.TYPE, constraintClass.getName());
                         if (domainClass != null && !domainClass.isRoot()) {
                             GrailsDomainClassProperty property = domainClass.getPropertyByName(constraintPropertyName);
                             while (property.isInherited() && domainClass != null) {
                                 domainClass = (GrailsDomainClass) application.getArtefact(
-                                        DomainClassArtefactHandler.TYPE,domainClass.getClazz().getSuperclass().getName());
+                                        DomainClassArtefactHandler.TYPE, domainClass.getClazz().getSuperclass().getName());
                                 if (domainClass != null) {
                                     property = domainClass.getPropertyByName(constraintPropertyName);
                                 }
@@ -193,7 +192,7 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                             criteria.add(Restrictions.eq(constraintPropertyAlias + "." + identifierPropertyName, identifierPropertyValue));
                         } else {
                             criteria = session.createCriteria(constraintClass)
-                                .add(Restrictions.eq(constraintPropertyName, propertyValue));
+                                    .add(Restrictions.eq(constraintPropertyName, propertyValue));
                         }
 
                         if (uniquenessGroup != null) {
@@ -207,8 +206,7 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                                 }
                                 if (shouldValidate) {
                                     criteria.add(Restrictions.eq(uniquenessGroupPropertyName, uniquenessGroupPropertyValue));
-                                }
-                                else {
+                                } else {
                                     break; // we aren't validating, so no point continuing
                                 }
                             }
@@ -220,8 +218,7 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                         return Collections.EMPTY_LIST;
                     }
                     return Collections.EMPTY_LIST;
-                }
-                finally {
+                } finally {
                     session.setFlushMode(FlushMode.AUTO);
                 }
             }
@@ -258,4 +255,12 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
         return uniquenessGroup;
     }
 
+    @Override
+    public IHibernateTemplate getHibernateTemplate() {
+        SessionFactory sf = sessionFactory.get();
+        if (sf == null) {
+            sf = applicationContext.getBean("sessionFactory", SessionFactory.class);
+        }
+        return new GrailsHibernateTemplate(sf, true);
+    }
 }

@@ -39,9 +39,12 @@ public class GrailsDomainClassMappingContext extends AbstractMappingContext {
         this.grailsApplication = grailsApplication;
 
         final GrailsClass[] artefacts = grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE);
+        Class[] persistentClasses = new Class[artefacts.length];
+        int i=0;
         for (GrailsClass grailsClass : artefacts) {
-            addPersistentEntity(grailsClass.getClazz());
+            persistentClasses[i++] = grailsClass.getClazz();
         }
+        addPersistentEntities(persistentClasses);
     }
 
     public GrailsApplication getGrailsApplication() {

@@ -3,6 +3,7 @@ package grails.gorm.tests
 import grails.persistence.Entity
 
 import org.grails.datastore.mapping.core.Session
+import spock.lang.IgnoreRest
 import spock.lang.Issue
 
 class EnumSpec extends GormDatastoreSpec {

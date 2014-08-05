@@ -133,12 +133,12 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
     static class EagerInitProcessor implements BeanPostProcessor, ApplicationContextAware {
 
         ApplicationContext applicationContext
-        private MessageSource messageSource
+        private Mongo mongo
         private Map enhancers
 
         @Override
         Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-            if(messageSource != null && enhancers == null) {
+            if(mongo != null && enhancers == null) {
                 // force MongoDB enhancer initialisation
                 enhancers = applicationContext.getBeansOfType(GormEnhancer)
             }
@@ -147,8 +147,8 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
 
         @Override
         Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-            if(bean instanceof MessageSource) {
-                messageSource = (MessageSource)bean
+            if(bean instanceof Mongo) {
+                mongo = (Mongo)bean
             }
             return bean
         }

@@ -10,7 +10,9 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Simple;
 import org.neo4j.helpers.collection.IteratorUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,27 +56,27 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
         }
         Neo4jGormEnhancer.amendMapWithUndeclaredProperties(simpleProps, getNativeEntry(), mappingContext);
 
-        String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance();
+        String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance(getEntityAccess().getEntity());
 
-        Map<String,Object> params = new HashMap<String, Object>();
-        params.put("props", simpleProps);
-        params.put("id", id);
+        List params = new ArrayList(2);
+        params.add(id);
 
         //TODO: set n={props} might remove dynamic properties
         StringBuilder cypherStringBuilder = new StringBuilder();
-        cypherStringBuilder.append("MATCH (n%s) WHERE n.__id__={id}");
+        cypherStringBuilder.append("MATCH (n%s) WHERE n.__id__={").append(params.size()).append("}");
         if (persistentEntity.hasProperty("version", Long.class) && persistentEntity.isVersioned()) {
-            cypherStringBuilder.append(" AND n.version={version}");
             Long version = (Long) getEntityAccess().getProperty("version");
             if (version == null) {
                 version = 0l;
             }
-            params.put("version", version);
+            params.add(version);
+            cypherStringBuilder.append(" AND n.version={").append(params.size()).append("}");
             long newVersion = version + 1;
             simpleProps.put("version", newVersion);
             getEntityAccess().setProperty("version", newVersion);
         }
-        cypherStringBuilder.append(" SET n={props} RETURN id(n) as id");
+        params.add(simpleProps);
+        cypherStringBuilder.append(" SET n={").append(params.size()).append("} RETURN id(n) as id");
         String cypher = String.format(cypherStringBuilder.toString(), labels);
 
 

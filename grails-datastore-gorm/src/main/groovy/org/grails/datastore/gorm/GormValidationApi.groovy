@@ -145,17 +145,6 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
         doValidate instance, (Map)null, (List)null
     }
 
-    /**
-     * Validates an instance. Note: This signature is purely here for compatibility the
-     * evict parameter does nothing and the method should be regarded as deprecated
-     *
-     * @param instance The instance to validate
-     * @return True if the instance is valid
-     */
-    @Deprecated
-    boolean validate(D instance, boolean evict) {
-        doValidate instance, (Map)null, (List)null
-    }
 
     /**
      * Obtains the errors for an instance

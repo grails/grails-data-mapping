@@ -20,13 +20,12 @@ import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.SavePersistentMethod
-import org.hibernate.LockMode
+import org.hibernate.FlushMode
+import org.hibernate.Session
 import org.hibernate.engine.EntityEntry
 import org.hibernate.engine.SessionImplementor
+import org.hibernate.engine.Status
 import org.hibernate.proxy.HibernateProxy
-import org.springframework.dao.DataAccessException
 
 /**
  * The implementation of the GORM instance API contract for Hibernate.
@@ -37,21 +36,16 @@ import org.springframework.dao.DataAccessException
 @CompileStatic
 class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
 
-    protected SavePersistentMethod saveMethod
-    protected MergePersistentMethod mergeMethod
     protected GrailsHibernateTemplate hibernateTemplate
     protected InstanceApiHelper instanceApiHelper
 
     HibernateGormInstanceApi(Class<D> persistentClass, HibernateDatastore datastore, ClassLoader classLoader) {
-        super(persistentClass, datastore, classLoader)
+        super(persistentClass, datastore, classLoader, new GrailsHibernateTemplate(datastore.sessionFactory))
 
-        def mappingContext = datastore.mappingContext
         def grailsApplication = datastore.getGrailsApplication()
         if (grailsApplication) {
             GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
             config = (Map)grailsApplication.getFlatConfig().get('grails.gorm')
-            saveMethod = new SavePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
-            mergeMethod = new MergePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication)
             cacheQueriesByDefault = GrailsHibernateUtil.isCacheQueriesByDefault(grailsApplication)
         }
@@ -141,107 +135,25 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
     }
 
     @Override
-    D lock(D instance) {
-        hibernateTemplate.lock(instance, LockMode.UPGRADE)
-    }
+    void setObjectToReadWrite(Object target) {
+        hibernateTemplate.execute { Session session ->
+            if (session.contains(target) && proxyHandler.isInitialized(target)) {
+                SessionImplementor sessionImpl = (SessionImplementor) session;
+                EntityEntry ee = sessionImpl.persistenceContext.getEntry(target)
 
-    @Override
-    D refresh(D instance) {
-        hibernateTemplate.refresh(instance)
-        return instance
-    }
+                if (ee && ee.status == Status.READ_ONLY) {
+                    Object actualTarget = target
+                    if (target instanceof HibernateProxy) {
+                        actualTarget = ((HibernateProxy)target).hibernateLazyInitializer.implementation
+                    }
 
-    @Override
-    D save(D instance) {
-        if (saveMethod) {
-            return (D)saveMethod.invoke(instance, "save", EMPTY_ARRAY)
+                    session.setReadOnly actualTarget, false
+                    session.flushMode = FlushMode.AUTO
+                    incrementVersion target
+                }
+            }
+            return null
         }
-        else {
-            return super.save(instance)
-        }
-    }
-
-    D save(D instance, boolean validate) {
-        if (saveMethod) {
-            return (D)saveMethod.invoke(instance, "save", [validate] as Object[])
-        }
-        else {
-            return super.save(instance, validate)
-        }
-    }
-
-    @Override
-    D merge(D instance) {
-        if (mergeMethod) {
-            return (D)mergeMethod.invoke(instance, "merge", EMPTY_ARRAY)
-        }
-        else {
-            return super.merge(instance)
-        }
-    }
-
-    @Override
-    D merge(D instance, Map params) {
-        if (mergeMethod) {
-            return (D)mergeMethod.invoke(instance, "merge", [params] as Object[])
-        }
-        else {
-            return super.merge(instance, params)
-        }
-    }
-
-    @Override
-    D save(D instance, Map params) {
-        if (saveMethod) {
-            return (D)saveMethod.invoke(instance, "save", [params] as Object[])
-        }
-        return super.save(instance, params)
-    }
-
-    @Override
-    D attach(D instance) {
-        hibernateTemplate.lock(instance, LockMode.NONE)
-        return instance
-    }
-
-    @Override
-    void discard(D instance) {
-        hibernateTemplate.evict instance
-    }
-
-    @Override
-    void delete(D instance) {
-        boolean flush = shouldFlush()
-        try {
-            instanceApiHelper.delete instance, flush
-        }
-        catch (DataAccessException e) {
-            handleDataAccessException(hibernateTemplate, e)
-        }
-    }
-
-    @Override
-    void delete(D instance, Map params) {
-        boolean flush = shouldFlush(params)
-        try {
-            instanceApiHelper.delete instance, flush
-        }
-        catch (DataAccessException e) {
-            handleDataAccessException(hibernateTemplate, e)
-        }
-    }
-
-    @Override
-    boolean instanceOf(D instance, Class cls) {
-        if (instance instanceof HibernateProxy) {
-            return GrailsHibernateUtil.unwrapProxy(instance) in cls
-        }
-        return instance in cls
-    }
-
-    @Override
-    boolean isAttached(D instance) {
-        hibernateTemplate.contains instance
     }
 
     protected EntityEntry findEntityEntry(D instance, SessionImplementor session, boolean forDirtyCheck = true) {
@@ -257,22 +169,4 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
         entry
     }
 
-    /**
-     * Session should no longer be flushed after a data access exception occurs (such a constriant violation)
-     */
-    protected void handleDataAccessException(GrailsHibernateTemplate template, DataAccessException e) {
-        try {
-            instanceApiHelper.setFlushModeManual()
-        }
-        finally {
-            throw e
-        }
-    }
-
-    protected boolean shouldFlush(Map map = [:]) {
-        if (map?.containsKey('flush')) {
-            return Boolean.TRUE == map.flush
-        }
-        return config?.autoFlush instanceof Boolean ? config.autoFlush : false
-    }
 }

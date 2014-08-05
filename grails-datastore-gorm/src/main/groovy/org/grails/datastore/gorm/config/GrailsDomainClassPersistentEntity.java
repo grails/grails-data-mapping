@@ -70,10 +70,14 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
     }
 
     public void initialize() {
-        identifier = new GrailsDomainClassPersistentProperty(this, domainClass.getIdentifier());
-        propertiesByName.put(identifier.getName(), identifier);
-        version = new GrailsDomainClassPersistentProperty(this, domainClass.getVersion());
-        propertiesByName.put(version.getName(), version);
+        if (domainClass.getIdentifier() != null) {
+            identifier = new GrailsDomainClassPersistentProperty(this, domainClass.getIdentifier());
+            propertiesByName.put(identifier.getName(), identifier);
+        }
+        if (domainClass.getVersion() != null) {
+            version = new GrailsDomainClassPersistentProperty(this, domainClass.getVersion());
+            propertiesByName.put(version.getName(), version);
+        }
 
         mappingContext.addEntityValidator(this, domainClass.getValidator());
 
@@ -108,6 +112,10 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
             }
             propertiesByName.put(grailsDomainClassProperty.getName(), persistentProperty);
             properties.add(persistentProperty);
+
+            if (persistentProperty instanceof Association) {
+                associations.add((Association)persistentProperty);
+            }
         }
         initialized = true;
     }
@@ -263,6 +271,10 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
         association.setAssociatedEntity(getMappingContext().addPersistentEntity(grailsDomainClassProperty.getReferencedPropertyType()));
         association.setOwningSide(grailsDomainClassProperty.isOwningSide());
         association.setReferencedPropertyName(grailsDomainClassProperty.getReferencedPropertyName());
+        GrailsDomainClassProperty otherSide = grailsDomainClassProperty.getOtherSide();
+        if(otherSide != null) {
+            association.setReferencedPropertyName(otherSide.getName());
+        }
     }
 
     private PersistentProperty createEmbedded(

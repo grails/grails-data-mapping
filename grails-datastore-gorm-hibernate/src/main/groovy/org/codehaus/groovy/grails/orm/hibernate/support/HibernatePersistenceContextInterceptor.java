@@ -20,8 +20,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.lifecycle.ShutdownOperations;
+import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractSavePersistentMethod;
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -98,7 +98,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
                 LOG.error("Unexpected exception on closing Hibernate Session", ex);
             }
         } finally {
-            AbstractSavePersistentMethod.clearDisabledValidations();
+            AbstractHibernateGormInstanceApi.clearDisabledValidations();
         }
     }
 

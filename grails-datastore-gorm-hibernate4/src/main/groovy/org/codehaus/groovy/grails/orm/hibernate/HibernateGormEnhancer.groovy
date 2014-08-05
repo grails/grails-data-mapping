@@ -17,20 +17,9 @@ package org.codehaus.groovy.grails.orm.hibernate
 import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.CountByPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindAllByBooleanPropertyPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindAllByPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindByBooleanPropertyPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindByPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindOrCreateByPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindOrSaveByPersistentMethod
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListOrderByPersistentMethod
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormValidationApi
-import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
@@ -45,19 +34,6 @@ class HibernateGormEnhancer extends AbstractHibernateGormEnhancer {
 
     HibernateGormEnhancer(HibernateDatastore datastore, PlatformTransactionManager transactionManager, GrailsApplication grailsApplication) {
         super(datastore, transactionManager, grailsApplication)
-    }
-
-    protected List<FinderMethod> createDynamicFinders() {
-        HibernateDatastore hibernateDatastore = (HibernateDatastore)datastore
-        def sessionFactory = hibernateDatastore.sessionFactory
-        [new FindAllByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-         new FindAllByBooleanPropertyPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-         new FindOrCreateByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-         new FindOrSaveByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-         new FindByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-         new FindByBooleanPropertyPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-         new CountByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-         new ListOrderByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader)]
     }
 
     protected <D> GormValidationApi<D> getValidationApi(Class<D> cls) {

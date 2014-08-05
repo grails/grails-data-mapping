@@ -140,7 +140,7 @@ public class GrailsSessionContext implements CurrentSessionContext {
            if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
               session.setFlushMode(FlushMode.MANUAL);
            }
-           TransactionSynchronizationManager.registerSynchronization(createSpringSessionSynchronization(sessionHolder));
+           TransactionSynchronizationManager.registerSynchronization(createSpringSessionSynchronization(holderToUse));
            holderToUse.setSynchronizedWithTransaction(true);
            if (holderToUse != sessionHolder) {
               TransactionSynchronizationManager.bindResource(sessionFactory, holderToUse);

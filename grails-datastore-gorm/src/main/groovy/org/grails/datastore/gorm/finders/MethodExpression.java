@@ -16,10 +16,7 @@ package org.grails.datastore.gorm.finders;
 
 import groovy.lang.Range;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
@@ -184,8 +181,11 @@ public abstract class MethodExpression {
 
         @Override
         public void setArguments(Object[] arguments) {
-            Assert.isTrue(arguments.length > 0 && arguments[0] instanceof Collection,
+            Assert.isTrue(arguments.length > 0,
                 "Only a collection of elements is supported in an 'in' query");
+
+            Object arg = arguments[0];
+            Assert.isTrue( (arg instanceof Collection) || arg == null, "Only a collection of elements is supported in an 'in' query");
 
             super.setArguments(arguments);
         }
@@ -204,12 +204,18 @@ public abstract class MethodExpression {
             if (prop != null) {
                 Class<?> type = prop.getType();
                 Collection<?> collection = (Collection<?>) arguments[0];
-                List<Object> converted = new ArrayList<Object>(collection.size());
-                for (Object o : collection) {
-                    if (o != null && !type.isAssignableFrom(o.getClass())) {
-                        o = conversionService.convert(o, type);
+                List<Object> converted;
+                if(collection == null) {
+                    converted = Collections.emptyList();
+                }
+                else {
+                    converted = new ArrayList<Object>(collection.size());
+                    for (Object o : collection) {
+                        if (o != null && !type.isAssignableFrom(o.getClass())) {
+                            o = conversionService.convert(o, type);
+                        }
+                        converted.add(o);
                     }
-                    converted.add(o);
                 }
                 arguments[0] = converted;
             }

@@ -74,7 +74,7 @@ abstract class Neo4jUtils {
             case float:
             case double:
             case boolean:
-            case byte[]:
+//            case byte[]:
             case int[]:
             case short[]:
             case long[]:
@@ -88,6 +88,10 @@ abstract class Neo4jUtils {
                 break
             case BigDecimal:
                 value = ((BigDecimal)value).doubleValue()
+                break
+
+            case byte[]:
+                value = mappingContext.conversionService.convert(value, String)
                 break
 
             default:

@@ -15,14 +15,10 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-
+import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractSavePersistentMethod;
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest;
-import org.codehaus.groovy.grails.web.sitemesh.GrailsContentBufferingResponse;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -101,19 +97,6 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
                 return;
             }
 
-            GrailsWebRequest webRequest = (GrailsWebRequest) request;
-            HttpServletResponse response = webRequest.getCurrentResponse();
-            GrailsContentBufferingResponse contentBufferingResponse = getContentBufferingResponse(response);
-            if (contentBufferingResponse == null) {
-                super.afterCompletion(request, ex);
-                return;
-            }
-
-            // if Sitemesh is still active disconnect the session, but don't close the session
-            if (!contentBufferingResponse.isActive()) {
-                super.afterCompletion(request, ex);
-                return;
-            }
 
             try {
                 SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(getSessionFactory());
@@ -129,19 +112,10 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
             }
         }
         finally {
-            AbstractSavePersistentMethod.clearDisabledValidations();
+            AbstractHibernateGormInstanceApi.clearDisabledValidations();
         }
     }
 
-    protected GrailsContentBufferingResponse getContentBufferingResponse(HttpServletResponse response) {
-        while (response instanceof HttpServletResponseWrapper) {
-            if (response instanceof GrailsContentBufferingResponse) {
-                return (GrailsContentBufferingResponse) response;
-            }
-            response = (HttpServletResponse) ((HttpServletResponseWrapper) response).getResponse();
-        }
-        return null;
-    }
 
     public void setFlushMode(int flushMode) {
         this.flushMode = flushMode;

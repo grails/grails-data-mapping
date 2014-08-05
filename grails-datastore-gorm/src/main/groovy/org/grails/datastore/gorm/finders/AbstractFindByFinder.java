@@ -27,14 +27,7 @@ public abstract class AbstractFindByFinder extends DynamicFinder {
     }
 
     protected Object invokeQuery(Query q) {
-        q.max(1);
-
-        List<?> results = q.list();
-        if (results.isEmpty()) {
-            return null;
-        }
-
-        return results.get(0);
+        return q.singleResult();
     }
 
     public boolean firstExpressionIsRequiredBoolean() {
@@ -59,7 +52,7 @@ public abstract class AbstractFindByFinder extends DynamicFinder {
             Query.Junction disjunction = q.disjunction();
 
             for (MethodExpression expression : invocation.getExpressions()) {
-                disjunction.add(expression.createCriterion());
+                q.add(disjunction, expression.createCriterion());
             }
         }
         else {
