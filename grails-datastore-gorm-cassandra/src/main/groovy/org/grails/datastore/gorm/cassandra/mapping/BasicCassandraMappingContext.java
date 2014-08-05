@@ -31,7 +31,7 @@ public class BasicCassandraMappingContext extends org.springframework.data.cassa
                 public boolean isTransient() { return true ;}
             };
         }
-        if (field != null && GormProperties.VERSION.equals(field.getName()) && long.class.isAssignableFrom(field.getType())) {
+        if (field != null && GormProperties.VERSION.equals(field.getName()) && (Long.class.isAssignableFrom(field.getType()) || long.class.isAssignableFrom(field.getType()))) {
             //this is required here as Grails adds a default version long property after Cassandra AST transformations are run
             //and Spring Data Cassandra defaults to counter type for longs. TODO: remove this block when long mapping bug fixed in Spring Data Cassandra
             return new BasicCassandraPersistentProperty(field, descriptor, owner, (CassandraSimpleTypeHolder) simpleTypeHolder) {
