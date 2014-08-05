@@ -52,9 +52,15 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
     private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
     private Map arguments = new HashMap();
     private boolean allowFiltering;
-        
+    private int fetchSize;
+    
     public Query allowFiltering(boolean allowFiltering) {
         this.allowFiltering = allowFiltering;
+        return this;
+    }
+    
+    public Query fetchSize(int fetchSize) {
+        this.fetchSize = fetchSize;
         return this;
     }
     
@@ -190,6 +196,10 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
             
             if (offset > 0) {
                 throw new UnsupportedOperationException("Cassandra does not support offset with pagination");
+            }
+            
+            if (fetchSize > 0) {
+                select.setFetchSize(fetchSize);
             }
             
             if (arguments.containsKey(ARGUMENT_ALLOW_FILTERING) || allowFiltering) {
