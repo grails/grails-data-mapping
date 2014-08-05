@@ -27,8 +27,8 @@ grails.project.dependency.resolution = {
             excludes 'ehcache-core'            
         }       
 
-        def datastoreVersion = "3.1.0.RELEASE"
-        def cassandraDatastoreVersion = "0.2.BUILD-SNAPSHOT"
+        def datastoreVersion = "3.1.2.RELEASE"
+        def cassandraDatastoreVersion = "0.5.BUILD-SNAPSHOT"
 
         compile ("org.grails:grails-datastore-gorm-cassandra:$cassandraDatastoreVersion",excludes)
 
