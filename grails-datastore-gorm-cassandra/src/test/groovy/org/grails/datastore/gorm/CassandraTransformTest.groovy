@@ -18,17 +18,16 @@ class CassandraTransformTest extends GroovyTestCase {
         def tableanno = Basic.class.getAnnotation(Table)
         assert tableanno != null
         def field = Basic.class.getDeclaredField("id")
-        assert field != null
+        assert field != null        
         def anno = field.getAnnotation(PrimaryKeyColumn)
         assert anno != null
+        field = Basic.class.getDeclaredField("version")
+        assertNonTransientField(field)
         
         assertTransientField(Basic.class.getDeclaredField("errors"))
         assertTransientField(Basic.class.getDeclaredField("tran"))
         assertTransientField(Basic.class.getDeclaredField("service"))
-        
-        shouldFail {
-            Basic.class.getDeclaredField("version")
-        }
+                
     }
 
     void testBasicWithIdAndTypes() {
@@ -59,7 +58,8 @@ class CassandraTransformTest extends GroovyTestCase {
         
         
         assertTransientField(BasicWithIdAndTypes.class.getDeclaredField('transientBoolean'))        
-        assertTransientField(BasicWithIdAndTypes.class.getDeclaredField('transientString'))        
+        assertTransientField(BasicWithIdAndTypes.class.getDeclaredField('transientString'))          
+        assertTransientField(BasicWithIdAndTypes.class.getDeclaredField('version'))
                 
     }
 
@@ -73,8 +73,31 @@ class CassandraTransformTest extends GroovyTestCase {
         assertTransientField(field)
         assert java.lang.reflect.Modifier.isTransient(field.getModifiers()) == true
         
+        field = BasicWithPrimaryKey.class.getDeclaredField("version")
+        assertNonTransientField(field)
+        anno = field.getAnnotation(Column)
+        assert anno != null
+        assert anno.value() == "revision_number"
+        
     }
-
+    
+    void testBasicWithCustomPrimaryKeyUndefined() {
+        def field = BasicWithCustomPrimaryKeyUndefined.class.getDeclaredField("primary")
+        assert field != null
+        def anno = field.getAnnotation(PrimaryKeyColumn)
+        assert anno != null
+        
+        field = BasicWithCustomPrimaryKeyUndefined.class.getDeclaredField("id")
+        assertTransientField(field)
+        assert java.lang.reflect.Modifier.isTransient(field.getModifiers()) == true
+        
+        field = BasicWithCustomPrimaryKeyUndefined.class.getDeclaredField("version")
+        assertNonTransientField(field)     
+        anno = field.getAnnotation(Column)
+        assert anno != null
+        assert anno.value() == "revision_number"
+    }
+    
     void testBasicWithCustomPrimaryKeyAndAssociation() {
         def field = BasicWithCustomPrimaryKeyAndAssociation.class.getDeclaredField("primary")
         assert field != null
@@ -191,14 +214,15 @@ class BasicWithIdAndTypes {
     TestEnum testEnum
     boolean transientBoolean
     String transientString
-    
+    long version
     
     static mapping = {
         id type:"timeuuid"
         ascii type:'ascii'
         varchar type:'varchar', column:'varcharcustom'
         counter type:'counter'
-        oneLong column: 'oneLongObject'       
+        oneLong column: 'oneLongObject'      
+        version false 
     }
     
     static transients = ['transientBoolean', 'transientString']
@@ -206,10 +230,19 @@ class BasicWithIdAndTypes {
 
 @CassandraEntity
 class BasicWithPrimaryKey {
-    UUID primary
-
+    UUID primary   
     static mapping = {  
-        id name:"primary"          
+        id name:"primary", column:"primary_key"   
+        version "revision_number"         
+    }
+}
+
+@CassandraEntity
+class BasicWithCustomPrimaryKeyUndefined {
+    long version
+    static mapping = {
+        id name:"primary", column:"primary_key"      
+        version "revision_number"
     }
 }
 

@@ -114,7 +114,8 @@ public class GormToCassandraTransform implements ASTTransformation {
         }
         
         addErrorsProperty(classNode);
-
+        injectVersionPropertyIfNecessary(classNode, propertyMappings);
+        
         // annotate properties in mapping closure
         String primaryKeyPropertyName = GrailsDomainClassProperty.IDENTITY;        
         for (Entry<String, Map<String, ?>> mappingEntry : propertyMappings.entrySet()) {
@@ -161,9 +162,8 @@ public class GormToCassandraTransform implements ASTTransformation {
                 }
             }
             
-            if (propertyConfig.containsKey("index") && BooleanUtils.toBoolean(propertyConfig.get("index").toString())) {
-                AnnotationNode indexAnnotation = new AnnotationNode(new ClassNode(Indexed.class));
-                annotateProperty(classNode, propertyName, indexAnnotation);
+            if (propertyConfig.containsKey("index") && BooleanUtils.toBoolean(propertyConfig.get("index").toString())) {                
+                annotateProperty(classNode, propertyName, Indexed.class);
             }
 
             if (annotatePrimaryKey) {
@@ -236,7 +236,21 @@ public class GormToCassandraTransform implements ASTTransformation {
                         tableAnnotation.addMember("value", new ConstantExpression(tableName));
                         classNode.addAnnotation(tableAnnotation);
                     }
-                }
+                } else if (methodName.equals("version")) {
+                    ArgumentListExpression ale = (ArgumentListExpression) arguments;
+                    final List<Expression> expressions = ale.getExpressions();
+                    if (!expressions.isEmpty()) {
+                        final Expression expr = expressions.get(0);
+                        if (expr instanceof ConstantExpression) {
+                            Object value = ((ConstantExpression) expr).getValue();
+                            if (value instanceof Boolean) {
+                                propertyMapping.put("enabled", value);
+                            } else if (value instanceof String) {
+                                propertyMapping.put("column", value);
+                            }
+                        }
+                    }
+                }                
             } else if (arguments instanceof TupleExpression) {
                 final List<Expression> tupleExpressions = ((TupleExpression) arguments).getExpressions();
                 for (Expression te : tupleExpressions) {
@@ -274,10 +288,10 @@ public class GormToCassandraTransform implements ASTTransformation {
         
         if (!hasId) {
             // inject into furthest relative
-            parent.addProperty(GrailsDomainClassProperty.IDENTITY, Modifier.PUBLIC, new ClassNode(UUID.class), null, null, null);            
+            parent.addProperty(primaryKeyPropertyName, Modifier.PUBLIC, new ClassNode(UUID.class), null, null, null);            
         } 
         
-        PropertyNode primaryKeyProperty = parent.getProperty(GrailsDomainClassProperty.IDENTITY);
+        PropertyNode primaryKeyProperty = parent.getProperty(primaryKeyPropertyName);
         if (primaryKeyProperty != null) {
             String type = primaryKeyProperty.getType().getName();
             if ("java.util.UUID".equals(type)) {    
@@ -287,7 +301,7 @@ public class GormToCassandraTransform implements ASTTransformation {
             }
         }        
         
-        //for primary key properties not named id, inject a property named id and make it transient so Grails doesn't add one
+        //for primary key properties not named id, inject a property named id and annotation it transient so Grails doesn't add one
         if (!primaryKeyPropertyName.equals(GrailsDomainClassProperty.IDENTITY)) {
             PropertyNode idProperty = classNode.getProperty(GrailsDomainClassProperty.IDENTITY);                 
             if (idProperty == null) {
@@ -303,7 +317,31 @@ public class GormToCassandraTransform implements ASTTransformation {
             }
         }    
     }
-
+    
+    private static void injectVersionPropertyIfNecessary(ClassNode classNode, Map<String, Map<String, ?>> propertyMappings) {
+        final boolean hasVersion = GrailsASTUtils.hasOrInheritsProperty(classNode, GrailsDomainClassProperty.VERSION);
+        ClassNode parent = GrailsASTUtils.getFurthestUnresolvedParent(classNode);
+        
+        if (!hasVersion) {
+            // inject into furthest relative
+            parent.addProperty(GrailsDomainClassProperty.VERSION, Modifier.PUBLIC, new ClassNode(Long.class), null, null, null);            
+        } 
+        
+        //inject a version property if not present and annotation it transient if version false - so Grails doesn't add one
+        PropertyNode versionProperty = classNode.getProperty(GrailsDomainClassProperty.VERSION);
+        if (versionProperty != null) {
+            if (propertyMappings.containsKey(GrailsDomainClassProperty.VERSION)) {
+                final Map<String, ?> versionSettings = propertyMappings.get(GrailsDomainClassProperty.VERSION);
+                final Object object = versionSettings.get("enabled");
+                if (object instanceof Boolean) {
+                    if (!((Boolean)object).booleanValue()) {
+                        annotateField(versionProperty.getField(), createTransientAnnotationNode());                        
+                    }
+                }
+            }           
+        }        
+    }
+    
     private static void annotatePropertiesWithType(ClassNode classNode) {
         final PropertyNode transientsMapping = classNode.getProperty(GrailsDomainClassProperty.TRANSIENT);
         List<String> transientPropertyNameList = new ArrayList<String>();

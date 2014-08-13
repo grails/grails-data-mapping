@@ -7,11 +7,7 @@ import org.springframework.data.cassandra.mapping.CassandraType
 class GormToCassandraTest {
     public static void main(String[] a) {
         
-    }
-    
-    static enum ATestEnum {
-        V1, V2, V3
-    }
+    }             
     
     @CassandraEntity
     static class ABasic {        
@@ -19,6 +15,7 @@ class GormToCassandraTest {
        Long version
        static mapping = {
             name unique:true, index:true
+            version false
        }  
     }
 
@@ -36,6 +33,7 @@ class GormToCassandraTest {
         def service
         ATestEnum testEnum
         UUID timeuuid
+        long version
         
         static mapping = {
             id type:"timeuuid"
@@ -43,6 +41,7 @@ class GormToCassandraTest {
             varchar type:'varchar'
             counter type:'counter'
             timeuuid type:"timeuuid"
+            version false
         }
         static transients = [
             'transientBoolean',
@@ -54,7 +53,10 @@ class GormToCassandraTest {
     static class ABasicWithPrimaryKey {
         UUID primary
         long id
-        static mapping = { id name:"primary" }
+        static mapping = { 
+            id name:"primary" 
+            version "revision_number"
+        }
     }
 
     @CassandraEntity
@@ -97,5 +99,31 @@ class GormToCassandraTest {
     @CassandraEntity
     static class ASub extends ABase {
         String subValue
+    }
+    
+    @CassandraEntity
+    class ATrackArtist {
+        
+        UUID trackId
+        String track
+        String artist
+        String trackLengthSeconds
+        String genre
+        String musicFile
+        
+        static mapping = {
+            table "track_by_artist"
+            id name:"artist", primaryKey:[ordinal:0, type: "partitioned"], generator:"assigned"
+            track primaryKey:[ordinal:1, type: "clustered"]
+            trackId primaryKey:[ordinal:2, type:"clustered"], column:"track_id"
+            version false
+        }
+        
+        static constraints = {
+        }
+    }
+    
+    static enum ATestEnum {
+        V1, V2, V3
     }
 }
