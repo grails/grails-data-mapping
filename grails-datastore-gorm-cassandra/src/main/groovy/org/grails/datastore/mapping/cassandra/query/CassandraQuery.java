@@ -70,61 +70,68 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
 
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {            
-            public void handle(CassandraQuery cassandraQuery, IdEquals criterion, Where where) { 
-                PersistentProperty property = cassandraQuery.entity.getIdentity();
-                if (property != null) {
-                    where.and(QueryBuilder.eq(property.getName(), 
-                            CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
+            public void handle(CassandraQuery cassandraQuery, IdEquals criterion, Where where) {                 
+                CassandraPersistentProperty idProperty = cassandraQuery.cassandraPersistentEntity.getIdProperty();
+                if (idProperty != null) {
+                    where.and(QueryBuilder.eq(getPropertyName(idProperty), 
+                            CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), idProperty, cassandraQuery.conversionService)));
                 }
             }
         });
         
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
             public void handle(CassandraQuery cassandraQuery, Equals criterion, Where where) {
-                where.and(QueryBuilder.eq(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
-                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
+                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
+                where.and(QueryBuilder.eq(getPropertyName(cassandraPersistentProperty), 
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraPersistentProperty, cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
             public void handle(CassandraQuery cassandraQuery, GreaterThan criterion, Where where) {
+                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
                 where.and(QueryBuilder.gt(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
-                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraPersistentProperty, cassandraQuery.conversionService)));
             }
         });
-        queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
+        queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {            
             public void handle(CassandraQuery cassandraQuery, GreaterThanEquals criterion, Where where) {
+                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
                 where.and(QueryBuilder.gte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
-                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraPersistentProperty, cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
             public void handle(CassandraQuery cassandraQuery, LessThan criterion, Where where) {
+                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
                 where.and(QueryBuilder.lt(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
-                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraPersistentProperty, cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
             public void handle(CassandraQuery cassandraQuery, LessThanEquals criterion, Where where) {
+                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
                 where.and(QueryBuilder.lte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
-                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraQuery.conversionService)));
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraPersistentProperty, cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(Between.class, new QueryHandler<Between>() {
             public void handle(CassandraQuery cassandraQuery, Between criterion, Where where) {
-                where.and(QueryBuilder.gte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
-                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getFrom(), cassandraQuery.conversionService)));
-                where.and(QueryBuilder.lte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
-                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getTo(), cassandraQuery.conversionService)));
+                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
+                where.and(QueryBuilder.gte(getPropertyName(cassandraPersistentProperty), 
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getFrom(), cassandraPersistentProperty, cassandraQuery.conversionService)));
+                where.and(QueryBuilder.lte(getPropertyName(cassandraPersistentProperty), 
+                        CassandraEntityPersister.convertPrimitiveToNative(criterion.getTo(), cassandraPersistentProperty, cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(In.class, new QueryHandler<In>() {
             public void handle(CassandraQuery cassandraQuery, In criterion, Where where) {
+                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
                 List<Object> values = new ArrayList<Object>(criterion.getValues().size());                
                 for (Object value : criterion.getValues()) {
-                    value = CassandraEntityPersister.convertPrimitiveToNative(value, cassandraQuery.conversionService);
+                    value = CassandraEntityPersister.convertPrimitiveToNative(value, cassandraPersistentProperty, cassandraQuery.conversionService);
                     values.add(value);
                 }               
-                where.and(QueryBuilder.in(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), values.toArray()));
+                where.and(QueryBuilder.in(getPropertyName(cassandraPersistentProperty), values.toArray()));
             }
         });
     }
@@ -138,7 +145,7 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
     }
     
     public void throwUnsupportedOperationException(String name) {
-        throw new UnsupportedOperationException("Queries of type " + name + " are not supported by this implementation");
+        throw new UnsupportedOperationException("Queries of type " + name + " are not supported by Cassandra");
     }
 
     @Override
@@ -348,6 +355,10 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
     
     private static String getPropertyName(CassandraPersistentEntity<?> cassandraPersistentEntity, String propertyName) {
         CassandraPersistentProperty property = getPersistentProperty(cassandraPersistentEntity, propertyName);
-        return property.getColumnName().toString();
+        return getPropertyName(property);
+    }
+    
+    private static String getPropertyName(CassandraPersistentProperty property) {
+        return property.getColumnName().toString(); 
     }
 }
