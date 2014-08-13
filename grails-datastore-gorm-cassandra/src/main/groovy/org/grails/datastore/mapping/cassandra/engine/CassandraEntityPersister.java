@@ -54,6 +54,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.cassandra.core.CassandraTemplate;
+import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
@@ -76,7 +77,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
         super(context, entity, cassandraSession, applicationEventPublisher);
         springCassandraPersistentEntity = ((CassandraMappingContext) context).getSpringCassandraMappingContext().getExistingPersistentEntity(entity.getJavaClass());
         cassandraTemplate = getCassandraTemplate();
-        conversionService = cassandraTemplate.getConverter().getConversionService();
+        conversionService = context.getConversionService();
     }
 
     protected CassandraTemplate getCassandraTemplate() {
@@ -163,21 +164,27 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
     @SuppressWarnings("unchecked")
     @Override
     protected EntityAccess retrieveEntry(PersistentEntity persistentEntity, String family, Serializable nativeKey) {
-    	if (!(nativeKey instanceof Map)) {
-            nativeKey = id(persistentEntity.getIdentity().getName(), (Serializable) convertPrimitiveToNative(nativeKey, conversionService));
+    	if (!(nativeKey instanceof Map)) {    	    
+    	    String name = persistentEntity.getIdentity().getName();
+    	    CassandraPersistentProperty cassandraPersistentProperty = springCassandraPersistentEntity.getPersistentProperty(name);  
+    	    if (cassandraPersistentProperty == null) {
+    	        throwUnknownPrimaryKeyException(name);
+    	    }
+            nativeKey = id(name, (Serializable) convertPrimitiveToNative(nativeKey, cassandraPersistentProperty, conversionService));
         } else {
-            Table table = (Table) persistentEntity.getMapping().getMappedForm();
+            Table table = (Table) persistentEntity.getMapping().getMappedForm();            
             for (Entry<String, Object> entry : ((Map<String, Object>) nativeKey).entrySet()) {
-                String property = entry.getKey();
-                entry.setValue(convertPrimitiveToNative(entry.getValue(), conversionService));
-                if (!table.isPrimaryKey(property)) {
-                    throw new IllegalArgumentException(String.format("unknown property [%s] on entity class [%s]", property, persistentEntity.getName()));
-                }
-            }
+                String name = entry.getKey();
+                CassandraPersistentProperty cassandraPersistentProperty = springCassandraPersistentEntity.getPersistentProperty(name);
+                if (cassandraPersistentProperty == null || !table.isPrimaryKey(name)) {
+                    throwUnknownPrimaryKeyException(name);
+                }                                                                
+                entry.setValue(convertPrimitiveToNative(entry.getValue(), cassandraPersistentProperty, conversionService));                
+            }            
         }
         Object entity = cassandraTemplate.selectOneById(persistentEntity.getJavaClass(), nativeKey);
         return entity == null ? null : new CassandraEntityAccess(persistentEntity, entity);
-    }
+    }  
 
     @Override
     protected Object storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object storeId, EntityAccess entry) {
@@ -283,8 +290,8 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
         return null;
     }
 
-    public static Object convertPrimitiveToNative(Object item, ConversionService conversionService) {
-        Object nativeValue;
+    public static Object convertPrimitiveToNative(Object item, CassandraPersistentProperty cassandraPersistentProperty, ConversionService conversionService) {
+        Object nativeValue = item;
         if (item != null) {             
             TypeDescriptor itemTypeDescriptor = TypeDescriptor.forObject(item);
             Class<?> itemTypeClass = itemTypeDescriptor.getObjectType();
@@ -294,15 +301,28 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
             else if (Currency.class.isAssignableFrom(itemTypeClass) || Locale.class.isAssignableFrom(itemTypeClass) || 
                     TimeZone.class.isAssignableFrom(itemTypeClass) || URL.class.isAssignableFrom(itemTypeClass)) {
                 nativeValue = conversionService.convert(item, String.class);    
-            } else {               
-                nativeValue = item;
+            } else {                  
+                if (cassandraPersistentProperty != null && !cassandraPersistentProperty.getType().isAssignableFrom(itemTypeClass)) {
+                    TypeDescriptor targetTypeDescriptor = TypeDescriptor.valueOf(cassandraPersistentProperty.getType());      
+                    if (conversionService.canConvert(itemTypeDescriptor, targetTypeDescriptor)) {     
+                        try {
+                            nativeValue = conversionService.convert(item, itemTypeDescriptor, targetTypeDescriptor);
+                        } catch (Exception e) {
+                            throw new IllegalArgumentException(String.format("Failed to convert property [%s] on entity class [%s]: [%s]", 
+                                    cassandraPersistentProperty.getName(), cassandraPersistentProperty.getOwner().getName(), e.getMessage()), e);
+                        }
+                    }
+                }
+                
             }
-        } else {
-            nativeValue = null;
-        }
+        } 
         return nativeValue;
     }
-
+    
+    private void throwUnknownPrimaryKeyException(String name) {
+        throw new IllegalArgumentException(String.format("Unknown primary key property [%s] on entity class [%s]", name, getPersistentEntity().getName()));
+    }
+    
     protected class CassandraEntityAccess extends NativeEntryModifyingEntityAccess {
 
         public CassandraEntityAccess(PersistentEntity persistentEntity, Object entity) {
