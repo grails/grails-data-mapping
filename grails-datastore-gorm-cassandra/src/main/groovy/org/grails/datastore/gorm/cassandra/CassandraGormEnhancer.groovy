@@ -6,6 +6,7 @@ import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
+import org.springframework.data.cassandra.core.CassandraTemplate
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
@@ -55,6 +56,10 @@ class CassandraGormStaticApi<D> extends GormStaticApi<D> {
             "org.grails.datastore.gorm.finders.FindByFinder".equals(f.class.name)            
         }
         finder.registerNewMethodExpression(InList.class)
+    }
+    
+    CassandraTemplate getCassandraTemplate() {
+        datastore.cassandraTemplate
     }
     
     /**
