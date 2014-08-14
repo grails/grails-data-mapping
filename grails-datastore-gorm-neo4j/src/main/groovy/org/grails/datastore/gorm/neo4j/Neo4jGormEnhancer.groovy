@@ -49,14 +49,22 @@ class Neo4jGormEnhancer extends GormEnhancer {
         return api
     }
 
-    public static void amendMapWithUndeclaredProperties(Map<String, Object> simpleProps, Object pojo, MappingContext mappingContext) {
+    public static Map<String, List<Object>> amendMapWithUndeclaredProperties(Map<String, Object> simpleProps, Object pojo, MappingContext mappingContext) {
         GroovyObject obj = (GroovyObject) pojo;
+        Map<String, List<Object>> dynRelProps = [:].withDefault { [] }
         Map<String,Object> map = (Map) obj.getProperty(Neo4jGormEnhancer.UNDECLARED_PROPERTIES);
         if (map!=null) {
             for (Map.Entry<String,Object> entry : map.entrySet()) {
-                simpleProps.put(entry.getKey(), Neo4jUtils.mapToAllowedNeo4jType(entry.getValue(), mappingContext));
+                if (mappingContext.isPersistentEntity(entry.getValue())) {
+                    assert entry.getValue().id
+                    dynRelProps[entry.getKey()] << entry.getValue()
+
+                } else {
+                    simpleProps.put(entry.getKey(), Neo4jUtils.mapToAllowedNeo4jType(entry.getValue(), mappingContext));
+                }
             }
         }
+        dynRelProps
     }
 }
 
@@ -113,6 +121,9 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
                 unwrappedInstance.metaClass."${Neo4jGormEnhancer.UNDECLARED_PROPERTIES}" = undeclaredProps
             }
             (val == null) ? undeclaredProps.remove(name) : undeclaredProps.put(name, val)
+            if (datastore.mappingContext.isPersistentEntity(val)) {
+                val.save()
+            }
             if (unwrappedInstance instanceof DirtyCheckable) {
                 ((DirtyCheckable)unwrappedInstance).markDirty(name)
             }

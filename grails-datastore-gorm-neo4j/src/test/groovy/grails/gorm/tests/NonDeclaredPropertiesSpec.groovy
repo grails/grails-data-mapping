@@ -1,10 +1,12 @@
 package grails.gorm.tests
 
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
+import org.neo4j.helpers.collection.IteratorUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Ignore
 import spock.lang.IgnoreRest
+import spock.lang.Issue
 
 class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
 
@@ -142,6 +144,28 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
         then:
         person.notDeclaredProperty == null
 
+
+    }
+
+    @Issue("GPNEO4J-25")
+    @IgnoreRest
+    def "dynamic properties point to domain classes instance should be relationships"() {
+        setup:
+        def cosima = new Pet(name: 'Cosima')
+        def lara = new Pet(name: 'Lara')
+        cosima.buddy = lara
+        cosima.save()
+        session.flush()
+        session.clear()
+
+        when:
+        def result = session.nativeInterface.execute("MATCH (n:Pet {__id__:{1}})-[:BUDDY]->(l) return l", [cosima.id])
+
+        then:
+        IteratorUtil.count(result) == 1
+
+        and: "reading dynamic rels works"
+        Pet.findByName("Cosima").buddy == lara
 
     }
 
