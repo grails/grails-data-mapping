@@ -15,12 +15,14 @@
 package org.grails.datastore.gorm.neo4j.plugin.support
 
 import org.apache.tomcat.jdbc.pool.PoolProperties
+import org.codehaus.groovy.grails.support.ClassEditor
 import org.grails.datastore.gorm.neo4j.engine.JdbcCypherEngine
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
 
 import org.apache.tomcat.jdbc.pool.DataSource
+import org.springframework.beans.factory.config.CustomEditorConfigurer
 
 /**
  * Spring configurer for Neo4j
@@ -48,7 +50,6 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
             def neo4jUrl = config?.url ?: "jdbc:neo4j:mem"
             def neo4jProperties = [:]
 
-
             def m = neo4jUrl =~ /$JDBC_NEO4J_PREFIX(\w+)/
 
             if (m.matches()) {
@@ -57,9 +58,12 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                 def isHaMode = config.ha ?: false
 
                 def factoryClassName = isHaMode ? "org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory" : "org.neo4j.graphdb.factory.GraphDatabaseFactory"
+
+                def factoryClazz = Thread.currentThread().contextClassLoader.loadClass(factoryClassName)
+
                 def factoryMethodName = isHaMode ? "newHighlyAvailableDatabaseBuilder" : "newEmbeddedDatabaseBuilder"
 
-                graphDbFactory(factoryClassName as Class)
+                graphDbFactory(factoryClazz)
                 graphDbBuilder(graphDbFactory : factoryMethodName,  config.location ?: neo4jDefaultLocation)
 
                 graphDbBuilderFinal(graphDbBuilder: "setConfig", config.dbProperties ?: [:])
@@ -71,7 +75,6 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
 
             }
             neo4jProperties.putAll(config.dbProperties)
-
 
             neo4jPoolConfiguration(PoolProperties) {
                 url = neo4jUrl
@@ -100,6 +103,13 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                 cypherEngine = cypherEngine
                 mappingContext = neo4jMappingContext
 
+            }
+
+            // reverting the change done for fixing GRAILS-11112
+            // since we supply a GraphDatabaseService instance to dbProperties we do not want
+            // it being converted to a String
+            customEditors(CustomEditorConfigurer) {
+                customEditors = [(Class.name): ClassEditor.name ]
             }
 
         }
