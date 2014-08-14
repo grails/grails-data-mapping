@@ -1,4 +1,4 @@
-package org.grails.datastore.gorm.cassandra;
+package org.codehaus.groovy.grails.compiler;
 
 import grails.gorm.CassandraEntity;
 import grails.persistence.Entity;
