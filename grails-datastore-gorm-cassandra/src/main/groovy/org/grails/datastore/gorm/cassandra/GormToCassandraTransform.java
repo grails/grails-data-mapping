@@ -318,6 +318,10 @@ public class GormToCassandraTransform implements ASTTransformation {
         }    
     }
     
+    /**
+     * Inject a version property if not present. 
+     * Annotate it as transient if "version false" so Spring Data Cassandra doesn't add it as a property 
+     */
     private static void injectVersionPropertyIfNecessary(ClassNode classNode, Map<String, Map<String, ?>> propertyMappings) {
         final boolean hasVersion = GrailsASTUtils.hasOrInheritsProperty(classNode, GrailsDomainClassProperty.VERSION);
         ClassNode parent = GrailsASTUtils.getFurthestUnresolvedParent(classNode);
@@ -327,7 +331,7 @@ public class GormToCassandraTransform implements ASTTransformation {
             parent.addProperty(GrailsDomainClassProperty.VERSION, Modifier.PUBLIC, new ClassNode(Long.class), null, null, null);            
         } 
         
-        //inject a version property if not present and annotation it transient if version false - so Grails doesn't add one
+        
         PropertyNode versionProperty = classNode.getProperty(GrailsDomainClassProperty.VERSION);
         if (versionProperty != null) {
             if (propertyMappings.containsKey(GrailsDomainClassProperty.VERSION)) {
