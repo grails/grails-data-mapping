@@ -1,16 +1,11 @@
 package org.grails.datastore.mapping.cassandra.config;
 
-import grails.gorm.CassandraEntity;
-
-import java.lang.annotation.Annotation;
-
 import org.grails.datastore.gorm.cassandra.mapping.BasicCassandraMappingContext;
 import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 
 /**
@@ -77,12 +72,7 @@ public class CassandraMappingContext extends AbstractMappingContext {
     }
 
     @Override
-    protected PersistentEntity createPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass) {
-        Annotation cassandraAnnotation = AnnotationUtils.findAnnotation(javaClass, CassandraEntity.class);
-        if (cassandraAnnotation != null) {
-            return new CassandraPersistentEntity(javaClass, this);
-        } else {
-            return null;        
-        }
+    protected PersistentEntity createPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass) {      
+        return new CassandraPersistentEntity(javaClass, this);        
     }
 }
