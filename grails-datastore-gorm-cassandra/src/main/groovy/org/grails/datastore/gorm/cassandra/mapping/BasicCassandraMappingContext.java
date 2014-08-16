@@ -9,14 +9,12 @@ import java.util.Currency;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.grails.datastore.mapping.model.config.GormProperties;
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.springframework.data.cassandra.mapping.BasicCassandraPersistentProperty;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.data.cassandra.mapping.CassandraSimpleTypeHolder;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
-
-import com.datastax.driver.core.DataType;
 
 /**
  * Extends default {@link org.springframework.data.cassandra.mapping.BasicCassandraMappingContext} to create 
@@ -31,15 +29,11 @@ public class BasicCassandraMappingContext extends org.springframework.data.cassa
                 public boolean isTransient() { return true ;}
             };
         }
-        if (field != null && GormProperties.VERSION.equals(field.getName()) && (Long.class.isAssignableFrom(field.getType()) || long.class.isAssignableFrom(field.getType()))) {
-            //this is required here as Grails adds a default version long property after Cassandra AST transformations are run
-            //and Spring Data Cassandra defaults to counter type for longs. TODO: remove this block when long mapping bug fixed in Spring Data Cassandra
+        if (field != null && GrailsDomainClassProperty.ERRORS.equals(field.getName())) {
             return new BasicCassandraPersistentProperty(field, descriptor, owner, (CassandraSimpleTypeHolder) simpleTypeHolder) {
-                public com.datastax.driver.core.DataType getDataType() {
-                    return DataType.bigint();
-                };
+                public boolean isTransient() { return true ;}
             };
-        }        
+        }            
         Class<?> rawType = field != null ? field.getType() : descriptor != null ? descriptor.getPropertyType() : null;
         if (rawType == null) {
             return new BasicCassandraPersistentProperty(field, descriptor, owner, (CassandraSimpleTypeHolder) simpleTypeHolder) {
