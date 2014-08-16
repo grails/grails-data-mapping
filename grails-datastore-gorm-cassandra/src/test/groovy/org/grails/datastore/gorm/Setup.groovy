@@ -75,7 +75,7 @@ class Setup {
         methodsConfigurer.configure()
         
         def cassandraSession = cassandraDatastore.connect()
-
+        
         deleteAllEntities(cassandraSession)
 
         return cassandraSession
@@ -103,8 +103,10 @@ class Setup {
     }
 
     public static void deleteAllEntities(def cassandraSession) {
-
-        for (CassandraPersistentEntity<?> entity : cassandraSession.cassandraTemplate.cassandraConverter.mappingContext.persistentEntities) {
+        if (!cassandraSession.cassandraTemplate) {
+            throw new RuntimeException("Cassandra Template not found, possible reason: Spring Data Cassandra not initialized")
+        }
+        for (CassandraPersistentEntity<?> entity : cassandraSession.cassandraTemplate?.cassandraConverter?.mappingContext?.persistentEntities) {
             cassandraSession.cassandraTemplate.truncate(entity.getTableName())
         }
     }
