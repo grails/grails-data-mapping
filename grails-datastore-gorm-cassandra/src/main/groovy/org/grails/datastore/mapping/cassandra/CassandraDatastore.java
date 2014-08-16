@@ -118,6 +118,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
             cassandraSessionFactory.setKeyspaceName(this.keyspace);
             MappingCassandraConverter mappingCassandraConverter = new MappingCassandraConverter(cassandraMapping());            
             cassandraSessionFactory.setConverter(mappingCassandraConverter);
+            //TODO: validate schema action
             cassandraSessionFactory.setSchemaAction(read(SchemaAction.class, CASSANDRA_SCHEMA_ACTION, connectionDetails, DEFAULT_SCHEMA_ACTION));
             // TODO: startup and shutdown scripts addition
             cassandraSessionFactory.afterPropertiesSet();
