@@ -1,6 +1,6 @@
 package org.grails.datastore.gorm
 
-import grails.gorm.CassandraEntity
+import grails.persistence.Entity
 
 import org.springframework.cassandra.core.PrimaryKeyType
 import org.springframework.data.annotation.Transient
@@ -18,18 +18,29 @@ class CassandraTransformTest extends GroovyTestCase {
         def tableanno = Basic.class.getAnnotation(Table)
         assert tableanno != null
         def field = Basic.class.getDeclaredField("id")
+        assert field.getType() == UUID
         assert field != null        
         def anno = field.getAnnotation(PrimaryKeyColumn)
         assert anno != null
         field = Basic.class.getDeclaredField("version")
         assertNonTransientField(field)
         
-        assertTransientField(Basic.class.getDeclaredField("errors"))
+        assertNonTransientField(Basic.class.getDeclaredField("errors"))
         assertTransientField(Basic.class.getDeclaredField("tran"))
         assertTransientField(Basic.class.getDeclaredField("service"))
                 
     }
-
+    
+    void testBasicMappedWithCassandra() {
+        def tableanno = BasicMappedWithCassandra.class.getAnnotation(Table)
+        assert tableanno != null
+    }
+    
+    void testBasicMappedWithOther() {
+        def tableanno = BasicMappedWithOther.class.getAnnotation(Table)
+        assert tableanno != null
+    }
+    
     void testBasicWithIdAndTypes() {
         def field = BasicWithIdAndTypes.class.getDeclaredField("id")
         assert field != null
@@ -58,9 +69,10 @@ class CassandraTransformTest extends GroovyTestCase {
         
         
         assertTransientField(BasicWithIdAndTypes.class.getDeclaredField('transientBoolean'))        
-        assertTransientField(BasicWithIdAndTypes.class.getDeclaredField('transientString'))          
-        assertTransientField(BasicWithIdAndTypes.class.getDeclaredField('version'))
-                
+        assertTransientField(BasicWithIdAndTypes.class.getDeclaredField('transientString'))  
+        field = BasicWithIdAndTypes.class.getDeclaredField('version')  
+        assertTransientField(field)
+        assert java.lang.reflect.Modifier.isTransient(field.getModifiers()) == true                       
     }
 
     void testBasicWithPrimaryKey() {
@@ -195,14 +207,24 @@ class CassandraTransformTest extends GroovyTestCase {
     }
 }
 
-@CassandraEntity
+@Entity
 class Basic {
     String value
     transient tran    
     def service
 }
 
-@CassandraEntity
+@Entity
+class BasicMappedWithCassandra {
+    static mapWith = "cassandra"
+}
+
+@Entity
+class BasicMappedWithOther {
+    static mapWith = "other"
+}
+
+@Entity
 class BasicWithIdAndTypes {
     UUID id
     String value
@@ -228,7 +250,7 @@ class BasicWithIdAndTypes {
     static transients = ['transientBoolean', 'transientString']
 }
 
-@CassandraEntity
+@Entity
 class BasicWithPrimaryKey {
     UUID primary   
     static mapping = {  
@@ -237,7 +259,7 @@ class BasicWithPrimaryKey {
     }
 }
 
-@CassandraEntity
+@Entity
 class BasicWithCustomPrimaryKeyUndefined {
     long version
     static mapping = {
@@ -246,7 +268,7 @@ class BasicWithCustomPrimaryKeyUndefined {
     }
 }
 
-@CassandraEntity
+@Entity
 class BasicWithCustomPrimaryKeyAndAssociation {
     UUID primary
     UUID clustered
@@ -258,7 +280,7 @@ class BasicWithCustomPrimaryKeyAndAssociation {
     }
 }
 
-@CassandraEntity
+@Entity
 class Person {
     String lastname
     String firstname
@@ -276,7 +298,7 @@ class Person {
     }
 }
 
-@CassandraEntity
+@Entity
 class Simple {
     Long id
     Long version
@@ -318,13 +340,13 @@ class Simple {
     }
 }
 
-@CassandraEntity
+@Entity
 class Base {
     UUID id
     String value
 }
 
-@CassandraEntity
+@Entity
 class Sub extends Base {
     String subValue
 }
