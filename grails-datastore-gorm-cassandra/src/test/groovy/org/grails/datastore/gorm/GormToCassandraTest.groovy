@@ -1,15 +1,13 @@
 package org.grails.datastore.gorm
 
-import grails.gorm.CassandraEntity
-
-import org.springframework.data.cassandra.mapping.CassandraType
+import grails.persistence.Entity
 
 class GormToCassandraTest {
     public static void main(String[] a) {
         
     }             
     
-    @CassandraEntity
+    @Entity
     static class ABasic {        
        String name
        Long version
@@ -17,9 +15,11 @@ class GormToCassandraTest {
             name unique:true, index:true
             version false
        }  
+       
+       static mapWith = "cassandra"
     }
-
-    @CassandraEntity
+    
+    @Entity
     static class ABasicWithId {
         UUID id
         String value
@@ -46,10 +46,10 @@ class GormToCassandraTest {
         static transients = [
             'transientBoolean',
             'transientString'
-        ]
+        ]               
     }
-
-    @CassandraEntity
+    
+    @Entity
     static class ABasicWithPrimaryKey {
         UUID primary
         long id
@@ -57,9 +57,10 @@ class GormToCassandraTest {
             id name:"primary" 
             version "revision_number"
         }
+        static mapWith = "Cassandra"
     }
-
-    @CassandraEntity
+    
+    @Entity
     static class ABasicCustomPrimaryKeyWithAssociation {
         UUID primary
         UUID clustered
@@ -69,9 +70,11 @@ class GormToCassandraTest {
             id name:"primary", column:"pri", primaryKey:[ordinal:0, type:"partitioned"]
             clustered column:"clu", primaryKey:[ordinal:1, type: "clustered"]
         }
+        
+        //static mapWith = "other"
     }
 
-    @CassandraEntity
+    @Entity
     static class APerson {
         String lastname
         String firstname
@@ -90,18 +93,17 @@ class GormToCassandraTest {
         }
     }
 
-    @CassandraEntity
-    static class ABase {
-        UUID id
+    @Entity
+    static class ABase {        
         String value
     }
 
-    @CassandraEntity
+    @Entity
     static class ASub extends ABase {
         String subValue
     }
     
-    @CassandraEntity
+    @Entity
     class ATrackArtist {
         
         UUID trackId
