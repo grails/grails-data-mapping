@@ -1,8 +1,8 @@
 package grails.gorm.tests
 
-import grails.gorm.CassandraEntity
+import grails.persistence.Entity
 
-@CassandraEntity
+@Entity
 class City extends Location {
     BigDecimal latitude
     BigDecimal longitude

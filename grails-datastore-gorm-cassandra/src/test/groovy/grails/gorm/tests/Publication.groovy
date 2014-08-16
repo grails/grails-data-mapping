@@ -1,10 +1,8 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
 
-
-import grails.gorm.CassandraEntity
-
-@CassandraEntity
+@Entity
 class Publication implements Serializable {    
     UUID id
     Long version

@@ -1,12 +1,12 @@
 package grails.gorm.tests
 
-import grails.gorm.CassandraEntity
+import grails.persistence.Entity
 
 import org.springframework.data.cassandra.mapping.CassandraType
 
 import com.datastax.driver.core.DataType
 
-@CassandraEntity
+@Entity
 class Book implements Serializable {    
     Long version
     String author

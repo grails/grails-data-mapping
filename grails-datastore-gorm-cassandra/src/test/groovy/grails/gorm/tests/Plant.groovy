@@ -1,8 +1,8 @@
 package grails.gorm.tests
 
-import grails.gorm.CassandraEntity
+import grails.persistence.Entity
 
-@CassandraEntity
+@Entity
 class Plant implements Serializable {    
     
     UUID id

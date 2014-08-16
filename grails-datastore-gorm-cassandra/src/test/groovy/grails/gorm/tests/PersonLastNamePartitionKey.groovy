@@ -1,10 +1,9 @@
 package grails.gorm.tests
 
-import grails.gorm.CassandraEntity
 import grails.persistence.Entity
 
 @groovy.transform.EqualsAndHashCode(includes=["lastName", "firstName"])
-@CassandraEntity
+@Entity
 class PersonLastNamePartitionKey  {      
     
     String lastName

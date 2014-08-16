@@ -1,8 +1,8 @@
 package grails.gorm.tests
 
-import grails.gorm.CassandraEntity
+import grails.persistence.Entity
 
-@CassandraEntity
+@Entity
 class CommonTypes implements Serializable {
     UUID id
     Long version

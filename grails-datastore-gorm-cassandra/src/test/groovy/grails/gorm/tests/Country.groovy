@@ -1,9 +1,8 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
 
-import grails.gorm.CassandraEntity
-
-@CassandraEntity
+@Entity
 class Country extends Location {
     Integer population   
 }

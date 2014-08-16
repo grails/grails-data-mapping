@@ -1,13 +1,12 @@
 package grails.gorm.tests
 
-import grails.gorm.CassandraEntity
 import grails.persistence.Entity
 
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
 @ApplyDetachedCriteriaTransform
 @groovy.transform.EqualsAndHashCode 
-@CassandraEntity
+@Entity
 class Person implements Serializable, Comparable<Person> {
     
     UUID id

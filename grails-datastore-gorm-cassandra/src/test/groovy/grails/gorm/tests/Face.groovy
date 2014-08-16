@@ -1,9 +1,8 @@
 package grails.gorm.tests
 
-import grails.gorm.CassandraEntity
 import grails.persistence.Entity
 
-@CassandraEntity
+@Entity
 class Face implements Serializable {
     UUID id
     Long version

@@ -1,10 +1,8 @@
 package grails.gorm.tests
 
-import grails.gorm.CassandraEntity
+import grails.persistence.Entity
 
-
-
-@CassandraEntity
+@Entity
 class ConstrainedEntity implements Serializable {
 
 	static final int MAX_VALUE = 1000

@@ -2,9 +2,9 @@ package grails.gorm.tests
 
 
 
-import grails.gorm.CassandraEntity
+import grails.persistence.Entity
 
-@CassandraEntity
+@Entity
 class PublicationTitlePartitionKey implements Serializable {    
     Long version
     String title
