@@ -43,6 +43,7 @@ class Setup {
 
             ConfigObject config = new ConfigObject()            
             config.setProperty(CassandraDatastore.CASSANDRA_SCHEMA_ACTION, "RECREATE_DROP_UNUSED")
+            //config.setProperty(CassandraDatastore.CASSANDRA_CONTACT_POINTS, "localhost")
             cassandraDatastore = new CassandraDatastore(new CassandraMappingContext("unittest"), config, ctx)
             cassandraDatastore.createCluster()
 
