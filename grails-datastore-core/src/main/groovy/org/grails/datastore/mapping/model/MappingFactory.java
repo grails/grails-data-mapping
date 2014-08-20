@@ -355,7 +355,6 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
                 return propertyMapping;
             }
         };
-        basic.setCollectionType(collectionType);
 
         CustomTypeMarshaller customTypeMarshaller = typeConverterMap.get(property.getPropertyType());
 
