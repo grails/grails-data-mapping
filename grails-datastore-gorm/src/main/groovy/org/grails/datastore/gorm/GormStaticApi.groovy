@@ -35,6 +35,7 @@ import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.api.BuildableCriteria
+import org.grails.datastore.mapping.query.api.Criteria
 import org.springframework.beans.PropertyAccessorFactory
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.transaction.PlatformTransactionManager
@@ -299,7 +300,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     /**
      * Creates a criteria builder instance
      */
-    def withCriteria(Closure callable) {
+    def withCriteria(@DelegatesTo(Criteria) Closure callable) {
         execute({ Session session ->
             InvokerHelper.invokeMethod(createCriteria(), 'call', callable)
         } as SessionCallback )
@@ -308,7 +309,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     /**
      * Creates a criteria builder instance
      */
-    def withCriteria(Map builderArgs, Closure callable) {
+    def withCriteria(Map builderArgs, @DelegatesTo(Criteria) Closure callable) {
         def criteriaBuilder = createCriteria()
         def builderBean = PropertyAccessorFactory.forBeanPropertyAccess(criteriaBuilder)
         for (entry in builderArgs.entrySet()) {
