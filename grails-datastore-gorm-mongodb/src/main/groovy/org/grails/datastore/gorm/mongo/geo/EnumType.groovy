@@ -9,6 +9,7 @@ import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.Query.Between
 import org.grails.datastore.mapping.query.Query.Equals
 import org.grails.datastore.mapping.query.Query.In
+import org.grails.datastore.mapping.query.Query.NotEquals
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 
 import com.mongodb.BasicDBObject
@@ -39,11 +40,11 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
         collectionType && (collectionType.isEnum())
     }
 
-    // Get the value of enum i.e. if has id, returns the id otherwise return name itself.
     EnumType() {
         super(Enum)
     }
 
+    // Get the value of enum i.e. if has id, returns the id otherwise return name itself.
     private static def enumValue(def value, def enumType) {
         if (value == null) {
             return null
@@ -72,10 +73,10 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
      * For example: If our code is something like this:
      * <pre>
      *      <code>
-     *          Partner.withCriteria {
+     *          User.withCriteria {
      *              or {
      *                  eq("name", "admin")
-     *                  eq("status", PartnerStatus.NEW)
+     *                  eq("status", UserStatus.ACTIVE)
      *              }
      *              eq("foo", "bar")
      *          }
@@ -118,7 +119,7 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
             return
         }
 
-        // Iterate each field in the query
+        // Iterate each field in the query deeply to get the blank field
         nativeQuery.each { key, value ->
             if (value instanceof Collection) {
                 value.each { BasicDBObject queryObject ->
@@ -133,13 +134,11 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
 
     @Override
     protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, DBObject nativeQuery) {
-        println "query " + criterion.class + " || " + nativeQuery
         putValueToProperPlace(property, key, criterion, nativeQuery)
     }
 
     @Override
     protected Object readInternal(PersistentProperty property, String key, DBObject nativeSource) {
-        println "read internal"
         final def value = nativeSource.get(key)
         if (value == null) {
             return null
@@ -153,13 +152,13 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
             finalValue = []
             propertyType = getCollectionType(property)
 
-            // Then value will be a list like: ["CREDIT_CARD", "TELE_CHECK"]
+            // Then value will be a list like: ["ACTIVE", "INACTIVE"]
             value.each { persistedValue ->
                 // If value is a number, then Enum type has id field.
                 if (persistedValue.toString().isNumber()) {
                     finalValue << propertyType.values().find { it.id == persistedValue.toInteger() }
                 } else {
-                    // Backward support for the plugin.
+                    // Backward support for the enums that does not have id.
                     finalValue << Enum.valueOf(propertyType, persistedValue)
                 }
             }
@@ -170,7 +169,7 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
             return propertyType.values().find { it.id == value.toInteger() }
         }
 
-        // Backward support for the plugin.
+        // Backward support for the enums that does not have id.
         return Enum.valueOf(propertyType, value)
     }
 
@@ -194,12 +193,8 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
             return finalValue
         }
 
-        if (value instanceof Enum && value.hasProperty("id")) {
-            nativeTarget.put(key, value.id)
-            return value.id
-        }
-
-        nativeTarget.put(key, value)
-        return value
+        def finalValue = enumValue(value, property.getType())
+        nativeTarget.put(key, finalValue)
+        return finalValue
     }
 }
