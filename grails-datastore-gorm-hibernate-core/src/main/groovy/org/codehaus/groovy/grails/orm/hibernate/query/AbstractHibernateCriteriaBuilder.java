@@ -297,8 +297,9 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
      * Whether to use the query cache
      * @param shouldCache True if the query should be cached
      */
-    public void cache(boolean shouldCache) {
+    public org.grails.datastore.mapping.query.api.Criteria cache(boolean shouldCache) {
         criteria.setCacheable(shouldCache);
+        return this;
     }
 
     /**

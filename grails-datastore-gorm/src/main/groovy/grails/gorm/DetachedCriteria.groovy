@@ -1222,4 +1222,10 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         lazyQuery = null
         this.with criteria
     }
+
+    @Override
+    public Criteria cache(boolean shouldCache) {
+        // no-op for now
+        this
+    }
 }

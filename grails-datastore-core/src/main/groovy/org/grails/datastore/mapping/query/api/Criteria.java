@@ -644,4 +644,14 @@ public interface Criteria  {
      * @return A Criterion instance
      */
     Criteria leSome(String propertyName, Closure<?> propertyValue);
+
+    /**
+     * <p>Configures the second-level cache with the default usage of 'read-write' and the default include of 'all' if
+     *  the passed argument is true
+     *
+     * <code> { cache true }
+     *
+     * @param shouldCache True if the default cache configuration should be applied
+     */
+    Criteria cache(boolean shouldCache);
 }
