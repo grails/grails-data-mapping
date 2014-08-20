@@ -15,7 +15,7 @@ import com.mongodb.BasicDBObject
 import com.mongodb.DBObject
 
 class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject, DBObject> {
-    
+
     /**
      * Get type of collection by looking at <code>hasMany</code> static field in
      * the domain class.
@@ -98,6 +98,8 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
 
             if (criterion instanceof Equals) {
                 nativeQuery.put(queryKey, enumValue(criterion.value, property.getType()))
+            } else if (criterion instanceof NotEquals) {
+                nativeQuery.put(queryKey, [(MongoQuery.MONGO_NE_OPERATOR): enumValue(criterion.value, property.getType())])
             } else if (criterion instanceof Between) {
                 criteriaObject.put(MongoQuery.MONGO_GTE_OPERATOR, enumValue(((Between) criterion).getFrom(), property.getType()))
                 criteriaObject.put(MongoQuery.MONGO_LTE_OPERATOR, enumValue(((Between) criterion).getTo()), property.getType())
@@ -131,11 +133,13 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
 
     @Override
     protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, DBObject nativeQuery) {
+        println "query " + criterion.class + " || " + nativeQuery
         putValueToProperPlace(property, key, criterion, nativeQuery)
     }
 
     @Override
     protected Object readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+        println "read internal"
         final def value = nativeSource.get(key)
         if (value == null) {
             return null
