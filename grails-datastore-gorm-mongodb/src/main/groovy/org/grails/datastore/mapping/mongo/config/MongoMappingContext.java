@@ -153,6 +153,7 @@ public class MongoMappingContext extends DocumentMappingContext {
         MappingFactory.registerCustomType(new ShapeType());
         MappingFactory.registerCustomType(new BoxType());
         MappingFactory.registerCustomType(new CircleType());
+        MappingFactory.registerCustomType(new EnumType());
     }
 
     @Override
