@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.mongo.geo
 
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Basic
 import org.grails.datastore.mapping.mongo.query.MongoQuery
@@ -8,13 +9,41 @@ import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.Query.Between
 import org.grails.datastore.mapping.query.Query.Equals
 import org.grails.datastore.mapping.query.Query.In
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 
 import com.mongodb.BasicDBObject
 import com.mongodb.DBObject
 
 class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject, DBObject> {
+    
+    /**
+     * Get type of collection by looking at <code>hasMany</code> static field in
+     * the domain class.
+     * @Example: Will return String class for list of String mapped by hasMany.
+     */
+    private static Class getCollectionType(PersistentProperty property) {
+        PersistentEntity owner = property.owner
+        ClassPropertyFetcher propertyFetcher = ClassPropertyFetcher.forClass(property.owner.getJavaClass())
+        Map hasManyMap = owner.context.getMappingSyntaxStrategy().getAssociationMap(propertyFetcher)
+
+        hasManyMap[property.name]
+    }
+
+    private static boolean isEnumTypeCollection(PersistentProperty property) {
+        if (!(property instanceof Basic)) {
+            return false
+        }
+
+        Class collectionType = getCollectionType(property)
+
+        collectionType && (collectionType.isEnum())
+    }
 
     // Get the value of enum i.e. if has id, returns the id otherwise return name itself.
+    EnumType() {
+        super(Enum)
+    }
+
     private static def enumValue(def value, def enumType) {
         if (value == null) {
             return null
@@ -37,10 +66,6 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
         value
     }
 
-    EnumType() {
-        super(Enum)
-    }
-
     /**
      * For custom user types, GORM return an empty map where our custom value needs
      * to be inserted.
@@ -56,14 +81,14 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
      *          }
      *      </code>
      * </pre>
-     * 
+     *
      * Then the query we receive will be like:
      * <code>
      *      <pre>
      *          [$and: [[$or: [["name": "admin"], [:]]], ["foo": "bar"]]
      *      </pre>
      * </code>
-     * 
+     *
      * Now we have to place value of status to the blank field.
      * This method searches that empty place and put the value to the right place.
      */
@@ -120,9 +145,9 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
 
         Class propertyType = property.getType()
         // If property is a collection of Enum.
-        if (property instanceof Basic && property.isEnumTypeCollection()) {
+        if (isEnumTypeCollection(property)) {
             finalValue = []
-            propertyType = property.getCollectionType()
+            propertyType = getCollectionType(property)
 
             // Then value will be a list like: ["CREDIT_CARD", "TELE_CHECK"]
             value.each { persistedValue ->
@@ -153,11 +178,12 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
         }
 
         // If property is a collection of Enum.
-        if (property instanceof Basic && property.isEnumTypeCollection()) {
+        if (isEnumTypeCollection(property)) {
             List finalValue = []
 
+            Class collectionType = getCollectionType(property)
             value.each {
-                finalValue << enumValue(it, property.getCollectionType())
+                finalValue << enumValue(it, collectionType)
             }
 
             nativeTarget.put(key, finalValue)
