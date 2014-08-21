@@ -1,7 +1,5 @@
 package grails.gorm.tests
 
-import org.grails.datastore.mapping.cassandra.BasicPersistenceCompositeKeySpec
-import org.grails.datastore.mapping.cassandra.BasicPersistenceSpec
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 import org.junit.runners.Suite.SuiteClasses
@@ -10,7 +8,7 @@ import org.junit.runners.Suite.SuiteClasses
  * @author Erawat
  */
 @RunWith(Suite)
-@SuiteClasses([
+@SuiteClasses([/*
 AttachMethodSpec,
 BasicPersistenceSpec,
 BasicPersistenceCompositeKeySpec,
@@ -58,6 +56,6 @@ UniqueConstraintSpec,
 UpdateWithProxyPresentSpec,
 ValidationSpec,
 WithTransactionSpec
-])
+*/])
 class CassandraTestSuite {
 }
