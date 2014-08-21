@@ -15,12 +15,14 @@
 package org.grails.datastore.gorm.neo4j;
 
 //import org.grails.datastore.gorm.neo4j.converters.*;
-import org.grails.datastore.mapping.document.config.Attribute;
+import org.grails.datastore.mapping.engine.NonPersistentTypeException;
 import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy;
+
+import java.util.Collection;
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -30,15 +32,9 @@ public class Neo4jMappingContext extends AbstractMappingContext  {
     MappingFactory mappingFactory = new GraphGormMappingFactory();
     MappingConfigurationStrategy mappingSyntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
 
-//    Neo4jMappingContext() {
-//        mappingFactory = new GraphGormMappingFactory()
-//        syntaxStrategy =
-//    }
-
-
     public Neo4jMappingContext() {
         super();
-        addTypeConverter(new LazyEntitySetToSetConverter());
+//        addTypeConverter(new LazyEntitySetToSetConverter());
     }
 
     @Override
@@ -56,6 +52,18 @@ public class Neo4jMappingContext extends AbstractMappingContext  {
         PersistentEntity persistentEntity = new GraphPersistentEntity(javaClass, this);
 //        mappingFactory.createMappedForm(persistentEntity) // populates mappingFactory.entityToPropertyMap as a side effect
         return persistentEntity;
+    }
+
+
+    public GraphPersistentEntity findPersistentEntityForLabels(Collection<String> labels) {
+        for (PersistentEntity pe : getPersistentEntities()) {
+            GraphPersistentEntity gpe = (GraphPersistentEntity) pe;
+
+            if (gpe.getLabels().equals(labels)) {
+                return gpe;
+            }
+        }
+        throw new NonPersistentTypeException(labels.toString());
     }
 
 //    MappingFactory getMappingFactory() {
