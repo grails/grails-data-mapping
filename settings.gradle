@@ -1,7 +1,7 @@
 // Datastore Project
 include ("grails-datastore-core",
          "grails-datastore-gemfire",
-        "grails-datastore-jpa",
+//        "grails-datastore-jpa",
 /*        "grails-datastore-riak",*/
         "grails-datastore-simple",
         "grails-datastore-web",
@@ -40,7 +40,7 @@ include ("grails-datastore-core",
 
         // GORM Implementations
         'grails-datastore-gorm-cassandra',
-        'grails-datastore-gorm-jpa',
+//        'grails-datastore-gorm-jpa',
         'grails-datastore-gorm-neo4j',
         'grails-datastore-gorm-redis',
         'grails-datastore-gorm-rest-client',
