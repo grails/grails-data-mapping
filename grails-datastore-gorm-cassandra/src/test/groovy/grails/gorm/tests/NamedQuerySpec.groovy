@@ -414,7 +414,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             !result
 
         when:
-            result = PublicationTitlePartitionKey.lastPublishedBefore(now - 50).findByTitleInList([pub1.title, pub2.title])
+            result = PublicationTitlePartitionKey.lastPublishedBefore(now - 50).findByTitleInList([pub1.title, pub2.title], [fetchSize: Integer.MAX_VALUE])
 
         then:
             'One Hundred Day Old Paperback' == result?.title
