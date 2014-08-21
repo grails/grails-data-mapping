@@ -44,6 +44,7 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
 
     private static final Log LOG = LogFactory.getLog(CassandraQuery.class);
     public static final String ARGUMENT_ALLOW_FILTERING = "allowFiltering";
+    public static final String ARGUMENT_FETCH_SIZE = "fetchSize";
     
     private CassandraSession cassandraSession;
     private CassandraTemplate cassandraTemplate;
@@ -205,8 +206,13 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
                 throw new UnsupportedOperationException("Cassandra does not support offset with pagination");
             }
             
-            if (fetchSize > 0) {
-                select.setFetchSize(fetchSize);
+            if (arguments.containsKey(ARGUMENT_FETCH_SIZE) || fetchSize > 0) {
+                Integer fetch = conversionService.convert(arguments.get(ARGUMENT_FETCH_SIZE), Integer.class); 
+                if (fetch != null) {
+                    select.setFetchSize(fetch);
+                } else if (fetchSize > 0) {
+                    select.setFetchSize(fetchSize);
+                }
             }
             
             if (arguments.containsKey(ARGUMENT_ALLOW_FILTERING) || allowFiltering) {
