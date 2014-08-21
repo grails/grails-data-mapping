@@ -408,7 +408,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             session.clear()
 
         when:
-            def result = PublicationTitlePartitionKey.lastPublishedBefore(now - 200).findByTitleInList([pub1.title, pub2.title])
+            def result = PublicationTitlePartitionKey.lastPublishedBefore(now - 200).findByTitleInList([pub1.title, pub2.title], [fetchSize: Integer.MAX_VALUE])
 
         then:
             !result
