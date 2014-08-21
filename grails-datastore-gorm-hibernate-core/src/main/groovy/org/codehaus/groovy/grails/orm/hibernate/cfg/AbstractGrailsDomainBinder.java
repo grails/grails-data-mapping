@@ -1171,37 +1171,55 @@ public abstract class AbstractGrailsDomainBinder {
             tableName = m.getTableName();
         }
         if (tableName == null) {
-            String shortName = domainClass.getShortName();
-            final GrailsApplication grailsApplication = domainClass.getGrailsApplication();
-            if (grailsApplication != null) {
-                final ApplicationContext mainContext = grailsApplication.getMainContext();
-                if (mainContext != null && mainContext.containsBean("pluginManager")) {
-                    final GrailsPluginManager pluginManager = (GrailsPluginManager) mainContext.getBean("pluginManager");
-                    final GrailsPlugin pluginForClass = pluginManager.getPluginForClass(domainClass.getClazz());
-                    if (pluginForClass != null) {
-                        final String pluginName = pluginForClass.getName();
-                        boolean shouldApplyPluginPrefix = false;
-                        if (!shortName.toLowerCase().startsWith(pluginName.toLowerCase())) {
-                            final String pluginSpecificConfigProperty = "grails.gorm." + GrailsNameUtils.getPropertyName(pluginName) + ".table.prefix.enabled";
-                            final Map<String, Object> flatConfig = grailsApplication.getFlatConfig();
-                            if (flatConfig.containsKey(pluginSpecificConfigProperty)) {
-                                shouldApplyPluginPrefix = Boolean.TRUE.equals(flatConfig.get(pluginSpecificConfigProperty));
-                            } else {
-                                shouldApplyPluginPrefix = Boolean.TRUE.equals(flatConfig.get("grails.gorm.table.prefix.enabled"));
-                            }
-                        }
-                        if (shouldApplyPluginPrefix) {
-                            shortName = pluginName + shortName;
-                        }
-                    }
-                }
-            }
-            tableName = getNamingStrategy(sessionFactoryBeanName).classToTableName(shortName);
+			String fullName = domainClass.getFullName();
+			String pluginPrefix = getPluginPrefix(domainClass);
+			if(!"".equals(pluginPrefix)) {
+				fullName = domainClass.getPackageName() + "." + pluginPrefix + domainClass.getShortName();
+			}
+
+			NamingStrategy strategy = getNamingStrategy(sessionFactoryBeanName);
+			tableName = strategy.classToTableName(fullName);
         }
         return tableName;
     }
 
-    protected NamingStrategy getNamingStrategy(String sessionFactoryBeanName) {
+	/**
+	 * Evaluates the plugin prefix for the given domain class
+	 *
+	 * @param domainClass The domain class to evaluate
+	 *
+	 * @return The prefix to apply to table names for this plugin, otherwise empty string.
+	 */
+	protected String getPluginPrefix(GrailsDomainClass domainClass) {
+		final GrailsApplication grailsApplication = domainClass.getGrailsApplication();
+		if (grailsApplication != null) {
+			final ApplicationContext mainContext = grailsApplication.getMainContext();
+			if (mainContext != null && mainContext.containsBean("pluginManager")) {
+				final GrailsPluginManager pluginManager = (GrailsPluginManager) mainContext.getBean("pluginManager");
+				final GrailsPlugin pluginForClass = pluginManager.getPluginForClass(domainClass.getClazz());
+				if (pluginForClass != null) {
+					final String pluginName = pluginForClass.getName();
+					boolean shouldApplyPluginPrefix = false;
+					String shortName = domainClass.getShortName();
+					if (!shortName.toLowerCase().startsWith(pluginName.toLowerCase())) {
+						final String pluginSpecificConfigProperty = "grails.gorm." + GrailsNameUtils.getPropertyName(pluginName) + ".table.prefix.enabled";
+						final Map<String, Object> flatConfig = grailsApplication.getFlatConfig();
+						if (flatConfig.containsKey(pluginSpecificConfigProperty)) {
+							shouldApplyPluginPrefix = Boolean.TRUE.equals(flatConfig.get(pluginSpecificConfigProperty));
+						} else {
+							shouldApplyPluginPrefix = Boolean.TRUE.equals(flatConfig.get("grails.gorm.table.prefix.enabled"));
+						}
+					}
+					if (shouldApplyPluginPrefix) {
+						return pluginName;
+					}
+				}
+			}
+		}
+		return "";
+	}
+
+	protected NamingStrategy getNamingStrategy(String sessionFactoryBeanName) {
         String key = "sessionFactory".equals(sessionFactoryBeanName) ?
                 GrailsDomainClassProperty.DEFAULT_DATA_SOURCE :
                     sessionFactoryBeanName.substring("sessionFactory_".length());
