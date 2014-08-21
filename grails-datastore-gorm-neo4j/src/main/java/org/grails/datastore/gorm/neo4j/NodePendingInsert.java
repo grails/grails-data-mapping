@@ -49,7 +49,7 @@ class NodePendingInsert extends PendingInsertAdapter<Object, Long> {
         for (Map.Entry<String, List<Object>> e: dynamicRelProps.entrySet()) {
             for (Object o: e.getValue()) {
                 GraphPersistentEntity gpe = (GraphPersistentEntity)mappingContext.getPersistentEntity(o.getClass().getName());
-                cypher = String.format("MATCH (a%s {__id__:{1}}), (b%s {__id__:{2}}) MERGE (a)-[:%s]->(b)", labels, gpe.getLabelsWithInheritance(o), e.getKey().toUpperCase() );
+                cypher = String.format("MATCH (a%s {__id__:{1}}), (b%s {__id__:{2}}) MERGE (a)-[:%s]->(b)", labels, gpe.getLabelsWithInheritance(o), e.getKey() );
                 List params = new ArrayList();
                 params.add(nativeKey);
                 params.add(new EntityAccess(gpe, o).getIdentifier());

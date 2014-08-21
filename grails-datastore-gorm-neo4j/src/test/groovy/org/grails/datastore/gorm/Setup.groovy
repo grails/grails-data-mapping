@@ -8,6 +8,7 @@ import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.neo4j.DumpGraphOnSessionFlushListener
+import org.grails.datastore.gorm.neo4j.HashcodeEqualsAwareProxyFactory
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
@@ -100,7 +101,7 @@ class Setup {
                 new JdbcCypherEngine(dataSource)
         )
         datastore.skipIndexSetup = skipIndexSetup
-        //datastore.mappingContext.proxyFactory = new GroovyProxyFactory()
+        datastore.mappingContext.proxyFactory = new HashcodeEqualsAwareProxyFactory()
 
 
 //        ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
@@ -129,10 +130,10 @@ class Setup {
         ctx.addApplicationListener new DomainEventListener(datastore)
         ctx.addApplicationListener new AutoTimestampEventListener(datastore)
 
-//      // enable for debugging
-//        if (graphDb) {
-//            ctx.addApplicationListener new DumpGraphOnSessionFlushListener(graphDb)
-//        }
+      // enable for debugging
+        if (graphDb) {
+            ctx.addApplicationListener new DumpGraphOnSessionFlushListener(graphDb)
+        }
 
         datastore.connect()
     }

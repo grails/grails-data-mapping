@@ -3,7 +3,6 @@ package grails.gorm.tests
 import grails.gorm.DetachedCriteria
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import spock.lang.Ignore
 
 class CascadingDeleteSpec extends GormDatastoreSpec {
 
@@ -72,7 +71,7 @@ class CascadingDeleteSpec extends GormDatastoreSpec {
 
         then:
             def criteria = new DetachedCriteria(Club).build {}
-        criteria.deleteAll()
+            criteria.deleteAll()
 
         then:
             Club.count() == 0

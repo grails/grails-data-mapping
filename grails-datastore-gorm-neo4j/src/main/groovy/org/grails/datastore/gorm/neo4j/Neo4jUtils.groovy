@@ -3,10 +3,6 @@ package org.grails.datastore.gorm.neo4j
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.model.MappingContext
-import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.types.*
-import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Relationship
@@ -19,28 +15,6 @@ import org.neo4j.walk.Walker
 @Slf4j
 @CompileStatic
 abstract class Neo4jUtils {
-
-    /**
-     *
-     * @return {@link org.neo4j.graphdb.RelationshipType}, {@link org.neo4j.graphdb.Direction}
-     */
-    static List relationTypeAndDirection(Association association) {
-        Direction direction = Direction.OUTGOING
-        String relTypeName = relationshipTypeName(association)
-
-        // switch direction and name if we have a bidi and ( (many2many with not owning side) or (onetomany))
-        if (association.bidirectional &&
-            ((association instanceof ManyToMany && (!association.owningSide)) ||
-            association instanceof ManyToOne)) {
-                direction = Direction.INCOMING
-                relTypeName = relationshipTypeName(association.inverseSide)
-        }
-        [DynamicRelationshipType.withName(relTypeName), direction ]
-    }
-
-    static String relationshipTypeName(Association association) {
-        association.name
-    }
 
     /**
      * dump a given node with all properties and relationships
