@@ -1,4 +1,18 @@
-package org.grails.datastore.gorm.mongo.geo
+/* Copyright (C) 2014 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.grails.datastore.gorm.mongo.simple
 
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -15,6 +29,32 @@ import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import com.mongodb.BasicDBObject
 import com.mongodb.DBObject
 
+/**
+ * A custom type for persisting Enum which have an id field in domain classes.
+ * For example: To save identity instead of string in database for field <b>type</b>.
+ * 
+ * <pre>
+ *      class User {
+ *          UserType type
+ *          String name
+ *      }
+ *
+ *      enum UserType {
+ *          A(1), B(2)
+ *          
+ *          final int id
+ *          UserType(int id) {
+ *              this.id = id
+ *          }
+ *      }
+ * </pre>
+ * 
+ * @author Shashank Agrawal
+ * @author Causecode Technologies
+ * 
+ * @since 3.1.3
+ *
+ */
 class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject, DBObject> {
 
     /**
