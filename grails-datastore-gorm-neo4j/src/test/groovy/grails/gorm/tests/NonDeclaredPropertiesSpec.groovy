@@ -141,8 +141,6 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
 
         then:
         person.notDeclaredProperty == null
-
-
     }
 
     @Issue("GPNEO4J-25")
@@ -165,8 +163,30 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
 
         and: "reading dynamic rels works"
         Pet.findByName("Cosima").buddy.name == "Lara"
-        Pet.findByName("Cosima").buddies*.name == ["Lara"]
 
+        and: "using plural named properties returns an array"
+        Pet.findByName("Cosima").buddies*.name == ["Lara"]
+    }
+
+    def "dynamic properties pointing to arrays of domain classes should be a relationship"() {
+        setup:
+        def cosima = new Pet(name: 'Cosima')
+        def lara = new Pet(name: 'Lara')
+        def samira = new Pet(name: 'Samira')
+        cosima.buddies = [lara, samira]
+
+        cosima.save()
+        session.flush()
+        session.clear()
+
+        when:
+        def result = session.nativeInterface.execute("MATCH (n:Pet {__id__:{1}})-[:buddies]->(l) return l", [cosima.id])
+
+        then:
+        IteratorUtil.count(result) == 2
+
+        and: "reading dynamic rels works"
+        Pet.findByName("Cosima").buddies*.name == ["Lara", "Samira"]
     }
 
 }

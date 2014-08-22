@@ -16,12 +16,16 @@ class Neo4jEntityPersisterSpec extends Specification {
         cut.isSingular(term) == result
 
         where:
-        term      | result
-        "word"    | true
-        "words"   | false
-        "friend"  | true
-        "friends" | false
-        "buddy"   | true
-        "buddies" | false
+        term       | result
+        "word"     | true
+        "words"    | false
+        "friend"   | true
+        "friends"  | false
+        "buddy"    | true
+        "buddies"  | false
+        "child"    | true
+        "children" | false
+        "person"   | true
+        //"people"   | false
     }
 }
