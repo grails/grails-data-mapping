@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.neo4j;
 import groovy.lang.GroovyObject;
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
 import org.grails.datastore.gorm.neo4j.engine.CypherResult;
+import org.grails.datastore.gorm.neo4j.parsers.PlingStemmer;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.EntityAccess;
@@ -262,7 +263,7 @@ public class Neo4jEntityPersister extends EntityPersister {
     }
 
     private boolean isSingular(String key) {
-        return !(key.endsWith("s")); // TODO: might be too simplistic
+        return PlingStemmer.isSingular(key);
     }
 
     /*private Class<Object> findJavaClassForLabels(Object labels) {
