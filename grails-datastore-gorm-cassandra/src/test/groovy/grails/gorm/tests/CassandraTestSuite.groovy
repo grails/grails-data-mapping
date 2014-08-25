@@ -9,9 +9,11 @@ import org.junit.runners.Suite.SuiteClasses
  */
 @RunWith(Suite)
 @SuiteClasses([/*
+AssignedIdentifierSpec,
 AttachMethodSpec,
 BasicPersistenceSpec,
 BasicPersistenceCompositeKeySpec,
+CassandraSpringConfigurerSpec,
 CircularOneToManySpec,
 CollectionTypesPersistenceSpec,
 CommonTypesPersistenceSpec,
@@ -29,6 +31,7 @@ FindOrCreateWhereSpec,
 FindOrSaveWhereSpec,
 FirstAndLastMethodSpec,
 FindWhereSpec,
+GetAllSpec,
 GormEnhancerSpec,
 GroovyProxySpec,
 InheritanceSpec,
