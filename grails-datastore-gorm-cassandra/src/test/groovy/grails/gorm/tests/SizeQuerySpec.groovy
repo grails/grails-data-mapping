@@ -1,10 +1,11 @@
 package grails.gorm.tests
 
-import spock.lang.Specification
+import org.junit.Ignore
 
 /**
  * Tests for querying the size of collections etc.
  */
+@Ignore("Cassandra GORM does not support collections at present")
 class SizeQuerySpec extends GormDatastoreSpec {
 
     void "Test sizeLe criterion"() {

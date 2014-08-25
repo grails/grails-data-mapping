@@ -67,16 +67,8 @@ class GormEnhancerSpec extends GormDatastoreSpec {
 
         when:
             def results = TestEntity.findAllByNameOrAge("Barney", 40)
-            def barney = results.find { it.name == "Barney" }
-            def bob = results.find { it.age == 40 }
-
         then:
-            3 == TestEntity.count()
-            2 == results.size()
-            barney != null
-            42 == barney.age
-            bob != null
-            "Bob" == bob.name
+            thrown UnsupportedOperationException
     }
 
     void "Test getAll() method"() {
@@ -110,7 +102,7 @@ class GormEnhancerSpec extends GormDatastoreSpec {
     void "Test dynamic finder with pagination parameters"() {
         given:
             def age = 40
-            ["Bob", "Fred", "Barney", "Frank"].each {
+            ["Bob", "Fred", "Barney", "Frank", "Barney"].each {
                 new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
             }
 
@@ -118,28 +110,29 @@ class GormEnhancerSpec extends GormDatastoreSpec {
             def total = TestEntity.count()
 
         then:
-            4 == total
-
-            2 == TestEntity.findAllByNameOrAge("Barney", 40).size()
-            1 == TestEntity.findAllByNameOrAge("Barney", 40, [max:1]).size()
+            5 == total
+			
+			1 == TestEntity.findAllByAge(40).size()
+            2 == TestEntity.findAllByName("Barney").size()
+            1 == TestEntity.findAllByName("Barney", [max:1]).size()
     }
 
     void "Test in list query"() {
         given:
-            def age = 40
-            ["Bob", "Fred", "Barney", "Frank"].each {
-                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
-            }
+           
+			["IPhone", "Samsung", "LG", "HTC", "Nokia", "Blackberry"].each {
+				new SimpleWidget(category: "phone", name:it).save()
+			}
 
         when:
-            def total = TestEntity.count()
+            def total = SimpleWidget.count()
 
         then:
-            4 == total
-            2 == TestEntity.findAllByNameInList(["Fred", "Frank"]).size()
-            1 == TestEntity.findAllByNameInList(["Joe", "Frank"]).size()
-            0 == TestEntity.findAllByNameInList(["Jeff", "Jack"]).size()
-            2 == TestEntity.findAllByNameInListOrName(["Joe", "Frank"], "Bob").size()
+            6 == total
+            2 == SimpleWidget.findAllByNameInList(["IPhone", "Samsung"], [allowFiltering:true]).size()
+            1 == SimpleWidget.findAllByNameInList(["None", "Blackberry"], [allowFiltering:true]).size()
+            0 == SimpleWidget.findAllByNameInList(["None1", "None2"], [allowFiltering:true]).size()
+            1 == SimpleWidget.findAllByNameInListAndCategory(["None", "LG"], "phone").size()
     }
 
     void "Test like query"() {
@@ -153,12 +146,9 @@ class GormEnhancerSpec extends GormDatastoreSpec {
             def results = TestEntity.findAllByNameLike("Fr%")
 
         then:
-            2 == results.size()
-            results.find { it.name == "Fred" } != null
-            results.find { it.name == "Frank" } != null
+            thrown UnsupportedOperationException
     }
 
-    @Ignore
     void "Test ilike query"() {
         given:
             def age = 40
@@ -170,10 +160,7 @@ class GormEnhancerSpec extends GormDatastoreSpec {
             def results = TestEntity.findAllByNameIlike("fr%")
 
         then:
-            3 == results.size()
-            results.find { it.name == "Fred" } != null
-            results.find { it.name == "Frank" } != null
-            results.find { it.name == "frita" } != null
+            thrown UnsupportedOperationException
     }
 
     void "Test count by query"() {
@@ -190,8 +177,8 @@ class GormEnhancerSpec extends GormDatastoreSpec {
         then:
             3 == total
             3 == TestEntity.list().size()
-            2 == TestEntity.countByNameOrAge("Barney", 40)
-            1 == TestEntity.countByNameAndAge("Bob", 40)
+            1 == TestEntity.countByName("Barney")
+            1 == TestEntity.countByNameAndAge("Bob", 40, [allowFiltering:true])
     }
 
     void "Test dynamic finder with conjunction"() {
@@ -208,8 +195,8 @@ class GormEnhancerSpec extends GormDatastoreSpec {
             3 == total
             3 == TestEntity.list().size()
 
-            TestEntity.findByNameAndAge("Bob", 40)
-            !TestEntity.findByNameAndAge("Bob", 41)
+            TestEntity.findByNameAndAge("Bob", 40, [allowFiltering:true])
+            !TestEntity.findByNameAndAge("Bob", 41, [allowFiltering:true])
     }
 
     void "Test count() method"() {
