@@ -1,6 +1,6 @@
 project.ext {
-    springVersion = "3.2.8.RELEASE"
-    grailsVersion = "2.3.9"
+    springVersion = "3.2.9.RELEASE"
+    grailsVersion = "2.3.11"
     slf4jVersion = "1.7.5"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.1.9'
 }
@@ -121,7 +121,7 @@ subprojects {
             documentation
         }
         dependencies {
-            documentation group: 'org.grails', name: 'grails-docs', version: '2.0.0'
+            documentation group: 'org.grails', name: 'grails-docs', version: grailsVersion
             project(":grails-datastore-core")
             documentation "org.slf4j:jcl-over-slf4j:$slf4jVersion"
             documentation "org.slf4j:slf4j-api:$slf4jVersion"
