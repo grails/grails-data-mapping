@@ -23,25 +23,25 @@ abstract class GormDatastoreSpec extends Specification {
     static final CURRENT_TEST_NAME = "current.gorm.test"
     static final SETUP_CLASS_NAME = 'org.grails.datastore.gorm.Setup'
     static final TEST_CLASSES = [Artist, Book, City, ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate, 
-            ClassWithOverloadedBeforeValidate, CollectionTypes, CommonTypes, ConstrainedEntity, Country, Dog, EnumThingEnumPartitionKey, 
+            ClassWithOverloadedBeforeValidate, CommonTypes, Country, Dog, EnumThingEnumPartitionKey, 
             EnumThing, GroupWithin, Highway, Location, ModifyPerson, OptLockNotVersioned, OptLockVersioned, 
-            Person, PersonEvent, PersonLastNamePartitionKey, Plant, Publication, PublicationTitlePartitionKey, Record,
-            SimpleWidget, SimpleWidgetDefaultOrderName, Simples, TrackArtist, Task, TestEntity, UniqueGroup] /**/
+            Person, PersonEvent, PersonLastNamePartitionKey, Plant, Publication, PublicationTitlePartitionKey, 
+            SimpleWidget, SimpleWidgetDefaultOrderName, TrackArtist, Task, TestEntity, UniqueGroup] /**/
     
     @Shared Class setupClass
 
-    Session session
+    Session session	    
 
     def setupSpec() {
         ExpandoMetaClass.enableGlobally()
         setupClass = loadSetupClass()
     }
 
-    def setup() {
+    def setup() {       
         cleanRegistry()
         System.setProperty(CURRENT_TEST_NAME, this.getClass().simpleName - 'Spec')
-        session = setupClass.setup(((TEST_CLASSES + getDomainClasses()) as Set) as List)
-        DatastoreUtils.bindSession session
+        session = setupClass.setup(((TEST_CLASSES) as Set) as List, getDomainClasses())					
+        DatastoreUtils.bindSession session            
     }
 
     List getDomainClasses() {
