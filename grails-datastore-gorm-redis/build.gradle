@@ -12,10 +12,3 @@ dependencies {
                 project(":grails-datastore-gorm-tck")
     testRuntime "org.springframework:spring-expression:$springVersion"
 }
-
-/*
-test {
-    jvmArgs '-Xmx1024m', '-Xdebug', '-Xnoagent', '-Dgrails.full.stacktrace=true', '-Djava.compiler=NONE',
-            '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
-}
-*/

@@ -3,6 +3,7 @@ project.ext {
     grailsVersion = "2.3.11"
     slf4jVersion = "1.7.5"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.1.9'
+    isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 }
 
 def groovyMajorVersion = groovyVersion[0..2]
@@ -171,7 +172,18 @@ subprojects {
         }
         
         test {
-            maxHeapSize = '2048m'
+            if (isTravisBuild) {
+                maxParallelForks = 2
+                jvmArgs = ['-server', '-Xmx768M', '-XX:MaxPermSize=256m']
+                forkEvery = 30
+                afterSuite {
+                    System.out.print('.')
+                    System.out.flush()
+                }
+            } else {
+                maxParallelForks = 4
+                jvmArgs = ['-server', '-Xmx2048M', '-XX:MaxPermSize=256m']
+            }
             if(System.getProperty("debug.tests")) {
                 jvmArgs '-Xmx2g', '-Xdebug', '-Xnoagent', '-Djava.compiler=NONE',
                         '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'

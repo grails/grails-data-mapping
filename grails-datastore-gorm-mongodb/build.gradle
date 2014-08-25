@@ -98,16 +98,4 @@ test {
         exceptionFormat ='full'
     }
     forkEvery = 30
-    maxParallelForks = 4
-    jvmArgs '-server','-Xmx1024M', '-Xms64M', '-XX:PermSize=32m','-XX:MaxPermSize=256m'
 }
-
-//test {
-//    if (System.getProperty('debug', 'false') == 'true') {
-//        jvmArgs '-server','-Xmx2048M', '-Xms64M', '-XX:PermSize=32m','-XX:MaxPermSize=256m', '-Xdebug',
-//                '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
-//    }
-//    else {
-//        jvmArgs '-server','-Xmx2048M', '-Xms64M', '-XX:PermSize=32m','-XX:MaxPermSize=256m'
-//    }
-//}

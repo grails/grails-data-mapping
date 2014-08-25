@@ -62,9 +62,3 @@ dependencies {
         exclude group: 'org.grails', module:'grails-datastore-simple'
     }
 }
-
-/*
-test {
-//    jvmArgs "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
-//    jvmArgs "-agentpath:/home/stefan/packages/yjp/bin/linux-x86-64/libyjpagent.so"
-}*/
