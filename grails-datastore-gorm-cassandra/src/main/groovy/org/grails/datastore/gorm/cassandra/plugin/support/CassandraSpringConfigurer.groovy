@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.cassandra.plugin.support
 
 import org.grails.datastore.gorm.cassandra.bean.factory.CassandraDatastoreFactoryBean
 import org.grails.datastore.gorm.cassandra.bean.factory.CassandraMappingContextFactoryBean
+import org.grails.datastore.gorm.cassandra.bean.factory.DefaultMappingHolder
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.mapping.cassandra.CassandraDatastore
 
@@ -34,20 +35,24 @@ class CassandraSpringConfigurer extends SpringConfigurer {
 	Closure getSpringCustomizer() {
 		return {
 			def cassandraConfig = application.config?.grails?.cassandra?.clone()
-                        if (cassandraConfig == null) cassandraConfig = new ConfigObject()
-                        
-                        def keyspaceName = cassandraConfig.remove(CassandraDatastore.CASSANDRA_KEYSPACE) ?: application.metadata.getApplicationName()                                                                                       
-                        
+			if (cassandraConfig == null) cassandraConfig = new ConfigObject()
+						
+			def keyspaceName = cassandraConfig.remove(CassandraDatastore.CASSANDRA_KEYSPACE) ?: application.metadata.applicationName			
+			
 			cassandraMappingContext(CassandraMappingContextFactoryBean) {
-                                keyspace = keyspaceName
-                                grailsApplication = ref('grailsApplication')				
-				
+				keyspace = keyspaceName
+				grailsApplication = ref('grailsApplication')
+				if (cassandraConfig.default.mapping instanceof Closure) {
+					defaultMapping = new DefaultMappingHolder((Closure)cassandraConfig.default.mapping)
+				}
 			}
 
 			cassandraDatastore(CassandraDatastoreFactoryBean) {
 				mappingContext = cassandraMappingContext
 				config = cassandraConfig.toProperties()
 			}
+			
+			cassandraTemplate(cassandraDatastore : "getCassandraTemplate")
 		}
 	}
 }
