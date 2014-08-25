@@ -123,6 +123,7 @@ subprojects {
         }
         dependencies {
             documentation group: 'org.grails', name: 'grails-docs', version: grailsVersion
+            documentation group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
             project(":grails-datastore-core")
             documentation "org.slf4j:jcl-over-slf4j:$slf4jVersion"
             documentation "org.slf4j:slf4j-api:$slf4jVersion"
