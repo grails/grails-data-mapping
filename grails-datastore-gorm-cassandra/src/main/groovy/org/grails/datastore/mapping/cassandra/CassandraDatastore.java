@@ -41,6 +41,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
+import org.springframework.data.cassandra.core.CassandraAdminTemplate;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
@@ -66,6 +67,8 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
     protected com.datastax.driver.core.Session nativeSession;
     protected BasicCassandraMappingContext springCassandraMappingContext;
     protected CassandraTemplate cassandraTemplate;
+    protected CassandraAdminTemplate cassandraAdminTemplate;
+    
     protected boolean stateless = false;
     protected String keyspace;
 
@@ -79,7 +82,8 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 
     public CassandraDatastore(CassandraMappingContext mappingContext, Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         super(mappingContext, connectionDetails, ctx);
-        this.keyspace = mappingContext.getKeyspace();                
+        this.keyspace = mappingContext.getKeyspace();   
+        Assert.hasText(keyspace, "Keyspace must be set");
         springCassandraMappingContext = new BasicCassandraMappingContext();        
         
         mappingContext.setSpringCassandraMappingContext(springCassandraMappingContext);
@@ -100,20 +104,24 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 
     public Cluster createCluster() throws Exception {
         if (nativeCluster == null) {
-            CassandraCqlClusterFactoryBean cassandraClusterFactory = new CassandraCqlClusterFactoryBean();
+            CassandraCqlClusterFactoryBean cassandraClusterFactory = createCassandraCqlClusterFactoryBean();
             cassandraClusterFactory.setContactPoints(read(String.class, CASSANDRA_CONTACT_POINTS, connectionDetails, CassandraCqlClusterFactoryBean.DEFAULT_CONTACT_POINTS));
             cassandraClusterFactory.setPort(read(Integer.class, CASSANDRA_PORT, connectionDetails, CassandraCqlClusterFactoryBean.DEFAULT_PORT));
             cassandraClusterFactory.afterPropertiesSet();
             nativeCluster = cassandraClusterFactory.getObject();
+            if (nativeCluster == null) {
+            	throw new RuntimeException("Cassandra driver cluster not created");
+            }
         }
         return nativeCluster;
     }
 
+	
+
     public com.datastax.driver.core.Session createNativeSession() throws ClassNotFoundException, Exception {
         if (nativeSession == null) {
-            Assert.notNull(nativeCluster);
-            Assert.notNull(keyspace);
-            GormCassandraSessionFactoryBean cassandraSessionFactory = new GormCassandraSessionFactoryBean();
+            Assert.notNull(nativeCluster, "Cassandra driver cluster not created");            
+            GormCassandraSessionFactoryBean cassandraSessionFactory = createCassandraSessionFactory();
             cassandraSessionFactory.setCluster(nativeCluster);
             cassandraSessionFactory.setKeyspaceName(this.keyspace);
             MappingCassandraConverter mappingCassandraConverter = new MappingCassandraConverter(cassandraMapping());            
@@ -124,11 +132,11 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
             cassandraSessionFactory.afterPropertiesSet();
             nativeSession = cassandraSessionFactory.getObject();
             cassandraTemplate = new CassandraTemplate(nativeSession, mappingCassandraConverter);
+            cassandraAdminTemplate = new CassandraAdminTemplate(nativeSession, mappingCassandraConverter);
         }
         return nativeSession;
-    }      
-    
-    
+    }
+	         
     public org.springframework.data.cassandra.mapping.CassandraMappingContext cassandraMapping() throws ClassNotFoundException {
         Collection<PersistentEntity> persistentEntities = mappingContext.getPersistentEntities();
         Set<Class<?>> entitySet = new HashSet<Class<?>>();
@@ -141,6 +149,14 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
         return springCassandraMappingContext;
     }
 
+    protected CassandraCqlClusterFactoryBean createCassandraCqlClusterFactoryBean() {		
+		return new CassandraCqlClusterFactoryBean();
+	}
+    
+    protected GormCassandraSessionFactoryBean createCassandraSessionFactory() {
+		return new GormCassandraSessionFactoryBean();		
+	}  
+    
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
         if (stateless) {
@@ -169,6 +185,16 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
         return nativeSession;
     }
 
+    public CassandraTemplate getCassandraTemplate() {
+		return cassandraTemplate;
+	}
+    
+    public void createTableDefinition(Class<?> cls) {
+    	cassandraAdminTemplate.createTable(true, cassandraTemplate.getTableName(cls), cls, null);
+    	CassandraPersistentEntity<?> cassandraPersistentEntity = springCassandraMappingContext.getPersistentEntity(cls);
+    	GormCassandraSessionFactoryBean.createIndex(cassandraPersistentEntity, cassandraAdminTemplate);    
+    }       
+    
     @Override
     public void destroy() throws Exception {
         super.destroy();
@@ -202,26 +228,30 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
         }
 
         private void createIndex() {
-            Collection<? extends CassandraPersistentEntity<?>> entities = converter.getMappingContext().getNonPrimaryKeyEntities();
+            Collection<? extends CassandraPersistentEntity<?>> entities = mappingContext.getNonPrimaryKeyEntities();
             for (final CassandraPersistentEntity<?> entity : entities) {
-                entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
-                    @Override
-                    public void doWithPersistentProperty(CassandraPersistentProperty persistentProperty) {
-                        if (persistentProperty.isIndexed()) {
-                            final CreateIndexSpecification createIndexSpecification = new CreateIndexSpecification();
-                            createIndexSpecification.tableName(entity.getTableName()).columnName(persistentProperty.getColumnName()).ifNotExists();
-                            admin.execute(new SessionCallback<ResultSet>() {
-                                @Override
-                                public ResultSet doInSession(com.datastax.driver.core.Session s) throws DataAccessException {
-                                    String cql = CreateIndexCqlGenerator.toCql(createIndexSpecification);
-                                    log.debug(cql);
-                                    return s.execute(cql);
-                                }
-                            });
-                        }
-                    }
-                });
+                createIndex(entity, admin);
             }
+        }
+        
+        private static void createIndex(final CassandraPersistentEntity<?> entity, final CassandraAdminTemplate cassandraAdminTemplate) {
+        	entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
+                @Override
+                public void doWithPersistentProperty(CassandraPersistentProperty persistentProperty) {
+                    if (persistentProperty.isIndexed()) {
+                        final CreateIndexSpecification createIndexSpecification = new CreateIndexSpecification();
+                        createIndexSpecification.tableName(entity.getTableName()).columnName(persistentProperty.getColumnName()).ifNotExists();
+                        cassandraAdminTemplate.execute(new SessionCallback<ResultSet>() {
+                            @Override
+                            public ResultSet doInSession(com.datastax.driver.core.Session s) throws DataAccessException {
+                                String cql = CreateIndexCqlGenerator.toCql(createIndexSpecification);
+                                log.debug(cql);
+                                return s.execute(cql);
+                            }
+                        });
+                    }
+                }
+            });
         }
     }
 }
