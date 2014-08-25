@@ -15,12 +15,15 @@
 package org.grails.datastore.gorm.cassandra.bean.factory
 
 
+import groovy.transform.Canonical
+
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.springframework.util.Assert
 import org.springframework.util.ClassUtils
 
 /**
@@ -29,6 +32,8 @@ import org.springframework.util.ClassUtils
  */
 class CassandraMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
 	String keyspace
+	DefaultMappingHolder defaultMapping
+	
     /**
      * What must be specified as a value of 'mapWith' to map the
      * domain class with the Cassandra Gorm plugin if the Hibernate plugin is
@@ -80,7 +85,12 @@ class CassandraMappingContextFactoryBean extends AbstractMappingContextFactoryBe
 
     @Override
     protected MappingContext createMappingContext() {
-        new CassandraMappingContext(keyspace)        
+		Assert.hasText(keyspace, "Property [keyspace] must be set!")
+        new CassandraMappingContext(keyspace, defaultMapping?.defaultMapping)        
     }
 }
 
+@Canonical
+class DefaultMappingHolder {
+	Closure defaultMapping
+}
