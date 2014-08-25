@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.cassandra.core.CassandraTemplate;
+import org.springframework.util.Assert;
 
 import com.datastax.driver.core.Session;
 
@@ -42,6 +43,7 @@ public class CassandraSession extends AbstractSession<Session> {
 
     public CassandraSession(Datastore ds, MappingContext context, Session session, ApplicationEventPublisher applicationEventPublisher, boolean stateless, CassandraTemplate cassandraTemplate) {
         super(ds, context, applicationEventPublisher, stateless);
+        Assert.notNull(session, "Native session to Cassandra is null");
         this.applicationEventPublisher = applicationEventPublisher;
         this.session = session;
         this.cassandraTemplate = cassandraTemplate;
