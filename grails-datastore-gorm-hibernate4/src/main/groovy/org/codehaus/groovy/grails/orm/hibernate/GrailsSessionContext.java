@@ -231,13 +231,8 @@ public class GrailsSessionContext implements CurrentSessionContext {
     protected void lookupConstructors() {
         springFlushSynchronizationConstructor = lookupConstructor(
                 "org.springframework.orm.hibernate4.SpringFlushSynchronization", Session.class);
-        try{
-            springSessionSynchronizationConstructor = lookupConstructor(
+        springSessionSynchronizationConstructor = lookupConstructor(
                 "org.springframework.orm.hibernate4.SpringSessionSynchronization", SessionHolder.class, SessionFactory.class);
-        }catch(Exception e){
-            springSessionSynchronizationConstructor = lookupConstructor(
-                "org.springframework.orm.hibernate4.SpringSessionSynchronization", SessionHolder.class, SessionFactory.class, int.class);
-        }
     }
 
     protected Constructor<?> lookupConstructor(String className, Class<?>... argTypes) {
@@ -264,11 +259,7 @@ public class GrailsSessionContext implements CurrentSessionContext {
     }
 
     protected TransactionSynchronization createSpringSessionSynchronization(SessionHolder sessionHolder) {
-        if(springSessionSynchronizationConstructor.getTypeParameters().length==3){
-            return (TransactionSynchronization)create(springSessionSynchronizationConstructor, sessionHolder, sessionFactory);
-        }else{
-            return (TransactionSynchronization)create(springSessionSynchronizationConstructor, sessionHolder, sessionFactory, true);
-        }
+        return (TransactionSynchronization)create(springSessionSynchronizationConstructor, sessionHolder, sessionFactory);
     }
 
     protected Object create(Constructor<?> constructor, Object... args) {
