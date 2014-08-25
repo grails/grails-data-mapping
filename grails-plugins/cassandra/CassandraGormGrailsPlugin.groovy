@@ -27,12 +27,12 @@ class CassandraGormGrailsPlugin {
 		def datastore = ctx.cassandraDatastore
 		def transactionManager = ctx.TransactionManager
 		def methodsConfigurer = new CassandraMethodsConfigurer(datastore, transactionManager)
-		methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")
+		methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")
 		def foe = application?.config?.grails?.gorm?.failOnError
 		methodsConfigurer.failOnError = foe instanceof Boolean ? foe : false
 		methodsConfigurer.configure()
 	}
-
+    
 	def onChange = { event ->
 		if (event.ctx) {
 			//TODO create cassandraOnChangeHandler
