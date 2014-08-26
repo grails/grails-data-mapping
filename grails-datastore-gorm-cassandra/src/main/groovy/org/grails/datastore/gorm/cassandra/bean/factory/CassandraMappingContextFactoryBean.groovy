@@ -14,10 +14,9 @@
  */
 package org.grails.datastore.gorm.cassandra.bean.factory
 
-
+import grails.core.GrailsDomainClass
 import groovy.transform.Canonical
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
@@ -62,7 +61,7 @@ class CassandraMappingContextFactoryBean extends AbstractMappingContextFactoryBe
         def isHibernateInstalled = ClassUtils.isPresent("org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateDatastore", getClass().getClassLoader())       
         //For now, only add domain classes to mappingContext if mapped by 'cassandra' or hibernate not installed       
         if (grailsApplication) {            
-            for (GrailsDomainClass domainClass in grailsApplication.domainClasses) {                
+            for (GrailsDomainClass domainClass in grailsApplication.domainClasses) {
                 def domainMappingStrategy = domainClass.mappingStrategy
                 PersistentEntity entity 
                                
