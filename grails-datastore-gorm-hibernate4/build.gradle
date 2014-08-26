@@ -128,8 +128,7 @@ eclipse {
 }
 
 test {
-    testLogging {
-        exceptionFormat ='full'
+    if (!isTravisBuild) {
+        forkEvery = 30
     }
-    forkEvery = 30
 }

@@ -30,8 +30,3 @@ sourceSets {
         compileClasspath += configurations.grails
     }
 }
-
-//test {
-//        maxParallelForks = 4
-//        forkEvery = 25
-//}
