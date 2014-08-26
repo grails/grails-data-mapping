@@ -21,7 +21,7 @@ import org.springframework.validation.Validator;
  * Extends the default Spring Validator interface and provides an additional method that specifies whether
  * validation should cascade into associations.
  */
-public interface CascadingValidator extends Validator, org.codehaus.groovy.grails.validation.CascadingValidator {
+public interface CascadingValidator extends Validator, grails.validation.CascadingValidator {
 
     /**
      * An extended version of the validate(errors,obj) method that takes an additional argument specifying whether

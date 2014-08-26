@@ -33,6 +33,7 @@ include ("grails-datastore-core",
         'grails-plugins:redis',
         'grails-plugins:riak',
 */
+        'grails-plugins/hibernate',
 
         // Boot Extensions
 //        'boot-plugins/gorm-hibernate4-spring-boot',

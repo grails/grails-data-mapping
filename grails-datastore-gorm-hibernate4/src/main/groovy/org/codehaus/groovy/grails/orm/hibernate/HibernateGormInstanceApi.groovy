@@ -15,11 +15,11 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.GrailsDomainClass
 import groovy.transform.CompileStatic
 
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.core.artefact.DomainClassArtefactHandler
 import org.hibernate.engine.spi.EntityEntry
 import org.hibernate.engine.spi.SessionImplementor
 

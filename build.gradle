@@ -1,6 +1,6 @@
 project.ext {
     springVersion = "4.0.5.RELEASE"
-    grailsVersion = "2.3.9"
+    grailsVersion = "3.0.0.BUILD-SNAPSHOT"
     slf4jVersion = "1.7.5"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.1.9'
 }

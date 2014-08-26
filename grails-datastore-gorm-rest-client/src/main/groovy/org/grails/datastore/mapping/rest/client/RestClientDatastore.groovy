@@ -18,8 +18,6 @@ import grails.plugins.rest.client.RestBuilder
 import grails.plugins.rest.client.async.AsyncRestBuilder
 import grails.rest.render.RendererRegistry
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.web.binding.bindingsource.DataBindingSourceRegistry
-import org.codehaus.groovy.grails.web.binding.bindingsource.DefaultDataBindingSourceRegistry
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository
 import org.grails.datastore.mapping.core.AbstractDatastore
 import org.grails.datastore.mapping.core.Session
@@ -28,6 +26,8 @@ import org.grails.datastore.mapping.rest.client.config.Endpoint
 import org.grails.datastore.mapping.rest.client.config.RestClientMappingContext
 import org.grails.datastore.mapping.rest.client.http.converters.PersistentEntityHttpConverter
 import org.grails.plugins.web.rest.render.DefaultRendererRegistry
+import org.grails.web.databinding.bindingsource.DataBindingSourceRegistry
+import org.grails.web.databinding.bindingsource.DefaultDataBindingSourceRegistry
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.web.client.RestTemplate

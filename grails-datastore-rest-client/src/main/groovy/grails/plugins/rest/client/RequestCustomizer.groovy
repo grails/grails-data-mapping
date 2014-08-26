@@ -31,7 +31,7 @@ import org.springframework.http.MediaType
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 
-import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
+import static grails.web.http.HttpHeaders.*
 
 /**
  * Core of the DSL for building REST requests

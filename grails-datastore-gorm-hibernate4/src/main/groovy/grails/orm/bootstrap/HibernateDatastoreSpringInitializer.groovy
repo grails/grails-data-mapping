@@ -17,6 +17,7 @@ package grails.orm.bootstrap
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.codehaus.groovy.grails.orm.hibernate.*
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler
@@ -49,7 +50,7 @@ import javax.sql.DataSource
 class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory"
 
-    String defaultDataSourceBeanName = "dataSource"
+    String defaultDataSourceBeanName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
     String defaultSessionFactoryBeanName = SESSION_FACTORY_BEAN_NAME
     String ddlAuto = "update"
     Set<String> dataSources = [defaultDataSourceBeanName]
@@ -152,7 +153,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 // Used to detect the database dialect to use
                 if(noDialect) {
                     "dialectDetector$suffix"(HibernateDialectDetectorFactoryBean) {
-                        dataSource = ref(dataSourceName)
+                        dataSource = ref("dataSource$suffix")
                         vendorNameDialectMappings = vendorToDialect
                     }
                 }
@@ -172,13 +173,13 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 if(!beanDefinitionRegistry.containsBeanDefinition(sessionFactoryName)) {
                     "$sessionFactoryName"(ConfigurableLocalSessionFactoryBean) { bean ->
                         bean.autowire = "byType"
-                        dataSource = ref(dataSourceName)
+                        dataSource = ref("dataSource$suffix")
                         delegate.hibernateProperties = ref("hibernateProperties$suffix")
                         grailsApplication = ref(GrailsApplication.APPLICATION_ID)
                         entityInterceptor = ref("entityInterceptor$suffix")
 
                         List hibConfigLocations = []
-                        def cl = classLoader ?: Thread.currentThread().contextClassLoader
+                        def cl = Thread.currentThread().contextClassLoader
                         if (cl.getResource(prefix + 'hibernate.cfg.xml')) {
                             hibConfigLocations << 'classpath:' + prefix + 'hibernate.cfg.xml'
                         }
@@ -208,7 +209,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                     "transactionManager$suffix"(GrailsHibernateTransactionManager) { bean ->
                         bean.autowire = "byName"
                         sessionFactory = ref(sessionFactoryName)
-                        dataSource = ref(dataSourceName)
+                        dataSource = ref("dataSource$suffix")
                     }
                 }
 

@@ -18,7 +18,7 @@ package org.codehaus.groovy.grails.orm.hibernate.support;
 import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest;
+import org.grails.web.servlet.mvc.GrailsWebRequest;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

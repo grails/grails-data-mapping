@@ -15,8 +15,8 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
+import grails.core.GrailsApplication;
 import groovy.lang.Closure;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.hibernate.Criteria;

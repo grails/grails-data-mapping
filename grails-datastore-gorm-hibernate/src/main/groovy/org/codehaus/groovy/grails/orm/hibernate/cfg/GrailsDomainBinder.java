@@ -17,13 +17,13 @@ package org.codehaus.groovy.grails.orm.hibernate.cfg;
 import java.util.Arrays;
 import java.util.List;
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import grails.core.GrailsDomainClass;
+import grails.core.GrailsDomainClassProperty;
+import grails.validation.ConstrainedProperty;
+import grails.validation.Constraint;
 import org.codehaus.groovy.grails.orm.hibernate.persister.entity.GroovyAwareJoinedSubclassEntityPersister;
 import org.codehaus.groovy.grails.orm.hibernate.persister.entity.GroovyAwareSingleTableEntityPersister;
 import org.codehaus.groovy.grails.orm.hibernate.validation.UniqueConstraint;
-import org.codehaus.groovy.grails.validation.ConstrainedProperty;
-import org.codehaus.groovy.grails.validation.Constraint;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.Table;
 

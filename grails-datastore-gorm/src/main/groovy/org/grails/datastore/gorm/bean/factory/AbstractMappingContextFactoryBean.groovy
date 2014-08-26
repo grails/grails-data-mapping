@@ -14,10 +14,10 @@
  */
 package org.grails.datastore.gorm.bean.factory
 
+import grails.core.GrailsApplication
+import grails.core.GrailsDomainClass
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 import org.grails.datastore.mapping.model.MappingContext

@@ -15,11 +15,12 @@
 
 package org.grails.datastore.gorm.plugin.support
 
+import grails.core.GrailsDomainClassProperty
+import grails.core.GrailsServiceClass
+import org.grails.validation.GrailsDomainClassValidator
+
 import java.lang.reflect.Method
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.codehaus.groovy.grails.commons.GrailsServiceClass
-import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager

@@ -16,14 +16,15 @@ package org.grails.datastore.mapping.rest.client.engine
 
 import grails.async.Promise
 import grails.async.PromiseList
+import grails.core.GrailsDomainClassProperty
+import grails.databinding.DataBindingSource
 import grails.plugins.rest.client.RestBuilder
 import grails.plugins.rest.client.RestResponse
 import grails.plugins.rest.client.async.AsyncRestBuilder
 import grails.util.GrailsNameUtils
+import grails.web.databinding.DataBindingUtils
+import grails.web.mime.MimeType
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.web.binding.DataBindingUtils
-import org.codehaus.groovy.grails.web.mime.MimeType
-import org.grails.databinding.DataBindingSource
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionImplementor
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
@@ -43,7 +44,6 @@ import org.grails.datastore.mapping.rest.client.config.RestClientMappingContext
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter
 import org.grails.datastore.mapping.rest.client.RestClientException
 import org.grails.datastore.mapping.rest.client.RestClientSession
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.grails.datastore.mapping.rest.client.query.RequestParameterRestClientQuery
 
 /**

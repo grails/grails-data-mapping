@@ -16,15 +16,14 @@
 package org.codehaus.groovy.grails.orm.hibernate.cfg
 
 import grails.artefact.Enhanced
+import grails.core.GrailsApplication
+import grails.core.GrailsDomainClass
+import grails.core.GrailsDomainClassProperty
+import grails.util.GrailsClassUtils
 import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsClassUtils
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormInstanceApi
@@ -33,7 +32,7 @@ import org.codehaus.groovy.grails.orm.hibernate.HibernateGormValidationApi
 import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
 import org.codehaus.groovy.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.codehaus.groovy.runtime.StringGroovyMethods
+import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity

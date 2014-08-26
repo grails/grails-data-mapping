@@ -18,15 +18,15 @@ import com.mongodb.DBAddress
 import com.mongodb.Mongo
 import com.mongodb.MongoClientURI
 import com.mongodb.MongoOptions
+import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.InstanceFactoryBean
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoDatastoreFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoMappingContextFactoryBean
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.grails.spring.beans.factory.InstanceFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.GenericApplicationContext

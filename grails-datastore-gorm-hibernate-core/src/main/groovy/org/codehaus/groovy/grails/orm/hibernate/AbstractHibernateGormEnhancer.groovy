@@ -14,11 +14,15 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.GrailsApplication
+import grails.core.GrailsDomainClass
+import grails.util.GrailsClassUtils
 import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-import org.codehaus.groovy.grails.commons.*
 import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateNamedQueriesBuilder
+import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.core.support.GrailsDomainConfigurationUtil
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity

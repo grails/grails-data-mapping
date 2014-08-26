@@ -17,7 +17,7 @@ package org.codehaus.groovy.grails.orm.hibernate;
 
 import java.util.Collection;
 
-import org.codehaus.groovy.grails.commons.GrailsApplication;
+import grails.core.GrailsApplication;
 import org.hibernate.EntityMode;
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;

@@ -1,6 +1,7 @@
 package org.codehaus.groovy.grails.compiler.gorm
 
 import grails.artefact.Artefact
+import grails.util.GrailsClassUtils
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
@@ -28,11 +29,10 @@ import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.codehaus.groovy.ast.tools.GenericsUtils
 import org.codehaus.groovy.classgen.GeneratorContext
 import org.codehaus.groovy.control.SourceUnit
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsClassUtils
-import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
 import org.codehaus.groovy.grails.compiler.injection.AstTransformer
 import org.codehaus.groovy.grails.compiler.injection.GrailsArtefactClassInjector
+import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.core.support.GrailsDomainConfigurationUtil
 
 import static org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils.*
 import org.codehaus.groovy.grails.compiler.injection.GrailsDomainClassInjector

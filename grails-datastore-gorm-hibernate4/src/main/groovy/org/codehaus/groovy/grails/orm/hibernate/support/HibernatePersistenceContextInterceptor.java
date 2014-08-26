@@ -15,14 +15,14 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
+import grails.core.GrailsDomainClassProperty;
+import grails.persistence.support.PersistenceContextInterceptor;
 import grails.validation.DeferredBindingActions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.codehaus.groovy.grails.lifecycle.ShutdownOperations;
 import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
+import org.grails.core.lifecycle.ShutdownOperations;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

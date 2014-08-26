@@ -15,6 +15,7 @@
  */
 package org.codehaus.groovy.grails.compiler.gorm;
 
+import grails.compiler.ast.AstTransformer;
 import grails.persistence.Entity;
 import grails.persistence.PersistenceMethod;
 
@@ -31,14 +32,12 @@ import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.control.SourceUnit;
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.metaclass.CreateDynamicMethod;
-import org.codehaus.groovy.grails.compiler.injection.AbstractGrailsArtefactTransformer;
-import org.codehaus.groovy.grails.compiler.injection.AstTransformer;
-import org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils;
-import org.codehaus.groovy.grails.io.support.GrailsResourceUtils;
+import org.grails.compiler.injection.AbstractGrailsArtefactTransformer;
+import org.grails.compiler.injection.GrailsASTUtils;
+import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.datastore.gorm.GormInstanceApi;
 import org.grails.datastore.gorm.GormStaticApi;
+import org.grails.io.support.GrailsResourceUtils;
 
 /**
  * Transforms GORM entities making the GORM API available to Java.
@@ -51,7 +50,8 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
 
     public static final String NEW_INSTANCE_METHOD = "newInstance";
 
-    private static final Set<String> EXCLUDES = new HashSet<String>(Arrays.asList("create", "setTransactionManager"));
+    public static final String CREATE_METHOD_NAME = "create";
+    private static final Set<String> EXCLUDES = new HashSet<String>(Arrays.asList(CREATE_METHOD_NAME, "setTransactionManager"));
     private static final Set<String> INCLUDES = new HashSet<String>(Arrays.asList("getAll", "getCount", "getValidationSkipMap", "getValidationErrorsMap", "getAsync"));
     private static final Set<String> TRANSFORMED_CLASSES = new HashSet<String>();
 
@@ -100,10 +100,10 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
 
         final BlockStatement methodBody = new BlockStatement();
         methodBody.addStatement(new ExpressionStatement(new MethodCallExpression(new ClassExpression(classNode), NEW_INSTANCE_METHOD,ZERO_ARGS)));
-        MethodNode methodNode = classNode.getDeclaredMethod(CreateDynamicMethod.METHOD_NAME, ZERO_PARAMETERS);
+        MethodNode methodNode = classNode.getDeclaredMethod(CREATE_METHOD_NAME, ZERO_PARAMETERS);
         classNode = GrailsASTUtils.nonGeneric(classNode);
         if (methodNode == null) {
-            classNode.addMethod(new MethodNode(CreateDynamicMethod.METHOD_NAME, PUBLIC_STATIC_MODIFIER, classNode, ZERO_PARAMETERS,null, methodBody));
+            classNode.addMethod(new MethodNode(CREATE_METHOD_NAME, PUBLIC_STATIC_MODIFIER, classNode, ZERO_PARAMETERS,null, methodBody));
         }
     }
 

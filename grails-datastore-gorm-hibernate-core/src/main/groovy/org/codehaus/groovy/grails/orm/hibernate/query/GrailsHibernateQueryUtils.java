@@ -1,6 +1,6 @@
 package org.codehaus.groovy.grails.orm.hibernate.query;
 
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
+import grails.util.GrailsClassUtils;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.Mapping;
 import org.grails.datastore.gorm.finders.DynamicFinder;

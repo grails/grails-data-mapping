@@ -15,6 +15,12 @@ dependencies {
     optional("org.grails:grails-web:$grailsVersion") {
         transitive = false
     }
+    optional("org.grails:grails-web-common:$grailsVersion") {
+        transitive = false
+    }
+    optional("org.grails:grails-web-url-mappings:$grailsVersion") {
+        transitive = false
+    }
     optional("org.grails:grails-spring:$grailsVersion") {
         transitive = false
     }

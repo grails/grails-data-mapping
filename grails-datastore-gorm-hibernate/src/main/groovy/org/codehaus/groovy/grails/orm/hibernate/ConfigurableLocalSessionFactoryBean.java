@@ -14,6 +14,8 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
+import grails.core.GrailsApplication;
+import grails.core.GrailsDomainClassProperty;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
 
@@ -27,8 +29,6 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.DefaultGrailsDomainConfiguration;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainConfiguration;
 import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor;

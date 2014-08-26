@@ -15,6 +15,8 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
+import grails.core.GrailsApplication;
+import grails.core.GrailsDomainClassProperty;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
 
@@ -28,8 +30,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration;
 import org.codehaus.groovy.grails.orm.hibernate.transaction.GrailsJdbcTransactionFactory;
 import org.hibernate.HibernateException;

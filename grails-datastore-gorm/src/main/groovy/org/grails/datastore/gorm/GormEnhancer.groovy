@@ -14,13 +14,13 @@
  */
 package org.grails.datastore.gorm
 
+import grails.util.GrailsMetaClassUtils
 import grails.util.GrailsNameUtils
+import grails.validation.ConstrainedProperty
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
-import org.codehaus.groovy.grails.commons.GrailsMetaClassUtils
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.codehaus.groovy.reflection.CachedMethod
 import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException

@@ -1,10 +1,10 @@
 package org.codehaus.groovy.grails.orm.hibernate.support
 
+import grails.core.GrailsDomainClassProperty
+import grails.core.support.proxy.ProxyHandler
 import grails.validation.ValidationErrors
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.codehaus.groovy.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler
-import org.codehaus.groovy.grails.support.proxy.ProxyHandler
 import org.codehaus.groovy.runtime.StringGroovyMethods
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association

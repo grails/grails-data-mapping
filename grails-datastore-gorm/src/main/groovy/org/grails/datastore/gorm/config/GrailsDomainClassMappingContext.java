@@ -15,10 +15,10 @@
 
 package org.grails.datastore.gorm.config;
 
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
+import grails.core.GrailsApplication;
+import grails.core.GrailsClass;
+import grails.core.GrailsDomainClass;
+import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.MappingFactory;

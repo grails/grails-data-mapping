@@ -15,8 +15,8 @@
 package org.grails.datastore.gorm.async
 
 import grails.async.DelegateAsync
-import org.grails.async.decorator.PromiseDecorator
-import org.grails.async.decorator.PromiseDecoratorProvider
+import grails.async.decorator.PromiseDecorator
+import grails.async.decorator.PromiseDecoratorProvider
 import org.grails.datastore.gorm.query.GormOperations
 
 /**
@@ -25,7 +25,7 @@ import org.grails.datastore.gorm.query.GormOperations
  * @author Graeme Rocher
  * @since 2.3
  */
-class AsyncQuery<E> implements PromiseDecoratorProvider{
+class AsyncQuery<E> implements PromiseDecoratorProvider {
 
     @DelegateAsync GormOperations<E> gormOperations
 

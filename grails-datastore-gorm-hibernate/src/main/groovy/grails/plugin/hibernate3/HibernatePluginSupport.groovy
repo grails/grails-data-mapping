@@ -15,15 +15,14 @@
  */
 package grails.plugin.hibernate3
 
+import grails.core.GrailsApplication
+import grails.core.GrailsDomainClass
+import grails.core.GrailsDomainClassProperty
+import grails.validation.ConstrainedProperty
+import grails.validation.ConstraintsEvaluator
 import groovy.transform.CompileStatic
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.codehaus.groovy.grails.commons.spring.DefaultRuntimeSpringConfiguration
-import org.codehaus.groovy.grails.commons.spring.GrailsRuntimeConfigurator
-import org.codehaus.groovy.grails.commons.spring.RuntimeSpringConfiguration
 import org.codehaus.groovy.grails.orm.hibernate.ConfigurableLocalSessionFactoryBean
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTransactionManager
 import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore
@@ -45,9 +44,10 @@ import org.codehaus.groovy.grails.orm.hibernate.validation.HibernateConstraintsE
 import org.codehaus.groovy.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.codehaus.groovy.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.codehaus.groovy.grails.orm.hibernate.validation.UniqueConstraint
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
-import org.codehaus.groovy.grails.validation.ConstraintsEvaluator
 import org.grails.datastore.mapping.model.MappingContext
+import org.grails.spring.DefaultRuntimeSpringConfiguration
+import org.grails.spring.RuntimeSpringConfiguration
+import org.grails.web.servlet.context.support.GrailsRuntimeConfigurator
 import org.hibernate.EmptyInterceptor
 import org.hibernate.cfg.ImprovedNamingStrategy
 import org.springframework.beans.factory.config.BeanDefinition

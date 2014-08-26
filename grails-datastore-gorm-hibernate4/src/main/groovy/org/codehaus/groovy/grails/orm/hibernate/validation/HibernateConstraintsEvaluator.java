@@ -16,11 +16,12 @@ package org.codehaus.groovy.grails.orm.hibernate.validation;
 
 import java.util.Map;
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import grails.core.GrailsDomainClassProperty;
+import grails.validation.Constrained;
+import grails.validation.ConstrainedProperty;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.PropertyConfig;
-import org.codehaus.groovy.grails.validation.ConstrainedProperty;
-import org.codehaus.groovy.grails.validation.DefaultConstraintEvaluator;
+import org.grails.validation.DefaultConstraintEvaluator;
 
 /**
  * Extends default implementation to add Hibernate specific exceptions.
@@ -39,7 +40,7 @@ public class HibernateConstraintsEvaluator extends DefaultConstraintEvaluator {
     }
 
     @Override
-    protected void applyDefaultNullableConstraint(GrailsDomainClassProperty p, ConstrainedProperty cp) {
+    protected void applyDefaultNullableConstraint(GrailsDomainClassProperty p, Constrained cp) {
         final PropertyConfig propertyConfig = new GrailsDomainBinder().getPropertyConfig(p);
         boolean insertable = propertyConfig != null ? propertyConfig.isInsertable() : true;
 

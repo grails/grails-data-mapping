@@ -15,7 +15,7 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
-import org.codehaus.groovy.grails.web.servlet.mvc.RedirectEventListener;
+import grails.web.mapping.mvc.RedirectEventListener;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

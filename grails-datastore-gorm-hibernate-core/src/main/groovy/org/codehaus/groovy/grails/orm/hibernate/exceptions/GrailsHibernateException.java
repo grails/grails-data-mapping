@@ -15,7 +15,8 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.exceptions;
 
-import org.codehaus.groovy.grails.exceptions.GrailsException;
+
+import org.grails.core.exceptions.GrailsException;
 
 /**
  * Base exception class for errors related to Hibernate configuration in Grails.

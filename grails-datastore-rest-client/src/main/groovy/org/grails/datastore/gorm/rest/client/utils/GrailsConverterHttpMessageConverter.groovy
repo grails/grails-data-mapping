@@ -15,7 +15,7 @@
 package org.grails.datastore.gorm.rest.client.utils
 
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.web.converters.Converter
+import org.grails.web.converters.Converter
 import org.springframework.http.HttpInputMessage
 import org.springframework.http.HttpOutputMessage
 import org.springframework.http.MediaType

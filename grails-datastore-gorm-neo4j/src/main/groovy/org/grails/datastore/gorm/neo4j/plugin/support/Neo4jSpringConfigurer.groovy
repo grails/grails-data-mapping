@@ -15,7 +15,7 @@
 package org.grails.datastore.gorm.neo4j.plugin.support
 
 import org.apache.tomcat.jdbc.pool.PoolProperties
-import org.codehaus.groovy.grails.support.ClassEditor
+import org.grails.core.support.ClassEditor
 import org.grails.datastore.gorm.neo4j.engine.JdbcCypherEngine
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean

@@ -15,12 +15,12 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.validation;
 
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import grails.core.GrailsDomainClass;
+import grails.core.GrailsDomainClassProperty;
+import grails.core.support.proxy.ProxyHandler;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
-import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
-import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator;
+import org.grails.core.artefact.DomainClassArtefactHandler;
+import org.grails.validation.GrailsDomainClassValidator;
 import org.hibernate.FlushMode;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;

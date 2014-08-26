@@ -17,6 +17,8 @@ dependencies {
 //        exclude group:'org.grails', module:'grails-plugin-controllers'
 //        exclude group:'org.grails', module:'grails-web'
 //    }
+
+    compile("org.grails:grails-async:$grailsVersion")
     compile("org.grails:grails-core:$grailsVersion") {
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'com.googlecode.concurrentlinkedhashmap', module:'concurrentlinkedhashmap-lru'

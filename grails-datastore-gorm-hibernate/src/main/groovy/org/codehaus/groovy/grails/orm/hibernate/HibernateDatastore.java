@@ -14,12 +14,12 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
+import grails.core.GrailsApplication;
+import grails.core.support.GrailsApplicationAware;
 import groovy.util.ConfigObject;
 
 import java.util.Map;
 
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.hibernate.SessionFactory;

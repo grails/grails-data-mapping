@@ -21,10 +21,10 @@ import java.util.Map;
 
 import javax.persistence.FlushModeType;
 
-import org.codehaus.groovy.grails.commons.GrailsApplication;
+import grails.core.GrailsApplication;
+import grails.core.support.proxy.ProxyHandler;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.codehaus.groovy.grails.orm.hibernate.query.HibernateQuery;
-import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;

@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import grails.core.GrailsDomainClass;
+import grails.core.GrailsDomainClassProperty;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;

@@ -14,9 +14,9 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.validation;
 
-import org.codehaus.groovy.grails.exceptions.GrailsDomainException;
 import org.codehaus.groovy.grails.validation.Constraint;
 import org.codehaus.groovy.grails.validation.ConstraintFactory;
+import org.grails.core.exceptions.GrailsDomainException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 

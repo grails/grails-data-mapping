@@ -1,0 +1,45 @@
+
+group = "org.grails.plugins"
+version = "4.3.5.5.BUILD-SNAPSHOT"
+project.archivesBaseName = 'hibernate'
+
+apply from:'https://raw.githubusercontent.com/grails/grails-boot/master/gradle/maven-central-build.gradle'
+
+configurations {
+    provided
+}
+
+dependencies {
+
+
+    provided("org.grails:grails-core:$grailsVersion")
+    compile 'org.codehaus.groovy:groovy:2.3.3'
+
+    compile project(":grails-datastore-gorm-hibernate4"), {
+        exclude group:'org.springframework', module:'spring-context'
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'org.springframework', module:'spring-beans'
+        exclude group:'org.springframework', module:'spring-tx'
+        exclude group:'org.grails', module:'grails-bootstrap'
+        exclude group:'org.codehaus.groovy', module:'groovy-all'
+        exclude group:'org.grails', module:'grails-core'
+        exclude group:'org.grails', module:'grails-async'
+        exclude group:'javax.transaction', module:'jta'
+    }
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+    }
+    javadoc {
+        classpath = configurations.compile + configurations.provided
+    }
+}
+
+def installer = install.repositories.mavenInstaller
+def deployer = uploadArchives.repositories.mavenDeployer
+
+[installer, deployer]*.pom*.whenConfigured { pom ->
+    pom.artifactId = 'hibernate'
+}

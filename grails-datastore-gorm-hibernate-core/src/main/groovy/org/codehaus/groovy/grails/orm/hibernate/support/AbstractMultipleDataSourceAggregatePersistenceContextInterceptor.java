@@ -15,21 +15,21 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
+import grails.core.GrailsDomainClassProperty;
+import grails.persistence.support.PersistenceContextInterceptor;
 import grails.util.Holders;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * Abstract implementation of the {@link org.codehaus.groovy.grails.support.PersistenceContextInterceptor} interface that supports multiple data sources
+ * Abstract implementation of the {@link grails.persistence.support.PersistenceContextInterceptor} interface that supports multiple data sources
  *
  * @author Graeme Rocher
  * @since 2.0.7

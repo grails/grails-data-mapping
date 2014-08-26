@@ -14,19 +14,25 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
+import grails.core.GrailsApplication;
+import grails.core.GrailsClass;
+import grails.core.GrailsDomainClass;
+import grails.core.GrailsDomainClassProperty;
 import grails.util.CollectionUtils;
+import grails.util.GrailsClassUtils;
 import grails.util.Holders;
 import groovy.lang.GroovyObject;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.commons.*;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateDomainClass;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
+import org.grails.core.DefaultGrailsDomainClass;
+import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.hibernate.*;
 import org.hibernate.criterion.Order;
 import org.hibernate.engine.EntityEntry;
@@ -246,7 +252,7 @@ public class GrailsHibernateUtil {
      * @param c The criteria instance
      * @param argMap The arguments map
      *
-     * @deprecated Use {@link #populateArgumentsForCriteria(org.codehaus.groovy.grails.commons.GrailsApplication, Class, org.hibernate.Criteria, java.util.Map)} instead
+     * @deprecated Use {@link #populateArgumentsForCriteria(GrailsApplication, Class, org.hibernate.Criteria, java.util.Map)} instead
      */
     @Deprecated
     @SuppressWarnings("rawtypes")

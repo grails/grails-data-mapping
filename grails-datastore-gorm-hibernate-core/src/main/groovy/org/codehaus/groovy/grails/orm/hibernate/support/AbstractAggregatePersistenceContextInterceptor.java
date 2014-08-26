@@ -18,7 +18,7 @@ package org.codehaus.groovy.grails.orm.hibernate.support;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
+import grails.persistence.support.PersistenceContextInterceptor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

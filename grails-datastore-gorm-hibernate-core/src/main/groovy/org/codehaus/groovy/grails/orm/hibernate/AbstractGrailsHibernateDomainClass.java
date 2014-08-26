@@ -22,15 +22,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.codehaus.groovy.grails.commons.AbstractGrailsClass;
-import org.codehaus.groovy.grails.commons.ExternalGrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.codehaus.groovy.grails.exceptions.InvalidPropertyException;
-import org.codehaus.groovy.grails.validation.ConstraintsEvaluator;
-import org.codehaus.groovy.grails.validation.DefaultConstraintEvaluator;
-import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator;
+import grails.core.GrailsApplication;
+import grails.core.GrailsDomainClass;
+import grails.core.GrailsDomainClassProperty;
+import grails.util.GrailsClassUtils;
+import grails.validation.ConstraintsEvaluator;
+import org.grails.core.AbstractGrailsClass;
+import org.grails.core.exceptions.InvalidPropertyException;
+import org.grails.validation.DefaultConstraintEvaluator;
+import org.grails.validation.GrailsDomainClassValidator;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.AnyType;
@@ -42,7 +42,7 @@ import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.validation.Validator;
 
 @SuppressWarnings("rawtypes")
-public abstract class AbstractGrailsHibernateDomainClass extends AbstractGrailsClass implements ExternalGrailsDomainClass {
+public abstract class AbstractGrailsHibernateDomainClass extends AbstractGrailsClass implements GrailsDomainClass {
 
     public static final String HIBERNATE = "hibernate";
 
@@ -103,7 +103,7 @@ public abstract class AbstractGrailsHibernateDomainClass extends AbstractGrailsC
             if (!propertyName.equals(ident) && !(versionPropertyName != null &&
                     propertyName.equals(versionPropertyName))) {
 
-                PropertyDescriptor pd = GrailsClassUtils.getProperty(clazz,propertyName);
+                PropertyDescriptor pd = GrailsClassUtils.getProperty(clazz, propertyName);
                 if (pd == null) continue;
 
                 GrailsHibernateDomainClassProperty prop = new GrailsHibernateDomainClassProperty(this, propertyName);

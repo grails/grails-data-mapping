@@ -1,9 +1,9 @@
 package org.codehaus.groovy.grails.orm.hibernate.query;
 
+import grails.core.GrailsApplication;
 import grails.util.CollectionUtils;
+import grails.util.GrailsClassUtils;
 import groovy.lang.*;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.grails.datastore.mapping.query.api.*;
 import org.hibernate.*;
 import org.hibernate.Criteria;

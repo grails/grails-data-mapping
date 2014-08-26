@@ -1,14 +1,14 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.support.proxy.ProxyHandler
+import grails.util.GrailsClassUtils
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.commons.GrailsClassUtils
 import org.codehaus.groovy.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder
 import org.codehaus.groovy.grails.orm.hibernate.cfg.CompositeIdentity
 import org.codehaus.groovy.grails.orm.hibernate.exceptions.GrailsQueryException
 import org.codehaus.groovy.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler
 import org.codehaus.groovy.grails.orm.hibernate.query.GrailsHibernateQueryUtils
 import org.codehaus.groovy.grails.orm.hibernate.support.HibernateRuntimeUtils
-import org.codehaus.groovy.grails.support.proxy.ProxyHandler
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod

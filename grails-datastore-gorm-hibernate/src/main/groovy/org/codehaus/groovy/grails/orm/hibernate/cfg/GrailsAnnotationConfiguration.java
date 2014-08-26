@@ -14,9 +14,11 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
+import grails.core.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.commons.*;
+import org.grails.core.artefact.AnnotationDomainClassArtefactHandler;
+import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;

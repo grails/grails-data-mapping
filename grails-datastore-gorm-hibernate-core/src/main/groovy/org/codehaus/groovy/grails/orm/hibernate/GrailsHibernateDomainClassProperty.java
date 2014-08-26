@@ -14,13 +14,13 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
+import grails.core.GrailsDomainClass;
+import grails.core.GrailsDomainClassProperty;
 import grails.util.GrailsNameUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.ReflectionUtils;
 

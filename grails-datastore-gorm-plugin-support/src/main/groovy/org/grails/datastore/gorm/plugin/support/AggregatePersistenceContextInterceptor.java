@@ -15,9 +15,10 @@
  */
 package org.grails.datastore.gorm.plugin.support;
 
+import grails.persistence.support.PersistenceContextInterceptor;
+
 import java.util.List;
 
-import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
 
 /**
  * @author Graeme Rocher

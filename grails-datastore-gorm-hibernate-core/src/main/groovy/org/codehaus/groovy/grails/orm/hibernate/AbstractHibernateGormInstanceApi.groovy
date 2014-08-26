@@ -15,19 +15,19 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.GrailsDomainClassProperty
+import grails.core.support.proxy.ProxyHandler
+import grails.util.GrailsClassUtils
 import grails.validation.DeferredBindingActions
 import grails.validation.ValidationException
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.commons.GrailsClassUtils
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.codehaus.groovy.grails.lifecycle.ShutdownOperations
 import org.codehaus.groovy.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler
 import org.codehaus.groovy.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.codehaus.groovy.grails.orm.hibernate.validation.AbstractPersistentConstraint
-import org.codehaus.groovy.grails.support.proxy.ProxyHandler
-import org.codehaus.groovy.grails.validation.CascadingValidator
+import org.grails.core.lifecycle.ShutdownOperations
 import org.grails.datastore.gorm.GormInstanceApi
+import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty

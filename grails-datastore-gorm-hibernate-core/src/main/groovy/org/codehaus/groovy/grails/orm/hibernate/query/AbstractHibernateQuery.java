@@ -25,12 +25,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.FetchType;
 
+import grails.core.support.proxy.ProxyHandler;
 import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateSession;
 import org.codehaus.groovy.grails.orm.hibernate.IHibernateTemplate;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.Mapping;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler;
-import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
 import org.grails.datastore.gorm.finders.DynamicFinder;
 import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria;
 import org.grails.datastore.mapping.model.PersistentEntity;

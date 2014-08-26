@@ -14,9 +14,9 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
 
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormValidationApi

@@ -15,7 +15,7 @@
 
 package org.grails.datastore.gorm.config;
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import grails.core.GrailsDomainClassProperty;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.PropertyMapping;

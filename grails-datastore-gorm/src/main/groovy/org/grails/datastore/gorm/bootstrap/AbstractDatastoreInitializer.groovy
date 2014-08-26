@@ -1,11 +1,11 @@
 package org.grails.datastore.gorm.bootstrap
 
+import grails.core.DefaultGrailsApplication
+import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.compiler.gorm.GormTransformer
-import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
+import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.validation.GrailsDomainClassValidator
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ResourceLoaderAware
@@ -31,6 +31,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     Collection<String> packages = []
     Properties configuration = new Properties()
     ConfigObject configurationObject = new ConfigObject()
+    boolean registerApplicationIfNotPresent = true
 
     protected ClassLoader classLoader = Thread.currentThread().contextClassLoader
 
@@ -135,7 +136,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
             context.'annotation-config'()
 
 
-            if(!registry.containsBeanDefinition(GrailsApplication.APPLICATION_ID)) {
+            if(!registry.containsBeanDefinition(GrailsApplication.APPLICATION_ID) && registerApplicationIfNotPresent) {
                 grailsApplication(DefaultGrailsApplication, persistentClasses as Class[], Thread.currentThread().contextClassLoader) { bean ->
                     bean.initMethod = 'initialise'
                 }

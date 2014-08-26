@@ -16,9 +16,9 @@ package org.grails.datastore.gorm.async
 
 import grails.async.Promise
 import grails.async.Promises
+import grails.async.decorator.PromiseDecorator
+import grails.async.decorator.PromiseDecoratorProvider
 import groovy.transform.CompileStatic
-import org.grails.async.decorator.PromiseDecorator
-import org.grails.async.decorator.PromiseDecoratorProvider
 import org.grails.datastore.gorm.GormStaticApi
 
 /**

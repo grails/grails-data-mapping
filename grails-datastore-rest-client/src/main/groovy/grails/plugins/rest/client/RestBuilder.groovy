@@ -16,16 +16,15 @@ package grails.plugins.rest.client
 
 import grails.converters.JSON
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationHolder
-import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationInitializer
-import org.codehaus.groovy.grails.web.converters.configuration.DefaultConverterConfiguration
 import org.grails.datastore.gorm.rest.client.json.GsonHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.json.JsonHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.utils.GrailsConverterHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.utils.NullSafeStringHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.utils.WritableHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.xml.GPathXmlHttpMessageConverter
+import org.grails.web.converters.configuration.ConvertersConfigurationHolder
+import org.grails.web.converters.configuration.ConvertersConfigurationInitializer
+import org.grails.web.converters.configuration.DefaultConverterConfiguration
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.http.client.SimpleClientHttpRequestFactory
@@ -54,7 +53,7 @@ class RestBuilder {
 
         if(ConvertersConfigurationHolder.getConverterConfiguration(JSON) instanceof DefaultConverterConfiguration) {
             // init manually
-            new ConvertersConfigurationInitializer().initialize(new DefaultGrailsApplication())
+            new ConvertersConfigurationInitializer().initialize()
         }
 
         Proxy proxyFromSystemProperties = getProxyForSystemProperties()

@@ -16,9 +16,9 @@
 package org.codehaus.groovy.grails.orm.hibernate.proxy;
 
 
+import grails.core.support.proxy.EntityProxyHandler;
 import groovy.lang.GroovyObject;
 import groovy.lang.GroovySystem;
-import org.codehaus.groovy.grails.support.proxy.EntityProxyHandler;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;

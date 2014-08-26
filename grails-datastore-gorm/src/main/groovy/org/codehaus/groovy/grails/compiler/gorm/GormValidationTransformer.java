@@ -18,18 +18,18 @@ package org.codehaus.groovy.grails.compiler.gorm;
 import java.net.URL;
 import java.util.Arrays;
 
+import grails.core.GrailsDomainClassProperty;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.PropertyNode;
 import org.codehaus.groovy.control.SourceUnit;
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.compiler.injection.ASTErrorsHelper;
 import org.codehaus.groovy.grails.compiler.injection.ASTValidationErrorsHelper;
 import org.codehaus.groovy.grails.compiler.injection.AbstractGrailsArtefactTransformer;
 import org.codehaus.groovy.grails.compiler.injection.AstTransformer;
-import org.codehaus.groovy.grails.io.support.GrailsResourceUtils;
+import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.datastore.gorm.GormValidationApi;
+import org.grails.io.support.GrailsResourceUtils;
 
 /**
  * Makes the validate methods statically available via an AST transformation.

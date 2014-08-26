@@ -4,6 +4,9 @@ configurations {
 dependencies {
 
     compile project(":grails-datastore-core")
+    compile("org.grails:grails-validation:$grailsVersion") {
+        exclude group:'org.grails',module:'grails-core'
+    }
     compile("org.grails:grails-core:$grailsVersion") {
         exclude group:'aopalliance',module:'aopalliance'
         exclude group:'commons-logging',module:'commons-logging'

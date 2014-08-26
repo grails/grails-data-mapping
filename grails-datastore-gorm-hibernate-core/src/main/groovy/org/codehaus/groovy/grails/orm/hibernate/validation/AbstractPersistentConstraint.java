@@ -14,13 +14,13 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.validation;
 
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.lifecycle.ShutdownOperations;
+import grails.core.GrailsApplication;
+import grails.core.GrailsDomainClass;
 import org.codehaus.groovy.grails.orm.hibernate.AbstractGrailsHibernateDomainClass;
 import org.codehaus.groovy.grails.orm.hibernate.IHibernateTemplate;
 import org.codehaus.groovy.grails.validation.AbstractConstraint;
+import org.grails.core.artefact.DomainClassArtefactHandler;
+import org.grails.core.lifecycle.ShutdownOperations;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

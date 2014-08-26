@@ -14,17 +14,17 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
+import grails.core.GrailsApplication;
+import grails.core.GrailsClass;
+import grails.core.GrailsDomainClass;
+import grails.core.GrailsDomainClassProperty;
 import groovy.lang.Closure;
 import groovy.util.Eval;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.hibernate.MappingException;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Mappings;

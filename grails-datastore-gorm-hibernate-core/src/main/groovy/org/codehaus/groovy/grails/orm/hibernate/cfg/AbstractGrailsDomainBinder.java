@@ -14,16 +14,20 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
+import grails.core.GrailsApplication;
+import grails.core.GrailsDomainClass;
+import grails.core.GrailsDomainClassProperty;
+import grails.plugins.GrailsPlugin;
+import grails.plugins.GrailsPluginManager;
+import grails.util.GrailsClassUtils;
 import grails.util.GrailsNameUtils;
+import grails.validation.ConstrainedProperty;
 import groovy.lang.Closure;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.commons.*;
-import org.codehaus.groovy.grails.exceptions.GrailsDomainException;
-import org.codehaus.groovy.grails.plugins.GrailsPlugin;
-import org.codehaus.groovy.grails.plugins.GrailsPluginManager;
-import org.codehaus.groovy.grails.validation.ConstrainedProperty;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.grails.core.DefaultGrailsDomainClassProperty;
+import org.grails.core.exceptions.GrailsDomainException;
 import org.hibernate.FetchMode;
 import org.hibernate.MappingException;
 import org.hibernate.cfg.*;
@@ -1172,12 +1176,12 @@ public abstract class AbstractGrailsDomainBinder {
         }
         if (tableName == null) {
             String shortName = domainClass.getShortName();
-            final GrailsApplication grailsApplication = domainClass.getGrailsApplication();
+            final GrailsApplication grailsApplication = domainClass.getApplication();
             if (grailsApplication != null) {
                 final ApplicationContext mainContext = grailsApplication.getMainContext();
                 if (mainContext != null && mainContext.containsBean("pluginManager")) {
                     final GrailsPluginManager pluginManager = (GrailsPluginManager) mainContext.getBean("pluginManager");
-                    final GrailsPlugin pluginForClass = pluginManager.getPluginForClass(domainClass.getClazz());
+                    final GrailsPlugin pluginForClass = null;
                     if (pluginForClass != null) {
                         final String pluginName = pluginForClass.getName();
                         boolean shouldApplyPluginPrefix = false;
@@ -1244,7 +1248,7 @@ public abstract class AbstractGrailsDomainBinder {
             Object o = GrailsClassUtils.getStaticPropertyValue(domainClass.getClazz(), GrailsDomainClassProperty.MAPPING);
             if (o != null || defaultMapping != null) {
                 HibernateMappingBuilder builder = new HibernateMappingBuilder(domainClass.getFullName());
-                GrailsApplication application = domainClass.getGrailsApplication();
+                GrailsApplication application = domainClass.getApplication();
                 ApplicationContext ctx = null;
                 if (application != null) {
                     ctx = application.getMainContext();

@@ -16,9 +16,9 @@ package org.grails.datastore.gorm.support;
 
 import javax.persistence.FlushModeType;
 
+import grails.persistence.support.PersistenceContextInterceptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.DatastoreUtils;
 import org.grails.datastore.mapping.core.Session;

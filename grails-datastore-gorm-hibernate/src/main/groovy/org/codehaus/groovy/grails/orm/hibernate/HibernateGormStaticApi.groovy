@@ -15,14 +15,14 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.GrailsApplication
+import grails.core.GrailsDomainClass
 import grails.orm.HibernateCriteriaBuilder
 import grails.orm.PagedResultList
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.orm.hibernate.query.GrailsHibernateQueryUtils
+import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.query.api.Criteria as GrailsCriteria

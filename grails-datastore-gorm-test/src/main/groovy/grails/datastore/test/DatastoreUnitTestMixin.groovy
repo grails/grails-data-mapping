@@ -14,13 +14,10 @@
  */
 package grails.datastore.test
 
+import grails.plugins.DefaultGrailsPluginManager
+import grails.plugins.GrailsPluginManager
 import grails.test.MockUtils
-
-import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
-import org.codehaus.groovy.grails.plugins.DefaultGrailsPluginManager
-import org.codehaus.groovy.grails.plugins.GrailsPluginManager
-import org.codehaus.groovy.grails.plugins.PluginManagerHolder
-import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
+import org.grails.core.DefaultGrailsDomainClass
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
@@ -29,6 +26,7 @@ import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.grails.datastore.mapping.transactions.SessionHolder
+import org.grails.validation.GrailsDomainClassValidator
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.transaction.PlatformTransactionManager

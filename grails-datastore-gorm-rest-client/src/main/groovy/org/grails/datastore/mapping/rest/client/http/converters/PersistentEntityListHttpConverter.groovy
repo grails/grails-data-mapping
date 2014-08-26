@@ -15,11 +15,11 @@
 package org.grails.datastore.mapping.rest.client.http.converters
 
 import grails.rest.render.RendererRegistry
+import grails.web.databinding.DataBindingUtils
+import grails.web.mime.MimeType
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.web.binding.DataBindingUtils
-import org.codehaus.groovy.grails.web.binding.bindingsource.DataBindingSourceRegistry
-import org.codehaus.groovy.grails.web.mime.MimeType
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.web.databinding.bindingsource.DataBindingSourceRegistry
 import org.springframework.http.HttpInputMessage
 import org.springframework.http.HttpOutputMessage
 import org.springframework.http.MediaType

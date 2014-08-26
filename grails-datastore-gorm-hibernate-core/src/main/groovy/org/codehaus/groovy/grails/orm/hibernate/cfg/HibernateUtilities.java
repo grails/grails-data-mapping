@@ -2,8 +2,8 @@ package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
 import java.util.List;
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import grails.core.GrailsDomainClass;
+import grails.core.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.orm.hibernate.AbstractGrailsHibernateDomainClass;
 
 public class HibernateUtilities {

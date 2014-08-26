@@ -17,13 +17,13 @@ package org.grails.datastore.gorm.rest.client
 
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.mapping.core.Datastore
-import org.codehaus.groovy.grails.plugins.converters.api.ConvertersApi
 import org.grails.datastore.mapping.rest.client.RestClientSession
 import groovy.transform.CompileStatic
 import grails.plugins.rest.client.RequestCustomizer
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import groovy.transform.TypeCheckingMode
+import org.grails.plugins.converters.api.ConvertersApi
 
 /**
  * Extensions to the instance API for REST

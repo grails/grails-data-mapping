@@ -14,13 +14,14 @@
  */
 package org.grails.datastore.gorm.plugin.support
 
+import grails.core.GrailsServiceClass
+import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.core.artefact.ServiceArtefactHandler
+import org.grails.spring.TypeSpecifyableTransactionProxyFactoryBean
+import org.grails.transaction.GroovyAwareNamedTransactionAttributeSource
+
 import java.lang.reflect.Method
 
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsServiceClass
-import org.codehaus.groovy.grails.commons.ServiceArtefactHandler
-import org.codehaus.groovy.grails.commons.spring.TypeSpecifyableTransactionProxyFactoryBean
-import org.codehaus.groovy.grails.orm.support.GroovyAwareNamedTransactionAttributeSource
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.AnnotationUtils

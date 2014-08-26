@@ -18,8 +18,8 @@ import grails.converters.XML
 import grails.plugins.rest.client.RestBuilder
 import groovy.transform.CompileStatic
 import groovy.util.slurpersupport.GPathResult
-import org.codehaus.groovy.grails.web.converters.ConverterUtil
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
+import org.grails.web.converters.ConverterUtil
 
 /**
  *

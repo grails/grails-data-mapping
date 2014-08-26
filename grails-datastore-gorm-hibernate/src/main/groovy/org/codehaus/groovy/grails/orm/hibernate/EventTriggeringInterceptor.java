@@ -15,6 +15,7 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
+import grails.core.GrailsDomainClass;
 import groovy.lang.GroovySystem;
 import groovy.util.ConfigObject;
 
@@ -22,14 +23,13 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.codehaus.groovy.grails.commons.AnnotationDomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventListener;
 import org.codehaus.groovy.grails.orm.hibernate.support.SoftKey;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
+import org.grails.core.artefact.AnnotationDomainClassArtefactHandler;
+import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.engine.event.ValidationEvent;
 import org.hibernate.HibernateException;

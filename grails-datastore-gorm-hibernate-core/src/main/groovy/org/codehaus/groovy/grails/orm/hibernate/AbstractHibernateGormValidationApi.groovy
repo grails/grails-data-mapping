@@ -15,13 +15,13 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.GrailsDomainClassProperty
+import grails.util.GrailsClassUtils
+import grails.validation.CascadingValidator
 import grails.validation.ValidationErrors
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.commons.GrailsClassUtils
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.codehaus.groovy.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.codehaus.groovy.grails.orm.hibernate.validation.AbstractPersistentConstraint
-import org.codehaus.groovy.grails.validation.CascadingValidator
 import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.springframework.validation.Errors

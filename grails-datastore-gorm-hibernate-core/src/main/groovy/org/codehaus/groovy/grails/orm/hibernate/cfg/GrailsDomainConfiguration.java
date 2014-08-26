@@ -14,8 +14,9 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
+
+import grails.core.GrailsApplication;
+import grails.core.GrailsDomainClass;
 
 /**
  * @author Graeme Rocher
