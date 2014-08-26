@@ -29,8 +29,8 @@ grails.project.dependency.resolution = {
 
 
 
-        def datastoreVersion = "3.1.0.RELEASE"
-        def mongoDatastoreVersion = "3.0.1.RELEASE"
+        def datastoreVersion = "3.1.2.RELEASE"
+        def mongoDatastoreVersion = "3.0.2.RELEASE"
 
         compile ("org.grails:grails-datastore-gorm-mongodb:$mongoDatastoreVersion",excludes)
         compile("org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
@@ -41,7 +41,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        build(':release:3.0.1', ':rest-client-builder:2.0.0') {
+        build(':release:3.0.1', ':rest-client-builder:2.0.3') {
             export = false
             excludes 'grails-core', 'grails-web'
         }

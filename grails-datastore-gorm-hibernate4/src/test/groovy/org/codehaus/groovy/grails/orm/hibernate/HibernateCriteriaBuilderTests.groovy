@@ -409,7 +409,7 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         createDomainData()
         def domainClass = ga.getDomainClass(CriteriaBuilderTestClass.name).clazz
         List results = domainClass.createCriteria().list {
-            inList 'firstName', ['homer', 'bart']
+            inList 'firstName', ["${'homer'}", 'bart'].asImmutable()
         }
         assertEquals 2, results.size()
         def firstNames = results*.firstName

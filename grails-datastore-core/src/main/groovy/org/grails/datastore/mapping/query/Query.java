@@ -1074,7 +1074,26 @@ public abstract class Query implements Cloneable{
 
         public In(String name, Collection values) {
             super(name, values);
-            this.values = values;
+            this.values = convertCharSequenceValuesIfNecessary(values);
+        }
+
+        private static Collection convertCharSequenceValuesIfNecessary(Collection values) {
+            boolean requiresConversion=false;
+            for (Object val : values) {
+                if (!(val instanceof String) && val instanceof CharSequence) {
+                    requiresConversion=true;
+                    break;
+                }
+            }
+            if (requiresConversion) {
+                List newList = new ArrayList(values.size());
+                for (Object val : values) {
+                    newList.add(val instanceof CharSequence ? val.toString() : val);
+                }
+                return newList;
+            } else { 
+                return values;
+            }
         }
 
         public In(String name, QueryableCriteria subquery) {

@@ -23,7 +23,7 @@ class InListGStringSpec extends GormDatastoreSpec{
         def plant2 = "Carrot"
 
         when:"An InList dynamic finder is used"
-            def results = Plant.findAllByNameInList(["$plant1", "$plant2"])
+            def results = Plant.findAllByNameInList(["$plant1", "$plant2"].asImmutable())
 
         then:"The results are correct"
             results.size() == 2
@@ -32,7 +32,7 @@ class InListGStringSpec extends GormDatastoreSpec{
 
         when:"An InList criteria query is used"
             results = Plant.withCriteria() {
-                inList 'name', ["$plant1", "$plant2"]
+                inList 'name', ["$plant1", "$plant2"].asImmutable()
             }
 
         then:"The results are correct"
@@ -42,7 +42,7 @@ class InListGStringSpec extends GormDatastoreSpec{
 
         when:"An InList where query is used"
             results = Plant.where() {
-                name in ["$plant1", "$plant2"]
+                name in ["$plant1", "$plant2"].asImmutable()
             }.list()
 
         then:"The results are correct"

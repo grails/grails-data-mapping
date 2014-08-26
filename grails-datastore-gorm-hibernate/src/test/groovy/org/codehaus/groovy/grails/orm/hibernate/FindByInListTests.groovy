@@ -24,6 +24,19 @@ class FindByInListTests extends AbstractGrailsHibernateTests {
     }
 
     @Test
+    void testFindInListWithGStrings() {
+        createBooks()
+
+        def results = FindByInListBook.findAllByTitleInList(["${'The Shining'}", "${'Rose Madder'}"].asImmutable())
+
+        assertNotNull results
+        assertEquals 2, results.size()
+
+        assertTrue "Should have returned 'The Shining' from inList query", results.any { it.title = "The Shining" }
+        assertTrue "Should have returned 'Rose Madder' from inList query", results.any { it.title = "Rose Madder" }
+    }
+    
+    @Test
     void testFindInListEmpty() {
         createBooks()
 

@@ -168,6 +168,23 @@ class SubquerySpec extends GormDatastoreSpec {
             results.size() == 1
             results[0].name == "Bob"
 
+        when:"A correlated subquery is executed with immutable lists and GStrings"
+
+            employees = new DetachedCriteria(Employee).build {
+                region {
+                    inList 'continent', ["${'APAC'}", "EMEA"].asImmutable()
+                }
+            }.id()
+
+            results = new DetachedCriteria(Sale).build {
+                inList 'employee', employees
+                gt 'total', 100000
+            }.employee.list()
+
+
+        then:"The results are correct"
+            results.size() == 1
+            results[0].name == "Bob"
     }
 
     void "Test correlated subquery"() {

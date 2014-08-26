@@ -19,6 +19,7 @@ import grails.async.Promise
 import grails.async.Promises
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
+
 import org.grails.datastore.mapping.query.api.QueryAliasAwareSession
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware
 
@@ -328,28 +329,25 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @see Criteria
      */
     Criteria inList(String propertyName, Collection values) {
-
-        if(values instanceof List) {
-            convertArgumentList((List)values);
-        }
-        add Restrictions.in(propertyName, values)
+        add Restrictions.in(propertyName, convertArgumentList(values))
         return this
     }
 
-    private void convertArgumentList(List argList) {
-        ListIterator listIterator = argList.listIterator();
-        while (listIterator.hasNext()) {
-            Object next = listIterator.next();
-            if(next instanceof CharSequence) {
-                listIterator.set( next.toString() )
+    protected List convertArgumentList(Collection argList) {
+        List convertedList = new ArrayList(argList.size());
+        for (Object item : argList) {
+            if(item instanceof CharSequence) {
+                item = item.toString();
             }
+            convertedList.add(item);
         }
+        return convertedList;
     }
     /**
      * @see Criteria
      */
     Criteria inList(String propertyName, Object[] values) {
-        add Restrictions.in(propertyName, Arrays.asList(values))
+        add Restrictions.in(propertyName, convertArgumentList(Arrays.asList(values)))
         return this
     }
 
@@ -1223,5 +1221,11 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         def criteria = lazyQuery
         lazyQuery = null
         this.with criteria
+    }
+
+    @Override
+    public Criteria cache(boolean shouldCache) {
+        // no-op for now
+        this
     }
 }

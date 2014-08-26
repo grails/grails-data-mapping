@@ -25,7 +25,7 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.orm.hibernate.query.GrailsHibernateQueryUtils
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.mapping.query.api.Criteria as GrailsCriteria
+import org.grails.datastore.mapping.query.api.BuildableCriteria as GrailsCriteria
 import org.hibernate.Criteria
 import org.hibernate.LockMode
 import org.hibernate.Session

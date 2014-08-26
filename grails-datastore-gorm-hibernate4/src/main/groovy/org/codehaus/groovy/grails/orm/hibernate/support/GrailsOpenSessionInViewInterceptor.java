@@ -23,6 +23,7 @@ import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.hibernate4.SessionHolder;
 import org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -58,6 +59,33 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
                 GrailsHibernateUtil.enableDynamicFilterEnablerIfPresent(sessionFactory, session);
             }
         }
+    }
+
+    @Override
+    protected Session openSession() throws DataAccessResourceFailureException {
+        Session session = super.openSession();
+        applyFlushMode(session);
+        return session;
+    }
+
+    protected void applyFlushMode(Session session) {
+        FlushMode hibernateFlushMode = FlushMode.AUTO;
+        switch (getFlushMode()) {
+            case GrailsHibernateTemplate.FLUSH_EAGER:
+            case GrailsHibernateTemplate.FLUSH_AUTO:
+                hibernateFlushMode = FlushMode.AUTO;
+                break;
+            case GrailsHibernateTemplate.FLUSH_NEVER:
+                hibernateFlushMode = FlushMode.MANUAL;
+                break;
+            case GrailsHibernateTemplate.FLUSH_COMMIT:
+                hibernateFlushMode = FlushMode.COMMIT;
+                break;
+            case GrailsHibernateTemplate.FLUSH_ALWAYS:
+                hibernateFlushMode = FlushMode.ALWAYS;
+                break;
+        }
+        session.setFlushMode(hibernateFlushMode);
     }
 
     @Override
