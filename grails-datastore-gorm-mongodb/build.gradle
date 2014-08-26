@@ -94,6 +94,7 @@ sourceSets {
 }
 
 test {
+    maxParallelForks = 1
     if (!isTravisBuild) {
         forkEvery = 30
     }
