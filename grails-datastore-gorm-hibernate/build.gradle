@@ -35,41 +35,30 @@ dependencies {
 
 sourceSets {
     main {
-        compileClasspath += configurations.optional
+        compileClasspath += files(configurations.optional)
     }
     javadoc {
-        classpath = configurations.compile + configurations.optional
+        classpath = files(configurations.compile) + files(configurations.optional)
     }
 }
 idea {
     module {
-        scopes.PROVIDED.plus += configurations.optional
+        scopes.PROVIDED.plus += [configurations.optional]
     }
 }
 
 eclipse {
     classpath {
-        plusConfigurations += configurations.optional
+        plusConfigurations += [configurations.optional]
     }
 }
 
 test {
-    testLogging {
-        exceptionFormat ='full'
+    if (!isTravisBuild) {
+        forkEvery = 30
     }
-    forkEvery = 30
-    maxParallelForks = 4
-    jvmArgs '-server','-Xmx1024M', '-Xms64M', '-XX:PermSize=32m','-XX:MaxPermSize=256m','-XX:+CMSClassUnloadingEnabled','-XX:+HeapDumpOnOutOfMemoryError'
 }
 
 compileTestGroovy {
     groovyOptions.fork(memoryMaximumSize: '1024m')
 }
-/*
-test {
-	jvmArgs '-Xmx1024m', '-Xdebug', '-Xnoagent', '-Dgrails.full.stacktrace=true', '-Djava.compiler=NONE',
-	        '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
-}
-*/
-
-

@@ -5,7 +5,7 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.validation.ValidatingEventListener
 import org.springframework.validation.Validator
 
-import spock.lang.Unroll
+import spock.lang.Ignore
 
 /**
  * Tests validation semantics.
@@ -207,7 +207,7 @@ class ValidationSpec extends GormDatastoreSpec {
             1 * mockValidator.validate(task, _)
     }
 
-    @Unroll
+    @Ignore("Cassandra GORM does not support associations at present so cascading validator will not work")//@Unroll
     void "deepValidate parameter is honoured if entity validator implements CascadingValidator"() {
         given:
             def mockValidator = Mock(CascadingValidator)

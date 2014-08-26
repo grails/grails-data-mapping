@@ -1,4 +1,4 @@
-version = "0.2.BUILD-SNAPSHOT"
+version = "0.5.BUILD-SNAPSHOT"
 
 configurations {
 	grails
@@ -6,7 +6,10 @@ configurations {
 
 
 dependencies {
-
+	compile "com.datastax.cassandra:cassandra-driver-core:2.0.4"
+	compile("org.springframework.data:spring-data-cassandra:1.0.2.RELEASE") {
+		exclude group:'com.datastax.cassandra',module:'cassandra-driver-dse'
+	}
     compile("org.grails:grails-async:$grailsVersion")
     compile("org.grails:grails-core:$grailsVersion") {
         exclude group:'aopalliance',module:'aopalliance'
@@ -57,12 +60,12 @@ dependencies {
 		project(':grails-datastore-gorm-tck')
 
 
-	compile "com.datastax.cassandra:cassandra-driver-core:2.0.1"
+	
 
 }
 
 sourceSets {
 	main {
-		compileClasspath += configurations.grails
+		compileClasspath += files(configurations.grails)
 	}
 }

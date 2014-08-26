@@ -1,8 +1,11 @@
 package grails.gorm.tests
 
+import org.junit.Ignore
+
 /**
  * Abstract base test for query associations. Subclasses should do the necessary setup to configure GORM
  */
+@Ignore("Cassandra GORM does not support associations at present")
 class QueryByAssociationSpec extends GormDatastoreSpec {
 
     void "Test query entity by single-ended association"() {

@@ -81,21 +81,21 @@ eclipse {
 }
 sourceSets {
     main {
-        compileClasspath += configurations.optional
+        compileClasspath += files(configurations.optional)
     }
     javadoc {
-        classpath += configurations.optional
+        classpath += files(configurations.optional)
     }
 }
 
 idea {
     module {
-        scopes.PROVIDED.plus += configurations.optional
+        scopes.PROVIDED.plus += [configurations.optional]
     }
 }
 
 eclipse {
     classpath {
-        plusConfigurations += configurations.optional
+        plusConfigurations += [configurations.optional]
     }
 }

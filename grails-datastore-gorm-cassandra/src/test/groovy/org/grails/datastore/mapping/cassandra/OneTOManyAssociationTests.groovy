@@ -3,13 +3,15 @@ package org.grails.datastore.mapping.cassandra
 //import grails.gorm.tests.Book;
 import grails.persistence.Entity
 
-import org.junit.Test
 import org.grails.datastore.mapping.core.Session
+import org.junit.Ignore
+import org.junit.Test
 
 /**
  * @author Graeme Rocher
  * @since 1.1
  */
+@Ignore
 class OneToManyAssociationTests extends AbstractCassandraTest {
     @Test
     void testOneToManyAssociation() {

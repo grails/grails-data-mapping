@@ -15,6 +15,7 @@
 package org.grails.datastore.gorm.neo4j.bean.factory
 
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
+import org.grails.datastore.gorm.neo4j.HashcodeEqualsAwareProxyFactory
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
 import org.grails.datastore.mapping.model.MappingContext
 
@@ -26,6 +27,6 @@ import org.grails.datastore.mapping.model.MappingContext
 class Neo4jMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
 
     protected MappingContext createMappingContext() {
-        new Neo4jMappingContext()
+        new Neo4jMappingContext(proxyFactory: new HashcodeEqualsAwareProxyFactory())
     }
 }

@@ -133,27 +133,21 @@ dependencies {
 
 sourceSets {
     main {
-        compileClasspath += configurations.optional
+        compileClasspath += files(configurations.optional)
     }
     javadoc {
-        classpath += configurations.optional
+        classpath += files(configurations.optional)
     }
 }
 
 idea {
     module {
-        scopes.PROVIDED.plus += configurations.optional
+        scopes.PROVIDED.plus += [configurations.optional]
     }
 }
 
 eclipse {
     classpath {
-        plusConfigurations += configurations.optional
+        plusConfigurations += [configurations.optional]
     }
 }
-/*
-test {
-	jvmArgs '-Xmx1024m', '-Xdebug', '-Xnoagent', '-Dgrails.full.stacktrace=true', '-Djava.compiler=NONE',
-	        '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
-}
-*/

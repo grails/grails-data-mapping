@@ -55,16 +55,23 @@ class Neo4jGormEnhancer extends GormEnhancer {
         Map<String,Object> map = (Map) obj.getProperty(Neo4jGormEnhancer.UNDECLARED_PROPERTIES);
         if (map!=null) {
             for (Map.Entry<String,Object> entry : map.entrySet()) {
-                if (mappingContext.isPersistentEntity(entry.getValue())) {
-                    assert entry.getValue().id
+                if  (mappingContext.isPersistentEntity(entry.getValue())) {
                     dynRelProps[entry.getKey()] << entry.getValue()
-
+                } else if (isCollectionWithPersistentEntities(entry.getValue(), mappingContext)) {
+                    dynRelProps[entry.getKey()].addAll(entry.getValue())
                 } else {
                     simpleProps.put(entry.getKey(), Neo4jUtils.mapToAllowedNeo4jType(entry.getValue(), mappingContext));
                 }
             }
         }
         dynRelProps
+    }
+
+    static boolean isCollectionWithPersistentEntities(Object o, MappingContext mappingContext) {
+        if (!(o instanceof Collection)) {
+            return false;
+        }
+        return (!o.empty) && (o.every { mappingContext.isPersistentEntity(it) })
     }
 }
 
@@ -123,6 +130,8 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
             (val == null) ? undeclaredProps.remove(name) : undeclaredProps.put(name, val)
             if (datastore.mappingContext.isPersistentEntity(val)) {
                 val.save()
+            } else if (Neo4jGormEnhancer.isCollectionWithPersistentEntities(val, datastore.mappingContext)) {
+                val.each { it.save() }
             }
             if (unwrappedInstance instanceof DirtyCheckable) {
                 ((DirtyCheckable)unwrappedInstance).markDirty(name)

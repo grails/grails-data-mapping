@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import spock.lang.Ignore
+
 /**
  * @author graemerocher
  */
@@ -16,14 +18,10 @@ class NegationSpec extends GormDatastoreSpec {
             def author = Book.findByAuthorNotEqual("Stephen King")
 
         then:
-            results.size() == 2
-            results[0].author == "Stephen King"
-            results[1].author == "Stephen King"
-
-            author != null
-            author.author == "James Patterson"
+            thrown UnsupportedOperationException
     }
 
+	@Ignore("Cassandra does not support negation")
     void "Test simple negation in criteria"() {
         given:
             new Book(title:"The Stand", author:"Stephen King").save()
@@ -43,6 +41,7 @@ class NegationSpec extends GormDatastoreSpec {
             author.author == "James Patterson"
     }
 
+	@Ignore("Cassandra does not support negation")
     void "Test complex negation in criteria"() {
         given:
             new Book(title:"The Stand", author:"Stephen King").save()

@@ -1,11 +1,11 @@
-version = "3.0.2.BUILD-SNAPSHOT"
+version = "3.0.2.RELEASE"
 configurations {
     optional
 }
 
 dependencies {
-    compile "org.mongodb:mongo-java-driver:2.12.0"
-    compile("org.springframework.data:spring-data-mongodb:1.4.1.RELEASE") {
+    compile "org.mongodb:mongo-java-driver:2.12.3"
+    compile("org.springframework.data:spring-data-mongodb:1.4.3.RELEASE") {
         exclude group:'org.mongodb',module:'mongo-java-driver'
     }
 
@@ -89,25 +89,13 @@ tasks.withType(GroovyCompile) {
 
 sourceSets {
     main {
-        compileClasspath += configurations.optional
+        compileClasspath += files(configurations.optional)
     }
 }
 
 test {
-    testLogging {
-        exceptionFormat ='full'
+    maxParallelForks = 1
+    if (!isTravisBuild) {
+        forkEvery = 30
     }
-    forkEvery = 30
-    maxParallelForks = 4
-    jvmArgs '-server','-Xmx1024M', '-Xms64M', '-XX:PermSize=32m','-XX:MaxPermSize=256m'
 }
-
-//test {
-//    if (System.getProperty('debug', 'false') == 'true') {
-//        jvmArgs '-server','-Xmx2048M', '-Xms64M', '-XX:PermSize=32m','-XX:MaxPermSize=256m', '-Xdebug',
-//                '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
-//    }
-//    else {
-//        jvmArgs '-server','-Xmx2048M', '-Xms64M', '-XX:PermSize=32m','-XX:MaxPermSize=256m'
-//    }
-//}

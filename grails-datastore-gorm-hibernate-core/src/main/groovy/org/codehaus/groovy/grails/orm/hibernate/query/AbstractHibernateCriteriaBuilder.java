@@ -26,7 +26,7 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 3.0.7
  */
-public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSupport implements org.grails.datastore.mapping.query.api.Criteria, org.grails.datastore.mapping.query.api.ProjectionList  {
+public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSupport implements org.grails.datastore.mapping.query.api.BuildableCriteria, org.grails.datastore.mapping.query.api.ProjectionList  {
 
     public static final String AND = "and"; // builder
     public static final String IS_NULL = "isNull"; // builder
@@ -296,8 +296,9 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
      * Whether to use the query cache
      * @param shouldCache True if the query should be cached
      */
-    public void cache(boolean shouldCache) {
+    public org.grails.datastore.mapping.query.api.Criteria cache(boolean shouldCache) {
         criteria.setCacheable(shouldCache);
+        return this;
     }
 
     /**
@@ -1221,20 +1222,22 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         propertyName = calculatePropertyName(propertyName);
 
         if(values instanceof List) {
-            convertArgumentList((List)values);
+            values = convertArgumentList((List)values);
         }
         addToCriteria(Restrictions.in(propertyName, values == null ? Collections.EMPTY_LIST : values));
         return this;
     }
 
-    private void convertArgumentList(List argList) {
-        ListIterator listIterator = argList.listIterator();
-        while (listIterator.hasNext()) {
-            Object next = listIterator.next();
-            if(next instanceof CharSequence) {
-                listIterator.set( next.toString() );
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected List convertArgumentList(List argList) {
+        List convertedList = new ArrayList(argList.size());
+        for (Object item : argList) {
+            if(item instanceof CharSequence) {
+                item = item.toString();
             }
+            convertedList.add(item);
         }
+        return convertedList;
     }
     /**
      * Delegates to in as in is a Groovy keyword
@@ -1502,6 +1505,31 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         return criteria != null;
     }
 
+    @Override
+    public Object list(@DelegatesTo(Criteria.class) Closure c) {
+        return invokeMethod(LIST_CALL, new Object[]{c});
+    }
+
+    @Override
+    public Object list(Map params, @DelegatesTo(Criteria.class) Closure c) {
+        return invokeMethod(LIST_CALL, new Object[]{params, c});
+    }
+    
+    @Override
+    public Object listDistinct(@DelegatesTo(Criteria.class) Closure c) {
+        return invokeMethod(LIST_DISTINCT_CALL, new Object[]{c});
+    }
+
+    @Override
+    public Object get(@DelegatesTo(Criteria.class) Closure c) {
+        return invokeMethod(GET_CALL, new Object[]{c});
+    }
+    
+    @Override
+    public Object scroll(@DelegatesTo(Criteria.class) Closure c) {
+        return invokeMethod(SCROLL_CALL, new Object[]{c});
+    }
+    
     @SuppressWarnings("rawtypes")
     @Override
     public Object invokeMethod(String name, Object obj) {

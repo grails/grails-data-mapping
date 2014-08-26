@@ -1,7 +1,8 @@
 package grails.gorm.tests
 
-import org.grails.datastore.mapping.proxy.EntityProxy
+import spock.lang.Ignore
 
+@Ignore("Cassandra GORM does not support associations at present")
 class OneToOneSpec extends GormDatastoreSpec {
 
     def "Test persist and retrieve unidirectional many-to-one"() {

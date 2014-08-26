@@ -17,6 +17,7 @@ package grails.gorm;
 
 import static org.grails.datastore.gorm.finders.DynamicFinder.populateArgumentsForCriteria;
 import groovy.lang.Closure;
+import groovy.lang.DelegatesTo;
 import groovy.lang.GroovyObjectSupport;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaMethod;
@@ -36,6 +37,7 @@ import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
+import org.grails.datastore.mapping.query.api.BuildableCriteria;
 import org.grails.datastore.mapping.query.api.Criteria;
 import org.grails.datastore.mapping.query.api.ProjectionList;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
@@ -48,7 +50,7 @@ import org.springframework.util.Assert;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, ProjectionList {
+public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCriteria, ProjectionList {
 
     public static final String ORDER_DESCENDING = "desc";
     public static final String ORDER_ASCENDING = "asc";
@@ -300,7 +302,12 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         query.projections().count();
         return (Number) query.singleResult();
     }
-
+    
+    @Override
+    public Object scroll(@DelegatesTo(Criteria.class) Closure c) {
+        return invokeMethod(SCROLL_CALL, new Object[]{c});
+    }
+    
     @Override
     public Object invokeMethod(String name, Object obj) {
         Object[] args = obj.getClass().isArray() ? (Object[])obj : new Object[]{obj};

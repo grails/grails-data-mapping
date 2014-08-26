@@ -71,6 +71,18 @@ class InListQuerySpec extends GormDatastoreSpec {
         results[0].name == "Saurapod"
         results[1].name == "Tyrannosaur"
 
+
+        when:"Querying a property in a given immutable list of GStrings"
+        results = PetType.withCriteria {
+            inList 'name', ["${'Tyrannosaur'}", "${'Saurapod'}"].asImmutable()
+            order "name"
+        }
+
+        then:"The correct results are returned"
+        results.size() == 2
+        results[0].name == "Saurapod"
+        results[1].name == "Tyrannosaur"
+
         when:"Querying an association in a given list of integers"
         results = Pet.withCriteria {
             inList 'age', [10, 5]

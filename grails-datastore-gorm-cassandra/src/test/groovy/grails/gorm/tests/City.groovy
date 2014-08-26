@@ -1,8 +1,6 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
-
-import java.math.BigDecimal;
+import grails.persistence.Entity
 
 @Entity
 class City extends Location {

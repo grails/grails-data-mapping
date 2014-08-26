@@ -24,4 +24,6 @@ class TestEntity implements Serializable {
         name blank:false
         child nullable:true
     }
+    
+    static transients = ['child']
 }

@@ -1,13 +1,4 @@
-package grails.gorm.tests;
-
-import java.io.Serializable;
-import java.net.URL;
-import java.util.Calendar;
-import java.util.Currency;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-import java.util.UUID;
+package grails.gorm.tests
 
 import grails.persistence.Entity
 
@@ -29,6 +20,26 @@ class CommonTypes implements Serializable {
     Float f
     TimeZone tz
     Locale loc
-    Currency cur
-    byte[] ba
+    Currency cur   
+    UUID uuid
+    UUID timeuuid
+    String text
+    String ascii
+    String varchar
+    TestEnum testEnum
+    boolean transientBoolean
+    String transientString
+    transient long tran
+    def service
+        
+    static mapping = {
+        timeuuid type:"timeuuid"
+        ascii type:'ascii'
+        varchar type:'varchar'               
+    }
+    
+    static transients = [
+        'transientBoolean',
+        'transientString'
+    ]
 }

@@ -83,6 +83,16 @@ class QueriesWithIdenticallyNamedPartsSpec extends GormDatastoreSpec {
         results.size() == 1
         results.contains(foos[1])
 
+        when: "Multiple inList queries with immutable list parameters are combined"
+        results = Foo.createCriteria().list {
+            inList 'a', [1, 2, 3].asImmutable()
+            inList 'a', [2, 4].asImmutable()
+        }
+
+        then:
+        results.size() == 1
+        results.contains(foos[1])
+
         when: "Eq and in queries are combined"
         results = Foo.createCriteria().list {
             eq 'a', 2

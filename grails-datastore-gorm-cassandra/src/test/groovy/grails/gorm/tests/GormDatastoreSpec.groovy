@@ -20,26 +20,28 @@ import spock.lang.Specification
  */
 abstract class GormDatastoreSpec extends Specification {
 
+    static final CURRENT_TEST_NAME = "current.gorm.test"
     static final SETUP_CLASS_NAME = 'org.grails.datastore.gorm.Setup'
-    static final TEST_CLASSES = [
-         Book, ChildEntity, City, ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,
-         ClassWithOverloadedBeforeValidate, CommonTypes, Country, EnumThing, Face, Highway,
-         Location, ModifyPerson, Nose, OptLockNotVersioned, OptLockVersioned, Person, PersonEvent,
-         Pet, PetType, Plant, PlantCategory, Publication, Task, TestEntity]
-
+    static final TEST_CLASSES = [Artist, Book, City, ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate, 
+            ClassWithOverloadedBeforeValidate, CommonTypes, Country, Dog, EnumThingEnumPartitionKey, 
+            EnumThing, GroupWithin, Highway, Location, ModifyPerson, OptLockNotVersioned, OptLockVersioned, 
+            Person, PersonEvent, PersonLastNamePartitionKey, Plant, Publication, PublicationTitlePartitionKey, 
+            SimpleWidget, SimpleWidgetDefaultOrderName, TrackArtist, Task, TestEntity, UniqueGroup] /**/
+    
     @Shared Class setupClass
 
-    Session session
+    Session session	    
 
     def setupSpec() {
         ExpandoMetaClass.enableGlobally()
         setupClass = loadSetupClass()
     }
 
-    def setup() {
+    def setup() {       
         cleanRegistry()
-        session = setupClass.setup(((TEST_CLASSES + getDomainClasses()) as Set) as List)
-        DatastoreUtils.bindSession session
+        System.setProperty(CURRENT_TEST_NAME, this.getClass().simpleName - 'Spec')
+        session = setupClass.setup(((TEST_CLASSES) as Set) as List, getDomainClasses())					
+        DatastoreUtils.bindSession session            
     }
 
     List getDomainClasses() {
@@ -66,7 +68,7 @@ abstract class GormDatastoreSpec extends Specification {
         }
     }
 
-    static private loadSetupClass() {
+    static Class loadSetupClass() {
         try {
             getClassLoader().loadClass(SETUP_CLASS_NAME)
         } catch (Throwable e) {

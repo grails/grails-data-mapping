@@ -2,7 +2,7 @@ version = "1.0.1.BUILD-SNAPSHOT"
 
 dependencies {
 
-    compile('redis.clients:jedis:2.5.1')
+    compile('redis.clients:jedis:2.5.2')
     compile project(":grails-datastore-gorm"),
             project(":grails-datastore-gorm-plugin-support"),
             project(":grails-datastore-core")
@@ -13,9 +13,6 @@ dependencies {
     testRuntime "org.springframework:spring-expression:$springVersion"
 }
 
-/*
 test {
-    jvmArgs '-Xmx1024m', '-Xdebug', '-Xnoagent', '-Dgrails.full.stacktrace=true', '-Djava.compiler=NONE',
-            '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
+	maxParallelForks = 1
 }
-*/

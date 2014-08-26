@@ -1,10 +1,10 @@
 package grails.gorm.tests
 
 class FindOrCreateWhereSpec extends GormDatastoreSpec {
-
+    
     def "Test findOrCreateWhere returns a new instance if it doesn't exist in the database"() {
         when:
-            def entity = TestEntity.findOrCreateWhere(name: 'Fripp', age: 64)
+            def entity = TestEntity.findOrCreateWhere(name: 'Fripp', age: 64, [allowFiltering:true])
 
         then:
             'Fripp' == entity.name
@@ -17,7 +17,7 @@ class FindOrCreateWhereSpec extends GormDatastoreSpec {
             def entityId = new TestEntity(name: 'Belew', age: 61).save().id
 
         when:
-            def entity = TestEntity.findOrCreateWhere(name: 'Belew', age: 61)
+            def entity = TestEntity.findOrCreateWhere(name: 'Belew', age: 61, [allowFiltering:true])
 
         then:
             entity.id != null

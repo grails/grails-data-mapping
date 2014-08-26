@@ -1,11 +1,13 @@
 package grails.gorm.tests
 
+import com.datastax.driver.core.exceptions.InvalidQueryException
+
 /**
  * @author graemerocher
  */
 class ListOrderBySpec extends GormDatastoreSpec {
 
-    void "Test listOrderBy property name method"() {
+    void "Test listOrderBy property name method throws InvalidQueryException"() {
         given:
             def child = new ChildEntity(name: "Child")
             new TestEntity(age:30, name:"Bob", child:child).save()
@@ -16,9 +18,7 @@ class ListOrderBySpec extends GormDatastoreSpec {
             def results = TestEntity.listOrderByAge()
 
         then:
-            results.size() == 3
-            results[0].name == "Jack"
-            results[1].name == "Bob"
-            results[2].name == "Fred"
+            //order by only supported when the partition key restricted by an EQ or IN which is not possible with listOrderBy
+            thrown InvalidQueryException
     }
 }
