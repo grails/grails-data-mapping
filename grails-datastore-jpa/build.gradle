@@ -27,9 +27,9 @@ dependencies {
 
 sourceSets {
     main {
-        compileClasspath += configurations.grails
+        compileClasspath += files(configurations.grails)
     }
     test {
-        compileClasspath += configurations.grails
+        compileClasspath += files(configurations.grails)
     }
 }

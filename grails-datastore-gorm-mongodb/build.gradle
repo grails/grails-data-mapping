@@ -89,7 +89,7 @@ tasks.withType(GroovyCompile) {
 
 sourceSets {
     main {
-        compileClasspath += configurations.optional
+        compileClasspath += files(configurations.optional)
     }
 }
 
