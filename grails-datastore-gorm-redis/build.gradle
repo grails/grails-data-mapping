@@ -12,3 +12,7 @@ dependencies {
                 project(":grails-datastore-gorm-tck")
     testRuntime "org.springframework:spring-expression:$springVersion"
 }
+
+test {
+	maxParallelForks = 1
+}
