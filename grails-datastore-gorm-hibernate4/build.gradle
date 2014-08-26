@@ -99,21 +99,21 @@ dependencies {
 
 sourceSets {
     main {
-        compileClasspath += configurations.optional
+        compileClasspath += files(configurations.optional)
     }
     javadoc {
-        classpath = configurations.compile + configurations.optional
+        classpath = files(configurations.compile) + files(configurations.optional)
     }
 }
 idea {
     module {
-        scopes.PROVIDED.plus += configurations.optional
+        scopes.PROVIDED.plus += [configurations.optional]
     }
 }
 
 eclipse {
     classpath {
-        plusConfigurations += configurations.optional
+        plusConfigurations += [configurations.optional]
         file {
             whenMerged { classpath ->
                  // move grails-datastore-gorm-hibernate-core reference to end
@@ -128,8 +128,7 @@ eclipse {
 }
 
 test {
-    testLogging {
-        exceptionFormat ='full'
+    if (!isTravisBuild) {
+        forkEvery = 30
     }
-    forkEvery = 30
 }

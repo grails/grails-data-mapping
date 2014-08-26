@@ -89,13 +89,12 @@ tasks.withType(GroovyCompile) {
 
 sourceSets {
     main {
-        compileClasspath += configurations.optional
+        compileClasspath += files(configurations.optional)
     }
 }
 
 test {
-    testLogging {
-        exceptionFormat ='full'
+    if (!isTravisBuild) {
+        forkEvery = 30
     }
-    forkEvery = 30
 }

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 EXIT_STATUS=0
+./gradlew testClasses || EXIT_STATUS=$?
 ./gradlew grails-datastore-gorm-hibernate:test || EXIT_STATUS=$?
 ./gradlew grails-datastore-gorm-hibernate4:test || EXIT_STATUS=$?
 ./gradlew grails-datastore-gorm-mongodb:test || EXIT_STATUS=$?

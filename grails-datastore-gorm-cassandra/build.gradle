@@ -66,6 +66,6 @@ dependencies {
 
 sourceSets {
 	main {
-		compileClasspath += configurations.grails
+		compileClasspath += files(configurations.grails)
 	}
 }
