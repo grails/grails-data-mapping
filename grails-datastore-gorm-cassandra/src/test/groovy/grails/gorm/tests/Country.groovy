@@ -1,13 +1,8 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
-
-import java.util.Set;
+import grails.persistence.Entity
 
 @Entity
 class Country extends Location {
-    Integer population
-
-    static hasMany = [residents:Person]
-    Set residents
+    Integer population   
 }

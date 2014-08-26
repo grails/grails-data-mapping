@@ -8,12 +8,12 @@ class QueryByNullSpec extends GormDatastoreSpec {
             def people = Person.findAllByLastName(null)
 
         then:
-            !people
+            thrown UnsupportedOperationException
 
         when:
             people - Person.findAllByLastName(null)
 
-       then:
-            !people
+        then:
+            thrown UnsupportedOperationException
     }
 }

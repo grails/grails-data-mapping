@@ -1,9 +1,8 @@
 package grails.gorm.tests
 
+import org.junit.Ignore
 
-import spock.lang.Ignore
-
-@Ignore
+@Ignore("Cassandra GORM does not support first() and last() at present as orderby currently only supported by Cassandra on a clustered key restricted by a primary key ")
 class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
     void "Test first and last method with empty datastore"() {
@@ -25,6 +24,7 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
     void "Test first and last method with multiple entities in the datastore"() {
         given:
+        
         assert new SimpleWidget(name: 'one', spanishName: 'uno').save()
         assert new SimpleWidget(name: 'two', spanishName: 'dos').save()
         assert new SimpleWidget(name: 'three', spanishName: 'tres').save()
@@ -208,6 +208,6 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
-        [SimpleWidget, PersonWithCompositeKey, SimpleWidgetWithNonStandardId]
+        [SimpleWidget, SimpleWidgetWithNonStandardId]
     }
 }

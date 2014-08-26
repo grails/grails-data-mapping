@@ -1,7 +1,4 @@
-package grails.gorm.tests;
-
-import java.io.Serializable;
-import java.util.UUID;
+package grails.gorm.tests
 
 import grails.persistence.Entity
 
@@ -11,8 +8,10 @@ class Highway implements Serializable {
     Long version
     Boolean bypassed
     String name
+    String other
 
     static mapping = {
+        id type:'timeuuid'
         bypassed index:true
         name index:true
     }

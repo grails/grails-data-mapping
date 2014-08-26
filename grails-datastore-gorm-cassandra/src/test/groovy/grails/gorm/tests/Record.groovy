@@ -1,9 +1,6 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
-
-import java.util.Date;
-import java.util.UUID;
+import grails.persistence.Entity
 
 @Entity
 class Record {

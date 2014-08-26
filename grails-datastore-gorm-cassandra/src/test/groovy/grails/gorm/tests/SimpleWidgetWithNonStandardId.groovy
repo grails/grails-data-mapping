@@ -1,8 +1,6 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
-
-import java.io.Serializable;
+import grails.persistence.Entity
 
 @Entity
 class SimpleWidgetWithNonStandardId implements Serializable {

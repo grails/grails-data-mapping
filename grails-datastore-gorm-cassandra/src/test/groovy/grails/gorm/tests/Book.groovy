@@ -1,21 +1,21 @@
-package grails.gorm.tests;
+package grails.gorm.tests
 
-import grails.persistence.Entity;
+import grails.persistence.Entity
 
-import java.io.Serializable;
-import java.util.UUID;
+import org.springframework.data.cassandra.mapping.CassandraType
+
+import com.datastax.driver.core.DataType
 
 @Entity
-class Book implements Serializable {
-    UUID id
+class Book implements Serializable {    
     Long version
     String author
     String title
     Boolean published = false
 
     static mapping = {
-        published index:true
-        title index:true
-        author index:true
+        id name:'author', primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned"   
+        title index:true, primaryKey:[ordinal:1, type: "clustered"]
+        published index:true               
     }
 }

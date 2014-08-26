@@ -64,4 +64,8 @@ class PersonEvent implements Serializable {
     void afterLoad() {
         STORE.afterLoad++
     }
+    
+    void setPersonService(java.lang.Object personService) {
+        this.personService = personService
+    }
 }
