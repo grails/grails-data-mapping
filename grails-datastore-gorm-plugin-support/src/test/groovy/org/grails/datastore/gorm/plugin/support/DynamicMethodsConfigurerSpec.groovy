@@ -2,8 +2,8 @@ package org.grails.datastore.gorm.plugin.support
 
 import grails.persistence.Entity
 import grails.validation.ValidationException
+import grails.validation.ConstrainedProperty
 import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
