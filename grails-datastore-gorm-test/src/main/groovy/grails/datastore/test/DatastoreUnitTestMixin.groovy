@@ -17,6 +17,7 @@ package grails.datastore.test
 import grails.plugins.DefaultGrailsPluginManager
 import grails.plugins.GrailsPluginManager
 import grails.test.MockUtils
+import grails.util.Holders
 import org.grails.core.DefaultGrailsDomainClass
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
@@ -90,8 +91,8 @@ class DatastoreUnitTestMixin {
             }
         }
 
-        if (!(PluginManagerHolder.pluginManager instanceof DefaultGrailsPluginManager)) {
-            PluginManagerHolder.pluginManager = mockPluginManager
+        if (!(Holders.pluginManager instanceof DefaultGrailsPluginManager)) {
+            Holders.pluginManager = mockPluginManager
         }
 
         def entity = datastore.mappingContext.addPersistentEntity(domainClass)
@@ -113,8 +114,8 @@ class DatastoreUnitTestMixin {
 
     def disconnect() {
         session?.disconnect()
-        if (PluginManagerHolder.pluginManager?.is(mockPluginManager)) {
-            PluginManagerHolder.pluginManager = null
+        if (Holders.pluginManager?.is(mockPluginManager)) {
+            Holders.pluginManager = null
         }
 
         datastore.clearData()

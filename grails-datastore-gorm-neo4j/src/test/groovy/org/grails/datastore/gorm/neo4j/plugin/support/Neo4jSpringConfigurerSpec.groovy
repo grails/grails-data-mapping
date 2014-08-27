@@ -1,12 +1,11 @@
 package org.grails.datastore.gorm.neo4j.plugin.support
 
+import grails.core.DefaultGrailsApplication
+import grails.core.GrailsApplication
 import grails.gorm.tests.Person
+import grails.plugins.DefaultGrailsPluginManager
 import grails.spring.BeanBuilder
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.plugins.DefaultGrailsPluginManager
-
+import org.grails.core.artefact.DomainClassArtefactHandler
 import spock.lang.Specification
 
 /**

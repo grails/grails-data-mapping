@@ -2,14 +2,14 @@ package org.grails.datastore.gorm.mongo.plugin.support
 
 import com.gmongo.GMongo
 import com.mongodb.MongoClientURI
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.core.DefaultGrailsApplication
+import grails.core.GrailsApplication
+import grails.plugins.DefaultGrailsPluginManager
+import org.grails.core.artefact.DomainClassArtefactHandler
 import spock.lang.Specification
 import grails.spring.BeanBuilder
-import org.codehaus.groovy.grails.plugins.DefaultGrailsPluginManager
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 import grails.gorm.tests.Person
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 
 /**
  */

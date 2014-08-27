@@ -1,9 +1,9 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
+import grails.validation.ConstrainedProperty
 import grails.validation.ValidationException
-import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.grails.core.support.GrailsDomainConfigurationUtil
 import org.grails.datastore.mapping.annotation.Entity
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator

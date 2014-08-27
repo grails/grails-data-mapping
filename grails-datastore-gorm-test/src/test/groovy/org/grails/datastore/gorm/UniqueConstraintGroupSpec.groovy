@@ -2,9 +2,8 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
-
-import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import grails.validation.ConstrainedProperty
+import org.grails.core.support.GrailsDomainConfigurationUtil
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
