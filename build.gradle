@@ -41,7 +41,9 @@ allprojects {
     repositories {
         mavenLocal()
         maven { url "http://repo.grails.org/grails/core" }
-        mavenCentral()
+        if(isBuildSnapshot) {
+            maven { url "http://repo.grails.org/grails/libs-snapshots-local" }
+        }        
     }
 
     configurations {
@@ -348,12 +350,6 @@ subprojects {
 
 configurations {
     build
-}
-
-repositories {
-    mavenLocal()
-    maven { url "http://repo.grails.org/grails/core" }
-    mavenCentral()
 }
 
 dependencies {
