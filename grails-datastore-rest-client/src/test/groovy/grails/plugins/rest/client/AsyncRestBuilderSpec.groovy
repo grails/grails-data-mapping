@@ -4,10 +4,8 @@ import grails.async.Promise
 import grails.converters.JSON
 import grails.plugins.rest.client.async.AsyncRestBuilder
 import grails.web.JSONBuilder
+import grails.web.http.HttpHeaders
 import groovy.util.slurpersupport.GPathResult
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationHolder
-import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationInitializer
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 import spock.lang.Issue
@@ -21,7 +19,6 @@ import org.springframework.test.web.client.MockRestServiceServer
 import org.springframework.http.HttpMethod
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header
-import org.codehaus.groovy.grails.web.servlet.HttpHeaders
 
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess
 import org.springframework.http.MediaType

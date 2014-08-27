@@ -1,15 +1,13 @@
 package org.grails.datastore.gorm.cassandra.plugin.support
 
+import grails.core.DefaultGrailsApplication
+import grails.core.GrailsApplication
 import grails.gorm.tests.Person
+import grails.plugins.DefaultGrailsPluginManager
 import grails.spring.BeanBuilder
-
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.plugins.DefaultGrailsPluginManager
+import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.datastore.gorm.Setup
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
-import org.springframework.data.cassandra.core.CassandraTemplate
 
 import spock.lang.Specification
 

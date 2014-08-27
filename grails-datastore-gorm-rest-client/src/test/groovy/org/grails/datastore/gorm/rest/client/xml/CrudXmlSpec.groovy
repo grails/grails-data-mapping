@@ -1,7 +1,7 @@
 package org.grails.datastore.gorm.rest.client.xml
 
 import grails.persistence.Entity
-import org.codehaus.groovy.grails.web.servlet.HttpHeaders
+import grails.web.http.HttpHeaders
 import org.grails.datastore.gorm.rest.client.RestClientDatastoreSpec
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus

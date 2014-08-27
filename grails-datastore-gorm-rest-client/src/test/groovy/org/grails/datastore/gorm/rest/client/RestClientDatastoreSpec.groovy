@@ -1,9 +1,6 @@
 package org.grails.datastore.gorm.rest.client
 
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationHolder
-import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationInitializer
-
+import grails.core.DefaultGrailsApplication
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
@@ -12,6 +9,8 @@ import org.grails.datastore.gorm.rest.client.plugin.support.RestClientMethodsCon
 import org.grails.datastore.mapping.rest.client.RestClientDatastore
 import org.grails.datastore.mapping.rest.client.RestClientSession
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.grails.web.converters.configuration.ConvertersConfigurationHolder
+import org.grails.web.converters.configuration.ConvertersConfigurationInitializer
 import org.springframework.context.support.GenericApplicationContext
 import spock.lang.Shared
 import spock.lang.Specification

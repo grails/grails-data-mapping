@@ -2,7 +2,7 @@ package org.grails.datastore.gorm.rest.client.json
 
 import grails.gorm.dirty.checking.DirtyCheck
 import grails.persistence.Entity
-import org.codehaus.groovy.grails.web.servlet.HttpHeaders
+import grails.web.http.HttpHeaders
 import org.grails.datastore.gorm.rest.client.RestClientDatastoreSpec
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.springframework.http.HttpMethod
