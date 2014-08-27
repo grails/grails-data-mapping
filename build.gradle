@@ -4,6 +4,12 @@ project.ext {
     slf4jVersion = "1.7.5"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.1.9'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
+
+    projectVersion = "3.1.3"
+//        releaseType = "RELEASE"
+    releaseType = "BUILD-SNAPSHOT"
+    isCiBuild = project.hasProperty("isCiBuild")
+    isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
 }
 
 def groovyMajorVersion = groovyVersion[0..2]
@@ -55,12 +61,13 @@ task wrapper(type: Wrapper) {
 
 subprojects {
     if(project.name.endsWith("spring-boot")) return
-    ext {
-        projectVersion = "3.1.3"
-//        releaseType = "RELEASE"
-        releaseType = "BUILD-SNAPSHOT"
-        isCiBuild = project.hasProperty("isCiBuild")
-        isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
+    afterEvaluate { project ->
+        if (isGroovyProject(project)) {
+            def hasSnapshotVersion = project.version.endsWith("-SNAPSHOT")
+            if(isBuildSnapshot != hasSnapshotVersion) {
+                throw new StopExecutionException("${project.name} has version \"${project.version}\" which is${isBuildSnapshot ? 'n\'t' : ''} a snapshot version. Current release type is ${releaseType}")
+            }
+        }
     }
 
     version = "${projectVersion}.${releaseType}"
