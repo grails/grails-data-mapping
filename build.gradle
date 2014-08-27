@@ -70,6 +70,10 @@ subprojects {
         }
     }
 
+    if(!project.hasProperty("artifactoryPublishPassword") && System.getenv("ARTIFACTORY_PASSWORD")) {
+        project.ext.artifactoryPublishPassword = System.getenv("ARTIFACTORY_PASSWORD")
+    }
+
     version = "${projectVersion}.${releaseType}"
     group = "org.grails"
 

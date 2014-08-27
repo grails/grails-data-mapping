@@ -19,6 +19,10 @@ releaseType="${releaseType#*=}";
 releaseType=${releaseType//\"/}
 
 echo "Project Version: $version $releaseType"
+if [[ $EXIT_STATUS -eq 0 && $releaseType == *-SNAPSHOT* ]]; then
+    echo "Publishing archives"
+    ./gradlew -PartifactoryPublishUsername=travis-gdm upload
+fi
 
 if [[ $releaseType != *-SNAPSHOT* ]]
 then
