@@ -19,6 +19,12 @@ releaseType="${releaseType#*=}";
 releaseType=${releaseType//\"/}
 
 echo "Project Version: $version $releaseType"
+if [[ ( $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == '3.x' ) && $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST == 'false' 
+    && $EXIT_STATUS -eq 0 && $releaseType == *-SNAPSHOT* 
+    && -n "$ARTIFACTORY_PASSWORD" ]]; then
+    echo "Publishing archives"
+    ./gradlew -PartifactoryPublishUsername=travis-gdm upload
+fi
 
 if [[ $releaseType != *-SNAPSHOT* ]]
 then

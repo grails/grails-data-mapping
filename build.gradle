@@ -4,6 +4,12 @@ project.ext {
     slf4jVersion = "1.7.5"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.1.9'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
+
+    projectVersion = "4.0.0"
+//        releaseType = "RELEASE"
+    releaseType = "BUILD-SNAPSHOT"
+    isCiBuild = project.hasProperty("isCiBuild")
+    isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
 }
 
 def groovyMajorVersion = groovyVersion[0..2]
@@ -34,8 +40,8 @@ ext {
 allprojects {
     repositories {
         mavenLocal()
-        mavenCentral()
         maven { url "http://repo.grails.org/grails/core" }
+        mavenCentral()
     }
 
     configurations {
@@ -55,13 +61,19 @@ task wrapper(type: Wrapper) {
 
 subprojects {
     if(project.name.endsWith("spring-boot")) return
-    ext {
-        projectVersion = "4.0.0"
-//        releaseType = "RELEASE"
-        releaseType = "BUILD-SNAPSHOT"
-        isCiBuild = project.hasProperty("isCiBuild")
-        isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
+   afterEvaluate { project ->
+        if (isGroovyProject(project)) {
+            def hasSnapshotVersion = project.version.endsWith("-SNAPSHOT")
+            if(isBuildSnapshot != hasSnapshotVersion) {
+                throw new StopExecutionException("${project.name} has version \"${project.version}\" which is${isBuildSnapshot ? 'n\'t' : ''} a snapshot version. Current release type is ${releaseType}")
+            }
+        }
     }
+
+    if(!project.hasProperty("artifactoryPublishPassword") && System.getenv("ARTIFACTORY_PASSWORD")) {
+        project.ext.artifactoryPublishPassword = System.getenv("ARTIFACTORY_PASSWORD")
+    }
+
 
     version = "${projectVersion}.${releaseType}"
     group = "org.grails"
@@ -268,17 +280,23 @@ subprojects {
             }
 
             repositories.mavenDeployer {
+                if(!isBuildSnapshot) {
                 beforeDeployment { MavenDeployment deployment ->
                     signing.signPom(deployment)
+                    }
                 }
 
+                if(project.hasProperty("sonatypeUsername")) {
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: project.hasProperty("sonatypeUsername") ? project.sonatypeUsername : null,
                             password: project.hasProperty("sonatypePassword") ?  project.sonatypePassword : null)
+                    }
                 }
+                if(project.hasProperty("artifactoryPublishUsername")) {
                 snapshotRepository(url: "http://repo.grails.org/grails/libs-snapshots-local") {
                     authentication(userName: project.hasProperty("artifactoryPublishUsername") ? project.artifactoryPublishUsername : null,
                             password: project.hasProperty("artifactoryPublishPassword") ?  project.artifactoryPublishPassword : null)
+                }
                 }
 
                 pom.project {
@@ -334,6 +352,8 @@ configurations {
 }
 
 repositories {
+    mavenLocal()
+    maven { url "http://repo.grails.org/grails/core" }
     mavenCentral()
 }
 
