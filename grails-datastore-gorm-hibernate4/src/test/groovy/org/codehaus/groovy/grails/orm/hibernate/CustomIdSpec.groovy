@@ -1,9 +1,9 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.GrailsDomainClass
+import grails.core.GrailsDomainClassProperty
 import grails.persistence.Entity
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.hibernate.id.IdentifierGenerationException
 import org.springframework.orm.hibernate4.HibernateSystemException
 

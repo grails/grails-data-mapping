@@ -1,6 +1,6 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import grails.core.GrailsDomainClass
 
 import static junit.framework.Assert.*
 import org.junit.Test

@@ -102,6 +102,9 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         if (shouldMapWithGorm(domainClass)) {
             domainClasses.add(domainClass);
         }
+        else {
+            addAnnotatedClass(domainClass.getClazz());
+        }
 
         return this;
     }

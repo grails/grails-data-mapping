@@ -14,10 +14,10 @@
  */
 package grails.orm.bootstrap
 
+import grails.core.GrailsApplication
+import grails.core.GrailsDomainClassProperty
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.codehaus.groovy.grails.orm.hibernate.*
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler
@@ -85,7 +85,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     ApplicationContext configureForDataSource(DataSource dataSource) {
         ExpandoMetaClass.enableGlobally()
         GenericApplicationContext applicationContext = new GenericApplicationContext()
-        applicationContext.beanFactory.registerSingleton(defaultDataSourceBeanName, dataSource)
+        applicationContext.beanFactory.registerSingleton("dataSource", dataSource)
         configureForBeanDefinitionRegistry(applicationContext)
         applicationContext.refresh()
         return applicationContext

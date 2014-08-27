@@ -1,11 +1,11 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.GrailsDomainClass
 import grails.persistence.Entity
 
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.orm.hibernate.exceptions.GrailsQueryException
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
+import org.grails.core.artefact.DomainClassArtefactHandler
 import org.springframework.core.convert.ConversionFailedException
 import org.springframework.validation.Errors
 

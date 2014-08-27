@@ -1181,7 +1181,7 @@ public abstract class AbstractGrailsDomainBinder {
                 final ApplicationContext mainContext = grailsApplication.getMainContext();
                 if (mainContext != null && mainContext.containsBean("pluginManager")) {
                     final GrailsPluginManager pluginManager = (GrailsPluginManager) mainContext.getBean("pluginManager");
-                    final GrailsPlugin pluginForClass = null;
+                    final GrailsPlugin pluginForClass = pluginManager.getPluginForClass(domainClass.getClazz());
                     if (pluginForClass != null) {
                         final String pluginName = pluginForClass.getName();
                         boolean shouldApplyPluginPrefix = false;

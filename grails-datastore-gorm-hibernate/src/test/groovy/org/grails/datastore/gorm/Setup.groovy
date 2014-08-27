@@ -1,10 +1,10 @@
 package org.grails.datastore.gorm
 
+import grails.core.DefaultGrailsApplication
+import grails.core.GrailsApplication
+import grails.core.GrailsDomainClass
+import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.commons.metaclass.MetaClassEnhancer
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTransactionManager
 import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
@@ -16,8 +16,9 @@ import org.codehaus.groovy.grails.orm.hibernate.validation.HibernateConstraintsE
 import org.codehaus.groovy.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.codehaus.groovy.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.codehaus.groovy.grails.orm.hibernate.validation.UniqueConstraint
+import org.grails.core.metaclass.MetaClassEnhancer
+
 //import org.codehaus.groovy.grails.plugins.web.api.ControllersDomainBindingApi
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext

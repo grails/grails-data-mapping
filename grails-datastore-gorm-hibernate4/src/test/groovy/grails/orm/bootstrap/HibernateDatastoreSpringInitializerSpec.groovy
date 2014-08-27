@@ -24,7 +24,9 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
 
         when:"The application context is configured"
             datastoreInitializer.configureForBeanDefinitionRegistry(applicationContext)
+            boolean refreshCalled = false
             applicationContext.refresh()
+            refreshCalled = true
             def conn = dataSource.getConnection()
 
         then:"The database tables are created correctly"
@@ -51,7 +53,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
 
 
         cleanup:
-            if(applicationContext.isRunning()) {
+            if(refreshCalled && applicationContext.isRunning()) {
                 applicationContext.stop()
             }
 

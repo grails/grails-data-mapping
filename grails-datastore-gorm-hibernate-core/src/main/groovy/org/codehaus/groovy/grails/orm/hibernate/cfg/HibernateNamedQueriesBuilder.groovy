@@ -15,13 +15,13 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg
 
+import grails.core.GrailsDomainClass
 import grails.util.GrailsNameUtils
 import groovy.lang.Closure;
 
 import java.lang.reflect.Modifier
 import java.util.List;
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.grails.datastore.mapping.model.PersistentEntity;

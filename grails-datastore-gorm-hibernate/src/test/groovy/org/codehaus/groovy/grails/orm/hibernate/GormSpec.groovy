@@ -1,7 +1,7 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.GrailsApplication
 import grails.gorm.tests.GormDatastoreSpec
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.hibernate.SessionFactory
 import org.springframework.context.ApplicationContext
 import spock.lang.Shared

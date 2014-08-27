@@ -1,7 +1,7 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
-import org.apache.commons.beanutils.PropertyUtils
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.core.util.ClassPropertyFetcher
 import org.hibernate.Hibernate
 import org.hibernate.proxy.HibernateProxy
 
@@ -19,6 +19,7 @@ class LazyLoadedOneToOneIdentifierTests extends AbstractGrailsHibernateTests {
 
     @Test
 	void testDynamicMethodOnProxiedObject() {
+        def cpf = ClassPropertyFetcher.forClass(LazyLoadedUserIdentifier)
 		def user = LazyLoadedUser.newInstance(name:"Fred")
 
 		assertNotNull user.save(flush:true)
@@ -29,7 +30,7 @@ class LazyLoadedOneToOneIdentifierTests extends AbstractGrailsHibernateTests {
 		session.clear()
 
 		id = LazyLoadedUserIdentifier.get(1)
-		def proxy = PropertyUtils.getProperty(id, "user")
+		def proxy = cpf.getPropertyValue(id, "user")
 		assertTrue "should be a hibernate proxy", (proxy instanceof HibernateProxy)
 		assertFalse "proxy should not be initialized", Hibernate.isInitialized(proxy)
 		assertNotNull "calling save() on the proxy should have worked",proxy.save()
@@ -37,6 +38,7 @@ class LazyLoadedOneToOneIdentifierTests extends AbstractGrailsHibernateTests {
 
     @Test
 	void testMethodCallsOnProxiedObjects() {
+        def cpf = ClassPropertyFetcher.forClass(LazyLoadedUserIdentifier)
 		def user = LazyLoadedUser.newInstance(name:"Fred")
 		assertNotNull user.save(flush:true)
 
@@ -47,7 +49,7 @@ class LazyLoadedOneToOneIdentifierTests extends AbstractGrailsHibernateTests {
 
 		id = LazyLoadedUserIdentifier.get(1)
 
-		def proxy = PropertyUtils.getProperty(id, "user")
+		def proxy = cpf.getPropertyValue(id, "user")
 		assertTrue "should be a hibernate proxy", (proxy instanceof HibernateProxy)
 		assertFalse "proxy should not be initialized", Hibernate.isInitialized(proxy)
 		assertEquals "Fred", proxy.name

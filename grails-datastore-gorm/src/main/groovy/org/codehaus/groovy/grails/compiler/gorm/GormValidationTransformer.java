@@ -18,15 +18,15 @@ package org.codehaus.groovy.grails.compiler.gorm;
 import java.net.URL;
 import java.util.Arrays;
 
+import grails.compiler.ast.AstTransformer;
 import grails.core.GrailsDomainClassProperty;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.PropertyNode;
 import org.codehaus.groovy.control.SourceUnit;
-import org.codehaus.groovy.grails.compiler.injection.ASTErrorsHelper;
-import org.codehaus.groovy.grails.compiler.injection.ASTValidationErrorsHelper;
-import org.codehaus.groovy.grails.compiler.injection.AbstractGrailsArtefactTransformer;
-import org.codehaus.groovy.grails.compiler.injection.AstTransformer;
+import org.grails.compiler.injection.ASTErrorsHelper;
+import org.grails.compiler.injection.ASTValidationErrorsHelper;
+import org.grails.compiler.injection.AbstractGrailsArtefactTransformer;
 import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.datastore.gorm.GormValidationApi;
 import org.grails.io.support.GrailsResourceUtils;
@@ -38,7 +38,7 @@ import org.grails.io.support.GrailsResourceUtils;
  * @since 2.0
  */
 @AstTransformer
-public class GormValidationTransformer extends AbstractGrailsArtefactTransformer{
+public class GormValidationTransformer extends AbstractGrailsArtefactTransformer {
     public static final String HAS_ERRORS_METHOD = "hasErrors";
     private static final java.util.List<String> EXCLUDES = Arrays.asList(
        "setErrors", "getErrors", HAS_ERRORS_METHOD,

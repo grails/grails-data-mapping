@@ -1,6 +1,6 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+import grails.core.DefaultGrailsApplication
 import org.codehaus.groovy.grails.orm.hibernate.cfg.DefaultGrailsDomainConfiguration
 import org.hibernate.FetchMode
 import org.hibernate.engine.CascadeStyle

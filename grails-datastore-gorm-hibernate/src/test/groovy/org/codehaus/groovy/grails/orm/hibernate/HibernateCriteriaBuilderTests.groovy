@@ -1,11 +1,9 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.GrailsDomainClass
 import grails.orm.HibernateCriteriaBuilder
 import grails.persistence.Entity
-
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
-
+import org.grails.core.artefact.DomainClassArtefactHandler
 import org.junit.Test
 import static junit.framework.Assert.*
 

@@ -15,20 +15,21 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg
 
+import grails.core.DefaultGrailsApplication
+import grails.core.GrailsDomainClass
+import grails.core.GrailsDomainClassProperty
+import grails.plugins.GrailsPlugin
+import grails.plugins.GrailsPluginManager
+import grails.util.Holders
+import grails.validation.ConstrainedProperty
+import org.codehaus.groovy.grails.validation.TestClass
+import org.grails.core.DefaultGrailsDomainClass
+import org.grails.plugins.MockGrailsPluginManager
+import org.grails.support.MockApplicationContext
 import org.junit.Ignore
 
 import java.lang.reflect.Field
 
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.codehaus.groovy.grails.plugins.GrailsPluginManager
-import org.codehaus.groovy.grails.plugins.MockGrailsPluginManager
-import org.codehaus.groovy.grails.plugins.PluginManagerHolder
-import org.codehaus.groovy.grails.support.MockApplicationContext
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
-import org.codehaus.groovy.grails.validation.TestClass
 import org.hibernate.cfg.ImprovedNamingStrategy
 import org.hibernate.mapping.Bag
 import org.hibernate.mapping.Column
@@ -245,7 +246,7 @@ class TablePerSubclassSubclass extends TablePerSubclassSuperclass {
         super.setUp()
         ExpandoMetaClass.enableGlobally()
         MockGrailsPluginManager pluginManager = new MockGrailsPluginManager()
-        PluginManagerHolder.setPluginManager(pluginManager)
+        Holders.setPluginManager(pluginManager)
         previousNamingStrategyClass = grailsDomainBinder.NAMING_STRATEGIES[GrailsDomainClassProperty.DEFAULT_DATA_SOURCE].getClass()
     }
 
@@ -255,7 +256,7 @@ class TablePerSubclassSubclass extends TablePerSubclassSuperclass {
         grailsDomainBinder.NAMING_STRATEGIES.clear()
         grailsDomainBinder.NAMING_STRATEGIES.put(
                 GrailsDomainClassProperty.DEFAULT_DATA_SOURCE, ImprovedNamingStrategy.INSTANCE)
-        PluginManagerHolder.setPluginManager(null)
+        Holders.setPluginManager(null)
         grailsDomainBinder.configureNamingStrategy previousNamingStrategyClass
     }
 
@@ -856,11 +857,11 @@ class AuthorClass {
 
         def myPluginMap = [:]
         myPluginMap.getName = { -> 'MyPlugin' }
-        def myPlugin = myPluginMap as org.codehaus.groovy.grails.plugins.GrailsPlugin
+        def myPlugin = myPluginMap as GrailsPlugin
 
         def publisherPluginMap = [:]
         publisherPluginMap.getName = { -> 'Publisher' }
-        def publisherPlugin = publisherPluginMap as org.codehaus.groovy.grails.plugins.GrailsPlugin
+        def publisherPlugin = publisherPluginMap as GrailsPlugin
 
         def pluginManagerMap = [setApplicationContext: { }]
         def myPluginDomainClassNames = ['GadgetClass', 'MyPluginPersonClass']

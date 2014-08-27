@@ -1,8 +1,7 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
 import grails.persistence.Entity
-
-import org.apache.commons.beanutils.PropertyUtils
+import org.grails.core.util.ClassPropertyFetcher
 import org.hibernate.proxy.HibernateProxy
 
 import static junit.framework.Assert.*
@@ -30,6 +29,7 @@ class LazyProxiedAssociationsWithInheritanceTests extends AbstractGrailsHibernat
     @Test
     void testMethodCallsOnProxiedObjects() {
 
+        def cpf = ClassPropertyFetcher.forClass(LazyProxiedAssociationsWithInheritanceBook)
         def addr = LazyProxiedAssociationsWithInheritanceAddress.newInstance(houseNumber:'52')
         def auth = LazyProxiedAssociationsWithInheritanceAuthor.newInstance(name:'Marc Palmer')
         assertNotNull addr.save()
@@ -44,7 +44,7 @@ class LazyProxiedAssociationsWithInheritanceTests extends AbstractGrailsHibernat
         session.clear()
 
         book = LazyProxiedAssociationsWithInheritanceBook.get(1)
-        def proxy = PropertyUtils.getProperty(book, "author")
+        def proxy = cpf.getPropertyValue(book, "author")
         assertTrue "should be a hibernate proxy", (proxy instanceof HibernateProxy)
         assertFalse "proxy should not be initialized", org.hibernate.Hibernate.isInitialized(proxy)
 
@@ -61,6 +61,7 @@ class LazyProxiedAssociationsWithInheritanceTests extends AbstractGrailsHibernat
 
     @Test
     void testSettersOnProxiedObjects() {
+        def cpf = ClassPropertyFetcher.forClass(LazyProxiedAssociationsWithInheritanceBook)
         def Author = ga.getDomainClass(LazyProxiedAssociationsWithInheritanceAuthor.name).clazz
         def Address = ga.getDomainClass(LazyProxiedAssociationsWithInheritanceAddress.name).clazz
         def Book = ga.getDomainClass(LazyProxiedAssociationsWithInheritanceBook.name).clazz
@@ -80,7 +81,7 @@ class LazyProxiedAssociationsWithInheritanceTests extends AbstractGrailsHibernat
 
         book = Book.get(1)
 
-        def proxy = PropertyUtils.getProperty(book, "author")
+        def proxy = cpf.getPropertyValue(book, "author")
         // test setter with non-null value
         proxy.address.houseNumber = '123'
         book.save()
@@ -96,7 +97,7 @@ class LazyProxiedAssociationsWithInheritanceTests extends AbstractGrailsHibernat
 
         // test setting property to null
         book = Book.get(1)
-        proxy = PropertyUtils.getProperty(book, "author")
+        proxy = cpf.getPropertyValue(book, "author")
         proxy.address.houseNumber = null
 
         book.save()
@@ -111,7 +112,7 @@ class LazyProxiedAssociationsWithInheritanceTests extends AbstractGrailsHibernat
         // should delegate call to the closure defined in HibernatePluginSupport.enhanceProxy
         // this broke with previous code
         book = Book.get(1)
-        proxy = PropertyUtils.getProperty(book, "author")
+        proxy = cpf.getPropertyValue(book, "author")
         proxy.address = null
         book.save()
         session.flush()

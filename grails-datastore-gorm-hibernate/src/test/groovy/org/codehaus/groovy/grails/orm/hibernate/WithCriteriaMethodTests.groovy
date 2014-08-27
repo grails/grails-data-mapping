@@ -49,7 +49,7 @@ class WithCriteriaMethodAuthor {
     Long version
     String name
     Set books
-    def relatesToMany = [books:WithCriteriaMethodBook]
+    static hasMany = [books:WithCriteriaMethodBook]
     boolean equals(obj) { name == obj?.name }
     int hashCode() { name ? name.hashCode() : super.hashCode() }
     String toString() { name }

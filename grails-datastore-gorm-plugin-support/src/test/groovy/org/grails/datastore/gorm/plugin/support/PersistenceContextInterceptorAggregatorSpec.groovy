@@ -15,9 +15,9 @@
 
 package org.grails.datastore.gorm.plugin.support
 
+import grails.persistence.support.PersistenceContextInterceptor
 import grails.spring.BeanBuilder
 
-import org.codehaus.groovy.grails.support.PersistenceContextInterceptor
 import org.springframework.context.ApplicationContext
 
 import spock.lang.Specification

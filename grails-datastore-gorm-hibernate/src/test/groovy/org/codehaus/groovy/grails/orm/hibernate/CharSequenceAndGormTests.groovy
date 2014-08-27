@@ -1,7 +1,7 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
 import grails.gorm.tests.Plant
-import org.codehaus.groovy.grails.web.util.StreamCharBuffer
+import org.grails.buffer.StreamCharBuffer
 import org.junit.Test
 
 import static junit.framework.Assert.*

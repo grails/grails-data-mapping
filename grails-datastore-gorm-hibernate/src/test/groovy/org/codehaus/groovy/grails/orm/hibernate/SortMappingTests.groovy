@@ -142,7 +142,6 @@ class SortMappingAuthor {
     Long version
 
     String name
-    Set unibooks
 
     Set books
     static hasMany = [books:SortMappingBook]
@@ -174,7 +173,6 @@ class SortMappingAuthor2 {
     Long version
 
     String name
-    Set unibooks
 
     Set books
     static hasMany = [books:SortMappingBook2]

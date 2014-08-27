@@ -1,7 +1,7 @@
 package org.codehaus.groovy.grails.compiler.gorm
 
-import org.codehaus.groovy.grails.compiler.injection.ClassInjector
-import org.codehaus.groovy.grails.compiler.injection.GrailsAwareClassLoader
+import grails.compiler.ast.ClassInjector
+import org.grails.compiler.injection.GrailsAwareClassLoader
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.mapping.simple.SimpleMapDatastore

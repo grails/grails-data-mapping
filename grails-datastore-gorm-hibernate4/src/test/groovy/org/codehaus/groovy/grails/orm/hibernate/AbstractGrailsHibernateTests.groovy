@@ -1,8 +1,8 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.GrailsApplication
 import grails.gorm.tests.GormDatastoreSpec
 import junit.framework.Assert
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.hibernate.Session
 import org.hibernate.SessionFactory

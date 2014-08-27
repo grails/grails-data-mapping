@@ -1,10 +1,8 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.core.GrailsDomainClass
 import grails.persistence.Entity
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
-import org.codehaus.groovy.grails.plugins.GrailsPlugin
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.hibernate.type.YesNoType
 
 import static junit.framework.Assert.*

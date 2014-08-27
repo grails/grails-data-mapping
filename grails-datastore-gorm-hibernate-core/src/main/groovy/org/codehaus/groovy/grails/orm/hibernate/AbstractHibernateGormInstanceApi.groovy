@@ -18,6 +18,7 @@ package org.codehaus.groovy.grails.orm.hibernate
 import grails.core.GrailsDomainClassProperty
 import grails.core.support.proxy.ProxyHandler
 import grails.util.GrailsClassUtils
+import grails.validation.CascadingValidator
 import grails.validation.DeferredBindingActions
 import grails.validation.ValidationException
 import groovy.transform.CompileDynamic
@@ -27,7 +28,6 @@ import org.codehaus.groovy.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.codehaus.groovy.grails.orm.hibernate.validation.AbstractPersistentConstraint
 import org.grails.core.lifecycle.ShutdownOperations
 import org.grails.datastore.gorm.GormInstanceApi
-import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
