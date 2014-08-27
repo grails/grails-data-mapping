@@ -11,4 +11,5 @@ env:
   - GIT_NAME="Graeme Rocher"
   - GIT_EMAIL="graeme.rocher@gmail.com"
   - secure: f2DAQhvxnzr4zptig+H8vPMWr+pMCLw29oHG+A1U20IBowgSrHThfpleIXRTi45Frmv7tSyD5S9Zq+v/tM5Mh2NLljVugYsg7EGIbLVGQQPmnjhG934RyYpwJM+CzypOR8QH9YqTQtzbFUDGpqJ01A2viHsM8nLCp1vxuhW1srU=
+  - secure: J+KWbE5RaZvcEibGWp2X4yR7bDKyRR0Yi+fm7Fyzs8PDpI3qJj/OqYiffgjGWPMFvGsYcH7pyhaYeFz1Z/8qcNGU6pw3/QV412WqWLO1pbWQZdrGbEgES0kpZzy/rliLBYwtuIS5DyjY3L3t4D2S2vcwZpvTWU9eqVikCC+R2eg=
 script: ./travis-build.sh
