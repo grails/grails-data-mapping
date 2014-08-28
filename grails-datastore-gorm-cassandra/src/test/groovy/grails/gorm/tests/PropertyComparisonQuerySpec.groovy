@@ -1,9 +1,12 @@
 package grails.gorm.tests
 
+import spock.lang.Ignore
+
 
 /**
  * Tests for criteria queries that compare two properties
  */
+@Ignore("Cassandra does not support property comparison")
 class PropertyComparisonQuerySpec extends GormDatastoreSpec {
 
     void "Test geProperty query"() {

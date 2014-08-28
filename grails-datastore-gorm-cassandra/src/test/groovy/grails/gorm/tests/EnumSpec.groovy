@@ -2,6 +2,7 @@ package grails.gorm.tests
 
 
 import org.grails.datastore.mapping.core.Session
+
 import spock.lang.Issue
 
 class EnumSpec extends GormDatastoreSpec {
@@ -9,22 +10,32 @@ class EnumSpec extends GormDatastoreSpec {
     void "Test save()"() {
         given:
 
-            EnumThing t = new EnumThing(name: 'e1', en: TestEnum.V1)
+            EnumThingEnumPartitionKey t = new EnumThingEnumPartitionKey(name: 'e1', en: TestEnum.V1)
+            EnumThing p = new EnumThing(name: 'e2', en: TestEnum.V2)
 
         when:
             t.save(failOnError: true, flush:true)
-
+            p.save(failOnError: true, flush:true)
+            session.clear()
         then:
             t != null
             !t.hasErrors()
+            
+            p != null
+            !p.hasErrors()
 
         when:
-            t = t.get(t.id)
+            t = t.get([en:t.en])
+            p = p.get(p.id)
 
         then:
             t != null
             'e1' == t.name
             TestEnum.V1 == t.en
+            
+            p != null
+            'e2' == p.name
+            TestEnum.V2 == p.en                       
     }
 
 
@@ -32,18 +43,18 @@ class EnumSpec extends GormDatastoreSpec {
     void "Test findByInList()"() {
         given:
 
-        new EnumThing(name: 'e1', en: TestEnum.V1).save(failOnError: true)
-        new EnumThing(name: 'e2', en: TestEnum.V1).save(failOnError: true)
-        new EnumThing(name: 'e3', en: TestEnum.V2).save(failOnError: true)
+        new EnumThingEnumPartitionKey(name: 'e1', en: TestEnum.V1).save(failOnError: true)
+        new EnumThingEnumPartitionKey(name: 'e2', en: TestEnum.V1).save(failOnError: true)
+        new EnumThingEnumPartitionKey(name: 'e3', en: TestEnum.V2).save(failOnError: true)
 
-        EnumThing instance1
-        EnumThing instance2
-        EnumThing instance3
+        EnumThingEnumPartitionKey instance1
+        EnumThingEnumPartitionKey instance2
+        EnumThingEnumPartitionKey instance3
 
         when:
-        instance1 = EnumThing.findByEnInList([TestEnum.V1])
-        instance2 = EnumThing.findByEnInList([TestEnum.V2])
-        instance3 = EnumThing.findByEnInList([TestEnum.V3])
+        instance1 = EnumThingEnumPartitionKey.findByEnInList([TestEnum.V1])
+        instance2 = EnumThingEnumPartitionKey.findByEnInList([TestEnum.V2])
+        instance3 = EnumThingEnumPartitionKey.findByEnInList([TestEnum.V3])
 
         then:
         instance1 != null
@@ -54,21 +65,22 @@ class EnumSpec extends GormDatastoreSpec {
 
         instance3 == null
     }
+    
     void "Test findBy()"() {
         given:
 
-            new EnumThing(name: 'e1', en: TestEnum.V1).save(failOnError: true)
-            new EnumThing(name: 'e2', en: TestEnum.V1).save(failOnError: true)
-            new EnumThing(name: 'e3', en: TestEnum.V2).save(failOnError: true)
+            new EnumThingEnumPartitionKey(name: 'e1', en: TestEnum.V1).save(failOnError: true)
+            new EnumThingEnumPartitionKey(name: 'e2', en: TestEnum.V1).save(failOnError: true)
+            new EnumThingEnumPartitionKey(name: 'e3', en: TestEnum.V2).save(failOnError: true)
 
-            EnumThing instance1
-            EnumThing instance2
-            EnumThing instance3
+            EnumThingEnumPartitionKey instance1
+            EnumThingEnumPartitionKey instance2
+            EnumThingEnumPartitionKey instance3
 
         when:
-            instance1 = EnumThing.findByEn(TestEnum.V1)
-            instance2 = EnumThing.findByEn(TestEnum.V2)
-            instance3 = EnumThing.findByEn(TestEnum.V3)
+            instance1 = EnumThingEnumPartitionKey.findByEn(TestEnum.V1)
+            instance2 = EnumThingEnumPartitionKey.findByEn(TestEnum.V2)
+            instance3 = EnumThingEnumPartitionKey.findByEn(TestEnum.V3)
 
         then:
             instance1 != null
@@ -83,19 +95,19 @@ class EnumSpec extends GormDatastoreSpec {
     void "Test findBy() with clearing the session"() {
         given:
 
-            new EnumThing(name: 'e1', en: TestEnum.V1).save(failOnError: true, flush: true)
-            new EnumThing(name: 'e2', en: TestEnum.V1).save(failOnError: true, flush: true)
-            new EnumThing(name: 'e3', en: TestEnum.V2).save(failOnError: true, flush: true)
+            new EnumThingEnumPartitionKey(name: 'e1', en: TestEnum.V1).save(failOnError: true, flush: true)
+            new EnumThingEnumPartitionKey(name: 'e2', en: TestEnum.V1).save(failOnError: true, flush: true)
+            new EnumThingEnumPartitionKey(name: 'e3', en: TestEnum.V2).save(failOnError: true, flush: true)
             session.clear()
 
-            EnumThing instance1
-            EnumThing instance2
-            EnumThing instance3
+            EnumThingEnumPartitionKey instance1
+            EnumThingEnumPartitionKey instance2
+            EnumThingEnumPartitionKey instance3
 
         when:
-            instance1 = EnumThing.findByEn(TestEnum.V1)
-            instance2 = EnumThing.findByEn(TestEnum.V2)
-            instance3 = EnumThing.findByEn(TestEnum.V3)
+            instance1 = EnumThingEnumPartitionKey.findByEn(TestEnum.V1)
+            instance2 = EnumThingEnumPartitionKey.findByEn(TestEnum.V2)
+            instance3 = EnumThingEnumPartitionKey.findByEn(TestEnum.V3)
 
         then:
             instance1 != null
@@ -110,9 +122,9 @@ class EnumSpec extends GormDatastoreSpec {
     void "Test findAllBy()"() {
         given:
 
-            new EnumThing(name: 'e1', en: TestEnum.V1).save(failOnError: true)
-            new EnumThing(name: 'e2', en: TestEnum.V1).save(failOnError: true)
-            new EnumThing(name: 'e3', en: TestEnum.V2).save(failOnError: true)
+            new EnumThingEnumPartitionKey(name: 'e1', en: TestEnum.V1).save(failOnError: true)
+            new EnumThingEnumPartitionKey(name: 'e2', en: TestEnum.V1).save(failOnError: true)
+            new EnumThingEnumPartitionKey(name: 'e3', en: TestEnum.V2).save(failOnError: true)
 
             def v1Instances
             def v2Instances
@@ -120,10 +132,10 @@ class EnumSpec extends GormDatastoreSpec {
             def v12Instances
 
         when:
-            v1Instances = EnumThing.findAllByEn(TestEnum.V1)
-            v2Instances = EnumThing.findAllByEn(TestEnum.V2)
-            v3Instances = EnumThing.findAllByEn(TestEnum.V3)
-            v12Instances = EnumThing.findAllByEnInList([TestEnum.V1, TestEnum.V2])
+            v1Instances = EnumThingEnumPartitionKey.findAllByEn(TestEnum.V1)
+            v2Instances = EnumThingEnumPartitionKey.findAllByEn(TestEnum.V2)
+            v3Instances = EnumThingEnumPartitionKey.findAllByEn(TestEnum.V3)
+            v12Instances = EnumThingEnumPartitionKey.findAllByEnInList([TestEnum.V1, TestEnum.V2])
 
         then:
             v1Instances != null
@@ -144,18 +156,18 @@ class EnumSpec extends GormDatastoreSpec {
     void "Test countBy()"() {
         given:
 
-            new EnumThing(name: 'e1', en: TestEnum.V1).save(failOnError: true)
-            new EnumThing(name: 'e2', en: TestEnum.V1).save(failOnError: true)
-            new EnumThing(name: 'e3', en: TestEnum.V2).save(failOnError: true)
+            new EnumThingEnumPartitionKey(name: 'e1', en: TestEnum.V1).save(failOnError: true)
+            new EnumThingEnumPartitionKey(name: 'e2', en: TestEnum.V1).save(failOnError: true)
+            new EnumThingEnumPartitionKey(name: 'e3', en: TestEnum.V2).save(failOnError: true)
 
             def v1Count
             def v2Count
             def v3Count
 
         when:
-            v1Count = EnumThing.countByEn(TestEnum.V1)
-            v2Count = EnumThing.countByEn(TestEnum.V2)
-            v3Count = EnumThing.countByEn(TestEnum.V3)
+            v1Count = EnumThingEnumPartitionKey.countByEn(TestEnum.V1)
+            v2Count = EnumThingEnumPartitionKey.countByEn(TestEnum.V2)
+            v3Count = EnumThingEnumPartitionKey.countByEn(TestEnum.V3)
 
         then:
             2 == v1Count

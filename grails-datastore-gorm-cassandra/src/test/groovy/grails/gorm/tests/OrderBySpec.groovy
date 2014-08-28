@@ -1,84 +1,112 @@
 package grails.gorm.tests
 
+import com.datastax.driver.core.exceptions.InvalidQueryException
+
+
 /**
  * Abstract base test for order by queries. Subclasses should do the necessary setup to configure GORM
  */
 class OrderBySpec extends GormDatastoreSpec {
-
+    
     void "Test order with criteria"() {
-        given:
-            def age = 40
-
-            ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each {
-                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+        given:            
+            ["IPhone", "Samsung", "LG", "HTC", "Nokia", "Blackberry"].each {
+                new SimpleWidget(category: "phone", name:it).save()
+            }
+            ["Alba", "Samsung", "Panasonic", "Toshiba"].each {
+                new SimpleWidget(category: "tv", name:it).save()
             }
 
         when:
-            def results = TestEntity.createCriteria().list {
-                order "age"
+            def results = SimpleWidget.createCriteria().list {
+                eq "category", "phone"
+                order "name"
             }
         then:
-            40 == results[0].age
-            41 == results[1].age
-            42 == results[2].age
+            'Blackberry' == results[0].name
+            'HTC' == results[1].name
+            'IPhone' == results[2].name
 
         when:
-            results = TestEntity.createCriteria().list {
-                order "age", "desc"
+            results = SimpleWidget.createCriteria().list {
+                eq "category", "phone"
+                order "name" , "desc"
             }
 
         then:
-            45 == results[0].age
-            44 == results[1].age
-            43 == results[2].age
+            'Samsung' == results[0].name
+            'Nokia' == results[1].name
+            'LG' == results[2].name
+            
+        when:
+            results = SimpleWidget.createCriteria().list {
+                'in' "category", ["phone", "tv"]
+                order "name"
+		//have to disable paging as cannot page queries with both order by and a IN 
+		//see https://issues.apache.org/jira/browse/CASSANDRA-6722
+		fetchSize Integer.MAX_VALUE
+            }
+
+        then:
+            'Alba' == results[0].name
+            'Blackberry' == results[1].name
+            'HTC' == results[2].name
     }
-    void "Test order by with list() method"() {
+    
+    void "Test default sort order with criteria"() {
         given:
-            def age = 40
+            ["IPhone", "Samsung", "LG", "HTC", "Nokia", "Blackberry"].each {
+                new SimpleWidgetDefaultOrderName(category: "phone", name:it).save()
+            }           
 
-            ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each {
-                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+        when:
+            def results = SimpleWidgetDefaultOrderName.createCriteria().list {
+                eq "category", "phone"                
+            }
+        then:
+            'Samsung' == results[0].name
+            'Nokia' == results[1].name
+            'LG' == results[2].name
+    }
+    
+    void "Test order by with list() method throw invalid query exception"() {
+        given:
+            ["IPhone", "Samsung", "LG", "HTC", "Nokia", "Blackberry"].each {
+                new SimpleWidget(category: "phone", name:it).save()
             }
 
         when:
-            def results = TestEntity.list(sort:"age")
+            def results = SimpleWidget.list(sort:"name")
 
         then:
-            40 == results[0].age
-            41 == results[1].age
-            42 == results[2].age
-
-        when:
-            results = TestEntity.list(sort:"age", order:"desc")
-
-        then:
-            45 == results[0].age
-            44 == results[1].age
-            43 == results[2].age
+            //order by only supported when the partition key restricted by an EQ or IN
+            thrown InvalidQueryException
+        
     }
 
     void "Test order by property name with dynamic finder"() {
         given:
-            def age = 40
-
-            ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each {
-                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+             ["IPhone", "Samsung", "LG", "HTC", "Nokia", "Blackberry"].each {
+                new SimpleWidget(category: "phone", name:it).save()
+            }
+            ["Alba", "Samsung", "Panasonic", "Toshiba"].each {
+                new SimpleWidget(category: "tv", name:it).save()
             }
 
         when:
-            def results = TestEntity.findAllByAgeGreaterThanEquals(40, [sort:"age"])
+            def results = SimpleWidget.findAllByCategory("tv", [sort:"name"])
 
         then:
-            40 == results[0].age
-            41 == results[1].age
-            42 == results[2].age
+            'Alba' == results[0].name
+            'Panasonic' == results[1].name
+            'Samsung' == results[2].name
 
         when:
-            results = TestEntity.findAllByAgeGreaterThanEquals(40, [sort:"age", order:"desc"])
+            results = SimpleWidget.findAllByCategory("tv", [sort:"name", order:"desc"])
 
         then:
-            45 == results[0].age
-            44 == results[1].age
-            43 == results[2].age
+            'Toshiba' == results[0].name
+            'Samsung' == results[1].name
+            'Panasonic' == results[2].name
     }
 }

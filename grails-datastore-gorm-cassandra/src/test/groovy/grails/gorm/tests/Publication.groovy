@@ -1,13 +1,9 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity;
-
-import java.io.Serializable;
-import java.util.Date;
-import java.util.UUID;
+import grails.persistence.Entity
 
 @Entity
-class Publication implements Serializable {
+class Publication implements Serializable {    
     UUID id
     Long version
     String title
@@ -30,11 +26,16 @@ class Publication implements Serializable {
 
         recentPublications {
             def now = new Date()
-            gt 'datePublished', now - 365
+            gt 'datePublished', now - 365  
+			allowFiltering true
         }
 
-        publicationsWithBookInTitle {
-            like 'title', 'Book%'
+        publicationsByTitles { titles ->
+            'in' 'title', titles
+        }
+        
+        publicationsByTitle { title ->
+            eq 'title', title
         }
 
         recentPublicationsByTitle { title ->
@@ -53,6 +54,7 @@ class Publication implements Serializable {
 
         publishedAfter { date ->
             gt 'datePublished', date
+            allowFiltering true
         }
 
         paperbackOrRecent {

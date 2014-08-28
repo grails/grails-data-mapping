@@ -1,10 +1,6 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity;
-
-import java.io.Serializable;
-import java.util.Date;
-import java.util.UUID;
+import grails.persistence.Entity
 
 @Entity
 class Pet implements Serializable {

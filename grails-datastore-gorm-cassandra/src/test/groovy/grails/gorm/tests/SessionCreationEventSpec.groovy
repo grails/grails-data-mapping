@@ -9,7 +9,6 @@ import spock.lang.Ignore
 /**
  * Test case that session creation events are fired.
  */
-@Ignore
 class SessionCreationEventSpec extends GormDatastoreSpec {
 
     Listener listener

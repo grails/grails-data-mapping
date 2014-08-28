@@ -3,7 +3,7 @@ grails.project.source.level = 1.6
 
 grails.project.dependency.resolver="maven"
 grails.project.dependency.resolution = {
-
+    
     inherits( "global" ) {
         excludes 'xml-apis', 'netty'
     }
@@ -24,32 +24,26 @@ grails.project.dependency.resolution = {
             excludes group:"org.grails", name:'grails-gorm'
             excludes group:"org.grails", name:'grails-test'
             excludes group:'xml-apis', name:'xml-apis'
-            excludes 'ehcache-core'
-            transitive = true
-        }
+            excludes 'ehcache-core'            
+        }       
 
-        //compile("org.springframework.data:spring-data-commons-core:1.4.1.RELEASE", excludes)
-        //runtime 'org.springframework.data:spring-data-commons:1.5.1.RELEASE'
-
-        def datastoreVersion = "3.1.0.RELEASE"
-        def cassandraDatastoreVersion = "0.2.BUILD-SNAPSHOT"
+        def datastoreVersion = "3.1.2.RELEASE"
+        def cassandraDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
 
         compile ("org.grails:grails-datastore-gorm-cassandra:$cassandraDatastoreVersion",excludes)
 
         compile("org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
-                "org.grails:grails-datastore-core:$datastoreVersion",
-                "org.grails:grails-datastore-gorm:$datastoreVersion",                
-                "org.grails:grails-datastore-web:$datastoreVersion",excludes)
-
-        runtime 'org.javassist:javassist:3.16.1-GA'
-
-        test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
-             "org.grails:grails-datastore-simple:$datastoreVersion", excludes)
+                "org.grails:grails-datastore-gorm:$datastoreVersion",
+                "org.grails:grails-datastore-core:$datastoreVersion",                
+                "org.grails:grails-datastore-simple:$datastoreVersion",    
+                "org.grails:grails-datastore-web:$datastoreVersion",excludes)         
+        
     }
 
     plugins {
         build(':release:3.0.1', ':rest-client-builder:2.0.0') {
             export = false
+            excludes 'grails-core', 'grails-web'
         }
     }
 }

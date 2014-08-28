@@ -1,8 +1,11 @@
 package grails.gorm.tests
 
+import spock.lang.Ignore
+
 /**
  * @author graemerocher
  */
+@Ignore("Cassandra GORM does not support associations at present")
 class OneToManySpec extends GormDatastoreSpec {
 
     void "test save and return unidirectional one to many"() {
