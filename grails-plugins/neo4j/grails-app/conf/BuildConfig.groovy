@@ -23,7 +23,7 @@ grails.project.dependency.resolution = {
         mavenRepo "http://m2.neo4j.org/content/repositories/releases/"
 
         //mavenRepo 'http://m2.neo4j.org/releases'
-        //mavenRepo "http://repo.grails.org/grails/repo"
+        //mavenRepo "https://repo.grails.org/grails/repo"
     }
 
     dependencies {

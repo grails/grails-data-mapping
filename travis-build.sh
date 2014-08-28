@@ -23,7 +23,7 @@ if [[ ( $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == '3.x' ) && $TRAVIS_REPO_
     && $EXIT_STATUS -eq 0 && $releaseType == *-SNAPSHOT* 
     && -n "$ARTIFACTORY_PASSWORD" ]]; then
     echo "Publishing archives"
-    ./gradlew -PartifactoryPublishUsername=travis-gdm upload
+    ./gradlew -PartifactoryPublishUsername=travis-gdm upload || EXIT_STATUS=$?
 fi
 
 if [[ $releaseType != *-SNAPSHOT* ]]
