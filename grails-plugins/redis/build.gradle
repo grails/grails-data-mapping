@@ -2,7 +2,7 @@ buildscript {
 
     repositories {
         mavenCentral()
-        mavenRepo urls: "http://repo.grails.org/grails/core"
+        mavenRepo urls: "https://repo.grails.org/grails/core"
     }
 
     dependencies {

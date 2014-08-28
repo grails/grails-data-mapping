@@ -32,7 +32,7 @@ grails.project.dependency.resolution = {
         grailsPlugins()
         grailsHome()
         grailsCentral()
-        mavenRepo "http://repo.grails.org/grails/core"
+        mavenRepo "https://repo.grails.org/grails/core"
         mavenLocal()
         mavenCentral()
         mavenRepo 'http://repository.codehaus.org'
