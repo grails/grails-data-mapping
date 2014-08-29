@@ -8,6 +8,7 @@ import grails.spring.BeanBuilder
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.datastore.gorm.Setup
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
+import org.springframework.data.cassandra.core.CassandraTemplate
 
 import spock.lang.Specification
 
