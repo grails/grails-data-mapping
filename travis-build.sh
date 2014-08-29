@@ -8,6 +8,11 @@ EXIT_STATUS=0
 ./gradlew grails-datastore-gorm-redis:test || EXIT_STATUS=$?
 ./gradlew grails-datastore-gorm-test:test || EXIT_STATUS=$?
 
+# ensure unittest keyspace exists in local Cassandra
+echo "create keyspace unittest;"|cassandra-cli
+
+./gradlew grails-datastore-gorm-cassandra:test || EXIT_STATUS=$?
+
 version=$(grep 'projectVersion =' build.gradle)
 version=${version//[[:blank:]]/}
 version="${version#*=}";

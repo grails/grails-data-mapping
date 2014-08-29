@@ -69,3 +69,7 @@ sourceSets {
 		compileClasspath += files(configurations.grails)
 	}
 }
+
+test {
+    maxParallelForks = 1
+}
