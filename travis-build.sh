@@ -9,21 +9,7 @@ EXIT_STATUS=0
 ./gradlew grails-datastore-gorm-test:test || EXIT_STATUS=$?
 
 # ensure unittest keyspace exists in local Cassandra
-cat > /tmp/create_keyspace.groovy <<EOF
-@Grab("com.datastax.cassandra:cassandra-driver-core:2.0.4")
-import com.datastax.driver.core.Cluster
-def cluster=Cluster.builder().addContactPoint("127.0.0.1").build()
-def session=cluster.connect()
-def keyspace='unittest'
-def cql = "CREATE KEYSPACE IF NOT EXISTS " + keyspace + " WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 1};"
-println "Executing $cql"
-session.execute(cql)
-println "Done."
-session.close()
-cluster.close()
-System.exit(0)
-EOF
-groovy /tmp/create_keyspace.groovy
+echo "create keyspace unittest;"|cassandra-cli
 
 ./gradlew grails-datastore-gorm-cassandra:test || EXIT_STATUS=$?
 
