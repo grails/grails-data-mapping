@@ -14,6 +14,11 @@
  */
 package org.grails.datastore.gorm.mongo.simple
 
+import java.lang.reflect.Array
+
+import javax.persistence.EnumType as JEnumType
+
+import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
@@ -70,6 +75,16 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
         hasManyMap[property.name]
     }
 
+    private static Object getEnumValueForOrdinal(Number value, Class type) {
+        try {
+            Object values = type.getMethod("values").invoke(type);
+            return Array.get(values, value.intValue());
+        } catch (Exception e) {
+            // ignore
+        }
+        return value;
+    }
+
     private static boolean isEnumTypeCollection(PersistentProperty property) {
         if (!(property instanceof Basic)) {
             return false
@@ -80,31 +95,48 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
         collectionType && (collectionType.isEnum())
     }
 
-    EnumType() {
-        super(Enum)
+    private static boolean isOrdinalTypeEnum(PersistentProperty property) {
+        final Property mappedProperty = property.getMapping().getMappedForm()
+
+        property.getType().isEnum() && mappedProperty?.getEnumTypeObject() == JEnumType.ORDINAL
     }
 
-    // Get the value of enum i.e. if has id, returns the id otherwise return name itself.
-    private static def enumValue(def value, def enumType) {
+    /*
+     * Get the value of enum for write or query operation i.e. 
+     * if enum is marked for ordinal mapping, return its ordinal value,
+     * if enum has id, returns the id,
+     * otherwise return the name of enum itself.
+     */
+    private static def enumValue(PersistentProperty property, def value, Class enumType = null) {
         if (value == null) {
             return null
         }
+
+        enumType = enumType ?: property.getType()
 
         if (value.toString().isNumber()) {
             return value
         }
 
-        if (value instanceof String && enumType) {
+        if (value instanceof String) {
             value = Enum.valueOf(enumType, value)
         }
 
-        if (value instanceof Enum && value.hasProperty("id")) {
-            value = value.id
-        } else {
-            value = value.toString()
+        if (value instanceof Enum) {
+            if (isOrdinalTypeEnum(property)) {
+                value = ((Enum) value).ordinal()
+            } else if (value.hasProperty("id")) {
+                value = value.id
+            } else {
+                value = value.name()
+            }
         }
 
         value
+    }
+
+    EnumType() {
+        super(Enum)
     }
 
     /**
@@ -138,18 +170,18 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
             BasicDBObject criteriaObject = new BasicDBObject()
 
             if (criterion instanceof Equals) {
-                nativeQuery.put(queryKey, enumValue(criterion.value, property.getType()))
+                nativeQuery.put(queryKey, enumValue(property, criterion.value))
             } else if (criterion instanceof NotEquals) {
-                nativeQuery.put(queryKey, [(MongoQuery.MONGO_NE_OPERATOR): enumValue(criterion.value, property.getType())])
+                nativeQuery.put(queryKey, [(MongoQuery.MONGO_NE_OPERATOR): enumValue(property, criterion.value)])
             } else if (criterion instanceof Between) {
-                criteriaObject.put(MongoQuery.MONGO_GTE_OPERATOR, enumValue(((Between) criterion).getFrom(), property.getType()))
-                criteriaObject.put(MongoQuery.MONGO_LTE_OPERATOR, enumValue(((Between) criterion).getTo()), property.getType())
+                criteriaObject.put(MongoQuery.MONGO_GTE_OPERATOR, enumValue(property, ((Between) criterion).getFrom()))
+                criteriaObject.put(MongoQuery.MONGO_LTE_OPERATOR, enumValue(property, ((Between) criterion).getTo()))
 
                 nativeQuery.put(queryKey, criteriaObject)
             } else if (criterion instanceof In) {
                 List criteriaValues = []
                 ((In) criterion).getValues().each { crtieriaValue ->
-                    criteriaValues << enumValue(crtieriaValue, property.getType())
+                    criteriaValues << enumValue(property, crtieriaValue)
                 }
 
                 criteriaObject.put(MongoQuery.MONGO_IN_OPERATOR, criteriaValues)
@@ -184,9 +216,14 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
             return null
         }
 
+        Class propertyType = property.getType()
+
+        if (isOrdinalTypeEnum(property)) {
+            return getEnumValueForOrdinal(value, propertyType)
+        }
+
         def finalValue
 
-        Class propertyType = property.getType()
         // If property is a collection of Enum.
         if (isEnumTypeCollection(property)) {
             finalValue = []
@@ -205,7 +242,7 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
 
             return finalValue
         } else if (value.toString().isNumber()) {
-            // If value is a number, then Enum type has id field.
+            // If value is a number, then Enum type will either has id field.
             return propertyType.values().find { it.id == value.toInteger() }
         }
 
@@ -226,14 +263,14 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
 
             Class collectionType = getCollectionType(property)
             value.each {
-                finalValue << enumValue(it, collectionType)
+                finalValue << enumValue(property, it, collectionType)
             }
 
             nativeTarget.put(key, finalValue)
             return finalValue
         }
 
-        def finalValue = enumValue(value, property.getType())
+        def finalValue = enumValue(property, value)
         nativeTarget.put(key, finalValue)
         return finalValue
     }
