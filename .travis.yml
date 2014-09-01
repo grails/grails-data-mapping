@@ -1,20 +1,36 @@
 language: groovy
 services:
-- redis
-- mongodb
-- cassandra
+  - redis
+  - mongodb
+  - cassandra
 jdk:
-- oraclejdk7
+  - oraclejdk7
 env:
   global:
-  - TERM=dumb
-  - GRADLE_OPTS="-Xmx1024m -Xms256m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled"
-  - _JAVA_OPTIONS="-XX:-UseSplitVerifier"
-  - GIT_NAME="Graeme Rocher"
-  - GIT_EMAIL="graeme.rocher@gmail.com"
-  - secure: f2DAQhvxnzr4zptig+H8vPMWr+pMCLw29oHG+A1U20IBowgSrHThfpleIXRTi45Frmv7tSyD5S9Zq+v/tM5Mh2NLljVugYsg7EGIbLVGQQPmnjhG934RyYpwJM+CzypOR8QH9YqTQtzbFUDGpqJ01A2viHsM8nLCp1vxuhW1srU=
-  - secure: J+KWbE5RaZvcEibGWp2X4yR7bDKyRR0Yi+fm7Fyzs8PDpI3qJj/OqYiffgjGWPMFvGsYcH7pyhaYeFz1Z/8qcNGU6pw3/QV412WqWLO1pbWQZdrGbEgES0kpZzy/rliLBYwtuIS5DyjY3L3t4D2S2vcwZpvTWU9eqVikCC+R2eg=
-  - secure: YM7rkQX1UzKuvMdjw8qCAQ0kWHJFpHZBvOoPaF3kuUUEbfFj/LgEh0xERnKyKz5QduRQipEFgpy492yJT1cb1wrH2YPt1cP+oDq9KOQr6vJB6Z/Xz0WsrgrU80rUBm4KrKXPRe/DMq/Lv3twnnB3Deub3nKSERidDW40JSnMLIE=
-  - secure: X1ffz/ywsPMxaN73nH86Pr4RD7q0p0IaKI7v+5yPvX2g59LY4aJFYEl9Jt65e8+c0mkESNXxocQ1dnL4lehXBFrC4rTWhJvly4URa81clbY8l5EOTZQha/tyGXUOYyaGK409LrEcmLOGSvBTV3YsV83xhMTLhrOZ1VwI5zL6MjE=
+    - TERM=dumb
+    - GRADLE_OPTS="-Xmx1024m -Xms256m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled"
+    - GIT_NAME="Graeme Rocher"
+    - GIT_EMAIL="graeme.rocher@gmail.com"
+    - secure: f2DAQhvxnzr4zptig+H8vPMWr+pMCLw29oHG+A1U20IBowgSrHThfpleIXRTi45Frmv7tSyD5S9Zq+v/tM5Mh2NLljVugYsg7EGIbLVGQQPmnjhG934RyYpwJM+CzypOR8QH9YqTQtzbFUDGpqJ01A2viHsM8nLCp1vxuhW1srU=
+    - secure: J+KWbE5RaZvcEibGWp2X4yR7bDKyRR0Yi+fm7Fyzs8PDpI3qJj/OqYiffgjGWPMFvGsYcH7pyhaYeFz1Z/8qcNGU6pw3/QV412WqWLO1pbWQZdrGbEgES0kpZzy/rliLBYwtuIS5DyjY3L3t4D2S2vcwZpvTWU9eqVikCC+R2eg=
+    - secure: YM7rkQX1UzKuvMdjw8qCAQ0kWHJFpHZBvOoPaF3kuUUEbfFj/LgEh0xERnKyKz5QduRQipEFgpy492yJT1cb1wrH2YPt1cP+oDq9KOQr6vJB6Z/Xz0WsrgrU80rUBm4KrKXPRe/DMq/Lv3twnnB3Deub3nKSERidDW40JSnMLIE=
+    - secure: X1ffz/ywsPMxaN73nH86Pr4RD7q0p0IaKI7v+5yPvX2g59LY4aJFYEl9Jt65e8+c0mkESNXxocQ1dnL4lehXBFrC4rTWhJvly4URa81clbY8l5EOTZQha/tyGXUOYyaGK409LrEcmLOGSvBTV3YsV83xhMTLhrOZ1VwI5zL6MjE=
+  matrix:
+    - GORM_IMPL=test
+    - GORM_IMPL=hibernate
+    - GORM_IMPL=hibernate4
+    - GORM_IMPL=mongodb
+    - GORM_IMPL=redis
+    - GORM_IMPL=cassandra
+matrix:
+  fast_finish: true
 script: ./travis-build.sh
-after_failure: ./travis-after-failure.sh
+install: true
+after_success:
+  - python ./travis/travis_after_all.py
+  - export $(cat .to_export_back)
+  - ./travis-publish.sh
+after_failure: 
+  - python ./travis/travis_after_all.py
+  - export $(cat .to_export_back)
+  - ./travis-after-failure.sh
