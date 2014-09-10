@@ -14,7 +14,7 @@ import org.springframework.context.ApplicationContextAware
 class CassandraDatastoreFactoryBean implements FactoryBean<CassandraDatastore>, ApplicationContextAware {
 
     MappingContext mappingContext
-    Map<String,String> config = [:]
+    ConfigObject config = new ConfigObject()
     ApplicationContext applicationContext
 
     @Override

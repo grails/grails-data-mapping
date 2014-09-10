@@ -57,7 +57,8 @@ dependencies {
 		project(':grails-datastore-gorm-plugin-support')
 
 	testCompile project(':grails-datastore-gorm-test'),
-		project(':grails-datastore-gorm-tck')
+		project(':grails-datastore-gorm-tck'),
+		('cglib:cglib:2.2.2')
 
 
 	

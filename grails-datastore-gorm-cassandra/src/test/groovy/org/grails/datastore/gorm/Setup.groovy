@@ -45,16 +45,16 @@ class Setup {
             def ctx = new GenericApplicationContext()
             ctx.refresh()
 
-            ConfigObject config = new ConfigObject()            
-            config.setProperty(CassandraDatastore.CASSANDRA_SCHEMA_ACTION, "RECREATE_DROP_UNUSED")
-            //config.setProperty(CassandraDatastore.CASSANDRA_CONTACT_POINTS, "localhost")
-            def cassandraDatastore = new CassandraDatastore(new CassandraMappingContext("unittest"), config, ctx)
-            def nativeCluster = cassandraDatastore.createCluster()
-			if (!nativeCluster) {
-				throw new RuntimeException("Cassandra Template not found, possible reason: Spring Data Cassandra not initialized")
-			}
-
-            ensureKeyspace(nativeCluster)
+            ConfigObject config = new ConfigObject()
+			ConfigObject keyspaceConfig = new ConfigObject()
+			config.put(CassandraDatastore.SCHEMA_ACTION, "RECREATE_DROP_UNUSED")
+			config.put(CassandraDatastore.KEYSPACE_CONFIG, keyspaceConfig)
+			keyspaceConfig.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
+			keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "CREATE")            
+			//can change to different host and port
+            //config.setProperty(CassandraDatastore.CONTACT_POINTS, "localhost") 
+			//config.setProperty(CassandraDatastore.PORT, 9042)
+            def cassandraDatastore = new CassandraDatastore(new CassandraMappingContext(keyspace), config, ctx)                   
 
             def entities = []
             for (cls in classes) {
@@ -100,20 +100,6 @@ class Setup {
         truncateAllEntities()
                
         return cassandraSession
-    }
-
-    private static void ensureKeyspace(nativeCluster) {        
-        if (!StringUtils.hasText(keyspace)) {
-            keyspace = null
-        }
-
-        if (keyspace != null) {           
-            def cql = "CREATE KEYSPACE IF NOT EXISTS " + keyspace + " WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 1};"
-            println "creating keyspace ${keyspace} via CQL [${cql}]"
-            def session = nativeCluster.connect()
-            session.execute(cql)
-            session.close()
-        }        
     }
 
     public static void truncateAllEntities() {        
