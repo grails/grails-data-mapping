@@ -16,8 +16,7 @@ case "$GORM_IMPL"  in
         ;;
     cassandra)
         # wait for Cassandra to start up
-        sleep 5
-        # ensure unittest keyspace exists in local Cassandra        
+        sleep 5               
         ./gradlew grails-datastore-gorm-cassandra:test || EXIT_STATUS=$?
         ;;
     *)
