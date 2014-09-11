@@ -128,7 +128,13 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
 
     public boolean isSimpleType(Class propType) {
         if (propType == null) return false;
-        if (propType.isEnum()) return true;
+        if (propType.isEnum()) {
+            // Check if prop (any enum) supports custom type marshaller.
+            if (isCustomType(propType)) {
+                return false;
+            }
+            return true;
+        }
         if (propType.isArray()) {
             return isSimpleType(propType.getComponentType());
         }
@@ -182,6 +188,10 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
      */
     public Custom<T> createCustom(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
         CustomTypeMarshaller customTypeMarshaller = typeConverterMap.get(pd.getPropertyType());
+        if (customTypeMarshaller == null && pd.getPropertyType().isEnum()) {
+            // If there is no custom type marshaller for current enum, lookup marshaller for enum itself.
+            customTypeMarshaller = typeConverterMap.get(Enum.class);
+        }
         if (customTypeMarshaller == null) {
             throw new IllegalStateException("Cannot create a custom type without a type converter for type " + pd.getPropertyType());
         }
@@ -337,7 +347,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
      * @return The Basic collection type
      */
     public Basic createBasicCollection(PersistentEntity entity,
-            MappingContext context, PropertyDescriptor property) {
+            MappingContext context, PropertyDescriptor property, Class collectionType) {
         Basic basic = new Basic(entity, context, property) {
             PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
 
@@ -347,6 +357,18 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
         };
 
         CustomTypeMarshaller customTypeMarshaller = typeConverterMap.get(property.getPropertyType());
+
+        // This is to allow using custom marshaller for list of enum.
+        // If no custom type marshaller for current enum.
+        if(collectionType != null && collectionType.isEnum()) {
+            // First look custom marshaller for related type of collection.
+            customTypeMarshaller = typeConverterMap.get(collectionType);
+            if(customTypeMarshaller == null) {
+                // If null, look for enum class itself.
+                customTypeMarshaller = typeConverterMap.get(Enum.class);
+            }
+        }
+
         if(customTypeMarshaller != null) {
             basic.setCustomTypeMarshaller(customTypeMarshaller);
         }
@@ -354,8 +376,19 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
         return basic;
     }
 
+    public Basic createBasicCollection(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
+        return createBasicCollection(entity, context, property, null);
+    }
+
     public static boolean isCustomType(Class<?> propertyType) {
-        return typeConverterMap.containsKey(propertyType);
+        if(typeConverterMap.containsKey(propertyType)) {
+            return true;
+        }
+        if(propertyType.isEnum()) {
+            // Check if enum itself supports custom type.
+            return typeConverterMap.containsKey(Enum.class);
+        }
+        return false;
     }
 
     public IdentityMapping createIdentityMapping(final ClassMapping classMapping) {

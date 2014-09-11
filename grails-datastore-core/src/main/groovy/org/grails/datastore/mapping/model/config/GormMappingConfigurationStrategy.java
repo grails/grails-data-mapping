@@ -217,8 +217,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     persistentProperties.add(association);
                 }
             }
-            else if (Enum.class.isAssignableFrom(currentPropType) ||
-                   propertyFactory.isSimpleType(propertyType)) {
+            else if (propertyFactory.isSimpleType(propertyType)) {
                 persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
             }
             else if (MappingFactory.isCustomType(propertyType)) {
@@ -312,7 +311,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
         if (embedded) {
             if (propertyFactory.isSimpleType(relatedClassType)) {
-                return propertyFactory.createBasicCollection(entity, context, property);
+                return propertyFactory.createBasicCollection(entity, context, property, relatedClassType);
             }
             else if (!isPersistentEntity(relatedClassType)) {
                 // no point in setting up bidirectional link here, since target isn't an entity.
@@ -325,7 +324,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         else if (!isPersistentEntity(relatedClassType)) {
             // otherwise set it to not persistent as you can't persist
             // relationships to non-domain classes
-            return propertyFactory.createBasicCollection(entity, context, property);
+            return propertyFactory.createBasicCollection(entity, context, property, relatedClassType);
         }
 
         // set the referenced type in the property
