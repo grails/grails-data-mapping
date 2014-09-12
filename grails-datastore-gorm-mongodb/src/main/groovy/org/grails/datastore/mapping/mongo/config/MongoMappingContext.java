@@ -15,6 +15,7 @@
 package org.grails.datastore.mapping.mongo.config;
 
 import com.mongodb.DBObject;
+
 import groovy.lang.Closure;
 
 import java.util.Arrays;
@@ -31,6 +32,7 @@ import org.bson.types.Code;
 import org.bson.types.CodeWScope;
 import org.bson.types.Symbol;
 import org.grails.datastore.gorm.mongo.geo.*;
+import org.grails.datastore.gorm.mongo.simple.EnumType;
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.document.config.Collection;
@@ -153,6 +155,7 @@ public class MongoMappingContext extends DocumentMappingContext {
         MappingFactory.registerCustomType(new ShapeType());
         MappingFactory.registerCustomType(new BoxType());
         MappingFactory.registerCustomType(new CircleType());
+        MappingFactory.registerCustomType(new EnumType());
     }
 
     @Override
