@@ -30,6 +30,7 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     private static Logger log = LoggerFactory.getLogger(Neo4jSession.class);
 
     private CypherEngine cypherEngine;
+    private boolean connected = true;
 
     /** map node id -> hashmap of relationship types showing startNode id and endNode id */
     private Collection<Object> persistingInstances = new HashSet<Object>();
@@ -42,8 +43,18 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     @Override
     public void disconnect() {
-        cypherEngine.commit();
+        if (connected) {
+            cypherEngine.commit();
+            connected = false;
+        }
         super.disconnect();
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        cypherEngine.commit();
+        cypherEngine.beginTx();
     }
 
     @Override
@@ -129,7 +140,6 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
         if (publisher!=null) {
             publisher.publishEvent(new SessionFlushedEvent(this));
         }
-        cypherEngine.commit();
     }
 
     /**

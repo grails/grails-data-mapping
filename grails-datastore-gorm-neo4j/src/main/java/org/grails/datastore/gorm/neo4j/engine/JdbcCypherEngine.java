@@ -14,12 +14,14 @@
  */
 package org.grails.datastore.gorm.neo4j.engine;
 
+import org.grails.datastore.gorm.neo4j.Neo4jUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * CypherEngine implementation backed by a Neo4j JDBC datasource
@@ -29,7 +31,20 @@ public class JdbcCypherEngine implements CypherEngine {
 
     private static Logger log = LoggerFactory.getLogger(JdbcCypherEngine.class);
     private final DataSource dataSource;
-    private ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<Connection>();
+    final private ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<Connection>();
+    final private ThreadLocal<AtomicInteger> transactionNestingDepth = new ThreadLocal<AtomicInteger>() {
+        @Override
+        protected AtomicInteger initialValue() {
+            return new AtomicInteger();
+        }
+    };
+    final private ThreadLocal<Boolean> doRollback = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return Boolean.FALSE;
+        }
+    };
+
 
     public JdbcCypherEngine(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -90,41 +105,61 @@ public class JdbcCypherEngine implements CypherEngine {
      */
     @Override
     public void beginTx() {
-        if (connectionThreadLocal.get()==null) {
-            log.info("beginTx");
+//        log.info("beginTx");
+        int depth = transactionNestingDepth.get().getAndIncrement();
+        if (depth==0) {
             getOrInitConnectionThreadLocal();
+            doRollback.set(Boolean.FALSE);
         }
+        Neo4jUtils.logWithCause(log, "beginTx", depth);
     }
 
     @Override
     public void commit() {
-        Connection connection = connectionThreadLocal.get();
-        if (connection != null) {
-            try {
-                log.info("commit");
+//        log.info("commit");
+        int depth = transactionNestingDepth.get().decrementAndGet();
+
+        String amend = doRollback.get() ? " <fake, doRollback>" : "";
+        Neo4jUtils.logWithCause(log, "commit" + amend, depth);
+        if (depth == 0) {
+            finishTransactionWithCommitOrRollback();
+        }
+    }
+
+    /**
+     * depending on {@link #doRollback} we either do a commit or a rollback
+     */
+    protected void finishTransactionWithCommitOrRollback() {
+        // precondition
+        int depth = transactionNestingDepth.get().get();
+        if (depth!=0) {
+            throw new IllegalStateException("we are still inside a nested transaction");
+        }
+
+        // action
+        try {
+            Connection connection = connectionThreadLocal.get();
+            if (doRollback.get()) {
+                connection.rollback();
+            } else {
                 connection.commit();
-                connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            } finally {
-                connectionThreadLocal.remove();
             }
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            connectionThreadLocal.remove();
         }
     }
 
     @Override
     public void rollback() {
-        Connection connection = connectionThreadLocal.get();
-        if (connection!=null) {
-            try {
-                log.info("rollback");
-                connection.rollback();
-                connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            } finally {
-                connectionThreadLocal.remove();
-            }
+//        log.info("rollback");
+        int depth = transactionNestingDepth.get().decrementAndGet();
+        Neo4jUtils.logWithCause(log, "rollback", depth);
+        doRollback.set(Boolean.TRUE);
+        if (depth == 0) {
+            finishTransactionWithCommitOrRollback();
         }
     }
 
