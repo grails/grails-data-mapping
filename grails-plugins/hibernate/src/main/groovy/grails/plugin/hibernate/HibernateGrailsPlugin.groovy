@@ -1,11 +1,10 @@
 package grails.plugin.hibernate
 
+import grails.core.GrailsApplication
+import grails.core.GrailsClass
+import grails.core.GrailsDomainClassProperty
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsClass
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
+import org.grails.core.artefact.DomainClassArtefactHandler
 
 /**
  * Plugin that integrates Hibernate into a Grails application
