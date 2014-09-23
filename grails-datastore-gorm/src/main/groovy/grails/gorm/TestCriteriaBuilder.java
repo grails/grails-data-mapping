@@ -24,13 +24,13 @@ import org.grails.datastore.mapping.query.api.Criteria;
  * @author Guilherme Souza based on Graeme Rocher code for MongoDB
  * @since 3.1.3
  */
-public class DefaultCriteriaBuilder extends CriteriaBuilder {
+public class TestCriteriaBuilder extends CriteriaBuilder {
 
-    public DefaultCriteriaBuilder(final Class<?> targetClass, final Session session, final Query query) {
+    public TestCriteriaBuilder(final Class<?> targetClass, final Session session, final Query query) {
         super(targetClass, session, query);
     }
 
-    public DefaultCriteriaBuilder(final Class<?> targetClass, final Session session) {
+    public TestCriteriaBuilder(final Class<?> targetClass, final Session session) {
         super(targetClass, session);
     }
 

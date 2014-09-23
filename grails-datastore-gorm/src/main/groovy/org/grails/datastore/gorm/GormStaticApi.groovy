@@ -14,7 +14,6 @@
  */
 package org.grails.datastore.gorm
 
-import grails.gorm.DefaultCriteriaBuilder
 import grails.gorm.CriteriaBuilder
 import grails.gorm.DetachedCriteria
 import grails.gorm.PagedResultList
@@ -295,7 +294,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Creates a criteria builder instance
      */
     BuildableCriteria createCriteria() {
-        new DefaultCriteriaBuilder(persistentClass, datastore.currentSession)
+        new CriteriaBuilder(persistentClass, datastore.currentSession)
     }
 
     /**
