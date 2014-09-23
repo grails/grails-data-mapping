@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
-import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil
+import org.grails.datastore.mapping.cassandra.utils.UUIDUtil;
 import org.springframework.dao.DataIntegrityViolationException
 
 /**

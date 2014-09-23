@@ -2,7 +2,7 @@ package grails.gorm.tests
 
 import grails.validation.ValidationException
 
-import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil
+import org.grails.datastore.mapping.cassandra.utils.UUIDUtil;
 
 /**
  * @author graemerocher
