@@ -27,12 +27,13 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.grails.datastore.gorm.cassandra.mapping.BasicCassandraMappingContext;
 import org.grails.datastore.gorm.cassandra.mapping.MappingCassandraConverter;
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
+import org.grails.datastore.mapping.cassandra.utils.EnumUtil;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.model.DatastoreConfigurationException;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.slf4j.Logger;
@@ -49,7 +50,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.CassandraAdminTemplate;
 import org.springframework.data.cassandra.core.CassandraTemplate;
-import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.Cluster;
@@ -104,7 +104,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 			this.configuration = (ConfigObject) connectionDetails;
 		} else if ((Map)connectionDetails instanceof Properties) {			
 			this.configuration = new ConfigSlurper().parse((Properties)(Map)connectionDetails);
-		} else {
+		} else if (connectionDetails != null){
 			for (Entry<String, String> entry : connectionDetails.entrySet()) {
 				this.configuration.put(entry.getKey(), entry.getValue());
 			}
@@ -153,18 +153,19 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 			cassandraCqlClusterFactoryBean.afterPropertiesSet();
 			nativeCluster = cassandraCqlClusterFactoryBean.getObject();
 			if (nativeCluster == null) {
-				throw new RuntimeException("Cassandra driver cluster not created");
+				throw new DatastoreConfigurationException("Cassandra driver cluster not created");
 			}
 		}
 		return nativeCluster;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected Set<KeyspaceActionSpecification<?>> createKeyspaceSpecifications() {
 		Set<KeyspaceActionSpecification<?>> specifications = Collections.emptySet();
 		Object object = configuration.get(KEYSPACE_CONFIG);
 		if (object instanceof ConfigObject) {
 			ConfigObject keyspaceConfiguration = (ConfigObject) object;
-			KeyspaceAction keyspaceAction = readEnum(KeyspaceAction.class, KEYSPACE_ACTION, keyspaceConfiguration, null);
+			KeyspaceAction keyspaceAction = EnumUtil.findEnum(KeyspaceAction.class, KEYSPACE_ACTION, keyspaceConfiguration, null);
 
 			if (keyspaceAction != null) {
 				if (keyspaceActionSpecificationFactoryBean == null) {
@@ -173,11 +174,13 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 				keyspaceActionSpecificationFactoryBean.setName(keyspace);
 				keyspaceActionSpecificationFactoryBean.setAction(keyspaceAction);
 				keyspaceActionSpecificationFactoryBean.setDurableWrites(read(Boolean.class, KEYSPACE_DURABLE_WRITES, keyspaceConfiguration, KeyspaceAttributes.DEFAULT_DURABLE_WRITES));
-				ReplicationStrategy replicationStrategy = readEnum(ReplicationStrategy.class, KEYSPACE_REPLICATION_STRATEGY, keyspaceConfiguration, KeyspaceAttributes.DEFAULT_REPLICATION_STRATEGY);
+				ReplicationStrategy replicationStrategy = EnumUtil.findEnum(ReplicationStrategy.class, KEYSPACE_REPLICATION_STRATEGY, keyspaceConfiguration, KeyspaceAttributes.DEFAULT_REPLICATION_STRATEGY);
 				keyspaceActionSpecificationFactoryBean.setReplicationStrategy(replicationStrategy);
+				
 				if (replicationStrategy == ReplicationStrategy.SIMPLE_STRATEGY) {
 					keyspaceActionSpecificationFactoryBean.setReplicationFactor(read(Long.class, KEYSPACE_REPLICATION_FACTOR, keyspaceConfiguration, KeyspaceAttributes.DEFAULT_REPLICATION_FACTOR));
 				} else if (replicationStrategy == ReplicationStrategy.NETWORK_TOPOLOGY_STRATEGY) {
+					
 					ConfigObject networkTopology = read(ConfigObject.class, KEYSPACE_NETWORK_TOPOLOGY, keyspaceConfiguration, null);
 					if (networkTopology != null) {
 						List<String> dataCenters = new ArrayList<String>();
@@ -198,24 +201,25 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 					specifications = keyspaceActionSpecificationFactoryBean.getObject();
 
 				} catch (Exception e) {
-					throw new RuntimeException("Failed to create keyspace: " + keyspace, e);
+					throw new DatastoreConfigurationException(String.format("Failed to create keyspace [%s] ", keyspace), e);
 				}
 			}
 		}
 		return specifications;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected com.datastax.driver.core.Session createNativeSession() throws ClassNotFoundException, Exception {
 		if (nativeSession == null) {
 			Assert.notNull(nativeCluster, "Cassandra driver cluster not created");
 			if (cassandraSessionFactoryBean == null) {
-				cassandraSessionFactoryBean = new GormCassandraSessionFactoryBean();
+				cassandraSessionFactoryBean = new GormCassandraSessionFactoryBean(mappingContext, springCassandraMappingContext);
 			}
 			cassandraSessionFactoryBean.setCluster(nativeCluster);
 			cassandraSessionFactoryBean.setKeyspaceName(this.keyspace);
 			MappingCassandraConverter mappingCassandraConverter = new MappingCassandraConverter(cassandraMapping());
 			cassandraSessionFactoryBean.setConverter(mappingCassandraConverter);
-			cassandraSessionFactoryBean.setSchemaAction(readEnum(SchemaAction.class, SCHEMA_ACTION, configuration, DEFAULT_SCHEMA_ACTION));
+			cassandraSessionFactoryBean.setSchemaAction(EnumUtil.findEnum(SchemaAction.class, SCHEMA_ACTION, configuration, DEFAULT_SCHEMA_ACTION));
 			// TODO: startup and shutdown scripts addition
 			cassandraSessionFactoryBean.afterPropertiesSet();
 			nativeSession = cassandraSessionFactoryBean.getObject();
@@ -270,10 +274,8 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 		return cassandraTemplate;
 	}
 
-	public void createTableDefinition(Class<?> cls) {
-		cassandraAdminTemplate.createTable(true, cassandraTemplate.getTableName(cls), cls, null);
-		CassandraPersistentEntity<?> cassandraPersistentEntity = springCassandraMappingContext.getPersistentEntity(cls);
-		GormCassandraSessionFactoryBean.createIndex(cassandraPersistentEntity, cassandraAdminTemplate);
+	public void createTableDefinition(Class<?> cls) {		
+		cassandraSessionFactoryBean.createTable(cls);
 	}
 
 	@Override
@@ -286,25 +288,5 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 	private <T> T read(Class<T> type, String key, ConfigObject config, T defaultValue) {
 		Object value = config.get(key);
 		return value == null ? defaultValue : mappingContext.getConversionService().convert(value, type);
-	}
-
-	private <E extends Enum<E>> E readEnum(Class<E> type, String key, ConfigObject config, E defaultValue) {
-		Object value = config.get(key);
-		if (value == null) {
-			return defaultValue;
-		}
-		List<E> enumTypes = EnumUtils.getEnumList(type);
-		E enumValue = null;
-		for (E e : enumTypes) {
-			if (e.toString().equals(value)) {
-				enumValue = e;
-				break;
-			}
-		}
-		if (enumValue == null) {
-			String allowable = EnumUtils.getEnumList(type).toString();
-			throw new RuntimeException(String.format("Invalid option '%s' for the property '%s', allowable values are %s", value, key.replace(".", " "), allowable));
-		}
-		return enumValue;
 	}
 }
