@@ -14,6 +14,9 @@ public class CassandraPersistentEntity extends AbstractPersistentEntity<Table> {
     
     public CassandraPersistentEntity(Class<?> javaClass, CassandraMappingContext context) {
         super(javaClass, context);
+        //need to create the mappedForm first so all the entity properties are read first, 
+        //which then ensures the classMapping.identifierMapping is created correctly for 
+        //multiple primary key entities
         this.mappedForm = context.getMappingFactory().createMappedForm(CassandraPersistentEntity.this);
         this.classMapping = new CassandraClassMapping(this, context);
     }      
