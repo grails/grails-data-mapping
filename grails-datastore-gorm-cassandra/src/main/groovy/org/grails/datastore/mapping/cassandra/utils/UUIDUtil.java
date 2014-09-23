@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.mapping.cassandra.uuid;
+package org.grails.datastore.mapping.cassandra.utils;
 
 import com.datastax.driver.core.utils.UUIDs;
 
