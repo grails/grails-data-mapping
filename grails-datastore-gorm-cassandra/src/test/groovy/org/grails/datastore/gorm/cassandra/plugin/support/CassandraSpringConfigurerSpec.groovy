@@ -7,6 +7,7 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.DefaultGrailsPluginManager
+import org.grails.datastore.gorm.Setup
 import org.grails.datastore.mapping.cassandra.CassandraDatastore
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
 import org.springframework.data.cassandra.core.CassandraTemplate
@@ -24,7 +25,7 @@ class CassandraSpringConfigurerSpec extends Specification{
     		def configurer = new CassandraSpringConfigurer()
     		def config = configurer.getConfiguration()
     		def application = new DefaultGrailsApplication([Person] as Class[], Thread.currentThread().contextClassLoader)
-    		def keyspace = randomKeyspaceName()
+    		def keyspace = Setup.randomKeyspaceName()
     		def contactPoints = "10.0.0.1"
     		application.config.grails.cassandra.keyspace.name = keyspace
     		application.config.grails.cassandra.contactPoints = contactPoints
@@ -43,7 +44,7 @@ class CassandraSpringConfigurerSpec extends Specification{
 		given:
     		def configurer = new CassandraSpringConfigurer()
     		def config = configurer.getConfiguration()
-    		def keyspace = randomKeyspaceName()
+    		def keyspace = Setup.randomKeyspaceName()
     		final defaultConfig = {
     			version false
     		}
@@ -69,27 +70,31 @@ class CassandraSpringConfigurerSpec extends Specification{
 			def cassandraTemplate = ctx.getBean("cassandraTemplate", CassandraTemplate)
 			cassandraTemplate != null
 			cassandraTemplate.session != null
-			def cassandraDatastore = ctx.getBean("cassandraDatastore")
+			CassandraDatastore cassandraDatastore = ctx.getBean("cassandraDatastore")
+			cassandraDatastore.keyspaceActionSpecificationFactoryBean != null
+			
 			def cluster = cassandraDatastore.nativeCluster
 			cluster != null			
             KeyspaceMetadata keyspaceMeta = cluster.metadata.getKeyspace(keyspace)
 			keyspaceMeta != null
 			keyspaceMeta.name == keyspace						
-			keyspaceMeta.durableWrites == false
+			!keyspaceMeta.durableWrites
 			keyspaceMeta.replication['class'] == "org.apache.cassandra.locator.NetworkTopologyStrategy"						
 			
-		when:"CassandraDatastore created with keyspace already created"
+		when:"A new CassandraDatastore created with keyspace already present"
 			def cassandraDatastore2 = new CassandraDatastore(mappingContext, [:], ctx)
 			cassandraDatastore2.afterPropertiesSet()
 		
-		then:"CassandraDatastore does not create a keyspace"
+		then:"CassandraDatastore does not create the keyspace again"
 			cassandraDatastore2.keyspaceActionSpecificationFactoryBean == null
 			def cluster2 = cassandraDatastore2.nativeCluster
 			cluster2 != null
 			def keyspaceMeta2 = cluster2.metadata.getKeyspace(keyspace)
 			keyspaceMeta2 != null
 			keyspaceMeta2.name == keyspace
-			cassandraDatastore.destroy() //instance that contains the keyspace destroy specification
+			
+		cleanup:			
+			cassandraDatastore?.destroy() //on the instance that contains the keyspace destroy specification
     }
 
     protected BeanBuilder createInitialApplicationContext(GrailsApplication application, Closure defaultMappingConfig = {}) {
@@ -112,7 +117,5 @@ class CassandraSpringConfigurerSpec extends Specification{
         return bb
     }
 	
-	def String randomKeyspaceName() {
-		return "ks" + UUID.randomUUID().toString().replace("-", "")
-	}
+		
 }
