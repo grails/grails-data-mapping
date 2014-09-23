@@ -649,9 +649,18 @@ public interface Criteria  {
      * <p>Configures the second-level cache with the default usage of 'read-write' and the default include of 'all' if
      *  the passed argument is true
      *
-     * <code> { cache true }
+     * <code> { cache true } </code>
      *
      * @param shouldCache True if the default cache configuration should be applied
      */
     Criteria cache(boolean shouldCache);
+
+    /**
+     * <p>Configures the hibernate readOnly property to avoid checking for changes on the objects if the passed argument is true
+     *
+     * <code> { readOnly true } </code>
+     *
+     * @param readOnly True to disable dirty checking
+     */
+    Criteria readOnly(boolean readOnly);
 }
