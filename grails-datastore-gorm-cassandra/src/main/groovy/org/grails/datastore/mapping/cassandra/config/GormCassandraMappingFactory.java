@@ -1,5 +1,7 @@
 package org.grails.datastore.mapping.cassandra.config;
 
+import groovy.lang.Closure;
+
 import java.beans.PropertyDescriptor;
 import java.util.Iterator;
 import java.util.Map;
@@ -12,43 +14,55 @@ import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.IdentityMapping;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.PropertyMapping;
 import org.grails.datastore.mapping.model.types.Identity;
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("rawtypes")
 public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Table, Column> {
 
-    private static Logger log = LoggerFactory.getLogger(GormCassandraMappingFactory.class);
+    private static final String TABLE_OPTIONS = "tableOptions";
+	private static Logger log = LoggerFactory.getLogger(GormCassandraMappingFactory.class);
     private String keyspace;
 
     public GormCassandraMappingFactory(String keyspace) {
         this.keyspace = keyspace;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public Table createMappedForm(PersistentEntity entity) {
         Table table = super.createMappedForm(entity);
-
+        
+        //read tableOptions
+        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());        
+        final Closure value = cpf.getStaticPropertyValue(TABLE_OPTIONS, Closure.class);
+        if (value != null) {
+        	MapConfigurationBuilder builder = new MapConfigurationBuilder();
+        	builder.evaluate(value);
+        	table.setTableOptions(builder.getProperties());
+        }
+        
         if (table.getKeyspace() == null) {
             table.setKeyspace(keyspace);
         }
 
+        //extra mapping block handling
         Map<String, Column> properties = entityToPropertyMap.get(entity);
         Column idProperty  = properties.get(IDENTITY_PROPERTY);
-        Iterator<Entry<String, Column>> iterator = properties.entrySet().iterator();
+        Iterator<Entry<String, Column>> propertyIterator = properties.entrySet().iterator();
         
-        while (iterator.hasNext()) {
-            Entry<String, Column> entry = iterator.next();                  
+        while (propertyIterator.hasNext()) {
+            Entry<String, Column> entry = propertyIterator.next();                  
             if (entry.getValue() instanceof Column) {
                 String name = entry.getKey();
                 Column column = entry.getValue();
                 if (idProperty != null && idProperty.getName() != null && idProperty.getName().equals(name)) {
-                    //remove extra column created if id property in constraints block, will be handled elsewhere,
-                    //as it conflicts with the column created in mapping block.                    
-                    iterator.remove();
+                    //remove extra column created if id property in constraints block, as it conflicts with the column created in mapping block. 
+                	//constraints will be handled elsewhere in GORM
+                    propertyIterator.remove();
                     continue;
                 }
                 
@@ -78,8 +92,7 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
     protected IdentityMapping getIdentityMappedForm(final ClassMapping classMapping, final Column property) {
         if (property != null) {
             final String name = property.getName();
-            if (name != null) {
-                final PersistentProperty idProperty = classMapping.getEntity().getPropertyByName(name);
+            if (name != null) {                
                 return new IdentityMapping() {
                     public String[] getIdentifierName() {
                         return new String[] { name };
@@ -90,7 +103,7 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
                     }
 
                     public Property getMappedForm() {
-                        return idProperty.getMapping().getMappedForm();
+                        return property;
                     }
                 };
             }
