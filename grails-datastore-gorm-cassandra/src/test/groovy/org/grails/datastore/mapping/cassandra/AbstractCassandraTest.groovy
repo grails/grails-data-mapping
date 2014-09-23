@@ -1,6 +1,5 @@
 package org.grails.datastore.mapping.cassandra
 
-import org.apache.cassandra.service.EmbeddedCassandraService
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
 import org.junit.BeforeClass
 import org.springframework.context.support.GenericApplicationContext
@@ -13,7 +12,7 @@ import org.springframework.context.support.GenericApplicationContext
  */
 abstract class AbstractCassandraTest {
 
-	protected static EmbeddedCassandraService cassandra
+	//protected static EmbeddedCassandraService cassandra
 	protected static CassandraDatastore datastore
 	protected static CassandraSession  session
 	protected static keyspace = "unittest"
