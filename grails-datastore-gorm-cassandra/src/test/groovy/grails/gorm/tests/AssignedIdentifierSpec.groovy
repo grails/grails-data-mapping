@@ -108,6 +108,7 @@ class River {
     String country
     static mapping = {
         id name:'name', generator:'assigned'
+		country index:true
     }
 }
 
