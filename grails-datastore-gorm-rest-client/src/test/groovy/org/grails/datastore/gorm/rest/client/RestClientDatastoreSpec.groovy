@@ -27,7 +27,7 @@ abstract class RestClientDatastoreSpec extends Specification{
     void setupSpec() {
         final application = new DefaultGrailsApplication(getDomainClasses() as Class[], new GroovyClassLoader())
         application.initialise()
-        new ConvertersConfigurationInitializer().initialize(application)
+        new ConvertersConfigurationInitializer(grailsApplication: application).initialize()
 
         def applicationContext = new GenericApplicationContext()
         applicationContext.refresh()
