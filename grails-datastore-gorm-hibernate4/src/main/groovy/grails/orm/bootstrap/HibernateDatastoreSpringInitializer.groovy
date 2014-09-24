@@ -16,6 +16,7 @@ package grails.orm.bootstrap
 
 import grails.core.GrailsApplication
 import grails.core.GrailsDomainClassProperty
+import grails.util.Environment
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
 import org.codehaus.groovy.grails.orm.hibernate.*
@@ -168,6 +169,10 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                     GrailsDomainBinder.configureNamingStrategy dataSourceName, ImprovedNamingStrategy
                 }
 
+
+                if (Environment.current.isReloadEnabled()) {
+                    "${SessionFactoryHolder.BEAN_ID}$suffix"(SessionFactoryHolder)
+                }
 
                 // the main SessionFactory bean
                 if(!beanDefinitionRegistry.containsBeanDefinition(sessionFactoryName)) {

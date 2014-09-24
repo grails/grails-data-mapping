@@ -18,6 +18,7 @@ package grails.plugin.hibernate4
 import grails.core.GrailsApplication
 import grails.core.GrailsDomainClass
 import grails.core.GrailsDomainClassProperty
+import grails.util.Environment
 import grails.validation.ConstrainedProperty
 import grails.validation.ConstraintsEvaluator
 import org.codehaus.groovy.grails.orm.hibernate.*
@@ -378,7 +379,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'""",t
                 def hibConfig = application.config["hibernate$suffix"]
                 def sessionFactoryReload = hibConfig?.containsKey('reload') ? hibConfig.reload : true
 
-                if (sessionFactoryReload) {
+                if (sessionFactoryReload && Environment.current.isReloadEnabled()) {
                     "${SessionFactoryHolder.BEAN_ID}$suffix"(SessionFactoryHolder) {
                         sessionFactory = bean(ConfigurableLocalSessionFactoryBean) { bean ->
                             bean.parent = ref("abstractSessionFactoryBeanConfig$suffix")
