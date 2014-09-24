@@ -62,7 +62,7 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
         registry.getBeanDefinitionNames().findAll { String beanName -> beanName ==~ persistenceInterceptorBeanNamePattern }
     }
 
-    protected ManagedList moveInterceptorBeansToManagedList(BeanDefinitionRegistry registry, Collection persistenceInterceptorBeanNames) {
+    protected ManagedList moveInterceptorBeansToManagedList(BeanDefinitionRegistry registry, Collection<String> persistenceInterceptorBeanNames) {
         ManagedList list = new ManagedList()
         persistenceInterceptorBeanNames.each { String beanName ->
             list.add registry.getBeanDefinition(beanName)

@@ -171,7 +171,7 @@ class RequestCustomizer {
      * @return The customizer
      */
     RequestCustomizer header(String name, String value) {
-        headers[name] = value
+        headers.add name, value
         return this
     }
 

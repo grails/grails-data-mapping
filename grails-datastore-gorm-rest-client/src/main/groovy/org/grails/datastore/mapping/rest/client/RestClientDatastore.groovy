@@ -55,11 +55,11 @@ class RestClientDatastore extends AbstractDatastore     {
     String baseUrl = DEFAULT_BASE_URL
 
 
-    Map<PersistentEntity, AsyncRestBuilder> asyncRestClients = new ConcurrentHashMap<>().withDefault { PersistentEntity entity ->
+    Map<PersistentEntity, AsyncRestBuilder> asyncRestClients = new ConcurrentHashMap<PersistentEntity, AsyncRestBuilder>().withDefault { PersistentEntity entity ->
         new AsyncRestBuilder(syncRestClients.get(entity))
     }
 
-    Map<PersistentEntity, RestBuilder> syncRestClients = new ConcurrentHashMap<>().withDefault { PersistentEntity entity ->
+    Map<PersistentEntity, RestBuilder> syncRestClients = new ConcurrentHashMap<PersistentEntity, RestBuilder>().withDefault { PersistentEntity entity ->
         final template = new RestTemplate(((Endpoint) entity.mapping.mappedForm).httpRequestFactory)
         final converters = template.getMessageConverters()
         converters.add(new PersistentEntityHttpConverter<Object>(entity, rendererRegistry, bindingSourceRegistry))

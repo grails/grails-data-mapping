@@ -102,15 +102,15 @@ class Polygon extends Shape implements GeoJSON{
                     return new Polygon( [fromSingleCoordsList(coords)] ) // case (2) above
                 }
                 else if( ((List)coords[0])[0] instanceof Point){
-                    return new Polygon( coords.collect { List<Point> poly_ring ->
+                    return new Polygon( coords.collect { poly_ring ->
                         // each is a List<Point>
-                        return fromSingleCoordsList(poly_ring)
+                        return fromSingleCoordsList((List<Point>)poly_ring)
                     }) // case (3) above
                 }
                 else if( ((List)coords[0])[0] instanceof List && ((List)((List)coords[0])[0])[0] instanceof Number ){
-                    return new Polygon( coords.collect { List<List<Number>> poly_ring ->
+                    return new Polygon( coords.collect { poly_ring ->
                         // each is a List<Point>
-                        return fromSingleCoordsList(poly_ring)
+                        return fromSingleCoordsList((List<List<Number>>)poly_ring)
                     } ) // case (4) above
                 }
                 else {

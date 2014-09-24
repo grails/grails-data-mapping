@@ -70,7 +70,7 @@ abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTy
         return null
     }
 
-    abstract T createFromCoords(List coords)
+    abstract T createFromCoords(List<List<Double>> coords)
 
     @Override
     protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion value, DBObject nativeQuery) {
