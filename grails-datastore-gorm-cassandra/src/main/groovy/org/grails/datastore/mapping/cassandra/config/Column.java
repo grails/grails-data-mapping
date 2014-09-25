@@ -3,6 +3,7 @@ package org.grails.datastore.mapping.cassandra.config;
 import java.util.Map;
 
 import org.grails.datastore.mapping.config.Property;
+import org.springframework.cassandra.core.Ordering;
 
 /**
  * Provides configuration options for mapping Cassandra columns
@@ -10,7 +11,8 @@ import org.grails.datastore.mapping.config.Property;
  */
 public class Column extends Property{
     private String type;
-    private Map primaryKey;
+    private Map primaryKeyAttributes;
+    private Ordering order;
     
     public String getType() {
         return type;
@@ -20,15 +22,27 @@ public class Column extends Property{
         this.type = type;
     }
 
-    public Map getPrimaryKey() {
-        return primaryKey;
+    public Map getPrimaryKeyAttributes() {
+        return primaryKeyAttributes;
     }
 
     public void setPrimaryKey(Map primaryKey) {
-        this.primaryKey = primaryKey;
+        this.primaryKeyAttributes = primaryKey;
     }
     
     public boolean isPrimaryKey() {
-        return primaryKey != null && !primaryKey.isEmpty();
+        return primaryKeyAttributes != null && !primaryKeyAttributes.isEmpty();
     }
+    
+    public Ordering getOrder() {
+		return order;
+	}
+
+	public void setOrder(String order) {		
+		if ("desc".equalsIgnoreCase(order)) {
+			this.order = Ordering.DESCENDING;
+		} else {
+			this.order = Ordering.ASCENDING;
+		}
+	}
 }

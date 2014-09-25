@@ -3,7 +3,7 @@ package org.grails.datastore.mapping.cassandra
 import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.tests.TestEntity
 
-import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil
+import org.grails.datastore.mapping.cassandra.utils.UUIDUtil;
 
 /**
  * @author Graeme Rocher

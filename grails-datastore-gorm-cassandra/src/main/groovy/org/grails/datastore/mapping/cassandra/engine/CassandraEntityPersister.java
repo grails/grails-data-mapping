@@ -32,7 +32,7 @@ import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
 import org.grails.datastore.mapping.cassandra.config.Column;
 import org.grails.datastore.mapping.cassandra.config.Table;
 import org.grails.datastore.mapping.cassandra.query.CassandraQuery;
-import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil;
+import org.grails.datastore.mapping.cassandra.utils.UUIDUtil;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.EntityAccess;

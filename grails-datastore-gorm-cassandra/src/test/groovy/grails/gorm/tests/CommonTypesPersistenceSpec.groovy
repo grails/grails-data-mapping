@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
 import org.grails.datastore.gorm.cassandra.mapping.BasicCassandraMappingContext
-import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil
+import org.grails.datastore.mapping.cassandra.utils.UUIDUtil;
 
 import com.datastax.driver.core.DataType
 

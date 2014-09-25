@@ -108,4 +108,7 @@ class Setup {
         }
     }
 
+	public static String randomKeyspaceName() {
+		return "ks" + UUID.randomUUID().toString().replace("-", "")
+	}
 }

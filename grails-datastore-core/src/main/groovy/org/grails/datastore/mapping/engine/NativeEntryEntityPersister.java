@@ -892,13 +892,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         for (PersistentProperty prop : props) {
             PropertyMapping<Property> pm = prop.getMapping();
             final Property mappedProperty = pm.getMappedForm();
-            boolean ordinalEnum = false;
             String key = null;
             if (mappedProperty != null) {
                 key = mappedProperty.getTargetName();
-                if(prop.getType().isEnum() && mappedProperty.getEnumTypeObject() == EnumType.ORDINAL) {
-                    ordinalEnum = true;
-                }
             }
             if (key == null) key = prop.getName();
             final boolean indexed = isPropertyIndexed(mappedProperty);
@@ -908,9 +904,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
                 handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, propValue);
 
-                if(ordinalEnum && (propValue instanceof Enum)) {
-                    propValue = ((Enum)propValue).ordinal();
-                }
                 setEntryValue(e, key, propValue);
             }
             else if((prop instanceof Basic)) {

@@ -6,4 +6,8 @@ import grails.persistence.Entity
 class Simples implements Serializable {
     UUID id
     String name
+	
+	static mapping = {
+		name index:true
+	}
 }
