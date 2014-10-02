@@ -3,6 +3,7 @@ package grails.plugin.hibernate
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.core.GrailsDomainClassProperty
+import grails.core.support.GrailsApplicationAware
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import org.grails.core.artefact.DomainClassArtefactHandler
 
@@ -12,7 +13,7 @@ import org.grails.core.artefact.DomainClassArtefactHandler
  * @author Graeme Rocher
  * @since 3.0
  */
-class HibernateGrailsPlugin {
+class HibernateGrailsPlugin implements GrailsApplicationAware{
 
 
     def version = '4.3.5.5-SNAPSHOT'
@@ -32,8 +33,10 @@ class HibernateGrailsPlugin {
     def issueManagement = [system: 'JIRA', url: 'http://jira.grails.org/browse/GPHIB']
     def scm = [url: 'https://github.com/grails-plugins/grails-hibernate4-plugin']
 
+    GrailsApplication grailsApplication
+
     def doWithSpring = {
-        GrailsApplication grailsApplication = application
+        GrailsApplication grailsApplication = grailsApplication
         def datasourceNames = []
         if (getSpringConfig().containsBean('dataSource')) {
             datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
