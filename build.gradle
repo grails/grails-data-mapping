@@ -124,12 +124,20 @@ subprojects {
 
             testCompile 'junit:junit:4.8.2'
             testCompile (spockDependency) {
+                exclude group:'junit',module:'junit-dep'
+                exclude group:'org.codehaus.groovy',module:'groovy-all'
+                exclude group:'org.hamcrest',module:'hamcrest-core'
                 transitive = false
             }
         }
 
         if (project.name == "grails-datastore-gorm-tck") {
-            compile spockDependency
+            compile spockDependency, {
+                exclude group:'junit',module:'junit-dep'
+                exclude group:'org.codehaus.groovy',module:'groovy-all'
+                exclude group:'org.hamcrest',module:'hamcrest-core'
+                transitive = false
+            }
         }
     }
 
