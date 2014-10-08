@@ -20,6 +20,7 @@ import grails.core.GrailsApplication
 import grails.core.GrailsDomainClass
 import grails.core.GrailsDomainClassProperty
 import grails.util.GrailsClassUtils
+import grails.util.GrailsMetaClassUtils
 import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
@@ -185,13 +186,14 @@ class HibernateUtils {
     // http://jira.codehaus.org/browse/GROOVY-6138 prevents using CompileStatic for this method
     @CompileStatic(TypeCheckingMode.SKIP)
     static void enhanceProxyClass(Class proxyClass) {
-        MetaMethod grailsEnhancedMetaMethod = proxyClass.metaClass.getStaticMetaMethod("grailsEnhanced", (Class[])null)
+        MetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(proxyClass)
+        MetaMethod grailsEnhancedMetaMethod = mc.getStaticMetaMethod("grailsEnhanced", (Class[])null)
         if (grailsEnhancedMetaMethod != null && grailsEnhancedMetaMethod.invoke(proxyClass, null) == proxyClass) {
             return
         }
 
-        MetaClass mc = (MetaClass)InvokerHelper.getMetaClass(proxyClass)
-        MetaClass superMc = InvokerHelper.getMetaClass(proxyClass.getSuperclass())
+        MetaClass superMc = GrailsMetaClassUtils.getExpandoMetaClass(proxyClass.getSuperclass())
+
 
         // hasProperty
         registerMetaMethod(mc, 'hasProperty', { String name ->
