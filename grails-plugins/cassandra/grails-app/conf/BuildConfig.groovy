@@ -13,7 +13,7 @@ grails.project.dependency.resolution = {
         mavenCentral()
         grailsCentral()
         mavenLocal()
-
+		mavenRepo "https://repo.grails.org/grails/libs-snapshots-local"
     }
 
     dependencies {

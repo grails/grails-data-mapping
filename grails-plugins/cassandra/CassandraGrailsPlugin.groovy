@@ -1,7 +1,7 @@
 import org.grails.datastore.gorm.cassandra.plugin.support.CassandraMethodsConfigurer
 import org.grails.datastore.gorm.cassandra.plugin.support.CassandraSpringConfigurer
 
-class CassandraGormGrailsPlugin {
+class CassandraGrailsPlugin {
 	def license = "Apache 2.0 License"
 	def organization = [name: "SpringSource", url: "http://www.springsource.org/"]
 	def developers = [
@@ -9,14 +9,14 @@ class CassandraGormGrailsPlugin {
 	def issueManagement = [system: "todo", url: "todo"]
 	def scm = [url: "https://github.com/grails/grails-data-mapping"]
 
-	def version = "0.2-SNAPSHOT"
-	def grailsVersion = "2.1.4 > *"
+	def version = "1.0.0-SNAPSHOT"
+	def grailsVersion = "2.3.2 > *"
 	def observe = ['services', 'domainClass']
-	def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
-	def author = "Jeff Beck"
-	def authorEmail = "beckje01@gmail.com"
+	def loadAfter = ['domainClass', 'hibernate', 'hibernate4', 'services', 'cloudFoundry']
+	def author = "Jeff Beck, Paras Lakhani"
+	def authorEmail = "paras@atoms.to"
 	def title = "Cassandra GORM"
-	def description = ''
+	def description = 'A plugin that integrates the Cassandra datastore into Grails, providing a GORM API onto it'
 
 	def documentation = ""
 
