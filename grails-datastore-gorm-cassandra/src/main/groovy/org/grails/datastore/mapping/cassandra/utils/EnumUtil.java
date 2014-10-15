@@ -61,13 +61,18 @@ public class EnumUtil {
 			return defaultValue;
 		}
 		Object value = map.get(key);
-		if (value == null || !(value instanceof String)) {
+		if (value == null) {
 			return defaultValue;
 		}
+		
+		if (!(value instanceof String)) {
+			throw new IllegalArgumentException(String.format("Invalid type for property [%s], expected java.lang.String", key));
+		}
+		
 		E enumValue = findEnum(enumClass, (String) value);
 		
 		if (enumValue == null) {			
-			throw new IllegalMappingException(String.format("Invalid option [%s] for the property [%s], allowable values are %s", value, key, getValidEnumList(enumClass)));
+			throw new IllegalArgumentException(String.format("Invalid option [%s] for property [%s], allowable values are %s", value, key, getValidEnumList(enumClass)));
 		}
 		return enumValue;
 	}
