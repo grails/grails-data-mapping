@@ -6,7 +6,7 @@ import grails.persistence.Entity
 class EnumThingEnumPartitionKey {
     TestEnum en
     String name
-   
+	TestEnum enumValue
 
     static mapping = {
         id name:"en", primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned"
