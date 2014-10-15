@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
 import org.grails.datastore.gorm.cassandra.mapping.BasicCassandraMappingContext
-import org.grails.datastore.mapping.cassandra.utils.UUIDUtil;
+import org.grails.datastore.mapping.cassandra.utils.UUIDUtil
 
 import com.datastax.driver.core.DataType
 
@@ -98,7 +98,58 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
             timeuuid == ct.timeuuid
             "text" == ct.text
             "ascii" == ct.ascii
-            "varchar" == ct.varchar    
+            "varchar" == ct.varchar   
+		
+		when: "update property"
+    		now = new Date()
+    		cal = new GregorianCalendar()
+    		uuid = UUIDUtil.randomUUID
+    		timeuuid = UUIDUtil.randomTimeUUID
+		 	CommonTypes.updateProperty(ct.id, "l", 11L)
+			CommonTypes.updateProperty(ct.id, "b", 11 as byte)
+			CommonTypes.updateProperty(ct.id, "s", 11)
+			CommonTypes.updateProperty(ct.id, "bool", false)
+			CommonTypes.updateProperty(ct.id, "i", 11)
+			CommonTypes.updateProperty(ct.id, "url", new URL("http://www.amazon.com"))
+			CommonTypes.updateProperty(ct.id, "date", now)
+			CommonTypes.updateProperty(ct.id, "c", cal)
+			CommonTypes.updateProperty(ct.id, "bd", 1.1)
+			CommonTypes.updateProperty(ct.id, "bi", 11)
+			CommonTypes.updateProperty(ct.id, "d", 1.1)
+			CommonTypes.updateProperty(ct.id, "f", 1.1)
+			CommonTypes.updateProperty(ct.id, "tz", TimeZone.getTimeZone("CET"))
+			CommonTypes.updateProperty(ct.id, "loc", Locale.ITALIAN)
+			CommonTypes.updateProperty(ct.id, "cur", Currency.getInstance("EUR"))
+			CommonTypes.updateProperty(ct.id, "uuid", uuid)
+			CommonTypes.updateProperty(ct.id, "timeuuid", timeuuid)
+			CommonTypes.updateProperty(ct.id, "text", "newtext")
+			CommonTypes.updateProperty(ct.id, "ascii", "newascii")
+			CommonTypes.updateProperty(ct.id, "varchar", "newvarchar", [flush:true])
+			
+			ct.discard()
+			ct = CommonTypes.get(ct.id)
+			 
+		then:
+			11L == ct.l
+            (11 as byte) == ct.b
+            (11 as short) == ct.s
+            false == ct.bool
+            11 == ct.i
+            new URL("http://www.amazon.com") == ct.url
+            now.time == ct.date.time
+            cal == ct.c
+            1.1 == ct.bd
+            11 as BigInteger == ct.bi
+            (1.1 as Double) == ct.d
+            (1.1 as Float) == ct.f
+            TimeZone.getTimeZone("CET") == ct.tz
+            Locale.ITALIAN == ct.loc
+            Currency.getInstance("EUR") == ct.cur        
+            uuid == ct.uuid
+            timeuuid == ct.timeuuid
+            "newtext" == ct.text
+            "newascii" == ct.ascii
+            "newvarchar" == ct.varchar
     }
 }
 
