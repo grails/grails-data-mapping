@@ -74,7 +74,7 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
             public void handle(CassandraQuery cassandraQuery, IdEquals criterion, Where where) {                 
                 CassandraPersistentProperty idProperty = cassandraQuery.cassandraPersistentEntity.getIdProperty();
                 if (idProperty != null) {
-                    where.and(QueryBuilder.eq(getPropertyName(idProperty), 
+                    where.and(QueryBuilder.eq(CassandraEntityPersister.getPropertyName(idProperty), 
                             CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), idProperty, cassandraQuery.conversionService)));
                 }
             }
@@ -82,57 +82,57 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
         
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
             public void handle(CassandraQuery cassandraQuery, Equals criterion, Where where) {
-                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
-                where.and(QueryBuilder.eq(getPropertyName(cassandraPersistentProperty), 
+                CassandraPersistentProperty cassandraPersistentProperty = CassandraEntityPersister.getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
+                where.and(QueryBuilder.eq(CassandraEntityPersister.getPropertyName(cassandraPersistentProperty), 
                         CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraPersistentProperty, cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
             public void handle(CassandraQuery cassandraQuery, GreaterThan criterion, Where where) {
-                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
-                where.and(QueryBuilder.gt(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
+                CassandraPersistentProperty cassandraPersistentProperty = CassandraEntityPersister.getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
+                where.and(QueryBuilder.gt(CassandraEntityPersister.getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
                         CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraPersistentProperty, cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {            
             public void handle(CassandraQuery cassandraQuery, GreaterThanEquals criterion, Where where) {
-                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
-                where.and(QueryBuilder.gte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
+                CassandraPersistentProperty cassandraPersistentProperty = CassandraEntityPersister.getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
+                where.and(QueryBuilder.gte(CassandraEntityPersister.getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
                         CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraPersistentProperty, cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
             public void handle(CassandraQuery cassandraQuery, LessThan criterion, Where where) {
-                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
-                where.and(QueryBuilder.lt(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
+                CassandraPersistentProperty cassandraPersistentProperty = CassandraEntityPersister.getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
+                where.and(QueryBuilder.lt(CassandraEntityPersister.getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
                         CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraPersistentProperty, cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
             public void handle(CassandraQuery cassandraQuery, LessThanEquals criterion, Where where) {
-                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
-                where.and(QueryBuilder.lte(getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
+                CassandraPersistentProperty cassandraPersistentProperty = CassandraEntityPersister.getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
+                where.and(QueryBuilder.lte(CassandraEntityPersister.getPropertyName(cassandraQuery.cassandraPersistentEntity, criterion.getProperty()), 
                         CassandraEntityPersister.convertPrimitiveToNative(criterion.getValue(), cassandraPersistentProperty, cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(Between.class, new QueryHandler<Between>() {
             public void handle(CassandraQuery cassandraQuery, Between criterion, Where where) {
-                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
-                where.and(QueryBuilder.gte(getPropertyName(cassandraPersistentProperty), 
+                CassandraPersistentProperty cassandraPersistentProperty = CassandraEntityPersister.getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
+                where.and(QueryBuilder.gte(CassandraEntityPersister.getPropertyName(cassandraPersistentProperty), 
                         CassandraEntityPersister.convertPrimitiveToNative(criterion.getFrom(), cassandraPersistentProperty, cassandraQuery.conversionService)));
-                where.and(QueryBuilder.lte(getPropertyName(cassandraPersistentProperty), 
+                where.and(QueryBuilder.lte(CassandraEntityPersister.getPropertyName(cassandraPersistentProperty), 
                         CassandraEntityPersister.convertPrimitiveToNative(criterion.getTo(), cassandraPersistentProperty, cassandraQuery.conversionService)));
             }
         });
         queryHandlers.put(In.class, new QueryHandler<In>() {
             public void handle(CassandraQuery cassandraQuery, In criterion, Where where) {
-                CassandraPersistentProperty cassandraPersistentProperty = getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
+                CassandraPersistentProperty cassandraPersistentProperty = CassandraEntityPersister.getPersistentProperty(cassandraQuery.cassandraPersistentEntity, criterion.getProperty());
                 List<Object> values = new ArrayList<Object>(criterion.getValues().size());                
                 for (Object value : criterion.getValues()) {
                     value = CassandraEntityPersister.convertPrimitiveToNative(value, cassandraPersistentProperty, cassandraQuery.conversionService);
                     values.add(value);
                 }               
-                where.and(QueryBuilder.in(getPropertyName(cassandraPersistentProperty), values.toArray()));
+                where.and(QueryBuilder.in(CassandraEntityPersister.getPropertyName(cassandraPersistentProperty), values.toArray()));
             }
         });
     }
@@ -238,7 +238,7 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
                     }
                     else if (projection instanceof PropertyProjection) {
                         PropertyProjection propertyProjection = (PropertyProjection) projection;
-                        CassandraPersistentProperty persistentProperty = getPersistentProperty(cassandraPersistentEntity, propertyProjection.getPropertyName());
+                        CassandraPersistentProperty persistentProperty = CassandraEntityPersister.getPersistentProperty(cassandraPersistentEntity, propertyProjection.getPropertyName());
                         Class type = persistentProperty.getActualType();
                         results = cassandraTemplate.queryForList(select, type);
                     } else {
@@ -296,7 +296,7 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
                     selection.column(persistentProperty.getName());
                 }            
             } else if (projection instanceof PropertyProjection) {
-                String name = getPropertyName(cassandraPersistentEntity, ((PropertyProjection) projection).getPropertyName());
+                String name = CassandraEntityPersister.getPropertyName(cassandraPersistentEntity, ((PropertyProjection) projection).getPropertyName());
                 selection.column(name);
             }
         }
@@ -349,22 +349,5 @@ public class CassandraQuery extends Query implements QueryArgumentsAware{
             keyspace = defaultValue;
         }
         return keyspace;
-    }
-
-    private static CassandraPersistentProperty getPersistentProperty(CassandraPersistentEntity<?> cassandraPersistentEntity, String propertyName) {
-        CassandraPersistentProperty property = cassandraPersistentEntity.getPersistentProperty(propertyName);
-        if (property == null) {
-            throw new IllegalArgumentException("Could not find property '" + propertyName + "' in entity '" + cassandraPersistentEntity.getName() + "'");
-        }
-        return property;
-    }
-    
-    private static String getPropertyName(CassandraPersistentEntity<?> cassandraPersistentEntity, String propertyName) {
-        CassandraPersistentProperty property = getPersistentProperty(cassandraPersistentEntity, propertyName);
-        return getPropertyName(property);
-    }
-    
-    private static String getPropertyName(CassandraPersistentProperty property) {
-        return property.getColumnName().toString(); 
     }
 }
