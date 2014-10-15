@@ -20,6 +20,7 @@ import groovy.util.ConfigSlurper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +30,12 @@ import java.util.Set;
 
 import org.grails.datastore.gorm.cassandra.mapping.BasicCassandraMappingContext;
 import org.grails.datastore.gorm.cassandra.mapping.MappingCassandraConverter;
+import org.grails.datastore.gorm.cassandra.mapping.TimeZoneToStringConverter;
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
 import org.grails.datastore.mapping.cassandra.utils.EnumUtil;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.core.SoftThreadLocalMap;
 import org.grails.datastore.mapping.model.DatastoreConfigurationException;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -44,6 +47,7 @@ import org.springframework.cassandra.config.CassandraCqlClusterFactoryBean;
 import org.springframework.cassandra.config.KeyspaceAction;
 import org.springframework.cassandra.config.KeyspaceActionSpecificationFactoryBean;
 import org.springframework.cassandra.config.KeyspaceAttributes;
+import org.springframework.cassandra.core.WriteOptions;
 import org.springframework.cassandra.core.keyspace.KeyspaceActionSpecification;
 import org.springframework.cassandra.core.keyspace.KeyspaceOption.ReplicationStrategy;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -59,6 +63,7 @@ import com.datastax.driver.core.Cluster;
  * beans to create and initialise the Cassandra driver cluster and session
  * 
  */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class CassandraDatastore extends AbstractDatastore implements InitializingBean, DisposableBean, MappingContext.Listener {
 
 	private static Logger log = LoggerFactory.getLogger(CassandraDatastore.class);
@@ -89,6 +94,8 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 	protected boolean stateless = false;
 	protected String keyspace;
 
+	private static final SoftThreadLocalMap PERSISTENCE_OPTIONS_MAP = new SoftThreadLocalMap();
+
 	public CassandraDatastore() {
 		this(new CassandraMappingContext(), Collections.<String, String> emptyMap(), null);
 	}
@@ -99,12 +106,14 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 
 	public CassandraDatastore(CassandraMappingContext mappingContext, Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
 		super(mappingContext, connectionDetails, ctx);
-		//Groovy can pass in any of the below to connectionDetails parameter, prefer a ConfigObject so we have proper access to any nested Maps i.e. unflattened
+		// Groovy can pass in any of the below to connectionDetails parameter,
+		// prefer a ConfigObject and not a flattened map so we have proper
+		// access to any nested maps
 		if (connectionDetails instanceof ConfigObject) {
 			this.configuration = (ConfigObject) connectionDetails;
-		} else if ((Map)connectionDetails instanceof Properties) {			
-			this.configuration = new ConfigSlurper().parse((Properties)(Map)connectionDetails);
-		} else if (connectionDetails != null){
+		} else if ((Map) connectionDetails instanceof Properties) {
+			this.configuration = new ConfigSlurper().parse((Properties) (Map) connectionDetails);
+		} else if (connectionDetails != null) {
 			for (Entry<String, String> entry : connectionDetails.entrySet()) {
 				this.configuration.put(entry.getKey(), entry.getValue());
 			}
@@ -121,6 +130,12 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 		initializeConverters(mappingContext);
 
 		log.debug("Initializing Cassandra Datastore for keyspace: " + keyspace);
+	}
+
+	@Override
+	protected void initializeConverters(MappingContext mappingContext) {
+		super.initializeConverters(mappingContext);
+		mappingContext.getConverterRegistry().addConverter(new TimeZoneToStringConverter());
 	}
 
 	public void setCassandraCqlClusterFactoryBean(CassandraCqlClusterFactoryBean cassandraCqlClusterFactoryBean) {
@@ -159,7 +174,6 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 		return nativeCluster;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected Set<KeyspaceActionSpecification<?>> createKeyspaceSpecifications() {
 		Set<KeyspaceActionSpecification<?>> specifications = Collections.emptySet();
 		Object object = configuration.get(KEYSPACE_CONFIG);
@@ -176,11 +190,11 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 				keyspaceActionSpecificationFactoryBean.setDurableWrites(read(Boolean.class, KEYSPACE_DURABLE_WRITES, keyspaceConfiguration, KeyspaceAttributes.DEFAULT_DURABLE_WRITES));
 				ReplicationStrategy replicationStrategy = EnumUtil.findEnum(ReplicationStrategy.class, KEYSPACE_REPLICATION_STRATEGY, keyspaceConfiguration, KeyspaceAttributes.DEFAULT_REPLICATION_STRATEGY);
 				keyspaceActionSpecificationFactoryBean.setReplicationStrategy(replicationStrategy);
-				
+
 				if (replicationStrategy == ReplicationStrategy.SIMPLE_STRATEGY) {
 					keyspaceActionSpecificationFactoryBean.setReplicationFactor(read(Long.class, KEYSPACE_REPLICATION_FACTOR, keyspaceConfiguration, KeyspaceAttributes.DEFAULT_REPLICATION_FACTOR));
 				} else if (replicationStrategy == ReplicationStrategy.NETWORK_TOPOLOGY_STRATEGY) {
-					
+
 					ConfigObject networkTopology = read(ConfigObject.class, KEYSPACE_NETWORK_TOPOLOGY, keyspaceConfiguration, null);
 					if (networkTopology != null) {
 						List<String> dataCenters = new ArrayList<String>();
@@ -208,7 +222,6 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 		return specifications;
 	}
 
-	@SuppressWarnings("unchecked")
 	protected com.datastax.driver.core.Session createNativeSession() throws ClassNotFoundException, Exception {
 		if (nativeSession == null) {
 			Assert.notNull(nativeCluster, "Cassandra driver cluster not created");
@@ -274,13 +287,24 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 		return cassandraTemplate;
 	}
 
-	public void createTableDefinition(Class<?> cls) {		
+	public void createTableDefinition(Class<?> cls) {
 		cassandraSessionFactoryBean.createTable(cls);
+	}
+
+	public void setWriteOptions(final Object o, WriteOptions writeOptions) {
+		if (o != null && writeOptions != null) {
+			getPersistenceOptionsMap(o).put("writeOptions", writeOptions);
+		}
+	}
+
+	public WriteOptions getWriteOptions(final Object o) {
+		return (WriteOptions) getPersistenceOptionsMap(o).get("writeOptions");
 	}
 
 	@Override
 	public void destroy() throws Exception {
 		super.destroy();
+		PERSISTENCE_OPTIONS_MAP.remove();
 		cassandraSessionFactoryBean.destroy();
 		cassandraCqlClusterFactoryBean.destroy();
 	}
@@ -288,5 +312,14 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 	private <T> T read(Class<T> type, String key, ConfigObject config, T defaultValue) {
 		Object value = config.get(key);
 		return value == null ? defaultValue : mappingContext.getConversionService().convert(value, type);
+	}
+
+	private Map<String, Object> getPersistenceOptionsMap(final Object o) {
+		Map<String, Object> persistenceOptionsMap = (Map<String, Object>) PERSISTENCE_OPTIONS_MAP.get().get(System.identityHashCode(o));
+		if (persistenceOptionsMap == null) {
+			persistenceOptionsMap = new HashMap<String, Object>();
+			PERSISTENCE_OPTIONS_MAP.get().put(System.identityHashCode(o), persistenceOptionsMap);
+		}
+		return persistenceOptionsMap;
 	}
 }
