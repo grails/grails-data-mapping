@@ -36,7 +36,7 @@ import com.datastax.driver.core.Session;
  */
 public class CassandraSession extends AbstractSession<Session> {
 
-    Logger log = LoggerFactory.getLogger(CassandraSession.class);
+    private Logger log = LoggerFactory.getLogger(CassandraSession.class);
     private Session session;
     private ApplicationEventPublisher applicationEventPublisher;
     private CassandraTemplate cassandraTemplate;
@@ -68,6 +68,10 @@ public class CassandraSession extends AbstractSession<Session> {
         return new SessionOnlyTransaction<Session>(getNativeInterface(), this);
     }
 
+    public CassandraDatastore getCassandraDatastore() {
+    	return (CassandraDatastore) getDatastore();
+    }
+    
     public Session getNativeInterface() {
         return session;
     }
