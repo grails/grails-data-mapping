@@ -2,7 +2,7 @@ package grails.gorm.tests
 
 import grails.validation.ValidationException
 
-import org.grails.datastore.mapping.cassandra.utils.UUIDUtil;
+import org.grails.datastore.mapping.cassandra.utils.UUIDUtil
 
 /**
  * @author graemerocher
@@ -40,11 +40,11 @@ class CrudOperationsSpec extends GormDatastoreSpec {
 
     void "Test basic CRUD operations"() {
         given:
-
             def t = new TestEntity(name:"Bob")
             def p = new PersonLastNamePartitionKey(firstName: "Bob", lastName: "Wilson", age: 25)
             t.save()
             p.save()
+			
         when:
             def results = TestEntity.list()
             t = TestEntity.get(t.id)

@@ -2,7 +2,6 @@ package org.grails.datastore.mapping.cassandra
 
 import org.grails.datastore.gorm.cassandra.mapping.MappingCassandraConverter
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
-import org.grails.datastore.mapping.model.IllegalMappingException
 import org.springframework.cassandra.config.CassandraCqlClusterFactoryBean
 import org.springframework.cassandra.config.KeyspaceAction
 import org.springframework.cassandra.config.KeyspaceActionSpecificationFactoryBean
@@ -85,8 +84,8 @@ class CassandraDatastoreSpec extends Specification {
 			cassandraDatastore.afterPropertiesSet()
 
 		then:
-			def e = thrown(IllegalMappingException)
-			e.message.startsWith("Invalid option")
+			def e = thrown(IllegalArgumentException)
+			e.message.startsWith("Invalid option [Invalid] for property [action], allowable values are")
 	}
 	
 	void "Test create keyspace with config objects"() {

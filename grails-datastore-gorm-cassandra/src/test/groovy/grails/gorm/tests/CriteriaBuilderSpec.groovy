@@ -283,6 +283,6 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             }
 
         then:
-            thrown IllegalArgumentException
+            thrown MissingPropertyException
     }
 }
