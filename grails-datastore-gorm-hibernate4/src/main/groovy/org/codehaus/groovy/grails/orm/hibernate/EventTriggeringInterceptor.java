@@ -15,6 +15,7 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
+import grails.config.Config;
 import grails.core.GrailsDomainClass;
 import groovy.lang.GroovySystem;
 import groovy.util.ConfigObject;
@@ -59,10 +60,10 @@ public class EventTriggeringInterceptor extends AbstractEventTriggeringIntercept
 
     protected final GrailsDomainBinder domainBinder = new GrailsDomainBinder();
 
-    public EventTriggeringInterceptor(HibernateDatastore datastore, ConfigObject co) {
+    public EventTriggeringInterceptor(HibernateDatastore datastore, Config co) {
         super(datastore);
 
-        Object failOnErrorConfig = co.flatten().get("grails.gorm.failOnError");
+        Object failOnErrorConfig = co.getProperty("grails.gorm.failOnError", Object.class);
         if (failOnErrorConfig instanceof List) {
             failOnError = true;
             failOnErrorPackages = (List<?>)failOnErrorConfig;

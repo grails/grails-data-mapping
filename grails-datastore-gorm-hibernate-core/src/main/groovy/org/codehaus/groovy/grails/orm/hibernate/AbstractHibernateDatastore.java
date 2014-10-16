@@ -14,6 +14,7 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
+import grails.config.Config;
 import groovy.util.ConfigObject;
 
 import org.grails.datastore.mapping.core.AbstractDatastore;
@@ -31,17 +32,17 @@ import org.springframework.context.ApplicationContextAware;
 public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware {
 
     protected SessionFactory sessionFactory;
-    protected ConfigObject config;
+    protected Config config;
     protected AbstractEventTriggeringInterceptor eventTriggeringInterceptor;
 
-    protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config) {
+    protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, Config config) {
         super(mappingContext);
         this.sessionFactory = sessionFactory;
         this.config = config;
         initializeConverters(mappingContext);
     }
 
-    public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config, ApplicationContext applicationContext) {
+    public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, Config config, ApplicationContext applicationContext) {
         this(mappingContext, sessionFactory, config);
         setApplicationContext(applicationContext);
     }

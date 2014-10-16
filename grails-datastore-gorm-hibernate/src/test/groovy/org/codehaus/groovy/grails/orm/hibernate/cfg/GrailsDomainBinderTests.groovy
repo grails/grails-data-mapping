@@ -880,7 +880,7 @@ class AuthorClass {
         // no config property specified
         def cfg = new ConfigSlurper().parse('''
 ''')
-        grailsApplication.config = cfg
+        grailsApplication.config.merge(cfg)
         def config = getDomainConfig(grailsApplication, pluginManager)
         def persistentClass = config.getClassMapping("WidgetClass")
         assertEquals("widget_class", persistentClass.table.name)
@@ -895,7 +895,7 @@ class AuthorClass {
         cfg = new ConfigSlurper().parse('''
 grails.gorm.table.prefix.enabled = true
 ''')
-        grailsApplication.config = cfg
+        grailsApplication.config.merge(cfg)
         config = getDomainConfig(grailsApplication, pluginManager)
         persistentClass = config.getClassMapping("WidgetClass")
         assertEquals("widget_class", persistentClass.table.name)
@@ -910,7 +910,7 @@ grails.gorm.table.prefix.enabled = true
         cfg = new ConfigSlurper().parse('''
 grails.gorm.table.prefix.enabled = false
 ''')
-        grailsApplication.config = cfg
+        grailsApplication.config.merge(cfg)
         config = getDomainConfig(grailsApplication, pluginManager)
         persistentClass = config.getClassMapping("WidgetClass")
         assertEquals("widget_class", persistentClass.table.name)
@@ -925,7 +925,7 @@ grails.gorm.table.prefix.enabled = false
         cfg = new ConfigSlurper().parse('''
 grails.gorm.publisher.table.prefix.enabled = true
 ''')
-        grailsApplication.config = cfg
+        grailsApplication.config.merge(cfg)
         config = getDomainConfig(grailsApplication, pluginManager)
         persistentClass = config.getClassMapping("WidgetClass")
         assertEquals("widget_class", persistentClass.table.name)
@@ -941,7 +941,7 @@ grails.gorm.publisher.table.prefix.enabled = true
 grails.gorm.table.prefix.enabled = true
 grails.gorm.myPlugin.table.prefix.enabled = false
 ''')
-        grailsApplication.config = cfg
+        grailsApplication.config.merge(cfg)
         config = getDomainConfig(grailsApplication, pluginManager)
         persistentClass = config.getClassMapping("WidgetClass")
         assertEquals("widget_class", persistentClass.table.name)

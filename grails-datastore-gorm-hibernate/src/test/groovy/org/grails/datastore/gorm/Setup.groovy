@@ -81,7 +81,7 @@ class Setup {
 
         grailsApplication = new DefaultGrailsApplication(classes as Class[], new GroovyClassLoader(Setup.getClassLoader()))
         if(grailsConfig) {
-            grailsApplication.config.putAll(grailsConfig)
+            grailsApplication.config.merge(grailsConfig)
         }
 
         applicationContext = new GenericApplicationContext()

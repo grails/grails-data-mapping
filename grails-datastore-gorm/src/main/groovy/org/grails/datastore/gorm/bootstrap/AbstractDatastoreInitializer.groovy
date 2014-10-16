@@ -1,14 +1,17 @@
 package org.grails.datastore.gorm.bootstrap
 
+import grails.config.Config
 import grails.core.DefaultGrailsApplication
 import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.compiler.gorm.GormTransformer
+import org.grails.config.PropertySourcesConfig
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.validation.GrailsDomainClassValidator
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ResourceLoaderAware
+import org.springframework.core.env.MutablePropertySources
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
@@ -30,7 +33,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     Collection<Class> persistentClasses = []
     Collection<String> packages = []
     Properties configuration = new Properties()
-    ConfigObject configurationObject = new ConfigObject()
+    Config configurationObject = new PropertySourcesConfig()
     boolean registerApplicationIfNotPresent = true
 
     protected ClassLoader classLoader = Thread.currentThread().contextClassLoader
@@ -114,7 +117,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
      */
     @CompileStatic
     void configureForBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {
-        this.configurationObject = new ConfigSlurper().parse(configuration)
+        this.configurationObject.merge((Map<String,Object>)configuration)
         scanForPersistentClasses()
 
         ExpandoMetaClass.enableGlobally()

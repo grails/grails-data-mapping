@@ -15,6 +15,9 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
+import grails.config.Config;
+import grails.core.GrailsApplication;
+import grails.core.support.GrailsApplicationAware;
 import groovy.util.ConfigObject;
 
 import java.sql.Connection;
@@ -22,9 +25,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.orm.hibernate.exceptions.CouldNotDetermineHibernateDialectException;
-import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware;
 import org.hibernate.HibernateException;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.resolver.DialectFactory;
@@ -79,7 +80,7 @@ public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>,
             connection = DataSourceUtils.getConnection(dataSource);
 
             try {
-                ConfigObject config = grailsApplication != null ? grailsApplication.getConfig() : null;
+                Config config = grailsApplication != null ? grailsApplication.getConfig() : null;
                 Properties properties = config != null ? config.toProperties() : new Properties();
                 hibernateDialect = DialectFactory.buildDialect(properties, connection);
                 hibernateDialectClassName = hibernateDialect.getClass().getName();

@@ -14,6 +14,7 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
+import grails.config.Config;
 import grails.core.GrailsApplication;
 import grails.core.GrailsDomainClass;
 import grails.core.GrailsDomainClassProperty;
@@ -1187,11 +1188,11 @@ public abstract class AbstractGrailsDomainBinder {
                         boolean shouldApplyPluginPrefix = false;
                         if (!shortName.toLowerCase().startsWith(pluginName.toLowerCase())) {
                             final String pluginSpecificConfigProperty = "grails.gorm." + GrailsNameUtils.getPropertyName(pluginName) + ".table.prefix.enabled";
-                            final Map<String, Object> flatConfig = grailsApplication.getFlatConfig();
-                            if (flatConfig.containsKey(pluginSpecificConfigProperty)) {
-                                shouldApplyPluginPrefix = Boolean.TRUE.equals(flatConfig.get(pluginSpecificConfigProperty));
+                            final Config config = grailsApplication.getConfig();
+                            if (config.containsKey(pluginSpecificConfigProperty)) {
+                                shouldApplyPluginPrefix = config.getProperty(pluginSpecificConfigProperty, Boolean.class, false);
                             } else {
-                                shouldApplyPluginPrefix = Boolean.TRUE.equals(flatConfig.get("grails.gorm.table.prefix.enabled"));
+                                shouldApplyPluginPrefix = config.getProperty("grails.gorm.table.prefix.enabled", Boolean.class, false);
                             }
                         }
                         if (shouldApplyPluginPrefix) {

@@ -14,6 +14,7 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
+import grails.config.Config;
 import grails.core.GrailsApplication;
 import grails.core.support.GrailsApplicationAware;
 import groovy.util.ConfigObject;
@@ -36,11 +37,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class HibernateDatastore extends AbstractHibernateDatastore implements GrailsApplicationAware {
 
     private GrailsApplication grailsApplication;
-    public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config) {
+    public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, Config config) {
         super(mappingContext, sessionFactory, config);
     }
 
-    public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config, ApplicationContext applicationContext) {
+    public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, Config config, ApplicationContext applicationContext) {
         super(mappingContext, sessionFactory, config, applicationContext);
     }
 
