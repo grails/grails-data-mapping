@@ -1,5 +1,7 @@
 package org.grails.datastore.gorm.neo4j.engine;
 
+import org.springframework.transaction.TransactionDefinition;
+
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ public interface CypherEngine {
     public CypherResult execute(String cypher);
 
     public void beginTx();
+    public void beginTx(TransactionDefinition transactionDefinition);
     public void commit();
     public void rollback();
 }

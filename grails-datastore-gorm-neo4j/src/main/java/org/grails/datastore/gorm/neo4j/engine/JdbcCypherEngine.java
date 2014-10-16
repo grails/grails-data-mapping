@@ -17,11 +17,16 @@ package org.grails.datastore.gorm.neo4j.engine;
 import org.grails.datastore.gorm.neo4j.Neo4jUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.springframework.transaction.TransactionDefinition.*;
 
 /**
  * CypherEngine implementation backed by a Neo4j JDBC datasource
@@ -42,6 +47,13 @@ public class JdbcCypherEngine implements CypherEngine {
         @Override
         protected Boolean initialValue() {
             return Boolean.FALSE;
+        }
+    };
+
+    final private ThreadLocal<Stack<TransactionDefinition>> transactionDefinitionStack = new ThreadLocal<Stack<TransactionDefinition>>() {
+        @Override
+        protected Stack<TransactionDefinition> initialValue() {
+            return new Stack<TransactionDefinition>();
         }
     };
 
@@ -66,6 +78,8 @@ public class JdbcCypherEngine implements CypherEngine {
     @Override
     public CypherResult execute(String cypher, List params) {
         try {
+
+            checkNestingDepthOnExecute();
             Connection connection = getOrInitConnectionThreadLocal();
             logCypher(cypher, params);
             PreparedStatement ps = connection.prepareStatement(cypher);
@@ -80,6 +94,14 @@ public class JdbcCypherEngine implements CypherEngine {
         }
     }
 
+    protected void checkNestingDepthOnExecute() {
+        int depth = transactionNestingDepth.get().get();
+        if (depth == 0 ) {
+            beginTx();
+            log.error("HURZ, execute with nesting depth 0, should not happen");
+        }
+    }
+
     public void logCypher(String cypher, Object params) {
         log.info("running cypher {}", cypher);
         if (params!=null) {
@@ -90,6 +112,7 @@ public class JdbcCypherEngine implements CypherEngine {
     @Override
     public CypherResult execute(String cypher) {
         try {
+            checkNestingDepthOnExecute();
             Connection connection = getOrInitConnectionThreadLocal();
             logCypher(cypher, null);
             Statement statement = connection.createStatement();
@@ -100,30 +123,51 @@ public class JdbcCypherEngine implements CypherEngine {
         }
     }
 
-    /**
-     * intentionally a noop here since execute open a tx implicitly
-     */
     @Override
     public void beginTx() {
-//        log.info("beginTx");
-        int depth = transactionNestingDepth.get().getAndIncrement();
-        if (depth==0) {
-            getOrInitConnectionThreadLocal();
-            doRollback.set(Boolean.FALSE);
-        }
-        Neo4jUtils.logWithCause(log, "beginTx", depth);
+        beginTx(new DefaultTransactionDefinition());
     }
+
+    @Override
+    public void beginTx(TransactionDefinition transactionDefinition) {
+        switch (transactionDefinition.getPropagationBehavior()) {
+            case PROPAGATION_MANDATORY:
+            case PROPAGATION_NESTED:
+            case PROPAGATION_NEVER:
+            case PROPAGATION_NOT_SUPPORTED:
+            case PROPAGATION_REQUIRED:
+            case PROPAGATION_REQUIRES_NEW:
+            case PROPAGATION_SUPPORTS:
+                transactionDefinitionStack.get().push(transactionDefinition);
+                int depth = transactionNestingDepth.get().getAndIncrement();
+                if (depth == 0) {
+                    getOrInitConnectionThreadLocal();
+                    doRollback.set(Boolean.FALSE);
+                }
+                Neo4jUtils.logWithCause(log, "beginTx", depth);
+                break;
+            default:
+                throw new RuntimeException("should not happen");
+        }
+    }
+
 
     @Override
     public void commit() {
 //        log.info("commit");
         int depth = transactionNestingDepth.get().decrementAndGet();
 
-        String amend = doRollback.get() ? " <fake, doRollback>" : "";
-        Neo4jUtils.logWithCause(log, "commit" + amend, depth);
-        if (depth == 0) {
-            finishTransactionWithCommitOrRollback();
+        if (depth>=0) {
+            String amend = doRollback.get() ? " <fake, doRollback>" : "";
+            Neo4jUtils.logWithCause(log, "commit" + amend, depth);
+            transactionDefinitionStack.get().pop();
+            if (depth == 0) {
+                finishTransactionWithCommitOrRollback();
+            }
+        } else {
+            transactionNestingDepth.get().incrementAndGet();
         }
+
     }
 
     /**
@@ -156,6 +200,7 @@ public class JdbcCypherEngine implements CypherEngine {
     public void rollback() {
 //        log.info("rollback");
         int depth = transactionNestingDepth.get().decrementAndGet();
+        transactionDefinitionStack.get().pop();
         Neo4jUtils.logWithCause(log, "rollback", depth);
         doRollback.set(Boolean.TRUE);
         if (depth == 0) {

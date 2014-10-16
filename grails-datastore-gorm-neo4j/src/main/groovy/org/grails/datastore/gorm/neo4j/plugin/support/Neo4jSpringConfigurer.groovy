@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.neo4j.plugin.support
 
 import org.apache.tomcat.jdbc.pool.PoolProperties
 import org.codehaus.groovy.grails.support.ClassEditor
+import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
 import org.grails.datastore.gorm.neo4j.engine.JdbcCypherEngine
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
@@ -102,7 +103,10 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
             neo4jDatastore(Neo4jDatastoreFactoryBean) {
                 cypherEngine = cypherEngine
                 mappingContext = neo4jMappingContext
+            }
 
+            neo4jTransactionManager(Neo4jDatastoreTransactionManager) {
+                datastore = ref("neo4jDatastore")
             }
 
             // reverting the change done for fixing GRAILS-11112

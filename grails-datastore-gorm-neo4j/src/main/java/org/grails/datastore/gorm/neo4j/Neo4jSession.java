@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.transaction.TransactionDefinition;
 
 import javax.persistence.FlushModeType;
 import java.io.Serializable;
@@ -30,7 +31,6 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     private static Logger log = LoggerFactory.getLogger(Neo4jSession.class);
 
     private CypherEngine cypherEngine;
-    private boolean connected = true;
 
     /** map node id -> hashmap of relationship types showing startNode id and endNode id */
     private Collection<Object> persistingInstances = new HashSet<Object>();
@@ -41,21 +41,14 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
         cypherEngine.beginTx();
     }
 
-    @Override
-    public void disconnect() {
-        if (connected) {
-            cypherEngine.commit();
-            connected = false;
-        }
-        super.disconnect();
-    }
 
     @Override
     public void clear() {
         super.clear();
         cypherEngine.commit();
-        cypherEngine.beginTx();
+        //cypherEngine.beginTx();
     }
+
 
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
@@ -65,7 +58,11 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     @Override
     protected Transaction beginTransactionInternal() {
-        return new Neo4jTransaction(cypherEngine);
+        throw new IllegalStateException("thou shall not call this");
+    }
+
+    public Transaction beginTransaction(TransactionDefinition transactionDefinition) {
+        return new Neo4jTransaction(cypherEngine, transactionDefinition);
     }
 
     @Override
