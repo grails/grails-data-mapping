@@ -15,7 +15,9 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
+import grails.config.Config;
 import grails.core.GrailsDomainClassProperty;
+import grails.core.support.GrailsConfigurationAware;
 import grails.persistence.support.PersistenceContextInterceptor;
 import grails.util.Holders;
 
@@ -34,10 +36,17 @@ import org.springframework.context.ApplicationContextAware;
  * @author Graeme Rocher
  * @since 2.0.7
  */
-public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInterceptor implements PersistenceContextInterceptor, InitializingBean, ApplicationContextAware {
+public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInterceptor implements PersistenceContextInterceptor, InitializingBean, ApplicationContextAware, GrailsConfigurationAware {
 
     protected List<PersistenceContextInterceptor> interceptors = new ArrayList<PersistenceContextInterceptor>();
     protected ApplicationContext applicationContext;
+    protected Config config;
+
+
+    @Override
+    public void setConfiguration(Config co) {
+        this.config = co;
+    }
 
     public boolean isOpen() {
         for (PersistenceContextInterceptor interceptor : interceptors) {
@@ -132,13 +141,15 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
 
     private List<String> aggregateDataSourceNames() {
         List<String> dataSourceNames = new ArrayList<String>();
-        Set<String> configKeys = Holders.getConfig().keySet();
-        if (configKeys.contains("dataSource") && applicationContext.containsBean("dataSource")) {
-            dataSourceNames.add(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE);
-        }
-        for (String name : configKeys) {
-            if (name.startsWith("dataSource_") && applicationContext.containsBean(name)) {
-                dataSourceNames.add(name.replaceFirst("dataSource_", ""));
+        if(config != null && applicationContext != null) {
+            Set<String> configKeys = config.keySet();
+            if (configKeys.contains("dataSource") && applicationContext.containsBean("dataSource")) {
+                dataSourceNames.add(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE);
+            }
+            for (String name : configKeys) {
+                if (name.startsWith("dataSource_") && applicationContext.containsBean(name)) {
+                    dataSourceNames.add(name.replaceFirst("dataSource_", ""));
+                }
             }
         }
         return dataSourceNames;
