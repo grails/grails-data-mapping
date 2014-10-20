@@ -23,7 +23,6 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
-import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.springframework.transaction.TransactionDefinition.*;
@@ -50,14 +49,6 @@ public class JdbcCypherEngine implements CypherEngine {
         }
     };
 
-    final private ThreadLocal<Stack<TransactionDefinition>> transactionDefinitionStack = new ThreadLocal<Stack<TransactionDefinition>>() {
-        @Override
-        protected Stack<TransactionDefinition> initialValue() {
-            return new Stack<TransactionDefinition>();
-        }
-    };
-
-
     public JdbcCypherEngine(DataSource dataSource) {
         this.dataSource = dataSource;
     }
@@ -78,7 +69,6 @@ public class JdbcCypherEngine implements CypherEngine {
     @Override
     public CypherResult execute(String cypher, List params) {
         try {
-
             checkNestingDepthOnExecute();
             Connection connection = getOrInitConnectionThreadLocal();
             logCypher(cypher, params);
@@ -98,7 +88,7 @@ public class JdbcCypherEngine implements CypherEngine {
         int depth = transactionNestingDepth.get().get();
         if (depth == 0 ) {
             beginTx();
-            log.error("HURZ, execute with nesting depth 0, should not happen");
+            log.warn("execute with nesting depth 0, should only happen in rare cases (e.g. after session.disconnect()");
         }
     }
 
@@ -131,14 +121,8 @@ public class JdbcCypherEngine implements CypherEngine {
     @Override
     public void beginTx(TransactionDefinition transactionDefinition) {
         switch (transactionDefinition.getPropagationBehavior()) {
-            case PROPAGATION_MANDATORY:
-            case PROPAGATION_NESTED:
-            case PROPAGATION_NEVER:
-            case PROPAGATION_NOT_SUPPORTED:
             case PROPAGATION_REQUIRED:
             case PROPAGATION_REQUIRES_NEW:
-            case PROPAGATION_SUPPORTS:
-                transactionDefinitionStack.get().push(transactionDefinition);
                 int depth = transactionNestingDepth.get().getAndIncrement();
                 if (depth == 0) {
                     getOrInitConnectionThreadLocal();
@@ -146,8 +130,13 @@ public class JdbcCypherEngine implements CypherEngine {
                 }
                 Neo4jUtils.logWithCause(log, "beginTx", depth);
                 break;
+            case PROPAGATION_MANDATORY:
+            case PROPAGATION_NESTED:
+            case PROPAGATION_NEVER:
+            case PROPAGATION_NOT_SUPPORTED:
+            case PROPAGATION_SUPPORTS:
             default:
-                throw new RuntimeException("should not happen");
+                throw new IllegalStateException("neo4j plugin does not yet know how to handle propagation " + transactionDefinition.getPropagationBehavior());
         }
     }
 
@@ -160,7 +149,6 @@ public class JdbcCypherEngine implements CypherEngine {
         if (depth>=0) {
             String amend = doRollback.get() ? " <fake, doRollback>" : "";
             Neo4jUtils.logWithCause(log, "commit" + amend, depth);
-            transactionDefinitionStack.get().pop();
             if (depth == 0) {
                 finishTransactionWithCommitOrRollback();
             }
@@ -200,7 +188,6 @@ public class JdbcCypherEngine implements CypherEngine {
     public void rollback() {
 //        log.info("rollback");
         int depth = transactionNestingDepth.get().decrementAndGet();
-        transactionDefinitionStack.get().pop();
         Neo4jUtils.logWithCause(log, "rollback", depth);
         doRollback.set(Boolean.TRUE);
         if (depth == 0) {
