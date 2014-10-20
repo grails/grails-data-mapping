@@ -1114,6 +1114,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     @CompileStatic(TypeCheckingMode.SKIP)
     def methodMissing(String methodName, args) {
         initialiseIfNecessary(targetClass)
+        applyLazyCriteria()
         def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
         if (method != null) {
             return method.invoke(targetClass, methodName,this, args)
