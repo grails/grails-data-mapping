@@ -43,6 +43,8 @@ class GroovyProxySpec extends GormDatastoreSpec {
 
             location != null
             id == location.id
+            Location == location.class
+            null != location.metaClass
             false == location.isInitialized()
             false == location.initialized
 
@@ -51,5 +53,36 @@ class GroovyProxySpec extends GormDatastoreSpec {
             true == location.isInitialized()
             true == location.initialized
             null != location.target
+            Location == location.class
+            null != location.metaClass
+    }
+
+
+    void "Test creation and behavior of Groovy proxies with method call"() {
+
+        given:
+        session.mappingContext.proxyFactory = new GroovyProxyFactory()
+        def id = new Location(name:"United Kingdom", code:"UK").save(flush:true)?.id
+        session.clear()
+
+        when:
+        def location = Location.proxy(id)
+
+        then:
+
+        location != null
+        id == location.id
+        Location == location.class
+        null != location.metaClass
+        false == location.isInitialized()
+        false == location.initialized
+
+        "United Kingdom - UK" == location.namedAndCode() // method first
+        "UK" == location.code
+        true == location.isInitialized()
+        true == location.initialized
+        null != location.target
+        Location == location.class
+        null != location.metaClass
     }
 }

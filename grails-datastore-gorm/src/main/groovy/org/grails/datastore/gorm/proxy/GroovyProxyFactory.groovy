@@ -17,7 +17,6 @@ package org.grails.datastore.gorm.proxy
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.proxy.ProxyFactory
-import org.springframework.dao.DataIntegrityViolationException
 
 /**
  * Implements the proxy interface and creates a Groovy proxy by passing the need for javassist style proxies
@@ -27,67 +26,37 @@ import org.springframework.dao.DataIntegrityViolationException
  */
 @SuppressWarnings("unchecked")
 class GroovyProxyFactory implements ProxyFactory {
-
+    /**
+     * Check our object has the correct meta class to be a proxy of this type.
+     * @param object The object.
+     * @return true if it is.
+     */
+    @Override
     boolean isProxy(Object object) {
-        object != null && object.metaClass.getMetaMethod("isProxy", null) != null
+        object != null && object.metaClass instanceof ProxyInstanceMetaClass
     }
 
+    @Override
     Serializable getIdentifier(Object obj) {
         return obj.getId()
     }
 
+    /**
+     * Creates a proxy
+     *
+     * @param <T> The type of the proxy to create
+     * @param session The session instance
+     * @param type The type of the proxy to create
+     * @param key The key to proxy
+     * @return A proxy instance
+     */
     def createProxy(Session session, Class type, Serializable key) {
-        EntityPersister persister = session.getPersister(type)
-
+        EntityPersister persister = (EntityPersister) session.getPersister(type)
         def proxy = type.newInstance()
         persister.setObjectIdentifier(proxy, key)
-        def target = null
-        proxy.metaClass.isProxy = {-> true}
-        proxy.metaClass.invokeMethod = { String name, args ->
-            switch(name) {
-                case "getId":
-                    return key
-                case 'initialize':
-                    if (target == null) target = session.retrieve(type, key)
-                    return target
-                case 'isInitialized':
-                    return target != null
-                case 'getTarget':
-                    if (target == null) target = session.retrieve(type, key)
-                    return target
-                default:
-                    if (target == null) target = session.retrieve(type, key)
-                    return target."$name"(*args)
-            }
-        }
 
-        proxy.metaClass.getProperty = { String name ->
-            switch(name) {
-                case 'id':
-                return key
-            case 'initialized':
-                return target != null
-            case 'target':
-                if (target == null) target = session.retrieve(type, key)
-                return target
-            default:
-                if (target == null) target = session.retrieve(type, key)
-
-                if (target == null) {
-                    throw new DataIntegrityViolationException("Error loading association [$key] of type [$type]. Associated instance no longer exists.")
-                }
-                return target[name]
-            }
-        }
-
-        proxy.metaClass.setProperty = { String name, value ->
-            if (target == null) target = session.retrieve(type, key)
-            if (target == null) {
-                throw new DataIntegrityViolationException("Error loading association [$key] of type [$type]. Associated instance no longer exists.")
-            }
-
-            target[name] = value
-        }
+        MetaClass metaClass = new ProxyInstanceMetaClass(proxy.getMetaClass(), session, key)
+        proxy.setMetaClass(metaClass)
         return proxy
     }
 
