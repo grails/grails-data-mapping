@@ -16,10 +16,11 @@ package org.grails.datastore.gorm.proxy;
 
 import groovy.lang.DelegatingMetaClass;
 import groovy.lang.MetaClass;
-import org.grails.datastore.mapping.core.Session;
-import org.springframework.dao.DataIntegrityViolationException;
 
 import java.io.Serializable;
+
+import org.grails.datastore.mapping.core.Session;
+import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * Per-instance metaclass to use for proxied GORM domain objects. It auto-retrieves the associated entity when
@@ -44,7 +45,7 @@ public class ProxyInstanceMetaClass extends DelegatingMetaClass {
     /**
      * The loaded instance we're proxying, or null if it hasn't been loaded.
      */
-    private Object target;
+    private Object proxyTarget;
     /**
      * The key of the object.
      */
@@ -60,17 +61,17 @@ public class ProxyInstanceMetaClass extends DelegatingMetaClass {
      * Load the target from the DB.
      * @return target.
      */
-    private Object resolveTarget() {
-        if (target == null) {
-            target = session.retrieve(getTheClass(), key);
-            if (target == null) {
+    public Object getProxyTarget() {
+        if (proxyTarget == null) {
+            proxyTarget = session.retrieve(getTheClass(), getKey());
+            if (proxyTarget == null) {
                 throw new DataIntegrityViolationException(
-                        "Error loading association [" + key + "] of type [" + getTheClass() +
+                        "Error loading association [" + getKey() + "] of type [" + getTheClass() +
                                 "]. Associated instance no longer exists.");
             }
         }
 
-        return target;
+        return proxyTarget;
     }
 
     /**
@@ -85,61 +86,69 @@ public class ProxyInstanceMetaClass extends DelegatingMetaClass {
         if (methodName.equals("isProxy")) {
             return true;
         } else if (methodName.equals("getId")) {
-            return key;
+            return getKey();
         } else if (methodName.equals("isInitialized")) {
-            return target != null;
+            return isProxyInitiated();
         } else if (methodName.equals("getTarget") || methodName.equals("initialize")) {
-            return resolveTarget();
+            return getProxyTarget();
         } else if (methodName.equals("getMetaClass")) {
             return this;
         } else if (methodName.equals("getClass") || methodName.equals("getDomainClass")) {
             // return correct class only if loaded, otherwise hope for the best
-            return delegate.invokeMethod(target != null ? target : o, methodName, arguments);
+            return delegate.invokeMethod(isProxyInitiated() ? proxyTarget : o, methodName, arguments);
         } else {
-            return delegate.invokeMethod(resolveTarget(), methodName, arguments);
+            return delegate.invokeMethod(getProxyTarget(), methodName, arguments);
         }
+    }
+
+    public Serializable getKey() {
+        return key;
+    }
+
+    public boolean isProxyInitiated() {
+        return proxyTarget != null;
     }
 
     @Override
     public Object getProperty(Object object, String property) {
         if (property.equals("id")) {
-            return key;
+            return getKey();
         } else if (property.equals("proxy")) {
             return true;
         } else if (property.equals("initialized")) {
-            return target != null;
+            return isProxyInitiated();
         } else if (property.equals("target")) {
-            return resolveTarget();
+            return getProxyTarget();
         } else if (property.equals("metaClass")) {
             return this;
         } else if (property.equals("class") || property.equals("domainClass")) {
             // return correct class only if loaded, otherwise hope for the best
-            return delegate.getProperty(target != null ? target : object, property);
+            return delegate.getProperty(isProxyInitiated() ? proxyTarget : object, property);
         } else {
-            return delegate.getProperty(resolveTarget(), property);
+            return delegate.getProperty(getProxyTarget(), property);
         }
     }
 
     @Override
     public void setProperty(Object object, String property, Object newValue) {
-        delegate.setProperty(resolveTarget(), property, newValue);
+        delegate.setProperty(getProxyTarget(), property, newValue);
     }
 
     @Override
     public Object getAttribute(Object object, String attribute) {
         if (attribute.equals("id")) {
-            return key;
+            return getKey();
         } else if (attribute.equals("initialized")) {
-            return target != null;
+            return isProxyInitiated();
         } else if (attribute.equals("target")) {
-            return resolveTarget();
+            return getProxyTarget();
         } else {
-            return delegate.getAttribute(resolveTarget(), attribute);
+            return delegate.getAttribute(getProxyTarget(), attribute);
         }
     }
 
     @Override
     public void setAttribute(Object object, String attribute, Object newValue) {
-        delegate.setAttribute(resolveTarget(), attribute, newValue);
+        delegate.setAttribute(getProxyTarget(), attribute, newValue);
     }
 }

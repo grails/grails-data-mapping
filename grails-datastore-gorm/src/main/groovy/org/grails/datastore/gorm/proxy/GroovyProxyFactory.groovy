@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm.proxy
 
+import groovy.transform.CompileStatic
+
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.proxy.ProxyFactory
@@ -24,7 +26,7 @@ import org.grails.datastore.mapping.proxy.ProxyFactory
  *
  * @author Graeme Rocher
  */
-@SuppressWarnings("unchecked")
+@CompileStatic
 class GroovyProxyFactory implements ProxyFactory {
     /**
      * Check our object has the correct meta class to be a proxy of this type.
@@ -33,11 +35,25 @@ class GroovyProxyFactory implements ProxyFactory {
      */
     @Override
     boolean isProxy(Object object) {
-        object != null && object.metaClass instanceof ProxyInstanceMetaClass
+        getProxyInstanceMetaClass(object) != null
+    }
+
+    protected ProxyInstanceMetaClass getProxyInstanceMetaClass(object) {
+        (object != null && object.metaClass instanceof ProxyInstanceMetaClass) ? (ProxyInstanceMetaClass)object.metaClass : null
     }
 
     @Override
     Serializable getIdentifier(Object obj) {
+        ProxyInstanceMetaClass proxyMc = getProxyInstanceMetaClass(obj)
+        if (proxyMc != null) {
+            return proxyMc.getKey()
+        } else {
+            getIdDynamic(obj)
+        }
+    }
+
+    @groovy.transform.CompileDynamic
+    protected Serializable getIdDynamic(obj) {
         return obj.getId()
     }
 
@@ -50,28 +66,37 @@ class GroovyProxyFactory implements ProxyFactory {
      * @param key The key to proxy
      * @return A proxy instance
      */
-    def createProxy(Session session, Class type, Serializable key) {
+    @Override
+    public <T> T createProxy(Session session, Class<T> type, Serializable key) {
         EntityPersister persister = (EntityPersister) session.getPersister(type)
-        def proxy = type.newInstance()
+        T proxy = type.newInstance()
         persister.setObjectIdentifier(proxy, key)
 
         MetaClass metaClass = new ProxyInstanceMetaClass(proxy.getMetaClass(), session, key)
-        proxy.setMetaClass(metaClass)
+        if(proxy instanceof GroovyObject) {
+            // direct assignment of MetaClass to GroovyObject
+			((GroovyObject)proxy).setMetaClass(metaClass)
+        } else {
+        	// call DefaultGroovyMethods.setMetaClass
+        	proxy.setMetaClass(metaClass)
+        }
         return proxy
     }
 
     @Override
     boolean isInitialized(Object object) {
-        if (isProxy(object)) {
-            return object.initialized
+        ProxyInstanceMetaClass proxyMc = getProxyInstanceMetaClass(object)
+        if (proxyMc != null) {
+            return proxyMc.isProxyInitiated()
         }
         return true
     }
 
     @Override
     Object unwrap(Object object) {
-        if (isProxy(object)) {
-            return object.target
+        ProxyInstanceMetaClass proxyMc = getProxyInstanceMetaClass(object)
+        if (proxyMc != null) {
+            return proxyMc.getProxyTarget()
         }
         return object
     }
