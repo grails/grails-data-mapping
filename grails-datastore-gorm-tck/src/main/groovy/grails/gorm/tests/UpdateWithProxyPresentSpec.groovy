@@ -53,6 +53,10 @@ class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
         when:
         parent = Parent.get(parent.id)
         child = Child.load(child.id) // make sure we've got a proxy.
+        then:
+        session.mappingContext.proxyFactory.isProxy(child)==true
+        
+        when:
         parent.addToChildren(child)
         parent.save(flush: true)
         session.clear()
