@@ -18,6 +18,7 @@ import groovy.lang.GroovyObject;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -86,34 +87,13 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
 
     protected Object createProxiedInstance(final Session session, final Class cls, Class proxyClass, final Serializable idAsInput) {
         final Serializable id = convertId(idAsInput, cls);
-        MethodHandler mi = new GroovyObjectMethodHandler(proxyClass) {
+        MethodHandler mi = new EntityProxyMethodHandler(proxyClass) {
             private Object target;
-
+            
             @Override
             protected Object resolveDelegate(Object self) {
-                return target;
-            }
-
-            public Object invoke(Object proxy, Method method, Method proceed, Object[] args) throws Throwable {
-                if (args.length == 0) {
-                    final String methodName = method.getName();
-                    if (methodName.equals("getId") || methodName.equals("getProxyKey")) {
-                        return id;
-                    }
-                    if (methodName.equals("initialize")) {
-                        initialize();
-                        return null;
-                    }
-                    if (methodName.equals("isInitialized")) {
-                        return target != null;
-                    }
-                    if (methodName.equals("getTarget")) {
-                        initialize();
-                        return target;
-                    }
-                }
                 if (target == null) {
-                    initialize();
+                    target = session.retrieve(cls, id);
 
                     // This tends to happen during unit testing if the proxy class is not properly mocked
                     // and therefore can't be found in the session.
@@ -121,18 +101,34 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
                         throw new DataIntegrityViolationException("Proxy for ["+cls.getName()+":"+id+"] could not be initialized");
                     }
                 }
-
-                Object result = handleInvocation(target, method, args);
-                if(!wasHandled(result)) {
-                    return org.springframework.util.ReflectionUtils.invokeMethod(method, target, args);
-                } else {
-                    return result;
+                return target;
+            }
+            
+            @Override
+            protected Object isProxyInitiated(Object self) {
+                return target != null;
+            }
+            
+            @Override
+            protected Object getProxyKey(Object self) {
+                return id;
+            }
+            
+            protected Object handleInvocationFallback(Object self, Method thisMethod, Object[] args) {
+                Object actualTarget = getProxyTarget(self);
+                if(!thisMethod.getDeclaringClass().isInstance(actualTarget)) {
+                    if(Modifier.isPublic(thisMethod.getModifiers())) {
+                        try {
+                            thisMethod = actualTarget.getClass().getMethod(thisMethod.getName(), thisMethod.getParameterTypes());
+                        } catch (Exception e) {
+                            org.springframework.util.ReflectionUtils.handleReflectionException(e);
+                        }
+                    } else {
+                        thisMethod = org.springframework.util.ReflectionUtils.findMethod(actualTarget.getClass(), thisMethod.getName(), thisMethod.getParameterTypes());
+                    }
                 }
-            }
-
-            public void initialize() {
-                target = session.retrieve(cls, id);
-            }
+                return org.springframework.util.ReflectionUtils.invokeMethod(thisMethod, actualTarget, args);
+            }    
         };
         Object proxy = ReflectionUtils.instantiate(proxyClass);
         ((ProxyObject)proxy).setHandler(mi);
