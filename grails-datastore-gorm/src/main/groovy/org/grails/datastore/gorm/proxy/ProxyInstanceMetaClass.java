@@ -83,6 +83,7 @@ public class ProxyInstanceMetaClass extends DelegatingMetaClass {
      */
     @Override
     public Object invokeMethod(Object o, String methodName, Object[] arguments) {
+        boolean resolveTarget = true;
         if (methodName.equals("isProxy")) {
             return true;
         } else if (methodName.equals("getId")) {
@@ -95,10 +96,11 @@ public class ProxyInstanceMetaClass extends DelegatingMetaClass {
             return this;
         } else if (methodName.equals("getClass") || methodName.equals("getDomainClass")) {
             // return correct class only if loaded, otherwise hope for the best
-            return delegate.invokeMethod(isProxyInitiated() ? proxyTarget : o, methodName, arguments);
-        } else {
-            return delegate.invokeMethod(getProxyTarget(), methodName, arguments);
+            resolveTarget = isProxyInitiated();
+        } else if (methodName.equals("setMetaClass") && arguments.length == 1 && (arguments[0]==null || arguments[0] instanceof MetaClass)) {
+            resolveTarget = false;
         }
+        return delegate.invokeMethod(resolveTarget ? getProxyTarget() : o, methodName, arguments);
     }
 
     public Serializable getKey() {
