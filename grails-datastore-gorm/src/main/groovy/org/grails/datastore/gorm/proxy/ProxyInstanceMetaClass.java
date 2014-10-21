@@ -131,7 +131,11 @@ public class ProxyInstanceMetaClass extends DelegatingMetaClass {
 
     @Override
     public void setProperty(Object object, String property, Object newValue) {
-        delegate.setProperty(getProxyTarget(), property, newValue);
+        boolean resolveTarget = true;
+        if(property.equals("metaClass") && (newValue == null || newValue instanceof MetaClass)) {
+            resolveTarget = false;
+        }        
+        delegate.setProperty(resolveTarget ? getProxyTarget() : object, property, newValue);
     }
 
     @Override
