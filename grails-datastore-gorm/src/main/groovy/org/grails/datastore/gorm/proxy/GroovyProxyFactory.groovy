@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.proxy
 
 import groovy.transform.CompileStatic
 
+import org.codehaus.groovy.runtime.HandleMetaClass
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.proxy.ProxyFactory
@@ -39,7 +40,11 @@ class GroovyProxyFactory implements ProxyFactory {
     }
 
     protected ProxyInstanceMetaClass getProxyInstanceMetaClass(object) {
-        (object != null && object.metaClass instanceof ProxyInstanceMetaClass) ? (ProxyInstanceMetaClass)object.metaClass : null
+        if(object == null) {
+            return null
+        }
+        MetaClass mc = unwrapHandleMetaClass(object instanceof GroovyObject ? ((GroovyObject)object).getMetaClass() : object.metaClass)
+        mc instanceof ProxyInstanceMetaClass ? (ProxyInstanceMetaClass)mc : null
     }
 
     @Override
@@ -72,15 +77,23 @@ class GroovyProxyFactory implements ProxyFactory {
         T proxy = type.newInstance()
         persister.setObjectIdentifier(proxy, key)
 
-        MetaClass metaClass = new ProxyInstanceMetaClass(proxy.getMetaClass(), session, key)
+        MetaClass metaClass = new ProxyInstanceMetaClass(resolveTargetMetaClass(proxy, type), session, key)
         if(proxy instanceof GroovyObject) {
             // direct assignment of MetaClass to GroovyObject
-			((GroovyObject)proxy).setMetaClass(metaClass)
+            ((GroovyObject)proxy).setMetaClass(metaClass)
         } else {
-        	// call DefaultGroovyMethods.setMetaClass
-        	proxy.setMetaClass(metaClass)
+            // call DefaultGroovyMethods.setMetaClass
+            proxy.metaClass = metaClass
         }
         return proxy
+    }
+    
+    protected <T> MetaClass resolveTargetMetaClass(T proxy, Class<T> type) {
+        unwrapHandleMetaClass(proxy.getMetaClass())
+    }
+    
+    private MetaClass unwrapHandleMetaClass(MetaClass metaClass) {
+        (metaClass instanceof HandleMetaClass) ? ((HandleMetaClass)metaClass).getAdaptee() : metaClass
     }
 
     @Override
