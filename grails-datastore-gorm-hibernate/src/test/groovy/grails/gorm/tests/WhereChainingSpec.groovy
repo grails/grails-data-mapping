@@ -20,6 +20,21 @@ class WhereChainingSpec extends GormDatastoreSpec{
             results.find { it.name == '12'}
             results.find { it.name == '21'}
     }
+    
+    void 'test chaining a dynamic finder'() {
+        given: 'some test data'
+            Company.withTransaction {
+                new Company(name: '38').save()
+                new Company(name: '39').save()
+                new Company(name: '48').save()
+                new Company(name: '49').save()
+            }
+        when: 'a dynamic finder is chained to a statically defined where query'
+            def results = Company.threes.findAllByNameLike('%9%')
+        then: 'the executed query includes all of the expected criteria'
+            results.size() == 1
+            results.find { it.name == '39' }
+    }
 
     void createTestData() {
         Company.withTransaction {
@@ -49,5 +64,8 @@ class Company {
 
     static ones = Company.where { name =~ '%1%'}
     static twos = ones.where { name =~ '%2%' }
+    static threes = where {
+        name =~ '%3%'
+    }
 
 }

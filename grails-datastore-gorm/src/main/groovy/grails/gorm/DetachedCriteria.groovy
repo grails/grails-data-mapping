@@ -1116,6 +1116,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         initialiseIfNecessary(targetClass)
         def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
         if (method != null) {
+            applyLazyCriteria()
             return method.invoke(targetClass, methodName,this, args)
         }
 
