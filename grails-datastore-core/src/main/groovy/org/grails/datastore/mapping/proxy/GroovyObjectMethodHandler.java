@@ -60,7 +60,14 @@ public class GroovyObjectMethodHandler implements MethodHandler {
         InvokerHelper.getMetaClass(delegate).setProperty(delegate, property, newValue);
     }
 
-    public Object invokeThisMethod(Object self, String name, Object args) {
+    public Object invokeThisMethod(Object self, String name, Object[] args) {
+        if("getMetaClass".equals(name) && args.length==0) {
+            return getThisMetaClass();
+        }
+        if("setMetaClass".equals(name) && args.length==1) {
+            setThisMetaClass((MetaClass)args[0]);
+            return Void.class;
+        }
         Object delegate = resolveDelegate(self);
         return InvokerHelper.getMetaClass(delegate).invokeMethod(delegate, name, args);
     }
@@ -121,7 +128,7 @@ public class GroovyObjectMethodHandler implements MethodHandler {
                 }
                 return Void.class;
             } else if ("invokeMethod".equals(methodName)) {
-                invokeThisMethod(self, args[0].toString(), args[1]);
+                invokeThisMethod(self, args[0].toString(), (Object[])args[1]);
                 return Void.class;
             }
         }
