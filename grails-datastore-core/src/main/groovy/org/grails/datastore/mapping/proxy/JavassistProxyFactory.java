@@ -43,6 +43,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy.ProxyFactory {
 
     private static final Map<Class, Class > PROXY_FACTORIES = new ConcurrentHashMap<Class, Class >();
+    private static final Map<Class, Class > ID_TYPES = new ConcurrentHashMap<Class, Class >();
+    private static final Class[] EMPTY_CLASS_ARRAY = {};
 
     private static final Set<String> EXCLUDES = new HashSet(Arrays.asList("$getStaticMetaClass"));
 
@@ -82,7 +84,8 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
         return (T) getProxyInstance(session, type, key);
     }
 
-    protected Object createProxiedInstance(final Session session, final Class cls, Class proxyClass, final Serializable id) {
+    protected Object createProxiedInstance(final Session session, final Class cls, Class proxyClass, final Serializable idAsInput) {
+        final Serializable id = convertId(idAsInput, cls);
         MethodHandler mi = new GroovyObjectMethodHandler(proxyClass) {
             private Object target;
 
@@ -136,6 +139,37 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
         return proxy;
     }
 
+    protected Serializable convertId(Serializable idAsInput, Class<?> ownerClass) {
+        if(idAsInput==null) return null;
+        Class<?> idType = ID_TYPES.get(ownerClass);
+        if(idType != null) {
+            if(idType.isInstance(idAsInput)) {
+                return idAsInput;
+            }
+            if(idType == String.class) {
+                return idAsInput.toString();
+            }
+            if(Number.class.isAssignableFrom(idType) && idAsInput instanceof Number) {
+                Number idNumber = (Number)idAsInput;
+                if(idType==Integer.class) {
+                    return idNumber.intValue();
+                }
+                if(idType==Long.class) {
+                    return idNumber.longValue();
+                }
+            }
+            if(idType==Integer.class) {
+                return Integer.parseInt(idAsInput.toString());
+            }
+            if(idType==Long.class) {
+                return Long.parseLong(idAsInput.toString());
+            }
+            return (Serializable)idType.cast(idAsInput);
+        } else {
+            return idAsInput;
+        }
+    }
+
     protected Object getProxyInstance(Session session, Class type, Serializable id) {
         Class proxyClass = getProxyClass(type);
         return createProxiedInstance(session, type, proxyClass, id);
@@ -165,6 +199,12 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
             });
             proxyClass = pf.createClass();
             PROXY_FACTORIES.put(type, proxyClass);
+            
+            Method getIdMethod = org.springframework.util.ReflectionUtils.findMethod(type, "getId", EMPTY_CLASS_ARRAY);
+            Class<?> idType = getIdMethod.getReturnType();
+            if(idType != null) {
+                ID_TYPES.put(type, idType);
+            }
         }
         return proxyClass;
     }
