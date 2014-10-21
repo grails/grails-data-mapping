@@ -31,6 +31,7 @@ import javassist.util.proxy.ProxyObject;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.reflect.ReflectionUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * A proxy factory that uses Javassist to create proxies
@@ -114,7 +115,7 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
                     // This tends to happen during unit testing if the proxy class is not properly mocked
                     // and therefore can't be found in the session.
                     if( target == null ) {
-                        throw new IllegalStateException("Proxy for ["+cls.getName()+":"+id+"] could not be initialized");
+                        throw new DataIntegrityViolationException("Proxy for ["+cls.getName()+":"+id+"] could not be initialized");
                     }
                 }
 
