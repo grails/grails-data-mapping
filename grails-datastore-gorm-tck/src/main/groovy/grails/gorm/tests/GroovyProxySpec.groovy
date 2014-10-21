@@ -57,7 +57,16 @@ class GroovyProxySpec extends GormDatastoreSpec {
             null != location.metaClass
     }
 
-
+    void "Test setting metaClass property on proxy"() {
+        given:
+            session.mappingContext.proxyFactory = new GroovyProxyFactory()
+        when:
+            def location = Location.proxy(123)
+            location.metaClass = null
+        then:
+            location.metaClass != null
+    }
+    
     void "Test creation and behavior of Groovy proxies with method call"() {
 
         given:
