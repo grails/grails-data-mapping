@@ -18,7 +18,6 @@ class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
 
     void "Test update entity with association proxies"() {
         given:
-            session.mappingContext.setProxyFactory(new GroovyProxyFactory())
             def person = new Person(firstName:"Bob", lastName:"Builder")
             def petType = new PetType(name:"snake")
             def pet = new Pet(name:"Fred", type:petType, owner:person)
@@ -45,7 +44,6 @@ class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
 
     void "Test update unidirectional oneToMany with proxy"() {
         given:
-        session.mappingContext.setProxyFactory(new GroovyProxyFactory())
         def parent = new Parent(name: "Bob").save(flush: true)
         def child = new Child(name: "Bill").save(flush: true)
         session.clear()
@@ -53,6 +51,10 @@ class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
         when:
         parent = Parent.get(parent.id)
         child = Child.load(child.id) // make sure we've got a proxy.
+        then:
+        session.mappingContext.proxyFactory.isProxy(child)==true
+        
+        when:
         parent.addToChildren(child)
         parent.save(flush: true)
         session.clear()

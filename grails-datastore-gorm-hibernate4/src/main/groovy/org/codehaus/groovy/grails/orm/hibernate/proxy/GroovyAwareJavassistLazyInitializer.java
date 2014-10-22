@@ -17,20 +17,6 @@ package org.codehaus.groovy.grails.orm.hibernate.proxy;
 
 import grails.util.CollectionUtils;
 import groovy.lang.GroovyObject;
-import javassist.util.proxy.MethodFilter;
-import javassist.util.proxy.MethodHandler;
-import javassist.util.proxy.ProxyFactory;
-import javassist.util.proxy.ProxyObject;
-import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateUtils;
-import org.grails.datastore.mapping.proxy.GroovyObjectMethodHandler;
-import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.internal.util.ReflectHelper;
-import org.hibernate.proxy.HibernateProxy;
-import org.hibernate.proxy.pojo.BasicLazyInitializer;
-import org.hibernate.proxy.pojo.javassist.SerializableProxy;
-import org.hibernate.type.CompositeType;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -38,6 +24,24 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
+
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateUtils;
+import org.grails.datastore.mapping.proxy.EntityProxy;
+import org.grails.datastore.mapping.proxy.EntityProxyMethodHandler;
+import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.internal.util.ReflectHelper;
+import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.LazyInitializer;
+import org.hibernate.proxy.pojo.BasicLazyInitializer;
+import org.hibernate.proxy.pojo.javassist.SerializableProxy;
+import org.hibernate.type.CompositeType;
 
 /**
  * @author Graeme Rocher
@@ -101,7 +105,7 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
             throw new HibernateException("Javassist Enhancement failed: " + proxyClass.getName(), e);
         }
         ((ProxyObject) proxy).setHandler(instance);
-        instance.groovyObjectMethodHandler = new HibernateGroovyObjectMethodHandler(proxyClass, proxy);
+        instance.groovyObjectMethodHandler = new HibernateGroovyObjectMethodHandler(proxyClass, proxy, instance);
         HibernateUtils.enhanceProxy(proxy);
         instance.constructed = true;
         return proxy;
@@ -134,6 +138,7 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
                 allInterfaces.addAll(Arrays.asList(interfaces));
             }
             allInterfaces.add(GroovyObject.class);
+            allInterfaces.add(EntityProxy.class);
             ProxyFactory factory = createProxyFactory(persistentClass, allInterfaces.toArray(new Class<?>[allInterfaces.size()]));
             Class<?> proxyClass = factory.createClass();
             HibernateUtils.enhanceProxyClass(proxyClass);
@@ -160,6 +165,11 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
 
     public Object invoke(final Object proxy, final Method thisMethod, final Method proceed,
             final Object[] args) throws Throwable {
+        // while constructor is running
+        if (thisMethod.getName().equals("getHibernateLazyInitializer")) {
+            return this;
+        }
+        
         Object result = groovyObjectMethodHandler.handleInvocation(proxy, thisMethod, args);
         if (groovyObjectMethodHandler.wasHandled(result)) {
            return result;
@@ -197,11 +207,6 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
             return result;
         }
 
-        // while constructor is running
-        if (thisMethod.getName().equals("getHibernateLazyInitializer")) {
-            return this;
-        }
-
         return proceed.invoke(proxy, args);
     }
 
@@ -218,13 +223,15 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
                 componentIdType);
     }
 
-    private static class HibernateGroovyObjectMethodHandler extends GroovyObjectMethodHandler {
+    private static class HibernateGroovyObjectMethodHandler extends EntityProxyMethodHandler {
         private Object target;
         private final Object originalSelf;
+        private final LazyInitializer lazyInitializer;
 
-        public HibernateGroovyObjectMethodHandler(Class<?> proxyClass, Object originalSelf) {
+        public HibernateGroovyObjectMethodHandler(Class<?> proxyClass, Object originalSelf, LazyInitializer lazyInitializer) {
             super(proxyClass);
             this.originalSelf = originalSelf;
+            this.lazyInitializer = lazyInitializer;
         }
 
         @Override
@@ -233,9 +240,19 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
                 throw new IllegalStateException("self instance has changed.");
             }
             if (target == null) {
-                target = ((HibernateProxy)self).getHibernateLazyInitializer().getImplementation();
+                target = lazyInitializer.getImplementation();
             }
             return target;
         }
+        
+        @Override
+        protected Object isProxyInitiated(Object self) {
+            return target != null;
+        }
+
+        @Override
+        protected Object getProxyKey(Object self) {
+            return lazyInitializer.getIdentifier();
+        }        
     }
 }

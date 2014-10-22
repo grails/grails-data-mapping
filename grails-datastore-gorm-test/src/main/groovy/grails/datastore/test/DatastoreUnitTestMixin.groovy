@@ -96,7 +96,7 @@ class DatastoreUnitTestMixin {
         }
 
         def entity = datastore.mappingContext.addPersistentEntity(domainClass)
-        def enhancer = new GormEnhancer(datastore, transactionManager)
+        def enhancer = new TestGormEnhancer(datastore, transactionManager)
         enhancer.enhance entity
         MockUtils.prepareForConstraintsTests(entity.javaClass)
         def dc = new DefaultGrailsDomainClass(entity.javaClass)

@@ -99,6 +99,10 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
        return this;
    }
 
+   public Criteria readOnly(boolean readOnly) {
+        throw new UnsupportedOperationException("readOnly isn't supported on this implementation of CriteriaBuilder.");
+   }
+
    public Criteria join(String property) {
        query.join(property);
        return this;

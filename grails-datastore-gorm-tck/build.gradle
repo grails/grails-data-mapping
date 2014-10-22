@@ -1,6 +1,6 @@
 dependencies {
     compile 'commons-lang:commons-lang:2.6'
     compile project(":grails-datastore-gorm")
-    compile 'junit:junit:4.8.2'
+    compile "junit:junit:$junitVersion"
     compile 'javax.servlet:javax.servlet-api:3.0.1'
 }

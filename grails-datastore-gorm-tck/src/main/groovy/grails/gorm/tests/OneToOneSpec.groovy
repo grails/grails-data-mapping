@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
+import org.grails.datastore.mapping.model.types.OneToOne
 import org.grails.datastore.mapping.proxy.EntityProxy
 
 class OneToOneSpec extends GormDatastoreSpec {
@@ -33,9 +34,11 @@ class OneToOneSpec extends GormDatastoreSpec {
 
         when:"The association is queried"
             face = Face.get(face.id)
-
+            def association = Face.gormPersistentEntity.getPropertyByName('nose')
         then:"The domain model is valid"
-
+            association instanceof OneToOne
+            association.bidirectional
+            association.associatedEntity.javaClass == Nose
             face != null
             face.noseId == nose.id
             face.nose != null

@@ -302,6 +302,15 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
     }
 
     /**
+     * Whether to check for changes on the objects loaded
+     * @param readOnly True to disable dirty checking
+     */
+    public org.grails.datastore.mapping.query.api.Criteria readOnly(boolean readOnly) {
+        criteria.setReadOnly(readOnly);
+        return this;
+    }
+
+    /**
      * Calculates the property name including any alias paths
      *
      * @param propertyName The property name

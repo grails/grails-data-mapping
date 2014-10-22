@@ -13,5 +13,5 @@ dependencies {
     //TODO: add commons-collections, concurrent, derby, jackrabbit-text, lucence core
     //TODO: also add dependency libraries for spring-extensions including spring-webmvc, servlet api
 
-    testCompile 'junit:junit:4.8.2'
+    testCompile "junit:junit:$junitVersion"
 }
