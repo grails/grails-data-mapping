@@ -35,6 +35,7 @@ dependencies {
         exclude group:'asm', module:'asm'
         exclude group:'aopalliance', module:'aopalliance'
         exclude group:'cglib', module:'cglib'
+        exclude group:'cglib', module:'cglib-nodep'
         exclude group:'commons-validator', module:'commons-validator'
         exclude group:'org.hibernate.javax.persistence', module:'hibernate-jpa-2.0-api'
     }

@@ -17,6 +17,7 @@ dependencies {
         exclude group:'oro',module:'oro'
         exclude group:'asm',module:'asm'
         exclude group:'cglib',module:'cglib'
+        exclude group:'cglib', module:'cglib-nodep'
         exclude group:'xalan',module:'serializer'
         exclude group:'org.springframework',module:'spring-core'
         exclude group:'org.springframework',module:'spring-tx'
