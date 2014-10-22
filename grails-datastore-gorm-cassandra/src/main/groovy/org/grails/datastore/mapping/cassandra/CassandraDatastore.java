@@ -163,8 +163,8 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 	protected Set<KeyspaceActionSpecification<?>> createKeyspaceSpecifications() {
 		Set<KeyspaceActionSpecification<?>> specifications = Collections.emptySet();
 		Object object = configuration.get(KEYSPACE_CONFIG);
-		if (object instanceof ConfigObject) {
-			ConfigObject keyspaceConfiguration = (ConfigObject) object;
+		if (object instanceof Map) {
+			Map keyspaceConfiguration = (Map) object;
 			KeyspaceAction keyspaceAction = EnumUtil.findEnum(KeyspaceAction.class, KEYSPACE_ACTION, keyspaceConfiguration, null);
 
 			if (keyspaceAction != null) {
@@ -181,7 +181,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 					keyspaceActionSpecificationFactoryBean.setReplicationFactor(read(Long.class, KEYSPACE_REPLICATION_FACTOR, keyspaceConfiguration, KeyspaceAttributes.DEFAULT_REPLICATION_FACTOR));
 				} else if (replicationStrategy == ReplicationStrategy.NETWORK_TOPOLOGY_STRATEGY) {
 					
-					ConfigObject networkTopology = read(ConfigObject.class, KEYSPACE_NETWORK_TOPOLOGY, keyspaceConfiguration, null);
+					Map networkTopology = read(Map.class, KEYSPACE_NETWORK_TOPOLOGY, keyspaceConfiguration, null);
 					if (networkTopology != null) {
 						List<String> dataCenters = new ArrayList<String>();
 						List<String> replicationFactors = new ArrayList<String>();
@@ -285,7 +285,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 		cassandraCqlClusterFactoryBean.destroy();
 	}
 
-	private <T> T read(Class<T> type, String key, ConfigObject config, T defaultValue) {
+	private <T> T read(Class<T> type, String key, Map<?,?> config, T defaultValue) {
 		Object value = config.get(key);
 		return value == null ? defaultValue : mappingContext.getConversionService().convert(value, type);
 	}
