@@ -17,6 +17,7 @@ import org.springframework.context.support.GenericApplicationContext
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
+import grails.datastore.test.TestGormEnhancer
 
 /**
  * @author graemerocher
@@ -85,7 +86,7 @@ class Setup {
             }
         ] as Validator)
 
-        def enhancer = new GormEnhancer(simple, new DatastoreTransactionManager(datastore: simple))
+        def enhancer = new TestGormEnhancer(simple, new DatastoreTransactionManager(datastore: simple))
         enhancer.enhance()
 
         simple.mappingContext.addMappingContextListener({ e -> enhancer.enhance e } as MappingContext.Listener)

@@ -18,6 +18,7 @@ import groovy.lang.GroovyObject;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,6 +32,7 @@ import javassist.util.proxy.ProxyObject;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.reflect.ReflectionUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * A proxy factory that uses Javassist to create proxies
@@ -42,6 +44,8 @@ import org.grails.datastore.mapping.reflect.ReflectionUtils;
 public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy.ProxyFactory {
 
     private static final Map<Class, Class > PROXY_FACTORIES = new ConcurrentHashMap<Class, Class >();
+    private static final Map<Class, Class > ID_TYPES = new ConcurrentHashMap<Class, Class >();
+    private static final Class[] EMPTY_CLASS_ARRAY = {};
 
     private static final Set<String> EXCLUDES = new HashSet(Arrays.asList("$getStaticMetaClass"));
 
@@ -81,58 +85,85 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
         return (T) getProxyInstance(session, type, key);
     }
 
-    protected Object createProxiedInstance(final Session session, final Class cls, Class proxyClass, final Serializable id) {
-        MethodHandler mi = new GroovyObjectMethodHandler(proxyClass) {
+    protected Object createProxiedInstance(final Session session, final Class cls, Class proxyClass, final Serializable idAsInput) {
+        final Serializable id = convertId(idAsInput, cls);
+        MethodHandler mi = new EntityProxyMethodHandler(proxyClass) {
             private Object target;
-
+            
             @Override
             protected Object resolveDelegate(Object self) {
-                return target;
-            }
-
-            public Object invoke(Object proxy, Method method, Method proceed, Object[] args) throws Throwable {
-                if (args.length == 0) {
-                    final String methodName = method.getName();
-                    if (methodName.equals("getId") || methodName.equals("getProxyKey")) {
-                        return id;
-                    }
-                    if (methodName.equals("initialize")) {
-                        initialize();
-                        return null;
-                    }
-                    if (methodName.equals("isInitialized")) {
-                        return target != null;
-                    }
-                    if (methodName.equals("getTarget")) {
-                        initialize();
-                        return target;
-                    }
-                }
                 if (target == null) {
-                    initialize();
+                    target = session.retrieve(cls, id);
 
                     // This tends to happen during unit testing if the proxy class is not properly mocked
                     // and therefore can't be found in the session.
                     if( target == null ) {
-                        throw new IllegalStateException("Proxy for ["+cls.getName()+":"+id+"] could not be initialized");
+                        throw new DataIntegrityViolationException("Proxy for ["+cls.getName()+":"+id+"] could not be initialized");
                     }
                 }
-
-                Object result = handleInvocation(target, method, args);
-                if(!wasHandled(result)) {
-                    return org.springframework.util.ReflectionUtils.invokeMethod(method, target, args);
-                } else {
-                    return result;
+                return target;
+            }
+            
+            @Override
+            protected Object isProxyInitiated(Object self) {
+                return target != null;
+            }
+            
+            @Override
+            protected Object getProxyKey(Object self) {
+                return id;
+            }
+            
+            protected Object handleInvocationFallback(Object self, Method thisMethod, Object[] args) {
+                Object actualTarget = getProxyTarget(self);
+                if(!thisMethod.getDeclaringClass().isInstance(actualTarget)) {
+                    if(Modifier.isPublic(thisMethod.getModifiers())) {
+                        try {
+                            thisMethod = actualTarget.getClass().getMethod(thisMethod.getName(), thisMethod.getParameterTypes());
+                        } catch (Exception e) {
+                            org.springframework.util.ReflectionUtils.handleReflectionException(e);
+                        }
+                    } else {
+                        thisMethod = org.springframework.util.ReflectionUtils.findMethod(actualTarget.getClass(), thisMethod.getName(), thisMethod.getParameterTypes());
+                    }
                 }
-            }
-
-            public void initialize() {
-                target = session.retrieve(cls, id);
-            }
+                return org.springframework.util.ReflectionUtils.invokeMethod(thisMethod, actualTarget, args);
+            }    
         };
         Object proxy = ReflectionUtils.instantiate(proxyClass);
         ((ProxyObject)proxy).setHandler(mi);
         return proxy;
+    }
+
+    protected Serializable convertId(Serializable idAsInput, Class<?> ownerClass) {
+        if(idAsInput==null) return null;
+        Class<?> idType = ID_TYPES.get(ownerClass);
+        if(idType != null) {
+            if(idType.isInstance(idAsInput)) {
+                return idAsInput;
+            }
+            if(idType == String.class) {
+                return idAsInput.toString();
+            }
+            if(Number.class.isAssignableFrom(idType) && idAsInput instanceof Number) {
+                Number idNumber = (Number)idAsInput;
+                if(idType==Integer.class) {
+                    return idNumber.intValue();
+                }
+                if(idType==Long.class) {
+                    return idNumber.longValue();
+                }
+            }
+            if(idType==Integer.class) {
+                return Integer.parseInt(idAsInput.toString());
+            }
+            if(idType==Long.class) {
+                return Long.parseLong(idAsInput.toString());
+            }
+            return (Serializable)idType.cast(idAsInput);
+        } else {
+            return idAsInput;
+        }
     }
 
     protected Object getProxyInstance(Session session, Class type, Serializable id) {
@@ -164,6 +195,12 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
             });
             proxyClass = pf.createClass();
             PROXY_FACTORIES.put(type, proxyClass);
+            
+            Method getIdMethod = org.springframework.util.ReflectionUtils.findMethod(type, "getId", EMPTY_CLASS_ARRAY);
+            Class<?> idType = getIdMethod.getReturnType();
+            if(idType != null) {
+                ID_TYPES.put(type, idType);
+            }
         }
         return proxyClass;
     }

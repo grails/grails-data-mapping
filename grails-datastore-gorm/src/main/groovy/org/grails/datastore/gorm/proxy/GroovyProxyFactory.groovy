@@ -14,10 +14,12 @@
  */
 package org.grails.datastore.gorm.proxy
 
+import groovy.transform.CompileStatic
+
+import org.codehaus.groovy.runtime.HandleMetaClass
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.proxy.ProxyFactory
-import org.springframework.dao.DataIntegrityViolationException
 
 /**
  * Implements the proxy interface and creates a Groovy proxy by passing the need for javassist style proxies
@@ -25,84 +27,89 @@ import org.springframework.dao.DataIntegrityViolationException
  *
  * @author Graeme Rocher
  */
-@SuppressWarnings("unchecked")
+@CompileStatic
 class GroovyProxyFactory implements ProxyFactory {
-
+    /**
+     * Check our object has the correct meta class to be a proxy of this type.
+     * @param object The object.
+     * @return true if it is.
+     */
+    @Override
     boolean isProxy(Object object) {
-        object != null && object.metaClass.getMetaMethod("isProxy", null) != null
+        getProxyInstanceMetaClass(object) != null
     }
 
+    protected ProxyInstanceMetaClass getProxyInstanceMetaClass(object) {
+        if(object == null) {
+            return null
+        }
+        MetaClass mc = unwrapHandleMetaClass(object instanceof GroovyObject ? ((GroovyObject)object).getMetaClass() : object.metaClass)
+        mc instanceof ProxyInstanceMetaClass ? (ProxyInstanceMetaClass)mc : null
+    }
+
+    @Override
     Serializable getIdentifier(Object obj) {
+        ProxyInstanceMetaClass proxyMc = getProxyInstanceMetaClass(obj)
+        if (proxyMc != null) {
+            return proxyMc.getKey()
+        } else {
+            getIdDynamic(obj)
+        }
+    }
+
+    @groovy.transform.CompileDynamic
+    protected Serializable getIdDynamic(obj) {
         return obj.getId()
     }
 
-    def createProxy(Session session, Class type, Serializable key) {
-        EntityPersister persister = session.getPersister(type)
-
-        def proxy = type.newInstance()
+    /**
+     * Creates a proxy
+     *
+     * @param <T> The type of the proxy to create
+     * @param session The session instance
+     * @param type The type of the proxy to create
+     * @param key The key to proxy
+     * @return A proxy instance
+     */
+    @Override
+    public <T> T createProxy(Session session, Class<T> type, Serializable key) {
+        EntityPersister persister = (EntityPersister) session.getPersister(type)
+        T proxy = type.newInstance()
         persister.setObjectIdentifier(proxy, key)
-        def target = null
-        proxy.metaClass.isProxy = {-> true}
-        proxy.metaClass.invokeMethod = { String name, args ->
-            switch(name) {
-                case "getId":
-                    return key
-                case 'initialize':
-                    if (target == null) target = session.retrieve(type, key)
-                    return target
-                case 'isInitialized':
-                    return target != null
-                case 'getTarget':
-                    if (target == null) target = session.retrieve(type, key)
-                    return target
-                default:
-                    if (target == null) target = session.retrieve(type, key)
-                    return target."$name"(*args)
-            }
-        }
 
-        proxy.metaClass.getProperty = { String name ->
-            switch(name) {
-                case 'id':
-                return key
-            case 'initialized':
-                return target != null
-            case 'target':
-                if (target == null) target = session.retrieve(type, key)
-                return target
-            default:
-                if (target == null) target = session.retrieve(type, key)
-
-                if (target == null) {
-                    throw new DataIntegrityViolationException("Error loading association [$key] of type [$type]. Associated instance no longer exists.")
-                }
-                return target[name]
-            }
-        }
-
-        proxy.metaClass.setProperty = { String name, value ->
-            if (target == null) target = session.retrieve(type, key)
-            if (target == null) {
-                throw new DataIntegrityViolationException("Error loading association [$key] of type [$type]. Associated instance no longer exists.")
-            }
-
-            target[name] = value
+        MetaClass metaClass = new ProxyInstanceMetaClass(resolveTargetMetaClass(proxy, type), session, key)
+        if(proxy instanceof GroovyObject) {
+            // direct assignment of MetaClass to GroovyObject
+            ((GroovyObject)proxy).setMetaClass(metaClass)
+        } else {
+            // call DefaultGroovyMethods.setMetaClass
+            proxy.metaClass = metaClass
         }
         return proxy
+    }
+    
+    protected <T> MetaClass resolveTargetMetaClass(T proxy, Class<T> type) {
+        unwrapHandleMetaClass(proxy.getMetaClass())
+    }
+    
+    private MetaClass unwrapHandleMetaClass(MetaClass metaClass) {
+        (metaClass instanceof HandleMetaClass) ? ((HandleMetaClass)metaClass).getAdaptee() : metaClass
     }
 
     @Override
     boolean isInitialized(Object object) {
-        if (isProxy(object)) {
-            return object.initialized
+        ProxyInstanceMetaClass proxyMc = getProxyInstanceMetaClass(object)
+        if (proxyMc != null) {
+            return proxyMc.isProxyInitiated()
         }
         return true
     }
 
     @Override
     Object unwrap(Object object) {
-        if (isProxy(object)) {
-            return object.target
+        ProxyInstanceMetaClass proxyMc = getProxyInstanceMetaClass(object)
+        if (proxyMc != null) {
+            return proxyMc.getProxyTarget()
         }
         return object
     }

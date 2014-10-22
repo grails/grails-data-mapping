@@ -40,11 +40,27 @@ public class GroovyObjectMethodHandler implements MethodHandler {
     }
 
     public Object getProperty(Object self, String property) {
+        Object result = getPropertyBeforeResolving(self, property);
+        if(!wasHandled(result)) {
+            return resolveDelegateAndGetProperty(self, property);
+        } else {
+            return result;
+        }
+    }
+
+    protected Object resolveDelegateAndGetProperty(Object self, String property) {
+        return getPropertyAfterResolving(resolveDelegate(self), property);
+    }
+
+    protected Object getPropertyAfterResolving(Object delegate, String property) {
+        return InvokerHelper.getMetaClass(delegate).getProperty(delegate, property);
+    }
+
+    protected Object getPropertyBeforeResolving(Object self, String property) {
         if("metaClass".equals(property)) {
             return getThisMetaClass();
         }
-        Object delegate = resolveDelegate(self);
-        return InvokerHelper.getMetaClass(delegate).getProperty(delegate, property);
+        return INVOKE_IMPLEMENTATION;
     }
 
     protected Object resolveDelegate(Object self) {
@@ -52,17 +68,54 @@ public class GroovyObjectMethodHandler implements MethodHandler {
     }
 
     public void setProperty(Object self, String property, Object newValue) {
-        if("metaClass".equals(property)) {
-            setThisMetaClass((MetaClass)newValue);
+        if(setPropertyBeforeResolving(self, property, newValue)) {
             return;
         }
-        Object delegate = resolveDelegate(self);
+        resolveDelegateAndSetProperty(self, property, newValue);
+    }
+
+    protected void resolveDelegateAndSetProperty(Object self, String property, Object newValue) {
+        setPropertyAfterResolving(resolveDelegate(self), property, newValue);
+    }
+
+    protected boolean setPropertyBeforeResolving(Object self, String property, Object newValue) {
+        if("metaClass".equals(property)) {
+            setThisMetaClass((MetaClass)newValue);
+            return true;
+        }
+        return false;
+    }
+    
+    protected void setPropertyAfterResolving(Object delegate, String property, Object newValue) {
         InvokerHelper.getMetaClass(delegate).setProperty(delegate, property, newValue);
     }
 
-    public Object invokeThisMethod(Object self, String name, Object args) {
-        Object delegate = resolveDelegate(self);
+    public Object invokeThisMethod(Object self, String name, Object[] args) {
+        Object result = invokeMethodBeforeResolving(self, name, args);
+        if(!wasHandled(result)) {
+            return resolveDelegateAndInvokeThisMethod(self, name, args);
+        } else {
+            return result;
+        }
+    }
+
+    protected Object resolveDelegateAndInvokeThisMethod(Object self, String name, Object[] args) {
+        return invokeMethodAfterResolving(resolveDelegate(self), name, args);
+    }
+
+    protected Object invokeMethodAfterResolving(Object delegate, String name, Object[] args) {
         return InvokerHelper.getMetaClass(delegate).invokeMethod(delegate, name, args);
+    }
+
+    public Object invokeMethodBeforeResolving(Object self, String name, Object[] args) {
+        if("getMetaClass".equals(name) && args.length==0) {
+            return getThisMetaClass();
+        }
+        if("setMetaClass".equals(name) && args.length==1) {
+            setThisMetaClass((MetaClass)args[0]);
+            return Void.class;
+        }
+        return INVOKE_IMPLEMENTATION;
     }
 
     public MetaClass getThisMetaClass() {
@@ -121,7 +174,7 @@ public class GroovyObjectMethodHandler implements MethodHandler {
                 }
                 return Void.class;
             } else if ("invokeMethod".equals(methodName)) {
-                invokeThisMethod(self, args[0].toString(), args[1]);
+                invokeThisMethod(self, args[0].toString(), (Object[])args[1]);
                 return Void.class;
             }
         }

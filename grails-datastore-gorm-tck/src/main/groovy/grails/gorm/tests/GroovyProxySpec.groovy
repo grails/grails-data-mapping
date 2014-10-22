@@ -9,9 +9,11 @@ import org.springframework.dao.DataIntegrityViolationException
 class GroovyProxySpec extends GormDatastoreSpec {
 
     void "Test proxying of non-existent instance throws an exception"() {
-        given:"A groovy proxy factory"
-            session.mappingContext.proxyFactory = new GroovyProxyFactory()
-
+        setup:
+            if(useGroovyProxyFactory) {
+                session.mappingContext.proxyFactory = new GroovyProxyFactory()
+            }
+            
         when:"A proxy is loaded for an instance that doesn't exist"
             def location = Location.proxy(123)
 
@@ -27,12 +29,17 @@ class GroovyProxySpec extends GormDatastoreSpec {
 
         then:"An exception is thrown"
             thrown DataIntegrityViolationException
+            
+        where:
+            useGroovyProxyFactory << [true, false]
     }
 
     void "Test creation and behavior of Groovy proxies"() {
-
-        given:
-            session.mappingContext.proxyFactory = new GroovyProxyFactory()
+        setup:
+            if(useGroovyProxyFactory) {
+                session.mappingContext.proxyFactory = new GroovyProxyFactory()
+            }
+            
             def id = new Location(name:"United Kingdom", code:"UK").save(flush:true)?.id
             session.clear()
 
@@ -43,6 +50,8 @@ class GroovyProxySpec extends GormDatastoreSpec {
 
             location != null
             id == location.id
+            Location.isInstance(location) == true
+            null != location.metaClass
             false == location.isInitialized()
             false == location.initialized
 
@@ -51,5 +60,70 @@ class GroovyProxySpec extends GormDatastoreSpec {
             true == location.isInitialized()
             true == location.initialized
             null != location.target
+            Location.isInstance(location) == true
+            null != location.metaClass
+        where:
+            useGroovyProxyFactory << [true, false]
+    }
+
+    void "Test setting metaClass property on proxy"() {
+        setup:
+            if(useGroovyProxyFactory) {
+                session.mappingContext.proxyFactory = new GroovyProxyFactory()
+            }
+
+        when:
+            def location = Location.proxy(123)
+            location.metaClass = null
+        then:
+            location.metaClass != null
+        where:
+            useGroovyProxyFactory << [true, false]
+    }
+
+    void "Test calling setMetaClass method on proxy"() {
+        setup:
+            if(useGroovyProxyFactory) {
+                session.mappingContext.proxyFactory = new GroovyProxyFactory()
+            }
+
+        when:
+            def location = Location.proxy(123)
+            location.setMetaClass(null)
+        then:
+            location.metaClass != null
+        where:
+            useGroovyProxyFactory << [true, false]
+    }
+        
+    void "Test creation and behavior of Groovy proxies with method call"() {
+        setup:
+        if(useGroovyProxyFactory) {
+            session.mappingContext.proxyFactory = new GroovyProxyFactory()
+        }
+        def id = new Location(name:"United Kingdom", code:"UK").save(flush:true)?.id
+        session.clear()
+
+        when:
+        def location = Location.proxy(id)
+
+        then:
+
+        location != null
+        id == location.id
+        Location.isInstance(location) == true
+        null != location.metaClass
+        false == location.isInitialized()
+        false == location.initialized
+
+        "United Kingdom - UK" == location.namedAndCode() // method first
+        "UK" == location.code
+        true == location.isInitialized()
+        true == location.initialized
+        null != location.target
+        Location.isInstance(location) == true
+        null != location.metaClass
+        where:
+        useGroovyProxyFactory << [true, false]
     }
 }
