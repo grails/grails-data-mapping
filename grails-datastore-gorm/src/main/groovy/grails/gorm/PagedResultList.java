@@ -14,6 +14,9 @@
  */
 package grails.gorm;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.List;
 
@@ -27,11 +30,14 @@ import org.grails.datastore.mapping.query.Query;
  * @since 1.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class PagedResultList extends AbstractList {
+public class PagedResultList extends AbstractList implements Serializable {
+
+
+    private static final long serialVersionUID = -5820655628956173929L;
 
     private Query query;
-    private List resultList;
-    private int totalCount = Integer.MIN_VALUE;
+    protected List resultList;
+    protected int totalCount = Integer.MIN_VALUE;
 
     public PagedResultList(Query query) {
         this.query = query;
@@ -76,7 +82,7 @@ public class PagedResultList extends AbstractList {
         resultList.add(i, o);
     }
 
-    private void initialize() {
+    protected void initialize() {
         if (resultList == null) {
             resultList = query.list();
         }
@@ -86,5 +92,26 @@ public class PagedResultList extends AbstractList {
     public int size() {
         initialize();
         return resultList.size();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        initialize();
+        return resultList.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        initialize();
+        return resultList.hashCode();
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+
+        // find the total count if it hasn't been done yet so when this is deserialized
+        // the null GrailsHibernateTemplate won't be an issue
+        getTotalCount();
+
+        out.defaultWriteObject();
     }
 }
