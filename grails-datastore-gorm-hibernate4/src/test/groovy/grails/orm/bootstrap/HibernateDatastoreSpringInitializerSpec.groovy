@@ -30,7 +30,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
             conn.prepareStatement("SELECT * FROM PERSON").execute()
 
         when:"A GORM method is invoked"
-            def total = Person.count()
+            def total = Person.withNewSession { Person.count() }
 
         then:"The correct results are returned"
             total == 0
@@ -39,14 +39,14 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
             def p = new Person()
 
         then:"it is initially invalid"
-            !p.validate()
+            ! Person.withNewSession { p.validate() }
 
         when:"it is made valid"
             p.name = "Bob"
 
         then:"It can be saved"
-            p.save(flush:true)
-            Person.count() == 1
+            Person.withNewSession { p.save(flush:true) }
+            Person.withNewSession { Person.count() } == 1
 
 
         cleanup:
@@ -70,7 +70,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
             conn.prepareStatement("SELECT * FROM PERSON").execute()
 
         when:"A GORM method is invoked"
-            def total = Person.count()
+            def total = Person.withNewSession { Person.count() }
 
         then:"The correct results are returned"
             total == 0
@@ -79,14 +79,14 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
             def p = new Person()
 
         then:"it is initially invalid"
-            !p.validate()
+            !Person.withNewSession { p.validate() }
 
         when:"it is made valid"
             p.name = "Bob"
 
         then:"It can be saved"
-            p.save(flush:true)
-            Person.count() == 1
+            Person.withNewSession { p.save(flush:true) }
+            Person.withNewSession { Person.count()  } == 1
 
 
 
