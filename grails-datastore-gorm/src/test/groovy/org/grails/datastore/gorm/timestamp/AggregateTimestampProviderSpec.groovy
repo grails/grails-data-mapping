@@ -2,7 +2,7 @@ package org.grails.datastore.gorm.timestamp
 
 import grails.spring.BeanBuilder
 
-import org.codehaus.groovy.grails.commons.InstanceFactoryBean
+import org.grails.spring.beans.factory.InstanceFactoryBean
 
 import spock.lang.Specification
 
