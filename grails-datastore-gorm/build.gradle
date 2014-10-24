@@ -51,6 +51,8 @@ dependencies {
     compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
 
     optional "org.springframework:spring-web:$springVersion"
+
+    testCompile "org.grails:grails-spring:$grailsVersion"
 }
 
 def astTransformPath

@@ -36,6 +36,8 @@ import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
 import org.grails.datastore.gorm.support.BeforeValidateHelper.BeforeValidateEventTriggerCaller;
 import org.grails.datastore.gorm.support.EventTriggerCaller;
+import org.grails.datastore.gorm.timestamp.DefaultTimestampProvider;
+import org.grails.datastore.gorm.timestamp.TimestampProvider;
 import org.grails.datastore.mapping.engine.event.ValidationEvent;
 import org.hibernate.EntityMode;
 import org.hibernate.FlushMode;
@@ -87,15 +89,16 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
     MetaProperty errorsProperty;
     Map validateParams;
     MetaMethod validateMethod;
+    TimestampProvider timestampProvider;
 
     public ClosureEventListener(Class<?> domainClazz, boolean failOnError, List failOnErrorPackages) {
+        this(domainClazz, failOnError, failOnErrorPackages, new DefaultTimestampProvider());
+    }
+
+    public ClosureEventListener(Class<?> domainClazz, boolean failOnError, List failOnErrorPackages, TimestampProvider timestampProvider) {
+        this.timestampProvider = timestampProvider;
         domainMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(domainClazz);
-        dateCreatedProperty = domainMetaClass.getMetaProperty(GrailsDomainClassProperty.DATE_CREATED);
-        lastUpdatedProperty = domainMetaClass.getMetaProperty(GrailsDomainClassProperty.LAST_UPDATED);
-        if (dateCreatedProperty != null || lastUpdatedProperty != null) {
-            Mapping m = new GrailsDomainBinder().getMapping(domainClazz);
-            shouldTimestamp = m == null || m.isAutoTimestamp();
-        }
+        applyAutotimestampSettings(domainClazz, timestampProvider);
 
         saveOrUpdateCaller = buildCaller(ClosureEventTriggeringInterceptor.ONLOAD_SAVE, domainClazz);
         beforeInsertCaller = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_INSERT_EVENT, domainClazz);
@@ -133,6 +136,32 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
             entityUpdateActionStateField.setAccessible(true);
         } catch (Exception e) {
             // ignore
+        }
+    }
+
+    private void applyAutotimestampSettings(Class<?> domainClazz, TimestampProvider timestampProvider) {
+        dateCreatedProperty = domainMetaClass.getMetaProperty(GrailsDomainClassProperty.DATE_CREATED);
+        if(dateCreatedProperty != null && !verifyTimestampFieldTypeSupport(domainClazz, timestampProvider, dateCreatedProperty)) {
+            dateCreatedProperty = null;
+        }
+        lastUpdatedProperty = domainMetaClass.getMetaProperty(GrailsDomainClassProperty.LAST_UPDATED);
+        if(lastUpdatedProperty != null && !verifyTimestampFieldTypeSupport(domainClazz, timestampProvider, lastUpdatedProperty)) {
+            lastUpdatedProperty = null;
+        }
+        if (dateCreatedProperty != null || lastUpdatedProperty != null) {
+            Mapping m = new GrailsDomainBinder().getMapping(domainClazz);
+            shouldTimestamp = m == null || m.isAutoTimestamp();
+        } else {
+            shouldTimestamp = false;
+        }
+    }
+            
+    private boolean verifyTimestampFieldTypeSupport(Class<?> domainClazz, TimestampProvider timestampProvider, MetaProperty timestampField) {
+        if(timestampProvider.supportsCreating(timestampField.getType())) {
+            return true;
+        } else {
+            LOG.warn("TimestampProvider doesn't support creating timestamps for " + domainClazz.getName() + "." + timestampField.getName() + " field of type " + timestampField.getType());
+            return false;
         }
     }
     
@@ -293,19 +322,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                     evict = preUpdateEventListener.call(entity);
                     synchronizePersisterState(event, event.getState());
                 }
-                if (shouldTimestamp) {
-                    long time = System.currentTimeMillis();
-                    if (dateCreatedProperty != null && dateCreatedProperty.getProperty(entity)==null) {
-                        Object now = applyTimestamp(entity, dateCreatedProperty,  time);
-                        String[] propertyNames = event.getPersister().getPropertyNames();
-                        event.getState()[ Arrays.asList(propertyNames).indexOf(GrailsDomainClassProperty.DATE_CREATED) ] = now;
-                    }
-                    if (lastUpdatedProperty != null) {
-                        Object now = applyTimestamp(entity, lastUpdatedProperty,  time);
-                        String[] propertyNames = event.getPersister().getPropertyNames();
-                        event.getState()[ Arrays.asList(propertyNames).indexOf( GrailsDomainClassProperty.LAST_UPDATED) ] = now;
-                    }
-                }
+                handleTimestampingBeforeUpdate(event, entity);
                 if (!AbstractHibernateGormInstanceApi.isAutoValidationDisabled(entity)
                         && !DefaultTypeTransformation.castToBoolean(validateMethod.invoke(entity, new Object[] { validateParams }))) {
                     evict = true;
@@ -343,17 +360,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                     }
                     synchronizeState = true;
                 }
-                if (shouldTimestamp) {
-                    long time = System.currentTimeMillis();
-                    if (dateCreatedProperty != null) {
-                        applyTimestamp(entity, dateCreatedProperty,  time);
-                        synchronizeState = true;
-                    }
-                    if (lastUpdatedProperty != null) {
-                        applyTimestamp(entity, lastUpdatedProperty,  time);
-                        synchronizeState = true;
-                    }
-                }
+                synchronizeState = handleTimestampingBeforeInsert(entity, synchronizeState);
 
                 if (synchronizeState) {
                     synchronizePersisterState(event, event.getState());
@@ -376,13 +383,51 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
         });
     }
 
-    protected Object applyTimestamp(Object entity, MetaProperty property, long time) {
-        Object now = DefaultGroovyMethods.newInstance(property.getType(), new Object[] { time });
-        property.setProperty(entity, now);
-        return now;
-    }
-
     public void onValidate(ValidationEvent event) {
         beforeValidateEventListener.call(event.getEntityObject(), event.getValidatedFields());
+    }
+
+    protected void handleTimestampingBeforeUpdate(final PreUpdateEvent event, Object entity) {
+        if (shouldTimestamp) {
+            Class<?> dateCreatedType = null;
+            Object timestamp = null;
+            String[] propertyNames = event.getPersister().getPropertyNames();
+            if (dateCreatedProperty != null && dateCreatedProperty.getProperty(entity)==null) {
+                dateCreatedType = dateCreatedProperty.getType();
+                timestamp = timestampProvider.createTimestamp(dateCreatedType);
+                dateCreatedProperty.setProperty(entity, timestamp);
+                event.getState()[ Arrays.asList(propertyNames).indexOf(GrailsDomainClassProperty.DATE_CREATED) ] = timestamp;
+            }
+            if (lastUpdatedProperty != null) {
+                Class<?> lastUpdateType = lastUpdatedProperty.getType();
+                if(dateCreatedType == null || !lastUpdateType.isAssignableFrom(dateCreatedType)) {
+                    timestamp = timestampProvider.createTimestamp(lastUpdateType);
+                }
+                lastUpdatedProperty.setProperty(entity, timestamp);
+                event.getState()[ Arrays.asList(propertyNames).indexOf( GrailsDomainClassProperty.LAST_UPDATED) ] = timestamp;
+            }
+        }
+    }
+
+    protected boolean handleTimestampingBeforeInsert(Object entity, boolean synchronizeState) {
+        if (shouldTimestamp) {
+            Class<?> dateCreatedType = null;
+            Object timestamp = null;
+            if (dateCreatedProperty != null) {
+                dateCreatedType = dateCreatedProperty.getType();
+                timestamp = timestampProvider.createTimestamp(dateCreatedType);
+                dateCreatedProperty.setProperty(entity, timestamp);
+                synchronizeState = true;
+            }
+            if (lastUpdatedProperty != null) {
+                Class<?> lastUpdateType = lastUpdatedProperty.getType();
+                if(dateCreatedType == null || !lastUpdateType.isAssignableFrom(dateCreatedType)) {
+                    timestamp = timestampProvider.createTimestamp(lastUpdateType);
+                }
+                lastUpdatedProperty.setProperty(entity, timestamp);
+                synchronizeState = true;
+            }
+        }
+        return synchronizeState;
     }
 }

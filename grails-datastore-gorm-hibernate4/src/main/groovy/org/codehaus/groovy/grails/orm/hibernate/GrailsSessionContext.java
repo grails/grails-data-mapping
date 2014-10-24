@@ -58,7 +58,7 @@ public class GrailsSessionContext implements CurrentSessionContext {
     protected Constructor<?> springSessionSynchronizationConstructor;
 
     // TODO make configurable?
-    protected boolean allowCreate = true;
+    protected boolean allowCreate = false;
 
     /**
      * Constructor.

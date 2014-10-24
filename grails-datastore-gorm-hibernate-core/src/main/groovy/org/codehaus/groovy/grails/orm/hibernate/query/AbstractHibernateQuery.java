@@ -443,23 +443,38 @@ public abstract class AbstractHibernateQuery extends Query {
     protected CriteriaAndAlias getOrCreateAlias(String associationName, String alias) {
         CriteriaAndAlias subCriteria = null;
         String associationPath = getAssociationPath(associationName);
+        Criteria parentCriteria = criteria;
         if(alias == null) {
             alias = generateAlias(associationName);
+        }
+        else {
+            CriteriaAndAlias criteriaAndAlias = createdAssociationPaths.get(alias);
+            if(criteriaAndAlias != null) {
+                parentCriteria = criteriaAndAlias.criteria;
+                if(parentCriteria != null) {
+
+                    alias = associationName + '_' + alias;
+                    associationPath = criteriaAndAlias.associationPath + '.' + associationPath;
+                }
+            }
         }
         if (createdAssociationPaths.containsKey(associationName)) {
             subCriteria = createdAssociationPaths.get(associationPath);
         }
         else {
-            if(criteria != null) {
-                Criteria sc = criteria.createAlias(associationPath, alias);
-                subCriteria = new CriteriaAndAlias(sc, alias);
+            if(parentCriteria != null) {
+                Criteria sc = parentCriteria.createAlias(associationPath, alias);
+                subCriteria = new CriteriaAndAlias(sc, alias, associationPath);
             }
             else if(detachedCriteria != null) {
                 DetachedCriteria sc = detachedCriteria.createAlias(associationPath, alias);
-                subCriteria = new CriteriaAndAlias(sc, alias);
+                subCriteria = new CriteriaAndAlias(sc, alias, associationPath);
             }
-            if(subCriteria != null)
+            if(subCriteria != null) {
+
                 createdAssociationPaths.put(associationPath,subCriteria);
+                createdAssociationPaths.put(alias,subCriteria);
+            }
         }
         return subCriteria;
     }
@@ -1068,15 +1083,18 @@ public abstract class AbstractHibernateQuery extends Query {
         protected DetachedCriteria detachedCriteria;
         protected Criteria criteria;
         protected String alias;
+        protected String associationPath;
 
-        public CriteriaAndAlias(Criteria subCriteria, String alias) {
-            criteria = subCriteria;
-            this.alias = alias;
-        }
-
-        public CriteriaAndAlias(DetachedCriteria detachedCriteria, String alias) {
+        public CriteriaAndAlias(DetachedCriteria detachedCriteria, String alias, String associationPath) {
             this.detachedCriteria = detachedCriteria;
             this.alias = alias;
+            this.associationPath = associationPath;
+        }
+
+        public CriteriaAndAlias(Criteria criteria, String alias, String associationPath) {
+            this.criteria = criteria;
+            this.alias = alias;
+            this.associationPath = associationPath;
         }
     }
 }

@@ -101,6 +101,11 @@ dependencies {
     }
     optional "org.grails:grails-test:$grailsVersion", excludes
     optional "org.grails:grails-plugin-testing:$grailsVersion", excludes
+
+    def tomcatVersion = '7.0.50'
+    testCompile "org.apache.tomcat:tomcat-jdbc:$tomcatVersion"
+    testRuntime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:$tomcatVersion"
+
 }
 
 sourceSets {

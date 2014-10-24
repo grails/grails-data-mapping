@@ -31,6 +31,8 @@ import org.codehaus.groovy.grails.orm.hibernate.support.SoftKey;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
 import org.grails.core.artefact.AnnotationDomainClassArtefactHandler;
 import org.grails.core.artefact.DomainClassArtefactHandler;
+import org.grails.datastore.gorm.timestamp.DefaultTimestampProvider;
+import org.grails.datastore.gorm.timestamp.TimestampProvider;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.engine.event.ValidationEvent;
 import org.hibernate.HibernateException;
@@ -59,6 +61,8 @@ public class EventTriggeringInterceptor extends AbstractEventTriggeringIntercept
             new ConcurrentHashMap<SoftKey<Class<?>>, ClosureEventListener>();
 
     protected final GrailsDomainBinder domainBinder = new GrailsDomainBinder();
+    
+    private TimestampProvider timestampProvider = new DefaultTimestampProvider();
 
     public EventTriggeringInterceptor(HibernateDatastore datastore, Config co) {
         super(datastore);
@@ -214,7 +218,7 @@ public class EventTriggeringInterceptor extends AbstractEventTriggeringIntercept
                             (DomainClassArtefactHandler.isDomainClass(clazz) || AnnotationDomainClassArtefactHandler.isJPADomainClass(clazz)) &&
                             isDefinedByCurrentDataStore(entity, domainBinder));
                     if (shouldTrigger) {
-                        eventListener = new ClosureEventListener(clazz, failOnError, failOnErrorPackages);
+                        eventListener = new ClosureEventListener(clazz, failOnError, failOnErrorPackages, timestampProvider);
                         ClosureEventListener previous = eventListeners.putIfAbsent(key, eventListener);
                         if (previous != null) {
                             eventListener = previous;
@@ -237,5 +241,13 @@ public class EventTriggeringInterceptor extends AbstractEventTriggeringIntercept
 
     protected List<String> getDatasourceNames(GrailsDomainClass dc) {
         return GrailsHibernateUtil.getDatasourceNames(dc);
+    }
+    
+    public TimestampProvider getTimestampProvider() {
+        return timestampProvider;
+    }
+
+    public void setTimestampProvider(TimestampProvider timestampProvider) {
+        this.timestampProvider = timestampProvider;
     }
 }

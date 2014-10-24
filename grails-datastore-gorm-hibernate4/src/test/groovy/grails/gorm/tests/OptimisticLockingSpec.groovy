@@ -45,27 +45,28 @@ class OptimisticLockingSpec extends GormDatastoreSpec {
             setupClass.transactionStatus = null
 
         when:
-            o = OptLockVersioned.get(o.id)
+            OptLockVersioned.withNewSession {
+                o = OptLockVersioned.get(o.id)
 
-            Thread.start {
-                OptLockVersioned.withTransaction { s ->
-                    def reloaded = OptLockVersioned.get(o.id)
-                    assert reloaded
-                    assert reloaded != o
-                    reloaded.name += ' in new session'
-                    reloaded.save(flush: true)
-                    assert reloaded.version == 1
-                    assert o.version == 0
-                }
+                Thread.start {
+                    OptLockVersioned.withTransaction { s ->
+                        def reloaded = OptLockVersioned.get(o.id)
+                        assert reloaded
+                        assert reloaded != o
+                        reloaded.name += ' in new session'
+                        reloaded.save(flush: true)
+                        assert reloaded.version == 1
+                        assert o.version == 0
+                    }
 
-            }.join()
+                }.join()
 
-            o.name += ' in main session'
-            assert o.save(flush: true)
+                o.name += ' in main session'
+                assert o.save(flush: true)
 
-            session.clear()
-            o = OptLockVersioned.get(o.id)
-
+                session.clear()
+                o = OptLockVersioned.get(o.id)
+            }
         then:
             thrown HibernateOptimisticLockingFailureException
     }
@@ -78,26 +79,33 @@ class OptimisticLockingSpec extends GormDatastoreSpec {
             setupClass.transactionStatus = null
 
         when:
-            o = OptLockNotVersioned.get(o.id)
-
-            OptLockNotVersioned.withNewSession { s ->
-                def reloaded = OptLockNotVersioned.get(o.id)
-                reloaded.name += ' in new session'
-                reloaded.save(flush: true)
-            }
-
-            o.name += ' in main session'
             def ex
-            try {
-                o.save(flush: true)
-            }
-            catch (e) {
-                ex = e
-                e.printStackTrace()
-            }
+            OptLockNotVersioned.withNewSession {
+                o = OptLockNotVersioned.get(o.id)
 
-            session.clear()
-            o = OptLockNotVersioned.get(o.id)
+                Thread.start {
+                    OptLockNotVersioned.withTransaction { s ->
+                        def reloaded = OptLockNotVersioned.get(o.id)
+                        reloaded.name += ' in new session'
+                        reloaded.save(flush: true)
+                    }
+
+                }.join()
+
+                o.name += ' in main session'
+
+                try {
+                    o.save(flush: true)
+                }
+                catch (e) {
+                    ex = e
+                    e.printStackTrace()
+                }
+
+                session.clear()
+                o = OptLockNotVersioned.get(o.id)
+
+            }
 
         then:
             ex == null
