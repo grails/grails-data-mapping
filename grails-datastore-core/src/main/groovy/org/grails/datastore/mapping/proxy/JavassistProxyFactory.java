@@ -50,7 +50,7 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
     private static final Set<String> EXCLUDES = new HashSet(Arrays.asList("$getStaticMetaClass"));
 
     public boolean isProxy(Object object) {
-        return object instanceof EntityProxy;
+        return (object instanceof EntityProxy) || (object instanceof ProxyObject);
     }
 
     public Serializable getIdentifier(Object obj) {
