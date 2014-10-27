@@ -49,14 +49,14 @@ public abstract class AbstractStaticPersistentMethod extends AbstractStaticMetho
     private SessionFactory sessionFactory;
     protected final GrailsApplication application;
 
-    protected AbstractStaticPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, Pattern pattern, GrailsApplication application) {
+    protected AbstractStaticPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, Pattern pattern, GrailsApplication application, int defaultFlushMode) {
         Assert.notNull(sessionFactory, "Session factory is required!");
         Assert.notNull(application, "Constructor argument 'application' cannot be null");
         this.application = application;
         setPattern(pattern);
         this.classLoader = classLoader;
         this.sessionFactory = sessionFactory;
-        hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, application);
+        hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, application, defaultFlushMode);
     }
 
     protected SessionFactory getSessionFactory() {
@@ -99,6 +99,7 @@ public abstract class AbstractStaticPersistentMethod extends AbstractStaticMetho
             HibernateCriteriaBuilder builder = new HibernateCriteriaBuilder(clazz, session.getSessionFactory());
             builder.setGrailsApplication(appliation);
             builder.setConversionService(datastore.getMappingContext().getConversionService());
+            builder.setDefaultFlushMode(datastore.getDefaultFlushMode());
             return builder.buildCriteria(additionalCriteria);
         }
 

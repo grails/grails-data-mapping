@@ -19,6 +19,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsDomainClass;
 import org.codehaus.groovy.grails.lifecycle.ShutdownOperations;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateDomainClass;
+import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.codehaus.groovy.grails.validation.AbstractConstraint;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.BeansException;
@@ -54,7 +55,10 @@ public abstract class AbstractPersistentConstraint extends AbstractConstraint im
         if (sf == null) {
             sf = applicationContext.getBean("sessionFactory", SessionFactory.class);
         }
-        return new HibernateTemplate(sf, true);
+        GrailsApplication app = applicationContext.getBean("grailsApplication", GrailsApplication.class);
+        GrailsHibernateTemplate hibernateTemplate = new GrailsHibernateTemplate(sf, app, GrailsHibernateTemplate.FLUSH_NEVER);
+        hibernateTemplate.setAllowCreate(true);
+        return hibernateTemplate;
     }
 
     /**
