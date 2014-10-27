@@ -52,12 +52,12 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
     protected Class identityType
     protected ClassLoader classLoader
     protected GrailsApplication grailsApplication
-    protected boolean cacheQueriesByDefault = false
     private HibernateGormInstanceApi<D> instanceApi
+    protected int defaultFlushMode
 
     HibernateGormStaticApi(Class<D> persistentClass, HibernateDatastore datastore, List<FinderMethod> finders,
                 ClassLoader classLoader, PlatformTransactionManager transactionManager) {
-        super(persistentClass, datastore, finders, transactionManager, new GrailsHibernateTemplate(datastore.sessionFactory))
+        super(persistentClass, datastore, finders, transactionManager, null)
         this.classLoader = classLoader
         sessionFactory = datastore.getSessionFactory()
         conversionService = datastore.mappingContext.conversionService
@@ -69,11 +69,14 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
             GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
             identityType = domainClass.identifier?.type
 
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
-            hibernateTemplate.setCacheQueries(cacheQueriesByDefault)
+            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication, datastore.getDefaultFlushMode())
         } else {
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
+            hibernateTemplate.setFlushMode(datastore.getDefaultFlushMode())
         }
+        super.hibernateTemplate = hibernateTemplate
+
+        this.defaultFlushMode = datastore.getDefaultFlushMode()
 
         instanceApi = new HibernateGormInstanceApi<>(persistentClass, datastore, classLoader)
     }
@@ -125,8 +128,9 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
 
     @Override
     Object withSession(Closure callable) {
-        HibernateTemplate template = new GrailsHibernateTemplate(sessionFactory)
+        GrailsHibernateTemplate template = new GrailsHibernateTemplate(sessionFactory, grailsApplication, defaultFlushMode)
         template.setExposeNativeSession(false)
+        template.setApplyFlushModeOnlyToNonExistingTransactions(true)
         template.execute({ session ->
             callable(session)
         } as HibernateCallback)
@@ -172,7 +176,7 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
 
     @Override
     def withNewSession(Closure callable) {
-        HibernateTemplate template  = new GrailsHibernateTemplate(sessionFactory, grailsApplication)
+        HibernateTemplate template  = new GrailsHibernateTemplate(sessionFactory, grailsApplication, defaultFlushMode)
         template.setExposeNativeSession(false)
         SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(sessionFactory)
         Session previousSession = sessionHolder?.session

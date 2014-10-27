@@ -48,19 +48,18 @@ import org.hibernate.proxy.HibernateProxy;
 public class HibernateSession extends AbstractHibernateSession {
 
     ProxyHandler proxyHandler = new HibernateProxyHandler();
-    public HibernateSession(HibernateDatastore hibernateDatastore, SessionFactory sessionFactory) {
+    public HibernateSession(HibernateDatastore hibernateDatastore, SessionFactory sessionFactory, int defaultFlushMode) {
         super(hibernateDatastore, sessionFactory);
 
-        hibernateTemplate = new GrailsHibernateTemplate(sessionFactory);
         GrailsApplication grailsApplication = hibernateDatastore.getGrailsApplication();
+        if (grailsApplication == null) {
+            grailsApplication = hibernateDatastore.getApplicationContext().getBean(GrailsApplication.APPLICATION_ID, GrailsApplication.class);
+        }
+        hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication, defaultFlushMode);
+    }
 
-        if (grailsApplication != null) {
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication);
-        }
-        else {
-            GrailsApplication app = hibernateDatastore.getApplicationContext().getBean(GrailsApplication.APPLICATION_ID, GrailsApplication.class);
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, app);
-        }
+    public HibernateSession(HibernateDatastore hibernateDatastore, SessionFactory sessionFactory) {
+        this(hibernateDatastore, sessionFactory, hibernateDatastore.getDefaultFlushMode());
     }
 
     @Override

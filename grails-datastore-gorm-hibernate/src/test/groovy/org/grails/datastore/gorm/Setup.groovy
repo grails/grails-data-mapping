@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm
 
 import grails.core.DefaultGrailsApplication
+import groovy.sql.Sql
 import grails.core.GrailsApplication
 import grails.core.GrailsDomainClass
 import grails.validation.ConstrainedProperty
@@ -30,6 +31,7 @@ import org.hibernate.dialect.H2Dialect
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.BeanWrapper
 import org.springframework.beans.BeanWrapperImpl
+import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.beans.factory.support.AbstractBeanDefinition
 import org.springframework.beans.factory.support.GenericBeanDefinition
@@ -41,9 +43,6 @@ import org.springframework.orm.hibernate3.SpringSessionContext
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.DefaultTransactionDefinition
 import org.springframework.transaction.support.TransactionSynchronizationManager
-import org.springframework.validation.Errors
-import org.springframework.validation.Validator
-import org.springframework.util.Log4jConfigurer
 
 class Setup {
     static GrailsApplication grailsApplication
@@ -72,7 +71,23 @@ class Setup {
         hibernateSession = null
         transactionManager = null
         sessionFactory = null
+        if(applicationContext instanceof DisposableBean) {
+            applicationContext.destroy()
+        }
         applicationContext = null
+        shutdownInMemDb()
+    }
+    
+    static shutdownInMemDb() {
+        Sql sql = null
+        try {
+            sql = Sql.newInstance('jdbc:h2:mem:devDB', 'sa', '', Driver.name)
+            sql.executeUpdate('SHUTDOWN')
+        } catch (e) {
+            // already closed, ignore
+        } finally {
+            try { sql?.close() } catch (ignored) {}
+        }
     }
 
     static Session setup(List<Class> classes, ConfigObject grailsConfig = null, boolean isTransactional = true) {
