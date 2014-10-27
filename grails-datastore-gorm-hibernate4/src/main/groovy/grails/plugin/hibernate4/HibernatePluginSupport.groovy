@@ -292,17 +292,28 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'""",t
                 sessionFactory = ref("sessionFactory$suffix")
                 dataSource = ref("dataSource$suffix")
             }
-            
-            int defaultFlushMode = resolveDefaultFlushMode(hibConfig, ds.readOnly)
 
-            "hibernateDatastore$suffix"(HibernateDatastore, ref('grailsDomainClassMappingContext'), ref("sessionFactory$suffix"), application.config, null, defaultFlushMode)
+            "hibernateDatastore$suffix"(HibernateDatastore, ref('grailsDomainClassMappingContext'), ref("sessionFactory$suffix"), application.config)
 
             if (manager?.hasGrailsPlugin("controllers")) {
                 "flushingRedirectEventListener$suffix"(FlushOnRedirectEventListener, ref("sessionFactory$suffix"))
 
                 "openSessionInViewInterceptor$suffix"(GrailsOpenSessionInViewInterceptor) {
 
-                    flushMode = defaultFlushMode
+                    if (Boolean.TRUE.equals(ds.readOnly)) {
+                        flushMode = GrailsHibernateTemplate.FLUSH_NEVER
+                    }
+                    else if (hibConfig.flush.mode instanceof CharSequence) {
+                        switch(hibConfig.flush.mode.toString()) {
+                            case "manual": flushMode = GrailsHibernateTemplate.FLUSH_NEVER;  break
+                            case "always": flushMode = GrailsHibernateTemplate.FLUSH_ALWAYS; break
+                            case "commit": flushMode = GrailsHibernateTemplate.FLUSH_COMMIT; break
+                            default:       flushMode = GrailsHibernateTemplate.FLUSH_AUTO
+                        }
+                    }
+                    else {
+                        flushMode = GrailsHibernateTemplate.FLUSH_AUTO
+                    }
 
                     sessionFactory = ref("sessionFactory$suffix")
 
@@ -329,33 +340,6 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'""",t
                 }
             }
         }
-    }
-
-    private static int resolveDefaultFlushMode(hibConfig, readOnly) {
-        int flushMode
-        if (Boolean.TRUE.equals(readOnly)) {
-            flushMode = GrailsHibernateTemplate.FLUSH_NEVER
-        }
-        else if (hibConfig.flush.mode instanceof CharSequence) {
-            switch(hibConfig.flush.mode.toString().toLowerCase()) {
-                case "manual": 
-                case "never":
-                    flushMode = GrailsHibernateTemplate.FLUSH_NEVER  
-                    break
-                case "always": 
-                    flushMode = GrailsHibernateTemplate.FLUSH_ALWAYS
-                    break
-                case "commit": 
-                    flushMode = GrailsHibernateTemplate.FLUSH_COMMIT
-                    break
-                default:
-                    flushMode = GrailsHibernateTemplate.FLUSH_AUTO
-            }
-        }
-        else {
-            flushMode = GrailsHibernateTemplate.FLUSH_AUTO
-        }
-        return flushMode
     }
 
     static final onChange = { event ->

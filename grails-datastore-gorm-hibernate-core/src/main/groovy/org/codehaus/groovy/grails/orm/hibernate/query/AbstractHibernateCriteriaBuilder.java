@@ -89,7 +89,6 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
     protected List<Order> orderEntries;
     protected GrailsApplication grailsApplication;
     protected ConversionService conversionService;
-    protected int defaultFlushMode;
 
     @SuppressWarnings("rawtypes")
     public AbstractHibernateCriteriaBuilder(Class targetClass, SessionFactory sessionFactory) {
@@ -1999,13 +1998,5 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
             hibernateSession.close();
         }
         criteria = null;
-    }
-
-    public int getDefaultFlushMode() {
-        return defaultFlushMode;
-    }
-
-    public void setDefaultFlushMode(int defaultFlushMode) {
-        this.defaultFlushMode = defaultFlushMode;
     }
 }

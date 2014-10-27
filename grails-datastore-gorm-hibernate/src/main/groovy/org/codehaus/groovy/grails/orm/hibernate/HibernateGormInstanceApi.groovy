@@ -40,19 +40,18 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
     protected InstanceApiHelper instanceApiHelper
 
     HibernateGormInstanceApi(Class<D> persistentClass, HibernateDatastore datastore, ClassLoader classLoader) {
-        super(persistentClass, datastore, classLoader, null)
+        super(persistentClass, datastore, classLoader, new GrailsHibernateTemplate(datastore.sessionFactory))
 
         def grailsApplication = datastore.getGrailsApplication()
         if (grailsApplication) {
             GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
             config = (Map)grailsApplication.getFlatConfig().get('grails.gorm')
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication, datastore.getDefaultFlushMode())
+            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication)
+            cacheQueriesByDefault = GrailsHibernateUtil.isCacheQueriesByDefault(grailsApplication)
         }
         else {
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
-            hibernateTemplate.setFlushMode(datastore.getDefaultFlushMode())
         }
-        super.hibernateTemplate = hibernateTemplate
         instanceApiHelper = new InstanceApiHelper(hibernateTemplate)
     }
 

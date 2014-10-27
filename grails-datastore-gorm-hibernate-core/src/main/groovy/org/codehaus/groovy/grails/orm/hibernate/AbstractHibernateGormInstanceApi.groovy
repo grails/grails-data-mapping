@@ -98,6 +98,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
 
     protected SessionFactory sessionFactory
     protected ClassLoader classLoader
+    protected boolean cacheQueriesByDefault = false
     protected IHibernateTemplate hibernateTemplate
     protected ProxyHandler proxyHandler = new SimpleHibernateProxyHandler()
     Map config = Collections.emptyMap()

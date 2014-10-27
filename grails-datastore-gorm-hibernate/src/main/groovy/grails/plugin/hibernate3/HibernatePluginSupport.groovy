@@ -291,18 +291,28 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'""",t
             "transactionManager$suffix"(GrailsHibernateTransactionManager) {
                 sessionFactory = ref("sessionFactory$suffix")
             }
-            
-            int defaultFlushMode = resolveDefaultFlushMode(hibConfig, ds.readOnly)
 
-            "hibernateDatastore$suffix"(HibernateDatastore, ref('grailsDomainClassMappingContext'), ref("sessionFactory$suffix"), application.config, null, defaultFlushMode)
+            "hibernateDatastore$suffix"(HibernateDatastore, ref('grailsDomainClassMappingContext'), ref("sessionFactory$suffix"), application.config)
 
             if (manager?.hasGrailsPlugin("controllers")) {
                 "flushingRedirectEventListener$suffix"(FlushOnRedirectEventListener, ref("sessionFactory$suffix"))
 
                 "openSessionInViewInterceptor$suffix"(GrailsOpenSessionInViewInterceptor) {
 
-                    flushMode = defaultFlushMode
-                    
+                    if (Boolean.TRUE.equals(ds.readOnly)) {
+                        flushMode = HibernateAccessor.FLUSH_NEVER
+                    }
+                    else if (hibConfig.flush.mode instanceof String) {
+                        switch(hibConfig.flush.mode) {
+                            case "manual": flushMode = HibernateAccessor.FLUSH_NEVER;  break
+                            case "always": flushMode = HibernateAccessor.FLUSH_ALWAYS; break
+                            case "commit": flushMode = HibernateAccessor.FLUSH_COMMIT; break
+                            default:       flushMode = HibernateAccessor.FLUSH_AUTO
+                        }
+                    }
+                    else {
+                        flushMode = HibernateAccessor.FLUSH_AUTO
+                    }
                     sessionFactory = ref("sessionFactory$suffix")
 
                     if(hibConfig?.containsKey('singleSession')) {
@@ -323,33 +333,6 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'""",t
                 }
             }
         }
-    }
-    
-    private static int resolveDefaultFlushMode(hibConfig, readOnly) {
-        int flushMode
-        if (Boolean.TRUE.equals(readOnly)) {
-            flushMode = HibernateAccessor.FLUSH_NEVER
-        }
-        else if (hibConfig.flush.mode instanceof CharSequence) {
-            switch(hibConfig.flush.mode.toString().toLowerCase()) {
-                case "manual":
-                case "never":
-                    flushMode = HibernateAccessor.FLUSH_NEVER
-                    break
-                case "always":
-                    flushMode = HibernateAccessor.FLUSH_ALWAYS
-                    break
-                case "commit":
-                    flushMode = HibernateAccessor.FLUSH_COMMIT
-                    break
-                default:
-                    flushMode = HibernateAccessor.FLUSH_AUTO
-            }
-        }
-        else {
-            flushMode = HibernateAccessor.FLUSH_AUTO
-        }
-        return flushMode
     }
 
     static final onChange = { event ->
