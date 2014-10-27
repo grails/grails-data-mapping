@@ -52,12 +52,11 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
             config = (Map)grailsApplication.getFlatConfig().get('grails.gorm')
             saveMethod = new SavePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
             mergeMethod = new MergePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication, datastore.getDefaultFlushMode())
+            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication)
             cacheQueriesByDefault = GrailsHibernateUtil.isCacheQueriesByDefault(grailsApplication)
         }
         else {
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
-            hibernateTemplate.setFlushMode(datastore.getDefaultFlushMode())
         }
         instanceApiHelper = new InstanceApiHelper(hibernateTemplate)
     }

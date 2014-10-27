@@ -41,15 +41,14 @@ public abstract class AbstractDynamicPersistentMethod extends AbstractDynamicMet
     private ClassLoader classLoader;
     private HibernateTemplate hibernateTemplate;
     GrailsApplication application;
-    int defaultFlushMode;
 
-    public AbstractDynamicPersistentMethod(Pattern pattern, SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, int defaultFlushMode) {
+    public AbstractDynamicPersistentMethod(Pattern pattern, SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application) {
         super(pattern);
         Assert.notNull(sessionFactory, "Session factory is required!");
         this.classLoader = classLoader;
         Assert.notNull(application, "Constructor argument 'application' cannot be null");
         this.application = application;
-        hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, application, defaultFlushMode);
+        hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, application);
     }
 
     protected HibernateTemplate getHibernateTemplate() {

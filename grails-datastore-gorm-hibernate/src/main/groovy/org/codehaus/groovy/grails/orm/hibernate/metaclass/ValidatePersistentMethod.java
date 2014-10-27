@@ -60,7 +60,7 @@ public class ValidatePersistentMethod extends AbstractDynamicPersistentMethod {
 
     public ValidatePersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader,
              GrailsApplication application, Validator validator, HibernateDatastore datastore) {
-        super(METHOD_PATTERN, sessionFactory, classLoader, application, datastore.getDefaultFlushMode());
+        super(METHOD_PATTERN, sessionFactory, classLoader, application);
         Assert.notNull(application, "Constructor argument 'application' cannot be null");
         this.validator = validator;
         this.datastore = datastore;

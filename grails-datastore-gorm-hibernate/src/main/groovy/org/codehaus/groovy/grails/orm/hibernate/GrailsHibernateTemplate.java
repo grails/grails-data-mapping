@@ -18,7 +18,6 @@ package org.codehaus.groovy.grails.orm.hibernate;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.hibernate.Criteria;
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -28,7 +27,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public class GrailsHibernateTemplate extends HibernateTemplate implements IHibernateTemplate {
     private boolean osivReadOnly;
     private boolean passReadOnlyToHibernate = false;
-    private boolean applyFlushModeOnlyToNonExistingTransactions = false;
 
     public GrailsHibernateTemplate() {
         initialize(null);
@@ -43,15 +41,10 @@ public class GrailsHibernateTemplate extends HibernateTemplate implements IHiber
         super(sessionFactory);
         initialize(null);
     }
-    
+
     public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application) {
-        this(sessionFactory, application, FLUSH_AUTO);
-    }
-     
-    public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application, int defaultFlushMode) {    
         super(sessionFactory);
         initialize(application);
-        setFlushMode(defaultFlushMode);
     }
 
     private void initialize(GrailsApplication application) {
@@ -111,27 +104,11 @@ public class GrailsHibernateTemplate extends HibernateTemplate implements IHiber
         super.enableFilters(session);
     }
 
-    @Override
-    protected FlushMode applyFlushMode(Session session, boolean existingTransaction) {
-        if(isApplyFlushModeOnlyToNonExistingTransactions() && existingTransaction) {
-            return null;
-        }
-        return super.applyFlushMode(session, existingTransaction);
-    }
-    
     public boolean isOsivReadOnly() {
         return osivReadOnly;
     }
 
     public void setOsivReadOnly(boolean osivReadOnly) {
         this.osivReadOnly = osivReadOnly;
-    }
-    
-    public boolean isApplyFlushModeOnlyToNonExistingTransactions() {
-        return applyFlushModeOnlyToNonExistingTransactions;
-    }
-    
-    public void setApplyFlushModeOnlyToNonExistingTransactions(boolean applyFlushModeOnlyToNonExistingTransactions) {
-        this.applyFlushModeOnlyToNonExistingTransactions = applyFlushModeOnlyToNonExistingTransactions;
     }
 }

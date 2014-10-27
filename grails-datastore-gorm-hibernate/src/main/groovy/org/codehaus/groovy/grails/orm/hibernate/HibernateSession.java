@@ -55,23 +55,18 @@ public class HibernateSession extends AbstractHibernateSession {
         this(hibernateDatastore, hibernateDatastore.getSessionFactory());
     }
 
-    public HibernateSession(HibernateDatastore hibernateDatastore, SessionFactory sessionFactory, int defaultFlushMode) {
+    public HibernateSession(HibernateDatastore hibernateDatastore, SessionFactory sessionFactory) {
         super(hibernateDatastore, sessionFactory);
 
 
         GrailsApplication grailsApplication = hibernateDatastore.getGrailsApplication();
         if (grailsApplication != null) {
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory,grailsApplication,defaultFlushMode);
+            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory,grailsApplication);
         }
         else {
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory);
-            hibernateTemplate.setFlushMode(defaultFlushMode);
         }
     }
-    
-    public HibernateSession(HibernateDatastore hibernateDatastore, SessionFactory sessionFactory) {
-        this(hibernateDatastore, sessionFactory, hibernateDatastore.getDefaultFlushMode());
-    }    
 
     @Override
     public Serializable getObjectIdentifier(Object instance) {
