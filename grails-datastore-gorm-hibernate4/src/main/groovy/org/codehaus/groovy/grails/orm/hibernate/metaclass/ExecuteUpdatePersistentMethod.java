@@ -53,8 +53,8 @@ public class ExecuteUpdatePersistentMethod extends AbstractStaticPersistentMetho
     private static final String METHOD_SIGNATURE = "executeUpdate";
     private static final Pattern METHOD_PATTERN = Pattern.compile("^executeUpdate$");
 
-    public ExecuteUpdatePersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application) {
-        super(sessionFactory, classLoader, METHOD_PATTERN, application);
+    public ExecuteUpdatePersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, int defaultFlushMode) {
+        super(sessionFactory, classLoader, METHOD_PATTERN, application, defaultFlushMode);
     }
 
     @Override

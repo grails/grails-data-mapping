@@ -36,13 +36,19 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class HibernateDatastore extends AbstractHibernateDatastore implements GrailsApplicationAware {
 
     private GrailsApplication grailsApplication;
+    private int defaultFlushMode;
 
     public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config) {
         super(mappingContext, sessionFactory, config);
     }
-
+    
     public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config, ApplicationContext applicationContext) {
+        this(mappingContext, sessionFactory, config, applicationContext, GrailsHibernateTemplate.FLUSH_AUTO);
+    }
+
+    public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config, ApplicationContext applicationContext, int defaultFlushMode) {
         super(mappingContext, sessionFactory, config, applicationContext);
+        this.defaultFlushMode = defaultFlushMode;
     }
 
     @Override
@@ -73,5 +79,9 @@ public class HibernateDatastore extends AbstractHibernateDatastore implements Gr
             }
         }
         return grailsApplication;
+    }
+
+    public int getDefaultFlushMode() {
+        return defaultFlushMode;
     }
 }
