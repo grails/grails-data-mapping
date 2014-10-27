@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm
 
 import groovy.transform.CompileStatic
+
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
@@ -18,8 +19,6 @@ import org.codehaus.groovy.grails.orm.hibernate.validation.HibernateDomainClassV
 import org.codehaus.groovy.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.codehaus.groovy.grails.orm.hibernate.validation.UniqueConstraint
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
-
-//import org.codehaus.groovy.grails.plugins.web.api.ControllersDomainBindingApi
 import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
@@ -27,11 +26,11 @@ import org.h2.Driver
 import org.hibernate.SessionFactory
 import org.hibernate.cache.ehcache.EhCacheRegionFactory
 import org.hibernate.cfg.AvailableSettings
-import org.hibernate.cfg.Environment
 import org.hibernate.dialect.H2Dialect
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.BeanWrapper
 import org.springframework.beans.BeanWrapperImpl
+import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.beans.factory.support.AbstractBeanDefinition
 import org.springframework.beans.factory.support.GenericBeanDefinition
@@ -73,6 +72,9 @@ class Setup {
         hibernateSession = null
         transactionManager = null
         sessionFactory = null
+        if(applicationContext instanceof DisposableBean) {
+            applicationContext.destroy()
+        }
         applicationContext = null
     }
 

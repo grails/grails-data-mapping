@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm
 
 import groovy.transform.CompileStatic
+
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
@@ -16,7 +17,6 @@ import org.codehaus.groovy.grails.orm.hibernate.validation.HibernateConstraintsE
 import org.codehaus.groovy.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.codehaus.groovy.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.codehaus.groovy.grails.orm.hibernate.validation.UniqueConstraint
-//import org.codehaus.groovy.grails.plugins.web.api.ControllersDomainBindingApi
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.datastore.mapping.core.Session
@@ -29,6 +29,7 @@ import org.hibernate.dialect.H2Dialect
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.BeanWrapper
 import org.springframework.beans.BeanWrapperImpl
+import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.beans.factory.support.AbstractBeanDefinition
 import org.springframework.beans.factory.support.GenericBeanDefinition
@@ -40,9 +41,6 @@ import org.springframework.orm.hibernate3.SpringSessionContext
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.DefaultTransactionDefinition
 import org.springframework.transaction.support.TransactionSynchronizationManager
-import org.springframework.validation.Errors
-import org.springframework.validation.Validator
-import org.springframework.util.Log4jConfigurer
 
 class Setup {
     static GrailsApplication grailsApplication
@@ -71,9 +69,12 @@ class Setup {
         hibernateSession = null
         transactionManager = null
         sessionFactory = null
+        if(applicationContext instanceof DisposableBean) {
+            applicationContext.destroy()
+        }
         applicationContext = null
     }
-
+    
     static Session setup(List<Class> classes, ConfigObject grailsConfig = null, boolean isTransactional = true) {
         ExpandoMetaClass.enableGlobally()
 //        Log4jConfigurer.initLogging("classpath:log4j.properties")
