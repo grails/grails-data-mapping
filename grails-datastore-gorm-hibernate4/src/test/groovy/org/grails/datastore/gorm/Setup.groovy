@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm
 
+import groovy.sql.Sql
 import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
@@ -76,6 +77,19 @@ class Setup {
             applicationContext.destroy()
         }
         applicationContext = null
+        shutdownInMemDb()
+    }
+    
+    static shutdownInMemDb() {
+        Sql sql = null
+        try {
+            sql = Sql.newInstance('jdbc:h2:mem:devDB', 'sa', '', Driver.name)
+            sql.executeUpdate('SHUTDOWN')
+        } catch (e) {
+            // already closed, ignore
+        } finally {
+            try { sql?.close() } catch (ignored) {}
+        }
     }
 
     static Session setup(List<Class> classes, ConfigObject grailsConfig = null, boolean isTransactional = true) {
