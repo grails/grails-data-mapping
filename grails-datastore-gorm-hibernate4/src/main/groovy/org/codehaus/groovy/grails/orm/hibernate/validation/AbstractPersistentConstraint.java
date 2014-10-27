@@ -56,7 +56,7 @@ public abstract class AbstractPersistentConstraint extends AbstractConstraint im
             sf = applicationContext.getBean("sessionFactory", SessionFactory.class);
         }
         GrailsApplication app = applicationContext.getBean("grailsApplication", GrailsApplication.class);
-        return new GrailsHibernateTemplate(sf, app, GrailsHibernateTemplate.FLUSH_NEVER);
+        return new GrailsHibernateTemplate(sf, app);
     }
 
     /**

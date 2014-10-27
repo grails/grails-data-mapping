@@ -62,7 +62,6 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
     protected SessionFactory sessionFactory;
     protected SQLExceptionTranslator jdbcExceptionTranslator;
     protected int flushMode = FLUSH_AUTO;
-    private boolean applyFlushModeOnlyToNonExistingTransactions = false;
 
     public static interface HibernateCallback<T> {
         T doInHibernate(Session session) throws HibernateException, SQLException;
@@ -89,19 +88,11 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
             jdbcExceptionTranslator = sqlErrorCodeSQLExceptionTranslator;
         }
     }
-    
     public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application) {
-        this(sessionFactory, application, FLUSH_AUTO);
-    }
-    
-    public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application, int defaultFlushMode) {
         this(sessionFactory);
-        if(application != null) {
-            cacheQueries = GrailsHibernateUtil.isCacheQueriesByDefault(application);
-            this.osivReadOnly = GrailsHibernateUtil.isOsivReadonly(application);
-            this.passReadOnlyToHibernate = GrailsHibernateUtil.isPassReadOnlyToHibernate(application);
-        }
-        this.flushMode = defaultFlushMode;
+        cacheQueries = GrailsHibernateUtil.isCacheQueriesByDefault(application);
+        this.osivReadOnly = GrailsHibernateUtil.isOsivReadonly(application);
+        this.passReadOnlyToHibernate = GrailsHibernateUtil.isPassReadOnlyToHibernate(application);
     }
 
     public SessionFactory getSessionFactory() {
@@ -541,10 +532,6 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
      * @see org.hibernate.Session#setFlushMode
      */
     protected FlushMode applyFlushMode(Session session, boolean existingTransaction) {
-        if(isApplyFlushModeOnlyToNonExistingTransactions() && existingTransaction) {
-            return null; 
-        }
-        
         if (getFlushMode() == FLUSH_NEVER) {
             if (existingTransaction) {
                 FlushMode previousFlushMode = session.getFlushMode();
@@ -648,13 +635,5 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
             }
         }
         return list;
-    }
-    
-    public boolean isApplyFlushModeOnlyToNonExistingTransactions() {
-        return applyFlushModeOnlyToNonExistingTransactions;
-    }
-    
-    public void setApplyFlushModeOnlyToNonExistingTransactions(boolean applyFlushModeOnlyToNonExistingTransactions) {
-        this.applyFlushModeOnlyToNonExistingTransactions = applyFlushModeOnlyToNonExistingTransactions;
     }
 }

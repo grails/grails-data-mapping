@@ -114,13 +114,11 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
     @SuppressWarnings("rawtypes")
     public HibernateCriteriaBuilder(Class targetClass, SessionFactory sessionFactory) {
         super(targetClass, sessionFactory);
-        setDefaultFlushMode(GrailsHibernateTemplate.FLUSH_AUTO);
     }
 
     @SuppressWarnings("rawtypes")
     public HibernateCriteriaBuilder(Class targetClass, SessionFactory sessionFactory, boolean uniqueResult) {
         super(targetClass, sessionFactory, uniqueResult);
-        setDefaultFlushMode(GrailsHibernateTemplate.FLUSH_AUTO);
     }
 
     /**
@@ -159,7 +157,7 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
     @Override
     protected List createPagedResultList(Map args) {
         GrailsHibernateUtil.populateArgumentsForCriteria(grailsApplication, targetClass, criteria, args, conversionService);
-        GrailsHibernateTemplate ght = new GrailsHibernateTemplate(sessionFactory, grailsApplication, getDefaultFlushMode());
+        GrailsHibernateTemplate ght = new GrailsHibernateTemplate(sessionFactory, grailsApplication);
         return new PagedResultList(ght, criteria);
     }
 

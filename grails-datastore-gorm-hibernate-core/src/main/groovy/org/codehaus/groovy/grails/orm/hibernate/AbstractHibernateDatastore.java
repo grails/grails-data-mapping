@@ -34,18 +34,16 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     protected ConfigObject config;
     protected AbstractEventTriggeringInterceptor eventTriggeringInterceptor;
 
-    protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config, ApplicationContext applicationContext) {
+    protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config) {
         super(mappingContext);
         this.sessionFactory = sessionFactory;
         this.config = config;
         initializeConverters(mappingContext);
-        if(applicationContext != null) {
-            setApplicationContext(applicationContext);
-        }
     }
 
-    public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config) {
-        this(mappingContext, sessionFactory, config, null);
+    public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config, ApplicationContext applicationContext) {
+        this(mappingContext, sessionFactory, config);
+        setApplicationContext(applicationContext);
     }
 
     /**
