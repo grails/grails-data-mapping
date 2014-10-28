@@ -51,7 +51,7 @@ public abstract class AbstractFindByPersistentMethod extends AbstractClausedStat
     public AbstractFindByPersistentMethod(HibernateDatastore datastore, GrailsApplication application,
                                           SessionFactory sessionFactory, ClassLoader classLoader,
                                           Pattern pattern, String[] operators) {
-        super(application, sessionFactory, classLoader, pattern, operators, datastore.getMappingContext().getConversionService());
+        super(application, sessionFactory, classLoader, pattern, operators, datastore.getMappingContext().getConversionService(), datastore.getDefaultFlushMode());
         this.datastore = datastore;
     }
 

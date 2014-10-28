@@ -59,7 +59,7 @@ public class FindAllByPersistentMethod extends AbstractClausedStaticPersistentMe
      * @param classLoader
      */
     public FindAllByPersistentMethod(HibernateDatastore datastore,GrailsApplication application, SessionFactory sessionFactory, ClassLoader classLoader) {
-        super(application, sessionFactory, classLoader, Pattern.compile(METHOD_PATTERN), OPERATORS, datastore.getMappingContext().getConversionService());
+        super(application, sessionFactory, classLoader, Pattern.compile(METHOD_PATTERN), OPERATORS, datastore.getMappingContext().getConversionService(), datastore.getDefaultFlushMode());
         this.datastore = datastore;
     }
 

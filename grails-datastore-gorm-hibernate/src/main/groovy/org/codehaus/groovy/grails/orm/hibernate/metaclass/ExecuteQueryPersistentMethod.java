@@ -64,8 +64,8 @@ public class ExecuteQueryPersistentMethod extends AbstractStaticPersistentMethod
 
     private final ConversionService conversionService;
 
-    public ExecuteQueryPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, ConversionService conversionService) {
-        super(sessionFactory, classLoader, METHOD_PATTERN, application);
+    public ExecuteQueryPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, ConversionService conversionService, int defaultFlushMode) {
+        super(sessionFactory, classLoader, METHOD_PATTERN, application, defaultFlushMode);
         this.conversionService = conversionService;
     }
 

@@ -71,8 +71,8 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     protected MergePersistentMethod mergeMethod
     protected ClassLoader classLoader
     protected GrailsApplication grailsApplication
-    protected boolean cacheQueriesByDefault = false
     protected GrailsDomainBinder grailsDomainBinder = new GrailsDomainBinder()
+    protected int defaultFlushMode
 
     HibernateGormStaticApi(Class<D> persistentClass, HibernateDatastore datastore, List<FinderMethod> finders,
                 ClassLoader classLoader, PlatformTransactionManager transactionManager) {
@@ -90,17 +90,19 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
             identityType = domainClass.identifier?.type
 
             mergeMethod = new MergePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
-            listMethod = new ListPersistentMethod(grailsApplication, sessionFactory, classLoader, mappingContext.conversionService)
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
-            hibernateTemplate.setCacheQueries(cacheQueriesByDefault)
+            listMethod = new ListPersistentMethod(grailsApplication, sessionFactory, classLoader, mappingContext.conversionService, datastore.getDefaultFlushMode())
+            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication, datastore.getDefaultFlushMode())
         } else {
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
+            hibernateTemplate.setFlushMode(datastore.getDefaultFlushMode())
         }
+        
+        this.defaultFlushMode = datastore.getDefaultFlushMode()
 
-        executeQueryMethod = new ExecuteQueryPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
-        executeUpdateMethod = new ExecuteUpdatePersistentMethod(sessionFactory, classLoader, grailsApplication)
-        findMethod = new FindPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
-        findAllMethod = new FindAllPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
+        executeQueryMethod = new ExecuteQueryPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService, datastore.getDefaultFlushMode())
+        executeUpdateMethod = new ExecuteUpdatePersistentMethod(sessionFactory, classLoader, grailsApplication, datastore.getDefaultFlushMode())
+        findMethod = new FindPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService, datastore.getDefaultFlushMode())
+        findAllMethod = new FindAllPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService, datastore.getDefaultFlushMode())
     }
 
 
@@ -205,6 +207,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         def builder = new HibernateCriteriaBuilder(persistentClass, sessionFactory)
         builder.grailsApplication = grailsApplication
         builder.conversionService = conversionService
+        builder.defaultFlushMode = defaultFlushMode
         builder
     }
 
@@ -463,8 +466,9 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     Object withSession(Closure callable) {
-        HibernateTemplate template = new GrailsHibernateTemplate(sessionFactory)
+        GrailsHibernateTemplate template = new GrailsHibernateTemplate(sessionFactory, grailsApplication, defaultFlushMode)
         template.setExposeNativeSession(false)
+        template.setApplyFlushModeOnlyToNonExistingTransactions(true)
         template.execute({ session ->
             callable(session)
         } as HibernateCallback)
@@ -472,7 +476,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     def withNewSession(Closure callable) {
-        HibernateTemplate template  = new GrailsHibernateTemplate(sessionFactory, grailsApplication)
+        HibernateTemplate template  = new GrailsHibernateTemplate(sessionFactory, grailsApplication, defaultFlushMode)
         template.setExposeNativeSession(false)
         SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(sessionFactory)
         Session previousSession = sessionHolder?.session
