@@ -398,8 +398,8 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
      * @param pattern
      * @param operators
      */
-    public AbstractClausedStaticPersistentMethod(GrailsApplication application, SessionFactory sessionFactory, ClassLoader classLoader, Pattern pattern, String[] operators, ConversionService conversionService) {
-        super(sessionFactory, classLoader, pattern, application);
+    public AbstractClausedStaticPersistentMethod(GrailsApplication application, SessionFactory sessionFactory, ClassLoader classLoader, Pattern pattern, String[] operators, ConversionService conversionService, int defaultFlushMode) {
+        super(sessionFactory, classLoader, pattern, application, defaultFlushMode);
         this.operators = operators;
         operatorPatterns = new Pattern[operators.length];
         for (int i = 0; i < operators.length; i++) {

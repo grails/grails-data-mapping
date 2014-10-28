@@ -48,8 +48,8 @@ public class ListPersistentMethod extends AbstractStaticPersistentMethod {
     private static final String METHOD_PATTERN = "^list$";
     private final ConversionService conversionService;
 
-    public ListPersistentMethod(GrailsApplication grailsApplication, SessionFactory sessionFactory, ClassLoader classLoader, ConversionService conversionService) {
-        super(sessionFactory, classLoader, Pattern.compile(METHOD_PATTERN), grailsApplication);
+    public ListPersistentMethod(GrailsApplication grailsApplication, SessionFactory sessionFactory, ClassLoader classLoader, ConversionService conversionService, int defaultFlushMode) {
+        super(sessionFactory, classLoader, Pattern.compile(METHOD_PATTERN), grailsApplication, defaultFlushMode);
         this.conversionService = conversionService;
     }
 

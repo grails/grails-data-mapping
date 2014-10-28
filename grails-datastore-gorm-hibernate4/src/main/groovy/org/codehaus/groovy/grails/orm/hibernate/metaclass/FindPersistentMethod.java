@@ -73,8 +73,8 @@ public class FindPersistentMethod extends AbstractStaticPersistentMethod {
     private static final String    METHOD_PATTERN    = "^find$";
     private final ConversionService conversionService;
 
-    public FindPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, ConversionService conversionService) {
-        super(sessionFactory, classLoader, Pattern.compile(METHOD_PATTERN), application);
+    public FindPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, ConversionService conversionService, int defaultFlushMode) {
+        super(sessionFactory, classLoader, Pattern.compile(METHOD_PATTERN), application, defaultFlushMode);
         this.conversionService = conversionService;
     }
 
