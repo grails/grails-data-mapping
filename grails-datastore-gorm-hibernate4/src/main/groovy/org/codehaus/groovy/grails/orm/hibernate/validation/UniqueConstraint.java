@@ -25,6 +25,7 @@ import grails.core.GrailsDomainClassProperty;
 import grails.util.GrailsClassUtils;
 import grails.validation.ConstrainedProperty;
 import groovy.lang.Closure;
+
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.codehaus.groovy.grails.orm.hibernate.IHibernateTemplate;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -146,83 +147,79 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                   "domain classes and not custom user types or embedded instances");
         }
 
-        IHibernateTemplate hibernateTemplate = getHibernateTemplate();
+        GrailsHibernateTemplate hibernateTemplate = (GrailsHibernateTemplate )getHibernateTemplate();
+        hibernateTemplate.setFlushMode(GrailsHibernateTemplate.FLUSH_NEVER);
         List<?> results = hibernateTemplate.execute(new Closure<List<?>>(this) {
 
             public List<?> call(Object... args) {
                 Session session = (Session) args[0];
-                session.setFlushMode(FlushMode.MANUAL);
-                try {
-                    boolean shouldValidate = true;
-                    Class<?> constraintClass = constraintOwningClass;
-                    if (propertyValue != null && DomainClassArtefactHandler.isDomainClass(propertyValue.getClass())) {
-                        shouldValidate = session.contains(propertyValue);
+                boolean shouldValidate = true;
+                Class<?> constraintClass = constraintOwningClass;
+                if (propertyValue != null && DomainClassArtefactHandler.isDomainClass(propertyValue.getClass())) {
+                    shouldValidate = session.contains(propertyValue);
+                }
+                if (shouldValidate) {
+                    GrailsApplication application = (GrailsApplication) applicationContext.getBean(GrailsApplication.APPLICATION_ID);
+                    GrailsDomainClass domainClass = (GrailsDomainClass) application.getArtefact(DomainClassArtefactHandler.TYPE, constraintClass.getName());
+                    if (domainClass != null && !domainClass.isRoot()) {
+                        GrailsDomainClassProperty property = domainClass.getPropertyByName(constraintPropertyName);
+                        while (property.isInherited() && domainClass != null) {
+                            domainClass = (GrailsDomainClass) application.getArtefact(
+                                    DomainClassArtefactHandler.TYPE, domainClass.getClazz().getSuperclass().getName());
+                            if (domainClass != null) {
+                                property = domainClass.getPropertyByName(constraintPropertyName);
+                            }
+                        }
+                        constraintClass = domainClass != null ? domainClass.getClazz() : constraintClass;
                     }
+                    Criteria criteria = null;
+
+                    if (domainClass.getPersistentProperty(constraintPropertyName).isOneToOne()) {
+                        criteria = session.createCriteria(constraintClass, TARGET_DOMAIN_CLASS_ALIAS);
+
+                        String constraintPropertyAlias = constraintPropertyName + "_";
+                        criteria.createAlias(TARGET_DOMAIN_CLASS_ALIAS + "." + constraintPropertyName, constraintPropertyAlias);
+
+                        GrailsDomainClassProperty property = domainClass.getPropertyByName(constraintPropertyName);
+                        ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(property.getReferencedPropertyType());
+                        String identifierPropertyName = classMetadata.getIdentifierPropertyName();
+
+                        BeanWrapper bean = new BeanWrapperImpl(propertyValue);
+                        Object identifierPropertyValue = bean.getPropertyValue(identifierPropertyName);
+
+                        criteria.add(Restrictions.eq(constraintPropertyAlias + "." + identifierPropertyName, identifierPropertyValue));
+                    } else {
+                        criteria = session.createCriteria(constraintClass)
+                                .add(Restrictions.eq(constraintPropertyName, propertyValue));
+                    }
+
+                    if (uniquenessGroup != null) {
+                        for (Object anUniquenessGroup : uniquenessGroup) {
+                            String uniquenessGroupPropertyName = (String) anUniquenessGroup;
+                            Object uniquenessGroupPropertyValue = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(target, uniquenessGroupPropertyName);
+
+                            if (uniquenessGroupPropertyValue != null && DomainClassArtefactHandler.isDomainClass(uniquenessGroupPropertyValue.getClass())) {
+                                try {
+                                    // We are merely verifying that the object is not transient here
+                                    session.lock(uniquenessGroupPropertyValue, LockMode.NONE);
+                                } catch (TransientObjectException e) {
+                                    shouldValidate = false;
+                                }
+                            }
+                            if (shouldValidate) {
+                                criteria.add(Restrictions.eq(uniquenessGroupPropertyName, uniquenessGroupPropertyValue));
+                            } else {
+                                break; // we aren't validating, so no point continuing
+                            }
+                        }
+                    }
+
                     if (shouldValidate) {
-                        GrailsApplication application = (GrailsApplication) applicationContext.getBean(GrailsApplication.APPLICATION_ID);
-                        GrailsDomainClass domainClass = (GrailsDomainClass) application.getArtefact(DomainClassArtefactHandler.TYPE, constraintClass.getName());
-                        if (domainClass != null && !domainClass.isRoot()) {
-                            GrailsDomainClassProperty property = domainClass.getPropertyByName(constraintPropertyName);
-                            while (property.isInherited() && domainClass != null) {
-                                domainClass = (GrailsDomainClass) application.getArtefact(
-                                        DomainClassArtefactHandler.TYPE, domainClass.getClazz().getSuperclass().getName());
-                                if (domainClass != null) {
-                                    property = domainClass.getPropertyByName(constraintPropertyName);
-                                }
-                            }
-                            constraintClass = domainClass != null ? domainClass.getClazz() : constraintClass;
-                        }
-                        Criteria criteria = null;
-
-                        if (domainClass.getPersistentProperty(constraintPropertyName).isOneToOne()) {
-                            criteria = session.createCriteria(constraintClass, TARGET_DOMAIN_CLASS_ALIAS);
-
-                            String constraintPropertyAlias = constraintPropertyName + "_";
-                            criteria.createAlias(TARGET_DOMAIN_CLASS_ALIAS + "." + constraintPropertyName, constraintPropertyAlias);
-
-                            GrailsDomainClassProperty property = domainClass.getPropertyByName(constraintPropertyName);
-                            ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(property.getReferencedPropertyType());
-                            String identifierPropertyName = classMetadata.getIdentifierPropertyName();
-
-                            BeanWrapper bean = new BeanWrapperImpl(propertyValue);
-                            Object identifierPropertyValue = bean.getPropertyValue(identifierPropertyName);
-
-                            criteria.add(Restrictions.eq(constraintPropertyAlias + "." + identifierPropertyName, identifierPropertyValue));
-                        } else {
-                            criteria = session.createCriteria(constraintClass)
-                                    .add(Restrictions.eq(constraintPropertyName, propertyValue));
-                        }
-
-                        if (uniquenessGroup != null) {
-                            for (Object anUniquenessGroup : uniquenessGroup) {
-                                String uniquenessGroupPropertyName = (String) anUniquenessGroup;
-                                Object uniquenessGroupPropertyValue = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(target, uniquenessGroupPropertyName);
-
-                                if (uniquenessGroupPropertyValue != null && DomainClassArtefactHandler.isDomainClass(uniquenessGroupPropertyValue.getClass())) {
-                                    try {
-                                        // We are merely verifying that the object is not transient here
-                                        session.lock(uniquenessGroupPropertyValue, LockMode.NONE);
-                                    } catch (TransientObjectException e) {
-                                        shouldValidate = false;
-                                    }
-                                }
-                                if (shouldValidate) {
-                                    criteria.add(Restrictions.eq(uniquenessGroupPropertyName, uniquenessGroupPropertyValue));
-                                } else {
-                                    break; // we aren't validating, so no point continuing
-                                }
-                            }
-                        }
-
-                        if (shouldValidate) {
-                            return criteria.list();
-                        }
-                        return Collections.EMPTY_LIST;
+                        return criteria.list();
                     }
                     return Collections.EMPTY_LIST;
-                } finally {
-                    session.setFlushMode(FlushMode.AUTO);
                 }
+                return Collections.EMPTY_LIST;
             }
         });
 
@@ -264,7 +261,8 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
         if (sf == null) {
             sf = applicationContext.getBean("sessionFactory", SessionFactory.class);
         }
-        return new GrailsHibernateTemplate(sf);
+        GrailsApplication app = applicationContext.getBean("grailsApplication", GrailsApplication.class);
+        GrailsHibernateTemplate hibernateTemplate = new GrailsHibernateTemplate(sf, app, GrailsHibernateTemplate.FLUSH_NEVER);
+        return hibernateTemplate;
     }
-
 }
