@@ -36,38 +36,98 @@ class CassandraGormEnhancer extends GormEnhancer {
 		for (p in e.persistentProperties) {
 			def prop = p			
 			def isCollectionOrMap = (Map.class.isAssignableFrom(prop.type) || Collection.class.isAssignableFrom(prop.type))			
-			if (isCollectionOrMap) {												
-				mc.static."appendTo${prop.capitilizedName}" = { Serializable id, Object obj, Map params = [:] ->						
-					final targetObject = delegate		
-					targetObject.append(id, prop.name, obj, params)														
+			if (isCollectionOrMap) {
+				mc."appendTo${prop.capitilizedName}" = { Object item, Map params = [:] ->
+					final targetObject = delegate
+					if (Map.class.isAssignableFrom(prop.type)) {
+						if (targetObject[prop.name] == null) {
+							targetObject[prop.name] = [:]
+						}
+						targetObject[prop.name].putAll(item)
+					} else {
+    					if (targetObject[prop.name] == null) {
+    						targetObject[prop.name] = [].asType(prop.type)
+    					}
+						targetObject[prop.name].add(item)
+					}
+					targetObject.append(prop.name, item, params)
 					targetObject
 				}
-				mc.static."prependTo${prop.capitilizedName}" = { Serializable id, Object obj, Map params = [:] ->
+				mc.static."appendTo${prop.capitilizedName}" = { Object id, Object item, Map params = [:] ->						
+					final targetObject = delegate		
+					targetObject.append(id, prop.name, item, params)														
+					targetObject
+				}		
+				mc."prependTo${prop.capitilizedName}" = { Object item, Map params = [:] ->
 					if (List.class.isAssignableFrom(prop.type)) {
 						final targetObject = delegate
-						targetObject.prepend(id, prop.name, obj, params)
+						if (targetObject[prop.name] == null) {
+							targetObject[prop.name] = []
+						}
+						targetObject[prop.name].add(0, item)
+						targetObject.prepend(prop.name, item, params)
 						targetObject
 					} else {
-						throw new MissingMethodException("prependTo${prop.capitilizedName}", cls, [id, obj, params] as Object[])
+						throw new MissingMethodException("prependTo${prop.capitilizedName}", cls, [item, params] as Object[])
 					}
 				}
-				mc.static."replaceAtIn${prop.capitilizedName}" = { Serializable id, Object obj, int index, Map params = [:] ->
+				mc.static."prependTo${prop.capitilizedName}" = { Object id, Object item, Map params = [:] ->
+					if (List.class.isAssignableFrom(prop.type)) {
+						final targetObject = delegate
+						targetObject.prepend(id, prop.name, item, params)
+						targetObject
+					} else {
+						throw new MissingMethodException("prependTo${prop.capitilizedName}", cls, [id, item, params] as Object[])
+					}
+				}
+				mc."replaceAtIn${prop.capitilizedName}" = { int index, Object item, Map params = [:] ->
+					if (List.class.isAssignableFrom(prop.type)) {
+						final targetObject = delegate						
+						targetObject[prop.name]?.set(index, item)
+						targetObject.replaceAt(prop.name, index, item, params)
+						targetObject
+					} else {
+						throw new MissingMethodException("replaceAtIn${prop.capitilizedName}", cls, [index, item, params] as Object[])
+					}
+				}
+				mc.static."replaceAtIn${prop.capitilizedName}" = { Object id, int index, Object item, Map params = [:] ->
 					if (List.class.isAssignableFrom(prop.type)) {
     					final targetObject = delegate
-    					targetObject.replaceAt(id, prop.name, obj, index, params)
+    					targetObject.replaceAt(id, prop.name, index, item, params)
     					targetObject
 					} else {
-						throw new MissingMethodException("replaceAtIn${prop.capitilizedName}", cls, [id, obj, index, params] as Object[])
+						throw new MissingMethodException("replaceAtIn${prop.capitilizedName}", cls, [id, index, item, params] as Object[])
 					}
 				}
-				mc.static."deleteFrom${prop.capitilizedName}" = { Serializable id, Object obj, Map params = [:] ->
-					if (Collection.class.isAssignableFrom(prop.type)) {
+				mc."deleteFrom${prop.capitilizedName}" = { Object item, Map params = [:] ->					
+					final targetObject = delegate
+					targetObject[prop.name]?.remove((Object)item)
+					targetObject.deleteFrom(prop.name, item, false, params)
+					targetObject					
+				}
+				mc.static."deleteFrom${prop.capitilizedName}" = { Object id, Object item, Map params = [:] ->					
+					final targetObject = delegate
+					targetObject.deleteFrom(id, prop.name, item, false, params)
+					targetObject								
+				}
+				mc."deleteAtFrom${prop.capitilizedName}" = { int index, Map params = [:] ->
+					if (List.class.isAssignableFrom(prop.type)) {
     					final targetObject = delegate
-    					targetObject.deleteFrom(id, prop.name, obj, params)
+    					targetObject[prop.name]?.remove(index)
+    					targetObject.deleteFrom(prop.name, index, true, params)
     					targetObject
 					} else {
-						throw new MissingMethodException("prependTo${prop.capitilizedName}", cls, [id, obj, params] as Object[])
-					}				
+						throw new MissingMethodException("deleteAtFrom${prop.capitilizedName}", cls, [index, params] as Object[])
+					}
+				}
+				mc.static."deleteAtFrom${prop.capitilizedName}" = { Object id, int index, Map params = [:] ->
+					if (List.class.isAssignableFrom(prop.type)) {
+    					final targetObject = delegate
+    					targetObject.deleteFrom(id, prop.name, index, true, params)
+    					targetObject
+					} else {
+						throw new MissingMethodException("deleteAtFrom${prop.capitilizedName}", cls, [id, index, params] as Object[])
+					}
 				}
 			}			
 		}
