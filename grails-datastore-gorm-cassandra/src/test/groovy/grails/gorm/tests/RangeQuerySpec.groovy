@@ -61,7 +61,7 @@ class RangeQuerySpec extends GormDatastoreSpec {
             ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new PersonLastNamePartitionKey(firstName:"A", lastName:it, age: age--).save() }
 
         when:
-            def results = PersonLastNamePartitionKey.findAllByFirstNameAndAgeGreaterThanEquals('A', 38, [allowFiltering:true])
+            def results = PersonLastNamePartitionKey.findAllByFirstNameAndAgeGreaterThanEquals('A', 38, [allowFiltering:true, max:5])
 
         then:
             3 == results.size()
