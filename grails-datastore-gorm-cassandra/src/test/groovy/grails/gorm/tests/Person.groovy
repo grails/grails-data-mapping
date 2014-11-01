@@ -8,9 +8,7 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @groovy.transform.EqualsAndHashCode 
 @Entity
 class Person implements Serializable, Comparable<Person> {
-    
-    UUID id
-    Long version
+          
     String firstName
     String lastName
     Integer age = 0    
