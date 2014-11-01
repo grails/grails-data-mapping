@@ -16,6 +16,7 @@ class PersonLastNamePartitionKey  {
         firstName index:true, primaryKey:[ordinal:1, type: "clustered"]   
         age index:true, primaryKey:[ordinal:2, type: "clustered"], column: "person_age"
         location index:true  
+		version false
     }
 
   
