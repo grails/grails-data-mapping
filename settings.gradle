@@ -21,7 +21,8 @@ include ("grails-datastore-core",
         'grails-documentation-simpledb',
         'grails-documentation-dynamodb',
         'grails-documentation-rest-client',
-
+		'grails-documentation-cassandra', 
+		
         // Core GORM Implementation projects
         'grails-datastore-gorm',
         'grails-datastore-gorm-tck',
