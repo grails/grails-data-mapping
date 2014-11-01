@@ -30,7 +30,7 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
             persistentEntity.getPersistentProperty("tz").getDataType() == DataType.text()
             persistentEntity.getPersistentProperty("loc").getDataType() == DataType.text()
             persistentEntity.getPersistentProperty("cur").getDataType() == DataType.text()
-            persistentEntity.getPersistentProperty("id").getDataType() == DataType.uuid()
+            persistentEntity.getPersistentProperty("primary").getDataType() == DataType.uuid()
             persistentEntity.getPersistentProperty("uuid").getDataType() == DataType.uuid()
             persistentEntity.getPersistentProperty("timeuuid").getDataType() == DataType.timeuuid()
             persistentEntity.getPersistentProperty("text").getDataType() == DataType.text()
@@ -75,7 +75,7 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
         when:
             ct.save(flush:true)
             ct.discard()
-            ct = CommonTypes.get(ct.id)
+            ct = CommonTypes.get(ct.primary)
 
         then:
             ct
@@ -105,31 +105,32 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
     		cal = new GregorianCalendar()
     		uuid = UUIDUtil.randomUUID
     		timeuuid = UUIDUtil.randomTimeUUID
-		 	CommonTypes.updateProperty(ct.id, "l", 11L)
-			CommonTypes.updateProperty(ct.id, "b", 11 as byte)
-			CommonTypes.updateProperty(ct.id, "s", 11)
-			CommonTypes.updateProperty(ct.id, "bool", false)
-			CommonTypes.updateProperty(ct.id, "i", 11)
-			CommonTypes.updateProperty(ct.id, "url", new URL("http://www.amazon.com"))
-			CommonTypes.updateProperty(ct.id, "date", now)
-			CommonTypes.updateProperty(ct.id, "c", cal)
-			CommonTypes.updateProperty(ct.id, "bd", 1.1)
-			CommonTypes.updateProperty(ct.id, "bi", 11)
-			CommonTypes.updateProperty(ct.id, "d", 1.1)
-			CommonTypes.updateProperty(ct.id, "f", 1.1)
-			CommonTypes.updateProperty(ct.id, "tz", TimeZone.getTimeZone("CET"))
-			CommonTypes.updateProperty(ct.id, "loc", Locale.ITALIAN)
-			CommonTypes.updateProperty(ct.id, "cur", Currency.getInstance("EUR"))
-			CommonTypes.updateProperty(ct.id, "uuid", uuid)
-			CommonTypes.updateProperty(ct.id, "timeuuid", timeuuid)
-			CommonTypes.updateProperty(ct.id, "text", "newtext")
-			CommonTypes.updateProperty(ct.id, "ascii", "newascii")
-			CommonTypes.updateProperty(ct.id, "varchar", "newvarchar", [flush:true])
+		 	CommonTypes.updateProperty(ct.primary, "l", 11L)
+			CommonTypes.updateProperty(ct.primary, "b", 11 as byte)
+			CommonTypes.updateProperty(ct.primary, "s", 11)
+			CommonTypes.updateProperty(ct.primary, "bool", false)
+			CommonTypes.updateProperty(ct.primary, "i", 11)
+			CommonTypes.updateProperty(ct.primary, "url", new URL("http://www.amazon.com"))
+			CommonTypes.updateProperty(ct.primary, "date", now)
+			CommonTypes.updateProperty(ct.primary, "c", cal)
+			CommonTypes.updateProperty(ct.primary, "bd", 1.1)
+			CommonTypes.updateProperty(ct.primary, "bi", 11)
+			CommonTypes.updateProperty(ct.primary, "d", 1.1)
+			CommonTypes.updateProperty(ct.primary, "f", 1.1)
+			CommonTypes.updateProperty(ct.primary, "tz", TimeZone.getTimeZone("CET"))
+			CommonTypes.updateProperty(ct.primary, "loc", Locale.ITALIAN)
+			CommonTypes.updateProperty(ct.primary, "cur", Currency.getInstance("EUR"))
+			CommonTypes.updateProperty(ct.primary, "uuid", uuid)
+			CommonTypes.updateProperty(ct.primary, "timeuuid", timeuuid)
+			CommonTypes.updateProperty(ct.primary, "text", "newtext")
+			CommonTypes.updateProperty(ct.primary, "ascii", "newascii")
+			CommonTypes.updateProperty(ct.primary, "varchar", "newvarchar", [flush:true])
 			
 			ct.discard()
-			ct = CommonTypes.get(ct.id)
+			ct = CommonTypes.get(ct.primary)
 			 
 		then:
+			ct
 			11L == ct.l
             (11 as byte) == ct.b
             (11 as short) == ct.s
