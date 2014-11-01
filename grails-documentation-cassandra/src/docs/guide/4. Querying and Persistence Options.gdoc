@@ -1,0 +1,3 @@
+The GORM for Cassandra plugin supports passing various options to Cassandra when querying or persisting.
+
+

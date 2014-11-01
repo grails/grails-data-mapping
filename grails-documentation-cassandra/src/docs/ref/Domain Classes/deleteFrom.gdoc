@@ -1,0 +1,30 @@
+h1. deleteFrom*
+
+h2. Purpose
+
+Removes an element from an existing instance's embedded set, list or map, where the actual collection or map removed from is indicated by the property used as the suffix to the method.
+
+h2. Examples 
+{code}
+class Person {     
+    List<Integer> scores
+    Set<String> friends
+    Map<String, String> pets	    
+}
+
+def person = Person.get(uuid)
+person.deleteFromScores(5)
+Person.deleteFromFriends(person.id, 'Barney', [flush:true])
+Person.deleteFromPets(person.id, 'eddie', [flush:true])
+{code}
+
+h2. Description
+
+The deleteFrom* method is a dynamic method that removes an element from an embedded set, list or map. In the case of a map it removes the entry keyed by the specified element. 
+The method exists as a static and instance method.
+The static method simply removes the element from the datastore, the instance method removes the element from the in-memory instance and the datastore.
+
+Argument:
+* id - the id or primary key map of the instance. Only required if using the static method.
+* element - the element to remove, or the key of the entry to remove from a map 
+* flush (optional) - When set to true flushes the persistence context, updating the datastore immediately
