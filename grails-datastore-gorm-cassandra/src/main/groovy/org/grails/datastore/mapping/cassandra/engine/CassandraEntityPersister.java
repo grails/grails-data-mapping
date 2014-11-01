@@ -70,6 +70,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
+import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Update;
 
@@ -135,6 +136,11 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 	}
 
 	@Override
+	protected EntityAccess createNewEntry(String family, Object instance) {
+		return createEntityAccess(getPersistentEntity(), instance);
+	}
+	
+	@Override
 	protected Object readObjectIdentifier(EntityAccess entityAccess, ClassMapping cm) {
 		Table table = (Table) cm.getMappedForm();
 		if (table.hasCompositePrimaryKeys()) {
@@ -165,6 +171,21 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 		}
 		return (Serializable) readIdentifierFromObject(object);
 	}
+
+	public Object convertObject(PersistentEntity persistentEntity, Serializable nativeKey, Object object) {
+		return createObjectFromNativeEntry(persistentEntity, nativeKey, createEntityAccess(persistentEntity, object));
+	}
+	
+	@Override
+	public Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, EntityAccess nativeEntry) {
+        persistentEntity = discriminatePersistentEntity(persistentEntity, nativeEntry);
+
+        cacheNativeEntry(persistentEntity, nativeKey, nativeEntry);
+
+        Object obj = nativeEntry.getEntity();
+        refreshObjectStateFromNativeEntry(persistentEntity, obj, nativeKey, nativeEntry, false);
+        return obj;
+    }
 
 	@Override
 	protected Object getEntryValue(EntityAccess nativeEntry, String property) {
@@ -233,7 +254,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 
 				if (versioned) {
 					Row row = resultSet.one();
-					if (row.getBool("[applied]")) {
+					if (row != null && row.getBool("[applied]")) {
 						if (LOG.isDebugEnabled()) {
 							LOG.debug("Successfully modified entry [{}] to version [{}] ", key, getCurrentVersion(entityAccess));
 						}
@@ -271,6 +292,10 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 
 	@Override
 	protected Object generateIdentifier(PersistentEntity persistentEntity, EntityAccess entityAccess) {
+		final Object identifier = entityAccess.getIdentifier();
+		if (identifier != null) {
+			return identifier;
+		}
 		UUID id = null;
 		Column idColumn = (Column) persistentEntity.getIdentity().getMapping().getMappedForm();
 		if (idColumn != null && "timeuuid".equals(idColumn.getType())) {
@@ -278,8 +303,14 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 		} else {
 			id = UUIDUtil.getRandomUUID();
 		}
-		entityAccess.setIdentifier(id);
-		return id;
+		if (UUID.class.isAssignableFrom(persistentEntity.getIdentity().getType())) {
+			entityAccess.setIdentifier(id);
+			return id;
+		}
+		
+		String stringId = id.toString();
+		entityAccess.setIdentifier(stringId);
+		return stringId;
 	}
 
 	protected Map<String, Serializable> createIdMap(Serializable nativeKey, boolean withColumnName) {
@@ -290,7 +321,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 			if (cassandraPersistentProperty == null) {
 				throwUnknownPrimaryKeyException(name, springCassandraPersistentEntity.getName());
 			}
-			idMap = id(name, (Serializable) convertPrimitiveToNative(nativeKey, cassandraPersistentProperty, conversionService));
+			idMap = id((withColumnName ? cassandraPersistentProperty.getColumnName().toCql() : name), (Serializable) convertPrimitiveToNative(nativeKey, cassandraPersistentProperty, conversionService));
 		} else {
 			for (Entry<String, Object> entry : ((Map<String, Object>) nativeKey).entrySet()) {
 				String name = entry.getKey();
@@ -298,7 +329,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 				if (cassandraPersistentProperty == null || !cassandraPersistentProperty.isPrimaryKeyColumn()) {
 					throwUnknownPrimaryKeyException(name, springCassandraPersistentEntity.getName());
 				}
-				idMap.put((withColumnName ? cassandraPersistentProperty.getColumnName().toString() : name), (Serializable) convertPrimitiveToNative(entry.getValue(), cassandraPersistentProperty, conversionService));
+				idMap.put((withColumnName ? cassandraPersistentProperty.getColumnName().toCql() : name), (Serializable) convertPrimitiveToNative(entry.getValue(), cassandraPersistentProperty, conversionService));
 			}
 		}
 		return idMap;
@@ -308,8 +339,12 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 		return getCassandraSession().getCassandraDatastore().getWriteOptions(entity);
 	}
 
+	protected String getTableName() {
+		return cassandraTemplate.getTableName(getPersistentEntity().getJavaClass()).toCql();
+	}
+	
 	protected Update createUpdate() {
-		return QueryBuilder.update(cassandraTemplate.getTableName(getPersistentEntity().getJavaClass()).toString());
+		return QueryBuilder.update(getTableName());
 	}
 
 	protected Update prepareUpdate(Serializable id, final Update update, WriteOptions writeOptions) {
@@ -322,10 +357,20 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 	}
 	
 	protected void addPendingUpdate(Serializable id, Statement statement) {
-		PendingUpdate<EntityAccess, Object> pendingUpdate = new CassandraPendingUpdateAdapter<EntityAccess, Object>(getPersistentEntity(), id, statement, cassandraTemplate);
-		((SessionImplementor<Object>) session).addPendingUpdate(pendingUpdate);
+		if (id != null && statement != null) {
+			PendingUpdate<EntityAccess, Object> pendingUpdate = new CassandraPendingUpdateAdapter<EntityAccess, Object>(getPersistentEntity(), id, statement, cassandraTemplate);
+			((SessionImplementor<Object>) session).addPendingUpdate(pendingUpdate);
+		}
 	}
 
+	protected Delete prepareDelete(Serializable id, final Delete delete) {
+		Map<String, Serializable> idMap = createIdMap(id, true);
+		for (Entry<String, Serializable> entry : ((Map<String, Serializable>) idMap).entrySet()) {
+			delete.where(eq(entry.getKey(), entry.getValue()));
+		}		
+		return delete;
+	}
+	
 	@Override
 	public void setObjectIdentifier(Object obj, Serializable id) {
 		new CassandraEntityAccess(getPersistentEntity(), obj).setIdentifier(id);
@@ -346,17 +391,27 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 		return null;
 	}
 
-	public void updateSimpleTypes(Object obj) {
+	public Object update(Object obj) {
+		return update(obj, false);
+	}
+	
+	public Object updateSingleTypes(Object obj) {
+		return update(obj, true);
+	}
+	
+	public Object update(Object obj, final boolean simpleTypesOnly) {
 		final PersistentEntity persistentEntity = getPersistentEntity();
 		final EntityAccess entityAccess = createEntityAccess(persistentEntity, obj);
-		final Object key = readObjectIdentifier(entityAccess, persistentEntity.getMapping());
+		final Object key = readIdentifierFromObject(obj);
 		PendingUpdate<EntityAccess, Object> pendingUpdate = new PendingUpdateAdapter<EntityAccess, Object>(persistentEntity, key, entityAccess, entityAccess) {
 			public void run() {
-				updateEntry(entity, getEntityAccess(), getNativeKey(), getNativeEntry(), true);
+				updateEntry(entity, getEntityAccess(), getNativeKey(), getNativeEntry(), simpleTypesOnly);
+				firePostUpdateEvent(persistentEntity, entityAccess);
 			}
 		};
 		((SessionImplementor<Object>) session).addPendingUpdate(pendingUpdate);
-	}
+		return key;
+	}	
 	
 	public void updateProperty(Serializable id, String propertyName, Object item, WriteOptions writeOptions) {
 		Statement statement = prepareUpdateProperty(id, propertyName, item, writeOptions);
@@ -388,37 +443,43 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 		return prepareUpdate(id, update, writeOptions);		
 	}
 	
-	public void append(Serializable id, String propertyName, Object item, WriteOptions writeOptions) {
-		Statement statement = prepareAppend(id, propertyName, item, writeOptions);
+	public void append(Object obj, String propertyName, Object element, WriteOptions writeOptions) {
+		Serializable id = (Serializable) readIdentifierFromObject(obj);
+		append(id, propertyName, element, writeOptions);
+	}
+	
+	public void append(Serializable id, String propertyName, Object element, WriteOptions writeOptions) {
+		Statement statement = prepareAppend(id, propertyName, element, writeOptions);
 		addPendingUpdate(id, statement);
 	}
-
-	public Statement prepareAppend(Serializable id, String propertyName, Object item, WriteOptions writeOptions) {
+	
+	public Statement prepareAppend(Serializable id, String propertyName, Object element, WriteOptions writeOptions) {
 		final Update update = createUpdate();
 		CassandraPersistentProperty persistentProperty = getPersistentProperty(springCassandraPersistentEntity, propertyName);
 		String columnName = getPropertyName(persistentProperty);
-
-		if (Set.class.isAssignableFrom(persistentProperty.getType())) {
-			if (item instanceof Set<?>) {
-				Set<?> set = (Set<?>) item;
+		final Class<?> type = persistentProperty.getType();
+		
+		if (Set.class.isAssignableFrom(type)) {
+			if (element instanceof Set<?>) {
+				Set<?> set = (Set<?>) element;
 				if (set.size() > 0) {
 					update.with(QueryBuilder.addAll(columnName, set));
 				}
 			} else {
-				update.with(QueryBuilder.add(columnName, item));
+				update.with(QueryBuilder.add(columnName, element));
 			}
-		} else if (List.class.isAssignableFrom(persistentProperty.getType())) {
-			if (item instanceof List<?>) {
-				List<?> list = (List<?>) item;
+		} else if (List.class.isAssignableFrom(type)) {
+			if (element instanceof List<?>) {
+				List<?> list = (List<?>) element;
 				if (list.size() > 0) {
 					update.with(QueryBuilder.appendAll(columnName, list));
 				}
 			} else {
-				update.with(QueryBuilder.append(columnName, item));
+				update.with(QueryBuilder.append(columnName, element));
 			}
-		} else if (Map.class.isAssignableFrom(persistentProperty.getType())) {
-			if (item instanceof Map<?, ?>) {
-				Map<?, ?> map = (Map<?, ?>) item;
+		} else if (Map.class.isAssignableFrom(type)) {
+			if (element instanceof Map<?, ?>) {
+				Map<?, ?> map = (Map<?, ?>) element;
 				if (map.size() > 0) {
 					update.with(QueryBuilder.putAll(columnName, map));
 				}
@@ -428,78 +489,111 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 		return prepareUpdate(id, update, writeOptions);
 	}
 
-	public void prepend(Serializable id, String propertyName, Object item, WriteOptions writeOptions) {
-		Statement statement = preparePrepend(id, propertyName, item, writeOptions);
+	public void prepend(Object obj, String propertyName, Object element, WriteOptions writeOptions) {
+		Serializable id = (Serializable) readIdentifierFromObject(obj);
+		prepend(id, propertyName, element, writeOptions);
+	}
+	
+	public void prepend(Serializable id, String propertyName, Object element, WriteOptions writeOptions) {
+		Statement statement = preparePrepend(id, propertyName, element, writeOptions);
 		addPendingUpdate(id, statement);
 	}
-
-	public Statement preparePrepend(Serializable id, String propertyName, Object item, WriteOptions writeOptions) {
+	
+	public Statement preparePrepend(Serializable id, String propertyName, Object element, WriteOptions writeOptions) {
 		final Update update = createUpdate();
 		CassandraPersistentProperty persistentProperty = getPersistentProperty(springCassandraPersistentEntity, propertyName);
 		String columnName = getPropertyName(persistentProperty);
 
 		if (List.class.isAssignableFrom(persistentProperty.getType())) {
-			if (item instanceof List<?>) {
-				List<?> list = (List<?>) item;
+			if (element instanceof List<?>) {
+				List<?> list = (List<?>) element;
 				if (list.size() > 0) {
 					update.with(QueryBuilder.prependAll(columnName, list));
 				}
 			} else {
-				update.with(QueryBuilder.prepend(columnName, item));
+				update.with(QueryBuilder.prepend(columnName, element));
 			}
 		}
 
 		return prepareUpdate(id, update, writeOptions);
 	}
 
-	public void replaceAt(Serializable id, String propertyName, Object item, int index, WriteOptions writeOptions) {
-		Statement statement = prepareReplaceAt(id, propertyName, item, index, writeOptions);
+	public void replaceAt(Object obj, String propertyName, int index, Object element, WriteOptions writeOptions) {
+		Serializable id = (Serializable) readIdentifierFromObject(obj);
+		replaceAt(id, propertyName, index, element, writeOptions);
+	}
+	
+	public void replaceAt(Serializable id, String propertyName, int index, Object element, WriteOptions writeOptions) {
+		Statement statement = prepareReplaceAt(id, propertyName, index, element, writeOptions);
 		addPendingUpdate(id, statement);
 	}
 
-	public Statement prepareReplaceAt(Serializable id, String propertyName, Object item, int index, WriteOptions writeOptions) {
+	public Statement prepareReplaceAt(Serializable id, String propertyName, int index, Object element, WriteOptions writeOptions) {
 		final Update update = createUpdate();
 		CassandraPersistentProperty persistentProperty = getPersistentProperty(springCassandraPersistentEntity, propertyName);
 		String columnName = getPropertyName(persistentProperty);
 
 		if (List.class.isAssignableFrom(persistentProperty.getType())) {			
-			update.with(QueryBuilder.setIdx(columnName, index, item));			
+			update.with(QueryBuilder.setIdx(columnName, index, element));			
 		}
 
 		return prepareUpdate(id, update, writeOptions);
 	}
 	
-	public void deleteFrom(Serializable id, String propertyName, Object item, WriteOptions writeOptions) {
-		Statement statement = prepareDeleteFrom(id, propertyName, item, writeOptions);
+	public void deleteFrom(Object obj, String propertyName, Object item, boolean isIndex, WriteOptions writeOptions) {
+		Serializable id = (Serializable) readIdentifierFromObject(obj);
+		deleteFrom(id, propertyName, item, isIndex, writeOptions);
+	}
+	
+	public void deleteFrom(Serializable id, String propertyName, Object item, boolean isIndex, WriteOptions writeOptions) {
+		Statement statement = prepareDeleteFrom(id, propertyName, item, isIndex, writeOptions);
 		addPendingUpdate(id, statement);
 	}
 
-	public Statement prepareDeleteFrom(Serializable id, String propertyName, Object item, WriteOptions writeOptions) {
-		final Update update = createUpdate();
+	public Statement prepareDeleteFrom(Serializable id, String propertyName, Object item, boolean isIndex, WriteOptions writeOptions) {
+		Update update = null;
+		Delete delete = null;
 		CassandraPersistentProperty persistentProperty = getPersistentProperty(springCassandraPersistentEntity, propertyName);
-		String columnName = getPropertyName(persistentProperty);
-
-		if (Set.class.isAssignableFrom(persistentProperty.getType())) {
-			if (item instanceof Set<?>) {
-				Set<?> set = (Set<?>) item;
-				if (set.size() > 0) {
-					update.with(QueryBuilder.removeAll(columnName, set));
-				}
-			} else {
-				update.with(QueryBuilder.remove(columnName, item));
+		String columnName = getPropertyName(persistentProperty);		
+		final Class<?> type = persistentProperty.getType();
+		
+		if (isIndex) {
+			if (List.class.isAssignableFrom(type)) {
+				delete = QueryBuilder.delete().listElt(columnName, (Integer) item).from(getTableName());
 			}
-		} else if (List.class.isAssignableFrom(persistentProperty.getType())) {
-			if (item instanceof List<?>) {
-				List<?> list = (List<?>) item;
-				if (list.size() > 0) {
-					update.with(QueryBuilder.discardAll(columnName, list));
-				}
-			} else {
-				update.with(QueryBuilder.discard(columnName, item));
-			}
+		} else {
+    		if (Set.class.isAssignableFrom(type)) {
+    			update = createUpdate();
+    			if (item instanceof Set<?>) {
+    				Set<?> set = (Set<?>) item;
+    				if (set.size() > 0) {
+    					update.with(QueryBuilder.removeAll(columnName, set));
+    				}
+    			} else {
+    				update.with(QueryBuilder.remove(columnName, item));
+    			}
+    		} else if (List.class.isAssignableFrom(type)) {
+    			update = createUpdate();
+    			if (item instanceof List<?>) {
+    				List<?> list = (List<?>) item;
+    				if (list.size() > 0) {
+    					update.with(QueryBuilder.discardAll(columnName, list));
+    				}
+    			} else {
+    				update.with(QueryBuilder.discard(columnName, item));
+    			}
+    		} else if (Map.class.isAssignableFrom(type)) {
+    			delete = QueryBuilder.delete().mapElt(columnName, item).from(getTableName());
+    		}
+		}
+		
+		if (update != null) {
+			return prepareUpdate(id, update, writeOptions);
+		}
+		if (delete != null) {
+			return prepareDelete(id, delete);
 		} 
-
-		return prepareUpdate(id, update, writeOptions);
+		return null;
 	}	
 
 	public static Object convertPrimitiveToNative(Object item, CassandraPersistentProperty cassandraPersistentProperty, ConversionService conversionService) {
@@ -534,7 +628,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 	}
 
 	public static String getPropertyName(CassandraPersistentProperty property) {
-		return property.getColumnName().toString();
+		return property.getColumnName().toCql();
 	}
 
 	public static CassandraPersistentProperty getPersistentProperty(CassandraPersistentEntity<?> cassandraPersistentEntity, String propertyName) {
