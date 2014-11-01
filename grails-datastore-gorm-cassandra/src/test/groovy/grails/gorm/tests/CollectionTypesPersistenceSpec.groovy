@@ -87,15 +87,16 @@ class CollectionTypesPersistenceSpec extends GormDatastoreSpec {
             ct.list << 4						
 			ct.set.remove("one")			
 			ct.map << [e:3.1f] 			
-			ct.update(flush:true)  
+			ct.updateSingleTypes(flush:true)  
 			ct.discard()
-			ct = CollectionTypes.get(ct.id)			
-		then:			
-			"2" == ct.string 
-			3 == ct.i 					
-			list == ct.list
-			set == ct.set
-			map == ct.map
+			def ct2 = CollectionTypes.get(ct.id)			
+		then:		
+			!ct.is(ct2)	
+			"2" == ct2.string 
+			3 == ct2.i 					
+			list == ct2.list
+			set == ct2.set
+			map == ct2.map
 	}
 	
 	void "Test update collections"() {
@@ -158,76 +159,127 @@ class CollectionTypesPersistenceSpec extends GormDatastoreSpec {
     		map2 == ct.map
 	}
 	
-	void "Test collection append methods"() {
-		given:
-    		def list = [1,2,3]
-    		def set = ["one", "two", "three"] as Set
-    		def map = [a:1, b:2.5f, z:3l]
-    		def ct = new CollectionTypes(string: "1", i:2, list: list, map: map, set:set)
+	void "Test collection append methods"() {		
+		when: "test instance collections created"
+			def ct = new CollectionTypes(string: "1", i:2)
 			ct.save(flush:true)
 			ct.discard()
-			
-    	when:
-    		CollectionTypes.appendToList(ct.id, 4)  
-			CollectionTypes.appendToSet(ct.id, "four")
-			CollectionTypes.appendToMap(ct.id, [e:5.5f], [flush:true])
-    		ct = CollectionTypes.get(ct.id)
-			
-    	then:
-    		ct
-    		"1" == ct.string 
-    		2 == ct.i  
-    		[1,2,3,4] == ct.list 
-    		["one", "two", "three", "four"] as Set == ct.set 
-    		[a:1, b:2.5f, e:5.5f, z:3l] == ct.map 
-		
-		when:
-			CollectionTypes.appendToList(ct.id, [5,6])
-			CollectionTypes.appendToSet(ct.id, ["five", "six"] as Set)
-			CollectionTypes.appendToMap(ct.id, [f:10l, g: 11], [flush:true])
+			ct.appendToList(1)
+			ct.appendToSet("one")
+			ct.appendToMap([a:1], [flush:true])
 			ct.discard()
+			
+		then:
+			[1] == ct.list
+			["one"] as Set == ct.set
+			[a:1] == ct.map	
+			
+    	when: "test instance collections updated"
+			ct = new CollectionTypes(string: "1", i:2, list: [1,2,3], map: [a:1, b:2.5f, z:3l], set:["one", "two", "three"] as Set)
+			ct.save(flush:true)
+			ct.discard()
+    		ct.appendToList(4)  
+			ct.appendToSet("four")
+			ct.appendToMap([e:5.5f], [flush:true])    
+			ct.discard()
+			
+    	then:    		
+			def list = [1,2,3,4]		
+			def set = ["one", "two", "three", "four"] as Set
+			def map = [a:1, b:2.5f, e:5.5f, z:3l]
+    		
+    		list == ct.list 
+			set == ct.set
+    		map == ct.map 
+    	
+		when: "test datastore updated"
 			ct = CollectionTypes.get(ct.id)
 			
 		then:
 			ct
-			"1" == ct.string 
-			2 == ct.i 
-			[1,2,3,4,5,6] == ct.list 			
-			["one", "two", "three", "four", "five", "six"] as Set == ct.set 
-			[a:1, b:2.5f, e:5.5f, f:10l, g:11, z:3l] == ct.map 					
+			"1" == ct.string
+			2 == ct.i
+			list == ct.list
+			set == ct.set
+			map == ct.map
+			ct.is(CollectionTypes.get(ct.id))
+			
+		when: "test static methods"
+			CollectionTypes.appendToList([id: ct.id], [5,6])
+			ct.appendToList([7,8])
+			list += [5,6,7,8]
+			CollectionTypes.appendToSet([id: ct.id], ["five", "six"] as Set)
+			set += ["five", "six"]
+			CollectionTypes.appendToMap([id: ct.id], [f:10l, g: 11], [flush:true])
+			map << [f:10l, g: 11]
+			ct.discard()
+			ct = CollectionTypes.get(ct.id)			
+			
+		then:						
+			list == ct.list 			
+			set == ct.set 
+			map == ct.map 		
+		
+		when: "test queried instance updated"
+			ct.discard()
+			ct = CollectionTypes.findById(ct.id)
+			ct.appendToList(9)
+			list << 9
+			ct.appendToSet("seven")
+			set << "seven"
+			ct.appendToMap([j:5], [flush:true])
+			map << [j:5]
+		
+		then:
+			list == ct.list
+			set == ct.set
+			map == ct.map
 	}
 	
 	void "Test collection prepend methods"() {
-		given:
+		when: "test instance collections created"
+			def ct = new CollectionTypes(string: "1", i:2)
+			ct.save(flush:true)
+			ct.discard()
+			ct.prependToList(1, [flush:true])	
+		
+		then:
+			[1] == ct.list		
+		
+		when: "test instance collections updated"
 			def list = [1,2,3]
 			def set = ["one", "two", "three"] as Set
 			def map = [a:1, b:2.5f, z:3l]
-			def ct = new CollectionTypes(string: "1", i:2, list: list, map: map, set:set)
+			ct = new CollectionTypes(string: "1", i:2, list: list, map: map, set:set)
 			ct.save(flush:true)
+			ct.discard()				
+			ct.prependToList(4, [flush:true])			
 			ct.discard()
-			
-		when:
-			CollectionTypes.prependToList(ct.id, 4, [flush:true])			
+		
+		then:
+			def list2 = [4,1,2,3]		
+			list2 == ct.list
+		
+		when: "test datastore updated"
 			ct = CollectionTypes.get(ct.id)
 			
 		then:
 			ct
 			"1" == ct.string 
 			2 == ct.i 
-			[4,1,2,3] == ct.list 
+			list2 == ct.list 
 			set == ct.set 
 			map == ct.map 
 		
-		when:
-			CollectionTypes.prependToList(ct.id, [5,0], [flush:true])			
+		when: "test static methods"
+			ct.prependToList(9, [flush:true])
+			CollectionTypes.prependToList(ct.id, 6, [flush:true])
+			CollectionTypes.prependToList([id: ct.id], [5,0], [flush:true])
 			ct.discard()
 			ct = CollectionTypes.get(ct.id)
 			
-		then:
-			ct
-			"1" == ct.string 
-			2 == ct.i  
-			[0,5,4,1,2,3] == ct.list 
+		then:			
+			[0,5,6,9,4,1,2,3] == ct.list 
 			set == ct.set 
 			map == ct.map 
 		
@@ -255,31 +307,49 @@ class CollectionTypesPersistenceSpec extends GormDatastoreSpec {
 			ct.save(flush:true)
 			ct.discard()
 			
-		when:
-			CollectionTypes.replaceAtInList(ct.id, 4, 1, [flush:true])
+		when: "test instance collections updated"
+			ct.replaceAtInList(1, 4, [flush:true])
+			ct.discard()
+			
+		then:
+			def list2 = [1,4,3]	
+			list2 == ct.list
+		
+		when: "test datastore updated"
 			ct = CollectionTypes.get(ct.id)
 			
 		then:
 			ct
 			"1" == ct.string
 			2 == ct.i
-			[1,4,3] == ct.list 
+			list2 == ct.list 
 			set == ct.set 
 			map == ct.map 
 		
+		when: "test static methods"
+			CollectionTypes.replaceAtInList(ct.id, 2, 5, [flush:true])
+			CollectionTypes.replaceAtInList([id: ct.id], 0, 3, [flush:true])
+			session.clear()
+			ct = CollectionTypes.get(ct.id)
+		
+		then:    		
+    		[3,4,5] == ct.list
+    		set == ct.set
+    		map == ct.map
+			
 		when:
-			CollectionTypes.replaceAtInSet(ct.id, "zero", 1, [flush:true])
+			CollectionTypes.replaceAtInSet(ct.id, 1, "zero", [flush:true])
 		
 		then:
 			def e = thrown(MissingMethodException)
-			e.message.startsWith("No signature of method: grails.gorm.tests.CollectionTypes.replaceAtInSet() is applicable for argument types: (java.util.UUID, java.lang.String, java.lang.Integer, java.util.LinkedHashMap)")
+			e.message.startsWith("No signature of method: grails.gorm.tests.CollectionTypes.replaceAtInSet() is applicable for argument types: (java.util.UUID, java.lang.Integer, java.lang.String, java.util.LinkedHashMap)")
 			
 		when:
-			CollectionTypes.replaceAtInMap(ct.id, [e:5.5f], 1, [flush:true])
+			ct.replaceAtInMap(1, [e:5.5f], [flush:true])
 		
 		then:
 			e = thrown(MissingMethodException)
-			e.message.startsWith("No signature of method: grails.gorm.tests.CollectionTypes.replaceAtInMap() is applicable for argument types: (java.util.UUID, java.util.LinkedHashMap, java.lang.Integer, java.util.LinkedHashMap)")
+			e.message.startsWith("No signature of method: grails.gorm.tests.CollectionTypes.replaceAtInMap() is applicable for argument types: (java.lang.Integer, java.util.LinkedHashMap, java.util.LinkedHashMap)")
 	}
 	
 	void "Test collection deleteFrom methods"() {
@@ -291,40 +361,100 @@ class CollectionTypesPersistenceSpec extends GormDatastoreSpec {
 			ct.save(flush:true)
 			ct.discard()
 			
-		when:
-			CollectionTypes.deleteFromList(ct.id, 1)
-			CollectionTypes.deleteFromSet(ct.id, "two", [flush:true])			
-			ct = CollectionTypes.get(ct.id)
+		when: "test deleted from instace collections"
+			ct.deleteFromList(1)
+			ct.deleteFromSet("two")	
+			ct.deleteFromMap("b", [flush:true])		
+			ct.discard()
 			
 		then:
+			def list2 = [2,3] 
+			def set2 = ["one", "three", "four"] as Set
+			def map2 = [a:1, z:3l]
+			list2 == ct.list
+			set2 == ct.set
+			map2 == ct.map
+			
+		when: "test deleted from datastore"
+			ct = CollectionTypes.get(ct.id)
+		
+		then:		
 			ct
 			"1" == ct.string
 			2 == ct.i
-			[2,3] == ct.list 
-			["one", "three", "four"] as Set == ct.set 
-			map == ct.map 
+			list2 == ct.list 
+			set2 == ct.set 
+			map2 == ct.map 
 		
-		when:
+		when: "test static methods"
 			CollectionTypes.deleteFromList(ct.id, [2,3])
-			CollectionTypes.deleteFromSet(ct.id, ["three", "four"] as Set, [flush:true])			
+			CollectionTypes.deleteFromSet([id: ct.id], ["three", "four"] as Set)
+			CollectionTypes.deleteFromMap([id: ct.id], "z", [flush:true])			
 			ct.discard()
 			ct = CollectionTypes.get(ct.id)
 			
 		then:
+			ct			
+			null == ct.list
+			["one"] as Set == ct.set 
+			[a:1] == ct.map 			
+	}
+	
+	void "Test collection deleteAtFrom methods"() {
+		given:
+			def list = [1,2,3]
+			def set = ["one", "two", "three", "four"] as Set
+			def map = [a:1, b:2.5f, z:3l]
+			def ct = new CollectionTypes(string: "1", i:2, list: list, map: map, set:set)
+			ct.save(flush:true)
+			ct.discard()
+			
+		when: "test deleted from instace collection"
+			ct.deleteAtFromList(1, [flush:true])
+			ct.discard()
+		
+		then:
+			def list2 = [1,3]
+			list2 == ct.list
+			set == ct.set
+			map == ct.map
+			
+		when: "test deleted from datastore"
+			ct = CollectionTypes.get(ct.id)
+		
+		then:
 			ct
 			"1" == ct.string
 			2 == ct.i
-			null == ct.list
-			["one"] as Set == ct.set 
-			map == ct.map 
+			list2 == ct.list
+			set == ct.set
+			map == ct.map
+		
+		when: "test static methods"
+			CollectionTypes.deleteAtFromList(ct.id, 1, [flush:true])			
+			ct.discard()
+			ct = CollectionTypes.get(ct.id)
+			
+		then:			
+			[1] == ct.list
+			set == ct.set
+			map == ct.map
 		
 		when:
-			CollectionTypes.deleteFromMap(ct.id, [a:1], [flush:true])
-		
+			CollectionTypes.deleteAtFromSet(ct.id, 1, [flush:true])
+				
 		then:
 			def e = thrown(MissingMethodException)
-			e.message.startsWith("No signature of method: grails.gorm.tests.CollectionTypes.prependToMap() is applicable for argument types: (java.util.UUID, java.util.LinkedHashMap, java.util.LinkedHashMap)")
+			e.message.startsWith("No signature of method: grails.gorm.tests.CollectionTypes.deleteAtFromSet() is applicable for argument types: (java.util.UUID, java.lang.Integer, java.util.LinkedHashMap)")
+		
+		when:
+			ct.deleteAtFromMap(1, [flush:true])
+		
+		then:
+			e = thrown(MissingMethodException)
+			e.message.startsWith("No signature of method: grails.gorm.tests.CollectionTypes.deleteAtFromMap() is applicable for argument types: (java.lang.Integer, java.util.LinkedHashMap)")
 	}
+			
 }
 
 @Entity
@@ -333,7 +463,7 @@ class CollectionTypes {
 	String string
 	int i
 	List<Integer> list
-	HashSet<String> set
+	Set<String> set
 	Map<String, Float> map	
 	
 }
