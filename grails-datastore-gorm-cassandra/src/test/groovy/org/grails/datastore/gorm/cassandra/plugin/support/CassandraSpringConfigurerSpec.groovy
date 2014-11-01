@@ -50,7 +50,7 @@ class CassandraSpringConfigurerSpec extends Specification{
     		}
     		def application = new DefaultGrailsApplication([Person] as Class[], Thread.currentThread().contextClassLoader)
     		application.config.grails.cassandra.keyspace.name = keyspace
-    		application.config.grails.cassandra.keyspace.action = "CREATE_DROP"
+    		application.config.grails.cassandra.keyspace.action = "create-drop"
 			application.config.grails.cassandra.keyspace.durableWrites = false			
 			application.config.grails.cassandra.keyspace.replicationStrategy = "NetworkTopologyStrategy"
 			application.config.grails.cassandra.keyspace.networkTopology = ["us-east":1, "eu-west":2]
@@ -60,13 +60,14 @@ class CassandraSpringConfigurerSpec extends Specification{
             bb.beans config
             def ctx = bb.createApplicationContext()
             CassandraMappingContext mappingContext = ctx.getBean("cassandraMappingContext",CassandraMappingContext)
-            def entity = mappingContext?.getPersistentEntity(Person.name)
+            def entity = mappingContext?.getPersistentEntity(Person.name)			
 				
         then:"The application context cassandra beans and keyspace is created"
             ctx != null
             ctx.containsBean("persistenceInterceptor")
 			mappingContext.defaultMapping == defaultConfig
 			entity != null
+			entity.isVersioned() == false
 			def cassandraTemplate = ctx.getBean("cassandraTemplate", CassandraTemplate)
 			cassandraTemplate != null
 			cassandraTemplate.session != null
