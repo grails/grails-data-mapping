@@ -147,13 +147,13 @@ public class GormCassandraSessionFactoryBean extends CassandraSessionFactoryBean
 		CreateTableSpecification createTableSpecification = springCassandraMappingContext.getCreateTableSpecificationFor(entity);
 
 		// set the clustering order
-		for (Column column : table.getPrimaryKeys()) {
+		for (Column column : table.getColumns()) {
 			if (column.getOrder() != null) {
 				// need to work with CqlIdentifier as it may be different from
 				// the property name, hence why CassandraPersistentProperty is
 				// needed here
 				CassandraPersistentProperty persistentProperty = entity.getPersistentProperty(column.getName());
-				if (persistentProperty == null || !persistentProperty.isClusterKeyColumn()) {
+				if (persistentProperty == null || !column.isClusterKey()) {
 					throw new IllegalMappingException(String.format("Invalid mapping for property [%s]. [order] attribute can only be set for a clustered primary key", column.getName()));
 				}
 				CqlIdentifier clusteringKeyName = persistentProperty.getColumnName();
@@ -167,12 +167,12 @@ public class GormCassandraSessionFactoryBean extends CassandraSessionFactoryBean
 		}
 
 		// set the various table options
-		Map<String, Object> gormTableOptions = table.getTableOptions();
-		if (gormTableOptions != null) {
-			if (gormTableOptions.remove(COMPACT_STORAGE) != null) {
+		Map<String, Object> gormTableProperties = table.getTableProperties();
+		if (gormTableProperties != null) {
+			if (gormTableProperties.remove(COMPACT_STORAGE) != null) {
 				createTableSpecification.with(TableOption.COMPACT_STORAGE);
 			}
-			Map<TableOption, Object> tableOptions = convertToCassandraOptionEnumObjectMap(TableOption.class, gormTableOptions, "tableOptions");
+			Map<TableOption, Object> tableOptions = convertToCassandraOptionEnumObjectMap(TableOption.class, gormTableProperties, "tableOptions");
 			for (Entry<TableOption, Object> tableOptionEntry : tableOptions.entrySet()) {
 				Object value = tableOptionEntry.getValue();
 				Map<String, Object> tableOptionMap = value instanceof Map ? (Map<String, Object>) value : null;
@@ -186,7 +186,7 @@ public class GormCassandraSessionFactoryBean extends CassandraSessionFactoryBean
 					createTableSpecification.with(TableOption.COMPRESSION, compressionOptions);
 
 				} else if (TableOption.CACHING == tableOptionEntry.getKey()) {
-					CachingOption cachingOption = EnumUtil.findEnum(CachingOption.class, "keys", tableOptionMap, null);
+					CachingOption cachingOption = EnumUtil.getRequiredEnum(CachingOption.class, "caching", String.valueOf(value));
 					createTableSpecification.with(TableOption.CACHING, cachingOption);
 					
 				} else if (TableOption.COMPACT_STORAGE == tableOptionEntry.getKey()) {
@@ -203,7 +203,7 @@ public class GormCassandraSessionFactoryBean extends CassandraSessionFactoryBean
 	/*
 	 * For each key in the specified stringObjectMap, replace it with the
 	 * equivalent Enum of type enumClass if found, else throw
-	 * IllegalArgumentException
+	 * IllegalMappingException
 	 */
 	protected <E extends Enum<E>> Map<E, Object> convertToCassandraOptionEnumObjectMap(Class<E> enumClass, Map<String, Object> stringObjectMap, String optionEnumTypeName) {
 		if (stringObjectMap == null) {
@@ -274,5 +274,13 @@ public class GormCassandraSessionFactoryBean extends CassandraSessionFactoryBean
 				}
 			}
 		});
+	}
+	
+	@Override
+	public void destroy() throws Exception {
+		executeScripts(shutdownScripts);
+		if (session != null) {
+			session.close();
+		}
 	}
 }
