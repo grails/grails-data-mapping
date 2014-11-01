@@ -50,6 +50,7 @@ import org.springframework.cassandra.config.KeyspaceAttributes;
 import org.springframework.cassandra.core.WriteOptions;
 import org.springframework.cassandra.core.keyspace.KeyspaceActionSpecification;
 import org.springframework.cassandra.core.keyspace.KeyspaceOption.ReplicationStrategy;
+import org.springframework.cassandra.support.CassandraExceptionTranslator;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.CassandraAdminTemplate;
@@ -73,7 +74,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 	public static final SchemaAction DEFAULT_SCHEMA_ACTION = SchemaAction.NONE;
 	public static final String CONTACT_POINTS = "contactPoints";
 	public static final String PORT = "port";
-	public static final String SCHEMA_ACTION = "schemaAction";
+	public static final String SCHEMA_ACTION = "dbCreate";
 	public static final String KEYSPACE_CONFIG = "keyspace";
 	public static final String KEYSPACE_NAME = "name";
 	public static final String KEYSPACE_ACTION = "action";
@@ -92,8 +93,8 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 	protected KeyspaceActionSpecificationFactoryBean keyspaceActionSpecificationFactoryBean;
 	protected GormCassandraSessionFactoryBean cassandraSessionFactoryBean;
 	protected boolean stateless = false;
-	protected String keyspace;
-
+	protected String keyspace;	
+	
 	private static final SoftThreadLocalMap PERSISTENCE_OPTIONS_MAP = new SoftThreadLocalMap();
 
 	public CassandraDatastore() {
@@ -120,7 +121,7 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 		}
 		this.keyspace = mappingContext.getKeyspace();
 		Assert.hasText(keyspace, "Keyspace must be set");
-		springCassandraMappingContext = new BasicCassandraMappingContext();
+		springCassandraMappingContext = new BasicCassandraMappingContext(mappingContext);
 
 		mappingContext.setSpringCassandraMappingContext(springCassandraMappingContext);
 		if (mappingContext != null) {
@@ -179,9 +180,10 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 		Object object = configuration.get(KEYSPACE_CONFIG);
 		if (object instanceof ConfigObject) {
 			ConfigObject keyspaceConfiguration = (ConfigObject) object;
-			KeyspaceAction keyspaceAction = EnumUtil.findEnum(KeyspaceAction.class, KEYSPACE_ACTION, keyspaceConfiguration, null);
+			KeyspaceAction keyspaceAction = readKeyspaceAction(keyspaceConfiguration);
 
 			if (keyspaceAction != null) {
+				log.info("Set keyspace generation strategy to '" + keyspaceConfiguration.get(KEYSPACE_ACTION) + "'");
 				if (keyspaceActionSpecificationFactoryBean == null) {
 					keyspaceActionSpecificationFactoryBean = new KeyspaceActionSpecificationFactoryBean();
 				}
@@ -232,11 +234,13 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 			cassandraSessionFactoryBean.setKeyspaceName(this.keyspace);
 			MappingCassandraConverter mappingCassandraConverter = new MappingCassandraConverter(cassandraMapping());
 			cassandraSessionFactoryBean.setConverter(mappingCassandraConverter);
-			cassandraSessionFactoryBean.setSchemaAction(EnumUtil.findEnum(SchemaAction.class, SCHEMA_ACTION, configuration, DEFAULT_SCHEMA_ACTION));
+			cassandraSessionFactoryBean.setSchemaAction(readSchemaAction());
+			log.info("Set Cassandra db generation strategy to '" + (configuration.get(SCHEMA_ACTION) != null ? configuration.get(SCHEMA_ACTION) : "none") + "'");
 			// TODO: startup and shutdown scripts addition
 			cassandraSessionFactoryBean.afterPropertiesSet();
 			nativeSession = cassandraSessionFactoryBean.getObject();
 			cassandraTemplate = new CassandraTemplate(nativeSession, mappingCassandraConverter);
+			cassandraTemplate.setExceptionTranslator(new CassandraExceptionTranslator());
 			cassandraAdminTemplate = new CassandraAdminTemplate(nativeSession, mappingCassandraConverter);
 		}
 		return nativeSession;
@@ -305,8 +309,12 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 	public void destroy() throws Exception {
 		super.destroy();
 		PERSISTENCE_OPTIONS_MAP.remove();
-		cassandraSessionFactoryBean.destroy();
-		cassandraCqlClusterFactoryBean.destroy();
+		if (cassandraSessionFactoryBean != null) {
+			cassandraSessionFactoryBean.destroy();
+		}
+		if (cassandraCqlClusterFactoryBean != null) {				
+			cassandraCqlClusterFactoryBean.destroy();
+		}
 	}
 
 	private <T> T read(Class<T> type, String key, ConfigObject config, T defaultValue) {
@@ -321,5 +329,21 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 			PERSISTENCE_OPTIONS_MAP.get().put(System.identityHashCode(o), persistenceOptionsMap);
 		}
 		return persistenceOptionsMap;
+	}
+	
+	private KeyspaceAction readKeyspaceAction(ConfigObject keyspaceConfiguration) {		
+		Map<String, KeyspaceAction> keyspaceActionMap = new HashMap<String, KeyspaceAction>();
+		keyspaceActionMap.put("create", KeyspaceAction.CREATE);
+		keyspaceActionMap.put("create-drop", KeyspaceAction.CREATE_DROP);
+		return EnumUtil.findMatchingEnum(KEYSPACE_ACTION, keyspaceConfiguration.get(KEYSPACE_ACTION), keyspaceActionMap, null);		
+	}
+	
+	private SchemaAction readSchemaAction() {		
+		Map<String, SchemaAction> schemaActionMap = new HashMap<String, SchemaAction>();
+		schemaActionMap.put("none", SchemaAction.NONE);
+		schemaActionMap.put("create", SchemaAction.CREATE);
+		schemaActionMap.put("recreate", SchemaAction.RECREATE);
+		schemaActionMap.put("recreate-drop-unused", SchemaAction.RECREATE_DROP_UNUSED);
+		return EnumUtil.findMatchingEnum(SCHEMA_ACTION, configuration.get(SCHEMA_ACTION), schemaActionMap, SchemaAction.NONE);		
 	}
 }
