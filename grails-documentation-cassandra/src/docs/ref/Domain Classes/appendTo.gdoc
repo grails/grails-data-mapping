@@ -1,0 +1,29 @@
+h1. appendTo*
+
+h2. Purpose
+
+Adds an element to an existing instance's embedded set, list or map, where the actual collection or map added to is indicated by the property used as the suffix to the method.
+
+h2. Examples 
+{code}
+class Person {     
+    List<Integer> scores
+    Set<String> friends
+    Map<String, String> pets	    
+}
+
+def person = Person.get(uuid)
+person.appendToScores(5)
+Person.appendToFriends(person.id, 'Barney', [flush:true])
+{code}
+
+h2. Description
+
+The appendTo* method is a dynamic method that adds an element to an embedded set, list or map. In the case of a list it adds the element to the end of the list. 
+The method exists as a static and instance method.
+The static method simply adds the element to the datastore, the instance method adds the element to the in-memory instance and the datastore.
+
+Argument:
+* id - the id or primary key map of the instance. Only required if using the static method.
+* element - the element to append 
+* flush (optional) - When set to true flushes the persistence context, updating the datastore immediately

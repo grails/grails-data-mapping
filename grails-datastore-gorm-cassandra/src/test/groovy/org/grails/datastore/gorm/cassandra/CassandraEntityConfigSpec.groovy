@@ -55,7 +55,7 @@ class CassandraEntityConfigSpec extends Specification{
 			table.primaryKeyNames == []
 			!table.isPrimaryKey("id")
 			!table.sort
-			!table.tableOptions
+			!table.tableProperties
 			
 			id != null	
 			!id.name					
@@ -91,6 +91,7 @@ class CassandraEntityConfigSpec extends Specification{
 			
 			lastName != null
 			lastName.name == "lastName"
+			lastName.isPartitionKey()
 			lastName.primaryKeyAttributes
 			lastName.primaryKeyAttributes.ordinal == 0
 			lastName.primaryKeyAttributes.type == "partitioned"
@@ -99,6 +100,7 @@ class CassandraEntityConfigSpec extends Specification{
 			
 			firstName != null
 			firstName.name == "firstName"
+			firstName.isClusterKey()
 			firstName.primaryKeyAttributes.ordinal == 1
 			firstName.primaryKeyAttributes.type == "clustered"			
 			firstName.index		
@@ -106,6 +108,7 @@ class CassandraEntityConfigSpec extends Specification{
 			
 			location != null
 			location.name == "location"
+			location.isClusterKey()
 			location.primaryKeyAttributes.ordinal == 2
 			location.primaryKeyAttributes.type == "clustered"
 			location.type == "ascii"
@@ -130,13 +133,13 @@ class CassandraEntityConfigSpec extends Specification{
 		then:
 			Table table = entity.mapping.mappedForm
     		table != null    		    	
-			Map tableOptions = table.tableOptions
+			Map tableOptions = table.tableProperties
 			tableOptions.size() == 9
 			tableOptions.comment == "table comment"
 			tableOptions.compact_storage
 			tableOptions.compaction == [class: "LeveledCompactionStrategy", sstable_size_in_mb: 300, tombstone_compaction_interval: 2]
 			tableOptions.compression == [sstable_compression: "LZ4Compressor", chunk_length_kb: 128, crc_check_chance: 0.75]
-			tableOptions.caching == [keys : "all"]
+			tableOptions.caching == "all"
 			tableOptions.bloom_filter_fp_chance == 0.2
 			tableOptions.read_repair_chance == 0.1
 			tableOptions.dclocal_read_repair_chance == 0.2
@@ -146,11 +149,11 @@ class CassandraEntityConfigSpec extends Specification{
 	def "Test entity table options check Cassandra metadata"() {
 		given:
 			def keyspace = Setup.randomKeyspaceName()    
-			config.put(CassandraDatastore.SCHEMA_ACTION, "RECREATE_DROP_UNUSED")		
+			config.put(CassandraDatastore.SCHEMA_ACTION, "recreate-drop-unused")		
     		keyspaceConfig.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
-    		keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "CREATE_DROP")
+    		keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "create-drop")
 			cassandraMappingContext = new CassandraMappingContext(keyspace)
-			cassandraMappingContext.addPersistentEntity(TableOptionsEntity)
+			cassandraMappingContext.addPersistentEntity(TablePropertiesEntity)
     		CassandraDatastore cassandraDatastore = new CassandraDatastore(cassandraMappingContext, config, null)    
 			
 		when:
@@ -159,7 +162,7 @@ class CassandraEntityConfigSpec extends Specification{
 		then:
     		def cluster = cassandraDatastore.nativeCluster
     		cluster != null
-			TableMetadata tableMetadata = cluster.metadata.getKeyspace(keyspace).getTable("tableoptionsentity")
+			TableMetadata tableMetadata = cluster.metadata.getKeyspace(keyspace).getTable("tablepropertiesentity")
 			tableMetadata != null
 			
 			Options options = tableMetadata.options
@@ -192,18 +195,18 @@ class CassandraEntityConfigSpec extends Specification{
 	def "Test invalid entity table options"() {
 		given:
 			def keyspace = Setup.randomKeyspaceName()
-			config.put(CassandraDatastore.SCHEMA_ACTION, "RECREATE_DROP_UNUSED")
+			config.put(CassandraDatastore.SCHEMA_ACTION, "recreate-drop-unused")
 			keyspaceConfig.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "CREATE_DROP")
+			keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "create-drop")
 			cassandraMappingContext = new CassandraMappingContext(keyspace)
-			cassandraMappingContext.addPersistentEntity(TableOptionsEntity)
-			PersistentEntity entity = cassandraMappingContext.getPersistentEntity(TableOptionsEntity.name)
+			cassandraMappingContext.addPersistentEntity(TablePropertiesEntity)
+			PersistentEntity entity = cassandraMappingContext.getPersistentEntity(TablePropertiesEntity.name)
 			Table table = entity.mapping.mappedForm
-			Map originalOptions = table.tableOptions
+			Map originalOptions = table.tableProperties
 			
 		when: "Invalid table option"
 			CassandraDatastore cassandraDatastore = new CassandraDatastore(cassandraMappingContext, config, null)			
-			table.tableOptions = [comment: "comment", invalidOption : true]
+			table.tableProperties = [comment: "comment", invalidOption : true]
 			cassandraDatastore.afterPropertiesSet()
 										
 		then:
@@ -212,7 +215,7 @@ class CassandraEntityConfigSpec extends Specification{
 		
 		when: "Invalid compaction option"
 			cassandraDatastore = new CassandraDatastore(cassandraMappingContext, config, null)			
-			table.tableOptions = [compaction: [class: "LeveledCompactionStrategy", unknown: 300]]
+			table.tableProperties = [compaction: [class: "LeveledCompactionStrategy", unknown: 300]]
 			cassandraDatastore.afterPropertiesSet()
 										
 		then:
@@ -221,14 +224,15 @@ class CassandraEntityConfigSpec extends Specification{
 		
 		when: "Invalid column marked as ordered"
     		cassandraDatastore = new CassandraDatastore(cassandraMappingContext, config, null)
-			table.tableOptions = originalOptions    		
-			Column name = entity.getPropertyByName("name").getMapping().getMappedForm()			
-			table.addPrimaryKey(name)
+			table.tableProperties = originalOptions    		
+			Column name = entity.getPropertyByName("firstName").getMapping().getMappedForm()		
+			name.setPrimaryKey(null)	
+			table.addColumn(name)
 			cassandraDatastore.afterPropertiesSet()
 		
 		then:
 			e = thrown(IllegalMappingException)
-			e.message == "Invalid mapping for property [name]. [order] attribute can only be set for a clustered primary key"
+			e.message == "Invalid mapping for property [firstName]. [order] attribute can only be set for a clustered primary key"
 			
 		cleanup:
 			cassandraDatastore?.destroy()
@@ -237,18 +241,21 @@ class CassandraEntityConfigSpec extends Specification{
 }
 
 @Entity
-class TableOptionsEntity {
+class TablePropertiesEntity {
 	
-	String name
+	String lastName
+    String firstName
 	
 	static mapping = {
-		name order:"desc"	
+		id name:"lastName", primaryKey:[ordinal:0, type:"partitioned"]
+		firstName primaryKey:[ordinal:1, type: "clustered"], order:"desc"	
 	}
 	
-	static tableOptions = {
+	static tableProperties = {
 		comment "table comment"
 		"COMPACT STORAGE" true
-		caching keys : "all"
+		replicate_on_write false
+		caching "all"
 		bloom_filter_fp_chance 0.2
 		read_repair_chance 0.1
 		dclocal_read_repair_chance 0.2

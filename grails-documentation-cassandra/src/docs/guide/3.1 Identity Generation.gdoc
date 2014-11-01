@@ -1,0 +1,60 @@
+By default in Cassandra GORM domain classes are supplied with a UUID-based identifier. So for example the following entity:
+
+{code}
+class Person {}
+{code}
+
+Has a property called @id@ of type @java.util.UUID@. In this case GORM for Cassandra will generate a UUID identifier using java.util.UUID.randomUUID(). 
+For a @timeuuid@ it will generate one using the [Java driver|http://www.datastax.com/drivers/java/2.0/com/datastax/driver/core/utils/UUIDs.html#timeBased%28%29]
+
+You can name the @id@ property something else, in which case you have to set the @name@ attribute in the mapping:
+
+{code}
+class Person {
+    UUID primary
+    
+    static mapping = {
+    	id name:"primary"
+    }
+}
+{code}
+
+h4. Assigned Identifiers
+
+If you want to manually assign an identifier, the following mapping should be used:
+
+{code}
+class Person {
+    String firstName
+    String lastName
+     	
+    static mapping = {
+        id name:"lastName", generator:"assigned"
+    }       
+}
+{code}
+
+Note that it is important to specify generator:"assigned" so GORM can work out whether you are trying to achieve an insert or an update. 
+Example:
+
+{code}
+def p = new Person(lastName:"Wilson")
+// to insert
+p.save()
+// to update
+p.save()
+{code}
+
+An existing manually-assigned entity will only be updated with the @save@ method if it is in the current persistence session. 
+Otherwise GORM will try to insert the entity again, which will result in an upsert to Cassandra (with no version checking if versioning is on).
+So if the entity is not in the session and you want to explicitly direct an update to Cassandra then use the @update@ method instead of the @save@ method. 
+Example:
+
+{code}
+def p = new Person(lastName:"Wilson")
+// to insert
+p.save()
+session.clear() or p.discard()
+// to update
+p.update()
+{code}

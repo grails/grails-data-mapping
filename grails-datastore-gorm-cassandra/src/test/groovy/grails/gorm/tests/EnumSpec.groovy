@@ -7,63 +7,94 @@ import spock.lang.Issue
 
 class EnumSpec extends GormDatastoreSpec {
 
-    void "Test save()"() {
+    void "Test CRUD()"() {
         given:
-
-            EnumThingEnumPartitionKey t = new EnumThingEnumPartitionKey(name: 'e1', en: TestEnum.V1)
+            EnumThingEnumPartitionKey t = new EnumThingEnumPartitionKey(en: TestEnum.V1, name: 'e1', enumValue: TestEnum.V2 )
             EnumThing p = new EnumThing(name: 'e2', en: TestEnum.V2)
 
-        when:
+        when: "create"
             t.save(failOnError: true, flush:true)
             p.save(failOnError: true, flush:true)
             session.clear()
-        then:
+			
+        then: 
             t != null
             !t.hasErrors()
             
             p != null
             !p.hasErrors()
 
-        when:
+        when: "read"
             t = t.get([en:t.en])
             p = p.get(p.id)
 
         then:
             t != null
-            'e1' == t.name
-            TestEnum.V1 == t.en
+			t.en == TestEnum.V1
+            t.name == 'e1' 
+            t.enumValue == TestEnum.V2 
             
             p != null
-            'e2' == p.name
-            TestEnum.V2 == p.en                       
+            p.name =='e2'  
+            p.en == TestEnum.V2			     
+		
+		when: "update"
+			t.enumValue = TestEnum.V3
+			t.save(failOnError: true, flush:true)			
+			p.en = TestEnum.V3	
+			p.save(failOnError: true, flush:true)
+			session.clear()
+			t = t.get([en:t.en])
+			p = p.get(p.id)
+		
+		then:
+    		t != null
+    		t.en == TestEnum.V1
+    		t.name == 'e1'
+    		t.enumValue == TestEnum.V3
+    		
+    		p != null
+    		p.name =='e2'
+    		p.en == TestEnum.V3
+		
+		when: "delete"
+			t.delete(flush:true)
+			p.delete(flush:true)
+			session.clear()
+			t = t.get([en:t.en])
+			p = p.get(p.id)
+		
+		then:
+			t == null
+			p == null
+		                 
     }
 
-
+			
     @Issue('GPMONGODB-248')
     void "Test findByInList()"() {
         given:
-
-        new EnumThingEnumPartitionKey(name: 'e1', en: TestEnum.V1).save(failOnError: true)
-        new EnumThingEnumPartitionKey(name: 'e2', en: TestEnum.V1).save(failOnError: true)
-        new EnumThingEnumPartitionKey(name: 'e3', en: TestEnum.V2).save(failOnError: true)
-
-        EnumThingEnumPartitionKey instance1
-        EnumThingEnumPartitionKey instance2
-        EnumThingEnumPartitionKey instance3
+            new EnumThingEnumPartitionKey(name: 'e1', en: TestEnum.V1).save(failOnError: true)
+            new EnumThingEnumPartitionKey(name: 'e2', en: TestEnum.V1).save(failOnError: true)
+            new EnumThingEnumPartitionKey(name: 'e3', en: TestEnum.V2).save(failOnError: true)
+    
+            EnumThingEnumPartitionKey instance1
+            EnumThingEnumPartitionKey instance2
+            EnumThingEnumPartitionKey instance3
 
         when:
-        instance1 = EnumThingEnumPartitionKey.findByEnInList([TestEnum.V1])
-        instance2 = EnumThingEnumPartitionKey.findByEnInList([TestEnum.V2])
-        instance3 = EnumThingEnumPartitionKey.findByEnInList([TestEnum.V3])
+            instance1 = EnumThingEnumPartitionKey.findByEnInList([TestEnum.V1])
+            instance2 = EnumThingEnumPartitionKey.findByEnInList([TestEnum.V2])
+            instance3 = EnumThingEnumPartitionKey.findByEnInList([TestEnum.V3])
 
         then:
-        instance1 != null
-        instance1.en == TestEnum.V1
-
-        instance2 != null
-        instance2.en == TestEnum.V2
-
-        instance3 == null
+            instance1 != null
+            instance1.en == TestEnum.V1
+    
+            instance2 != null
+            instance2.en == TestEnum.V2
+    
+            instance3 == null
     }
     
     void "Test findBy()"() {
@@ -174,4 +205,35 @@ class EnumSpec extends GormDatastoreSpec {
             1 == v2Count
             0 == v3Count
     }
+	
+	void "Test update properties"() {
+		given:
+    		EnumThingEnumPartitionKey t = new EnumThingEnumPartitionKey(en: TestEnum.V1, name: 'e1', enumValue: TestEnum.V2 )
+    		EnumThing p = new EnumThing(name: 'e2', en: TestEnum.V2)        
+    		t.save(failOnError: true, flush:true)
+    		p.save(failOnError: true, flush:true)
+    		session.clear()
+		
+		when:
+			EnumThingEnumPartitionKey.updateProperty([en: t.en, name: t.name], "enumValue", TestEnum.V3)
+			EnumThing.updateProperty(p.id, "en", TestEnum.V3, [flush:true])
+			session.clear()
+			t = t.get([en:t.en])
+			p = p.get(p.id)
+			
+		then:
+    		t != null
+    		!t.hasErrors()
+    		
+    		p != null
+    		!p.hasErrors()
+			
+			t.en == TestEnum.V1
+			t.name == 'e1'
+			t.enumValue == TestEnum.V3
+						
+			p.name =='e2'
+			p.en == TestEnum.V3
+			
+	}
 }

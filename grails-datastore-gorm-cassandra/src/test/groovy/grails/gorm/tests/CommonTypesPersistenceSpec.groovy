@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
 import org.grails.datastore.gorm.cassandra.mapping.BasicCassandraMappingContext
-import org.grails.datastore.mapping.cassandra.utils.UUIDUtil;
+import org.grails.datastore.mapping.cassandra.utils.UUIDUtil
 
 import com.datastax.driver.core.DataType
 
@@ -30,7 +30,7 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
             persistentEntity.getPersistentProperty("tz").getDataType() == DataType.text()
             persistentEntity.getPersistentProperty("loc").getDataType() == DataType.text()
             persistentEntity.getPersistentProperty("cur").getDataType() == DataType.text()
-            persistentEntity.getPersistentProperty("id").getDataType() == DataType.uuid()
+            persistentEntity.getPersistentProperty("primary").getDataType() == DataType.uuid()
             persistentEntity.getPersistentProperty("uuid").getDataType() == DataType.uuid()
             persistentEntity.getPersistentProperty("timeuuid").getDataType() == DataType.timeuuid()
             persistentEntity.getPersistentProperty("text").getDataType() == DataType.text()
@@ -75,7 +75,7 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
         when:
             ct.save(flush:true)
             ct.discard()
-            ct = CommonTypes.get(ct.id)
+            ct = CommonTypes.get(ct.primary)
 
         then:
             ct
@@ -98,7 +98,59 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
             timeuuid == ct.timeuuid
             "text" == ct.text
             "ascii" == ct.ascii
-            "varchar" == ct.varchar    
+            "varchar" == ct.varchar   
+		
+		when: "update property"
+    		now = new Date()
+    		cal = new GregorianCalendar()
+    		uuid = UUIDUtil.randomUUID
+    		timeuuid = UUIDUtil.randomTimeUUID
+		 	CommonTypes.updateProperty(ct.primary, "l", 11L)
+			CommonTypes.updateProperty(ct.primary, "b", 11 as byte)
+			CommonTypes.updateProperty(ct.primary, "s", 11)
+			CommonTypes.updateProperty(ct.primary, "bool", false)
+			CommonTypes.updateProperty(ct.primary, "i", 11)
+			CommonTypes.updateProperty(ct.primary, "url", new URL("http://www.amazon.com"))
+			CommonTypes.updateProperty(ct.primary, "date", now)
+			CommonTypes.updateProperty(ct.primary, "c", cal)
+			CommonTypes.updateProperty(ct.primary, "bd", 1.1)
+			CommonTypes.updateProperty(ct.primary, "bi", 11)
+			CommonTypes.updateProperty(ct.primary, "d", 1.1)
+			CommonTypes.updateProperty(ct.primary, "f", 1.1)
+			CommonTypes.updateProperty(ct.primary, "tz", TimeZone.getTimeZone("CET"))
+			CommonTypes.updateProperty(ct.primary, "loc", Locale.ITALIAN)
+			CommonTypes.updateProperty(ct.primary, "cur", Currency.getInstance("EUR"))
+			CommonTypes.updateProperty(ct.primary, "uuid", uuid)
+			CommonTypes.updateProperty(ct.primary, "timeuuid", timeuuid)
+			CommonTypes.updateProperty(ct.primary, "text", "newtext")
+			CommonTypes.updateProperty(ct.primary, "ascii", "newascii")
+			CommonTypes.updateProperty(ct.primary, "varchar", "newvarchar", [flush:true])
+			
+			ct.discard()
+			ct = CommonTypes.get(ct.primary)
+			 
+		then:
+			ct
+			11L == ct.l
+            (11 as byte) == ct.b
+            (11 as short) == ct.s
+            false == ct.bool
+            11 == ct.i
+            new URL("http://www.amazon.com") == ct.url
+            now.time == ct.date.time
+            cal == ct.c
+            1.1 == ct.bd
+            11 as BigInteger == ct.bi
+            (1.1 as Double) == ct.d
+            (1.1 as Float) == ct.f
+            TimeZone.getTimeZone("CET") == ct.tz
+            Locale.ITALIAN == ct.loc
+            Currency.getInstance("EUR") == ct.cur        
+            uuid == ct.uuid
+            timeuuid == ct.timeuuid
+            "newtext" == ct.text
+            "newascii" == ct.ascii
+            "newvarchar" == ct.varchar
     }
 }
 

@@ -4,7 +4,7 @@ import grails.persistence.Entity
 
 @Entity
 class CommonTypes implements Serializable {
-    UUID id
+    UUID primary
     Long version
     Long l
     Byte b
@@ -33,6 +33,7 @@ class CommonTypes implements Serializable {
     def service
         
     static mapping = {
+		id name:"primary"
         timeuuid type:"timeuuid"
         ascii type:'ascii'
         varchar type:'varchar'               

@@ -1,0 +1,57 @@
+GORM for Cassandra supports both stateless and stateful modes for mapping domain classes to Cassandra. In general stateful mapping is superior for write heavy applications and stateless mode better for read heavy applications (particularily when large amounts of data is involved).
+
+h4. Stateful mode
+
+Domain classes are by default stateful, which means when they are read from Cassandra their state is stored in the user session (which is typically bound to the request in Grails). This has several advantages for write heavy applications:
+
+* GORM can automatically detect whether a call to save() is a an update or an insert and act appropriately
+* GORM can store the current version and therefore implement optimistic locking
+* Repeated reads of the same entity can be retrieved from the cache, thus optimizing reads as well
+
+An example of when a stateful domain class is better is batching (TO BE IMPLEMENTED)
+
+h4. Stateless Domain classes
+
+However, stateful domain classes can cause problems for read-heavy applications. Take for example the following code:
+
+{code}
+def books = Book.list() // read 100,000 books
+for(b in books) {
+    println b.title
+}
+{code}
+
+The above example will read 100,000 books and print the title of each. In stateful mode this will almost certainly run out of memory as each Cassandra row is stored in user memory as is each book. Rewriting the code as follows will solve the problem:
+
+{code}
+Book.withStatelessSession {
+    def books = Book.list() // read 100,000 books
+    for(b in books) {
+        println b.title
+    }    
+}
+{code}
+
+Alternatively you can map the domain class as stateless, in which case its state will never be stored in the session:
+
+{code}
+class Book {
+    ...
+    static mapping = {
+        stateless true
+    }
+}
+{code}
+
+h4. Disadvantages of Stateless Mode
+
+There are several disadvantages to using stateless domain classes as the default. One disadvantage is that if you are using assigned identifiers GORM cannot detect whether you want to do an insert or an update so you have to be explicit about which one you want:
+
+{code}
+def b = new Book(id:"The Book")
+b.insert()
+b.revenue = 100
+b.update()
+{code}
+
+In the above case we use the explicit 'insert' or 'update method to tell Cassandra GORM what to do.

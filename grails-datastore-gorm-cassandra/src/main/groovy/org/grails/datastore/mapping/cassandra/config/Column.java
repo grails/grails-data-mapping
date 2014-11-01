@@ -34,6 +34,14 @@ public class Column extends Property{
         return primaryKeyAttributes != null && !primaryKeyAttributes.isEmpty();
     }
     
+    public boolean isPartitionKey() {
+    	return primaryKeyAttributes != null && "partitioned".equals(primaryKeyAttributes.get("type"));
+    }
+    
+    public boolean isClusterKey() {
+    	return primaryKeyAttributes != null && "clustered".equals(primaryKeyAttributes.get("type"));
+    }
+    
     public Ordering getOrder() {
 		return order;
 	}

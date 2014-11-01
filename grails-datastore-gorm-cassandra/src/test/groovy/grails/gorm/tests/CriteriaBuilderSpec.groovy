@@ -81,11 +81,11 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             def criteria = TestEntity.createCriteria()            
 
         when:
-            def results = criteria.list (allowFiltering:true) {
+            def results = criteria.list (allowFiltering:true, max:5) {
                 and {
                     eq('name', 'Bob')
                     eq('age', 40)
-                }
+                }				
             }            
         then:
             1 == results.size()
@@ -212,7 +212,7 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
                     eq('name', 'Bob')
                     lt("age", 41)
                 }
-                allowFiltering true
+                allowFiltering true				
             }
 
         then:
@@ -239,6 +239,7 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
                     between("age", 40, 43)                   
                 }
                 allowFiltering true
+				max 5
             }         
         then:
             2 == results.size()
@@ -283,6 +284,6 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             }
 
         then:
-            thrown IllegalArgumentException
+            thrown MissingPropertyException
     }
 }

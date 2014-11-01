@@ -14,9 +14,12 @@
  */
 package org.grails.datastore.mapping.cassandra;
 
+import java.io.Serializable;
+
 import org.grails.datastore.mapping.cassandra.engine.CassandraEntityPersister;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.engine.NonPersistentTypeException;
 import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -36,7 +39,7 @@ import com.datastax.driver.core.Session;
  */
 public class CassandraSession extends AbstractSession<Session> {
 
-    Logger log = LoggerFactory.getLogger(CassandraSession.class);
+    private Logger log = LoggerFactory.getLogger(CassandraSession.class);
     private Session session;
     private ApplicationEventPublisher applicationEventPublisher;
     private CassandraTemplate cassandraTemplate;
@@ -68,12 +71,29 @@ public class CassandraSession extends AbstractSession<Session> {
         return new SessionOnlyTransaction<Session>(getNativeInterface(), this);
     }
 
+    public CassandraDatastore getCassandraDatastore() {
+    	return (CassandraDatastore) getDatastore();
+    }
+    
     public Session getNativeInterface() {
         return session;
     }
 
     public CassandraTemplate getCassandraTemplate() {
         return cassandraTemplate;
+    }
+    
+    public Serializable update(Object o) {
+        Assert.notNull(o, "Cannot persist null object");
+        Persister persister = getPersister(o);
+        if (persister == null) {
+            throw new NonPersistentTypeException("Object [" + o +
+                    "] cannot be persisted. It is not a known persistent type.");
+        }
+        CassandraEntityPersister cassandraEntityPersister = (CassandraEntityPersister) persister;
+        final Serializable key = (Serializable) cassandraEntityPersister.update(o);
+        cacheObject(key, o);
+        return key;
     }
     
     public void deleteAll(Class type) {

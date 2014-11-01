@@ -33,6 +33,7 @@ public class MappingCassandraConverter extends org.springframework.data.cassandr
         conversionService.addConverter(new StringToCurrencyConverter());
         conversionService.addConverter(new StringToLocaleConverter());
         conversionService.addConverter(new StringToTimeZoneConverter());
+        conversionService.addConverter(new TimeZoneToStringConverter());
         conversionService.addConverter(new StringToURLConverter());
         BasicTypeConverterRegistrar registrar = new BasicTypeConverterRegistrar();
         registrar.register(conversionService);

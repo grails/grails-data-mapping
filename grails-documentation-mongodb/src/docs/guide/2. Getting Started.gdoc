@@ -6,13 +6,13 @@ plugins {
 }
 {code}
 
-With that done you need to set up a running MongoDB server. Refer to the [MongoDB Quick Start guide|http://www.mongodb.org/display/DOCS/Quickstart] for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:
+With that done you need to set up a running MongoDB server. Refer to the [MongoDB Quick Start guide|http://www.mongodb.org/display/DOCS/Quickstart] for an explanation on how to startup a Mongo instance. Once installed, starting Mongo is typically a matter of executing the following command:
 
 {code}
 MONGO_HOME/bin/mongod
 {code}
 
-With the above commands executed in a terminal window you should see output like the following appear:
+With the above command executed in a terminal window you should see output like the following appear:
 
 {code}
 Tue Mar 18 14:16:35.267 [initandlisten] db version v2.4.9

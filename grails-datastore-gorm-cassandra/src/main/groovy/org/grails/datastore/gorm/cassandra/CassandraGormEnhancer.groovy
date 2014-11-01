@@ -1,12 +1,12 @@
 package org.grails.datastore.gorm.cassandra
 
-import org.codehaus.groovy.runtime.InvokerHelper
+import org.codehaus.groovy.grails.commons.GrailsMetaClassUtils
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
-import org.springframework.data.cassandra.core.CassandraTemplate
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
@@ -23,6 +23,116 @@ class CassandraGormEnhancer extends GormEnhancer {
         super(datastore, transactionManager)
     }
     
+	@Override
+	 void enhance(PersistentEntity e, boolean onlyExtendedMethods = false) {
+		super.enhance(e, onlyExtendedMethods)
+		addCollectionMethods(e)
+	}
+	 
+	protected void addCollectionMethods(PersistentEntity e) {
+		Class cls = e.javaClass
+		ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
+		final proxyFactory = datastore.mappingContext.proxyFactory
+		for (p in e.persistentProperties) {
+			def prop = p			
+			def isCollectionOrMap = (Map.class.isAssignableFrom(prop.type) || Collection.class.isAssignableFrom(prop.type))			
+			if (isCollectionOrMap) {
+				mc."appendTo${prop.capitilizedName}" = { Object item, Map params = [:] ->
+					final targetObject = delegate
+					if (Map.class.isAssignableFrom(prop.type)) {
+						if (targetObject[prop.name] == null) {
+							targetObject[prop.name] = [:]
+						}
+						targetObject[prop.name].putAll(item)
+					} else {
+    					if (targetObject[prop.name] == null) {
+    						targetObject[prop.name] = [].asType(prop.type)
+    					}
+						targetObject[prop.name].add(item)
+					}
+					targetObject.append(prop.name, item, params)
+					targetObject
+				}
+				mc.static."appendTo${prop.capitilizedName}" = { Object id, Object item, Map params = [:] ->						
+					final targetObject = delegate		
+					targetObject.append(id, prop.name, item, params)														
+					targetObject
+				}		
+				mc."prependTo${prop.capitilizedName}" = { Object item, Map params = [:] ->
+					if (List.class.isAssignableFrom(prop.type)) {
+						final targetObject = delegate
+						if (targetObject[prop.name] == null) {
+							targetObject[prop.name] = []
+						}
+						targetObject[prop.name].add(0, item)
+						targetObject.prepend(prop.name, item, params)
+						targetObject
+					} else {
+						throw new MissingMethodException("prependTo${prop.capitilizedName}", cls, [item, params] as Object[])
+					}
+				}
+				mc.static."prependTo${prop.capitilizedName}" = { Object id, Object item, Map params = [:] ->
+					if (List.class.isAssignableFrom(prop.type)) {
+						final targetObject = delegate
+						targetObject.prepend(id, prop.name, item, params)
+						targetObject
+					} else {
+						throw new MissingMethodException("prependTo${prop.capitilizedName}", cls, [id, item, params] as Object[])
+					}
+				}
+				mc."replaceAtIn${prop.capitilizedName}" = { int index, Object item, Map params = [:] ->
+					if (List.class.isAssignableFrom(prop.type)) {
+						final targetObject = delegate						
+						targetObject[prop.name]?.set(index, item)
+						targetObject.replaceAt(prop.name, index, item, params)
+						targetObject
+					} else {
+						throw new MissingMethodException("replaceAtIn${prop.capitilizedName}", cls, [index, item, params] as Object[])
+					}
+				}
+				mc.static."replaceAtIn${prop.capitilizedName}" = { Object id, int index, Object item, Map params = [:] ->
+					if (List.class.isAssignableFrom(prop.type)) {
+    					final targetObject = delegate
+    					targetObject.replaceAt(id, prop.name, index, item, params)
+    					targetObject
+					} else {
+						throw new MissingMethodException("replaceAtIn${prop.capitilizedName}", cls, [id, index, item, params] as Object[])
+					}
+				}
+				mc."deleteFrom${prop.capitilizedName}" = { Object item, Map params = [:] ->					
+					final targetObject = delegate
+					targetObject[prop.name]?.remove((Object)item)
+					targetObject.deleteFrom(prop.name, item, false, params)
+					targetObject					
+				}
+				mc.static."deleteFrom${prop.capitilizedName}" = { Object id, Object item, Map params = [:] ->					
+					final targetObject = delegate
+					targetObject.deleteFrom(id, prop.name, item, false, params)
+					targetObject								
+				}
+				mc."deleteAtFrom${prop.capitilizedName}" = { int index, Map params = [:] ->
+					if (List.class.isAssignableFrom(prop.type)) {
+    					final targetObject = delegate
+    					targetObject[prop.name]?.remove(index)
+    					targetObject.deleteFrom(prop.name, index, true, params)
+    					targetObject
+					} else {
+						throw new MissingMethodException("deleteAtFrom${prop.capitilizedName}", cls, [index, params] as Object[])
+					}
+				}
+				mc.static."deleteAtFrom${prop.capitilizedName}" = { Object id, int index, Map params = [:] ->
+					if (List.class.isAssignableFrom(prop.type)) {
+    					final targetObject = delegate
+    					targetObject.deleteFrom(id, prop.name, index, true, params)
+    					targetObject
+					} else {
+						throw new MissingMethodException("deleteAtFrom${prop.capitilizedName}", cls, [id, index, params] as Object[])
+					}
+				}
+			}			
+		}
+	}
+	
     @Override
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
         return new CassandraGormStaticApi<D>(cls, datastore, getFinders(), transactionManager)
@@ -35,67 +145,4 @@ class CassandraGormEnhancer extends GormEnhancer {
         return api
     }
 
-}
-
-class CassandraGormInstanceApi<D> extends GormInstanceApi<D> {
-
-    CassandraGormInstanceApi(Class<D> persistentClass, Datastore datastore) {
-        super(persistentClass, datastore)        
-    } 
-}
-
-class CassandraGormStaticApi<D> extends GormStaticApi<D> {
-
-    CassandraGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
-        this(persistentClass, datastore, finders, null)
-    }
-            
-    CassandraGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
-        super(persistentClass, datastore, finders, transactionManager) 
-        def finder =  gormDynamicFinders.find { FinderMethod f -> 
-            "org.grails.datastore.gorm.finders.FindByFinder".equals(f.class.name)            
-        }
-        finder.registerNewMethodExpression(InList.class)
-    }
-    
-    CassandraTemplate getCassandraTemplate() {
-        datastore.cassandraTemplate
-    }
-    
-    /**
-     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
-     * a matching persistent entity is not found a new entity is created and returned.
-     *
-     * @param queryMap The map of conditions
-     * @param args The Query arguments
-     * @return A single result
-      */
-     D findOrCreateWhere(Map queryMap, Map args) {
-         internalFindOrCreate(queryMap, args, false)
-     }
- 
-    /**
-     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
-     * a matching persistent entity is not found a new entity is created, saved and returned.
-     * 
-     * @param queryMap The map of conditions
-     * @param args The Query arguments
-     * @return A single result
-      */
-     D findOrSaveWhere(Map queryMap, Map args) {
-         internalFindOrCreate(queryMap, args, true)
-     }
-     
-     private D internalFindOrCreate(Map queryMap, Map args, boolean shouldSave) {
-         D result = findWhere(queryMap, args)
-         if (!result) {
-             def persistentMetaClass = GroovySystem.metaClassRegistry.getMetaClass(persistentClass)
-             result = (D)persistentMetaClass.invokeConstructor(queryMap)
-             if (shouldSave) {
-                 InvokerHelper.invokeMethod(result, "save", null)
-             }
-         }
-         result
-     }
-    
 }
