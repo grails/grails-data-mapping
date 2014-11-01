@@ -10,6 +10,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.cassandra.mapping.BasicCassandraPersistentProperty;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
@@ -25,8 +27,16 @@ import org.springframework.data.mapping.model.SimpleTypeHolder;
  *
  */
 public class BasicCassandraMappingContext extends org.springframework.data.cassandra.mapping.BasicCassandraMappingContext {
+	
+	CassandraMappingContext gormCassandraMappingContext;
+	
+	public BasicCassandraMappingContext(CassandraMappingContext gormCassandraMappingContext) {
+		this.gormCassandraMappingContext = gormCassandraMappingContext;
+	}
+	
 	@Override
 	public CassandraPersistentProperty createPersistentProperty(Field field, PropertyDescriptor descriptor, CassandraPersistentEntity<?> owner, SimpleTypeHolder simpleTypeHolder) {
+		PersistentEntity gormEntity = gormCassandraMappingContext.getPersistentEntity(owner.getName());			
 		final CassandraPersistentProperty property = super.createPersistentProperty(field, descriptor, owner, simpleTypeHolder);
 		final CassandraPersistentProperty transientProperty = new BasicCassandraPersistentProperty(field, descriptor, owner, (CassandraSimpleTypeHolder) simpleTypeHolder) {
 			public boolean isTransient() {
@@ -80,7 +90,10 @@ public class BasicCassandraMappingContext extends org.springframework.data.cassa
 					return true;
 				};
 			};
+		} else if (field != null && GrailsDomainClassProperty.VERSION.equals(field.getName()) && !gormEntity.isVersioned()) {
+			return transientProperty;
 		}
+		
 
 		// for collections or maps of non-primitive types, i.e associations,
 		// return transient property as spring data cassandra doesn't support
