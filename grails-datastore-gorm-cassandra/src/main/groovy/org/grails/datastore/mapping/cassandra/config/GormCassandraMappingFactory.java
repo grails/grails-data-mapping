@@ -10,8 +10,10 @@ import java.util.UUID;
 
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
 import org.grails.datastore.mapping.config.Property;
+import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.IdentityMapping;
+import org.grails.datastore.mapping.model.IllegalMappingException;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PropertyMapping;
@@ -23,7 +25,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("rawtypes")
 public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Table, Column> {
 
-    private static final String TABLE_OPTIONS = "tableOptions";
+    private static final String TABLE_PROPERTIES = "tableProperties";
 	private static Logger log = LoggerFactory.getLogger(GormCassandraMappingFactory.class);
     private String keyspace;
 
@@ -35,22 +37,31 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
 	@Override
     public Table createMappedForm(PersistentEntity entity) {
         Table table = super.createMappedForm(entity);
-        
+        CassandraPersistentEntity cassandraPersistentEntity = (CassandraPersistentEntity) entity;
         //read tableOptions
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());        
-        final Closure value = cpf.getStaticPropertyValue(TABLE_OPTIONS, Closure.class);
+        final Closure value = cpf.getStaticPropertyValue(TABLE_PROPERTIES, Closure.class);
         if (value != null) {
         	MapConfigurationBuilder builder = new MapConfigurationBuilder();
-        	builder.evaluate(value);
-        	table.setTableOptions(builder.getProperties());
+        	try {
+        		builder.evaluate(value);
+        	} catch (Exception e) {
+        		throw new IllegalMappingException(String.format("Error reading %s : %s",TABLE_PROPERTIES, e.toString()));
+        	}
+        	table.setTableProperties(builder.getProperties());
         }
         
         if (table.getKeyspace() == null) {
             table.setKeyspace(keyspace);
         }
 
-        //extra mapping block handling
-        Map<String, Column> properties = entityToPropertyMap.get(entity);
+        //additional static mapping block handling        
+        Map<String, Column> properties = entityToPropertyMap.get(entity);        
+        Object version = properties.get(MappingConfigurationBuilder.VERSION_KEY);
+        if (version instanceof Boolean) {
+        	cassandraPersistentEntity.setVersion((Boolean) version);
+        }
+                
         Column idProperty  = properties.get(IDENTITY_PROPERTY);
         Iterator<Entry<String, Column>> propertyIterator = properties.entrySet().iterator();
         
@@ -68,10 +79,8 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
                 
                 if (column.getName() == null) {
                     column.setName(name);
-                }
-                if (column.isPrimaryKey()) {
-                    table.addPrimaryKey(column);
-                }
+                }                
+                table.addColumn(column);
             }
         }
                
