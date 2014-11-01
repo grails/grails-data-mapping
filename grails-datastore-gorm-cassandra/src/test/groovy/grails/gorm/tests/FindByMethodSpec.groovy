@@ -15,8 +15,9 @@ class FindByMethodSpec extends GormDatastoreSpec {
             new PersonLastNamePartitionKey(firstName: 'Jeff', lastName: 'Brown', age: 41).insert()
             new PersonLastNamePartitionKey(firstName: 'Jake', lastName: 'Galifianakis', age: 14).insert()
             new PersonLastNamePartitionKey(firstName: 'Zack', lastName: 'Galifianakis', age: 41).insert()
-            new PersonLastNamePartitionKey(firstName: 'Jake', lastName: 'Robinson', age: 30).insert()
-
+            new PersonLastNamePartitionKey(firstName: 'Jake', lastName: 'Robinson', age: 30).insert(flush:true)
+			session.clear()
+			
         when:
             def people = PersonLastNamePartitionKey.findAllByFirstNameAndLastNameAndAge('Jeff', 'Brown', 1)
 
