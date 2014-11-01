@@ -45,6 +45,13 @@ class CassandraGormStaticApi<D> extends GormStaticApi<D> {
         cassandraTemplate
     }
     
+	/**
+	 * Update a property on an instance with the specified item 
+	 * @param id the id of the instance to update
+	 * @param propertyName the name of the property to update
+	 * @param item the new value of the property
+	 * @param params The parameters	
+	 */
 	def updateProperty(Serializable id, String propertyName, Object item, Map params = [:]) {
 		execute ({ Session session ->
 			getCassandraEntityPersister(session).updateProperty(id, propertyName, item, OptionsUtil.convertToWriteOptions(params))
@@ -54,6 +61,12 @@ class CassandraGormStaticApi<D> extends GormStaticApi<D> {
 		 } as SessionCallback)
 	}
 	
+	/**
+	 * Update multiple properties on an instance with the specified properties
+	 * @param id the id of the instance to update
+	 * @param properties a map of property name/value pairs to update
+	 * @param params The parameters
+	 */
 	def updateProperties(Serializable id, Map properties, Map params = [:]) {
 		execute ({ Session session ->
 			getCassandraEntityPersister(session).updateProperties(id, properties, OptionsUtil.convertToWriteOptions(params))
@@ -63,42 +76,72 @@ class CassandraGormStaticApi<D> extends GormStaticApi<D> {
 		 } as SessionCallback)
 	}
 
-	
-	def append(Serializable id, String propertyName, Object item, Map params = [:]) {	
+	/**
+	 * Add the specified element to the instance's embedded list, set or map in the datastore
+	 * @param id the id of the instance to update
+	 * @param propertyName the name of the embedded list, set or map
+	 * @param element the element to add
+	 * @param params The parameters
+	 */
+	def append(Serializable id, String propertyName, Object element, Map params = [:]) {	
 		execute ({ Session session ->						
-			getCassandraEntityPersister(session).append(id, propertyName, item, OptionsUtil.convertToWriteOptions(params))	
+			getCassandraEntityPersister(session).append(id, propertyName, element, OptionsUtil.convertToWriteOptions(params))	
 			if (params.flush) {
 				session.flush()
 			}		
 		 } as SessionCallback)
 	}	
 	
-	def prepend(Serializable id, String propertyName, Object item, Map params = [:]) {
+	/**
+	 * Prepend the specified element to the instance's embedded list in the datastore
+	 * @param id the id of the instance to update
+	 * @param propertyName the name of the embedded list
+	 * @param element the element to prepend
+	 * @param params The parameters
+	 */
+	def prepend(Serializable id, String propertyName, Object element, Map params = [:]) {
 		execute ({ Session session ->			
-			getCassandraEntityPersister(session).prepend(id, propertyName, item, OptionsUtil.convertToWriteOptions(params))
+			getCassandraEntityPersister(session).prepend(id, propertyName, element, OptionsUtil.convertToWriteOptions(params))
 			if (params.flush) {
 				session.flush()
 			}
 		 } as SessionCallback)
 	}
 	
-	def replaceAt(Serializable id, String propertyName, Object item, int index, Map params = [:]) {
+	/**
+	 * Replace the specified element at the specified index in the instance's embedded list in the datastore
+	 * @param id the id of the instance to update
+	 * @param propertyName the name of the embedded list
+	 * @param index the index of the element to replace
+	 * @param element the element to be stored at the specified index
+	 * @param params The parameters
+	 */
+	def replaceAt(Serializable id, String propertyName, int index, Object element, Map params = [:]) {
 		execute ({ Session session ->
-			getCassandraEntityPersister(session).replaceAt(id, propertyName, item, index, OptionsUtil.convertToWriteOptions(params))
+			getCassandraEntityPersister(session).replaceAt(id, propertyName, index, element, OptionsUtil.convertToWriteOptions(params))
 			if (params.flush) {
 				session.flush()
 			}
 		 } as SessionCallback)
 	}
 	
-	def deleteFrom(Serializable id, String propertyName, Object item, Map params = [:]) {
+	/**
+	 * Remove the specified element, or the element at the specified index, from the instance's embedded list, set or map in the datastore
+	 * @param id the id of the instance to update
+	 * @param propertyName the name of the embedded list, set or map
+	 * @param item the element or index of the element to remove in the case of a list, the element in the case of a set or map
+	 * @param isIndex whether the specified item is an element or the index of the element to remove, only true if removing from a list using index, false otherwise
+	 * @param params The parameters
+	 */
+	def deleteFrom(Serializable id, String propertyName, Object element, boolean index, Map params = [:]) {
 		execute ({ Session session ->
-			getCassandraEntityPersister(session).deleteFrom(id, propertyName, item, OptionsUtil.convertToWriteOptions(params))
+			getCassandraEntityPersister(session).deleteFrom(id, propertyName, element, index, OptionsUtil.convertToWriteOptions(params))
 			if (params.flush) {
 				session.flush()
 			}
 		 } as SessionCallback)
 	}
+	
     /**
      * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
      * a matching persistent entity is not found a new entity is created and returned.
@@ -129,7 +172,7 @@ class CassandraGormStaticApi<D> extends GormStaticApi<D> {
              def persistentMetaClass = GroovySystem.metaClassRegistry.getMetaClass(persistentClass)
              result = (D)persistentMetaClass.invokeConstructor(queryMap)
              if (shouldSave) {
-                 InvokerHelper.invokeMethod(result, "save", null)
+                 InvokerHelper.invokeMethod(result, "save", args)
              }
          }
          result
