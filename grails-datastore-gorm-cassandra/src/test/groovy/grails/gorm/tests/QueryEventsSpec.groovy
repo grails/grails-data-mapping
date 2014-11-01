@@ -53,7 +53,7 @@ class QueryEventsSpec extends GormDatastoreSpec {
 	        listener.events[1].query == listener.events[0].query
 	        listener.events[1].results instanceof List
 	        listener.events[1].results.size() == 1
-	        listener.events[1].results[0] != entity
+	        listener.events[1].results[0] == entity
 	        listener.PostExecution == 1
 			
         when:
