@@ -19,8 +19,8 @@ import com.datastax.driver.core.Session
 class GormCassandraSessionFactoryBeanSpec extends Specification {
 
 	def keyspace = "configtest"
-	BasicCassandraMappingContext springCassandraMappingContext = new BasicCassandraMappingContext()
-	CassandraMappingContext cassandraMappingContext = new CassandraMappingContext(keyspace)		
+	CassandraMappingContext cassandraMappingContext = new CassandraMappingContext(keyspace)
+	BasicCassandraMappingContext springCassandraMappingContext = new BasicCassandraMappingContext(cassandraMappingContext)	
 	GormCassandraSessionFactoryBean gormCassandraSessionFactoryBean = new GormCassandraSessionFactoryBean(cassandraMappingContext, springCassandraMappingContext)		
 	
 	void "Test entity config simple primary key"() {
@@ -47,7 +47,7 @@ class GormCassandraSessionFactoryBeanSpec extends Specification {
     						
     	then:    		
     		def cql = new CreateTableCqlGenerator(createTableSpecification).toCql()
-    		cql == "CREATE TABLE personlastnamepartitionkey (surname text, firstname text, person_age int, location text, version bigint, PRIMARY KEY (surname, firstname, person_age));"
+    		cql == "CREATE TABLE personlastnamepartitionkey (surname text, firstname text, person_age int, location text, PRIMARY KEY (surname, firstname, person_age));"
 	}
 	
 	void "Test entity config table options CQL"() {
@@ -60,7 +60,7 @@ class GormCassandraSessionFactoryBeanSpec extends Specification {
 							
 		then:			
 			def cql = new CreateTableCqlGenerator(createTableSpecification).toCql()
-			cql == "CREATE TABLE configentity (surname text, firstname text, location ascii, person_age int, version bigint, PRIMARY KEY (surname, firstname, location)) " + 
+			cql == "CREATE TABLE configentity (surname text, firstname text, location ascii, person_age int, PRIMARY KEY (surname, firstname, location)) " + 
 				   "WITH CLUSTERING ORDER BY (firstname DESC, location DESC) " +
 				   "AND COMPACT STORAGE AND comment = 'table comment' " +
 				   "AND compaction = { 'class' : 'LeveledCompactionStrategy', 'sstable_size_in_mb' : 300, 'tombstone_compaction_interval' : 2 } " +

@@ -21,22 +21,22 @@ class QueryEventsSpec extends GormDatastoreSpec {
 
     void "pre-events are fired before queries are run"() {
         when:
-        TestEntity.findByName 'bob'
+        	TestEntity.findByName 'bob'
         then:
-        listener.events.size() >= 1
-        listener.events[0] instanceof PreQueryEvent
-        listener.events[0].query != null
-        listener.PreExecution == 1
+        	listener.events.size() >= 1
+			listener.events[0] instanceof PreQueryEvent
+			listener.events[0].query != null
+			listener.PreExecution == 1
 
         when:
-        TestEntity.where {name == 'bob'}.list()
+        	TestEntity.where {name == 'bob'}.list()
         then:
-        listener.PreExecution == 2
+        	listener.PreExecution == 2
 
         when:
-        new DetachedCriteria(TestEntity).build({name == 'bob'}).list()
+			new DetachedCriteria(TestEntity).build({name == 'bob'}).list()
         then:
-        listener.PreExecution == 3
+        	listener.PreExecution == 3
     }
 
     void "post-events are fired after queries are run"() {
@@ -53,7 +53,7 @@ class QueryEventsSpec extends GormDatastoreSpec {
 	        listener.events[1].query == listener.events[0].query
 	        listener.events[1].results instanceof List
 	        listener.events[1].results.size() == 1
-	        listener.events[1].results[0] != entity
+	        listener.events[1].results[0] == entity
 	        listener.PostExecution == 1
 			
         when:

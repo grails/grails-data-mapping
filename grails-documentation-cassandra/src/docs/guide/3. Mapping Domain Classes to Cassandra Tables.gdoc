@@ -1,0 +1,116 @@
+h4. Basic Mapping
+
+The way the GORM for Cassandra plugin works is to map each domain class to a Cassandra table. For example given a domain class such as:
+
+{code}
+class Person {
+    String firstName
+    String lastName    
+}
+{code}
+
+This will map onto a Cassandra table called "person" and generate the following table if schema creation is on:
+
+{code}
+CREATE TABLE person (id uuid, firstname text, lastname text, version bigint, PRIMARY KEY (id));
+{code}
+
+The plugin transparently adds an implicit @id@ property of type UUID which is auto-generated when an entity is saved.
+
+h4. Data types
+In general a property's Java type maps onto a CQL3 data type as listed [here|http://www.datastax.com/documentation/developer/java-driver/2.0/java-driver/reference/javaClass2Cql3Datatypes_r.html]
+Some Java types can map onto more than one CQL3 data type, the default mappings are shown in bold:
+* @java.util.UUID@ - CQL *uuid* or @timeuuid@
+* @java.lang.String@ - CQL *text* or @ascii@ or @varchar@
+* @long@ / @java.lang.Long@ - CQL *bigint* or @counter@
+
+Java @byte@ and @short@ map onto CQL @int@.
+
+To map onto a different CQL type specify the @type@ attribute in the mapping. Example: 
+
+{code}
+class Person {
+    String firstName
+    String lastName
+    UUID timeuuid    
+    String ascii
+    String varchar
+    long counter
+ 	
+    static mapping = {
+        timeuuid type:"timeuuid"
+        ascii type:'ascii'
+        varchar type:'varchar'   
+        counter type:'counter'     
+    }       
+}
+{code}
+
+ 
+h4. Embedded Collections and Maps
+
+You can map embedded lists, sets and maps of standard CQL data types simply by defining the appropriate collection type:
+
+{code}
+class Person {
+    String firstName
+    String lastName    
+    List<Integer> scores
+    Set<String> friends
+    Map<String, String> pets	    
+}
+
+...
+
+new Person(friends:['Fred', 'Bob'], pets:[chuck:"Dog", eddie:'Parrot']).save(flush:true)
+{code}
+
+There are certain [limitations|http://www.datastax.com/documentation/cql/3.1/cql/cql_using/use_collections_c.html] on collections and only the standard CQL data types can be stored inside embedded collections and maps.
+
+When persisting a domain class containing embedded collections or maps using the @save@ method, the entire collection or map is saved or updated to Cassandra. 
+This may not be appropriate if you only want to persist the non-collection properties, in which case you can use the @updateSimpleTypes@ instance method.
+Example:
+{code}
+def person = Person.get(uuid)
+person.age = 31
+person.updateSimpleTypes(flush:true)
+{code}
+
+If you want to add or remove an item from a collection or map and only have that change updated to Cassandra you can use the various dynamic methods listed in the "Domain Classes" section of the right nav. 
+Example:
+{code}
+person.prependToScores(5)
+Person.appendToFriends(person.id, 'Barney')
+Person.deleteFromPets(person.id, 'eddie', [flush:true])
+{code}
+ 
+ 
+h4. Customized Database Mapping
+
+You may wish to customize how a domain class maps onto a Cassandra table. This is possible using the @mapping@ block as follows:
+
+{code}
+class Person {
+    ..
+    static mapping = {
+        table "the_person"
+    }
+}
+{code}
+
+In this example we see that the @Person@ entity has been mapped to a table called "the_person".
+
+You can also control how an individual property maps onto a table column (the default is to use the property name itself):
+
+{code}
+class Person {
+    ..
+    static mapping = {
+        firstName column:"first_name"
+    }
+}
+{code}
+
+
+
+

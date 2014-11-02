@@ -1,0 +1,65 @@
+In Cassandra, a compound primary key consists of more than one column and treats only one column as the partition key. The other columns are treated as clustering columns.
+To define a compound primary key on a domain class, each property that is part of the key has to be defined in the mapping block with a @primaryKey@ map. Example:
+
+{code}
+class Person  {      
+    
+    String lastName
+    String firstName    
+    Integer age = 0
+    String location   
+
+    static mapping = {
+        id name:"lastName", primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned"     
+        firstName index:true, primaryKey:[ordinal:1, type: "clustered"]   
+        age primaryKey:[ordinal:2, type: "clustered"]     
+        version false  
+    }
+}
+{code}
+
+The above mapping will generate the following Cassandra table if schema creation is on:
+
+{code}
+CREATE TABLE person (lastname text, firstname text, age int, location text, PRIMARY KEY (lastname, firstname, age))
+{code}
+
+h4. Composite Partition Key
+A composite partition key consists of multiple columns and treats more than one column as the partition key. The other columns are treated as clustering columns.
+To define a composite partition key on a domain class, each property that is a part of the key has to have its @primaryKey type@ attribute set to "partitioned". Example:
+{code}
+class Person  {      
+    
+    String lastName
+    String firstName    
+    Integer age = 0
+    String location   
+
+    static mapping = {
+        id name:"lastName", primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned"     
+        firstName index:true, primaryKey:[ordinal:1, type: "partitioned"]   
+        age index:true, primaryKey:[ordinal:0, type: "clustered"]     
+        version false  
+    }
+}
+...
+CREATE TABLE person (lastname text, firstname text, age int, location text, PRIMARY KEY ((lastname, firstname), age))
+{code}
+
+h4. The mapping block
+The first column of the partition key is always mapped using @id@, and then the name of the actual property.
+
+
+You should then add the @primaryKey@ map to all columns of the compound/composite primary key. The two attributes are: 
+* @ordinal@ - specifies the order of the column in the compound/composite primary key. 
+* @type@ - "partitioned" or "clustered". For a compound primary key only one property is type "partitioned" and the rest are type "clustered". For a composite partition key more than one property is type "partitioned".
+
+h4. Persistence and Querying for Compound/Composite Primary Key domain classes
+Where ever you need to pass in an id to a persistence or query method, pass in a map containing the components of the compound/composite primary key instead.
+
+Example:
+
+{code}
+def person = Person.get([firstName:"Bob", lastName: "Wilson", age: 25])
+Person.updateProperties([firstName:"Bob", lastName: "Wilson", age: 25], [location: "London"], [flush:true])
+{code}

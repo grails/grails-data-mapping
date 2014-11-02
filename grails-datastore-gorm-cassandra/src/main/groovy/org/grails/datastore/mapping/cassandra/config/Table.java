@@ -14,11 +14,12 @@ import org.grails.datastore.mapping.query.Query;
 @SuppressWarnings("rawtypes")
 public class Table extends Entity {
 	private String keyspace;
+	private List<Column> columns = new ArrayList<Column>();
 	private List<Column> primaryKeys = new ArrayList<Column>();
 	private List<String> primaryKeyNames = new ArrayList<String>();
 	private Query.Order sort;
 	
-	private Map<String, Object> tableOptions;
+	private Map<String, Object> tableProperties;
 
 	public Table() {
 
@@ -36,9 +37,16 @@ public class Table extends Entity {
 		this.keyspace = keyspace;
 	}
 
-	public void addPrimaryKey(Column column) {
-		primaryKeys.add(column);
-		primaryKeyNames.add(column.getName());
+	public void addColumn(Column column) {
+		columns.add(column);
+		if (column.isPrimaryKey()) {
+			primaryKeys.add(column);
+			primaryKeyNames.add(column.getName());
+		}
+	}
+	
+	public List<Column> getColumns() {
+		return columns;
 	}
 
 	public List<Column> getPrimaryKeys() {
@@ -81,11 +89,11 @@ public class Table extends Entity {
 		}
 	}	
 
-	public Map<String, Object> getTableOptions() {
-		return tableOptions;
+	public Map<String, Object> getTableProperties() {
+		return tableProperties;
 	}
 
-	public void setTableOptions(Map<String, Object> tableOptions) {
-		this.tableOptions = tableOptions;
+	public void setTableProperties(Map<String, Object> tableProperties) {
+		this.tableProperties = tableProperties;
 	}
 }

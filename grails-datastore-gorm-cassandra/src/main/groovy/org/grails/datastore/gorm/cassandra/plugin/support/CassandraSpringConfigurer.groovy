@@ -37,7 +37,7 @@ class CassandraSpringConfigurer extends SpringConfigurer {
 			def cassandraConfig = application.config?.grails?.cassandra?.clone()
 			if (cassandraConfig == null) cassandraConfig = new ConfigObject()
 									
-			def keyspaceName = cassandraConfig.get(CassandraDatastore.KEYSPACE_CONFIG)?.remove(CassandraDatastore.KEYSPACE_NAME) ?: application.metadata.applicationName			
+			def keyspaceName = cassandraConfig.get(CassandraDatastore.KEYSPACE_CONFIG)?.remove(CassandraDatastore.KEYSPACE_NAME) ?: application.metadata.getApplicationName()		
 						
 			cassandraMappingContext(CassandraMappingContextFactoryBean) {
 				keyspace = keyspaceName

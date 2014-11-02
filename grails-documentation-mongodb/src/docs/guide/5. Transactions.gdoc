@@ -16,6 +16,6 @@ Person.withTransaction { status ->
 }
 {code}
 
-For example in this case neither @Person@ object will be persisted to the database, because underneath the surface a persistence session is being used to batch up both insert operations into a single insert. When the exception is thrown neither insert is ever executed, hence we allow for some transactional semantics are the GORM-level.
+For example in this case neither @Person@ object will be persisted to the database, because underneath the surface a persistence session is being used to batch up both insert operations into a single insert. When an exception is thrown neither insert is ever executed, hence we allow for some transactional semantics at the GORM-level.
 
 Using the lower level API you can of course also take advantage of Mongo's support for [Atomic operations|http://docs.mongodb.org/manual/tutorial/isolate-sequence-of-operations].

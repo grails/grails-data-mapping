@@ -1,6 +1,6 @@
 h4. Mongo Database Connection Configuration
 
-As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your @grails-app/conf/DataSource.groovy@ file:
+As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the @grails-app/conf/DataSource.groovy@ file:
 
 {code}
 grails {
@@ -79,7 +79,7 @@ Note you can also configure the @SSLSocketFactory@ manually if necessary. All se
 
 h4. Configuration Options Guide
 
-Below is a complete example showing all configuration options
+Below is a complete example showing all configuration options:
 
 {code}
 grails {

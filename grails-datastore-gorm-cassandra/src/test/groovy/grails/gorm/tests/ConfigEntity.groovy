@@ -15,14 +15,15 @@ class ConfigEntity {
         location index:true, primaryKey:[ordinal:2, type: "clustered"], type:'ascii', order: "desc"
         age index:true, column: "person_age"  
 		sort location: "desc"      		
+		version false
 	}	
 	
-	static tableOptions = {		
+	static tableProperties = {		
 		compact_storage true
 		comment "table comment"
 		compaction class: "LeveledCompactionStrategy", sstable_size_in_mb: 300, tombstone_compaction_interval: 2
 		compression sstable_compression: "LZ4Compressor", chunk_length_kb: 128,	crc_check_chance: 0.75
-		caching keys : "all"
+		caching "all"
 		bloom_filter_fp_chance 0.2
 		read_repair_chance 0.1
 		dclocal_read_repair_chance 0.2

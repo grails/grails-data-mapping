@@ -31,7 +31,7 @@ db.languages << [[name: 'Javascript', type: 'prototyped'], [name: 'Ioke', type: 
 {code}
 
 
-To get hold of the @mongo@ instance (which is an of the [com.mongodb.Mongo|http://api.mongodb.org/java/current/com/mongodb/Mongo.html] class) inside a controller or service simple define a @mongo@ property:
+To get hold of the @mongo@ instance (which is an instance of the [com.mongodb.Mongo|http://api.mongodb.org/java/current/com/mongodb/Mongo.html] class) inside a controller or service simple define a @mongo@ property:
 
 {code}
 def mongo

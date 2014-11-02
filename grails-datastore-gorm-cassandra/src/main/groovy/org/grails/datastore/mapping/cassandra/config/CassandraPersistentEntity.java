@@ -11,7 +11,7 @@ public class CassandraPersistentEntity extends AbstractPersistentEntity<Table> {
 
     private Entity mappedForm;
     private CassandraClassMapping classMapping;
-    
+    private Boolean version = true; 
     public CassandraPersistentEntity(Class<?> javaClass, CassandraMappingContext context) {
         super(javaClass, context);
         //need to create the mappedForm first so all the entity properties are read first, 
@@ -37,5 +37,15 @@ public class CassandraPersistentEntity extends AbstractPersistentEntity<Table> {
         public Table getMappedForm() {
             return (Table) mappedForm;
         }
+    }
+    
+    
+    public void setVersion(Boolean version) {
+		this.version = version;
+	}
+    
+    @Override
+    public boolean isVersioned() {
+    	return version;
     }
 }

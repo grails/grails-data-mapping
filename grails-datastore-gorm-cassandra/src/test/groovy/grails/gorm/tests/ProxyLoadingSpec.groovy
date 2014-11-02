@@ -11,14 +11,22 @@ class ProxyLoadingSpec extends GormDatastoreSpec {
 
         given:
             def t = new TestEntity(name:"Bob", age: 45, child:new ChildEntity(name:"Test Child")).save(flush:true)
-
+			def person = new PersonLastNamePartitionKey(firstName: 'Jake', lastName: 'Brown', age: 35).save(flush:true)
+			session.clear()
         when:
             def proxy = TestEntity.load(t.id)
-
+			def proxyPerson = PersonLastNamePartitionKey.load([firstName: person.firstName, lastName: person.lastName, age: person.age])
         then:
             proxy != null
             t.id == proxy.id
             "Bob" == proxy.name
+			session.getCachedInstance(TestEntity, t.id)
+			
+			proxyPerson != null
+			'Jake' == proxyPerson.firstName
+			'Brown' == proxyPerson.lastName
+			35 == proxyPerson.age
+			session.getCachedInstance(PersonLastNamePartitionKey, [firstName: person.firstName, lastName: person.lastName, age: person.age])
     }
 
     @Ignore("Cassandra GORM does not support associations at present")

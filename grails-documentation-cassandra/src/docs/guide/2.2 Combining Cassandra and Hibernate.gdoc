@@ -1,0 +1,58 @@
+If you have both the Hibernate and Cassandra plugins installed then by default all classes in the @grails-app/domain@ directory will be persisted by Hibernate and not Cassandra. 
+If you want to persist a particular domain class with Cassandra then you must use the @mapWith@ property in the domain class:
+
+{code}
+static mapWith = "cassandra"
+{code}
+
+Alternatively you can persist Hibernate entities to Cassandra using the special @cassandra@ scope added to all Hibernate entities.
+
+{code}
+person.cassandra.save()
+{code}
+
+By default the Hibernate plugin transparently adds an implicit @id@ property of type @Long@ to your domain class. The Cassandra plugin adds an @id@ property of type @UUID@. 
+If you install both plugins the @id@ property will be of type @Long@.
+If you have a domain class with auto-generated @id@ (the default) and you want to save it to both datastores, you should set a @String id@ property.
+Example of persisting an entity to both datastores:
+{code}
+class Person {
+    String id
+    String firstName
+    String lastName     
+}	
+
+def hibernatePerson = new Person(firstName: "Fred", lastName: "Flintstone").save(flush:true)
+
+hibernatePerson = Person.get(1)
+
+hibernatePerson.cassandra.insert()
+
+def cassandraPerson = Person.cassandra.get(1)
+{code}
+
+Because a @Long id@ won't really work for Cassandra, you can explicitly add a @UUID id@ property, and set the id's @generator@ attribute so the Hibernate plugin can auto-generate a @UUID@.
+
+Example:
+
+{code}
+class Person {
+    UUID id
+    String firstName
+    String lastName 
+    static mapping = {
+        id generator:'uuid2'        
+    }   
+}	
+
+def hibernatePerson = new Person(firstName: "Fred", lastName: "Flintstone").save(flush:true)
+
+hibernatePerson = Person.get(uuid)
+
+hibernatePerson.cassandra.insert()
+
+def cassandraPerson = Person.cassandra.get(uuid)
+{code}
+
+Note that as an identifier has been assigned to the entity by the Hibernate plugin, you will need to use the @insert@ method for Cassandra instead of the @save@ method, 
+otherwise GORM can't work out whether you are trying to achieve an insert or an update.

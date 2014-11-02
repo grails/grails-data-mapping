@@ -47,10 +47,10 @@ class Setup {
 
             ConfigObject config = new ConfigObject()
 			ConfigObject keyspaceConfig = new ConfigObject()
-			config.put(CassandraDatastore.SCHEMA_ACTION, "RECREATE_DROP_UNUSED")
+			config.put(CassandraDatastore.SCHEMA_ACTION, "recreate-drop-unused")
 			config.put(CassandraDatastore.KEYSPACE_CONFIG, keyspaceConfig)
 			keyspaceConfig.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "CREATE")            
+			keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "create")            
 			//can change to different host and port
             //config.setProperty(CassandraDatastore.CONTACT_POINTS, "localhost") 
 			//config.setProperty(CassandraDatastore.PORT, 9042)

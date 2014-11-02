@@ -1,0 +1,20 @@
+h1. updateProperties
+
+h2. Purpose
+
+Static method that updates multiple properties on an existing instance in the datastore.
+
+h2. Examples 
+{code}
+Book.updateProperties(uuid, [revenue : 300, sold : 10])
+Person.updateProperties([firstName:"Fred", lastName: "Flintstone"], [age : 30, email: "fred.flintstone@gmail.com"], [flush:true])
+{code}
+
+h2. Description
+
+Allows an update to multiple properties of an existing instance without having to get it from the datastore first. Will not validate the properties nor update the version column for optimistic locking.
+
+Argument:
+* id - the id or primary key map of the instance to update
+* properties - a map of property name/value pairs to update
+* flush (optional) - When set to true flushes the persistence context, updating the datastore immediately
