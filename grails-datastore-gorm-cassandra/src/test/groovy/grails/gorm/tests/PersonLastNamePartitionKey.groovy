@@ -10,7 +10,11 @@ class PersonLastNamePartitionKey  {
     String firstName    
     Integer age = 0
     String location   
-
+	
+	def Map getId() {
+		[]
+	}
+	
     static mapping = {
         id name:"lastName", primaryKey:[ordinal:0, type:"partitioned"], generator:"assigned", column: "surname"       
         firstName index:true, primaryKey:[ordinal:1, type: "clustered"]   
