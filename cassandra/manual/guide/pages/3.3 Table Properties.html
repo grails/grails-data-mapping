@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.4 Table Properties 1.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/3.%20Mapping%20Domain%20Classes%20to%20Cassandra%20Tables.html"><strong>3</strong><span>Mapping Domain Classes to Cassandra Tables</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/4.%20Querying%20and%20Persistence%20Options.html"><strong>4</strong><span>Querying and Persistence Options</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/5.%20Low-level%20API.html"><strong>5</strong><span>Low-level API</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/2.%20Getting%20Started.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/4.%20Querying%20and%20Persistence%20Options.html"><strong>4</strong><span>Querying and Persistence Options</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3.4 Table Properties - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Paras Lakhani</p>
+
+                    <p><strong>Version:</strong> 1.0.0</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h2 id="3.3 Table Properties">3.4 Table Properties</h2>
+You can configure clustering order, caching, compaction, and a number of other operations that Cassandra performs on a new table.<p class="paragraph"/><h4>Clusterting order</h4>
+An explanation is provided in the <a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_reference/refClstrOrdr.html" target="blank">Cassandra docs</a>.
+Clustering order can only be used on a clustered primary key, to use it set its order attribute. Example:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    ..
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        id name:<span class="java&#45;quote">"lastName"</span>, primaryKey:&#91;ordinal:0, type:<span class="java&#45;quote">"partitioned"</span>&#93;, generator:<span class="java&#45;quote">"assigned"</span>
+        firstName index:<span class="java&#45;keyword">true</span>, primaryKey:&#91;ordinal:1, type: <span class="java&#45;quote">"clustered"</span>&#93;, order: <span class="java&#45;quote">"desc"</span> //or order: <span class="java&#45;quote">"asc"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/><h4>Setting a table property</h4>
+Available properties and their descriptions are defined in the <a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_reference/tabProp.html" target="blank">Cassandra docs</a>.
+If you want to set a table property, define a static <code>tableProperties</code> block. 
+Below is an example of the properties you can set with Cassandra GORM:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    ..	
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        id name:<span class="java&#45;quote">"lastName"</span>, primaryKey:&#91;ordinal:0, type:<span class="java&#45;quote">"partitioned"</span>&#93;
+        firstName primaryKey:&#91;ordinal:1, type: <span class="java&#45;quote">"clustered"</span>&#93;, order:<span class="java&#45;quote">"desc"</span>
+    &#125;<p class="paragraph"/>    <span class="java&#45;keyword">static</span> tableProperties = &#123;
+        comment <span class="java&#45;quote">"table comment"</span>
+        <span class="java&#45;quote">"COMPACT STORAGE"</span> <span class="java&#45;keyword">true</span> //OR <span class="java&#45;quote">"compact_storage"</span> <span class="java&#45;keyword">true</span>
+        replicate_on_write <span class="java&#45;keyword">false</span>
+        caching <span class="java&#45;quote">"all"</span>
+        bloom_filter_fp_chance 0.2
+        read_repair_chance 0.1
+        dclocal_read_repair_chance 0.2
+        gc_grace_seconds 900000
+        compaction class: <span class="java&#45;quote">"SizeTieredCompactionStrategy"</span>, bucket_high: 2.5, bucket_low: 0.6, max_threshold: 40, min_threshold: 5, min_sstable_size: 60
+        compression sstable_compression: <span class="java&#45;quote">"LZ4Compressor"</span>, chunk_length_kb: 128,	crc_check_chance: 0.85	
+    &#125;
+&#125;</pre></div>
+The above mapping will generate the following Cassandra table if schema creation is on:<p class="paragraph"/><div class="code"><pre>CREATE TABLE person (lastname text, firstname text, version bigint, PRIMARY KEY (lastname, firstname)) 
+WITH CLUSTERING ORDER BY (firstname DESC) AND comment = 'table comment' AND COMPACT STORAGE AND replicate_on_write = '<span class="java&#45;keyword">false</span>' 
+AND caching = 'all' AND bloom_filter_fp_chance = 0.2 AND read_repair_chance = 0.1 AND dclocal_read_repair_chance = 0.2 
+AND gc_grace_seconds = 900000 
+AND compaction = &#123; 'class' : 'SizeTieredCompactionStrategy', 'bucket_high' : 2.5, 'bucket_low' : 0.6, 'max_threshold' : 40, 'min_threshold' : 5, 
+                   'min_sstable_size' : 60 &#125; 
+AND compression = &#123; 'sstable_compression' : 'LZ4Compressor', 'chunk_length_kb' : 128, 'crc_check_chance' : 0.85 &#125;;</pre></div><p class="paragraph"/><h4><a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_reference/tabProp.html" target="blank">Table property options</a></h4>
+<ul class="star">
+<li>comment : String</li>
+<li>"COMPACT STORAGE" OR "compact_storage" : boolean</li>
+<li>replicate_on_write : boolean</li>
+<li>caching : "all", "keys_only", "rows_only", "none"</li>
+<li>bloom_filter_fp_chance : double</li>
+<li>read_repair_chance : double</li>
+<li>dclocal_read_repair_chance : double</li>
+<li>gc_grace_seconds : long</li>
+<li>compaction : class, tombstone_threshold, tombstone_compaction_interval, min_sstable_size, min_threshold, max_threshold, bucket_low, bucket_high, sstable_size_in_mb</li>
+<li>compression : sstable_compression, chunk_length_kb, crc_check_chance</li>
+</ul><p class="paragraph"/>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/2.%20Getting%20Started.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/4.%20Querying%20and%20Persistence%20Options.html"><strong>4</strong><span>Querying and Persistence Options</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Beans/cassandraTemplate.html">cassandraTemplate</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/appendTo.html">appendTo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/deleteAtFrom.html">deleteAtFrom</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/deleteFrom.html">deleteFrom</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/prependTo.html">prependTo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/replaceAtIn.html">replaceAtIn</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/updateProperties.html">updateProperties</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/updateProperty.html">updateProperty</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/updateSingleTypes.html">updateSingleTypes</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

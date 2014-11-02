@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>1 Introduction 1.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/3.%20Mapping%20Domain%20Classes%20to%20Cassandra%20Tables.html"><strong>3</strong><span>Mapping Domain Classes to Cassandra Tables</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20Querying%20and%20Persistence%20Options.html"><strong>4</strong><span>Querying and Persistence Options</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Low-level%20API.html"><strong>5</strong><span>Low-level API</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>1 Introduction - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Paras Lakhani</p>
+
+                    <p><strong>Version:</strong> 1.0.0</p>
+
+                    
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#1.1%20Compatibility%20with%20GORM%20for%20Hibernate"><strong>1.1</strong><span>Compatibility with GORM for Hibernate</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#1.2%20Release%20Notes"><strong>1.2</strong><span>Release Notes</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="1. Introduction">1 Introduction</h1>
+Apache Cassandra is a massively scalable open source NoSQL database.<p class="paragraph"/>Cassandra can be used for managing large amounts of data across multiple data centers and the cloud.<p class="paragraph"/>The goal of this grails-data-mapping subproject is to provide a 'as-complete-as-possible' GORM implemenatition that maps domain classes and instances to Cassandra 2.0 tables.<p class="paragraph"/>This project aims to provide an object-mapping layer on top of Cassandra to ease common activities such as:
+<ul class="star">
+<li>Marshalling from Cassandra to Groovy/Java types and back again</li>
+<li>Support for GORM dynamic finders, criteria and named queries</li>
+<li>Session-managed transactions</li>
+<li>Validating domain instances backed by the Cassandra datastore</li>
+<li>Cassandra schema creation</li>
+</ul><p class="paragraph"/>
+
+
+<h2 id="1.1 Compatibility with GORM for Hibernate">1.1 Compatibility with GORM for Hibernate</h2>
+This implementation tries to be as compatible as possible with GORM for Hibernate. 
+In general you can refer to the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html" target="blank">GORM documentation</a> and the "Domain Classes" section of the <a href="http://grails.org/doc/latest/" target="blank">reference guide</a> (see the right nav) for usage information.<p class="paragraph"/>The following key features are supported by GORM for Cassandra:
+<ul class="star">
+<li>Simple persistence methods</li>
+<li>Dynamic finders</li>
+<li>Criteria queries</li>
+<li>Named queries</li>
+<li>Inheritance</li>
+<li>Embedded types</li>
+<li>Query by example</li>
+</ul><p class="paragraph"/>However, some features are not supported:
+<ul class="star">
+<li>HQL queries</li>
+<li>Associations (these should be supported in the future)</li>
+<li>Any direct interaction with the Hibernate API</li>
+<li>Custom Hibernate user types</li>
+<li>Queries using OR, LIKE, NOT EQUAL, IS NULL, negation, property comparison, offset in paging, most projections (mainly because Cassandra itself doesn't support these)</li>
+<li>Table-per-hierarchy mapping</li>
+</ul><p class="paragraph"/>There may be other limitations not mentioned here so in general it shouldn't be expected that an application based on GORM for Hibernate will "just work" without some tweaking involved. Having said that, the large majority of common GORM functionality is supported.
+
+
+
+<h2 id="1.2 Release Notes">1.2 Release Notes</h2>
+Below are the details of the changes across releases:<p class="paragraph"/><h4>1.0.0 GA</h4>
+<ul class="star">
+<li>Initial feature complete 1.0 release</li>
+</ul><p class="paragraph"/>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Beans/cassandraTemplate.html">cassandraTemplate</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/appendTo.html">appendTo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/deleteAtFrom.html">deleteAtFrom</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/deleteFrom.html">deleteFrom</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/prependTo.html">prependTo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/replaceAtIn.html">replaceAtIn</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/updateProperties.html">updateProperties</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/updateProperty.html">updateProperty</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/updateSingleTypes.html">updateSingleTypes</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

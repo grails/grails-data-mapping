@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2.3 Advanced Configuration 1.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/3.%20Mapping%20Domain%20Classes%20to%20Cassandra%20Tables.html"><strong>3</strong><span>Mapping Domain Classes to Cassandra Tables</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/4.%20Querying%20and%20Persistence%20Options.html"><strong>4</strong><span>Querying and Persistence Options</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/5.%20Low-level%20API.html"><strong>5</strong><span>Low-level API</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/1.%20Introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/3.%20Mapping%20Domain%20Classes%20to%20Cassandra%20Tables.html"><strong>3</strong><span>Mapping Domain Classes to Cassandra Tables</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2.3 Advanced Configuration - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Paras Lakhani</p>
+
+                    <p><strong>Version:</strong> 1.0.0</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h2 id="2.3 Advanced Configuration">2.3 Advanced Configuration</h2>
+<h4>Cassandra Database Connection Configuration</h4><p class="paragraph"/>As mentioned the GORM for Cassandra plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    cassandra &#123;
+        contactPoints = <span class="java&#45;quote">"localhost"</span>
+        port = 9042
+        schemaAction = <span class="java&#45;quote">"recreate&#45;drop&#45;unused"</span>
+        keyspace &#123;
+            name = <span class="java&#45;quote">"foo"</span> 
+            action = <span class="java&#45;quote">"create"</span>
+        &#125;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>The <code>keyspace name</code> property configures the default keyspace to use. If it's not specified the <code>keyspace</code> used will default to the name of your application.<p class="paragraph"/>In production scenarios you will typically use more than one Cassandra node:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    cassandra &#123;
+        contactPoints = <span class="java&#45;quote">"192.168.0.1, 192.168.0.2"</span> //comma&#45;separated list of hostnames or IP addresses of nodes to connect to
+    &#125;
+&#125;</pre></div><p class="paragraph"/><h4>Keyspace creation</h4><p class="paragraph"/>If you want the plugin to automatically create the application's keyspace you can specify a value for the <code>keyspace action</code> property:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    cassandra &#123;
+        keyspace &#123;
+            name = <span class="java&#45;quote">"foo"</span> 
+            action = <span class="java&#45;quote">"create"</span>
+        &#125;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Valid options for <code>action</code> are:
+<ul class="star">
+<li><strong class="bold">create</strong> - Create the keyspace if it doesn't exist</li>
+<li><strong class="bold">create-drop</strong> - Drop the keyspace and create it if doesn't exist</li>
+</ul><p class="paragraph"/><h4>Schema creation</h4><p class="paragraph"/>The plugin can automatically create the Cassandra tables and indexes required for your domain model. You have some control over when and how it does this through the <code>dbCreate</code> property, which can take these values: 
+<ul class="star">
+<li><strong class="bold">none</strong> - The default. Do not create any schema objects.</li>
+<li><strong class="bold">create</strong> - Create a table and indexes for each domain class on startup. Fail if a table already exists.</li>
+<li><strong class="bold">recreate</strong> - Create a table and indexes for each domain class on startup, dropping the table first if it exists.</li>
+<li><strong class="bold">recreate-drop-unused</strong> - Drop <strong class="bold">all</strong> tables in the keyspace, then create a table and indexes for each domain class on startup.</li>
+<li>update - TO IMPLEMENT</li>
+</ul><p class="paragraph"/>Example:
+<div class="code"><pre>grails &#123;
+    cassandra &#123;
+        dbCreate = <span class="java&#45;quote">"recreate&#45;drop&#45;unused"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>You can remove the dbCreate property completely, which is recommended once your schema is relatively stable and definitely when your application and database are deployed in production.<p class="paragraph"/><h4>Configuration Options Guide</h4><p class="paragraph"/>Below is a complete example showing all configuration options, including <a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_reference/create_keyspace_r.html" target="blank">keyspace options</a>:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    cassandra &#123;
+    	contactPoints = <span class="java&#45;quote">"localhost"</span> //comma&#45;separated list of hostnames or IP addresses of nodes to connect to
+        port = 9042 //the port to connect to
+        dbCreate = <span class="java&#45;quote">"recreate"</span> //the strategy to create cassandra tables and indexes <span class="java&#45;keyword">for</span> domain classes, <span class="java&#45;keyword">default</span>: <span class="java&#45;quote">"none"</span>     
+        stateless = <span class="java&#45;keyword">false</span> // whether to use stateless sessions by <span class="java&#45;keyword">default</span><p class="paragraph"/>        keyspace &#123;
+            name = <span class="java&#45;quote">"foo"</span> //the name of the keyspace to use, <span class="java&#45;keyword">default</span>: the name of the application
+            action = <span class="java&#45;quote">"create"</span> //whether to create a keyspace, <span class="java&#45;keyword">default</span>: no keyspace created<p class="paragraph"/>            //keyspace properties to set only <span class="java&#45;keyword">if</span> the plugin is to create the keyspace         			
+            durableWrites = <span class="java&#45;keyword">false</span> //<span class="java&#45;keyword">default</span>: <span class="java&#45;keyword">false</span>                        
+            replicationStrategy = <span class="java&#45;quote">"SimpleStrategy"</span> OR <span class="java&#45;quote">"NetworkTopologyStrategy"</span> //<span class="java&#45;keyword">default</span>: <span class="java&#45;quote">"SimpleStrategy"</span>             
+            replicationFactor = 1 //<span class="java&#45;keyword">default</span>: 1                        
+            dataCenter = &#91;<span class="java&#45;quote">"us&#45;west"</span>:1, <span class="java&#45;quote">"eu&#45;west"</span>:2&#93; //<span class="java&#45;keyword">if</span> replicationStrategy is <span class="java&#45;quote">"NetworkTopologyStrategy"</span>,
+                                                    //a map of data centre names and replication factors
+        &#125;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>
+<h4>Global Mapping Configuration</h4><p class="paragraph"/>Using the <code>grails.cassandra.default.mapping</code> setting in <code>Config.groovy</code> you can configure global mapping options across your domain classes. 
+The following configuration will disable optimistic locking globally:<p class="paragraph"/><div class="code"><pre>grails.cassandra.<span class="java&#45;keyword">default</span>.mapping = &#123;
+    version <span class="java&#45;keyword">false</span>    
+&#125;</pre></div>
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/1.%20Introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/3.%20Mapping%20Domain%20Classes%20to%20Cassandra%20Tables.html"><strong>3</strong><span>Mapping Domain Classes to Cassandra Tables</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Beans/cassandraTemplate.html">cassandraTemplate</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/appendTo.html">appendTo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/deleteAtFrom.html">deleteAtFrom</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/deleteFrom.html">deleteFrom</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/prependTo.html">prependTo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/replaceAtIn.html">replaceAtIn</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/updateProperties.html">updateProperties</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/updateProperty.html">updateProperty</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/updateSingleTypes.html">updateSingleTypes</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
