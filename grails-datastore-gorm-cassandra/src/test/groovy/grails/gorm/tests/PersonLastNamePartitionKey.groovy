@@ -2,7 +2,7 @@ package grails.gorm.tests
 
 import grails.persistence.Entity
 
-@groovy.transform.EqualsAndHashCode(includes=["lastName", "firstName"])
+@groovy.transform.EqualsAndHashCode(includes=["lastName", "firstName", "age"])
 @Entity
 class PersonLastNamePartitionKey  {      
     
