@@ -13,7 +13,6 @@ grails.project.dependency.resolution = {
         mavenCentral()
         grailsCentral()
         mavenLocal()
-		mavenRepo "https://repo.grails.org/grails/libs-snapshots-local"
     }
 
     dependencies {
@@ -27,11 +26,12 @@ grails.project.dependency.resolution = {
             excludes 'ehcache-core'            
         }       
 
-        def datastoreVersion = "3.1.2.RELEASE"
-        def cassandraDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
+        
+        
+        def datastoreVersion = "3.1.3.RELEASE"
+        def cassandraDatastoreVersion = "1.0.0-M01"
 
         compile ("org.grails:grails-datastore-gorm-cassandra:$cassandraDatastoreVersion",excludes)
-
         compile("org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
                 "org.grails:grails-datastore-gorm:$datastoreVersion",
                 "org.grails:grails-datastore-core:$datastoreVersion",                
@@ -41,7 +41,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        build(':release:3.0.1', ':rest-client-builder:2.0.0') {
+        build(':release:3.0.1', ':rest-client-builder:2.0.3') {
             export = false
             excludes 'grails-core', 'grails-web'
         }
