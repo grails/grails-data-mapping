@@ -140,16 +140,16 @@ In general you can refer to the <a href="http://grails.org/doc/latest/guide/5.%2
 
 
 <h2 id="1.2 Release Notes">1.2 Release Notes</h2>
-Below are the details of the changes across releases:<p class="paragraph"/><h4>1.0.0 GA</h4>
+Below are the details of the changes across releases:<p class="paragraph"/><h4>1.0.0 M1</h4>
 <ul class="star">
-<li>Initial feature complete 1.0 release</li>
+<li>First GORM compliant version of the plugin, without support for associations</li>
 </ul><p class="paragraph"/>
 
 
 <h1 id="2. Getting Started">2 Getting Started</h1>
 To get started with GORM for Cassandra you need configure it as a dependency in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
     compile ':cassandra:latest.version' 
-&#125;</pre></div><p class="paragraph"/>With that done you need to set up a running Cassandra server. 
+&#125;</pre></div><p class="paragraph"/>The next step is to setup a running Cassandra server. 
 Refer to the <a href="https://wiki.apache.org/cassandra/GettingStarted" target="blank">Apache Cassandra Getting Started Guide</a> for an explanation on how to setup and startup a Cassandra instance. 
 Once installed, starting Cassandra is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>CASSANDRA_HOME/bin/cassandra &#45;f</pre></div><p class="paragraph"/>With the above command executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>INFO 00:11:16,935 Starting listening <span class="java&#45;keyword">for</span> CQL clients on localhost/127.0.0.1:9042&#8230;
 INFO 00:11:17,013 Using TFramedTransport with a max frame size of 15728640 bytes.
@@ -173,26 +173,23 @@ If you plan to use Cassandra as your primary datastore then you need to remove t
 <h2 id="2.2 Combining Cassandra and Hibernate">2.2 Combining Cassandra and Hibernate</h2>
 If you have both the Hibernate and Cassandra plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Cassandra. 
 If you want to persist a particular domain class with Cassandra then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"cassandra"</span></pre></div><p class="paragraph"/>Alternatively you can persist Hibernate entities to Cassandra using the special <code>cassandra</code> scope added to all Hibernate entities.<p class="paragraph"/><div class="code"><pre>person.cassandra.save()</pre></div><p class="paragraph"/>By default the Hibernate plugin transparently adds an implicit <code>id</code> property of type <code>Long</code> to your domain class. The Cassandra plugin adds an <code>id</code> property of type <code>UUID</code>. 
-If you install both plugins the <code>id</code> property will be of type <code>Long</code>.
-If you have a domain class with auto-generated <code>id</code> (the default) and you want to save it to both datastores, you should set a <code>String id</code> property.
-Example of persisting an entity to both datastores:
+If you install both plugins, the <code>id</code> property will be of type <code>Long</code>.
+So if you have a domain class with an auto-generated <code>id</code> (the default behaviour) and you want to save it to both datastores, you should define a <code>UUID id</code> 
+property as a <code>Long</code> won't really work for Cassandra. You also need to set the id's <code>generator</code> attribute so that the Hibernate plugin can auto-generate a <code>UUID</code>.
+Here is an example of persisting an entity to both datastores:
 <div class="code"><pre>class Person &#123;
-    <span class="java&#45;object">String</span> id
-    <span class="java&#45;object">String</span> firstName
-    <span class="java&#45;object">String</span> lastName     
-&#125;<p class="paragraph"/>def hibernatePerson = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Fred"</span>, lastName: <span class="java&#45;quote">"Flintstone"</span>).save(flush:<span class="java&#45;keyword">true</span>)<p class="paragraph"/>hibernatePerson = Person.get(1)<p class="paragraph"/>hibernatePerson.cassandra.insert()<p class="paragraph"/>def cassandraPerson = Person.cassandra.get(1)</pre></div><p class="paragraph"/>Because a <code>Long id</code> won't really work for Cassandra, you can explicitly add a <code>UUID id</code> property, and set the id's <code>generator</code> attribute so the Hibernate plugin can auto-generate a <code>UUID</code>.<p class="paragraph"/>Example:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     UUID id
     <span class="java&#45;object">String</span> firstName
     <span class="java&#45;object">String</span> lastName 
     <span class="java&#45;keyword">static</span> mapping = &#123;
         id generator:'uuid2'        
     &#125;   
-&#125;<p class="paragraph"/>def hibernatePerson = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Fred"</span>, lastName: <span class="java&#45;quote">"Flintstone"</span>).save(flush:<span class="java&#45;keyword">true</span>)<p class="paragraph"/>hibernatePerson = Person.get(uuid)<p class="paragraph"/>hibernatePerson.cassandra.insert()<p class="paragraph"/>def cassandraPerson = Person.cassandra.get(uuid)</pre></div><p class="paragraph"/>Note that as an identifier has been assigned to the entity by the Hibernate plugin, you will need to use the <code>insert</code> method for Cassandra instead of the <code>save</code> method, 
+&#125;<p class="paragraph"/>def hibernatePerson = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Fred"</span>, lastName: <span class="java&#45;quote">"Flintstone"</span>).save()<p class="paragraph"/>hibernatePerson = Person.get(uuid)<p class="paragraph"/>hibernatePerson.cassandra.insert()<p class="paragraph"/>def cassandraPerson = Person.cassandra.get(uuid)</pre></div><p class="paragraph"/>Note that as an identifier has been assigned to the entity by the Hibernate plugin, you will need to use the <code>insert</code> method for Cassandra instead of the <code>save</code> method, 
 otherwise GORM can't work out whether you are trying to achieve an insert or an update.
 
 
 <h2 id="2.3 Advanced Configuration">2.3 Advanced Configuration</h2>
-<h4>Cassandra Database Connection Configuration</h4><p class="paragraph"/>As mentioned the GORM for Cassandra plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
+<h4>Cassandra Database Connection Configuration</h4><p class="paragraph"/>As mentioned above, the GORM for Cassandra plugin will configure itself with default settings, but if you wish to customize those defaults you can do so in the <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
     cassandra &#123;
         contactPoints = <span class="java&#45;quote">"localhost"</span>
         port = 9042
@@ -256,7 +253,7 @@ The following configuration will disable optimistic locking globally:<p class="p
 <h4>Basic Mapping</h4><p class="paragraph"/>The way the GORM for Cassandra plugin works is to map each domain class to a Cassandra table. For example given a domain class such as:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     <span class="java&#45;object">String</span> firstName
     <span class="java&#45;object">String</span> lastName    
-&#125;</pre></div><p class="paragraph"/>This will map onto a Cassandra table called "person" and generate the following table if schema creation is on:<p class="paragraph"/><div class="code"><pre>CREATE TABLE person (id uuid, firstname text, lastname text, version bigint, PRIMARY KEY (id));</pre></div><p class="paragraph"/>The plugin transparently adds an implicit <code>id</code> property of type UUID which is auto-generated when an entity is saved.<p class="paragraph"/><h4>Data types</h4>
+&#125;</pre></div><p class="paragraph"/>This will map onto a Cassandra table called "person" and generate the following table if schema creation is on:<p class="paragraph"/><div class="code"><pre>CREATE TABLE person (id uuid, firstname text, lastname text, version bigint, PRIMARY KEY (id));</pre></div><p class="paragraph"/><blockquote class="note"> The plugin transparently adds an implicit <code>id</code> property of type UUID which is auto-generated when an entity is saved.</blockquote><p class="paragraph"/><h4>Data types</h4>
 In general a property's Java type maps onto a CQL3 data type as listed <a href="http://www.datastax.com/documentation/developer/java-driver/2.0/java-driver/reference/javaClass2Cql3Datatypes_r.html" target="blank">here</a>
 Some Java types can map onto more than one CQL3 data type, the default mappings are shown in bold:
 <ul class="star">
@@ -282,7 +279,7 @@ Some Java types can map onto more than one CQL3 data type, the default mappings 
     List&#60;<span class="java&#45;object">Integer</span>&#62; scores
     Set&#60;<span class="java&#45;object">String</span>&#62; friends
     Map&#60;<span class="java&#45;object">String</span>, <span class="java&#45;object">String</span>&#62; pets	    
-&#125;<p class="paragraph"/>...<p class="paragraph"/><span class="java&#45;keyword">new</span> Person(friends:&#91;'Fred', 'Bob'&#93;, pets:&#91;chuck:<span class="java&#45;quote">"Dog"</span>, eddie:'Parrot'&#93;).save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>There are certain <a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_using/use_collections_c.html" target="blank">limitations</a> on collections and only the standard CQL data types can be stored inside embedded collections and maps.<p class="paragraph"/>When persisting a domain class containing embedded collections or maps using the <code>save</code> method, the entire collection or map is saved or updated to Cassandra. 
+&#125;<p class="paragraph"/>...<p class="paragraph"/><span class="java&#45;keyword">new</span> Person(friends:&#91;'Fred', 'Bob'&#93;, pets:&#91;chuck:<span class="java&#45;quote">"Dog"</span>, eddie:'Parrot'&#93;).save()</pre></div><p class="paragraph"/>There are certain <a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_using/use_collections_c.html" target="blank">limitations</a> on collections and only the standard CQL data types can be stored inside embedded collections and maps.<p class="paragraph"/>When persisting a domain class containing embedded collections or maps using the <code>save</code> method, the entire collection or map is saved or updated to Cassandra. 
 This may not be appropriate if you only want to persist the non-collection properties, in which case you can use the <code>updateSimpleTypes</code> instance method.
 Example:
 <div class="code"><pre>def person = Person.get(uuid)
@@ -291,8 +288,7 @@ person.updateSimpleTypes(flush:<span class="java&#45;keyword">true</span>)</pre>
 Example:
 <div class="code"><pre>person.prependToScores(5)
 Person.appendToFriends(person.id, 'Barney')
-Person.deleteFromPets(person.id, 'eddie', &#91;flush:<span class="java&#45;keyword">true</span>&#93;)</pre></div><p class="paragraph"/> 
-<h4>Customized Database Mapping</h4><p class="paragraph"/>You may wish to customize how a domain class maps onto a Cassandra table. This is possible using the <code>mapping</code> block as follows:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+Person.deleteFromPets(person.id, 'eddie', &#91;flush:<span class="java&#45;keyword">true</span>&#93;)</pre></div><p class="paragraph"/>The last <code>flush:true</code> argument causes the session to flush the pending collection updates to the datastore.<p class="paragraph"/><h4>Customized Database Mapping</h4><p class="paragraph"/>You may wish to customize how a domain class maps onto a Cassandra table. This is possible using the <code>mapping</code> block as follows:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     ..
     <span class="java&#45;keyword">static</span> mapping = &#123;
         table <span class="java&#45;quote">"the_person"</span>
@@ -365,7 +361,7 @@ You should then add the <code>primaryKey</code> map to all columns of the compou
 <li><code>ordinal</code> - specifies the order of the column in the compound/composite primary key.</li>
 <li><code>type</code> - "partitioned" or "clustered". For a compound primary key only one property is type "partitioned" and the rest are type "clustered". For a composite partition key more than one property is type "partitioned".</li>
 </ul><p class="paragraph"/><h4>Persistence and Querying for Compound/Composite Primary Key domain classes</h4>
-Where ever you need to pass in an id to a persistence or query method, pass in a map containing the components of the compound/composite primary key instead.<p class="paragraph"/>Example:<p class="paragraph"/><div class="code"><pre>def person = Person.get(&#91;firstName:<span class="java&#45;quote">"Bob"</span>, lastName: <span class="java&#45;quote">"Wilson"</span>, age: 25&#93;)
+Where you need to pass in an id to a persistence or query method, use a map containing the components of the compound/composite primary key instead.<p class="paragraph"/>Example:<p class="paragraph"/><div class="code"><pre>def person = Person.get(&#91;firstName:<span class="java&#45;quote">"Bob"</span>, lastName: <span class="java&#45;quote">"Wilson"</span>, age: 25&#93;)
 Person.updateProperties(&#91;firstName:<span class="java&#45;quote">"Bob"</span>, lastName: <span class="java&#45;quote">"Wilson"</span>, age: 25&#93;, &#91;location: <span class="java&#45;quote">"London"</span>&#93;, &#91;flush:<span class="java&#45;keyword">true</span>&#93;)</pre></div>
 
 
@@ -382,7 +378,7 @@ Indexing can impact performance greatly. Before creating an index, be aware of w
 
 
 <h2 id="3.3 Table Properties">3.4 Table Properties</h2>
-You can configure clustering order, caching, compaction, and a number of other operations that Cassandra performs on a new table.<p class="paragraph"/><h4>Clusterting order</h4>
+You can configure clustering order, caching, compaction, and a number of other operations that Cassandra performs on a new table.<p class="paragraph"/><h4>Clustering order</h4>
 An explanation is provided in the <a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_reference/refClstrOrdr.html" target="blank">Cassandra docs</a>.
 Clustering order can only be used on a clustered primary key, to use it set its order attribute. Example:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     ..

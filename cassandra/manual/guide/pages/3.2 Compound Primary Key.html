@@ -118,7 +118,7 @@ You should then add the <code>primaryKey</code> map to all columns of the compou
 <li><code>ordinal</code> - specifies the order of the column in the compound/composite primary key.</li>
 <li><code>type</code> - "partitioned" or "clustered". For a compound primary key only one property is type "partitioned" and the rest are type "clustered". For a composite partition key more than one property is type "partitioned".</li>
 </ul><p class="paragraph"/><h4>Persistence and Querying for Compound/Composite Primary Key domain classes</h4>
-Where ever you need to pass in an id to a persistence or query method, pass in a map containing the components of the compound/composite primary key instead.<p class="paragraph"/>Example:<p class="paragraph"/><div class="code"><pre>def person = Person.get(&#91;firstName:<span class="java&#45;quote">"Bob"</span>, lastName: <span class="java&#45;quote">"Wilson"</span>, age: 25&#93;)
+Where you need to pass in an id to a persistence or query method, use a map containing the components of the compound/composite primary key instead.<p class="paragraph"/>Example:<p class="paragraph"/><div class="code"><pre>def person = Person.get(&#91;firstName:<span class="java&#45;quote">"Bob"</span>, lastName: <span class="java&#45;quote">"Wilson"</span>, age: 25&#93;)
 Person.updateProperties(&#91;firstName:<span class="java&#45;quote">"Bob"</span>, lastName: <span class="java&#45;quote">"Wilson"</span>, age: 25&#93;, &#91;location: <span class="java&#45;quote">"London"</span>&#93;, &#91;flush:<span class="java&#45;keyword">true</span>&#93;)</pre></div>
 
 
