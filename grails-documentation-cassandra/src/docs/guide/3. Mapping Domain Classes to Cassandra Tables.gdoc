@@ -15,7 +15,7 @@ This will map onto a Cassandra table called "person" and generate the following 
 CREATE TABLE person (id uuid, firstname text, lastname text, version bigint, PRIMARY KEY (id));
 {code}
 
-The plugin transparently adds an implicit @id@ property of type UUID which is auto-generated when an entity is saved.
+{note} The plugin transparently adds an implicit @id@ property of type UUID which is auto-generated when an entity is saved.{note}
 
 h4. Data types
 In general a property's Java type maps onto a CQL3 data type as listed [here|http://www.datastax.com/documentation/developer/java-driver/2.0/java-driver/reference/javaClass2Cql3Datatypes_r.html]
@@ -62,7 +62,7 @@ class Person {
 
 ...
 
-new Person(friends:['Fred', 'Bob'], pets:[chuck:"Dog", eddie:'Parrot']).save(flush:true)
+new Person(friends:['Fred', 'Bob'], pets:[chuck:"Dog", eddie:'Parrot']).save()
 {code}
 
 There are certain [limitations|http://www.datastax.com/documentation/cql/3.1/cql/cql_using/use_collections_c.html] on collections and only the standard CQL data types can be stored inside embedded collections and maps.
@@ -83,7 +83,8 @@ person.prependToScores(5)
 Person.appendToFriends(person.id, 'Barney')
 Person.deleteFromPets(person.id, 'eddie', [flush:true])
 {code}
- 
+
+The last @flush:true@ argument causes the session to flush the pending collection updates to the datastore.
  
 h4. Customized Database Mapping
 

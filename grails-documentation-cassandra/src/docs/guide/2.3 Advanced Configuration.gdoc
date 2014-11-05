@@ -1,6 +1,6 @@
 h4. Cassandra Database Connection Configuration
 
-As mentioned the GORM for Cassandra plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the @grails-app/conf/DataSource.groovy@ file:
+As mentioned above, the GORM for Cassandra plugin will configure itself with default settings, but if you wish to customize those defaults you can do so in the @grails-app/conf/DataSource.groovy@ file:
 
 {code}
 grails {

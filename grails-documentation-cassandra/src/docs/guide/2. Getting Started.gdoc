@@ -6,7 +6,7 @@ plugins {
 }
 {code}
 
-With that done you need to set up a running Cassandra server. 
+The next step is to setup a running Cassandra server. 
 Refer to the [Apache Cassandra Getting Started Guide|https://wiki.apache.org/cassandra/GettingStarted] for an explanation on how to setup and startup a Cassandra instance. 
 Once installed, starting Cassandra is typically a matter of executing the following command:
 
