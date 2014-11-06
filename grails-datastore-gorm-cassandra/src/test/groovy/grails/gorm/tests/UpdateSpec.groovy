@@ -25,6 +25,10 @@ class UpdateSpec extends GormDatastoreSpec {
 		then:
 			t == t2
 			p == p2
+			session.contains(new TestEntity(id:t.id))
+			session.contains(p)
+			!TestEntity.get(UUID.randomUUID())
+			!PersonLastNamePartitionKey.get([firstName:"none", lastName: "none", age: 25])
 	}
 	
 	void "Test update() entity not in session"() {

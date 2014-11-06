@@ -5,6 +5,7 @@ import grails.persistence.Entity
 /**
  * @author graemerocher
  */
+@groovy.transform.EqualsAndHashCode(includes=["id"])
 @Entity
 class TestEntity implements Serializable {
     UUID id

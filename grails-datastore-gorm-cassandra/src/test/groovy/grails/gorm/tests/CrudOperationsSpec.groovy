@@ -102,11 +102,34 @@ class CrudOperationsSpec extends GormDatastoreSpec {
             
         when:
             t = TestEntity.get(t.id)
+			
         then:
             t.id != null
     }
 
-	void "Test insert method"() {		
+	void "Test insert"() {
+		given:
+			def t = new TestEntity(name:"Bob")
+			def p = new PersonLastNamePartitionKey(firstName: "Bob", lastName: "Wilson", age: 25)
+		
+		when:
+			t.insert()
+			p.insert(flush:true)
+			session.clear(t)
+			session.clear(p)
+			def t2 = TestEntity.get(t.id)			
+			def p2 = PersonLastNamePartitionKey.get([firstName:p.firstName, lastName: p.lastName, age: 25])
+		
+		then:
+			t2
+			p2
+			!t.is(t2)
+			!p.is(p2)
+			t.isAttached()
+			p.isAttached()
+	}
+	
+	void "Test insert with same id"() {		
 		given:
 			def t = new TestEntity(name:"Bob")
 			t.save(param:"one", flush: true)	
@@ -130,6 +153,30 @@ class CrudOperationsSpec extends GormDatastoreSpec {
 			s = StringIdEntity.get(s.id)
 		then:
 			s != null
+	}
+	
+	void "Test session contains entity"() {
+		given:
+			def t = new TestEntity(name:"Bob")
+			def p = new PersonLastNamePartitionKey(firstName: "Bob", lastName: "Wilson", age: 25)
+	
+		when:
+			t.save()
+			p.save(flush:true)
+			session.clear(t)
+			session.clear(p)
+			def t2 = TestEntity.get(t.id)
+			def p2 = PersonLastNamePartitionKey.get([firstName:p.firstName, lastName: p.lastName, age: 25])
+		
+		then:
+			session.contains(t)
+			session.contains(t2)
+			session.contains(new TestEntity(id:t.id))
+			!session.contains(new TestEntity(id:UUID.randomUUID()))
+			session.contains(p)
+			session.contains(p2)
+			session.contains(new PersonLastNamePartitionKey(firstName: "Bob", lastName: "Wilson", age: 25))
+			!session.contains(new PersonLastNamePartitionKey(firstName: "Bob", lastName: "Wilson", age: 100))
 	}
 	
     void "Test failOnError"() {

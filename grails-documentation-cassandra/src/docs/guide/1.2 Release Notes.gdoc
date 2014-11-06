@@ -1,5 +1,5 @@
 Below are the details of the changes across releases:
 
-h4. 1.0.0 GA
+h4. 1.0.0 M1
 
-* Initial feature complete 1.0 release
+* First GORM compliant version of the plugin, without support for associations 

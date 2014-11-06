@@ -12,29 +12,10 @@ person.cassandra.save()
 {code}
 
 By default the Hibernate plugin transparently adds an implicit @id@ property of type @Long@ to your domain class. The Cassandra plugin adds an @id@ property of type @UUID@. 
-If you install both plugins the @id@ property will be of type @Long@.
-If you have a domain class with auto-generated @id@ (the default) and you want to save it to both datastores, you should set a @String id@ property.
-Example of persisting an entity to both datastores:
-{code}
-class Person {
-    String id
-    String firstName
-    String lastName     
-}	
-
-def hibernatePerson = new Person(firstName: "Fred", lastName: "Flintstone").save(flush:true)
-
-hibernatePerson = Person.get(1)
-
-hibernatePerson.cassandra.insert()
-
-def cassandraPerson = Person.cassandra.get(1)
-{code}
-
-Because a @Long id@ won't really work for Cassandra, you can explicitly add a @UUID id@ property, and set the id's @generator@ attribute so the Hibernate plugin can auto-generate a @UUID@.
-
-Example:
-
+If you install both plugins, the @id@ property will be of type @Long@.
+So if you have a domain class with an auto-generated @id@ (the default behaviour) and you want to save it to both datastores, you should define a @UUID id@ 
+property as a @Long@ won't really work for Cassandra. You also need to set the id's @generator@ attribute so that the Hibernate plugin can auto-generate a @UUID@.
+Here is an example of persisting an entity to both datastores:
 {code}
 class Person {
     UUID id
@@ -45,7 +26,7 @@ class Person {
     }   
 }	
 
-def hibernatePerson = new Person(firstName: "Fred", lastName: "Flintstone").save(flush:true)
+def hibernatePerson = new Person(firstName: "Fred", lastName: "Flintstone").save()
 
 hibernatePerson = Person.get(uuid)
 

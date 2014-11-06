@@ -55,7 +55,7 @@ You should then add the @primaryKey@ map to all columns of the compound/composit
 * @type@ - "partitioned" or "clustered". For a compound primary key only one property is type "partitioned" and the rest are type "clustered". For a composite partition key more than one property is type "partitioned".
 
 h4. Persistence and Querying for Compound/Composite Primary Key domain classes
-Where ever you need to pass in an id to a persistence or query method, pass in a map containing the components of the compound/composite primary key instead.
+Where you need to pass in an id to a persistence or query method, use a map containing the components of the compound/composite primary key instead.
 
 Example:
 

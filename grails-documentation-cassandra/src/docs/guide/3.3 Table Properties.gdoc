@@ -1,6 +1,6 @@
 You can configure clustering order, caching, compaction, and a number of other operations that Cassandra performs on a new table.
 
-h4. Clusterting order
+h4. Clustering order
 An explanation is provided in the [Cassandra docs|http://www.datastax.com/documentation/cql/3.1/cql/cql_reference/refClstrOrdr.html].
 Clustering order can only be used on a clustered primary key, to use it set its order attribute. Example: 
 
