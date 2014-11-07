@@ -100,7 +100,7 @@ Here is an example of persisting an entity to both datastores:
     <span class="java&#45;keyword">static</span> mapping = &#123;
         id generator:'uuid2'        
     &#125;   
-&#125;<p class="paragraph"/>def hibernatePerson = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Fred"</span>, lastName: <span class="java&#45;quote">"Flintstone"</span>).save()<p class="paragraph"/>hibernatePerson = Person.get(uuid)<p class="paragraph"/>hibernatePerson.cassandra.insert()<p class="paragraph"/>def cassandraPerson = Person.cassandra.get(uuid)</pre></div><p class="paragraph"/>Note that as an identifier has been assigned to the entity by the Hibernate plugin, you will need to use the <code>insert</code> method for Cassandra instead of the <code>save</code> method, 
+&#125;<p class="paragraph"/>def hibernatePerson = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Fred"</span>, lastName: <span class="java&#45;quote">"Flintstone"</span>)<p class="paragraph"/>hibernatePerson.save()<p class="paragraph"/>hibernatePerson = Person.get(uuid)<p class="paragraph"/>hibernatePerson.cassandra.insert()<p class="paragraph"/>def cassandraPerson = Person.cassandra.get(uuid)</pre></div><p class="paragraph"/>Note that as an identifier has been assigned to the entity by the Hibernate plugin, you will need to use the <code>insert</code> method for Cassandra instead of the <code>save</code> method, 
 otherwise GORM can't work out whether you are trying to achieve an insert or an update.
 
 

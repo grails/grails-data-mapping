@@ -120,8 +120,13 @@ INFO 00:11:17,042 Listening <span class="java&#45;keyword">for</span> thrift cli
 
 
 <h2 id="2.1 Using Cassandra Standalone">2.1 Using Cassandra Standalone</h2>
-If you plan to use Cassandra as your primary datastore then you need to remove the Hibernate plugin from the <code>grails-app/conf/BuildConfig.groovy</code> file by commenting out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile ':hibernate:3.6.10.12'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Cassandra and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Cassandra.
-
+If you plan to use Cassandra as your primary datastore then you need to remove the Hibernate plugin from the <code>grails-app/conf/BuildConfig.groovy</code> file by commenting out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile ':hibernate:3.6.10.12'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Cassandra and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Cassandra. Example:<p class="paragraph"/><div class="code"><pre>class Person &#123;    
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName 
+&#125;
+def person = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Fred"</span>, lastName: <span class="java&#45;quote">"Flintstone"</span>)<p class="paragraph"/>person.save()
+&#8230;
+def person2 = Person.get(uuid)</pre></div>
 
 
 <h2 id="2.2 Combining Cassandra and Hibernate">2.2 Combining Cassandra and Hibernate</h2>
@@ -138,7 +143,7 @@ Here is an example of persisting an entity to both datastores:
     <span class="java&#45;keyword">static</span> mapping = &#123;
         id generator:'uuid2'        
     &#125;   
-&#125;<p class="paragraph"/>def hibernatePerson = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Fred"</span>, lastName: <span class="java&#45;quote">"Flintstone"</span>).save()<p class="paragraph"/>hibernatePerson = Person.get(uuid)<p class="paragraph"/>hibernatePerson.cassandra.insert()<p class="paragraph"/>def cassandraPerson = Person.cassandra.get(uuid)</pre></div><p class="paragraph"/>Note that as an identifier has been assigned to the entity by the Hibernate plugin, you will need to use the <code>insert</code> method for Cassandra instead of the <code>save</code> method, 
+&#125;<p class="paragraph"/>def hibernatePerson = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Fred"</span>, lastName: <span class="java&#45;quote">"Flintstone"</span>)<p class="paragraph"/>hibernatePerson.save()<p class="paragraph"/>hibernatePerson = Person.get(uuid)<p class="paragraph"/>hibernatePerson.cassandra.insert()<p class="paragraph"/>def cassandraPerson = Person.cassandra.get(uuid)</pre></div><p class="paragraph"/>Note that as an identifier has been assigned to the entity by the Hibernate plugin, you will need to use the <code>insert</code> method for Cassandra instead of the <code>save</code> method, 
 otherwise GORM can't work out whether you are trying to achieve an insert or an update.
 
 
