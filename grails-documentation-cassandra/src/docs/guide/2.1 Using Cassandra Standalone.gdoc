@@ -10,4 +10,16 @@ With this done all domain classes in grails-app/domain will be persisted via Cas
 grails create-domain-class Person
 {code}
 
-The @Person@ domain class will automatically be a persistent entity that can be stored in Cassandra.
+The @Person@ domain class will automatically be a persistent entity that can be stored in Cassandra. Example:
+
+{code}
+class Person {    
+    String firstName
+    String lastName 
+}
+def person = new Person(firstName: "Fred", lastName: "Flintstone")
+
+person.save()
+...
+def person2 = Person.get(uuid)
+{code}
