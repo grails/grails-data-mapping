@@ -1,5 +1,5 @@
 project.ext {
-    springVersion = "4.0.5.RELEASE"
+    springVersion = "4.1.2.RELEASE"
     grailsVersion = "3.0.0.BUILD-SNAPSHOT"
     slf4jVersion = "1.7.5"
     junitVersion = "4.11"
