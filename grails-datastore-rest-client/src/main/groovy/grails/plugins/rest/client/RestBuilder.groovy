@@ -14,8 +14,13 @@
  */
 package grails.plugins.rest.client
 
+import static org.springframework.http.HttpMethod.*
+
+import java.net.Proxy
+
 import grails.converters.JSON
 import groovy.transform.CompileStatic
+
 import org.grails.datastore.gorm.rest.client.json.GsonHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.json.JsonHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.utils.GrailsConverterHttpMessageConverter
@@ -31,12 +36,9 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter
 import org.springframework.util.ClassUtils
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
-
-import static org.springframework.http.HttpMethod.*
 
 /**
  * Main API entry to the synchronous version of the REST low-level client API
@@ -286,10 +288,6 @@ class RestBuilder {
         final mappingJackson2HttpMessageConverter = messageConverters.find { HttpMessageConverter httpMessageConverter -> httpMessageConverter instanceof MappingJackson2HttpMessageConverter }
         if(mappingJackson2HttpMessageConverter) {
             messageConverters.remove(mappingJackson2HttpMessageConverter)
-        }
-        final mappingJacksonHttpMessageConverter = messageConverters.find { HttpMessageConverter httpMessageConverter -> httpMessageConverter instanceof MappingJacksonHttpMessageConverter }
-        if(mappingJacksonHttpMessageConverter) {
-            messageConverters.remove(mappingJacksonHttpMessageConverter)
         }
         if(ClassUtils.isPresent("com.google.gson.Gson", getClass().getClassLoader())) {
             messageConverters.add(new GsonHttpMessageConverter())
