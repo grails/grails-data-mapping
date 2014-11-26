@@ -16,7 +16,6 @@ package grails.datastore.test
 
 import grails.plugins.DefaultGrailsPluginManager
 import grails.plugins.GrailsPluginManager
-import grails.test.MockUtils
 import grails.util.Holders
 import org.grails.core.DefaultGrailsDomainClass
 import org.grails.datastore.gorm.GormEnhancer
@@ -98,7 +97,6 @@ class DatastoreUnitTestMixin {
         def entity = datastore.mappingContext.addPersistentEntity(domainClass)
         def enhancer = new TestGormEnhancer(datastore, transactionManager)
         enhancer.enhance entity
-        MockUtils.prepareForConstraintsTests(entity.javaClass)
         def dc = new DefaultGrailsDomainClass(entity.javaClass)
         datastore.mappingContext.addEntityValidator(entity, new GrailsDomainClassValidator(domainClass:dc))
         instances.each {
