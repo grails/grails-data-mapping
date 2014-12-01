@@ -67,10 +67,6 @@ allprojects {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.9'
-}
-
 subprojects {
     if(project.name.endsWith("spring-boot")) return
    afterEvaluate { project ->
