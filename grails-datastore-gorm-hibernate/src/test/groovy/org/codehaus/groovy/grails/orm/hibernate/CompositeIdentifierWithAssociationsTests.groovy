@@ -76,9 +76,12 @@ class CompositeIdentifierWithAssociationsTests extends AbstractGrailsHibernateTe
     }
 }
 
+trait SomeTrait {
+    void foo(){}
+}
 
 @Entity
-class CompositeIdentifierWithAssociationsParent implements Serializable {
+class CompositeIdentifierWithAssociationsParent implements Serializable, SomeTrait {
     Long id
     Long version
 
