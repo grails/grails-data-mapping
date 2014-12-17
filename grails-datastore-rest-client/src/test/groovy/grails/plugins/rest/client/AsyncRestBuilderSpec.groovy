@@ -6,8 +6,8 @@ import grails.plugins.rest.client.async.AsyncRestBuilder
 import grails.web.JSONBuilder
 import grails.web.http.HttpHeaders
 import groovy.util.slurpersupport.GPathResult
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONObject
 import spock.lang.Issue
 import spock.lang.Specification
 

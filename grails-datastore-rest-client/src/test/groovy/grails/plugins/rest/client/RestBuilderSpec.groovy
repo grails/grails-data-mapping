@@ -4,8 +4,8 @@ import grails.converters.JSON
 import grails.web.JSONBuilder
 import grails.web.http.HttpHeaders
 import groovy.util.slurpersupport.GPathResult
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONObject
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType

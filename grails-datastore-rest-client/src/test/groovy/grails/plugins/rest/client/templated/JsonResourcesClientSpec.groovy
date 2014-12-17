@@ -1,7 +1,7 @@
 package grails.plugins.rest.client.templated
 
 import grails.plugins.rest.client.RestBuilder
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.web.json.JSONObject
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
