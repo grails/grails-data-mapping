@@ -19,6 +19,9 @@ case "$GORM_IMPL"  in
         sleep 5               
         ./gradlew grails-datastore-gorm-cassandra:test || EXIT_STATUS=$?
         ;;
+    neo4j)
+        ./gradlew grails-datastore-gorm-neo4j:test || EXIT_STATUS=$?
+        ;;
     *)
         ./gradlew testClasses || EXIT_STATUS=$?
         ./gradlew grails-datastore-gorm-test:test || EXIT_STATUS=$?
