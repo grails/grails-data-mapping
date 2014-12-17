@@ -1,6 +1,6 @@
 
 group = "org.grails.plugins"
-version = "4.3.5.5.BUILD-SNAPSHOT"
+version = "4.0.0.BUILD-SNAPSHOT"
 
 apply from:'https://raw.githubusercontent.com/grails/grails-boot/master/gradle/maven-central-build.gradle'
 
@@ -12,9 +12,11 @@ dependencies {
 
 
     provided("org.grails:grails-core:$grailsVersion")
+    provided("org.grails:grails-plugin-converters:$grailsVersion")
+    provided 'javax.servlet:javax.servlet-api:3.1.0'
     compile 'org.codehaus.groovy:groovy:2.3.7'
 
-    compile project(":grails-datastore-gorm-hibernate4"), {
+    compile project(":grails-datastore-gorm-mongodb"), {
         exclude group:'org.springframework', module:'spring-context'
         exclude group:'org.springframework', module:'spring-core'
         exclude group:'org.springframework', module:'spring-beans'
@@ -40,5 +42,5 @@ def installer = install.repositories.mavenInstaller
 def deployer = uploadArchives.repositories.mavenDeployer
 
 [installer, deployer]*.pom*.whenConfigured { pom ->
-    pom.artifactId = 'hibernate'
+    pom.artifactId = 'mongodb'
 }

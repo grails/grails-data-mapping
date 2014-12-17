@@ -1,11 +1,15 @@
 package grails.plugin.hibernate
 
+import grails.config.Config
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.core.GrailsDomainClassProperty
 import grails.core.support.GrailsApplicationAware
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
+import grails.plugins.Plugin
+import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
+import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
 /**
  * Plugin that integrates Hibernate into a Grails application
@@ -13,7 +17,8 @@ import org.grails.core.artefact.DomainClassArtefactHandler
  * @author Graeme Rocher
  * @since 3.0
  */
-class HibernateGrailsPlugin implements GrailsApplicationAware{
+@CompileStatic
+class HibernateGrailsPlugin extends Plugin {
 
 
     def version = '4.3.5.5-SNAPSHOT'
@@ -33,28 +38,39 @@ class HibernateGrailsPlugin implements GrailsApplicationAware{
     def issueManagement = [system: 'JIRA', url: 'http://jira.grails.org/browse/GPHIB']
     def scm = [url: 'https://github.com/grails-plugins/grails-hibernate4-plugin']
 
-    GrailsApplication grailsApplication
 
-    def doWithSpring = {
+    Closure doWithSpring() {{->
         GrailsApplication grailsApplication = grailsApplication
-        def datasourceNames = []
-        if (getSpringConfig().containsBean('dataSource')) {
-            datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
-        }
+        Set<String> datasourceNames = []
 
-        for (name in grailsApplication.config.keySet()) {
-            if (name.startsWith('dataSource_')) {
-                datasourceNames << name - 'dataSource_'
+        Config config = grailsApplication.config
+        Map dataSources = config.getProperty('dataSources', Map, [:])
+
+        if(dataSources) {
+            for (name in config.keySet()) {
+                if(name == 'dataSource') {
+                    datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
+                }
+                else {
+                    datasourceNames << name
+                }
+            }
+        }
+        else {
+            Map dataSource = config.getProperty('dataSource', Map, [:])
+            if(dataSource) {
+                datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
             }
         }
 
-        def springInitializer = new HibernateDatastoreSpringInitializer(grailsApplication.config.toProperties(), grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
+
+        def springInitializer = new HibernateDatastoreSpringInitializer(config, grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
         springInitializer.registerApplicationIfNotPresent = false
         springInitializer.dataSources = datasourceNames
-        def beans = springInitializer.getBeanDefinitions(getSpringConfig().getUnrefreshedApplicationContext())
+        def beans = springInitializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
 
         beans.delegate = delegate
         beans.call()
-    }
+    }}
 
 }

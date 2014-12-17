@@ -1,13 +1,22 @@
+package grails.plugins.mongodb
 
+import com.mongodb.BasicDBList
+import com.mongodb.BasicDBObject
+import com.mongodb.DBObject
+import grails.core.GrailsClass
+import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
+import grails.plugins.Plugin
+import groovy.transform.CompileStatic
+import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.datastore.gorm.mongo.plugin.support.MongoMethodsConfigurer
 import org.grails.datastore.gorm.mongo.plugin.support.MongoOnChangeHandler
-import org.grails.datastore.gorm.mongo.plugin.support.MongoSpringConfigurer
-import grails.converters.*
-import org.codehaus.groovy.grails.web.json.JSONWriter
-import com.mongodb.*
+import org.grails.datastore.mapping.mongo.MongoDatastore
+import org.grails.web.json.JSONWriter
+import grails.converters.JSON
+import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.transaction.PlatformTransactionManager
 
-
-class MongodbGrailsPlugin {
+class MongodbGrailsPlugin extends Plugin {
     def license = "Apache 2.0 License"
     def organization = [name: "SpringSource", url: "http://www.springsource.org/"]
     def developers = [
@@ -26,9 +35,15 @@ class MongodbGrailsPlugin {
 
     def documentation = "http://grails.github.io/grails-data-mapping/mongodb"
 
-    def doWithSpring = new MongoSpringConfigurer().getConfiguration()
+    @Override
+    Closure doWithSpring() {
+        def initializer = new MongoDbDataStoreSpringInitializer(config, grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
+        initializer.registerApplicationIfNotPresent = false
+        return initializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
+    }
 
-    def doWithApplicationContext = { 
+    @Override
+    void doWithApplicationContext() {
         JSON.registerObjectMarshaller DBObject, { dbo, json ->
             JSONWriter writer = json.getWriter();
 
@@ -63,22 +78,30 @@ class MongodbGrailsPlugin {
 
             null
         }
-
     }
 
-    def doWithDynamicMethods = { ctx ->
-        def datastore = ctx.mongoDatastore
-        def transactionManager = ctx.mongoTransactionManager
-        def methodsConfigurer = new MongoMethodsConfigurer(datastore, transactionManager)    
+    @Override
+    @CompileStatic
+    void doWithDynamicMethods() {
+        def ctx = applicationContext
+        def datastore = ctx.getBean(MongoDatastore)
+        def transactionManager = ctx.getBean('mongoTransactionManager', PlatformTransactionManager)
+        def methodsConfigurer = new MongoMethodsConfigurer(datastore, transactionManager)
         methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")
-        def foe = application?.config?.grails?.gorm?.failOnError
-        methodsConfigurer.failOnError = foe instanceof Boolean ? foe : false
+        methodsConfigurer.failOnError = config.getProperty('grails.gorm.failOnError', Boolean, false)
         methodsConfigurer.configure()
     }
 
-    def onChange = { event ->
-        if(event.ctx) {
-            new MongoOnChangeHandler(event.ctx.mongoDatastore, event.ctx.mongoTransactionManager).onChange(delegate, event)            
-        }
-    }   
+    @Override
+    @CompileStatic
+    void onChange(Map<String, Object> event) {
+
+        def ctx = applicationContext
+        event.application = grailsApplication
+        event.ctx = applicationContext
+
+        def mongoDatastore = ctx.getBean(MongoDatastore)
+        def mongoTransactionManager = ctx.getBean('mongoTransactionManager', PlatformTransactionManager)
+        new MongoOnChangeHandler(mongoDatastore, mongoTransactionManager).onChange(this, event)
+    }
 }

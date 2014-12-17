@@ -19,7 +19,7 @@ import grails.plugins.rest.client.async.AbstractAsyncResourcesClient
 import grails.plugins.rest.client.async.AsyncRestBuilder
 import grails.plugins.rest.client.templated.JsonResourcesClient
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.web.json.JSONElement
+import org.grails.web.json.JSONElement
 import org.springframework.http.MediaType
 
 /**

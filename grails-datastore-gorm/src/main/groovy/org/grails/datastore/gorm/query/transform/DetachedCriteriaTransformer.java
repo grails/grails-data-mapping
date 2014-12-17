@@ -14,8 +14,10 @@
  */
 package org.grails.datastore.gorm.query.transform;
 
+import grails.core.GrailsDomainClassProperty;
 import grails.gorm.DetachedCriteria;
 import grails.persistence.Entity;
+import grails.util.GrailsClassUtils;
 import grails.util.GrailsNameUtils;
 
 import java.io.File;
@@ -66,8 +68,6 @@ import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.*;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.messages.LocatedMessage;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils;
 import org.codehaus.groovy.syntax.Token;
 import org.grails.datastore.mapping.query.Query;

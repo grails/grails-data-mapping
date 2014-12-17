@@ -22,11 +22,13 @@ import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
+import org.grails.datastore.gorm.mongo.bean.factory.DefaultMappingHolder
 import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoDatastoreFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoMappingContextFactoryBean
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.grails.spring.beans.factory.InstanceFactoryBean
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.GenericApplicationContext
@@ -68,11 +70,11 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
         super(persistentClasses)
     }
 
-    MongoDbDataStoreSpringInitializer(Properties configuration, Collection<Class> persistentClasses) {
+    MongoDbDataStoreSpringInitializer(Map configuration, Collection<Class> persistentClasses) {
         super(configuration, persistentClasses)
     }
 
-    MongoDbDataStoreSpringInitializer(Properties configuration, Class... persistentClasses) {
+    MongoDbDataStoreSpringInitializer(Map configuration, Class... persistentClasses) {
         super(configuration, persistentClasses)
     }
 
@@ -94,13 +96,13 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
     @Override
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         return {
-            def config = configuration ? new ConfigSlurper().parse(configuration) : new ConfigObject()
-            def mongoConfig = config?.grails?.mongo?.clone() ?: config?.grails?.mongodb?.clone()
-            if(mongoConfig == null) mongoConfig = new ConfigObject()
+            String connectionString = configurationObject.getProperty('grails.mongodb.connectionString','') ?: null
+            Closure defaultMapping = configurationObject.getProperty('grails.mongodb.default.mapping',Closure, this.defaultMapping)
+            Map mongoOptions = configurationObject.getProperty('grails.mongodb.options', Map, null)
+            String hostSetting = configurationObject.getProperty('grails.mongodb.host', '')
+            Collection<String> replicaSetSetting = configurationObject.getProperty('grails.mongodb.replicaSet', Collection, [])
+            Collection<String> replicaPairSetting = configurationObject.getProperty('grails.mongodb.replicaPair', Collection, [])
 
-
-            def cso = mongoConfig?.connectionString
-            def connectionString = cso ? cso?.toString() : null
             MongoClientURI mongoClientURI = null
             if(connectionString) {
                 mongoClientURI = new MongoClientURI(connectionString)
@@ -111,11 +113,11 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             callable.delegate = delegate
             callable.call()
 
-            mongoMappingContext(MongoMappingContextFactoryBean) {
+            gormMongoMappingContext(MongoMappingContextFactoryBean) {
                 defaultDatabaseName = databaseName
                 grailsApplication = ref(GrailsApplication.APPLICATION_ID)
-                if (mongoConfig.default.mapping instanceof Closure) {
-                    delegate.defaultMapping = this.defaultMapping
+                if (defaultMapping) {
+                    delegate.defaultMapping = new DefaultMappingHolder(defaultMapping)
                 }
             }
 
@@ -124,12 +126,9 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             }
             else if(!beanDefinitionRegistry.containsBeanDefinition(mongoOptionsBeanName)) {
                 "$mongoOptionsBeanName"(MongoOptionsFactoryBean) {
-                    if (mongoConfig?.options) {
-                        def options = mongoConfig.remove("options")
-                        if(options instanceof Map) {
-                            for (option in options) {
-                                setProperty(option.key, option.value)
-                            }
+                    if (mongoOptions) {
+                        for (option in mongoOptions) {
+                            setProperty(option.key, option.value)
                         }
                     }
                 }
@@ -138,46 +137,61 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             if(mongo) {
                 "$mongoBeanName"(InstanceFactoryBean, mongo)
             }
-            else if(!beanDefinitionRegistry.containsBeanDefinition(mongoBeanName)) {
+            else  {
 
-                "gmongo"(GMongoFactoryBean) {
-                    delegate.mongoOptions = ref("$mongoOptionsBeanName")
-                    def mongoHost = mongoConfig?.get("host")
+                def existingBean = beanDefinitionRegistry.containsBeanDefinition(mongoBeanName) ? beanDefinitionRegistry.getBeanDefinition(mongoBeanName) : null
+                boolean registerMongoBean = false
+                if(existingBean instanceof AnnotatedBeanDefinition) {
+                    AnnotatedBeanDefinition annotatedBeanDefinition = (AnnotatedBeanDefinition)existingBean
+                    if(annotatedBeanDefinition.metadata.className == 'org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration') {
 
-                    if (mongoConfig?.replicaSet instanceof Collection) {
-                        def set = []
-                        for (server in mongoConfig.get("replicaSet")) {
-                            set << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
-                        }
-
-                        replicaSetSeeds = set
-                    }
-                    else if (mongoConfig?.replicaPair instanceof Collection) {
-                        def pair = []
-                        for (server in mongoConfig.get("replicaPair")) {
-                            pair << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
-                        }
-                        replicaPair = pair
-                    }
-                    else if(mongoClientURI) {
-                        clientURI = mongoClientURI
-                    }
-                    else if (mongoHost) {
-                        host = mongoHost
-                        def mongoPort = mongoConfig?.get("port")
-                        if (mongoPort) port = mongoPort
-                    }
-                    else {
-                        host = "localhost"
+                        registerMongoBean = true
                     }
                 }
+                else if(existingBean == null) {
+                    registerMongoBean = true
+                }
 
-                "$mongoBeanName"(gmongo:"getMongo")
+                if(registerMongoBean) {
+                    "gmongo"(GMongoFactoryBean) {
+                        delegate.mongoOptions = ref("$mongoOptionsBeanName")
+
+                        if(mongoClientURI) {
+                            clientURI = mongoClientURI
+                        }
+                        else if (replicaSetSetting) {
+                            def set = []
+                            for (server in replicaSetSetting) {
+                                set << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
+                            }
+
+                            replicaSetSeeds = set
+                        }
+                        else if (replicaPairSetting) {
+                            def pair = []
+                            for (server in replicaPairSetting) {
+                                pair << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
+                            }
+                            replicaPair = pair
+                        }
+                        else if (hostSetting) {
+                            host = hostSetting
+                            Integer mongoPort = configurationObject.getProperty('grails.mongodb.port', Integer, null)
+                            if (mongoPort) port = mongoPort
+                        }
+                        else {
+                            host = "localhost"
+                        }
+                    }
+
+                    "$mongoBeanName"(gmongo:"getMongo")
+                }
+
             }
             mongoDatastore(MongoDatastoreFactoryBean) {
                 delegate.mongo = ref(mongoBeanName)
-                mappingContext = mongoMappingContext
-                config = mongoConfig.toProperties()
+                mappingContext = gormMongoMappingContext
+                config = configurationObject
             }
             "mongoTransactionManager"(DatastoreTransactionManager) {
                 datastore = ref("mongoDatastore")

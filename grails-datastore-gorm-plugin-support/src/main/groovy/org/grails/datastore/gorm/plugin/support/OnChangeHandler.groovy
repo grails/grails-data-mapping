@@ -67,7 +67,7 @@ abstract class OnChangeHandler extends DynamicMethodsConfigurer{
                 return
             }
 
-            def beans = plugin.beans {
+            plugin.beans {
                 def scope = serviceClass.getPropertyValue("scope")
                 def props = ["*": "PROPAGATION_REQUIRED"] as Properties
                 "${serviceClass.propertyName}"(TypeSpecifyableTransactionProxyFactoryBean, serviceClass.clazz) { bean ->
@@ -84,7 +84,6 @@ abstract class OnChangeHandler extends DynamicMethodsConfigurer{
                     delegate.transactionManager = ref("${datastoreType.toLowerCase()}TransactionManager")
                 }
             }
-            beans.registerBeans(event.ctx)
         }
     }
 

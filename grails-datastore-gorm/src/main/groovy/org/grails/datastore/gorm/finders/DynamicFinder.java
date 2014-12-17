@@ -15,6 +15,7 @@
 package org.grails.datastore.gorm.finders;
 
 import grails.gorm.DetachedCriteria;
+import grails.util.GrailsClassUtils;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 
@@ -25,7 +26,6 @@ import java.util.regex.Pattern;
 
 import javax.persistence.FetchType;
 
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.finders.MethodExpression.Between;
 import org.grails.datastore.gorm.finders.MethodExpression.Equal;

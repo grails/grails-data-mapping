@@ -32,7 +32,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver()
     Collection<Class> persistentClasses = []
     Collection<String> packages = []
-    Properties configuration = new Properties()
+    Map configuration = new LinkedHashMap()
     Config configurationObject = new PropertySourcesConfig()
     boolean registerApplicationIfNotPresent = true
 
@@ -57,12 +57,18 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         this(persistentClasses.toList())
     }
 
-    AbstractDatastoreInitializer(Properties configuration, Collection<Class> persistentClasses) {
+    AbstractDatastoreInitializer(Map configuration, Collection<Class> persistentClasses) {
         this.configuration = configuration
         this.persistentClasses = persistentClasses
+        if(configuration instanceof Config) {
+            this.configurationObject = (Config)configuration
+        }
+        else {
+            this.configurationObject.merge((Map<String,Object>)configuration)
+        }
     }
 
-    AbstractDatastoreInitializer(Properties configuration, Class... persistentClasses) {
+    AbstractDatastoreInitializer(Map configuration, Class... persistentClasses) {
         this(configuration, persistentClasses.toList())
     }
 
@@ -117,7 +123,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
      */
     @CompileStatic
     void configureForBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {
-        this.configurationObject.merge((Map<String,Object>)configuration)
+
         scanForPersistentClasses()
 
         ExpandoMetaClass.enableGlobally()

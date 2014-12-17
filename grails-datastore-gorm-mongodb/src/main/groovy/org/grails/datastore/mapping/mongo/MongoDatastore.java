@@ -294,7 +294,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                     if (mappedForm != null) {
                         List<MongoCollection.Index> indices = mappedForm.getIndices();
                         for (MongoCollection.Index index : indices) {
-                            collection.ensureIndex(new BasicDBObject(index.getDefinition()), new BasicDBObject(index.getOptions()));
+                            collection.createIndex(new BasicDBObject(index.getDefinition()), new BasicDBObject(index.getOptions()));
                         }
 
                         for (Map compoundIndex : mappedForm.getCompoundIndices()) {
@@ -338,10 +338,10 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                         }
                         // continue using deprecated method to support older versions of MongoDB
                         if (options.toMap().isEmpty()) {
-                            collection.ensureIndex(dbObject);
+                            collection.createIndex(dbObject);
                         }
                         else {
-                            collection.ensureIndex(dbObject, options);
+                            collection.createIndex(dbObject, options);
                         }
                     }
                 }

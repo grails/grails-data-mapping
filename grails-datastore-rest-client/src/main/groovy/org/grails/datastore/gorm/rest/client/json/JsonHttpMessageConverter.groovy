@@ -16,7 +16,7 @@ package org.grails.datastore.gorm.rest.client.json
 
 import grails.converters.JSON
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.web.json.JSONElement
+import org.grails.web.json.JSONElement
 import org.springframework.http.HttpInputMessage
 import org.springframework.http.HttpOutputMessage
 import org.springframework.http.MediaType

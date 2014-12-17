@@ -18,9 +18,9 @@ import grails.converters.JSON
 import grails.plugins.rest.client.RestBuilder
 import grails.plugins.rest.client.RestResponse
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.web.json.JSONElement
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.grails.web.converters.ConverterUtil
+import org.grails.web.json.JSONElement
 
 /**
  * A simple client for interacting with a REST web service exposed by a Grails application

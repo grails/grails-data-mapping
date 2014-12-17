@@ -1,4 +1,6 @@
-/* Copyright (C) 2011 SpringSource
+
+/*
+ * Copyright 2014 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,22 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.mapping.config.utils;
+package org.grails.datastore.mapping.config.utils
 
-import java.util.Map;
+import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.model.types.conversion.DefaultConversionService
+import org.springframework.core.convert.ConversionService
 
-import org.grails.datastore.mapping.model.types.conversion.DefaultConversionService;
-import org.springframework.core.convert.ConversionService;
 
 /**
- * Used to ease reading of configuration.
+ * @author Graeme Rocher
+ * @since 3.0
  */
-public class ConfigUtils {
-
+@CompileStatic
+class ConfigUtils {
     private static ConversionService conversionService = new DefaultConversionService();
 
     public static <T> T read(Class<T> type, String key, Map<String, String> config, T defaultValue) {
-        String value = config.get(key);
-        return value == null ? defaultValue : conversionService.convert(value, type);
+        Object value = config.get(key);
+        return !value ? defaultValue : conversionService.convert(value, type);
     }
 }

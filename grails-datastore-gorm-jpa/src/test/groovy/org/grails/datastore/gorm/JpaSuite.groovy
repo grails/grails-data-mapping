@@ -14,6 +14,7 @@ import grails.gorm.tests.ListOrderBySpec
 import grails.gorm.tests.NamedQuerySpec
 import grails.gorm.tests.NegationSpec
 import grails.gorm.tests.OneToManySpec
+import grails.gorm.tests.OneToOneSpec
 import grails.gorm.tests.OrderBySpec
 import grails.gorm.tests.PersistenceEventListenerSpec
 import grails.gorm.tests.ProxyLoadingSpec
@@ -61,7 +62,8 @@ import grails.gorm.tests.DeleteAllSpec
 //SaveAllSpec,
 //DeleteAllSpec
 //    PersistenceEventListenerSpec
-UpdateWithProxyPresentSpec
+//UpdateWithProxyPresentSpec
+    OneToOneSpec
 ])
 class JpaSuite {
 
