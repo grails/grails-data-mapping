@@ -22,6 +22,7 @@ env:
     - GORM_IMPL=mongodb
     - GORM_IMPL=redis
     - GORM_IMPL=cassandra
+    - GORM_IMPL=neo4j
 matrix:
   fast_finish: true
 script: ./travis-build.sh
