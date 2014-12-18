@@ -28,7 +28,7 @@ import org.grails.support.MockApplicationContext
 
 import java.lang.reflect.Field
 
-import org.codehaus.groovy.grails.validation.TestClass
+import org.grails.validation.TestClass
 import org.hibernate.cfg.ImprovedNamingStrategy
 import org.hibernate.mapping.Bag
 import org.hibernate.mapping.Column

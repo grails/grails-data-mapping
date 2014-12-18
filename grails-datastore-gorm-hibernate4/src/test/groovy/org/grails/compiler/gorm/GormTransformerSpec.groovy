@@ -1,4 +1,4 @@
-package org.codehaus.groovy.grails.compiler.gorm
+package org.grails.compiler.gorm
 
 import grails.compiler.ast.ClassInjector
 import grails.persistence.Entity
