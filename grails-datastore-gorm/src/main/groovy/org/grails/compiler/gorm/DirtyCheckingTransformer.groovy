@@ -30,13 +30,13 @@ import org.codehaus.groovy.ast.tools.GenericsUtils
 import org.codehaus.groovy.classgen.GeneratorContext
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.grails.compiler.injection.AstTransformer
-import org.codehaus.groovy.grails.compiler.injection.GrailsArtefactClassInjector
+import grails.compiler.ast.GrailsArtefactClassInjector
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.core.support.GrailsDomainConfigurationUtil
 
-import static org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils.*
-import org.codehaus.groovy.grails.compiler.injection.GrailsDomainClassInjector
-import org.codehaus.groovy.grails.io.support.GrailsResourceUtils
+import static org.grails.compiler.injection.GrailsASTUtils.*
+import grails.compiler.ast.GrailsDomainClassInjector
+import org.grails.io.support.GrailsResourceUtils
 import org.codehaus.groovy.syntax.Token
 import org.codehaus.groovy.syntax.Types
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable

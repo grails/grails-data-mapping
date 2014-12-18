@@ -68,7 +68,7 @@ import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.*;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.messages.LocatedMessage;
-import org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils;
+import org.grails.compiler.injection.GrailsASTUtils;
 import org.codehaus.groovy.syntax.Token;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;

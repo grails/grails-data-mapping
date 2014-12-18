@@ -48,7 +48,7 @@ import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.compiler.injection.AstTransformer;
-import org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils;
+import org.grails.compiler.injection.GrailsASTUtils;
 import org.codehaus.groovy.grails.compiler.injection.GrailsArtefactClassInjector;
 import org.codehaus.groovy.grails.compiler.injection.GrailsDomainClassInjector;
 import org.codehaus.groovy.grails.io.support.GrailsResourceUtils;
