@@ -1,11 +1,7 @@
 package grails.gorm.tests
-
 import grails.gorm.dirty.checking.DirtyCheck
 import grails.persistence.Entity
-
-import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
-
 /**
  * @author graemerocher
  */
@@ -166,6 +162,7 @@ class Child implements Serializable {
     private static final long serialVersionUID = 1
     Long id
     String name
+    static belongsTo = [parent: Parent]
 }
 
 
