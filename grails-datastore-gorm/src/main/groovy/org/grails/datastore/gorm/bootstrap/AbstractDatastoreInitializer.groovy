@@ -4,7 +4,7 @@ import grails.config.Config
 import grails.core.DefaultGrailsApplication
 import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.compiler.gorm.GormTransformer
+import org.grails.compiler.gorm.GormTransformer
 import org.grails.config.PropertySourcesConfig
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.validation.GrailsDomainClassValidator

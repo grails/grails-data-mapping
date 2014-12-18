@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codehaus.groovy.grails.compiler.gorm;
+package org.grails.compiler.gorm;
 
 import grails.compiler.ast.AstTransformer;
 import grails.persistence.Entity;

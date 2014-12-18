@@ -1,9 +1,10 @@
-package org.codehaus.groovy.grails.compiler.gorm
+package org.grails.compiler.gorm
 
 import grails.compiler.ast.ClassInjector
 import grails.persistence.Entity
 
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
+import org.grails.compiler.gorm.GormTransformer;
 import org.grails.compiler.injection.DefaultGrailsDomainClassInjector
 import org.grails.compiler.injection.GrailsAwareClassLoader
 import org.grails.core.DefaultGrailsDomainClass
@@ -15,6 +16,7 @@ import org.springframework.validation.Errors
 
 import spock.lang.Specification
 import grails.spring.BeanBuilder
+
 import org.springframework.context.ConfigurableApplicationContext
 
 class GormTransformerSpec extends Specification {

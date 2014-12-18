@@ -29,7 +29,7 @@ import java.lang.annotation.Target
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target([ElementType.TYPE])
-@GroovyASTTransformationClass("org.codehaus.groovy.grails.compiler.gorm.DirtyCheckTransformation")
+@GroovyASTTransformationClass("org.grails.compiler.gorm.DirtyCheckTransformation")
 public @interface DirtyCheck {
 
 }
