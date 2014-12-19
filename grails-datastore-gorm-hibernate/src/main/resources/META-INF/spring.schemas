@@ -1,1 +1,1 @@
-http\://grails.org/schema/gorm/gorm.xsd=org/codehaus/groovy/grails/orm/hibernate/cfg/gorm.xsd
+http\://grails.org/schema/gorm/gorm.xsd=org/grails/orm/hibernate/cfg/gorm.xsd

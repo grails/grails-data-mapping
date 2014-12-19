@@ -7,7 +7,7 @@ import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil;
 public class GrailsDomainConfigurationUtilTests extends TestCase {
 
 	public void testGetMappingFileName() {
-		assertEquals("org/codehaus/groovy/grails/orm/hibernate/HibernateMappedClass.hbm.xml",
+		assertEquals("org/grails/orm/hibernate/HibernateMappedClass.hbm.xml",
 				GrailsDomainConfigurationUtil.getMappingFileName("org.grails.orm.hibernate.HibernateMappedClass"));
 	}
 }
