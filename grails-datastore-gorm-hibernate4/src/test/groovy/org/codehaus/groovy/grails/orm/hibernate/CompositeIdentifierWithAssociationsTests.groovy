@@ -82,6 +82,7 @@ trait SomeTrait {
 
 @Entity
 class CompositeIdentifierWithAssociationsParent implements Serializable, SomeTrait {
+    Long id
     Long version
 
     Set children
