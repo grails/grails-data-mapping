@@ -41,16 +41,16 @@ import org.hibernate.engine.Status;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Property;
 import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.property.Getter;
-import org.hibernate.property.Setter;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.type.CompositeType;
+import org.hibernate.type.Type;
 import org.hibernate.util.StringHelper;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -511,16 +511,15 @@ public class GrailsHibernateUtil {
 
         final Class<?> javaClass = persistentClass.getMappedClass();
         final Property identifierProperty = persistentClass.getIdentifierProperty();
-        final Getter idGetter = identifierProperty!=null?  identifierProperty.getGetter(javaClass) : null;
-        final Setter idSetter = identifierProperty!=null? identifierProperty.getSetter(javaClass) : null;
-
-        if (idGetter == null || idSetter == null) return null;
+        final Method idGetterMethod = identifierProperty!=null?  identifierProperty.getGetter(javaClass).getMethod() : null;
+        final Method idSetterMethod = identifierProperty!=null? identifierProperty.getSetter(javaClass).getMethod() : null;
+        final Type identifierType = persistentClass.hasEmbeddedIdentifier() ? persistentClass.getIdentifier().getType() : null;
 
         try {
             proxyFactory.postInstantiate(persistentClass.getEntityName(), javaClass, proxyInterfaces,
-                    idGetter.getMethod(), idSetter.getMethod(),
-                    persistentClass.hasEmbeddedIdentifier() ?
-                            (CompositeType) persistentClass.getIdentifier().getType() :
+                    idGetterMethod, idSetterMethod,
+                    identifierType instanceof CompositeType ?
+                            (CompositeType) identifierType :
                             null);
         }
         catch (HibernateException e) {
