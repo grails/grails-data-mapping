@@ -56,6 +56,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import java.io.IOException;
+import java.lang.InstantiationException;
 import java.util.*;
 
 /**
@@ -333,16 +334,17 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         }
         return false;
     }
+
     @Override
-    public Settings buildSettings() {
-        Settings settings = super.buildSettings();
+    public Settings buildSettings(ServiceRegistry serviceRegistry) {
+        Settings settings = super.buildSettings(serviceRegistry);
         settings.getEntityTuplizerFactory().registerDefaultTuplizerClass(EntityMode.POJO, GroovyAwarePojoEntityTuplizer.class);
         return settings;
     }
 
     @Override
-    public Settings buildSettings(Properties props) throws HibernateException {
-        Settings settings = super.buildSettings(props);
+    public Settings buildSettings(Properties props, ServiceRegistry serviceRegistry) throws HibernateException {
+        Settings settings = super.buildSettings(props, serviceRegistry);
         settings.getEntityTuplizerFactory().registerDefaultTuplizerClass(EntityMode.POJO, GroovyAwarePojoEntityTuplizer.class);
         return settings;
     }
