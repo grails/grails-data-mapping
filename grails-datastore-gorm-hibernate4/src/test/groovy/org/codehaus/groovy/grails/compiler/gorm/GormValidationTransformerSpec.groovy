@@ -1,4 +1,4 @@
-package org.grails.compiler.gorm
+package org.codehaus.groovy.grails.compiler.gorm
 
 import grails.compiler.ast.ClassInjector
 import org.grails.compiler.injection.GrailsAwareClassLoader

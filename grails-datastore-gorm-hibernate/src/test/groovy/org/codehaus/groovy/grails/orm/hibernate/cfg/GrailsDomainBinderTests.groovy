@@ -22,10 +22,14 @@ import grails.plugins.GrailsPlugin
 import grails.plugins.GrailsPluginManager
 import grails.util.Holders
 import grails.validation.ConstrainedProperty
-import org.grails.validation.TestClass
+import org.codehaus.groovy.grails.validation.TestClass
 import org.grails.core.DefaultGrailsDomainClass
 import org.grails.plugins.MockGrailsPluginManager
 import org.grails.support.MockApplicationContext
+import org.junit.Ignore
+
+import java.lang.reflect.Field
+
 import org.hibernate.cfg.ImprovedNamingStrategy
 import org.hibernate.mapping.Bag
 import org.hibernate.mapping.Column
@@ -34,6 +38,7 @@ import org.hibernate.mapping.PersistentClass
 import org.hibernate.mapping.Property
 import org.hibernate.mapping.SimpleValue
 import org.hibernate.mapping.Table
+import org.hibernate.mapping.UniqueKey
 import org.springframework.beans.BeanWrapper
 import org.springframework.beans.BeanWrapperImpl
 
