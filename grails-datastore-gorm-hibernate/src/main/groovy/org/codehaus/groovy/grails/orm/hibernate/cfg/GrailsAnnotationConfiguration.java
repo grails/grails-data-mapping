@@ -17,24 +17,20 @@ package org.codehaus.groovy.grails.orm.hibernate.cfg;
 import grails.core.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.groovy.grails.orm.hibernate.proxy.GroovyAwarePojoEntityTuplizer;
 import org.grails.core.artefact.AnnotationDomainClassArtefactHandler;
 import org.grails.core.artefact.DomainClassArtefactHandler;
+import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.ImprovedNamingStrategy;
-import org.hibernate.cfg.Mappings;
-import org.hibernate.cfg.NamingStrategy;
+import org.hibernate.cfg.*;
 import org.hibernate.engine.FilterDefinition;
 import org.hibernate.mapping.JoinedSubclass;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.RootClass;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Allows configuring Grails' hibernate support to work in conjunction with Hibernate's annotation
@@ -145,6 +141,20 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         }
 
         return sessionFactory;
+    }
+
+    @Override
+    public Settings buildSettings() {
+        Settings settings = super.buildSettings();
+        settings.getEntityTuplizerFactory().registerDefaultTuplizerClass(EntityMode.POJO, GroovyAwarePojoEntityTuplizer.class);
+        return settings;
+    }
+
+    @Override
+    public Settings buildSettings(Properties props) throws HibernateException {
+        Settings settings = super.buildSettings(props);
+        settings.getEntityTuplizerFactory().registerDefaultTuplizerClass(EntityMode.POJO, GroovyAwarePojoEntityTuplizer.class);
+        return settings;
     }
 
     /**

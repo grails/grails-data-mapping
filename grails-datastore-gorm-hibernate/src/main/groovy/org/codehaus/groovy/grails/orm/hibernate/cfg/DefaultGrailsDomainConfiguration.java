@@ -22,12 +22,17 @@ import groovy.lang.Closure;
 import groovy.util.Eval;
 
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
+import org.codehaus.groovy.grails.orm.hibernate.proxy.GroovyAwarePojoEntityTuplizer;
 import org.grails.core.artefact.DomainClassArtefactHandler;
+import org.hibernate.EntityMode;
+import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Mappings;
+import org.hibernate.cfg.Settings;
 
 /**
  * Creates runtime configuration mapping for the Grails domain classes
@@ -122,6 +127,20 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
                 binder.evaluateMapping(domainClass);
             }
         }
+    }
+
+    @Override
+    public Settings buildSettings() {
+        Settings settings = super.buildSettings();
+        settings.getEntityTuplizerFactory().registerDefaultTuplizerClass(EntityMode.POJO, GroovyAwarePojoEntityTuplizer.class);
+        return settings;
+    }
+
+    @Override
+    public Settings buildSettings(Properties props) throws HibernateException {
+        Settings settings = super.buildSettings(props);
+        settings.getEntityTuplizerFactory().registerDefaultTuplizerClass(EntityMode.POJO, GroovyAwarePojoEntityTuplizer.class);
+        return settings;
     }
     
     @Override
