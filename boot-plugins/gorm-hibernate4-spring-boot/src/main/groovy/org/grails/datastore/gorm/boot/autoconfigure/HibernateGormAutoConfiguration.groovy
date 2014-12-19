@@ -16,9 +16,9 @@ package org.grails.datastore.gorm.boot.autoconfigure
 
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.compiler.gorm.GormTransformer
-import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
+import org.grails.compiler.gorm.GormTransformer
+import org.grails.orm.hibernate.HibernateGormEnhancer
+import org.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
 import org.grails.datastore.gorm.GormEnhancer
 import org.hibernate.SessionFactory
 import org.springframework.beans.BeansException

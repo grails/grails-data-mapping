@@ -1,1 +1,1 @@
-http\://grails.org/schema/gorm=org.codehaus.groovy.grails.orm.hibernate.cfg.GORMNamespaceHandler
+http\://grails.org/schema/gorm=org.grails.orm.hibernate.cfg.GORMNamespaceHandler

@@ -1,6 +1,6 @@
 package grails.orm
 
-import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate
+import org.grails.orm.hibernate.GrailsHibernateTemplate
 import org.hibernate.internal.CriteriaImpl
 
 /**

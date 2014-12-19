@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
  * Created by graemerocher on 12/02/14.

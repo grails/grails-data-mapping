@@ -16,9 +16,9 @@
 package grails.orm;
 
 import groovy.lang.GroovySystem;
-import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.codehaus.groovy.grails.orm.hibernate.query.*;
+import org.grails.orm.hibernate.GrailsHibernateTemplate;
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
+import org.grails.orm.hibernate.query.*;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.hibernate.Criteria;

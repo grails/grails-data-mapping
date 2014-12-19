@@ -1,8 +1,8 @@
 package org.grails.datastore.gorm.boot.autoconfigure
 
 import grails.persistence.Entity
-import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore
-import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
+import org.grails.orm.hibernate.HibernateDatastore
+import org.grails.orm.hibernate.HibernateGormEnhancer
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration

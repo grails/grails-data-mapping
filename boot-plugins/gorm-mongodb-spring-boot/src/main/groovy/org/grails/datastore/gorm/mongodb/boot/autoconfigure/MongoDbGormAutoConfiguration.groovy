@@ -18,7 +18,7 @@ import com.mongodb.Mongo
 import com.mongodb.MongoOptions
 import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.compiler.gorm.GormTransformer
+import org.grails.compiler.gorm.GormTransformer
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.springframework.beans.BeansException

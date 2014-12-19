@@ -2,8 +2,8 @@ package org.grails.compiler.gorm
 
 import grails.spring.BeanBuilder
 
-import org.codehaus.groovy.grails.orm.hibernate.SessionFactoryHolder
-import org.codehaus.groovy.grails.orm.hibernate.SessionFactoryProxy
+import org.grails.orm.hibernate.SessionFactoryHolder
+import org.grails.orm.hibernate.SessionFactoryProxy
 import org.hibernate.dialect.H2Dialect
 import org.springframework.context.ApplicationContext
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean

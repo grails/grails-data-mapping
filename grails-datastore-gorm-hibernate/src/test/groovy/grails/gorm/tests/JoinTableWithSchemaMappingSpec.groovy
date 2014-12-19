@@ -2,9 +2,8 @@ package grails.gorm.tests
 
 import spock.lang.Issue
 import grails.persistence.Entity
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.datastore.gorm.Setup
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
+import org.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
 
 /**
  */

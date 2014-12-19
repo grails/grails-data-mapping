@@ -5,8 +5,6 @@ import org.hibernate.Session
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
-import org.codehaus.groovy.grails.orm.hibernate.HibernateGormStaticApi
-import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore
 
 /**
  */
