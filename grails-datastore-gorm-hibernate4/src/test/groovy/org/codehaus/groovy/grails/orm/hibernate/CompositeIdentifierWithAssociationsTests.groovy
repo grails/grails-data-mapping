@@ -79,6 +79,7 @@ class CompositeIdentifierWithAssociationsTests extends AbstractGrailsHibernateTe
 
 @Entity
 class CompositeIdentifierWithAssociationsParent implements Serializable {
+    Long id
     Long version
 
     Set children
