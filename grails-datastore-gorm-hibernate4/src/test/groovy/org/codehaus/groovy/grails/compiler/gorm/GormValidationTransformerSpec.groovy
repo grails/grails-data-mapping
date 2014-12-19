@@ -1,6 +1,7 @@
 package org.codehaus.groovy.grails.compiler.gorm
 
 import grails.compiler.ast.ClassInjector
+import org.grails.compiler.gorm.GormValidationTransformer
 import org.grails.compiler.injection.GrailsAwareClassLoader
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormValidationApi
