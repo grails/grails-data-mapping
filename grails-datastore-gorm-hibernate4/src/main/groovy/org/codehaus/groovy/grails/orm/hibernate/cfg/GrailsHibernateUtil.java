@@ -490,7 +490,7 @@ public class GrailsHibernateUtil implements HibernateQueryConstants{
         final Property identifierProperty = persistentClass.getIdentifierProperty();
         final Method idGetterMethod = identifierProperty!=null?  identifierProperty.getGetter(javaClass).getMethod() : null;
         final Method idSetterMethod = identifierProperty!=null? identifierProperty.getSetter(javaClass).getMethod() : null;
-        final Type identifierType = persistentClass.getIdentifier().getType();
+        final Type identifierType = persistentClass.hasEmbeddedIdentifier() ? persistentClass.getIdentifier().getType() : null;
 
         try {
             proxyFactory.postInstantiate(persistentClass.getEntityName(), javaClass, proxyInterfaces,
