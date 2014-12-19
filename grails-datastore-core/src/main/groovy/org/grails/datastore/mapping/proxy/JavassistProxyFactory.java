@@ -15,6 +15,13 @@
 package org.grails.datastore.mapping.proxy;
 
 import groovy.lang.GroovyObject;
+import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.reflect.ReflectionUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -24,15 +31,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javassist.util.proxy.MethodFilter;
-import javassist.util.proxy.MethodHandler;
-import javassist.util.proxy.ProxyFactory;
-import javassist.util.proxy.ProxyObject;
-
-import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.reflect.ReflectionUtils;
-import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * A proxy factory that uses Javassist to create proxies
@@ -85,8 +83,7 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
         return (T) getProxyInstance(session, type, key);
     }
 
-    protected Object createProxiedInstance(final Session session, final Class cls, Class proxyClass, final Serializable idAsInput) {
-        final Serializable id = convertId(idAsInput, cls);
+    protected Object createProxiedInstance(final Session session, final Class cls, Class proxyClass, final Serializable id) {
         MethodHandler mi = new EntityProxyMethodHandler(proxyClass) {
             private Object target;
             
@@ -166,8 +163,9 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
         }
     }
 
-    protected Object getProxyInstance(Session session, Class type, Serializable id) {
+    protected Object getProxyInstance(Session session, Class type, Serializable idAsInput) {
         Class proxyClass = getProxyClass(type);
+        final Serializable id = convertId(idAsInput, type);
         return createProxiedInstance(session, type, proxyClass, id);
     }
 
