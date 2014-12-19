@@ -15,24 +15,20 @@
 package org.grails.datastore.mapping.proxy;
 
 import groovy.lang.GroovyObject;
+import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.reflect.ReflectionUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javassist.util.proxy.MethodFilter;
-import javassist.util.proxy.MethodHandler;
-import javassist.util.proxy.ProxyFactory;
-import javassist.util.proxy.ProxyObject;
-
-import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.reflect.ReflectionUtils;
-import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * A proxy factory that uses Javassist to create proxies
@@ -85,54 +81,15 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
         return (T) getProxyInstance(session, type, key);
     }
 
-    protected Object createProxiedInstance(final Session session, final Class cls, Class proxyClass, final Serializable idAsInput) {
-        final Serializable id = convertId(idAsInput, cls);
-        MethodHandler mi = new EntityProxyMethodHandler(proxyClass) {
-            private Object target;
-            
-            @Override
-            protected Object resolveDelegate(Object self) {
-                if (target == null) {
-                    target = session.retrieve(cls, id);
-
-                    // This tends to happen during unit testing if the proxy class is not properly mocked
-                    // and therefore can't be found in the session.
-                    if( target == null ) {
-                        throw new DataIntegrityViolationException("Proxy for ["+cls.getName()+":"+id+"] could not be initialized");
-                    }
-                }
-                return target;
-            }
-            
-            @Override
-            protected Object isProxyInitiated(Object self) {
-                return target != null;
-            }
-            
-            @Override
-            protected Object getProxyKey(Object self) {
-                return id;
-            }
-            
-            protected Object handleInvocationFallback(Object self, Method thisMethod, Object[] args) {
-                Object actualTarget = getProxyTarget(self);
-                if(!thisMethod.getDeclaringClass().isInstance(actualTarget)) {
-                    if(Modifier.isPublic(thisMethod.getModifiers())) {
-                        try {
-                            thisMethod = actualTarget.getClass().getMethod(thisMethod.getName(), thisMethod.getParameterTypes());
-                        } catch (Exception e) {
-                            org.springframework.util.ReflectionUtils.handleReflectionException(e);
-                        }
-                    } else {
-                        thisMethod = org.springframework.util.ReflectionUtils.findMethod(actualTarget.getClass(), thisMethod.getName(), thisMethod.getParameterTypes());
-                    }
-                }
-                return org.springframework.util.ReflectionUtils.invokeMethod(thisMethod, actualTarget, args);
-            }    
-        };
+    protected Object createProxiedInstance(final Session session, final Class cls, Class proxyClass, final Serializable id) {
+        MethodHandler mi = createMethodHandler(session, cls, proxyClass, id);
         Object proxy = ReflectionUtils.instantiate(proxyClass);
         ((ProxyObject)proxy).setHandler(mi);
         return proxy;
+    }
+
+    protected MethodHandler createMethodHandler(Session session, Class cls, Class proxyClass, Serializable id) {
+        return new SessionEntityProxyMethodHandler(proxyClass, session, cls, id);
     }
 
     protected Serializable convertId(Serializable idAsInput, Class<?> ownerClass) {
@@ -166,8 +123,9 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
         }
     }
 
-    protected Object getProxyInstance(Session session, Class type, Serializable id) {
+    protected Object getProxyInstance(Session session, Class type, Serializable idAsInput) {
         Class proxyClass = getProxyClass(type);
+        final Serializable id = convertId(idAsInput, type);
         return createProxiedInstance(session, type, proxyClass, id);
     }
 
@@ -204,4 +162,5 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
         }
         return proxyClass;
     }
+
 }
