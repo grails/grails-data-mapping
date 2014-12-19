@@ -33,6 +33,7 @@ import org.hibernate.MappingException;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Mappings;
 import org.hibernate.cfg.Settings;
+import org.hibernate.service.ServiceRegistry;
 
 /**
  * Creates runtime configuration mapping for the Grails domain classes
@@ -87,19 +88,18 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
     }
 
     @Override
-    public Settings buildSettings() {
-        Settings settings = super.buildSettings();
+    public Settings buildSettings(ServiceRegistry serviceRegistry) {
+        Settings settings = super.buildSettings(serviceRegistry);
         settings.getEntityTuplizerFactory().registerDefaultTuplizerClass(EntityMode.POJO, GroovyAwarePojoEntityTuplizer.class);
         return settings;
     }
 
     @Override
-    public Settings buildSettings(Properties props) throws HibernateException {
-        Settings settings = super.buildSettings(props);
+    public Settings buildSettings(Properties props, ServiceRegistry serviceRegistry) throws HibernateException {
+        Settings settings = super.buildSettings(props, serviceRegistry);
         settings.getEntityTuplizerFactory().registerDefaultTuplizerClass(EntityMode.POJO, GroovyAwarePojoEntityTuplizer.class);
         return settings;
     }
-
     /**
      * Overrides the default behaviour to including binding of Grails domain classes.
      */
