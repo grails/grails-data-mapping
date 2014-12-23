@@ -320,6 +320,10 @@ class MBookworm implements Serializable {
     String name
     MBook favoriteBook
 
+    void setFavoriteBook(MBook book) {
+        favoriteBook = book
+    }
+
     static constraints = {
         name(nullable: false, blank: false)
         favoriteBook(nullable: true)
