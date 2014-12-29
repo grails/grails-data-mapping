@@ -43,11 +43,18 @@ class InstanceProxy {
 
     def invokeMethod(String name, args) {
         if (validateMethods.contains(name)) {
-            validateApi.invokeMethod(name, [instance, *args] as Object[])
+            validateApi.invokeMethod(name, prependToArray(instance, (Object[])args))
         }
         else {
-            instanceApi.invokeMethod(name, [instance, *args] as Object[])
+            instanceApi.invokeMethod(name, prependToArray(instance, (Object[])args))
         }
+    }
+
+    private final static Object[] prependToArray(Object item, Object[] array) {
+        def list = new ArrayList(array.length + 1)
+        list.add item
+        list.addAll array
+        list as Object[]
     }
 
     void setProperty(String name, val) {
