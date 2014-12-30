@@ -103,6 +103,7 @@ class TwoManyToManyTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class TwoMMBook {
     Long id
     Long version
