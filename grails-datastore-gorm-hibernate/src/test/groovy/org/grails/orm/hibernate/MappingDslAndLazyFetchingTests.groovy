@@ -38,6 +38,7 @@ class MappingDslAndLazyFetchingTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class Actor {
 
     Long id
