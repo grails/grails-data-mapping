@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 /**
@@ -36,6 +38,7 @@ class UnidirectionalOneToManyUpdateTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class UnidirectionalOneToManyCustomer {
     Long id
     Long version
@@ -45,6 +48,7 @@ class UnidirectionalOneToManyCustomer {
     String password
 }
 
+@Entity
 class UnidirectionalOneToManyOrder {
     Long id
     Long version

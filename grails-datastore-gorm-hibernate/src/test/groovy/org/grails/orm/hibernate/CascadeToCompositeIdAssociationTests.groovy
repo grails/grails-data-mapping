@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -40,6 +42,7 @@ class CascadeToCompositeIdAssociationTests extends AbstractGrailsHibernateTests 
     }
 }
 
+@Entity
 class CascadeToCompositeIdAssociationTrade {
     Long id
     Long version
@@ -47,6 +50,7 @@ class CascadeToCompositeIdAssociationTrade {
     static hasMany = [segments:CascadeToCompositeIdAssociationSegment]
 }
 
+@Entity
 class CascadeToCompositeIdAssociationSegment{
     Long id
     Long version
@@ -54,6 +58,7 @@ class CascadeToCompositeIdAssociationSegment{
     static hasMany = [products:CascadeToCompositeIdAssociationProduct]
 }
 
+@Entity
 class CascadeToCompositeIdAssociationProduct implements Serializable{
     Long id
     Long version
@@ -66,6 +71,7 @@ class CascadeToCompositeIdAssociationProduct implements Serializable{
     }
 }
 
+@Entity
 class CascadeToCompositeIdAssociationCountry implements Serializable{
     Long id
     Long version

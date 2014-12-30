@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import grails.core.GrailsDomainClass
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -56,6 +58,7 @@ class CascadingDeleteBehaviour2Tests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class CascadingDeleteBehaviourUserRecord {
     Long id
     Long version
@@ -65,6 +68,7 @@ class CascadingDeleteBehaviourUserRecord {
     String name
 }
 
+@Entity
 class CascadingDeleteBehaviourItem {
     Long id
     Long version
@@ -74,6 +78,7 @@ class CascadingDeleteBehaviourItem {
     String name
 }
 
+@Entity
 class CascadingDeleteBehaviourItemRating {
     Long id
     Long version

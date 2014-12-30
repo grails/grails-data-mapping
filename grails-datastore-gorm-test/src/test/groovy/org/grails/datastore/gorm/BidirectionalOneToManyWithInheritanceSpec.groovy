@@ -1,4 +1,5 @@
 import grails.gorm.tests.GormDatastoreSpec
+import grails.persistence.Entity
 
 /**
  * @author graemerocher
@@ -28,6 +29,7 @@ class BidirectionalOneToManyWithInheritanceSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class ConfigurationItem {
     Long id
     Long version
@@ -43,11 +45,13 @@ class ConfigurationItem {
     }
 }
 
+@Entity
 class Documentation extends ConfigurationItem {
     Long id
     Long version
 }
 
+@Entity
 class ChangeRequest extends ConfigurationItem {
     Long id
     Long version

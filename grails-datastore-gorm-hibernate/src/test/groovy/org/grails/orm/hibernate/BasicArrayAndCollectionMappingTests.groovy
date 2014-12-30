@@ -1,7 +1,10 @@
 package org.grails.orm.hibernate
 
 import grails.core.GrailsDomainClass
+import grails.persistence.Entity;
+
 import org.junit.Test
+
 import static junit.framework.Assert.*
 /**
  * @author Graeme Rocher
@@ -156,6 +159,7 @@ class BasicArrayAndCollectionMappingTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class BasicCollections {
     Long id
     Long version

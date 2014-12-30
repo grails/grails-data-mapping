@@ -1,7 +1,7 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
-
+import grails.persistence.Entity
 import spock.lang.Issue
 import spock.lang.Shared
 
@@ -110,6 +110,7 @@ class CustomTypeMarshallingSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class Person {
     Long id
     Integer version

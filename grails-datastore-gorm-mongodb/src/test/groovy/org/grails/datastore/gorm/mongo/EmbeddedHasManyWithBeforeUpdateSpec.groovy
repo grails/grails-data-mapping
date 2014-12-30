@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
+import grails.persistence.Entity
 
 import org.bson.types.ObjectId
 
@@ -43,6 +44,7 @@ class EmbeddedHasManyWithBeforeUpdateSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class User {
     ObjectId id
     String name
@@ -56,6 +58,7 @@ class User {
     }
 }
 
+@Entity
 class UserAddress {
     ObjectId id
     String type

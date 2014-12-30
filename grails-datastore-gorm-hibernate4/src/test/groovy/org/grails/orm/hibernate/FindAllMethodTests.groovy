@@ -1,6 +1,9 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity
+
 import org.junit.Test
+
 import static junit.framework.Assert.*
 
 /**
@@ -221,6 +224,7 @@ class FindAllMethodTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class FindAllTest {
     Long id
     Long version

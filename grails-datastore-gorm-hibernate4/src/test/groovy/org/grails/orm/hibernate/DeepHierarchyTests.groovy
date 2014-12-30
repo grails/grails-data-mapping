@@ -1,7 +1,8 @@
 package org.grails.orm.hibernate
 
-import org.codehaus.groovy.grails.commons.test.*
+import grails.persistence.Entity
 
+import org.codehaus.groovy.grails.commons.test.*
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -79,18 +80,21 @@ class DeepHierarchyTests extends AbstractGrailsHibernateTests {
         [Personnel, Approver, Handler]
     }
 }
+@Entity
 class Personnel {
     Long id
     Long version
     String name
 }
 
+@Entity
 class Approver extends Personnel {
     Long id
     Long version
     String status
 }
 
+@Entity
 class Handler extends Approver {
     Long id
     Long version

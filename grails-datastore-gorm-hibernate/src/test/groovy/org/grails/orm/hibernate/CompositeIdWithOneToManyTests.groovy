@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -39,6 +41,7 @@ class CompositeIdWithOneToManyTests extends AbstractGrailsHibernateTests {
         [Left, Center]
     }
 }
+@Entity
 class Left {
     Long id
     Long version
@@ -46,6 +49,7 @@ class Left {
     static hasMany = [centers:Center]
 }
 
+@Entity
 class Center implements Serializable {
     Long id
     Long version

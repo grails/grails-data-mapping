@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -82,6 +84,7 @@ class EventsTriggeringTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class EventsTriggering {
 
     Long id

@@ -1,6 +1,9 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity
+
 import org.junit.Test
+
 import static junit.framework.Assert.*
 
 /**
@@ -24,6 +27,7 @@ class IdentityNameMappingTests extends AbstractGrailsHibernateTests {
         [IdentityNameMapping]
     }
 }
+@Entity
 class IdentityNameMapping {
     Long id
     Long version

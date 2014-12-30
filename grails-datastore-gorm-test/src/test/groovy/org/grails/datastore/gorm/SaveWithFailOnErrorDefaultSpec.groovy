@@ -3,6 +3,7 @@ package org.grails.datastore.gorm
 import grails.gorm.tests.GormDatastoreSpec
 import grails.validation.ConstrainedProperty
 import grails.validation.ValidationException
+
 import org.grails.core.support.GrailsDomainConfigurationUtil
 import org.grails.datastore.mapping.annotation.Entity
 import org.springframework.validation.Errors
@@ -66,6 +67,7 @@ class SaveWithFailOnErrorDefaultSpec extends GormDatastoreSpec {
 }
 
 @Entity
+@grails.persistence.Entity
 class TestProduct {
     Long id
     String name

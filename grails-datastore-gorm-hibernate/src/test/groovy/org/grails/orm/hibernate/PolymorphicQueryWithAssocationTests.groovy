@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 /**
@@ -31,12 +33,14 @@ class PolymorphicQueryWithAssocationTests  extends AbstractGrailsHibernateTests 
     }
 }
 
+@Entity
 class PolymorphicQueryWithAssocationPerson {
     Long id
     Long version
     Set bases
     static hasMany = [ bases:PolymorphicQueryWithAssocationBase]
 }
+@Entity
 class PolymorphicQueryWithAssocationBase {
     Long id
     Long version
@@ -44,5 +48,7 @@ class PolymorphicQueryWithAssocationBase {
     static belongsTo = PolymorphicQueryWithAssocationPerson
     PolymorphicQueryWithAssocationPerson person
 }
+@Entity
 class PolymorphicQueryWithAssocationHyperBase extends PolymorphicQueryWithAssocationBase {}
+@Entity
 class PolymorphicQueryWithAssocationSpecialBase extends PolymorphicQueryWithAssocationBase {}

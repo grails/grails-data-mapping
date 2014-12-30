@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 /**
@@ -36,6 +38,7 @@ class UnidirectionalMapOneToManyUpdateTests extends AbstractGrailsHibernateTests
     }
 }
 
+@Entity
 class UnidirectionalMapCustomer {
     Long id
     Long version
@@ -45,6 +48,7 @@ class UnidirectionalMapCustomer {
     String password
 }
 
+@Entity
 class UnidirectionalMapOrder {
     Long id
     Long version

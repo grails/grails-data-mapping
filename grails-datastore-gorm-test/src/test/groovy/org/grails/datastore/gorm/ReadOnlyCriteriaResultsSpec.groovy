@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
+import grails.persistence.Entity
 import spock.lang.Issue
 
 class ReadOnlyCriteriaResultsSpec extends GormDatastoreSpec {
@@ -29,6 +30,7 @@ class ReadOnlyCriteriaResultsSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class FamilyMember {
     Long id
     String name

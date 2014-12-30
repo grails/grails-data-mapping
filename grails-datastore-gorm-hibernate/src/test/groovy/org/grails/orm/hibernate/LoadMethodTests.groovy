@@ -1,5 +1,6 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity
 import org.hibernate.Hibernate
 import org.hibernate.ObjectNotFoundException
 import org.hibernate.proxy.HibernateProxy
@@ -160,12 +161,14 @@ class LoadMethodTests extends AbstractGrailsHibernateTests {
         assertEquals 'proxied class should be domain class', className, Hibernate.getClass(instance).name
     }
 }
+@Entity
 class LoadMethodTest {
     Long id
     Long version
     String name
 }
 
+@Entity
 class LoadMethodZeroIdTest {
     Long id
     Long version

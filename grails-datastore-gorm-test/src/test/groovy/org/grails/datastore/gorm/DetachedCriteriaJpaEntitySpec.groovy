@@ -51,6 +51,7 @@ class DetachedCriteriaJpaEntitySpec extends GormDatastoreSpec {
 }
 
 @javax.persistence.Entity
+@grails.persistence.Entity
 class Todo {
     Long id
     String title

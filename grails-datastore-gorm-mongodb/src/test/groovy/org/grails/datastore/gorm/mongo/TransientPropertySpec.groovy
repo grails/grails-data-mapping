@@ -1,7 +1,7 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
-
+import grails.persistence.Entity
 class TransientPropertySpec extends GormDatastoreSpec {
 
     void "Test that transient properties are not saved to mongodb"() {
@@ -27,6 +27,7 @@ class TransientPropertySpec extends GormDatastoreSpec {
 
 class RodeoService {}
 
+@Entity
 class Cow {
     Long id
     String name

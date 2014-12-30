@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity
+
 import org.junit.Test
 
 class MappedByColumn2Tests extends AbstractGrailsHibernateTests {
@@ -32,6 +34,7 @@ class MappedByColumn2Tests extends AbstractGrailsHibernateTests {
 
 }
 
+@Entity
 class Airport2 {
     Long id
     Long version
@@ -41,6 +44,7 @@ class Airport2 {
     static hasMany = [routes:Route2]
 }
 
+@Entity
 class Route2 {
     Long id
     Long version

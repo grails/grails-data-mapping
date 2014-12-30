@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
+import grails.persistence.Entity
 
 class DisableVersionSpec extends GormDatastoreSpec {
 
@@ -23,6 +24,7 @@ class DisableVersionSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class NoVersion {
 
     Long id

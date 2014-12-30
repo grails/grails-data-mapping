@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity
+
 import org.codehaus.groovy.grails.validation.AbstractConstraint
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.junit.Before
@@ -71,6 +73,7 @@ class ComponentValidationTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class ComponentValidationTestsPerson {
     Long id
     Long version
@@ -84,6 +87,7 @@ class ComponentValidationTestsPerson {
     }
 }
 
+@Entity
 class ComponentValidationTestsAuditInfo {
     Long id
     Long version
