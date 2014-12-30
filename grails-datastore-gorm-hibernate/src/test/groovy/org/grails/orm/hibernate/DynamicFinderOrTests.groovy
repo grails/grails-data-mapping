@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -64,6 +66,7 @@ class DynamicFinderOrTests extends AbstractGrailsHibernateTests {
 
 
 }
+@Entity
 class DynamicFinderOrBook {
     Long id
     Long version

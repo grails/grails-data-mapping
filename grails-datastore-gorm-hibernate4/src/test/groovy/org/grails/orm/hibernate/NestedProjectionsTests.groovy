@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity
+
 import org.junit.Test
 
 
@@ -54,6 +56,7 @@ class NestedProjectionsTests extends AbstractGrailsHibernateTests {
 }
 
 
+@Entity
 class NestedProjectionsUser {
     Long id
     Long version
@@ -64,6 +67,7 @@ class NestedProjectionsUser {
     static hasMany = [roles:NestedProjectionsRole]
 }
 
+@Entity
 class NestedProjectionsRole {
     Long id
     Long version
@@ -74,6 +78,7 @@ class NestedProjectionsRole {
     static hasMany = [permissions:NestedProjectionsPermission]
 }
 
+@Entity
 class NestedProjectionsPermission {
     Long id
     Long version

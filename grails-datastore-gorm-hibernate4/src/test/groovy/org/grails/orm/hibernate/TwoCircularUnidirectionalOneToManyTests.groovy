@@ -1,8 +1,9 @@
 package org.grails.orm.hibernate
 
 import grails.core.GrailsDomainClass
-
+import grails.persistence.Entity
 import static junit.framework.Assert.*
+
 import org.junit.Test
 
 /**
@@ -77,6 +78,7 @@ class TwoCircularUnidirectionalOneToManyTests extends AbstractGrailsHibernateTes
     }
 }
 
+@Entity
 class TwoCircularUnidirectionalOneToManyUser {
 
     Long id

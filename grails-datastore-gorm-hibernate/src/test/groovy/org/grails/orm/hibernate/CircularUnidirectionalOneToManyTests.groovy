@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -40,6 +42,7 @@ class CircularUnidirectionalOneToManyTests extends AbstractGrailsHibernateTests 
         [CircularUnidirectionalOneToManyTask]
     }
 }
+@Entity
 class CircularUnidirectionalOneToManyTask {
     Long id
     Long version

@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity
+
 import org.junit.Test
 
 
@@ -28,18 +30,21 @@ class TwoUnidirectionalOneToManyTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class Mailing {
     Long id
     Long version
     Set documents
     static hasMany = [documents:MailingDocument]
 }
+@Entity
 class Recipient {
     Long id
     Long version
     Set documents
     static hasMany = [documents:MailingDocument]
 }
+@Entity
 class MailingDocument {
     Long id
     Long version

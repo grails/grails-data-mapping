@@ -81,6 +81,7 @@ class NestedAssociationQuerySpec extends GormDatastoreSpec{
 }
 
 @Entity
+@grails.persistence.Entity
 class UserOpinion {
     Long id
     Set answers = []
@@ -88,6 +89,7 @@ class UserOpinion {
 }
 
 @Entity
+@grails.persistence.Entity
 class Answer {
 
     Long id
@@ -100,6 +102,7 @@ class Answer {
 }
 
 @Entity
+@grails.persistence.Entity
 class Question {
 
     Long id
@@ -111,6 +114,7 @@ class Question {
 }
 
 @Entity
+@grails.persistence.Entity
 class Release {
     Long id
     String name
@@ -118,6 +122,7 @@ class Release {
 }
 
 @Entity
+@grails.persistence.Entity
 class MilestoneCycle {
     Long id
     String name
@@ -125,6 +130,7 @@ class MilestoneCycle {
 }
 
 @Entity
+@grails.persistence.Entity
 class Department {
     Long id
     String name

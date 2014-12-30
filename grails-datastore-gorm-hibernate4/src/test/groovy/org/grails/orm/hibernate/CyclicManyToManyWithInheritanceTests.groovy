@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import grails.core.GrailsDomainClass
+import grails.persistence.Entity
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -46,8 +48,10 @@ class CyclicManyToManyWithInheritanceTests extends AbstractGrailsHibernateTests 
     }
 }
 
+@Entity
 class CyclicManyToManyWithInheritanceIndividual extends CyclicManyToManyWithInheritanceUser {}
 
+@Entity
 class CyclicManyToManyWithInheritanceUser {
 
     Long id
@@ -59,6 +63,7 @@ class CyclicManyToManyWithInheritanceUser {
     static hasMany = [ groups: CyclicManyToManyWithInheritanceUserGroup ]
 }
 
+@Entity
 class CyclicManyToManyWithInheritanceUserGroup extends CyclicManyToManyWithInheritanceUser {
 
     static belongsTo = [CyclicManyToManyWithInheritanceIndividual,

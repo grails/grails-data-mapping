@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity
+
 import org.junit.Test
 
 /**
@@ -39,6 +41,7 @@ class ManyToManyWithSortedSetTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class ManyToManyWithSortedSetFoo {
     Long id
     Long version
@@ -47,6 +50,7 @@ class ManyToManyWithSortedSetFoo {
     static hasMany = [bars:ManyToManyWithSortedSetBar]
 }
 
+@Entity
 class ManyToManyWithSortedSetBar implements Comparable {
     String name
     int sortOrder

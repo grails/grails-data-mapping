@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 
@@ -24,6 +26,7 @@ class CascadingSaveAndUniqueConstraintTests extends AbstractGrailsHibernateTests
 }
 
 
+@Entity
 class CascadingSaveAndUniqueConstraintFace {
     Long id
     Long version
@@ -34,6 +37,7 @@ class CascadingSaveAndUniqueConstraintFace {
     }
 }
 
+@Entity
 class CascadingSaveAndUniqueConstraintNose {
     Long id
     Long version

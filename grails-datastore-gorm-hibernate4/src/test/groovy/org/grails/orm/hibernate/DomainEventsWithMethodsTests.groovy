@@ -380,6 +380,7 @@ class Address {
     static belongsTo = [person:PersonEvent]
 }
 
+@Entity
 class PersonEvent2 {
     Long id
     Long version

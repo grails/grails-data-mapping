@@ -1,6 +1,9 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
+
 import static junit.framework.Assert.*
 
 /**
@@ -62,12 +65,14 @@ class GetMethodTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class GetMethodTest {
     Long id
     Long version
     String name
 }
 
+@Entity
 class GetMethodZeroIdTest {
     Long id
     Long version

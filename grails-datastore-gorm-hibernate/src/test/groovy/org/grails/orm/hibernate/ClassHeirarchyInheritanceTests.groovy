@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -37,8 +39,12 @@ class ClassHeirarchyInheritanceTests extends AbstractGrailsHibernateTests {
         [Car, Alpha, Fiat, Ferrari]
     }
 }
+@Entity
 class Car { Long id;Long version;String type;}
+@Entity
 class Alpha extends Car { }
+@Entity
 class Fiat extends Car { }
+@Entity
 class Ferrari extends Car { }
 

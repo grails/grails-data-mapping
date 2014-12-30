@@ -1,6 +1,7 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity
 import org.junit.Test
 
 /**
@@ -102,6 +103,7 @@ class TwoManyToManyTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class TwoMMBook {
     Long id
     Long version
@@ -116,6 +118,7 @@ class TwoMMBook {
     static hasMany = [authors:TwoMMPerson,
                       publishers:TwoMMPerson]
 }
+@Entity
 class TwoMMPerson {
     Long id
     Long version

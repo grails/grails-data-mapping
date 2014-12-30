@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
+import grails.persistence.Entity;
 import spock.lang.Issue
 
 import org.grails.datastore.mapping.core.Session
@@ -296,6 +297,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class PersonEvent implements Serializable {
     Long id
     Long version
@@ -359,6 +361,7 @@ class PersonEvent implements Serializable {
     }
 }
 
+@Entity
 class ModifyPerson implements Serializable {
     Long id
     Long version

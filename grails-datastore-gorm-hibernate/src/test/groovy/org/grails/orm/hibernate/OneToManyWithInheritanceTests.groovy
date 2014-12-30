@@ -1,6 +1,7 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity
 import org.junit.Test
 
 /**
@@ -49,6 +50,7 @@ class OneToManyWithInheritanceTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class OneToManyWithInheritanceOwnerObject {
     Long id
     Long version
@@ -59,6 +61,7 @@ class OneToManyWithInheritanceOwnerObject {
     static hasMany = [class1: OneToManyWithInheritanceSubClass1, class2: OneToManyWithInheritanceSubClass2]
 }
 
+@Entity
 class OneToManyWithInheritanceSubClass1 extends OneToManyWithInheritanceBaseClass {
     Long id
     Long version
@@ -69,6 +72,7 @@ class OneToManyWithInheritanceSubClass1 extends OneToManyWithInheritanceBaseClas
     }
 }
 
+@Entity
 class OneToManyWithInheritanceSubClass2 extends OneToManyWithInheritanceBaseClass {
     Long id
     Long version
@@ -79,6 +83,7 @@ class OneToManyWithInheritanceSubClass2 extends OneToManyWithInheritanceBaseClas
     }
 }
 
+@Entity
 class OneToManyWithInheritanceBaseClass {
     Long id
     Long version

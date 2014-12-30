@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity
+
 import org.junit.Test
 
 class MapMappingTests extends AbstractGrailsHibernateTests {
@@ -97,6 +99,7 @@ class MapMappingTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class MapBook {
     Long id
     Long version
@@ -114,6 +117,7 @@ class MapBook {
         authorNameSurname indexColumn:[length:50], length:100
     }
 }
+@Entity
 class MapPerson {
     Long id
     Long version

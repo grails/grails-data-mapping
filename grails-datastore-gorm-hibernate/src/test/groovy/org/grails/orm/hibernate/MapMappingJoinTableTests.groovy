@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 
@@ -34,6 +36,7 @@ class MapMappingJoinTableTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class Skydive {
     Long id
     Long version

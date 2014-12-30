@@ -1,6 +1,9 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity
+
 import org.junit.Test
+
 import static junit.framework.Assert.*
 
 
@@ -89,6 +92,7 @@ class FindByInListTests extends AbstractGrailsHibernateTests {
 }
 
 
+@Entity
 class FindByInListBook {
     Long id
     Long version

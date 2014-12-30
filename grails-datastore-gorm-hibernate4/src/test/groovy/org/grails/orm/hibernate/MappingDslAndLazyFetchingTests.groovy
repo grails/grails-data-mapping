@@ -1,7 +1,11 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity
+
 import org.hibernate.Hibernate
+
 import static junit.framework.Assert.*
+
 import org.junit.Test
 
 /**
@@ -34,6 +38,7 @@ class MappingDslAndLazyFetchingTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class Actor {
 
     Long id
@@ -52,6 +57,7 @@ class Actor {
     }
 }
 
+@Entity
 class Film {
     Long id
     Long version

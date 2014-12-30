@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 /**
@@ -42,6 +44,7 @@ class UndirectionalOneToManyMappingTests extends AbstractGrailsHibernateTests {
 
 }
 
+@Entity
 class MappedU2mBook {
     Long id
     Long version
@@ -49,6 +52,7 @@ class MappedU2mBook {
     String title
 }
 
+@Entity
 class MappedU2mAuthor {
     Long id
     Long version

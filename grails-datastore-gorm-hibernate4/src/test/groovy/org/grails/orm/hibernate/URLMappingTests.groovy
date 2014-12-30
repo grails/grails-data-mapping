@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity
+
 import org.junit.Test
 
 
@@ -28,6 +30,7 @@ class URLMappingTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class UniListMappingBookmark {
     Long id
     Long version

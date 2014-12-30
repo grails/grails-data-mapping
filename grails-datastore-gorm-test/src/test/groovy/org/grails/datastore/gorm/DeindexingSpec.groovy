@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
+import grails.persistence.Entity
 
 /**
  * @author Daniel Wiell
@@ -22,6 +23,7 @@ class DeindexingSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class AuthorWithPseudonym {
     Long id
     Integer version

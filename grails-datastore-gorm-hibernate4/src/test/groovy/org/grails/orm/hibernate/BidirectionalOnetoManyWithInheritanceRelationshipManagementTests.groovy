@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import grails.core.GrailsDomainClass
+import grails.persistence.Entity
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -52,6 +54,7 @@ class BidirectionalOnetoManyWithInheritanceRelationshipManagementTests extends A
         [BidirectionalOnetoManyManySide, BidirectionalOnetoManySubManySide, BidirectionalOnetoManyOneSide]
     }
 }
+@Entity
 class BidirectionalOnetoManyManySide {
     Long id
     Long version
@@ -59,8 +62,10 @@ class BidirectionalOnetoManyManySide {
     static hasMany = [oneSides:BidirectionalOnetoManyOneSide]
 }
 
+@Entity
 class BidirectionalOnetoManySubManySide extends BidirectionalOnetoManyManySide {}
 
+@Entity
 class BidirectionalOnetoManyOneSide {
     Long id
     Long version

@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
+
 /**
  * @author graemerocher
  */
@@ -54,6 +56,7 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class CommonTypes implements Serializable {
     Long id
     Long version

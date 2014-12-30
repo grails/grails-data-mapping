@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -100,11 +102,13 @@ class EnumMappingTests extends AbstractGrailsHibernateTests {
 }
 enum VehicleStatus { OFF, IDLING, ACCELERATING, DECELARATING }
 
+@Entity
 class Vehicle {
     Long id
     Long version
     VehicleStatus status
 }
+@Entity
 class Vehicle2 {
     Long id
     Long version
@@ -113,16 +117,20 @@ class Vehicle2 {
         status enumType:'ordinal'
     }
 }
+@Entity
 class EnumMappingSuperClass {Long id; Long version;}
 
+@Entity
 class SubClassWithStringPropertyEnumMapping extends EnumMappingSuperClass {
     Long id
     Long version
     String someProperty
 }
+@Entity
 class SubClassWithEnumPropertyEnumMapping extends EnumMappingSuperClass {
     VehicleStatus vehicalStatus
 }
+@Entity
 class SubClassWithOptionalEnumPropertyEnumMapping extends EnumMappingSuperClass {
     VehicleStatus optionalVehicalStatus
     static constraints = {
@@ -130,6 +138,7 @@ class SubClassWithOptionalEnumPropertyEnumMapping extends EnumMappingSuperClass 
     }
 }
 
+@Entity
 class TestEnumUser {
     Long id
     Long version

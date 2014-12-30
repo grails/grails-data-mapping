@@ -1,6 +1,7 @@
 package org.grails.datastore.test
 
 import grails.datastore.test.DatastoreUnitTestMixin
+import grails.persistence.Entity
 import spock.lang.Specification
 
 /**
@@ -66,6 +67,7 @@ class TestTests extends GroovyTestCase {
     }
 }
 
+@Entity
 class TestDomain {
     Long id
     Long version

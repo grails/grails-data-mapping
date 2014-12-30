@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
+import grails.persistence.Entity
 
 class CustomSequenceIdentifierSpec extends GormDatastoreSpec {
 
@@ -20,6 +21,7 @@ class CustomSequenceIdentifierSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class Book {
 
     Long id
