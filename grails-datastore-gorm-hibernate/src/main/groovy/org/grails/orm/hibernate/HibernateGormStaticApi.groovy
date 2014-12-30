@@ -122,11 +122,6 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
     }
 
     @Override
-    D merge( D o ) {
-        instanceApi.merge(o)
-    }
-
-    @Override
     Object withSession(Closure callable) {
         GrailsHibernateTemplate template = new GrailsHibernateTemplate(sessionFactory, grailsApplication, defaultFlushMode)
         template.setExposeNativeSession(false)
