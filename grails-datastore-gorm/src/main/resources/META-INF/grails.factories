@@ -1,1 +1,1 @@
-grails.compiler.traits.TraitInjector=org.grails.datastore.gorm.StaticQueryMethodsTraitInjector
+grails.compiler.traits.TraitInjector=org.grails.datastore.gorm.PersistenceMethodsTraitInjector,org.grails.datastore.gorm.StaticQueryMethodsTraitInjector
