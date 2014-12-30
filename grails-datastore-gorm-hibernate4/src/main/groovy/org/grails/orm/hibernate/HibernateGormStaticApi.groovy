@@ -120,11 +120,6 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
     }
 
     @Override
-    D merge( D o ) {
-        instanceApi.merge(o)
-    }
-
-    @Override
     Integer executeUpdate(String query, Map params, Map args) {
         def template = hibernateTemplate
         SessionFactory sessionFactory = this.sessionFactory
