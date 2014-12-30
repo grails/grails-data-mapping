@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import grails.core.GrailsDomainClass
+import grails.persistence.Entity
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -86,6 +88,7 @@ class CascadingDeleteBehaviourTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class CascadingDeleteBehaviourCompany {
     Long id
     Long version
@@ -94,15 +97,18 @@ class CascadingDeleteBehaviourCompany {
     Set locations
     Set people
 }
+@Entity
 class CascadingDeleteBehaviourPerson {
     Long id
     Long version
     static belongsTo = CascadingDeleteBehaviourCompany
 }
+@Entity
 class CascadingDeleteBehaviourLocation {
     Long id
     Long version
 }
+@Entity
 class CascadingDeleteBehaviourProject {
     Long id
     Long version
@@ -110,6 +116,7 @@ class CascadingDeleteBehaviourProject {
     CascadingDeleteBehaviourCompany company
     CascadingDeleteBehaviourMember member
 }
+@Entity
 class CascadingDeleteBehaviourMember {
     Long id
     Long version

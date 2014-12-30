@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -96,6 +98,7 @@ class ComponentMappingTests extends AbstractGrailsHibernateTests {
         [ComponentMappingPerson, ComponentMappingStoreItem, ComponentMappingPrice, RegularPayment2773, RegularPaymentPart2773, Money2773]
     }
 }
+@Entity
 class ComponentMappingPerson {
     Long id
     Long version
@@ -108,11 +111,13 @@ class ComponentMappingPerson {
         workAddress nullable:true
     }
 }
+@Entity
 class ComponentMappingAddress {
     ComponentMappingPerson person
     String number
     String postCode
 }
+@Entity
 class ComponentMappingStoreItem {
     Long id
     Long version
@@ -123,6 +128,7 @@ class ComponentMappingStoreItem {
     static embedded = ['price']
 }
 
+@Entity
 class ComponentMappingPrice {
     Long id
     Long version
@@ -131,6 +137,7 @@ class ComponentMappingPrice {
     Integer quantity
 }
 
+@Entity
 class RegularPayment2773 {
     Long id
     Long version
@@ -139,6 +146,7 @@ class RegularPayment2773 {
     static embedded = ['regular']
 }
 
+@Entity
 class RegularPaymentPart2773 {
     Long id
     Long version
@@ -147,6 +155,7 @@ class RegularPaymentPart2773 {
     static embedded = ['amount']
 }
 
+@Entity
 class Money2773 {
     Long id
     Long version

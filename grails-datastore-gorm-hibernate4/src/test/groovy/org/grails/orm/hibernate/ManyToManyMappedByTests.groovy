@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity
+
 import org.junit.Test
 
 /**
@@ -50,6 +52,7 @@ class ManyToManyMappedByTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class ManyToManyMappedByBook implements Serializable{
     Long id
     Long version
@@ -62,6 +65,7 @@ class ManyToManyMappedByBook implements Serializable{
     static belongsTo = [ManyToManyMappedByAuthor]
 }
 
+@Entity
 class ManyToManyMappedByAuthor implements Serializable {
     Long id
     Long version

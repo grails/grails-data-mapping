@@ -1,12 +1,14 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity
+
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.core.util.ClassPropertyFetcher
 import org.hibernate.Hibernate
 import org.hibernate.proxy.HibernateProxy
 
-
 import static junit.framework.Assert.*
+
 import org.junit.Test
 
 /**
@@ -80,6 +82,7 @@ class LazyLoadedOneToOneIdentifierTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class LazyLoadedUserIdentifier {
     Long id
     Long version
@@ -88,6 +91,7 @@ class LazyLoadedUserIdentifier {
     static mapping = { user lazy:true }
 }
 
+@Entity
 class LazyLoadedUser {
     Long id
     Long version

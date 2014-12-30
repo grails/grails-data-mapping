@@ -1,8 +1,9 @@
 package org.grails.orm.hibernate
 
 import grails.orm.PagedResultList
-
+import grails.persistence.Entity
 import static junit.framework.Assert.*
+
 import org.junit.Test
 
 /**
@@ -47,6 +48,7 @@ class ListMethodTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class ListableBook {
     Long id
     Long version
