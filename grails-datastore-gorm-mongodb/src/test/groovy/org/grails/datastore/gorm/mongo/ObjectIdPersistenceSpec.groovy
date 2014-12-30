@@ -1,7 +1,7 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
-
+import grails.persistence.Entity
 import org.bson.types.ObjectId
 
 class ObjectIdPersistenceSpec extends GormDatastoreSpec {
@@ -21,6 +21,7 @@ class ObjectIdPersistenceSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class MongoObjectIdEntity {
     ObjectId id
 
