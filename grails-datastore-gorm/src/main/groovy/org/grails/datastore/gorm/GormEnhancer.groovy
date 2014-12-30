@@ -236,6 +236,21 @@ class GormEnhancer {
         ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
         for (AbstractGormApi apiProvider in getInstanceMethodApiProviders(cls)) {
             registerApiInstance(cls, apiProvider.getClass(), apiProvider, false)
+
+            for (Method method in (onlyExtendedMethods ? apiProvider.extendedMethods : apiProvider.methods)) {
+                def methodName = method.name
+                Class[] parameterTypes = method.parameterTypes
+
+                if (parameterTypes) {
+                    parameterTypes = parameterTypes.length == 1 ? []: parameterTypes[1..-1]
+
+                    boolean realMethodExists = doesRealMethodExist(mc, methodName, parameterTypes, false)
+
+                    if(!realMethodExists) {
+                        registerInstanceMethod(cls, mc, apiProvider, methodName, parameterTypes)
+                    }
+                }
+            }
         }
     }
     
@@ -255,6 +270,18 @@ class GormEnhancer {
         }
     }
 
+    protected registerInstanceMethod(Class cls, ExpandoMetaClass mc, AbstractGormApi apiProvider, String methodName, Class[] parameterTypes) {
+        // use fake object just so we have the right method signature
+        final tooCall = new InstanceMethodInvokingClosure(apiProvider, cls, methodName, parameterTypes)
+        def pt = parameterTypes
+        // Hack to workaround http://jira.codehaus.org/browse/GROOVY-4720
+        final closureMethod = new ClosureStaticMetaMethod(methodName, cls, tooCall, pt) {
+                    @Override
+                    int getModifiers() { Modifier.PUBLIC }
+                }
+        mc.registerInstanceMethod(closureMethod)
+    }
+    
     protected static boolean doesRealMethodExist(final MetaClass mc, final String methodName, final Class[] parameterTypes, boolean staticScope) {
         boolean realMethodExists = false
         try {
