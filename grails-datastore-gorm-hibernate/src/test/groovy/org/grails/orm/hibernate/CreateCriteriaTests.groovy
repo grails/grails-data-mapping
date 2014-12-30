@@ -1,6 +1,7 @@
 package org.grails.orm.hibernate
 
 import grails.orm.PagedResultList
+import grails.persistence.Entity;
 
 import org.junit.Test
 
@@ -64,6 +65,7 @@ class CreateCriteriaTests extends AbstractGrailsHibernateTests {
         [CreateCriteriaMethodBook]
     }
 }
+@Entity
 class CreateCriteriaMethodBook {
     Long id
     Long version

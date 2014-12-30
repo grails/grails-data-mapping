@@ -1,8 +1,11 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.hibernate.type.YesNoType
 
 import static junit.framework.Assert.*
+
 import org.junit.Test
 
 /**
@@ -67,6 +70,7 @@ class UserTypeMappingTests extends AbstractGrailsHibernateTests{
     }
 }
 
+@Entity
 class UserTypeMappingTest {
     Long id
     Long version
@@ -82,6 +86,7 @@ class UserTypeMappingTest {
 }
 
 
+@Entity
 class UserTypeMappingTestsPerson {
     Long id
     Long version

@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -64,18 +66,21 @@ class ExistsTests extends AbstractGrailsHibernateTests {
         [ExistsFoo, ExistsBar, ExistsFooBar]
     }
 }
+@Entity
 class ExistsFoo {
     Long id
     Long version
     String name
 }
 
+@Entity
 class ExistsBar {
     Long id
     Long version
     String name
 }
 
+@Entity
 class ExistsFooBar implements Serializable {
     Long id
     Long version

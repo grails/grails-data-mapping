@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 class WithCriteriaMethodTests extends AbstractGrailsHibernateTests {
@@ -44,6 +46,7 @@ class WithCriteriaMethodBook {
         author(nullable:true)
     }
 }
+@Entity
 class WithCriteriaMethodAuthor {
     Long id
     Long version

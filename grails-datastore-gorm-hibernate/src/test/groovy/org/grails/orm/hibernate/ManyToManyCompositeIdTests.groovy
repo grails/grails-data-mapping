@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 
@@ -77,6 +79,7 @@ class ManyToManyCompositeIdTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class ManyToManyCompositeIdBook implements Serializable {
     Long id
     Long version
@@ -93,6 +96,7 @@ class ManyToManyCompositeIdBook implements Serializable {
     }
 }
 
+@Entity
 class ManyToManyCompositeIdAuthor implements Serializable {
     Long id
     Long version

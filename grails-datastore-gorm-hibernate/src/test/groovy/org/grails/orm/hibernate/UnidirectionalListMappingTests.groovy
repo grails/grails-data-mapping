@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 
@@ -39,12 +41,14 @@ class UnidirectionalListMappingTests extends AbstractGrailsHibernateTests {
         [UnidirectionalListMappingEmailAddress, UnidirectionalListMappingPerson]
     }
 }
+@Entity
 class UnidirectionalListMappingEmailAddress {
     Long id
     Long version
     String email
 }
 
+@Entity
 class UnidirectionalListMappingPerson {
     Long id
     Long version

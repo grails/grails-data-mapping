@@ -1,6 +1,7 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity
 import org.junit.Test
 
 class ValidationFailureTests extends AbstractGrailsHibernateTests {
@@ -64,12 +65,14 @@ class ValidationFailureTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class ValidationFailureBook {
     Long id
     Long version
     String title
 }
 
+@Entity
 class ValidationFailureAuthor {
     Long id
     Long version
@@ -80,6 +83,7 @@ class ValidationFailureAuthor {
         name(size:8..16)
     }
 }
+@Entity
 class ValidationOrder {
     Long id
     Long version

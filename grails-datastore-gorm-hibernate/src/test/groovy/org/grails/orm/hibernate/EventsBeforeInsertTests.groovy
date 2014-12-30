@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -27,6 +29,7 @@ class EventsBeforeInsertTests extends AbstractGrailsHibernateTests {
         [BeforeInsertExample, BeforeInsertArticle]
     }
 }
+@Entity
 class BeforeInsertExample {
 
     Long id
@@ -50,6 +53,7 @@ class BeforeInsertExample {
     }
 }
 
+@Entity
 class BeforeInsertArticle {
     Long id
     Long version

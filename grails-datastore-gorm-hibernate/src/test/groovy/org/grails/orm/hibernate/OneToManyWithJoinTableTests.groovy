@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 /**
@@ -44,12 +46,14 @@ class OneToManyWithJoinTableTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class Thing {
     Long id
     Long version
     String name
 }
 
+@Entity
 class ThingGroup {
     Long id
     Long version

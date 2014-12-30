@@ -1,6 +1,8 @@
 package org.grails.orm.hibernate
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 /**
@@ -32,6 +34,7 @@ class InheritedUniqueConstraintTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class InheritedUniqueConstraintTestsParent {
 
     Long id
@@ -43,4 +46,5 @@ class InheritedUniqueConstraintTestsParent {
     }
 }
 
+@Entity
 class InheritedUniqueConstraintTestsChild extends InheritedUniqueConstraintTestsParent {}

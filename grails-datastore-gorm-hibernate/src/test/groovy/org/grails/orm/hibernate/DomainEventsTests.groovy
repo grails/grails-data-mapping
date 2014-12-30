@@ -216,6 +216,7 @@ class DomainEventAddress {
     static belongsTo = [person:PersonDomainEvent]
 }
 
+@Entity
 class PersonDomainEvent2 {
     Long id
     Long version

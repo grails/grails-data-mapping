@@ -2,6 +2,7 @@ package org.grails.orm.hibernate
 
 
 import static junit.framework.Assert.*
+import grails.persistence.Entity
 import org.junit.Test
 
 /**
@@ -43,6 +44,7 @@ class InheritanceWithOneToOneTests extends AbstractGrailsHibernateTests {
         [InheritanceWithOneToOneProduct, InheritanceWithOneToOneAttachment, InheritanceWithOneToOneBook, InheritanceWithOneToOneAttachment2]
     }
 }
+@Entity
 class InheritanceWithOneToOneProduct{
     Long id
     Long version
@@ -51,12 +53,14 @@ class InheritanceWithOneToOneProduct{
     InheritanceWithOneToOneAttachment previewPicture
 }
 
+@Entity
 class InheritanceWithOneToOneBook extends InheritanceWithOneToOneProduct {
     Long id
     Long version
     String title
 }
 
+@Entity
 class InheritanceWithOneToOneAttachment {
     Long id
     Long version
@@ -65,6 +69,7 @@ class InheritanceWithOneToOneAttachment {
     InheritanceWithOneToOneAttachment2 attachment2
 }
 
+@Entity
 class InheritanceWithOneToOneAttachment2 {
     Long id
     Long version

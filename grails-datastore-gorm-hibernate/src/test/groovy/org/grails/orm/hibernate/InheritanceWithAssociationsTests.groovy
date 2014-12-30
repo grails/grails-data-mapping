@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -41,18 +43,21 @@ class InheritanceWithAssociationsTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class InheritanceWithAssociationsA {
     Long id
     Long version
     InheritanceWithAssociationsLinkToA link
 }
 
+@Entity
 class InheritanceWithAssociationsB {
     Long id
     Long version
     InheritanceWithAssociationsLinkToB link
 }
 
+@Entity
 class InheritanceWithAssociationsLink {
     Long id
     Long version
@@ -66,6 +71,7 @@ class InheritanceWithAssociationsLink {
     }
 }
 
+@Entity
 class InheritanceWithAssociationsLinkToA extends InheritanceWithAssociationsLink {
     Long id
     Long version
@@ -74,6 +80,7 @@ class InheritanceWithAssociationsLinkToA extends InheritanceWithAssociationsLink
     InheritanceWithAssociationsA a
 }
 
+@Entity
 class InheritanceWithAssociationsLinkToB {
     Long id
     Long version
@@ -82,6 +89,7 @@ class InheritanceWithAssociationsLinkToB {
     InheritanceWithAssociationsB b
 }
 
+@Entity
 class InheritanceWithAssociationsRoot {
     Long id
     Long version

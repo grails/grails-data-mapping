@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -33,6 +35,7 @@ class EmbeddedConstraintsTests extends AbstractGrailsHibernateTests {
         [EmbeddedConstraintsCustomer]
     }
 }
+@Entity
 class EmbeddedConstraintsCustomer {
     Long id
     Long version
