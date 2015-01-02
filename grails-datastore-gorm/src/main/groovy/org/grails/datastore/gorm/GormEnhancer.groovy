@@ -22,6 +22,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 import org.codehaus.groovy.reflection.CachedMethod
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import org.grails.datastore.gorm.finders.CountByFinder
@@ -255,6 +256,14 @@ class GormEnhancer {
     }
     
     void registerApiInstance (Class cls, Class apiProviderType, AbstractGormApi apiProvider, boolean staticApi) {
+        // TODO
+        try {
+            if(apiProvider instanceof GormInstanceApi) {
+                InvokerHelper.invokeStaticMethod(cls, "initInternalApi", apiProvider)
+            }
+        } catch (Exception e) {
+        }
+        
         Class apiProviderBaseClass = apiProviderType
         while(apiProviderBaseClass.getSuperclass() != AbstractGormApi) {
             apiProviderBaseClass = apiProviderBaseClass.getSuperclass()

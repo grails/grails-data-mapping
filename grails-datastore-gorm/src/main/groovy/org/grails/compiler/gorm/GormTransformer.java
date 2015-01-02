@@ -71,7 +71,7 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
     }
 
     public Class<?> getInstanceImplementation() {
-        return GormInstanceApi.class;
+        return DummyGormApiPlaceholder.class;
     }
 
     public Class<?> getStaticImplementation() {
@@ -115,3 +115,5 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
         return Collections.unmodifiableCollection( TRANSFORMED_CLASSES );
     }
 }
+
+class DummyGormApiPlaceholder {}
