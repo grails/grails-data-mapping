@@ -159,7 +159,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
         return errors
     }
 
-    private Errors resetErrors(D instance) {
+    protected Errors resetErrors(D instance) {
         def errors = new ValidationErrors(instance)
         instance.errors = errors
         return errors

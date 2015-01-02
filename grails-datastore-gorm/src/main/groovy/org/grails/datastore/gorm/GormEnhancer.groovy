@@ -104,6 +104,17 @@ class GormEnhancer {
      * @param onlyExtendedMethods If only to add additional methods provides by subclasses of the GORM APIs
      */
     void enhance(PersistentEntity e, boolean onlyExtendedMethods = false) {
+        // TODO
+        def cls = e.javaClass
+        try {
+            InvokerHelper.invokeStaticMethod(cls, "initInternalApi", getInstanceApi(cls))
+        } catch (Exception ex) {
+        }
+        try {
+            InvokerHelper.invokeStaticMethod(cls, "initInternalValidationApi", getValidationApi(cls))
+        } catch (Exception ex) {
+        }
+
         addNamedQueryMethods(e)
 
         addInstanceMethods(e, onlyExtendedMethods)
@@ -256,14 +267,6 @@ class GormEnhancer {
     }
     
     void registerApiInstance (Class cls, Class apiProviderType, AbstractGormApi apiProvider, boolean staticApi) {
-        // TODO
-        try {
-            if(apiProvider instanceof GormInstanceApi) {
-                InvokerHelper.invokeStaticMethod(cls, "initInternalApi", apiProvider)
-            }
-        } catch (Exception e) {
-        }
-        
         Class apiProviderBaseClass = apiProviderType
         while(apiProviderBaseClass.getSuperclass() != AbstractGormApi) {
             apiProviderBaseClass = apiProviderBaseClass.getSuperclass()
