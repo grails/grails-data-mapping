@@ -22,11 +22,16 @@ package org.grails.datastore.gorm
  */
 trait PersistenceMethods<D> {
     
+    static GormInstanceApi internalApi
+    
+    static void initInternalApi(GormInstanceApi api) {
+        internalApi = api
+    }
     /**
      * Proxy aware instanceOf implementation.
      */
     boolean instanceOf(Class cls) {
-        instanceGormInstanceApi.instanceOf this, cls
+        internalApi.instanceOf this, cls
     }
 
     /**
@@ -34,7 +39,7 @@ trait PersistenceMethods<D> {
      * @return The instance
      */
     D lock() {
-        instanceGormInstanceApi.lock this
+        internalApi.lock this
     }
 
     /**
@@ -44,7 +49,7 @@ trait PersistenceMethods<D> {
      * @return The result of the closure
      */
     def mutex(Closure callable) {
-        instanceGormInstanceApi.mutex this, callable
+        internalApi.mutex this, callable
     }
 
     /**
@@ -52,7 +57,7 @@ trait PersistenceMethods<D> {
      * @return The instance
      */
     D refresh() {
-        instanceGormInstanceApi.refresh this
+        internalApi.refresh this
     }
 
     /**
@@ -60,7 +65,7 @@ trait PersistenceMethods<D> {
      * @return Returns the instance
      */
     D save() {
-        instanceGormInstanceApi.save this
+        internalApi.save this
     }
 
     /**
@@ -68,7 +73,7 @@ trait PersistenceMethods<D> {
      * @return Returns the instance
      */
     D insert() {
-        instanceGormInstanceApi.insert this
+        internalApi.insert this
     }
 
     /**
@@ -76,7 +81,7 @@ trait PersistenceMethods<D> {
      * @return Returns the instance
      */
     D insert(Map params) {
-        instanceGormInstanceApi.insert this, params
+        internalApi.insert this, params
     }
 
     /**
@@ -84,7 +89,7 @@ trait PersistenceMethods<D> {
      * @return Returns the instance
      */
     D merge() {
-        instanceGormInstanceApi.merge this
+        internalApi.merge this
     }
 
     /**
@@ -92,7 +97,7 @@ trait PersistenceMethods<D> {
      * @return Returns the instance
      */
     D merge(Map params) {
-        instanceGormInstanceApi.merge this, params
+        internalApi.merge this, params
     }
 
     /**
@@ -103,7 +108,7 @@ trait PersistenceMethods<D> {
      * @return The instance or null if validation fails
      */
     D save(boolean validate) {
-        instanceGormInstanceApi.save this, validate
+        internalApi.save this, validate
     }
 
     /**
@@ -113,14 +118,14 @@ trait PersistenceMethods<D> {
      * @return The instance
      */
     D save(Map params) {
-        instanceGormInstanceApi.save this, params
+        internalApi.save this, params
     }
 
     /**
      * Returns the objects identifier
      */
     Serializable ident() {
-        instanceGormInstanceApi.ident this
+        internalApi.ident this
     }
 
     /**
@@ -128,35 +133,35 @@ trait PersistenceMethods<D> {
      * @return
      */
     D attach() {
-        instanceGormInstanceApi.attach this
+        internalApi.attach this
     }
 
     /**
      * No concept of session-based model so defaults to true
      */
     boolean isAttached() {
-        instanceGormInstanceApi.isAttached this
+        internalApi.isAttached this
     }
 
     /**
      * Discards any pending changes. Requires a session-based model.
      */
     void discard() {
-        instanceGormInstanceApi.discard this
+        internalApi.discard this
     }
 
     /**
      * Deletes an instance from the datastore
      */
     void delete() {
-        instanceGormInstanceApi.delete this
+        internalApi.delete this
     }
 
     /**
      * Deletes an instance from the datastore
      */
     void delete(Map params) {
-        instanceGormInstanceApi.delete this, params
+        internalApi.delete this, params
     }
 
     /**
@@ -168,7 +173,7 @@ trait PersistenceMethods<D> {
      * @return true if the field is dirty
      */
     boolean isDirty(String fieldName) {
-        instanceGormInstanceApi.isDirty this, fieldName
+        internalApi.isDirty this, fieldName
     }
 
     /**
@@ -178,7 +183,7 @@ trait PersistenceMethods<D> {
      * @return true if it is dirty
      */
     boolean isDirty() {
-        instanceGormInstanceApi.isDirty this
+        internalApi.isDirty this
     }
 
     /**
@@ -188,7 +193,7 @@ trait PersistenceMethods<D> {
      * @return A list of property names that are dirty
      */
     List getDirtyPropertyNames() {
-        instanceGormInstanceApi.getDirtyPropertyNames this
+        internalApi.getDirtyPropertyNames this
     }
 
     /**
@@ -198,6 +203,6 @@ trait PersistenceMethods<D> {
      * @return The original persisted value
      */
     Object getPersistentValue(String fieldName) {
-        instanceGormInstanceApi.getPersistentValue this, fieldName
+        internalApi.getPersistentValue this, fieldName
     }
 }
