@@ -37,9 +37,9 @@ class RestBuilderSpec extends Specification {
             def rest = new RestBuilder()
             final mockServer = MockRestServiceServer.createServer(rest.restTemplate)
             mockServer.expect(requestTo("http://grails.org/api/v1.0/plugin/acegi/"))
-                       .andExpect(method(HttpMethod.GET))
-                       .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
-                        .andRespond(withSuccess('{"name":"acegi"}', MediaType.APPLICATION_JSON))
+                    .andExpect(method(HttpMethod.GET))
+                    .andExpect(header(HttpHeaders.ACCEPT, "application/json"))
+                    .andRespond(withSuccess('{"name":"acegi"}', MediaType.APPLICATION_JSON))
 
 
         when:"A get request is issued for a response that returns JSON"
@@ -162,7 +162,6 @@ class RestBuilderSpec extends Specification {
         given:"A rest client instance"
             def rest = new RestBuilder()
             MockRestServiceServer mockServer = mockArtifactoryUserGroupApi(rest)
-
 
 
         when:"A put request is issued"
