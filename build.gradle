@@ -124,7 +124,7 @@ subprojects {
 
     dependencies {
         if (isStandardGroovyMavenProject) {
-            groovy group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
+            compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
 
             testCompile group: 'org.codehaus.groovy', name: 'groovy-test', version: groovyVersion
 
