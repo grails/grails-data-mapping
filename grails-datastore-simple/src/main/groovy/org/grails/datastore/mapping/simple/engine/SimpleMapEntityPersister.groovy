@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.mapping.simple.engine
 
+import java.util.UUID
+
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
 import org.grails.datastore.mapping.core.OptimisticLockingException
@@ -257,6 +259,9 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
                 key = session.getPersister(root).lastKey
             }
             return type == String ? key.toString() : key
+        }
+        else if (UUID.isAssignableFrom(type)) {
+            return UUID.randomUUID()
         }
         else {
             try {
