@@ -14,8 +14,6 @@
  */
 package org.grails.datastore.mapping.simple.engine
 
-import java.util.UUID
-
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
 import org.grails.datastore.mapping.core.OptimisticLockingException
