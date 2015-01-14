@@ -31,9 +31,6 @@ sourceSets {
     main {
         compileClasspath += configurations.provided
     }
-    javadoc {
-        classpath = configurations.compile + configurations.provided
-    }
 }
 
 def installer = install.repositories.mavenInstaller

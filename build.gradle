@@ -1,9 +1,9 @@
 project.ext {
-    springVersion = "4.1.2.RELEASE"
+    springVersion = "4.1.4.RELEASE"
     grailsVersion = "3.0.0.BUILD-SNAPSHOT"
     slf4jVersion = "1.7.5"
     junitVersion = "4.11"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.0-rc-1'
+    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.0-rc-2'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectVersion = "4.0.0"
@@ -124,7 +124,7 @@ subprojects {
 
     dependencies {
         if (isStandardGroovyMavenProject) {
-            groovy group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
+            compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
 
             testCompile group: 'org.codehaus.groovy', name: 'groovy-test', version: groovyVersion
 
