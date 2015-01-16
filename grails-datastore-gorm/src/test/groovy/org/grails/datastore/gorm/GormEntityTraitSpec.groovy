@@ -4,16 +4,16 @@ import grails.artefact.Artefact
 import grails.persistence.Entity
 import spock.lang.Specification
 
-class StaticQueryMethodsTraitSpec extends Specification {
+class GormEntityTraitSpec extends Specification {
 
-    void "test that a class marked with @Artefact('Domain') is enhanced with StaticQueryMethods"() {
+    void "test that a class marked with @Artefact('Domain') is enhanced with GormEntityTraitSpec"() {
         expect:
-        StaticQueryMethods.isAssignableFrom QueryMethodArtefactDomain
+        GormEntity.isAssignableFrom QueryMethodArtefactDomain
     }
     
-    void "test that a class marked with @Entity is enhanced with StaticQueryMethods"() {
+    void "test that a class marked with @Entity is enhanced with GormEntityTraitSpec"() {
         expect:
-        StaticQueryMethods.isAssignableFrom QueryMethodEntityDomain
+        GormEntity.isAssignableFrom QueryMethodEntityDomain
     }
     
     void 'test that generic return values are respected'() {
