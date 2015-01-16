@@ -28,10 +28,10 @@ import org.grails.io.support.GrailsResourceUtils
  *
  */
 @CompileStatic
-class StaticQueryMethodsTraitInjector implements TraitInjector {
+class GormEntityTraitInjector implements TraitInjector {
     
     Class getTrait() {
-        StaticQueryMethods
+        GormEntity
     }
 
     @Override

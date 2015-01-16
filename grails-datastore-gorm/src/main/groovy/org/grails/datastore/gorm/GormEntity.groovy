@@ -20,7 +20,6 @@ import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.mapping.query.api.BuildableCriteria
 import org.grails.datastore.mapping.query.api.Criteria
 import org.springframework.transaction.TransactionDefinition
-import org.springframework.transaction.support.DefaultTransactionDefinition
 import org.springframework.validation.Errors
 
 /**
@@ -28,9 +27,21 @@ import org.springframework.validation.Errors
  * @author Jeff Brown
  * @since 4.0
  */
-trait StaticQueryMethods<D> {
-
+trait GormEntity<D> {
+    
+    static GormInstanceApi internalApi
     private static GormStaticApi<D> internalStaticApi
+
+    static void initInternalApi(GormInstanceApi api) {
+        internalApi = api
+    }
+
+    private static GormInstanceApi retrieveGormInstanceApi() {
+        if(internalApi == null) {
+            throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
+        }
+        internalApi
+    }
 
     static void initInternalStaticApi(GormStaticApi<D> api) {
         internalStaticApi = api
@@ -41,6 +52,185 @@ trait StaticQueryMethods<D> {
             throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
         }
         internalStaticApi
+    }
+
+    /**
+     * Proxy aware instanceOf implementation.
+     */
+    boolean instanceOf(Class cls) {
+        retrieveGormInstanceApi().instanceOf this, cls
+    }
+
+    /**
+     * Upgrades an existing persistence instance to a write lock
+     * @return The instance
+     */
+    D lock() {
+        retrieveGormInstanceApi().lock this
+    }
+
+    /**
+     * Locks the instance for updates for the scope of the passed closure
+     *
+     * @param callable The closure
+     * @return The result of the closure
+     */
+    def mutex(Closure callable) {
+        retrieveGormInstanceApi().mutex this, callable
+    }
+
+    /**
+     * Refreshes the state of the current instance
+     * @return The instance
+     */
+    D refresh() {
+        retrieveGormInstanceApi().refresh this
+    }
+
+    /**
+     * Saves an object the datastore
+     * @return Returns the instance
+     */
+    D save() {
+        retrieveGormInstanceApi().save this
+    }
+
+    /**
+     * Forces an insert of an object to the datastore
+     * @return Returns the instance
+     */
+    D insert() {
+        retrieveGormInstanceApi().insert this
+    }
+
+    /**
+     * Forces an insert of an object to the datastore
+     * @return Returns the instance
+     */
+    D insert(Map params) {
+        retrieveGormInstanceApi().insert this, params
+    }
+
+    /**
+     * Saves an object the datastore
+     * @return Returns the instance
+     */
+    D merge() {
+        retrieveGormInstanceApi().merge this
+    }
+
+    /**
+     * Saves an object the datastore
+     * @return Returns the instance
+     */
+    D merge(Map params) {
+        retrieveGormInstanceApi().merge this, params
+    }
+
+    /**
+     * Save method that takes a boolean which indicates whether to perform validation or not
+     *
+     * @param validate Whether to perform validation
+     *
+     * @return The instance or null if validation fails
+     */
+    D save(boolean validate) {
+        retrieveGormInstanceApi().save this, validate
+    }
+
+    /**
+     * Saves an object with the given parameters
+     * @param instance The instance
+     * @param params The parameters
+     * @return The instance
+     */
+    D save(Map params) {
+        retrieveGormInstanceApi().save this, params
+    }
+
+    /**
+     * Returns the objects identifier
+     */
+    Serializable ident() {
+        retrieveGormInstanceApi().ident this
+    }
+
+    /**
+     * Attaches an instance to an existing session. Requries a session-based model
+     * @return
+     */
+    D attach() {
+        retrieveGormInstanceApi().attach this
+    }
+
+    /**
+     * No concept of session-based model so defaults to true
+     */
+    boolean isAttached() {
+        retrieveGormInstanceApi().isAttached this
+    }
+
+    /**
+     * Discards any pending changes. Requires a session-based model.
+     */
+    void discard() {
+        retrieveGormInstanceApi().discard this
+    }
+
+    /**
+     * Deletes an instance from the datastore
+     */
+    void delete() {
+        retrieveGormInstanceApi().delete this
+    }
+
+    /**
+     * Deletes an instance from the datastore
+     */
+    void delete(Map params) {
+        retrieveGormInstanceApi().delete this, params
+    }
+
+    /**
+     * Checks whether a field is dirty
+     *
+     * @param instance The instance
+     * @param fieldName The name of the field
+     *
+     * @return true if the field is dirty
+     */
+    boolean isDirty(String fieldName) {
+        retrieveGormInstanceApi().isDirty this, fieldName
+    }
+
+    /**
+     * Checks whether an entity is dirty
+     *
+     * @param instance The instance
+     * @return true if it is dirty
+     */
+    boolean isDirty() {
+        retrieveGormInstanceApi().isDirty this
+    }
+
+    /**
+     * Obtains a list of property names that are dirty
+     *
+     * @param instance The instance
+     * @return A list of property names that are dirty
+     */
+    List getDirtyPropertyNames() {
+        retrieveGormInstanceApi().getDirtyPropertyNames this
+    }
+
+    /**
+     * Gets the original persisted value of a field.
+     *
+     * @param fieldName The field name
+     * @return The original persisted value
+     */
+    Object getPersistentValue(String fieldName) {
+        retrieveGormInstanceApi().getPersistentValue this, fieldName
     }
 
     /**
@@ -60,7 +250,7 @@ trait StaticQueryMethods<D> {
     static DetachedCriteria<D> whereLazy(Closure callable) {
         retrieveGormStaticApi().whereLazy callable
     }
-    
+
     /**
      *
      * @param callable Callable closure containing detached criteria definition
@@ -69,7 +259,7 @@ trait StaticQueryMethods<D> {
     static DetachedCriteria<D> whereAny(Closure callable) {
         retrieveGormStaticApi().whereAny callable
     }
-    
+
     /**
      * Uses detached criteria to build a query and then execute it returning a list
      *
@@ -523,7 +713,7 @@ trait StaticQueryMethods<D> {
      * Executes the closure within the context of a transaction which is
      * configured with the properties contained in transactionProperties.
      * transactionProperties may contain any properties supported by
-     * {@link DefaultTransactionDefinition}.
+     * {@link org.springframework.transaction.support.DefaultTransactionDefinition}.
      *
      * <blockquote>
      * <pre>
@@ -537,7 +727,7 @@ trait StaticQueryMethods<D> {
      * @param transactionProperties properties to configure the transaction properties
      * @param callable The closure to call
      * @return The result of the closure execution
-     * @see DefaultTransactionDefinition
+     * @see org.springframework.transaction.support.DefaultTransactionDefinition
      * @see #withNewTransaction(Closure)
      * @see #withNewTransaction(Map, Closure)
      * @see #withTransaction(Closure)
@@ -550,7 +740,7 @@ trait StaticQueryMethods<D> {
      * Executes the closure within the context of a new transaction which is
      * configured with the properties contained in transactionProperties.
      * transactionProperties may contain any properties supported by
-     * {@link DefaultTransactionDefinition}.  Note that if transactionProperties
+     * {@link org.springframework.transaction.support.DefaultTransactionDefinition}.  Note that if transactionProperties
      * includes entries for propagationBehavior or propagationName, those values
      * will be ignored.  This method always sets the propagation level to
      * TransactionDefinition.REQUIRES_NEW.
@@ -566,7 +756,7 @@ trait StaticQueryMethods<D> {
      * @param transactionProperties properties to configure the transaction properties
      * @param callable The closure to call
      * @return The result of the closure execution
-     * @see DefaultTransactionDefinition
+     * @see org.springframework.transaction.support.DefaultTransactionDefinition
      * @see #withNewTransaction(Closure)
      * @see #withTransaction(Closure)
      * @see #withTransaction(Map, Closure)
@@ -576,7 +766,7 @@ trait StaticQueryMethods<D> {
     }
 
     /**
-     * Executes the closure within the context of a transaction for the given {@link TransactionDefinition}
+     * Executes the closure within the context of a transaction for the given {@link org.springframework.transaction.TransactionDefinition}
      *
      * @param callable The closure to call
      * @return The result of the closure execution
