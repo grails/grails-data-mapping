@@ -121,8 +121,4 @@ class TestEntity {
         then:
             cls
     }
-
-    private void registerApiInstance(cls, apiInstanceType, apiInstance, staticApi) {
-        new GormEnhancer(null).registerApiInstance(cls, apiInstanceType, apiInstance, staticApi)
-    }
 }
