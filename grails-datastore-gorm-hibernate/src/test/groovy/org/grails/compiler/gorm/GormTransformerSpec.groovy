@@ -126,40 +126,6 @@ class TestEntity {
             cls
     }
 
-    void "Test that GORM static methods are available on transformation"() {
-        given:
-              gcl.classInjectors = [alwaysInjectGormTransformer] as ClassInjector[]
-
-        when:
-            def cls = gcl.parseClass('''
-class TestEntity {
-    Long id
-}
-  ''')
-            cls.count()
-
-        then:
-            Exception e = thrown()
-            assert e instanceof IllegalStateException || e instanceof MissingMethodException
-
-        when:
-            registerApiInstance(cls, GormStaticApi, null, true)
-            cls.count()
-
-        then:
-            Exception e2 = thrown()
-            assert e2 instanceof IllegalStateException || e2 instanceof MissingMethodException
-
-        when:
-            def ds = new SimpleMapDatastore(new BeanBuilder().createApplicationContext() as ConfigurableApplicationContext)
-            ds.mappingContext.addPersistentEntity(cls)
-
-            registerApiInstance(cls, GormStaticApi, new GormStaticApi(cls, ds, []), true)
-
-        then:
-            cls.count() == 0
-    }
-
     private void registerApiInstance(cls, apiInstanceType, apiInstance, staticApi) {
         new GormEnhancer(null).registerApiInstance(cls, apiInstanceType, apiInstance, staticApi)
     }
