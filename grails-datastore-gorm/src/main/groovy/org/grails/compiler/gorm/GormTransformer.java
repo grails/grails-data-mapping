@@ -16,28 +16,27 @@
 package org.grails.compiler.gorm;
 
 import grails.compiler.ast.AstTransformer;
+import grails.compiler.ast.GrailsArtefactClassInjector;
 import grails.persistence.Entity;
-import grails.persistence.PersistenceMethod;
-
 import groovy.transform.Canonical;
-
-import java.net.URL;
-import java.util.*;
-
-import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
+import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.SourceUnit;
-import org.grails.compiler.injection.AbstractGrailsArtefactTransformer;
 import org.grails.compiler.injection.GrailsASTUtils;
 import org.grails.core.artefact.DomainClassArtefactHandler;
-import org.grails.datastore.gorm.GormInstanceApi;
-import org.grails.datastore.gorm.GormStaticApi;
 import org.grails.io.support.GrailsResourceUtils;
+
+import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Transforms GORM entities making the GORM API available to Java.
@@ -46,50 +45,35 @@ import org.grails.io.support.GrailsResourceUtils;
  * @since 2.0
  */
 @AstTransformer
-public class GormTransformer extends AbstractGrailsArtefactTransformer {
+public class GormTransformer implements GrailsArtefactClassInjector {
+
+    public static final int PUBLIC_STATIC_MODIFIER = Modifier.PUBLIC | Modifier.STATIC;
 
     public static final String NEW_INSTANCE_METHOD = "newInstance";
 
     public static final String CREATE_METHOD_NAME = "create";
-    private static final Set<String> EXCLUDES = new HashSet<String>(Arrays.asList(CREATE_METHOD_NAME, "setTransactionManager"));
-    private static final Set<String> INCLUDES = new HashSet<String>(Arrays.asList("getAll", "getCount", "getValidationSkipMap", "getValidationErrorsMap", "getAsync"));
     private static final Set<String> TRANSFORMED_CLASSES = new HashSet<String>();
 
     @Override
-    protected boolean isStaticMethodExcluded(ClassNode classNode, MethodNode declaredMethod) {
-        return EXCLUDES.contains(declaredMethod.getName());
+    public String[] getArtefactTypes() {
+        return new String[] {DomainClassArtefactHandler.TYPE};
+    }
+
+    public boolean shouldInject(URL url) {
+        return GrailsResourceUtils.isDomainClass(url);
+    }
+
+    public static Collection<String> getKnownEntityNames() {
+        return Collections.unmodifiableCollection( TRANSFORMED_CLASSES );
     }
 
     @Override
-    protected boolean isStaticMethodIncluded(ClassNode classNode, MethodNode declaredMethod) {
-        return INCLUDES.contains(declaredMethod.getName());
+    public void performInjection(SourceUnit source, GeneratorContext context, ClassNode classNode) {
+        performInjectionOnAnnotatedClass(source, classNode);
     }
 
     @Override
-    public String getArtefactType() {
-        return DomainClassArtefactHandler.TYPE;
-    }
-
-    public Class<?> getInstanceImplementation() {
-        return DummyGormApiPlaceholder.class;
-    }
-
-    public Class<?> getStaticImplementation() {
-        return DummyGormApiPlaceholder.class;
-    }
-
-    @Override
-    protected boolean requiresStaticLookupMethod() {
-        return true;
-    }
-
-    @Override
-    protected AnnotationNode getMarkerAnnotation() {
-        return new AnnotationNode(new ClassNode(PersistenceMethod.class).getPlainNodeReference());
-    }
-
-    @Override
-    protected void performInjectionInternal(String apiInstanceProperty, SourceUnit source, ClassNode classNode) {
+    public void performInjection(SourceUnit source, ClassNode classNode) {
         if(GrailsASTUtils.hasAnnotation(classNode, Canonical.class)) {
             GrailsASTUtils.error(source, classNode, "Class [" + classNode.getName() + "] is marked with @groovy.transform.Canonical which is not supported for GORM entities.", true);
         }
@@ -107,13 +91,8 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
         }
     }
 
-    public boolean shouldInject(URL url) {
-        return GrailsResourceUtils.isDomainClass(url);
-    }
-
-    public static Collection<String> getKnownEntityNames() {
-        return Collections.unmodifiableCollection( TRANSFORMED_CLASSES );
+    @Override
+    public void performInjectionOnAnnotatedClass(SourceUnit source, ClassNode classNode) {
+        performInjection(source, classNode);
     }
 }
-
-class DummyGormApiPlaceholder {}
