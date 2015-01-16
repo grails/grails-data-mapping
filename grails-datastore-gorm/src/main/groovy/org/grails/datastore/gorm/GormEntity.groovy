@@ -36,7 +36,7 @@ trait GormEntity<D> {
         internalApi = api
     }
 
-    private static GormInstanceApi retrieveGormInstanceApi() {
+    static GormInstanceApi currentGormInstanceApi() {
         if(internalApi == null) {
             throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
         }
@@ -47,7 +47,7 @@ trait GormEntity<D> {
         internalStaticApi = api
     }
 
-    private static GormStaticApi<D> retrieveGormStaticApi() {
+    static GormStaticApi<D> currentGormStaticApi() {
         if(internalStaticApi == null) {
             throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
         }
@@ -58,7 +58,7 @@ trait GormEntity<D> {
      * Proxy aware instanceOf implementation.
      */
     boolean instanceOf(Class cls) {
-        retrieveGormInstanceApi().instanceOf this, cls
+        currentGormInstanceApi().instanceOf this, cls
     }
 
     /**
@@ -66,7 +66,7 @@ trait GormEntity<D> {
      * @return The instance
      */
     D lock() {
-        retrieveGormInstanceApi().lock this
+        currentGormInstanceApi().lock this
     }
 
     /**
@@ -76,7 +76,7 @@ trait GormEntity<D> {
      * @return The result of the closure
      */
     def mutex(Closure callable) {
-        retrieveGormInstanceApi().mutex this, callable
+        currentGormInstanceApi().mutex this, callable
     }
 
     /**
@@ -84,7 +84,7 @@ trait GormEntity<D> {
      * @return The instance
      */
     D refresh() {
-        retrieveGormInstanceApi().refresh this
+        currentGormInstanceApi().refresh this
     }
 
     /**
@@ -92,7 +92,7 @@ trait GormEntity<D> {
      * @return Returns the instance
      */
     D save() {
-        retrieveGormInstanceApi().save this
+        currentGormInstanceApi().save this
     }
 
     /**
@@ -100,7 +100,7 @@ trait GormEntity<D> {
      * @return Returns the instance
      */
     D insert() {
-        retrieveGormInstanceApi().insert this
+        currentGormInstanceApi().insert this
     }
 
     /**
@@ -108,7 +108,7 @@ trait GormEntity<D> {
      * @return Returns the instance
      */
     D insert(Map params) {
-        retrieveGormInstanceApi().insert this, params
+        currentGormInstanceApi().insert this, params
     }
 
     /**
@@ -116,7 +116,7 @@ trait GormEntity<D> {
      * @return Returns the instance
      */
     D merge() {
-        retrieveGormInstanceApi().merge this
+        currentGormInstanceApi().merge this
     }
 
     /**
@@ -124,7 +124,7 @@ trait GormEntity<D> {
      * @return Returns the instance
      */
     D merge(Map params) {
-        retrieveGormInstanceApi().merge this, params
+        currentGormInstanceApi().merge this, params
     }
 
     /**
@@ -135,7 +135,7 @@ trait GormEntity<D> {
      * @return The instance or null if validation fails
      */
     D save(boolean validate) {
-        retrieveGormInstanceApi().save this, validate
+        currentGormInstanceApi().save this, validate
     }
 
     /**
@@ -145,14 +145,14 @@ trait GormEntity<D> {
      * @return The instance
      */
     D save(Map params) {
-        retrieveGormInstanceApi().save this, params
+        currentGormInstanceApi().save this, params
     }
 
     /**
      * Returns the objects identifier
      */
     Serializable ident() {
-        retrieveGormInstanceApi().ident this
+        currentGormInstanceApi().ident this
     }
 
     /**
@@ -160,35 +160,35 @@ trait GormEntity<D> {
      * @return
      */
     D attach() {
-        retrieveGormInstanceApi().attach this
+        currentGormInstanceApi().attach this
     }
 
     /**
      * No concept of session-based model so defaults to true
      */
     boolean isAttached() {
-        retrieveGormInstanceApi().isAttached this
+        currentGormInstanceApi().isAttached this
     }
 
     /**
      * Discards any pending changes. Requires a session-based model.
      */
     void discard() {
-        retrieveGormInstanceApi().discard this
+        currentGormInstanceApi().discard this
     }
 
     /**
      * Deletes an instance from the datastore
      */
     void delete() {
-        retrieveGormInstanceApi().delete this
+        currentGormInstanceApi().delete this
     }
 
     /**
      * Deletes an instance from the datastore
      */
     void delete(Map params) {
-        retrieveGormInstanceApi().delete this, params
+        currentGormInstanceApi().delete this, params
     }
 
     /**
@@ -200,7 +200,7 @@ trait GormEntity<D> {
      * @return true if the field is dirty
      */
     boolean isDirty(String fieldName) {
-        retrieveGormInstanceApi().isDirty this, fieldName
+        currentGormInstanceApi().isDirty this, fieldName
     }
 
     /**
@@ -210,7 +210,7 @@ trait GormEntity<D> {
      * @return true if it is dirty
      */
     boolean isDirty() {
-        retrieveGormInstanceApi().isDirty this
+        currentGormInstanceApi().isDirty this
     }
 
     /**
@@ -220,7 +220,7 @@ trait GormEntity<D> {
      * @return A list of property names that are dirty
      */
     List getDirtyPropertyNames() {
-        retrieveGormInstanceApi().getDirtyPropertyNames this
+        currentGormInstanceApi().getDirtyPropertyNames this
     }
 
     /**
@@ -230,7 +230,7 @@ trait GormEntity<D> {
      * @return The original persisted value
      */
     Object getPersistentValue(String fieldName) {
-        retrieveGormInstanceApi().getPersistentValue this, fieldName
+        currentGormInstanceApi().getPersistentValue this, fieldName
     }
 
     /**
@@ -239,7 +239,7 @@ trait GormEntity<D> {
      * @return The DetachedCriteria instance
      */
     static DetachedCriteria<D> where(Closure callable) {
-        retrieveGormStaticApi().where callable
+        currentGormStaticApi().where callable
     }
 
     /**
@@ -248,7 +248,7 @@ trait GormEntity<D> {
      * @return The DetachedCriteria instance that is lazily initialized
      */
     static DetachedCriteria<D> whereLazy(Closure callable) {
-        retrieveGormStaticApi().whereLazy callable
+        currentGormStaticApi().whereLazy callable
     }
 
     /**
@@ -257,7 +257,7 @@ trait GormEntity<D> {
      * @return The DetachedCriteria instance
      */
     static DetachedCriteria<D> whereAny(Closure callable) {
-        retrieveGormStaticApi().whereAny callable
+        currentGormStaticApi().whereAny callable
     }
 
     /**
@@ -267,7 +267,7 @@ trait GormEntity<D> {
      * @return A List of entities
      */
     static List<D> findAll(Closure callable) {
-        retrieveGormStaticApi().findAll callable
+        currentGormStaticApi().findAll callable
     }
 
     /**
@@ -278,7 +278,7 @@ trait GormEntity<D> {
      * @return A List of entities
      */
     static List<D> findAll(Map args, Closure callable) {
-        retrieveGormStaticApi().findAll args, callable
+        currentGormStaticApi().findAll args, callable
     }
 
     /**
@@ -288,7 +288,7 @@ trait GormEntity<D> {
      * @return A single entity
      */
     static D find(Closure callable) {
-        retrieveGormStaticApi().find callable
+        currentGormStaticApi().find callable
     }
 
 
@@ -298,7 +298,7 @@ trait GormEntity<D> {
      * @return A list of object identifiers
      */
     static List<Serializable> saveAll(Object... objectsToSave) {
-        retrieveGormStaticApi().saveAll objectsToSave
+        currentGormStaticApi().saveAll objectsToSave
     }
 
     /**
@@ -307,7 +307,7 @@ trait GormEntity<D> {
      * @return A list of object identifiers
      */
     static List<Serializable> saveAll(Iterable<?> objectsToSave) {
-        retrieveGormStaticApi().saveAll objectsToSave
+        currentGormStaticApi().saveAll objectsToSave
     }
 
     /**
@@ -315,7 +315,7 @@ trait GormEntity<D> {
      * @param objectsToDelete The objects to delete
      */
     static void deleteAll(Object... objectsToDelete) {
-        retrieveGormStaticApi().deleteAll objectsToDelete
+        currentGormStaticApi().deleteAll objectsToDelete
     }
 
     /**
@@ -323,7 +323,7 @@ trait GormEntity<D> {
      * @param objectsToDelete Collection of objects to delete
      */
     static void deleteAll(Iterable objectToDelete) {
-        retrieveGormStaticApi().deleteAll objectToDelete
+        currentGormStaticApi().deleteAll objectToDelete
     }
 
     /**
@@ -331,14 +331,14 @@ trait GormEntity<D> {
      * @return The created instance
      */
     static D create() {
-        retrieveGormStaticApi().create()
+        currentGormStaticApi().create()
     }
 
     /**
      * Retrieves and object from the datastore. eg. Book.get(1)
      */
     static D get(Serializable id) {
-        retrieveGormStaticApi().get id
+        currentGormStaticApi().get id
     }
 
     /**
@@ -348,21 +348,21 @@ trait GormEntity<D> {
      * just delegates to {@link #get(Serializable)}
      */
     static D read(Serializable id) {
-        retrieveGormStaticApi().read id
+        currentGormStaticApi().read id
     }
 
     /**
      * Retrieves and object from the datastore as a proxy. eg. Book.load(1)
      */
     static D load(Serializable id) {
-        retrieveGormStaticApi().load id
+        currentGormStaticApi().load id
     }
 
     /**
      * Retrieves and object from the datastore as a proxy. eg. Book.proxy(1)
      */
     static D proxy(Serializable id) {
-        retrieveGormStaticApi().proxy id
+        currentGormStaticApi().proxy id
     }
 
     /**
@@ -371,7 +371,7 @@ trait GormEntity<D> {
      * @return A list of identifiers
      */
     static List<D> getAll(Iterable<Serializable> ids) {
-        retrieveGormStaticApi().getAll ids
+        currentGormStaticApi().getAll ids
     }
 
     /**
@@ -380,14 +380,14 @@ trait GormEntity<D> {
      * @return A list of identifiers
      */
     static List<D> getAll(Serializable... ids) {
-        retrieveGormStaticApi().getAll ids
+        currentGormStaticApi().getAll ids
     }
 
     /**
      * @return The async version of the GORM static API
      */
     static GormAsyncStaticApi<D> getAsync() {
-        retrieveGormStaticApi().getAsync()
+        currentGormStaticApi().getAsync()
     }
 
     /**
@@ -401,21 +401,21 @@ trait GormEntity<D> {
      * Creates a criteria builder instance
      */
     static BuildableCriteria createCriteria() {
-        retrieveGormStaticApi().createCriteria()
+        currentGormStaticApi().createCriteria()
     }
 
     /**
      * Creates a criteria builder instance
      */
     static withCriteria(@DelegatesTo(Criteria) Closure callable) {
-        retrieveGormStaticApi().withCriteria callable
+        currentGormStaticApi().withCriteria callable
     }
 
     /**
      * Creates a criteria builder instance
      */
     static withCriteria(Map builderArgs, @DelegatesTo(Criteria) Closure callable) {
-        retrieveGormStaticApi().withCriteria builderArgs, callable
+        currentGormStaticApi().withCriteria builderArgs, callable
     }
 
     /**
@@ -424,7 +424,7 @@ trait GormEntity<D> {
      * @return The instance
      */
     static D lock(Serializable id) {
-        retrieveGormStaticApi().lock id
+        currentGormStaticApi().lock id
     }
 
     /**
@@ -433,7 +433,7 @@ trait GormEntity<D> {
      * @return The instance
      */
     static D merge(D d) {
-        retrieveGormStaticApi().merge d
+        currentGormStaticApi().merge d
     }
 
     /**
@@ -441,21 +441,21 @@ trait GormEntity<D> {
      * @return The number of persisted entities
      */
     static Integer count() {
-        retrieveGormStaticApi().count()
+        currentGormStaticApi().count()
     }
 
     /**
      * Same as {@link #count()} but allows property-style syntax (Foo.count)
      */
     static Integer getCount() {
-        retrieveGormStaticApi().getCount()
+        currentGormStaticApi().getCount()
     }
 
     /**
      * Checks whether an entity exists
      */
     static boolean exists(Serializable id) {
-        retrieveGormStaticApi().exists id
+        currentGormStaticApi().exists id
     }
 
     /**
@@ -465,7 +465,7 @@ trait GormEntity<D> {
      * @return A list of results
      */
     static List<D> list(Map params) {
-        retrieveGormStaticApi().list params
+        currentGormStaticApi().list params
     }
 
     /**
@@ -474,7 +474,7 @@ trait GormEntity<D> {
      * @return The list of all entities
      */
     static List<D> list() {
-        retrieveGormStaticApi().list()
+        currentGormStaticApi().list()
     }
 
     /**
@@ -483,7 +483,7 @@ trait GormEntity<D> {
      * @return The list of all entities
      */
     static List<D> findAll(Map params = Collections.emptyMap()) {
-        retrieveGormStaticApi().findAll params
+        currentGormStaticApi().findAll params
     }
 
     /**
@@ -493,7 +493,7 @@ trait GormEntity<D> {
      * @return A list of matching results
      */
     static List<D> findAll(D example) {
-        retrieveGormStaticApi().findAll example
+        currentGormStaticApi().findAll example
     }
 
     /**
@@ -505,7 +505,7 @@ trait GormEntity<D> {
      * @return A list of matching results
      */
     static List<D> findAll(D example, Map args) {
-        retrieveGormStaticApi().findAll example, args
+        currentGormStaticApi().findAll example, args
     }
 
     /**
@@ -514,7 +514,7 @@ trait GormEntity<D> {
      * @return the first object in the datastore, null if none exist
      */
     static D first() {
-        retrieveGormStaticApi().first()
+        currentGormStaticApi().first()
     }
 
     /**
@@ -525,7 +525,7 @@ trait GormEntity<D> {
      * @return the first object in the datastore sorted by propertyName, null if none exist
      */
     static D first(String propertyName) {
-        retrieveGormStaticApi().first propertyName
+        currentGormStaticApi().first propertyName
     }
 
     /**
@@ -538,7 +538,7 @@ trait GormEntity<D> {
      * @return the first object in the datastore, null if none exist
      */
     static D first(Map queryParams) {
-        retrieveGormStaticApi().first queryParams
+        currentGormStaticApi().first queryParams
     }
 
     /**
@@ -547,7 +547,7 @@ trait GormEntity<D> {
      * @return the last object in the datastore, null if none exist
      */
     static D last() {
-        retrieveGormStaticApi().last()
+        currentGormStaticApi().last()
     }
 
     /**
@@ -558,7 +558,7 @@ trait GormEntity<D> {
      * @return the last object in the datastore sorted by propertyName, null if none exist
      */
     static D last(String propertyName) {
-        retrieveGormStaticApi().last propertyName
+        currentGormStaticApi().last propertyName
     }
 
     /**
@@ -571,7 +571,7 @@ trait GormEntity<D> {
      * @return the last object in the datastore, null if none exist
      */
     static D last(Map queryParams) {
-        retrieveGormStaticApi().last queryParams
+        currentGormStaticApi().last queryParams
     }
 
     /**
@@ -581,7 +581,7 @@ trait GormEntity<D> {
      * @return A list of results
      */
     static List<D> findAllWhere(Map queryMap) {
-        retrieveGormStaticApi().findAllWhere queryMap
+        currentGormStaticApi().findAllWhere queryMap
     }
 
     /**
@@ -593,7 +593,7 @@ trait GormEntity<D> {
      * @return A list of results
      */
     static List<D> findAllWhere(Map queryMap, Map args) {
-        retrieveGormStaticApi().findAllWhere queryMap, args
+        currentGormStaticApi().findAllWhere queryMap, args
     }
 
     /**
@@ -603,7 +603,7 @@ trait GormEntity<D> {
      * @return A list of matching results
      */
     static D find(D example) {
-        retrieveGormStaticApi().find example
+        currentGormStaticApi().find example
     }
 
     /**
@@ -615,7 +615,7 @@ trait GormEntity<D> {
      * @return A list of matching results
      */
     static D find(D example, Map args) {
-        retrieveGormStaticApi().find example, args
+        currentGormStaticApi().find example, args
     }
 
     /**
@@ -625,7 +625,7 @@ trait GormEntity<D> {
      * @return A single result
      */
     static D findWhere(Map queryMap) {
-        retrieveGormStaticApi().findWhere queryMap
+        currentGormStaticApi().findWhere queryMap
     }
 
     /**
@@ -637,7 +637,7 @@ trait GormEntity<D> {
      * @return A single result
      */
     static D findWhere(Map queryMap, Map args) {
-        retrieveGormStaticApi().findWhere queryMap, args
+        currentGormStaticApi().findWhere queryMap, args
     }
 
     /**
@@ -648,7 +648,7 @@ trait GormEntity<D> {
      * @return A single result
      */
     static D findOrCreateWhere(Map queryMap) {
-        retrieveGormStaticApi().findOrCreateWhere queryMap
+        currentGormStaticApi().findOrCreateWhere queryMap
     }
 
     /**
@@ -659,7 +659,7 @@ trait GormEntity<D> {
      * @return A single result
      */
     static D findOrSaveWhere(Map queryMap) {
-        retrieveGormStaticApi().findOrSaveWhere queryMap
+        currentGormStaticApi().findOrSaveWhere queryMap
     }
 
     /**
@@ -669,7 +669,7 @@ trait GormEntity<D> {
      * @return The result of the closure
      */
     static withSession(Closure callable) {
-        retrieveGormStaticApi().withSession callable
+        currentGormStaticApi().withSession callable
     }
 
     /**
@@ -679,7 +679,7 @@ trait GormEntity<D> {
      * @return The result of the closure
      */
     static withDatastoreSession(Closure callable) {
-        retrieveGormStaticApi().withDatastoreSession callable
+        currentGormStaticApi().withDatastoreSession callable
     }
 
     /**
@@ -693,7 +693,7 @@ trait GormEntity<D> {
      * @see #withNewTransaction(Map, Closure)
      */
     static withTransaction(Closure callable) {
-        retrieveGormStaticApi().withTransaction callable
+        currentGormStaticApi().withTransaction callable
     }
 
     /**
@@ -706,7 +706,7 @@ trait GormEntity<D> {
      * @see #withNewTransaction(Map, Closure)
      */
     static withNewTransaction(Closure callable) {
-        retrieveGormStaticApi().withNewTransaction callable
+        currentGormStaticApi().withNewTransaction callable
     }
 
     /**
@@ -733,7 +733,7 @@ trait GormEntity<D> {
      * @see #withTransaction(Closure)
      */
     static withTransaction(Map transactionProperties, Closure callable) {
-        retrieveGormStaticApi().withTransaction transactionProperties, callable
+        currentGormStaticApi().withTransaction transactionProperties, callable
     }
 
     /**
@@ -762,7 +762,7 @@ trait GormEntity<D> {
      * @see #withTransaction(Map, Closure)
      */
     static withNewTransaction(Map transactionProperties, Closure callable) {
-        retrieveGormStaticApi().withNewTransaction transactionProperties, callable
+        currentGormStaticApi().withNewTransaction transactionProperties, callable
     }
 
     /**
@@ -772,21 +772,21 @@ trait GormEntity<D> {
      * @return The result of the closure execution
      */
     static withTransaction(TransactionDefinition definition, Closure callable) {
-        retrieveGormStaticApi().withTransaction definition, callable
+        currentGormStaticApi().withTransaction definition, callable
     }
 
     /**
      * Creates and binds a new session for the scope of the given closure
      */
     static withNewSession(Closure callable) {
-        retrieveGormStaticApi().withNewSession callable
+        currentGormStaticApi().withNewSession callable
     }
 
     /**
      * Creates and binds a new session for the scope of the given closure
      */
     static withStatelessSession(Closure callable) {
-        retrieveGormStaticApi().withStatelessSession callable
+        currentGormStaticApi().withStatelessSession callable
     }
 
     /**
@@ -794,7 +794,7 @@ trait GormEntity<D> {
      * @return the map
      */
     static Map<D, Errors> getValidationErrorsMap() {
-        retrieveGormStaticApi().getValidationErrorsMap()
+        currentGormStaticApi().getValidationErrorsMap()
     }
 
     /**
@@ -802,102 +802,102 @@ trait GormEntity<D> {
      * @return the map
      */
     static Map<D, Boolean> getValidationSkipMap() {
-        retrieveGormStaticApi().getValidationSkipMap()
+        currentGormStaticApi().getValidationSkipMap()
     }
 
     static List<D> executeQuery(String query) {
-        retrieveGormStaticApi().executeQuery query
+        currentGormStaticApi().executeQuery query
     }
 
     static List<D> executeQuery(String query, Map args) {
-        retrieveGormStaticApi().executeQuery query, args
+        currentGormStaticApi().executeQuery query, args
     }
 
     static List<D> executeQuery(String query, Map params, Map args) {
-        retrieveGormStaticApi().executeQuery query, params, args
+        currentGormStaticApi().executeQuery query, params, args
     }
 
     static List<D> executeQuery(String query, Collection params) {
-        retrieveGormStaticApi().executeQuery query, params
+        currentGormStaticApi().executeQuery query, params
     }
 
     static List<D> executeQuery(String query, Object...params) {
-        retrieveGormStaticApi().executeQuery query, params
+        currentGormStaticApi().executeQuery query, params
     }
 
     static List<D> executeQuery(String query, Collection params, Map args) {
-        retrieveGormStaticApi().executeQuery query, params, args
+        currentGormStaticApi().executeQuery query, params, args
     }
 
     static Integer executeUpdate(String query) {
-        retrieveGormStaticApi().executeUpdate query
+        currentGormStaticApi().executeUpdate query
     }
 
     static Integer executeUpdate(String query, Map args) {
-        retrieveGormStaticApi().executeUpdate query, args
+        currentGormStaticApi().executeUpdate query, args
     }
 
     static Integer executeUpdate(String query, Map params, Map args) {
-        retrieveGormStaticApi().executeUpdate query, params, args
+        currentGormStaticApi().executeUpdate query, params, args
     }
 
     static Integer executeUpdate(String query, Collection params) {
-        retrieveGormStaticApi().executeUpdate query, params
+        currentGormStaticApi().executeUpdate query, params
     }
 
     static Integer executeUpdate(String query, Object...params) {
-        retrieveGormStaticApi().executeUpdate query, params
+        currentGormStaticApi().executeUpdate query, params
     }
 
     static Integer executeUpdate(String query, Collection params, Map args) {
-        retrieveGormStaticApi().executeUpdate query, params, args
+        currentGormStaticApi().executeUpdate query, params, args
     }
 
     static D find(String query) {
-        retrieveGormStaticApi().find query
+        currentGormStaticApi().find query
     }
 
     static D find(String query, Map args) {
-        retrieveGormStaticApi().find query, args
+        currentGormStaticApi().find query, args
     }
 
     static D find(String query, Map params, Map args) {
-        retrieveGormStaticApi().find query, params, args
+        currentGormStaticApi().find query, params, args
     }
 
     static D find(String query, Collection params) {
-        retrieveGormStaticApi().find query, params
+        currentGormStaticApi().find query, params
     }
 
     static D find(String query, Object[] params) {
-        retrieveGormStaticApi().find query, params
+        currentGormStaticApi().find query, params
     }
 
     static D find(String query, Collection params, Map args) {
-        retrieveGormStaticApi().find query, params, args
+        currentGormStaticApi().find query, params, args
     }
 
     static List<D> findAll(String query) {
-        retrieveGormStaticApi().findAll query
+        currentGormStaticApi().findAll query
     }
 
     static List<D> findAll(String query, Map params) {
-        retrieveGormStaticApi().findAll query, params
+        currentGormStaticApi().findAll query, params
     }
 
     static List<D> findAll(String query, Map params, Map args) {
-        retrieveGormStaticApi().findAll query, params, args
+        currentGormStaticApi().findAll query, params, args
     }
 
     static List<D> findAll(String query, Collection params) {
-        retrieveGormStaticApi().findAll query, params
+        currentGormStaticApi().findAll query, params
     }
 
     static List<D> findAll(String query, Object[] params) {
-        retrieveGormStaticApi().findAll query, params
+        currentGormStaticApi().findAll query, params
     }
 
     static List<D> findAll(String query, Collection params, Map args) {
-        retrieveGormStaticApi().findAll query, params, args
+        currentGormStaticApi().findAll query, params, args
     }
 }
