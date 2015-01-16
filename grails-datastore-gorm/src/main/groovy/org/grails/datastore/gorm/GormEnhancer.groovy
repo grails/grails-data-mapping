@@ -114,6 +114,10 @@ class GormEnhancer {
             InvokerHelper.invokeStaticMethod(cls, "initInternalValidationApi", getValidationApi(cls))
         } catch (Exception ex) {
         }
+        try {
+            InvokerHelper.invokeStaticMethod(cls, "initInternalStaticApi", getStaticApi(cls))
+        } catch (Exception ex) {
+        }
 
         addNamedQueryMethods(e)
 

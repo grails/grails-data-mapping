@@ -75,7 +75,7 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
     }
 
     public Class<?> getStaticImplementation() {
-        return GormStaticApi.class;
+        return DummyGormApiPlaceholder.class;
     }
 
     @Override

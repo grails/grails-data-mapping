@@ -106,6 +106,66 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     /**
+     *
+     * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance
+     */
+    DetachedCriteria<D> where(Closure callable) {
+        new DetachedCriteria<D>(persistentClass).build(callable)
+    }
+
+    /**
+     *
+     * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance that is lazily initialized
+     */
+    DetachedCriteria<D> whereLazy(Closure callable) {
+        new DetachedCriteria<D>(persistentClass).buildLazy(callable)
+    }
+    /**
+     *
+     * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance
+     */
+    DetachedCriteria<D> whereAny(Closure callable) {
+        (DetachedCriteria<D>)new DetachedCriteria<D>(persistentClass).or(callable)
+    }
+
+    /**
+     * Uses detached criteria to build a query and then execute it returning a list
+     *
+     * @param callable The callable
+     * @return A List of entities
+     */
+    List<D> findAll(Closure callable) {
+        def criteria = new DetachedCriteria<D>(persistentClass).build(callable)
+        return criteria.list()
+    }
+
+    /**
+     * Uses detached criteria to build a query and then execute it returning a list
+     *
+     * @param args pagination parameters
+     * @param callable The callable
+     * @return A List of entities
+     */
+    List<D> findAll(Map args, Closure callable) {
+        def criteria = new DetachedCriteria<D>(persistentClass).build(callable)
+        return criteria.list(args)
+    }
+
+    /**
+     * Uses detached criteria to build a query and then execute it returning a list
+     *
+     * @param callable The callable
+     * @return A single entity
+     */
+    D find(Closure callable) {
+        def criteria = new DetachedCriteria<D>(persistentClass).build(callable)
+        return criteria.find()
+    }
+
+    /**
      * Saves a list of objects in one go
      * @param objectsToSave The objects to save
      * @return A list of object identifiers
