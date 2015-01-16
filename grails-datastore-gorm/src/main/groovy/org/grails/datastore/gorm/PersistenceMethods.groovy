@@ -27,11 +27,19 @@ trait PersistenceMethods<D> {
     static void initInternalApi(GormInstanceApi api) {
         internalApi = api
     }
+
+    private static GormInstanceApi retrieveGormInstanceApi() {
+        if(internalApi == null) {
+            throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
+        }
+        internalApi
+    }
+
     /**
      * Proxy aware instanceOf implementation.
      */
     boolean instanceOf(Class cls) {
-        internalApi.instanceOf this, cls
+        retrieveGormInstanceApi().instanceOf this, cls
     }
 
     /**
@@ -39,7 +47,7 @@ trait PersistenceMethods<D> {
      * @return The instance
      */
     D lock() {
-        internalApi.lock this
+        retrieveGormInstanceApi().lock this
     }
 
     /**
@@ -49,7 +57,7 @@ trait PersistenceMethods<D> {
      * @return The result of the closure
      */
     def mutex(Closure callable) {
-        internalApi.mutex this, callable
+        retrieveGormInstanceApi().mutex this, callable
     }
 
     /**
@@ -57,7 +65,7 @@ trait PersistenceMethods<D> {
      * @return The instance
      */
     D refresh() {
-        internalApi.refresh this
+        retrieveGormInstanceApi().refresh this
     }
 
     /**
@@ -65,7 +73,7 @@ trait PersistenceMethods<D> {
      * @return Returns the instance
      */
     D save() {
-        internalApi.save this
+        retrieveGormInstanceApi().save this
     }
 
     /**
@@ -73,7 +81,7 @@ trait PersistenceMethods<D> {
      * @return Returns the instance
      */
     D insert() {
-        internalApi.insert this
+        retrieveGormInstanceApi().insert this
     }
 
     /**
@@ -81,7 +89,7 @@ trait PersistenceMethods<D> {
      * @return Returns the instance
      */
     D insert(Map params) {
-        internalApi.insert this, params
+        retrieveGormInstanceApi().insert this, params
     }
 
     /**
@@ -89,7 +97,7 @@ trait PersistenceMethods<D> {
      * @return Returns the instance
      */
     D merge() {
-        internalApi.merge this
+        retrieveGormInstanceApi().merge this
     }
 
     /**
@@ -97,7 +105,7 @@ trait PersistenceMethods<D> {
      * @return Returns the instance
      */
     D merge(Map params) {
-        internalApi.merge this, params
+        retrieveGormInstanceApi().merge this, params
     }
 
     /**
@@ -108,7 +116,7 @@ trait PersistenceMethods<D> {
      * @return The instance or null if validation fails
      */
     D save(boolean validate) {
-        internalApi.save this, validate
+        retrieveGormInstanceApi().save this, validate
     }
 
     /**
@@ -118,14 +126,14 @@ trait PersistenceMethods<D> {
      * @return The instance
      */
     D save(Map params) {
-        internalApi.save this, params
+        retrieveGormInstanceApi().save this, params
     }
 
     /**
      * Returns the objects identifier
      */
     Serializable ident() {
-        internalApi.ident this
+        retrieveGormInstanceApi().ident this
     }
 
     /**
@@ -133,35 +141,35 @@ trait PersistenceMethods<D> {
      * @return
      */
     D attach() {
-        internalApi.attach this
+        retrieveGormInstanceApi().attach this
     }
 
     /**
      * No concept of session-based model so defaults to true
      */
     boolean isAttached() {
-        internalApi.isAttached this
+        retrieveGormInstanceApi().isAttached this
     }
 
     /**
      * Discards any pending changes. Requires a session-based model.
      */
     void discard() {
-        internalApi.discard this
+        retrieveGormInstanceApi().discard this
     }
 
     /**
      * Deletes an instance from the datastore
      */
     void delete() {
-        internalApi.delete this
+        retrieveGormInstanceApi().delete this
     }
 
     /**
      * Deletes an instance from the datastore
      */
     void delete(Map params) {
-        internalApi.delete this, params
+        retrieveGormInstanceApi().delete this, params
     }
 
     /**
@@ -173,7 +181,7 @@ trait PersistenceMethods<D> {
      * @return true if the field is dirty
      */
     boolean isDirty(String fieldName) {
-        internalApi.isDirty this, fieldName
+        retrieveGormInstanceApi().isDirty this, fieldName
     }
 
     /**
@@ -183,7 +191,7 @@ trait PersistenceMethods<D> {
      * @return true if it is dirty
      */
     boolean isDirty() {
-        internalApi.isDirty this
+        retrieveGormInstanceApi().isDirty this
     }
 
     /**
@@ -193,7 +201,7 @@ trait PersistenceMethods<D> {
      * @return A list of property names that are dirty
      */
     List getDirtyPropertyNames() {
-        internalApi.getDirtyPropertyNames this
+        retrieveGormInstanceApi().getDirtyPropertyNames this
     }
 
     /**
@@ -203,6 +211,6 @@ trait PersistenceMethods<D> {
      * @return The original persisted value
      */
     Object getPersistentValue(String fieldName) {
-        internalApi.getPersistentValue this, fieldName
+        retrieveGormInstanceApi().getPersistentValue this, fieldName
     }
 }
