@@ -29,18 +29,18 @@ import org.springframework.validation.Errors
  */
 trait GormEntity<D> {
     
-    static GormInstanceApi internalApi
+    private static GormInstanceApi internalInstanceApi
     private static GormStaticApi<D> internalStaticApi
 
     static void initInternalApi(GormInstanceApi api) {
-        internalApi = api
+        internalInstanceApi = api
     }
 
     static GormInstanceApi currentGormInstanceApi() {
-        if(internalApi == null) {
+        if(internalInstanceApi == null) {
             throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
         }
-        internalApi
+        internalInstanceApi
     }
 
     static void initInternalStaticApi(GormStaticApi<D> api) {
