@@ -156,51 +156,6 @@ class TestEntity {
             cls.count() == 0
     }
 
-    void "Test that the new Errors property is valid"() {
-        given:
-            def transformer = new GormValidationTransformer() {
-                boolean shouldInject(URL url) { true }
-            }
-            gcl.classInjectors = [transformer] as ClassInjector[]
-
-        when:
-            def cls = gcl.parseClass('''
-class TestEntity {
-    Long id
-    Long version
-    String name
-}
-  ''')
-            def dc = new DefaultGrailsDomainClass(cls)
-
-        then:
-            dc.persistentProperties.size() == 1
-
-        when:
-            def obj = dc.newInstance()
-
-        then:
-            obj != null
-            obj.errors instanceof Errors
-
-        when:
-            def ds = new SimpleMapDatastore(new BeanBuilder().createApplicationContext() as ConfigurableApplicationContext)
-
-            registerApiInstance(cls, GormValidationApi, new GormValidationApi(cls, ds), false)
-            obj.clearErrors()
-
-        then:
-            obj.errors.hasErrors() == false
-            obj.hasErrors() == false
-
-        when:
-            Errors errors = obj.errors
-            errors.reject("bad")
-
-        then:
-            obj.hasErrors() == true
-    }
-
     private void registerApiInstance(cls, apiInstanceType, apiInstance, staticApi) {
         new GormEnhancer(null).registerApiInstance(cls, apiInstanceType, apiInstance, staticApi)
     }
