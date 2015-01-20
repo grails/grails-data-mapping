@@ -21,7 +21,6 @@ import com.mongodb.DB
 import com.mongodb.DBCollection
 import com.mongodb.DBObject
 import com.mongodb.ReadPreference
-import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
@@ -39,7 +38,6 @@ import org.springframework.transaction.PlatformTransactionManager
  * @since 1.0
  * @param < D > The domain class type
  */
-@CompileStatic
 class MongoGormStaticApi<D> extends GormStaticApi<D> {
     MongoGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
         this(persistentClass, datastore, finders, null)

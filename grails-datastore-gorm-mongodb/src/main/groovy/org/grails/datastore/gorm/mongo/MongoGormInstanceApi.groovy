@@ -16,8 +16,6 @@ package org.grails.datastore.gorm.mongo
 
 import com.mongodb.BasicDBObject
 import com.mongodb.DBObject
-import groovy.transform.CompileStatic
-import groovy.transform.TypeCheckingMode
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
@@ -34,7 +32,6 @@ import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
  * @since 1.0
  * @param < D > The domain class type
  */
-@CompileStatic
 class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
 
     MongoGormInstanceApi(Class<D> persistentClass, Datastore datastore) {
@@ -101,7 +98,6 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
         }
     }
 
-    @CompileStatic(TypeCheckingMode.SKIP)
     protected void setProperty(D instance, String name, value) {
         instance.setProperty(name, value)
     }
@@ -125,7 +121,6 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
         return null
     }
 
-    @CompileStatic(TypeCheckingMode.SKIP)
     protected def getProperty(D instance, String name) {
         return instance.getProperty(name)
     }
@@ -136,7 +131,6 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param instance The instance
      * @return The DBObject instance
      */
-    @CompileStatic(TypeCheckingMode.SKIP)
     DBObject getDbo(D instance) {
         execute (new SessionCallback<DBObject>() {
             DBObject doInSession(Session session) {

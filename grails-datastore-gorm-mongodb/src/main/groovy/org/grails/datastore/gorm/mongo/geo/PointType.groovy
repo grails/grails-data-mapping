@@ -15,7 +15,6 @@
 package org.grails.datastore.gorm.mongo.geo
 
 import grails.mongodb.geo.Point
-import groovy.transform.CompileStatic
 
 /**
  * Adds support for the {@link Point} type to GORM for MongoDB
@@ -23,7 +22,6 @@ import groovy.transform.CompileStatic
  * @author Graeme Rocher
  * @since 2.4
  */
-@CompileStatic
 class PointType extends GeoJSONType<Point>{
 
     PointType() {

@@ -17,7 +17,6 @@ package org.grails.datastore.gorm.mongo.geo
 import com.mongodb.DBObject
 import grails.mongodb.geo.GeoJSON
 import grails.mongodb.geo.Shape
-import groovy.transform.CompileStatic
 import org.bson.BSONObject
 import org.bson.BasicBSONObject
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
@@ -30,7 +29,6 @@ import org.grails.datastore.mapping.query.Query
  * @author Graeme Rocher
  * @since 2.0
  */
-@CompileStatic
 abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTypeMarshaller<T, DBObject, DBObject> {
 
     public static final String COORDINATES = "coordinates"
