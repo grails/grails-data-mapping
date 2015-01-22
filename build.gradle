@@ -351,12 +351,11 @@ subprojects {
 
 
         bintray {
-            apiUrl = "https://api.bintray.net"
             user = project.bintrayUser
             key = project.bintrayKey
 //            configurations = ['archives']
             publications = ['maven']
-            publish = true
+            publish = false
             pkg {
                 repo = 'grails-core'
                 userOrg = 'grails'
@@ -374,7 +373,7 @@ subprojects {
                         passphrase = project."signing.password"
                     }
                     mavenCentralSync {
-                        sync = true
+                        sync = false
                         user = project.sonatypeOssUsername
                         password = project.sonatypeOssPassword
                     }
