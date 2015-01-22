@@ -22,6 +22,9 @@ case "$GORM_IMPL"  in
     neo4j)
         ./gradlew grails-datastore-gorm-neo4j:test || EXIT_STATUS=$?
         ;;
+    restclient)
+        ./gradlew grails-datastore-gorm-rest-client:test || EXIT_STATUS=$?
+        ;;
     *)
         ./gradlew testClasses || EXIT_STATUS=$?
         ./gradlew grails-datastore-gorm-test:test || EXIT_STATUS=$?
