@@ -290,13 +290,13 @@ class RestBuilder {
             messageConverters.remove(mappingJackson2HttpMessageConverter)
         }
         if(ClassUtils.isPresent("com.google.gson.Gson", getClass().getClassLoader())) {
-            messageConverters.add(new GsonHttpMessageConverter())
+            messageConverters.add(0, new GsonHttpMessageConverter())
         }
-        messageConverters.add(new NullSafeStringHttpMessageConverter())
-        messageConverters.add(new JsonHttpMessageConverter())
-        messageConverters.add(new GPathXmlHttpMessageConverter())
-        messageConverters.add(new GrailsConverterHttpMessageConverter())
-        messageConverters.add(new WritableHttpMessageConverter())
+        messageConverters.add(0, new NullSafeStringHttpMessageConverter())
+        messageConverters.add(0, new JsonHttpMessageConverter())
+        messageConverters.add(0, new GPathXmlHttpMessageConverter())
+        messageConverters.add(0, new GrailsConverterHttpMessageConverter())
+        messageConverters.add(0, new WritableHttpMessageConverter())
     }
 
 
