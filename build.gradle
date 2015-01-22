@@ -88,11 +88,6 @@ subprojects {
         }
     }
 
-    if(!project.hasProperty("artifactoryPublishPassword") && System.getenv("ARTIFACTORY_PASSWORD")) {
-        project.ext.artifactoryPublishPassword = System.getenv("ARTIFACTORY_PASSWORD")
-    }
-
-
     version = "${projectVersion}.${releaseType}"
     group = "org.grails"
 
@@ -282,8 +277,8 @@ subprojects {
                 repositories {
                     maven {
                         credentials {
-                            def u = project.hasProperty("artifactoryPublishUsername") ? project.artifactoryPublishUsername : ''
-                            def p = project.hasProperty("artifactoryPublishPassword") ? project.artifactoryPublishPassword : ''
+                            def u = System.getenv("ARTIFACTORY_USERNAME") ?: project.hasProperty("artifactoryPublishUsername") ? project.artifactoryPublishUsername : ''
+                            def p = System.getenv("ARTIFACTORY_PASSWORD") ?: project.hasProperty("artifactoryPublishPassword") ? project.artifactoryPublishPassword : ''
                             username = u
                             password = p
                         }
@@ -351,11 +346,13 @@ subprojects {
 
 
         bintray {
-            user = project.bintrayUser
-            key = project.bintrayKey
-//            configurations = ['archives']
+            def u = System.getenv("BINTRAY_USER") ?: project.hasProperty("bintrayUser") ? project.bintrayUser : ''
+            def p = System.getenv("BINTRAY_KEY") ?: project.hasProperty("bintrayKey") ? project.bintrayKey : ''
+
+            user = u
+            key = p
             publications = ['maven']
-            publish = false
+            publish = true
             pkg {
                 repo = 'grails-core'
                 userOrg = 'grails'
@@ -370,12 +367,14 @@ subprojects {
                     name = project.version
                     gpg {
                         sign = true
-                        passphrase = project."signing.password"
+                        passphrase = System.getenv("SIGNING_PASSPHRASE") ?: project.hasProperty("signingPassphrase") ? project.signingPassphrase : ''
                     }
                     mavenCentralSync {
-                        sync = false
-                        user = project.sonatypeOssUsername
-                        password = project.sonatypeOssPassword
+                        sync = true
+                        def ossUser = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
+                        def ossPass = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
+                        user = ossUser
+                        password = ossPass
                     }
 
                 }

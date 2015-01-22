@@ -15,15 +15,15 @@ echo "Publishing..."
 
 EXIT_STATUS=0
 
-if [[ ( $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == '3.x' ) && $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST == 'false'
-    && $EXIT_STATUS -eq 0
-    && -n "$ARTIFACTORY_PASSWORD" ]]; then
+if [[ ( $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == '3.x' ) && $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST == 'false' && $EXIT_STATUS -eq 0 ]]; then
 
     echo "Publishing archives"
-    ./gradlew -PartifactoryPublishUsername=travis-gdm upload || EXIT_STATUS=$?
-fi
 
-if [[ $TRAVIS_PULL_REQUEST == 'false' ]]; then
+    if [[ -n $TRAVIS_TAG ]]; then
+        ./gradlew bintrayUpload || EXIT_STATUS=$?
+    else
+        ./gradlew upload || EXIT_STATUS=$?
+    fi
 
 	git clone https://${GH_TOKEN}@github.com/grails/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
 	cd gh-pages
@@ -64,8 +64,6 @@ if [[ $TRAVIS_PULL_REQUEST == 'false' ]]; then
     git push origin HEAD
     cd ..
     rm -rf gh-pages
-
-
 fi
 
 exit $EXIT_STATUS
