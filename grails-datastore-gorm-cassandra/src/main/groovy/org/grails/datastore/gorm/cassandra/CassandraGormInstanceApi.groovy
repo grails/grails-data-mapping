@@ -1,7 +1,5 @@
 package org.grails.datastore.gorm.cassandra
 
-import groovy.transform.CompileStatic
-
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.mapping.cassandra.CassandraDatastore
@@ -13,7 +11,6 @@ import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 
-@CompileStatic
 class CassandraGormInstanceApi<D> extends GormInstanceApi<D> {
 
     CassandraGormInstanceApi(Class<D> persistentClass, Datastore datastore) {

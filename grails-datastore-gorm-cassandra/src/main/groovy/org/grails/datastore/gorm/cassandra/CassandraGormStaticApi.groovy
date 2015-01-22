@@ -1,7 +1,5 @@
 package org.grails.datastore.gorm.cassandra
 
-import groovy.transform.CompileStatic
-
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FindByFinder
@@ -16,7 +14,6 @@ import org.springframework.core.convert.ConversionService
 import org.springframework.data.cassandra.core.CassandraTemplate
 import org.springframework.transaction.PlatformTransactionManager
 
-@CompileStatic
 class CassandraGormStaticApi<D> extends GormStaticApi<D> {
 	
 	org.springframework.data.cassandra.mapping.CassandraPersistentEntity<?> springCassandraPersistentEntity
