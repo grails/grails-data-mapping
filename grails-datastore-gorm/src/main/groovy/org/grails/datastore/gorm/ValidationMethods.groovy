@@ -96,6 +96,6 @@ trait ValidationMethods {
      * @return True if errors exist
      */
     Boolean hasErrors() {
-        errors?.hasErrors()
+        getErrors().hasErrors()
     }
 }
