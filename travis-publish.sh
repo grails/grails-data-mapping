@@ -15,64 +15,57 @@ echo "Publishing..."
 
 EXIT_STATUS=0
 
-version=$(grep 'projectVersion =' build.gradle)
-version=${version//[[:blank:]]/}
-version="${version#*=}";
-version=${version//\"/}
-
-releaseType=$(grep 'releaseType =' build.gradle | egrep -v ^[[:blank:]]*\/\/ | egrep -v ^[[:blank:]]*isBuildSnapshot)
-releaseType=${releaseType//[[:blank:]]/}
-releaseType="${releaseType#*=}";
-releaseType=${releaseType//\"/}
-
-echo "Project Version: $version $releaseType"
-if [[ ( $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == '3.x' ) && $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST == 'false' 
-    && $EXIT_STATUS -eq 0 && $releaseType == *-SNAPSHOT* 
+if [[ ( $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == '3.x' ) && $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST == 'false'
+    && $EXIT_STATUS -eq 0
     && -n "$ARTIFACTORY_PASSWORD" ]]; then
+
     echo "Publishing archives"
     ./gradlew -PartifactoryPublishUsername=travis-gdm upload || EXIT_STATUS=$?
 fi
 
-if [[ $releaseType != *-SNAPSHOT* ]]
-then
-    ./gradlew allDocs
+if [[ $TRAVIS_PULL_REQUEST == 'false' ]]; then
 
-    base_dir=$(pwd)
+	git clone https://${GH_TOKEN}@github.com/grails/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
+	cd gh-pages
 
-    echo "BASE DIR = $base_dir"
+	# If this is the master branch then update the snapshot
+	if [[ $TRAVIS_BRANCH == 'master' ]]; then
+		mkdir -p snapshot
+		cp -r ../build/docs/. ./snapshot/
 
-    git config --global user.name "$GIT_NAME"
-    git config --global user.email "$GIT_EMAIL"
-    git config --global credential.helper "store --file=~/.git-credentials"
-    echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
+		git add snapshot/*
+	fi
 
-    git clone https://${GH_TOKEN}@github.com/grails/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
-    cd gh-pages
-    echo "Making directory for Version: $version"
-    mkdir -p "$version"
-    cd "$version"    
-    current_dir=$(pwd)
-    git rm -rf .    
-    mkdir -p "$current_dir"
+    # If there is a tag present then this becomes the latest
+    if [[ -n $TRAVIS_TAG ]]; then
+        if [[ $TRAVIS_BRANCH == 'master' ]]; then
+            git rm -rf latest/
+            mkdir -p latest
+            cp -r ../build/docs/. ./latest/
+            git add latest/*
+        fi
 
-    echo "Current Directory: $current_dir"
-    cp -r "$base_dir/build/docs/." "$current_dir/"
-    cd ..
-    mkdir -p current
-    cd current
-    current_dir=$(pwd)
-    git rm -rf .
-    mkdir -p "$current_dir"
-    
-    echo "Current Directory: $current_dir"
-    cp -r "$base_dir/build/docs/." "$current_dir/"
-    cd ..
-    cp -r "$base_dir/build/docs/." ./
-    git add .
-    git commit -a -m "Updating docs for Travis build: https://travis-ci.org/grails/grails-data-mapping/builds/$TRAVIS_BUILD_ID"
+        version="$TRAVIS_TAG"
+        version=${version:1}
+        majorVersion=${version:0:4}
+        majorVersion="${majorVersion}x"
+
+        mkdir -p "$version"
+        cp -r ../build/docs/. "./$version/"
+        git add "$version/*"
+
+        mkdir -p "$majorVersion"
+        cp -r ../build/docs/. "./$majorVersion/"
+        git add "$majorVersion/*"
+
+    fi
+
+    git commit -a -m "Updating docs for Travis build: https://travis-ci.org/$TRAVIS_REPO_SLUG/builds/$TRAVIS_BUILD_ID"
     git push origin HEAD
     cd ..
     rm -rf gh-pages
+
+
 fi
 
 exit $EXIT_STATUS
