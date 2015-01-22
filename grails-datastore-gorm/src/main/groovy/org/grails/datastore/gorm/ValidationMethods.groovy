@@ -35,7 +35,14 @@ trait ValidationMethods {
     static void initInternalValidationApi(GormValidationApi gvi) {
         internalValidationApi = gvi
     }
-    
+
+    static GormValidationApi currentGormValidationApi() {
+        if(internalValidationApi == null) {
+            throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
+        }
+        internalValidationApi
+    }
+
     /**
      * Validates an instance for the given arguments
      *
@@ -43,7 +50,7 @@ trait ValidationMethods {
      * @return True if the instance is valid
      */
     boolean validate(Map arguments) {
-        internalValidationApi.validate this, arguments
+        currentGormValidationApi().validate this, arguments
     }
 
     /**
@@ -53,7 +60,7 @@ trait ValidationMethods {
      * @return True if the instance is valid
      */
     boolean validate(List fields) {
-        internalValidationApi.validate this, fields
+        currentGormValidationApi().validate this, fields
     }
 
     /**
@@ -62,7 +69,7 @@ trait ValidationMethods {
      * @return True if the instance is valid
      */
     boolean validate() {
-        internalValidationApi.validate this
+        currentGormValidationApi().validate this
     }
 
 
@@ -71,7 +78,7 @@ trait ValidationMethods {
      * @return The {@link Errors} instance
      */
     Errors getErrors() {
-        internalValidationApi.getErrors this
+        currentGormValidationApi().getErrors this
     }
 
     /**
@@ -79,14 +86,14 @@ trait ValidationMethods {
      * @param errors The errors
      */
     void setErrors(Errors errors) {
-        internalValidationApi.setErrors this, errors
+        currentGormValidationApi().setErrors this, errors
     }
 
     /**
      * Clears any errors that exist on an instance
      */
     void clearErrors() {
-        internalValidationApi.clearErrors this
+        currentGormValidationApi().clearErrors this
     }
 
     /**
@@ -94,6 +101,6 @@ trait ValidationMethods {
      * @return True if errors exist
      */
     Boolean hasErrors() {
-        internalValidationApi.hasErrors this
+        currentGormValidationApi().hasErrors this
     }
 }
