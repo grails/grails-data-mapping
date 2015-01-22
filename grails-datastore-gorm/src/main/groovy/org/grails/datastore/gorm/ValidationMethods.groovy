@@ -31,6 +31,7 @@ import org.springframework.validation.Validator
  */
 trait ValidationMethods {
     private static GormValidationApi internalValidationApi
+    Errors errors
     
     static void initInternalValidationApi(GormValidationApi gvi) {
         internalValidationApi = gvi
@@ -72,28 +73,22 @@ trait ValidationMethods {
         currentGormValidationApi().validate this
     }
 
-
     /**
      * Obtains the errors for an instance
      * @return The {@link Errors} instance
      */
     Errors getErrors() {
-        currentGormValidationApi().getErrors this
-    }
-
-    /**
-     * Sets the errors for an instance
-     * @param errors The errors
-     */
-    void setErrors(Errors errors) {
-        currentGormValidationApi().setErrors this, errors
+        if(errors == null) {
+            errors = new ValidationErrors(this)
+        }
+        errors
     }
 
     /**
      * Clears any errors that exist on an instance
      */
     void clearErrors() {
-        currentGormValidationApi().clearErrors this
+        errors = new ValidationErrors(this)
     }
 
     /**
@@ -101,6 +96,6 @@ trait ValidationMethods {
      * @return True if errors exist
      */
     Boolean hasErrors() {
-        currentGormValidationApi().hasErrors this
+        errors?.hasErrors()
     }
 }
