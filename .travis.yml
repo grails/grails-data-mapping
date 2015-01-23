@@ -27,8 +27,6 @@ env:
     - GORM_IMPL=hibernate4
     - GORM_IMPL=mongodb
     - GORM_IMPL=redis
-    - GORM_IMPL=cassandra
-    - GORM_IMPL=neo4j
     - GORM_IMPL=restclient
 matrix:
   fast_finish: true
