@@ -38,6 +38,14 @@ dependencies {
 
 }
 
+javadoc {
+    classpath +=  configurations.optional
+}
+
+groovydoc {
+    classpath +=  configurations.optional
+}
+
 sourceSets {
     main {
         compileClasspath += files(configurations.optional)

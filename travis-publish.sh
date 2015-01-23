@@ -25,6 +25,8 @@ if [[ ( $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == '3.x' ) && $TRAVIS_REPO_
         ./gradlew publish || EXIT_STATUS=$?
     fi
 
+    ./gradlew allDocs || EXIT_STATUS=$?
+
 	git clone https://${GH_TOKEN}@github.com/grails/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
 	cd gh-pages
 
