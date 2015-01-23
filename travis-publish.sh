@@ -22,7 +22,7 @@ if [[ ( $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == '3.x' ) && $TRAVIS_REPO_
     if [[ -n $TRAVIS_TAG ]]; then
         ./gradlew bintrayUpload || EXIT_STATUS=$?
     else
-        ./gradlew upload || EXIT_STATUS=$?
+        ./gradlew publish || EXIT_STATUS=$?
     fi
 
 	git clone https://${GH_TOKEN}@github.com/grails/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null

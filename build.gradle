@@ -415,7 +415,7 @@ task coreApiDocs(type: Groovydoc) {
 task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
     def docTasks = getTasksByName("docs", true)
     def groovydocTasks = getTasksByName("groovydoc", true)
-    allDocsDir = "$buildDir/docs"
+    def allDocsDir = "$buildDir/docs"
     mkdir allDocsDir
     def stores = []
     for(task in docTasks) {
@@ -424,7 +424,10 @@ task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
         if (projectName.endsWith("-core")) {
             mkdir "$allDocsDir/manual"
 
-            fileTree { from dir }.copy { into "$allDocsDir/manual" }            
+            copy {
+                from dir
+                into "$allDocsDir/manual"
+            }
         }
         else {
             def storeName = projectName["grails-documentation-".size()..-1]
@@ -436,10 +439,16 @@ task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
             if (groovydocTask != null) {
                 mkdir "$docsDir/api"
                 groovydocTask.actions.each { it.execute(groovydocTask) }
-                fileTree { from groovydocTask.destinationDir }.copy { into "$docsDir/api"}
+                copy {
+                    from groovydocTask.destinationDir
+                    into "$docsDir/api"
+                }
             }
             mkdir "$docsDir/manual"
-            fileTree { from dir }.copy { into "$docsDir/manual" }
+            copy {
+                from dir
+                into "$docsDir/manual"
+            }
         }
 
         def engine = new groovy.text.SimpleTemplateEngine()
