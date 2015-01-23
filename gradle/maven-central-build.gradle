@@ -1,0 +1,144 @@
+apply plugin:'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+
+class PublishingConvention {
+    Project project
+
+    String projectArtifactId
+    String projectName = 'Grails GORM'
+    String projectDescription = 'GORM - Grails Data Access Framework'
+    String projectURL = 'http://grails.org/'
+    String projectIssueTrackerUrl = 'http://jira.grails.org/browse/GRAILS'
+    String projectVcsUrl = 'https://github.com/grails/grails-data-mapping'
+
+    PublishingConvention(Project project) {
+        this.project = project
+
+        def name = project.name
+        if(name.contains('/')) {
+            name = name[(name.lastIndexOf('/')+1)..-1]
+        }
+        projectArtifactId = name
+    }
+
+
+}
+
+ext {
+    isBuildSnapshot =  version.endsWith( "BUILD-SNAPSHOT" )
+}
+
+def projectInfo = new PublishingConvention(project)
+project.convention.plugins.projectInfo = projectInfo
+
+
+publishing {
+    if(isBuildSnapshot) {
+        repositories {
+            maven {
+                credentials {
+                    def u = System.getenv("ARTIFACTORY_USERNAME") ?: project.hasProperty("artifactoryPublishUsername") ? project.artifactoryPublishUsername : ''
+                    def p = System.getenv("ARTIFACTORY_PASSWORD") ?: project.hasProperty("artifactoryPublishPassword") ? project.artifactoryPublishPassword : ''
+                    username = u
+                    password = p
+                }
+                url  "https://repo.grails.org/grails/libs-snapshots-local"
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            def id = projectInfo.projectArtifactId
+
+            artifactId id
+            from components.java
+
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+
+
+            pom.withXml {
+                def xml = asNode()
+                def dependency = xml.dependencies.find { dep -> dep.artifactId == 'slf4j-simple' }
+                dependency?.optional = true
+                xml.children().last() + {
+                    delegate.name projectInfo.projectName
+                    delegate.description projectInfo.projectDescription
+                    delegate.url projectInfo.projectURL
+
+                    delegate.licenses {
+                        delegate.license {
+                            delegate.name 'The Apache Software License, Version 2.0'
+                            delegate.url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            delegate.distribution 'repo'
+                        }
+                    }
+
+                    delegate.scm {
+                        delegate.url projectInfo.projectVcsUrl
+                        delegate.connection 'scm:git@github.com:grails/grails-data-mapping.git'
+                        delegate.developerConnection 'scm:git@github.com:grails/grails-data-mapping.git'
+                    }
+
+
+                    delegate.developers {
+                        delegate.developer {
+                            delegate.id 'graemerocher'
+                            delegate.name 'Graeme Rocher'
+                        }
+                        delegate.developer {
+                            delegate.id 'jeffscottbrown'
+                            delegate.name 'Jeff Brown'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+bintray {
+
+    def u = System.getenv("BINTRAY_USER") ?: project.hasProperty("bintrayUser") ? project.bintrayUser : ''
+    def p = System.getenv("BINTRAY_KEY") ?: project.hasProperty("bintrayKey") ? project.bintrayKey : ''
+
+    user = u
+    key = p
+    publications = ['maven']
+    publish = true
+    pkg {
+        repo = 'plugins'
+        userOrg = 'grails'
+        def pkgName = "$group:$projectInfo.projectArtifactId"
+        name = pkgName
+        desc = projectInfo.projectDescription
+        websiteUrl = projectInfo.projectURL
+        issueTrackerUrl = projectInfo.projectIssueTrackerUrl
+        vcsUrl = projectInfo.projectVcsUrl
+        licenses = ['Apache-2.0']
+        publicDownloadNumbers = true
+        version {
+            name = project.version
+            gpg {
+                sign = true
+                passphrase = System.getenv("SIGNING_PASSPHRASE") ?: project.hasProperty("signingPassphrase") ? project.signingPassphrase : ''
+            }
+            mavenCentralSync {
+                sync = false
+                def ossUser = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
+                def ossPass = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
+                user = ossUser
+                password = ossPass
+            }
+
+        }
+    }
+}
+
+

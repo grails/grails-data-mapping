@@ -1,18 +1,37 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "http://repo.grails.org/grails/core" }
+    }
+    dependencies {
+        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+    }
+}
+
+plugins {
+    id "io.spring.dependency-management" version "0.3.1.RELEASE"
+}
 
 group = "org.grails.plugins"
 version = "4.3.5.5.BUILD-SNAPSHOT"
 
-apply from:'https://raw.githubusercontent.com/grails/grails-boot/master/gradle/maven-central-build.gradle'
+apply plugin: "org.grails.grails-plugin"
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply from:'../../gradle/maven-central-build.gradle'
 
-configurations {
-    provided
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+    mavenLocal()
+    maven { url "http://repo.grails.org/grails/core" }
 }
 
 dependencies {
 
-
     provided("org.grails:grails-core:$grailsVersion")
-    compile 'org.codehaus.groovy:groovy:2.3.7'
 
     compile project(":grails-datastore-gorm-hibernate4"), {
         exclude group:'org.springframework', module:'spring-context'
@@ -25,17 +44,4 @@ dependencies {
         exclude group:'org.grails', module:'grails-async'
         exclude group:'javax.transaction', module:'jta'
     }
-}
-
-sourceSets {
-    main {
-        compileClasspath += configurations.provided
-    }
-}
-
-def installer = install.repositories.mavenInstaller
-def deployer = uploadArchives.repositories.mavenDeployer
-
-[installer, deployer]*.pom*.whenConfigured { pom ->
-    pom.artifactId = 'hibernate'
 }

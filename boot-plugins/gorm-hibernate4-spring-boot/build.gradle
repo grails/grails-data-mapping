@@ -1,7 +1,18 @@
-apply from:'../gradle/maven-central-build.gradle'
-
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1"
+    }
+}
 group = 'org.grails'
 version = "4.0.0.BUILD-SNAPSHOT"
+
+apply plugin:'groovy'
+apply from:'../../gradle/maven-central-build.gradle'
+
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
@@ -12,14 +23,24 @@ repositories {
     mavenLocal()
 }
 
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn:javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
 dependencies {
-    def springBootVersion = '1.1.1.RELEASE'
+    def springBootVersion = '1.2.1.RELEASE'
     compile "org.springframework.boot:spring-boot-cli:$springBootVersion", {
         exclude group:'org.codehaus.groovy', module:'groovy'
     }
-    compile 'org.codehaus.groovy:groovy-all:2.3.2'
+    compile 'org.codehaus.groovy:groovy-all:2.4.0'
     compile "org.springframework.boot:spring-boot-autoconfigure:$springBootVersion"
-    compile "org.grails:grails-datastore-gorm-hibernate4:3.1.1.RELEASE"
+    compile "org.grails:grails-datastore-gorm-hibernate4:$version"
 
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
     testRuntime "com.h2database:h2:1.3.173"
