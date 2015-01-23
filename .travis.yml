@@ -1,3 +1,4 @@
+sudo: false
 language: groovy
 services:
 - redis
@@ -5,6 +6,9 @@ services:
 - cassandra
 jdk:
 - oraclejdk7
+cache:
+  directories:
+    - '$HOME/.gradle/caches'
 env:
   global:
   - TERM=dumb
@@ -31,7 +35,7 @@ env:
 matrix:
   fast_finish: true
 script: ./travis-build.sh
-install: true
+install: /bin/true
 after_success:
 - python ./travis/travis_after_all.py
 - export $(cat .to_export_back)
