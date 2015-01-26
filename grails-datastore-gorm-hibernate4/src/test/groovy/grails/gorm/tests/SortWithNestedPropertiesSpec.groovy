@@ -5,7 +5,6 @@ import grails.persistence.Entity
 /**
  * Created by graemerocher on 12/02/14.
  */
-@spock.lang.Ignore
 class SortWithNestedPropertiesSpec extends GormDatastoreSpec{
 
 
@@ -26,7 +25,7 @@ class SortWithNestedPropertiesSpec extends GormDatastoreSpec{
 
     void "Test sort with named query builder"() {
         expect:
-            SortBook.manningBooks().list(sort:'author.name').author.name == ['A','a','b','B','C','c']
+            equalsIgnoreCase SortBook.manningBooks().list(sort:'author.name').author.name, ['A','a','b','B','C','c']
     }
 
     void "Test sort with findWhere method"() {
