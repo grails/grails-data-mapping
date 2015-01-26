@@ -1,0 +1,10 @@
+org.grails.compiler
+org.grails.datastore.gorm.cassandra
+org.grails.datastore.gorm.cassandra.bean.factory
+org.grails.datastore.gorm.cassandra.mapping
+org.grails.datastore.gorm.cassandra.plugin.support
+org.grails.datastore.mapping.cassandra
+org.grails.datastore.mapping.cassandra.config
+org.grails.datastore.mapping.cassandra.engine
+org.grails.datastore.mapping.cassandra.query
+org.grails.datastore.mapping.cassandra.utils
