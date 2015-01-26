@@ -28,10 +28,10 @@ import org.grails.io.support.GrailsResourceUtils
  *
  */
 @CompileStatic
-class ValidationMethodsTraitInjector implements TraitInjector {
+class GormValidateableTraitInjector implements TraitInjector {
 
     Class getTrait() {
-        ValidationMethods
+        GormValidateable
     }
 
     @Override

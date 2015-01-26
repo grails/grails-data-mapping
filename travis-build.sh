@@ -14,6 +14,14 @@ case "$GORM_IMPL"  in
     redis)
         ./gradlew grails-datastore-gorm-redis:test || EXIT_STATUS=$?
         ;;
+    cassandra)
+        # wait for Cassandra to start up
+        sleep 5               
+        ./gradlew grails-datastore-gorm-cassandra:test || EXIT_STATUS=$?
+        ;;
+    neo4j)
+        ./gradlew grails-datastore-gorm-neo4j:test || EXIT_STATUS=$?
+        ;;
     restclient)
         ./gradlew grails-datastore-gorm-rest-client:test || EXIT_STATUS=$?
         ;;
