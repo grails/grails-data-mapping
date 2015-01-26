@@ -5,6 +5,7 @@ import grails.persistence.Entity
 /**
  * Created by graemerocher on 12/02/14.
  */
+@spock.lang.Ignore
 class SortWithNestedPropertiesSpec extends GormDatastoreSpec{
 
 
