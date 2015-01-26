@@ -19,13 +19,13 @@ class SortWithNestedPropertiesSpec extends GormDatastoreSpec{
 
     void "Test the list method with nested property sort"() {
         expect:
-            SortBook.list(sort:'author.name').author.name == ['A','a','b','B','C','c']
+            equalsIgnoreCase SortBook.list(sort:'author.name').author.name, ['a','a','b','b','c','c']
             SortBook.list(sort:'author.name', ignoreCase:false).author.name == ['A','B','C','a','b','c']
     }
 
     void "Test sort with named query builder"() {
         expect:
-            equalsIgnoreCase SortBook.manningBooks().list(sort:'author.name').author.name, ['A','a','b','B','C','c']
+            equalsIgnoreCase SortBook.manningBooks().list(sort:'author.name').author.name, ['a','a','b','b','c','c']
     }
 
     void "Test sort with findWhere method"() {
@@ -35,7 +35,7 @@ class SortWithNestedPropertiesSpec extends GormDatastoreSpec{
 
     void "Test sort with findBy dynamic method"() {
         expect:
-            SortBook.findAllByPublisher('Manning', [sort:'author.name']).author.name == ['A','a','b','B','C','c']
+            equalsIgnoreCase SortBook.findAllByPublisher('Manning', [sort:'author.name']).author.name, ['a','a','b','b','c','c']
     }
 
     void "Test sort with find dynamic method"() {
@@ -45,16 +45,16 @@ class SortWithNestedPropertiesSpec extends GormDatastoreSpec{
 
     void "Test deep sort"() {
         expect:
-            SortBook.list(sort:'author.person.name').author.person.name == ['A','a','b','B','C','c']
+            equalsIgnoreCase SortBook.list(sort:'author.person.name').author.person.name, ['a','a','b','b','c','c']
     }
 
     void "Test other parameters are presevered with sort query"() {
         expect:
-            equalsIgnoreCase(['b','B','C'], SortBook.list(max:3, offset:2, sort:'author.name').author.name)
-            equalsIgnoreCase(['C','a','b'], SortBook.list(max:3, offset:2, sort:'author.name', ignoreCase:false).author.name)
-            equalsIgnoreCase(['b','B','C'], SortBook.manningBooks().list(max:3, offset:2, sort:'author.name').author.name)
-            equalsIgnoreCase(['b','B','C'], SortBook.findAllByPublisher('Manning', [max:3, offset:2, sort:'author.name']).author.name)
-            equalsIgnoreCase(['b','B','C'], SortBook.list(max:3, offset:2, sort:'author.person.name').author.person.name)
+            equalsIgnoreCase(['b','b','c'], SortBook.list(max:3, offset:2, sort:'author.name').author.name)
+            equalsIgnoreCase(['c','a','b'], SortBook.list(max:3, offset:2, sort:'author.name', ignoreCase:false).author.name)
+            equalsIgnoreCase(['b','b','c'], SortBook.manningBooks().list(max:3, offset:2, sort:'author.name').author.name)
+            equalsIgnoreCase(['b','b','c'], SortBook.findAllByPublisher('Manning', [max:3, offset:2, sort:'author.name']).author.name)
+            equalsIgnoreCase(['b','b','c'], SortBook.list(max:3, offset:2, sort:'author.person.name').author.person.name)
     }
 
     boolean equalsIgnoreCase(Collection<String> a, Collection<String> b) {
@@ -63,12 +63,12 @@ class SortWithNestedPropertiesSpec extends GormDatastoreSpec{
 
     void "Test sort with embedded property"() {
         expect:
-            equalsIgnoreCase(['A','a','b','B','C','c'], SortBook.list(sort:'address.street').address.street)
+            equalsIgnoreCase(['a','a','b','b','c','c'], SortBook.list(sort:'address.street').address.street)
     }
 
     void "Test default sort"() {
         expect:
-            equalsIgnoreCase(['A','a','b','B','C','c'], SortBook.list().address.street)
+            equalsIgnoreCase(['a','a','b','b','c','c'], SortBook.list().address.street)
     }
 
     @Override
