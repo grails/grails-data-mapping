@@ -29,7 +29,7 @@ import org.springframework.validation.Validator
  * @author Jeff Brown
  * @since 4.0
  */
-trait ValidationMethods {
+trait GormValidateable {
     private static GormValidationApi internalValidationApi
     Errors errors
     
