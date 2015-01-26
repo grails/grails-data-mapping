@@ -27,6 +27,11 @@ if [[ ( $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == '3.x' ) && $TRAVIS_REPO_
 
     ./gradlew allDocs || EXIT_STATUS=$?
 
+    git config --global user.name "$GIT_NAME"
+    git config --global user.email "$GIT_EMAIL"
+    git config --global credential.helper "store --file=~/.git-credentials"
+    echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
+
 	git clone https://${GH_TOKEN}@github.com/grails/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
 	cd gh-pages
 
