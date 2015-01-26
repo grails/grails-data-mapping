@@ -356,7 +356,7 @@ subprojects {
             pkg {
                 repo = 'grails-core'
                 userOrg = 'grails'
-                name = 'org.grails'
+                name = 'org.grails:grails-data-mapping'
                 desc = 'Grails Data Mapping'
                 websiteUrl = 'http://grails.org'
                 issueTrackerUrl = 'http://jira.grails.org/browse/GRAILS'
