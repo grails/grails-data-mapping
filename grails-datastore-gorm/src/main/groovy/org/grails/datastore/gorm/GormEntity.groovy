@@ -27,7 +27,7 @@ import org.springframework.validation.Errors
  * @author Jeff Brown
  * @since 4.0
  */
-trait GormEntity<D> {
+trait GormEntity<D> implements GormValidateable {
     
     private static GormInstanceApi internalInstanceApi
     private static GormStaticApi<D> internalStaticApi
