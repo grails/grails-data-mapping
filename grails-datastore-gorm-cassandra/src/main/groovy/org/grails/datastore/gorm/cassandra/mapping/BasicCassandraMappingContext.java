@@ -18,6 +18,7 @@ import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.data.cassandra.mapping.CassandraSimpleTypeHolder;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
+import org.springframework.data.util.TypeInformation;
 
 /**
  * Extends default
@@ -33,7 +34,15 @@ public class BasicCassandraMappingContext extends org.springframework.data.cassa
 	public BasicCassandraMappingContext(CassandraMappingContext gormCassandraMappingContext) {
 		this.gormCassandraMappingContext = gormCassandraMappingContext;
 	}
-	
+
+	@Override
+	protected CassandraPersistentEntity<?> addPersistentEntity(TypeInformation<?> typeInformation) {
+		if(!typeInformation.getType().isInterface()) {
+			return super.addPersistentEntity(typeInformation);
+		}
+		return null;
+	}
+
 	@Override
 	public CassandraPersistentProperty createPersistentProperty(Field field, PropertyDescriptor descriptor, CassandraPersistentEntity<?> owner, SimpleTypeHolder simpleTypeHolder) {
 		PersistentEntity gormEntity = gormCassandraMappingContext.getPersistentEntity(owner.getName());			
