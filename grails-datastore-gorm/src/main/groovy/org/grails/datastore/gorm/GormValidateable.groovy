@@ -15,28 +15,35 @@
  */
 package org.grails.datastore.gorm
 
-import grails.validation.CascadingValidator
-import org.grails.datastore.gorm.support.BeforeValidateHelper
-import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.grails.datastore.mapping.validation.ValidationErrors
 import org.springframework.validation.Errors
-import org.springframework.validation.FieldError
-import org.springframework.validation.ObjectError
-import org.springframework.validation.Validator
+
 
 /**
+ * A trait that adds GORM validation behavior to any class
  *
  * @author Jeff Brown
+ * @author Graeme Rocher
  * @since 4.0
  */
 trait GormValidateable {
     private static GormValidationApi internalValidationApi
+
+    /**
+     * The validation errors object
+     */
     Errors errors
-    
+
+    /**
+     * Used to initialise the state of GORM. This method is used internally by the framework and SHOULD NOT be called by the developer
+     */
     static void initInternalValidationApi(GormValidationApi gvi) {
         internalValidationApi = gvi
     }
 
+    /**
+     * Used to obtain the {@link GormValidationApi} instance. This method is used internally by the framework and SHOULD NOT be called by the developer
+     */
     static GormValidationApi currentGormValidationApi() {
         if(internalValidationApi == null) {
             throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
