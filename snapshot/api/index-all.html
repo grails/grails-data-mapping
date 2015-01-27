@@ -1711,11 +1711,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html#currentClassNode" title="Field in DetachedCriteriaTransformer">currentClassNode</a></span> - Field in <a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html">DetachedCriteriaTransformer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#currentGormInstanceApi()" title="Method in GormEntity">currentGormInstanceApi()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">Used to obtain the <a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html' title='GormInstanceApi'>GormInstanceApi</a> instance. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#currentGormStaticApi()" title="Method in GormEntity">currentGormStaticApi()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">Used to obtain the <a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html' title='GormInstanceApi'>GormInstanceApi</a> instance. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidateable.html#currentGormValidationApi()" title="Method in GormValidateable">currentGormValidationApi()</a></span> - Method in <a href="org/grails/datastore/gorm/GormValidateable.html">GormValidateable</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">Used to obtain the <a href='../../../../org/grails/datastore/gorm/GormValidationApi.html' title='GormValidationApi'>GormValidationApi</a> instance. </div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/GrailsSessionContext.html#currentSession()" title="Method in GrailsSessionContext">currentSession()</a></span> - Method in <a href="org/grails/orm/hibernate/GrailsSessionContext.html">GrailsSessionContext</a>
 </dt><dd> <div class="block">Retrieve the Spring-managed Session for the current thread, if any.</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/ConfigurableLocalSessionFactoryBean.html#currentSessionContextClass" title="Field in ConfigurableLocalSessionFactoryBean">currentSessionContextClass</a></span> - Field in <a href="org/grails/orm/hibernate/ConfigurableLocalSessionFactoryBean.html">ConfigurableLocalSessionFactoryBean</a>
@@ -2318,7 +2318,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/AssociationQuery.html#executeQuery(org.grails.datastore.mapping.model.PersistentEntity, Junction)" title="Method in AssociationQuery">executeQuery(PersistentEntity, Junction)</a></span> - Method in <a href="org/grails/datastore/mapping/query/AssociationQuery.html">AssociationQuery</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#executeQuery(java.lang.String, java.util.Collection, java.util.Map)" title="Method in GormEntity">executeQuery(String, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">Executes a query for the given String</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.String, java.util.Collection, java.util.Map)" title="Method in GormStaticApi">executeQuery(String, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.html#executeQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.query.Query.Junction)" title="Method in Query">executeQuery(PersistentEntity, Query.Junction)</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.html">Query</a>
@@ -4042,7 +4042,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#GormEnhancer(org.grails.datastore.mapping.core.Datastore, org.springframework.transaction.PlatformTransactionManager)" title="Constructor in GormEnhancer">GormEnhancer(Datastore, PlatformTransactionManager)</a></span> - Constructor in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html" title="Trait in org.grails.datastore.gorm">GormEntity</a></span> - Trait in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
-</dt><dd><div class="block">@author Jeff Brown</div></dd>
+</dt><dd><div class="block">A trait that turns any class into a GORM entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntityTraitInjector.html" title="Class in org.grails.datastore.gorm">GormEntityTraitInjector</a></span> - Class in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
 </dt><dd><div class="block">@author Jeff Brown</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormInstanceApi.html" title="Class in org.grails.datastore.gorm">GormInstanceApi</a></span> - Class in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
@@ -4068,7 +4068,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/compiler/gorm/GormTransformer.html" title="Class in org.grails.compiler.gorm">GormTransformer</a></span> - Class in <a href="./org/grails/compiler/gorm/package-summary.html">org.grails.compiler.gorm</a>
 </dt><dd><div class="block">Transforms GORM entities making the GORM API available to Java.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidateable.html" title="Trait in org.grails.datastore.gorm">GormValidateable</a></span> - Trait in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
-</dt><dd><div class="block">@author Jeff Brown</div></dd>
+</dt><dd><div class="block">A trait that adds GORM validation behavior to any class</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidateableTraitInjector.html" title="Class in org.grails.datastore.gorm">GormValidateableTraitInjector</a></span> - Class in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
 </dt><dd><div class="block">@author Jeff Brown</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidationApi.html" title="Class in org.grails.datastore.gorm">GormValidationApi</a></span> - Class in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
@@ -4694,11 +4694,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/SoftThreadLocalMap.html#initialValue()" title="Method in SoftThreadLocalMap">initialValue()</a></span> - Method in <a href="org/grails/datastore/mapping/core/SoftThreadLocalMap.html">SoftThreadLocalMap</a>
 </dt><dd> <div class="block">Creates an initial value of a Map.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#initInternalApi(org.grails.datastore.gorm.GormInstanceApi)" title="Method in GormEntity">initInternalApi(GormInstanceApi)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">Used to initialise the state of GORM. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#initInternalStaticApi(GormStaticApi<D>)" title="Method in GormEntity">initInternalStaticApi(GormStaticApi&lt;D&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">Used to initialise the state of GORM. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidateable.html#initInternalValidationApi(org.grails.datastore.gorm.GormValidationApi)" title="Method in GormValidateable">initInternalValidationApi(GormValidationApi)</a></span> - Method in <a href="org/grails/datastore/gorm/GormValidateable.html">GormValidateable</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">Used to initialise the state of GORM. </div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/GrailsSessionContext.html#initJta()" title="Method in GrailsSessionContext">initJta()</a></span> - Method in <a href="org/grails/orm/hibernate/GrailsSessionContext.html">GrailsSessionContext</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html#inList(java.lang.String, java.lang.Object)" title="Method in AbstractHibernateCriteriaBuilder">inList(String, Object)</a></span> - Method in <a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html">AbstractHibernateCriteriaBuilder</a>
