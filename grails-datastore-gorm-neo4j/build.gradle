@@ -61,3 +61,8 @@ dependencies {
         exclude group: 'org.grails', module:'grails-datastore-simple'
     }
 }
+
+test {
+    maxParallelForks = 1
+}
+
