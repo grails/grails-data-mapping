@@ -15,7 +15,7 @@ echo "Publishing..."
 
 EXIT_STATUS=0
 
-if [[ ( $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == '3.x' ) && $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST == 'false' && $EXIT_STATUS -eq 0 ]]; then
+if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST == 'false' && $EXIT_STATUS -eq 0 ]]; then
 
     echo "Publishing archives"
 
@@ -45,12 +45,9 @@ if [[ ( $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == '3.x' ) && $TRAVIS_REPO_
 
     # If there is a tag present then this becomes the latest
     if [[ -n $TRAVIS_TAG ]]; then
-        if [[ $TRAVIS_BRANCH == 'master' ]]; then
-            git rm -rf latest/
-            mkdir -p latest
-            cp -r ../build/docs/. ./latest/
-            git add latest/*
-        fi
+        mkdir -p latest
+        cp -r ../build/docs/. ./latest/
+        git add latest/*
 
         version="$TRAVIS_TAG"
         version=${version:1}
