@@ -14,15 +14,14 @@
  */
 package org.grails.datastore.mapping.collection;
 
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.engine.AssociationIndexer;
+import org.grails.datastore.mapping.model.PersistentEntity;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
-import org.grails.datastore.mapping.engine.AssociationIndexer;
-import org.grails.datastore.mapping.model.PersistentEntity;
 
 /**
  * Abstract base class for persistent collections.
@@ -30,14 +29,14 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  * @author Burt Beckwith
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class AbstractPersistentCollection implements PersistentCollection {
+public abstract class AbstractPersistentCollection implements PersistentCollection, Serializable {
+    private transient Session session;
+    private transient AssociationIndexer indexer;
+    private transient Class childType;
 
     private boolean initialized;
     private Serializable associationKey;
-    private Session session;
-    private AssociationIndexer indexer;
     private Collection keys;
-    private Class childType;
     private boolean dirty = false;
 
     protected final Collection collection;
@@ -194,6 +193,10 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
     public void initialize() {
         if (initialized) {
             return;
+        }
+
+        if (session == null) {
+            throw new IllegalStateException("PersistentCollection of type " + this.getClass().getName() + " should have been initialized before serialization.");
         }
 
         initialized = true;
