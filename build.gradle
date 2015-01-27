@@ -242,6 +242,11 @@ subprojects {
     }
 
     if (isStandardGroovyMavenProject) {
+        if(project.hasProperty("install")) {
+            project.install.dependsOn publishToMavenLocal
+        } else {
+            task install(dependsOn: publishToMavenLocal)
+        }
 
         task sourcesJar(type: Jar, dependsOn:classes) {
             classifier = 'sources'
@@ -518,3 +523,4 @@ task test(dependsOn: getTasksByName("test", true)) << {
         ant."clover-html-report"(initstring: mergedDb, outdir:"${cloverReportsDir}/html")
     }
 }
+
