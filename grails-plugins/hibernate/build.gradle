@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "org.grails.plugins"
-version = "4.3.5.5.BUILD-SNAPSHOT"
+version = "${hibernatePluginVersion}.$releaseType"
 
 apply plugin: "org.grails.grails-plugin"
 apply plugin: 'eclipse'

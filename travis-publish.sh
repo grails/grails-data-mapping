@@ -32,7 +32,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
     git config --global credential.helper "store --file=~/.git-credentials"
     echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
-	git clone https://${GH_TOKEN}@github.com/grails/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
+	git clone https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git -b gh-pages gh-pages --single-branch > /dev/null
 	cd gh-pages
 
 	# If this is the master branch then update the snapshot
