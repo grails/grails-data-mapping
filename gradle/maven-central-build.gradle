@@ -111,7 +111,8 @@ bintray {
     user = u
     key = p
     publications = ['maven']
-    publish = true
+    publish = false
+    dryRun = true
     pkg {
         repo = 'plugins'
         userOrg = 'grails'

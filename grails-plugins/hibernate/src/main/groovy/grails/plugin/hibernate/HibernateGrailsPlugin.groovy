@@ -20,8 +20,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
 @CompileStatic
 class HibernateGrailsPlugin extends Plugin {
 
-
-    def version = '4.3.5.5-SNAPSHOT'
     def grailsVersion = '2.3.5 > *'
     def author = 'Burt Beckwith'
     def title = 'Hibernate 4 for Grails'
@@ -34,7 +32,7 @@ class HibernateGrailsPlugin extends Plugin {
     def pluginExcludes = ['src/templates/**']
 
     def license = 'APACHE'
-    def organization = [name: 'Pivotal', url: 'http://pivotal.io']
+    def organization = [name: 'Grails', url: 'http://grails.org']
     def issueManagement = [system: 'JIRA', url: 'http://jira.grails.org/browse/GPHIB']
     def scm = [url: 'https://github.com/grails-plugins/grails-hibernate4-plugin']
 
