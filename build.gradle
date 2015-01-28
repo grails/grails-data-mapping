@@ -17,8 +17,8 @@ project.ext {
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectVersion = "4.0.0"
-//    releaseType = "BUILD-SNAPSHOT"
-    releaseType = "M1"
+   releaseType = "BUILD-SNAPSHOT"
+    // releaseType = "M1"
 
     // plugin versions
     hibernatePluginVersion = "4.3.7.0"
@@ -60,7 +60,7 @@ allprojects {
         if(System.getProperty('useJbossNexus')) {
             // jboss-nexus contains Hibernate source code archives which aren't in maven central
             // usefull with eclipse and idea tasks, for example
-            // ./gradlew -PuseJbossNexus cleanEclipse eclipse            
+            // ./gradlew -PuseJbossNexus cleanEclipse eclipse
             maven {
                 name 'jboss-nexus'
                 url "https://repository.jboss.org/nexus/content/groups/public/"
@@ -69,7 +69,7 @@ allprojects {
         maven { url "https://repo.grails.org/grails/core" }
         if(isBuildSnapshot) {
             maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
-        }        
+        }
     }
 
     configurations {
@@ -111,13 +111,13 @@ subprojects {
         targetCompatibility = "1.7"
     }
 
-    def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") && 
-                                !project.name.endsWith("tck") && 
+    def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") &&
+                                !project.name.endsWith("tck") &&
                                 !project.name.endsWith("plugin-support") &&
                                 project.name != 'grails-datastore-gorm-hibernate-core'&&
                                 project.name != 'grails-datastore-gorm-rest-client'
 
-                                                
+
     def isDocumentationProject = project.name.startsWith("grails-documentation")
 
     dependencies {
@@ -199,7 +199,7 @@ subprojects {
                 null
             }
         }
-        
+
         test {
             testLogging {
                 exceptionFormat ='full'
@@ -221,7 +221,7 @@ subprojects {
                 jvmArgs '-Xmx2g', '-Xdebug', '-Xnoagent', '-Djava.compiler=NONE',
                         '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
             }
-        }        
+        }
         test.doFirst {
             def tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.output.classesDir
             def thisProjectsTests = // surely there is a less hardcoded way to do this
@@ -263,7 +263,7 @@ subprojects {
             options.docEncoding "UTF-8"
             options.charSet "UTF-8"
             options.jFlags "-Xms64M", "-Xmx512M", "-XX:MaxPermSize=256m"
-        }        
+        }
 
         artifacts {
             archives jar
@@ -399,12 +399,12 @@ dependencies {
 task install(dependsOn: subprojects*.tasks*.withType(PublishToMavenLocal))
 
 task coreApiDocs(type: Groovydoc) {
-   def coreDocs = [ 'grails-datastore-core', 
-                    'grails-datastore-gorm', 
-                    'grails-datastore-gorm-hibernate-core', 
-                    'grails-datastore-gorm-hibernate4', 
-                    'grails-datastore-simple', 
-                    'grails-datastore-web', 
+   def coreDocs = [ 'grails-datastore-core',
+                    'grails-datastore-gorm',
+                    'grails-datastore-gorm-hibernate-core',
+                    'grails-datastore-gorm-hibernate4',
+                    'grails-datastore-simple',
+                    'grails-datastore-web',
                     'grails-datastore-gorm-test']
    def projs = subprojects.findAll { project -> coreDocs.contains(project.name) }
    source projs.collect { project -> project.sourceSets.main.allGroovy } + projs.collect { project -> project.sourceSets.main.allJava }
@@ -521,4 +521,3 @@ task test(dependsOn: getTasksByName("test", true)) << {
         ant."clover-html-report"(initstring: mergedDb, outdir:"${cloverReportsDir}/html")
     }
 }
-
