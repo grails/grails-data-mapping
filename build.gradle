@@ -16,12 +16,16 @@ project.ext {
     groovyVersion = System.getProperty('groovyVersion') ?: '2.4.0'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
-    projectVersion = "4.0.0"
-   releaseType = "BUILD-SNAPSHOT"
-    // releaseType = "M1"
+    projectMajorVersion = "4"
+    projectMinorVersion = "0"
+    projectPatchVersion = "0"
+    releaseType = "BUILD-SNAPSHOT"
+
+    // overall project version
+    projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
 
     // plugin versions
-    hibernatePluginVersion = "4.3.7.0"
+    hibernatePluginVersion = "4.3.7.$projectPatchVersion"
     mongodbPluginVersion = projectVersion
 
 
@@ -352,7 +356,7 @@ subprojects {
             user = u
             key = p
             publications = ['maven']
-            dryRun = true
+            dryRun = false
             publish = false
             pkg {
                 repo = 'grails-core'
