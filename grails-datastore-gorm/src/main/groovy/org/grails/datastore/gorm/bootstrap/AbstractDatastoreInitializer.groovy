@@ -11,6 +11,7 @@ import org.grails.validation.GrailsDomainClassValidator
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ResourceLoaderAware
+import org.springframework.core.env.MapPropertySource
 import org.springframework.core.env.MutablePropertySources
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
@@ -32,7 +33,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver()
     Collection<Class> persistentClasses = []
     Collection<String> packages = []
-    Map configuration = new LinkedHashMap()
+    Config configuration = new PropertySourcesConfig(new MutablePropertySources())
     Config configurationObject = new PropertySourcesConfig()
     boolean registerApplicationIfNotPresent = true
 
@@ -58,7 +59,14 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     }
 
     AbstractDatastoreInitializer(Map configuration, Collection<Class> persistentClasses) {
-        this.configuration = configuration
+        if(configuration instanceof Config) {
+            this.configuration = (Config)configuration;
+        }
+        else {
+            def sources = new MutablePropertySources()
+            this.configuration = new PropertySourcesConfig(sources)
+            sources.addFirst(new MapPropertySource("hibernateConfig", configuration))
+        }
         this.persistentClasses = persistentClasses
         if(configuration instanceof Config) {
             this.configurationObject = (Config)configuration

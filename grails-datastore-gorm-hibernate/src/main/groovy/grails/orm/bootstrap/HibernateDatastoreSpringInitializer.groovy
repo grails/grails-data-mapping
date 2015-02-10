@@ -14,14 +14,16 @@
  */
 package grails.orm.bootstrap
 
+import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.grails.orm.hibernate.*
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler
 import org.grails.orm.hibernate.support.AggregatePersistenceContextInterceptor
 import org.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
+import org.grails.orm.hibernate.support.FlushOnRedirectEventListener
+import org.grails.orm.hibernate.support.GrailsOpenSessionInViewInterceptor
 import org.grails.orm.hibernate.support.HibernateDialectDetectorFactoryBean
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
@@ -99,9 +101,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
             Object vendorToDialect = getVenderToDialectMappings()
 
-            if (!configuration['hibernate.hbm2ddl.auto']) {
-                configuration['hibernate.hbm2ddl.auto'] = ddlAuto
-            }
+
 
 
             // for unwrapping / inspecting proxies
@@ -120,17 +120,26 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             grailsDomainClassMappingContext(GrailsDomainClassMappingContext, ref(GrailsApplication.APPLICATION_ID))
 
 
-
+            def config = this.configuration
             for(dataSourceName in dataSources) {
 
                 boolean isDefault = dataSourceName == defaultDataSourceBeanName
                 String suffix = isDefault ? '' : '_' + dataSourceName
                 String prefix = isDefault ? '' : dataSourceName + '_'
                 def sessionFactoryName = isDefault ? defaultSessionFactoryBeanName : "sessionFactory$suffix"
-                def hibConfig = configurationObject["hibernate$suffix"] ?: configurationObject["hibernate"]
+                def hibConfig = config.getProperty("hibernate$suffix", Map, Collections.emptyMap())
 
                 def hibernateProperties = new Properties()
-                hibernateProperties.putAll(this.configuration)
+                if(hibConfig) {
+                    for(key in hibConfig.keySet()) {
+                        hibernateProperties["hibernate.${key}".toString()] = hibConfig.get(key)
+                    }
+                }
+
+                if (!hibernateProperties['hibernate.hbm2ddl.auto']) {
+                    hibernateProperties['hibernate.hbm2ddl.auto'] = ddlAuto
+                }
+
                 def noDialect = !hibernateProperties['hibernate.dialect']
                 if (noDialect) {
                     hibernateProperties['hibernate.dialect'] = ref("dialectDetector")
@@ -220,11 +229,50 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                     grailsApplication = ref(GrailsApplication.APPLICATION_ID)
                     bean.lazyInit = false
                 }
+
+                boolean osivEnabled = config.getProperty("hibernate${suffix}.osiv.enabled", Boolean, true)
+                if (beanDefinitionRegistry?.containsBeanDefinition("dispatcherServlet") && osivEnabled) {
+                    "flushingRedirectEventListener$suffix"(FlushOnRedirectEventListener, ref(sessionFactoryName))
+                    "openSessionInViewInterceptor$suffix"(GrailsOpenSessionInViewInterceptor) {
+                        flushMode = HibernateDatastoreSpringInitializer.resolveDefaultFlushMode(config.getProperty("hibernate${suffix}.flush.mode"),
+                                                                                                    config.getProperty("hibernate${suffix}.osiv.readonly", Boolean, false))
+                        sessionFactory = ref(sessionFactoryName)
+                    }
+                }
             }
 
 
         }
         beanDefinitions
+    }
+
+
+    @CompileStatic
+    private static int resolveDefaultFlushMode(CharSequence flushModeStr, boolean readOnly) {
+        int flushMode
+        if (Boolean.TRUE.equals(readOnly)) {
+            flushMode = GrailsHibernateTemplate.FLUSH_NEVER
+        }
+        else if (flushModeStr instanceof CharSequence) {
+            switch(flushModeStr.toString().toLowerCase()) {
+                case "manual":
+                case "never":
+                    flushMode = GrailsHibernateTemplate.FLUSH_NEVER
+                    break
+                case "always":
+                    flushMode = GrailsHibernateTemplate.FLUSH_ALWAYS
+                    break
+                case "commit":
+                    flushMode = GrailsHibernateTemplate.FLUSH_COMMIT
+                    break
+                default:
+                    flushMode = GrailsHibernateTemplate.FLUSH_AUTO
+            }
+        }
+        else {
+            flushMode = GrailsHibernateTemplate.FLUSH_AUTO
+        }
+        return flushMode
     }
 
     protected Properties getVenderToDialectMappings() {
