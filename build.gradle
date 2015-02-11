@@ -380,10 +380,6 @@ subprojects {
                         sign = true
 
                         def signingPassphrase = System.getenv("SIGNING_PASSPHRASE") ?: project.hasProperty("signingPassphrase") ? project.signingPassphrase : ''
-                        if(signingPassphrase) {
-                            def result = String.valueOf( Hex.encodeHex( signingPassphrase.getBytes("UTF-8") ) )
-                            println "TEST = ${result}"
-                        }
                         passphrase = signingPassphrase
                     }
                     mavenCentralSync {
