@@ -6,6 +6,7 @@ dependencies {
         exclude group:"org.grails",module: "grails-plugin-domain-class"
         exclude group:"org.grails",module: "grails-plugin-gsp"
         exclude group:"org.grails",module: "grails-plugin-filters"
+        exclude group:"org.grails",module: "grails-plugin-interceptors"
         exclude group:"org.grails",module: "grails-plugin-mimetypes"
         exclude group:"org.grails",module: "grails-plugin-converters"
         exclude group:"org.grails",module: "grails-logging"
