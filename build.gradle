@@ -1,3 +1,9 @@
+import org.apache.commons.codec.binary.Hex
+
+import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
+import java.security.Key
+
 buildscript {
     repositories {
         mavenLocal()
@@ -19,7 +25,7 @@ project.ext {
     projectMajorVersion = "4"
     projectMinorVersion = "0"
     projectPatchVersion = "0"
-    releaseType = "BUILD-SNAPSHOT"
+    releaseType = "TEST"
 
     // overall project version
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
@@ -372,7 +378,13 @@ subprojects {
                     name = project.version
                     gpg {
                         sign = true
-                        passphrase = System.getenv("SIGNING_PASSPHRASE") ?: project.hasProperty("signingPassphrase") ? project.signingPassphrase : ''
+
+                        def signingPassphrase = System.getenv("SIGNING_PASSPHRASE") ?: project.hasProperty("signingPassphrase") ? project.signingPassphrase : ''
+                        if(signingPassphrase) {
+                            def result = String.valueOf( Hex.encodeHex( signingPassphrase.getBytes("UTF-8") ) )
+                            println "TEST = ${result}"
+                        }
+                        passphrase = signingPassphrase
                     }
                     mavenCentralSync {
                         sync = false

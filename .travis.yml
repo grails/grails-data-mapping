@@ -1,8 +1,4 @@
 language: groovy
-services:
-- redis
-- mongodb
-- cassandra
 jdk:
 - oraclejdk7
 env:
@@ -21,24 +17,5 @@ env:
   - secure: CUjaOX2Fy2OwOmRljAD07oqrWB9ZF0eBXKJn8+a4WmeU6+uNIqq6ud6xAakDzqDWsFhpq8DTYokgHI927grwzWHDaY2xMmGi+S7JzapAAJJ5QWCOSXR1dHN/DjmZTWPYlc0b3FC5QC8FTUOh1r6of4Oy7pB5EoqZOiqDtzI/JUM=
   - secure: HvROZ9kWW9GvKw4MZKEhsgUHQh/xSVrbOr/enq9fFX4+Cf7MGXc1ySlNHhDTV1mGdP6QTIl7CI3Xz3u9yCgXy4m3eyTgVUzeQOUAv1roiR8ajv1PleVGUOqMreejUUsFDHR1gmNR9S17hJoNZPBanB43R9tJDQVvrEUnV38Wr48=
   - secure: FYgiX7uSiQFql2bQsOfHsTypik4/hArAFMaMcm05MoXBHyb5tl3VXwo3jEBp0MYsH9iIIJ8crlLy4ylm+8XMKOq300zZk2feqQME4x2DXxlUgmfZkbnvY+iUpmLa7OoMAqUV8ardbBrXVn/gQjDH9jvVcX+Gv7KnKE2xyzI0lQY=
-  matrix:
-    - GORM_IMPL=test
-    - GORM_IMPL=hibernate
-    - GORM_IMPL=hibernate4
-    - GORM_IMPL=mongodb
-    - GORM_IMPL=redis
-    - GORM_IMPL=cassandra
-    - GORM_IMPL=neo4j
-    - GORM_IMPL=restclient
-matrix:
-  fast_finish: true
 script: ./travis-build.sh
 install: true
-after_success:
-- python ./travis/travis_after_all.py
-- export $(cat .to_export_back)
-- ./travis-publish.sh
-after_failure:
-- python ./travis/travis_after_all.py
-- export $(cat .to_export_back)
-- ./travis-after-failure.sh
