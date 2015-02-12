@@ -13,7 +13,7 @@ project.ext {
     grailsVersion = "3.0.0.BUILD-SNAPSHOT"
     slf4jVersion = "1.7.5"
     junitVersion = "4.11"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.0'
+    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.1-SNAPSHOT'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectMajorVersion = "4"
@@ -73,6 +73,7 @@ allprojects {
         maven { url "https://repo.grails.org/grails/core" }
         if(isBuildSnapshot) {
             maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
+            maven { url "https://oss.jfrog.org/oss-snapshot-local/" }
         }
     }
 
