@@ -133,6 +133,10 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 def sessionFactoryName = isDefault ? defaultSessionFactoryBeanName : "sessionFactory$suffix"
 
                 def hibConfig = config.getProperty("hibernate$suffix", Map, Collections.emptyMap())
+                def dsConfigPrefix = isDefault ? "dataSource" :"dataSources.$dataSourceName"
+                def ddlAutoSetting = config.getProperty("${dsConfigPrefix}.dbCreate", ddlAuto)
+
+
 
                 def hibernateProperties = new Properties()
                 if(hibConfig) {
@@ -140,8 +144,19 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                         hibernateProperties["hibernate.${key}".toString()] = hibConfig.get(key)
                     }
                 }
+
+                String logSql = config.getProperty("${dsConfigPrefix}.logSql", "")
+                String formatSql = config.getProperty("${dsConfigPrefix}.formatSql", "")
+
+                if (logSql) {
+                    hibernateProperties."hibernate.show_sql" = logSql
+                }
+                if (formatSql) {
+                    hibernateProperties."hibernate.format_sql" = formatSql
+                }
+
                 if (!hibernateProperties['hibernate.hbm2ddl.auto']) {
-                    hibernateProperties['hibernate.hbm2ddl.auto'] = ddlAuto
+                    hibernateProperties['hibernate.hbm2ddl.auto'] = ddlAutoSetting
                 }
 
                 def noDialect = !hibernateProperties['hibernate.dialect']
