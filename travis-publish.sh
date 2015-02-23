@@ -19,7 +19,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
 
   echo "Publishing archives"
 
-  if [[ -n $TRAVIS_TAG ]]; then
+  if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
     ./gradlew bintrayUpload || EXIT_STATUS=$?
   else
     ./gradlew publish || EXIT_STATUS=$?
@@ -44,7 +44,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
   fi
 
   # If there is a tag present then this becomes the latest
-  if [[ -n $TRAVIS_TAG ]]; then
+  if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
     version="$TRAVIS_TAG"
     version=${version:1}
     milestone=${version:5}
