@@ -25,7 +25,7 @@ project.ext {
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
 
     // plugin versions
-    hibernatePluginVersion = "4.3.7.$projectPatchVersion"
+    hibernatePluginVersion = "4.3.8.$projectPatchVersion"
     mongodbPluginVersion = projectVersion
 
 
