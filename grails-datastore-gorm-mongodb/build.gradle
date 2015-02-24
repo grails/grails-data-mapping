@@ -65,6 +65,7 @@ dependencies {
         exclude group:"org.grails",module: "grails-plugin-url-mappings"
         exclude group:"org.grails",module: "grails-plugin-servlets"
         exclude group:"org.grails",module: "grails-plugin-controllers"
+        exclude group:"org.grails",module: "grails-plugin-interceptors"
         exclude group:"org.grails",module: "grails-plugin-domain-class"
         exclude group:"org.grails",module: "grails-plugin-gsp"
         exclude group:"org.grails",module: "grails-plugin-filters"
