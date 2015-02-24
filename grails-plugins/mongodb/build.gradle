@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "org.grails.plugins"
-version = "${mongodbPluginVersion}.${releaseType}"
+version = mongodbPluginVersion
 
 apply plugin: "org.grails.grails-plugin"
 apply plugin: 'eclipse'
