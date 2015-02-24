@@ -1,4 +1,5 @@
 dependencies {
+    compile "org.springframework:spring-expression:$springVersion"
     compile 'commons-lang:commons-lang:2.6'
     compile project(":grails-datastore-gorm")
     compile "junit:junit:$junitVersion"

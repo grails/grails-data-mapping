@@ -126,6 +126,7 @@ dependencies {
          exclude group:'net.sf.ehcache', module:'ehcache-core'
     }
 
+    optional "org.springframework:spring-expression:$springVersion"
     optional ("net.sf.ehcache:ehcache-core:2.4.8") {
         exclude group: 'commons-logging', module:'commons-logging'
     }
