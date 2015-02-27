@@ -35,7 +35,7 @@ class GMongoSpec extends Specification {
         when:
             def ctx = new GenericApplicationContext()
             ctx.refresh()
-            def datastore = new MongoDatastore(new MongoMappingContext("test"), gmongo.mongo, ctx)
+            def datastore = new MongoDatastore(new MongoMappingContext("test"), gmongo.mongoClient, ctx)
             def session = datastore.connect()
             def entity = datastore.mappingContext.addPersistentEntity(Person)
             new MongoGormEnhancer(datastore).enhance entity

@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.boot.autoconfigure
 import grails.persistence.Entity
 import org.grails.orm.hibernate.HibernateDatastore
 import org.grails.orm.hibernate.HibernateGormEnhancer
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration
@@ -24,6 +25,7 @@ class HibernateGormAutoConfigurationSpec extends Specification{
 
     void setup() {
 
+        AutoConfigurationPackages.register(context, "org.grails.datastore.gorm.boot.autoconfigure")
         this.context.register( TestConfiguration, EmbeddedDataSourceConfiguration.class,
                 PropertyPlaceholderAutoConfiguration.class);
     }
@@ -40,7 +42,6 @@ class HibernateGormAutoConfigurationSpec extends Specification{
     }
 
     @Configuration
-    @TestAutoConfigurationPackage(Person)
     @Import(HibernateGormAutoConfiguration)
     static class TestConfiguration {
     }

@@ -4,8 +4,8 @@ import com.mongodb.Mongo
 import grails.mongodb.geo.Point
 import grails.persistence.Entity
 import org.bson.types.ObjectId
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration
-import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration
@@ -24,6 +24,7 @@ class MongoDbGormAutoConfigureWithGeoSpacialSpec extends Specification{
     }
 
     void setup() {
+        AutoConfigurationPackages.register(context, "org.grails.datastore.gorm.mongodb.boot.autoconfigure")
 
         this.context.register( TestConfiguration, MongoAutoConfiguration.class,
                 PropertyPlaceholderAutoConfiguration.class);
@@ -55,7 +56,6 @@ class MongoDbGormAutoConfigureWithGeoSpacialSpec extends Specification{
     }
 
     @Configuration
-    @TestAutoConfigurationPackage(City)
     @Import(MongoDbGormAutoConfiguration)
     static class TestConfiguration {
     }

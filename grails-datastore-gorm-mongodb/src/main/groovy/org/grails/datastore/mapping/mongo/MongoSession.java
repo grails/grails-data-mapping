@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.impl.PendingInsert;
 import org.grails.datastore.mapping.core.impl.PendingOperation;
-import org.grails.datastore.mapping.core.impl.PendingUpdate;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -70,12 +69,6 @@ public class MongoSession extends AbstractSession<DB> {
     public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless) {
         super(datastore, mappingContext, publisher, stateless);
         mongoDatastore = datastore;
-        try {
-            getNativeInterface().requestStart();
-        }
-        catch (IllegalStateException ignored) {
-            // can't call authenticate() twice, and it's probably been called at startup
-        }
     }
 
     @Override
@@ -130,7 +123,6 @@ public class MongoSession extends AbstractSession<DB> {
     @Override
     public void disconnect() {
         super.disconnect();
-        getNativeInterface().requestDone();
     }
 
     @Override

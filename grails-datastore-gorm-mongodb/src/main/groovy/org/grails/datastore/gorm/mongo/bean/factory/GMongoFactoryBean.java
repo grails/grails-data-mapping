@@ -15,12 +15,11 @@
 package org.grails.datastore.gorm.mongo.bean.factory;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.gmongo.GMongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.MongoOptions;
-import com.mongodb.ServerAddress;
+import com.mongodb.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.model.DatastoreConfigurationException;
@@ -36,7 +35,7 @@ import com.gmongo.GMongo;
  *
  * @author Graeme Rocher
  */
-public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/*,
+public class GMongoFactoryBean implements FactoryBean<GMongoClient>, InitializingBean/*,
     PersistenceExceptionTranslator*/, DisposableBean {
 
     /**
@@ -44,8 +43,8 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
      */
     protected final Log logger = LogFactory.getLog(getClass());
 
-    private GMongo mongo;
-    private MongoOptions mongoOptions;
+    private MongoClient mongo;
+    private MongoClientOptions mongoOptions;
     private String host;
     private Integer port;
     private String username;
@@ -64,7 +63,7 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
         this.replicaSetSeeds = replicaSetSeeds;
     }
 
-    public void setMongoOptions(MongoOptions mongoOptions) {
+    public void setMongoOptions(MongoClientOptions mongoOptions) {
         this.mongoOptions = mongoOptions;
     }
 
@@ -96,9 +95,11 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
         this.clientURI = clientURI;
     }
 
-    public GMongo getObject() throws Exception {
+    public GMongoClient getObject() throws Exception {
         Assert.notNull(mongo, "Mongo must not be null");
-        return mongo;
+        GMongoClient mongoClient = new GMongoClient();
+        mongoClient.setMongoClient(mongo);
+        return mongoClient;
     }
 
     public Class<? extends GMongo> getObjectType() {
@@ -117,36 +118,43 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
         }
 
         ServerAddress defaultOptions = new ServerAddress();
-        if (mongoOptions == null) mongoOptions = new MongoOptions();
+        List<MongoCredential> credentials = new ArrayList<MongoCredential>();
+        if (mongoOptions == null) {
+            MongoClientOptions.Builder builder = MongoClientOptions.builder();
+
+
+            mongoOptions = builder.build();
+        }
+        // If username/pw exists and we are not authenticated, authenticate now
+        if (username != null && password != null) {
+            credentials.add(MongoCredential.createCredential(username, database, password.toCharArray()));
+        }
 
         if (replicaPair != null) {
             if (replicaPair.size() < 2) {
                 throw new DatastoreConfigurationException("A replica pair must have two server entries");
             }
-            mongo = new GMongo(replicaPair.get(0), replicaPair.get(1), mongoOptions);
+            mongo = new MongoClient(replicaPair, credentials, mongoOptions);
         }
         else if (replicaSetSeeds != null) {
-            mongo = new GMongo(replicaSetSeeds, mongoOptions);
+            mongo = new MongoClient(replicaSetSeeds, credentials, mongoOptions);
         }
         else if(clientURI != null) {
-            mongo = new GMongoClient(clientURI);
+            mongo = new MongoClient(clientURI);
         }
         else if(connectionString != null) {
-            mongo = new GMongoClient(new MongoClientURI(connectionString));
+            mongo = new MongoClient(new MongoClientURI(connectionString));
         }
         else {
             String mongoHost = host != null ? host : defaultOptions.getHost();
             if (port != null) {
-                mongo = new GMongo(new ServerAddress(mongoHost, port), mongoOptions);
+                mongo = new MongoClient(new ServerAddress(mongoHost, port), credentials, mongoOptions);
             }
             else {
-                mongo = new GMongo(mongoHost, mongoOptions);
+                mongo = new MongoClient(new ServerAddress(host), credentials,  mongoOptions);
             }
         }
 
-        // If username/pw exists and we are not authenticated, authenticate now
-        if (username != null && !mongo.getDB(database).isAuthenticated())
-            mongo.getDB(database).authenticate(username, password.toCharArray());
     }
 
     public void destroy() {

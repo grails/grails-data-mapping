@@ -17,13 +17,14 @@ package grails.mongodb.bootstrap
 import com.mongodb.DBAddress
 import com.mongodb.Mongo
 import com.mongodb.MongoClientURI
-import com.mongodb.MongoOptions
+import com.mongodb.MongoClientOptions
 import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.gorm.mongo.bean.factory.DefaultMappingHolder
 import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
+import org.grails.datastore.gorm.mongo.bean.factory.MongoClientOptionsFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoDatastoreFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoMappingContextFactoryBean
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
@@ -43,11 +44,21 @@ import org.springframework.data.mongodb.core.MongoOptionsFactoryBean
 class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
 
     public static final String DEFAULT_DATABASE_NAME = "test"
+    public static final String SETTING_CONNECTION_STRING = 'grails.mongodb.connectionString'
+    public static final String SETTING_DEFAULT_MAPPING = 'grails.mongodb.default.mapping'
+    public static final String SETTING_OPTIONS = 'grails.mongodb.options'
+    public static final String SETTING_HOST = 'grails.mongodb.host'
+    public static final String SETTING_PORT = 'grails.mongodb.port'
+    public static final String SETTING_USERNAME = 'grails.mongodb.username'
+    public static final String SETTING_PASSWORD = 'grails.mongodb.password'
+    public static final String SETTING_REPLICA_SET = 'grails.mongodb.replicaSet'
+    public static final String SETTING_REPLICA_PAIR = 'grails.mongodb.replicaPair'
+
     protected String mongoBeanName = "mongo"
     protected String mongoOptionsBeanName = "mongoOptions"
     protected String databaseName = DEFAULT_DATABASE_NAME
     protected Closure defaultMapping
-    protected MongoOptions mongoOptions
+    protected MongoClientOptions mongoOptions
     protected Mongo mongo
 
 
@@ -96,12 +107,15 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
     @Override
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         return {
-            String connectionString = configurationObject.getProperty('grails.mongodb.connectionString','') ?: null
-            Closure defaultMapping = configurationObject.getProperty('grails.mongodb.default.mapping',Closure, this.defaultMapping)
-            Map mongoOptions = configurationObject.getProperty('grails.mongodb.options', Map, null)
-            String hostSetting = configurationObject.getProperty('grails.mongodb.host', '')
-            Collection<String> replicaSetSetting = configurationObject.getProperty('grails.mongodb.replicaSet', Collection, [])
-            Collection<String> replicaPairSetting = configurationObject.getProperty('grails.mongodb.replicaPair', Collection, [])
+            String connectionString = configurationObject.getProperty(SETTING_CONNECTION_STRING,'') ?: null
+            Closure defaultMapping = configurationObject.getProperty(SETTING_DEFAULT_MAPPING,Closure, this.defaultMapping)
+            Map mongoOptions = configurationObject.getProperty(SETTING_OPTIONS, Map, null)
+            String hostSetting = configurationObject.getProperty(SETTING_HOST, '')
+            Integer mongoPort = configurationObject.getProperty(SETTING_PORT, Integer, null)
+            String username = configurationObject.getProperty(SETTING_USERNAME, '')
+            String password= configurationObject.getProperty(SETTING_PASSWORD, '')
+            Collection<String> replicaSetSetting = configurationObject.getProperty(SETTING_REPLICA_SET, Collection, [])
+            Collection<String> replicaPairSetting = configurationObject.getProperty(SETTING_REPLICA_PAIR, Collection, [])
 
             MongoClientURI mongoClientURI = null
             if(connectionString) {
@@ -121,15 +135,13 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
                 }
             }
 
-            if(mongoOptions) {
-                "$mongoOptionsBeanName"(InstanceFactoryBean, mongoOptions)
+            if(this.mongoOptions) {
+                "$mongoOptionsBeanName"(InstanceFactoryBean, this.mongoOptions, MongoClientOptions)
             }
             else if(!beanDefinitionRegistry.containsBeanDefinition(mongoOptionsBeanName)) {
-                "$mongoOptionsBeanName"(MongoOptionsFactoryBean) {
-                    if (mongoOptions) {
-                        for (option in mongoOptions) {
-                            setProperty(option.key, option.value)
-                        }
+                "$mongoOptionsBeanName"(MongoClientOptionsFactoryBean) {
+                    if(mongoOptions) {
+                        delegate.mongoOptions = mongoOptions
                     }
                 }
             }
@@ -144,7 +156,6 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
                 if(existingBean instanceof AnnotatedBeanDefinition) {
                     AnnotatedBeanDefinition annotatedBeanDefinition = (AnnotatedBeanDefinition)existingBean
                     if(annotatedBeanDefinition.metadata.className == 'org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration') {
-
                         registerMongoBean = true
                     }
                 }
@@ -155,6 +166,10 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
                 if(registerMongoBean) {
                     "gmongo"(GMongoFactoryBean) {
                         delegate.mongoOptions = ref("$mongoOptionsBeanName")
+                        if(username && password) {
+                            delegate.username = username
+                            delegate.password = password
+                        }
 
                         if(mongoClientURI) {
                             clientURI = mongoClientURI
@@ -176,7 +191,6 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
                         }
                         else if (hostSetting) {
                             host = hostSetting
-                            Integer mongoPort = configurationObject.getProperty('grails.mongodb.port', Integer, null)
                             if (mongoPort) port = mongoPort
                         }
                         else {
@@ -184,7 +198,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
                         }
                     }
 
-                    "$mongoBeanName"(gmongo:"getMongo")
+                    "$mongoBeanName"(gmongo:"getMongoClient")
                 }
 
             }
@@ -221,7 +235,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
     /**
      * Sets the MongoOptions instance to use when constructing the Mongo instance
      */
-    void setMongoOptions(MongoOptions mongoOptions) {
+    void setMongoOptions(MongoClientOptions mongoOptions) {
         this.mongoOptions = mongoOptions
     }
     /**

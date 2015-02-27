@@ -16,9 +16,9 @@ package org.grails.orm.hibernate.validation;
 
 import grails.core.GrailsApplication;
 import grails.core.GrailsDomainClass;
+import grails.validation.AbstractConstraint;
 import org.grails.orm.hibernate.AbstractGrailsHibernateDomainClass;
 import org.grails.orm.hibernate.IHibernateTemplate;
-import org.codehaus.groovy.grails.validation.AbstractConstraint;
 import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.core.lifecycle.ShutdownOperations;
 import org.hibernate.SessionFactory;
