@@ -15,6 +15,10 @@ plugins {
 group = "org.grails.plugins"
 version = mongodbPluginVersion
 
+ext {
+    isGrailsPlugin = true
+}
+
 apply plugin: "org.grails.grails-plugin"
 apply plugin: 'eclipse'
 apply plugin: 'idea'

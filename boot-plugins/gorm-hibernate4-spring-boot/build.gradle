@@ -10,6 +10,10 @@ buildscript {
 group = 'org.grails'
 version = "4.0.0.BUILD-SNAPSHOT"
 
+ext {
+    isGrailsPlugin = false
+}
+
 apply plugin:'groovy'
 apply from:'../../gradle/maven-central-build.gradle'
 

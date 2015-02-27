@@ -1,3 +1,7 @@
+ext {
+    isGrailsPlugin = false
+}
+
 apply plugin:'groovy'
 apply from:'../../gradle/maven-central-build.gradle'
 
