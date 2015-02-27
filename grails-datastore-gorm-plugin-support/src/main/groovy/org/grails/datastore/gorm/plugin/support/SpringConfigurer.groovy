@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional
  */
 abstract class SpringConfigurer {
 
-    public static final String TRANSACTION_MANAGER_BEAN = 'transactionManager'
+
 
     /**
      * The name of the datastore type (example "Mongo" or "Neo4j")
@@ -160,34 +160,5 @@ abstract class SpringConfigurer {
         }
     }
 
-    /**
-     * Internal method aiding in datastore configuration.
-     *
-     * @param registry The BeanDefinitionRegistry
-     * @param type The type of the datastore
-     *
-     * @return A closure containing bean definitions
-     */
-    static Closure getAdditionalBeansConfiguration(BeanDefinitionRegistry registry, String type) {
-        {->
-            "${type}TransactionManager"(DatastoreTransactionManager) {
-                datastore = ref("${type}Datastore")
-            }
 
-            if (!registry.containsBeanDefinition(TRANSACTION_MANAGER_BEAN)) {
-                registry.registerAlias("${type}TransactionManager",TRANSACTION_MANAGER_BEAN)
-            }
-
-            "${type}PersistenceInterceptor"(DatastorePersistenceContextInterceptor, ref("${type}Datastore"))
-
-            "${type}PersistenceContextInterceptorAggregator"(PersistenceContextInterceptorAggregator)
-
-            if (registry.containsBeanDefinition('dispatcherServlet')) {
-                String interceptorName = "${type}OpenSessionInViewInterceptor"
-                "${interceptorName}"(OpenSessionInViewInterceptor) {
-                    datastore = ref("${type}Datastore")
-                }
-            }
-        }
-    }
 }

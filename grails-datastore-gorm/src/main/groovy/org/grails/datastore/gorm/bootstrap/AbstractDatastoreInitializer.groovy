@@ -7,6 +7,9 @@ import groovy.transform.CompileStatic
 import org.grails.compiler.gorm.GormTransformer
 import org.grails.config.PropertySourcesConfig
 import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
+import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.grails.validation.GrailsDomainClassValidator
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
@@ -28,7 +31,9 @@ import org.springframework.util.ClassUtils
  */
 abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
+    public static final String TRANSACTION_MANAGER_BEAN = 'transactionManager'
     public static final String ENTITY_CLASS_RESOURCE_PATTERN = "/**/*.class"
+    public static final String OSIV_CLASS_NAME = 'org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor'
 
 
     ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver()
@@ -182,6 +187,39 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
 
     abstract public Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry)
+
+    /**
+     * Internal method aiding in datastore configuration.
+     *
+     * @param registry The BeanDefinitionRegistry
+     * @param type The type of the datastore
+     *
+     * @return A closure containing bean definitions
+     */
+    Closure getAdditionalBeansConfiguration(BeanDefinitionRegistry registry, String type) {
+        {->
+            "${type}TransactionManager"(DatastoreTransactionManager) {
+                datastore = ref("${type}Datastore")
+            }
+
+            if (!registry.containsBeanDefinition(TRANSACTION_MANAGER_BEAN)) {
+                registry.registerAlias("${type}TransactionManager",TRANSACTION_MANAGER_BEAN)
+            }
+
+            "${type}PersistenceInterceptor"(DatastorePersistenceContextInterceptor, ref("${type}Datastore"))
+
+            "${type}PersistenceContextInterceptorAggregator"(PersistenceContextInterceptorAggregator)
+
+
+            def classLoader = Thread.currentThread().contextClassLoader
+            if (registry.containsBeanDefinition('dispatcherServlet') && ClassUtils.isPresent(OSIV_CLASS_NAME, classLoader)) {
+                String interceptorName = "${type}OpenSessionInViewInterceptor"
+                "${interceptorName}"(ClassUtils.forName(OSIV_CLASS_NAME, classLoader)) {
+                    datastore = ref("${type}Datastore")
+                }
+            }
+        }
+    }
 
     static class GroovyBeanReaderInit {
         static boolean isAvailable() {

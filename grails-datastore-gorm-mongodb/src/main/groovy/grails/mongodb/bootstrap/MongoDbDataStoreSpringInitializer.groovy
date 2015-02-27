@@ -22,7 +22,6 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.gorm.mongo.bean.factory.*
-import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.spring.beans.factory.InstanceFactoryBean
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
@@ -202,7 +201,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
                 delegate.config = config
             }
 
-            callable = SpringConfigurer.getAdditionalBeansConfiguration(beanDefinitionRegistry, "mongo")
+            callable = getAdditionalBeansConfiguration(beanDefinitionRegistry, "mongo")
             callable.delegate = delegate
             callable.call()
 
