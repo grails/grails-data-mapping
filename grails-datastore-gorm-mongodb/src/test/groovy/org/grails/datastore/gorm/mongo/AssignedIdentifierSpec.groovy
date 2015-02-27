@@ -4,7 +4,7 @@ import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
 import org.springframework.dao.DataIntegrityViolationException
-
+import org.springframework.dao.DuplicateKeyException
 import spock.lang.Issue
 
 /**
@@ -62,7 +62,7 @@ class AssignedIdentifierSpec extends GormDatastoreSpec {
 
         then:"An error is produced"
             River.count() == 1
-            thrown DataIntegrityViolationException
+            thrown DuplicateKeyException
 
         when:"A new session is created"
             def totalRivers = 0

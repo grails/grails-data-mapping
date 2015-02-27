@@ -13,28 +13,21 @@
  * limitations under the License.
  */
 package grails.mongodb.bootstrap
-
 import com.mongodb.DBAddress
 import com.mongodb.Mongo
-import com.mongodb.MongoClientURI
 import com.mongodb.MongoClientOptions
+import com.mongodb.MongoClientURI
 import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
-import org.grails.datastore.gorm.mongo.bean.factory.DefaultMappingHolder
-import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
-import org.grails.datastore.gorm.mongo.bean.factory.MongoClientOptionsFactoryBean
-import org.grails.datastore.gorm.mongo.bean.factory.MongoDatastoreFactoryBean
-import org.grails.datastore.gorm.mongo.bean.factory.MongoMappingContextFactoryBean
-import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.grails.datastore.gorm.mongo.bean.factory.*
+import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.spring.beans.factory.InstanceFactoryBean
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.GenericApplicationContext
-import org.springframework.data.mongodb.core.MongoOptionsFactoryBean
-
 /**
  * Used to initialize GORM for MongoDB outside of Grails
  *
@@ -107,15 +100,16 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
     @Override
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         return {
-            String connectionString = configurationObject.getProperty(SETTING_CONNECTION_STRING,'') ?: null
-            Closure defaultMapping = configurationObject.getProperty(SETTING_DEFAULT_MAPPING,Closure, this.defaultMapping)
-            Map mongoOptions = configurationObject.getProperty(SETTING_OPTIONS, Map, null)
-            String hostSetting = configurationObject.getProperty(SETTING_HOST, '')
-            Integer mongoPort = configurationObject.getProperty(SETTING_PORT, Integer, null)
-            String username = configurationObject.getProperty(SETTING_USERNAME, '')
-            String password= configurationObject.getProperty(SETTING_PASSWORD, '')
-            Collection<String> replicaSetSetting = configurationObject.getProperty(SETTING_REPLICA_SET, Collection, [])
-            Collection<String> replicaPairSetting = configurationObject.getProperty(SETTING_REPLICA_PAIR, Collection, [])
+            final config = configurationObject
+            String connectionString = config.getProperty(SETTING_CONNECTION_STRING,'') ?: null
+            Closure defaultMapping = config.getProperty(SETTING_DEFAULT_MAPPING,Closure, this.defaultMapping)
+            Map mongoOptions = config.getProperty(SETTING_OPTIONS, Map, null)
+            String hostSetting = config.getProperty(SETTING_HOST, '')
+            Integer mongoPort = config.getProperty(SETTING_PORT, Integer, null)
+            String username = config.getProperty(SETTING_USERNAME, '')
+            String password= config.getProperty(SETTING_PASSWORD, '')
+            Collection<String> replicaSetSetting = config.getProperty(SETTING_REPLICA_SET, Collection, [])
+            Collection<String> replicaPairSetting = config.getProperty(SETTING_REPLICA_PAIR, Collection, [])
 
             MongoClientURI mongoClientURI = null
             if(connectionString) {
@@ -205,11 +199,12 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             mongoDatastore(MongoDatastoreFactoryBean) {
                 delegate.mongo = ref(mongoBeanName)
                 mappingContext = gormMongoMappingContext
-                config = configurationObject
+                delegate.config = config
             }
-            "mongoTransactionManager"(DatastoreTransactionManager) {
-                datastore = ref("mongoDatastore")
-            }
+
+            callable = SpringConfigurer.getAdditionalBeansConfiguration(beanDefinitionRegistry, "mongo")
+            callable.delegate = delegate
+            callable.call()
 
             "org.grails.gorm.mongodb.internal.GORM_ENHANCER_BEAN-${mongoBeanName}"(MongoGormEnhancer, ref("mongoDatastore"), ref("mongoTransactionManager")) { bean ->
                 bean.initMethod = 'enhance'
@@ -217,6 +212,8 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             }
         }
     }
+
+
 
     /**
      * Sets the name of the Mongo bean to use

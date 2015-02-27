@@ -17,15 +17,12 @@ package org.grails.datastore.mapping.mongo;
 
 import static org.grails.datastore.mapping.config.utils.ConfigUtils.read;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.mongodb.*;
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
-import org.grails.datastore.gorm.mongo.geo.*;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.StatelessDatastore;
@@ -39,21 +36,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.authentication.UserCredentials;
-import org.springframework.data.mongodb.core.DbCallback;
-import org.springframework.data.mongodb.core.MongoFactoryBean;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
-import com.mongodb.MongoException;
-import com.mongodb.MongoOptions;
-import com.mongodb.ServerAddress;
-import com.mongodb.WriteConcern;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.*;
 
 /**
  * A Datastore implementation for the Mongo document store.
@@ -71,7 +57,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     public static final String INDEX_ATTRIBUTES = "indexAttributes";
 
     protected Mongo mongo;
-    protected MongoOptions mongoOptions = new MongoOptions();
+    protected MongoClientOptions mongoOptions;
     protected Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
     protected Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
     protected boolean stateless = false;
@@ -92,7 +78,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * @param connectionDetails The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings
      */
     public MongoDatastore(MongoMappingContext mappingContext,
-            Map<String, String> connectionDetails, MongoOptions mongoOptions, ConfigurableApplicationContext ctx) {
+            Map<String, String> connectionDetails, MongoClientOptions mongoOptions, ConfigurableApplicationContext ctx) {
 
         this(mappingContext, connectionDetails, ctx);
         if (mongoOptions != null) {
@@ -203,16 +189,25 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     public void afterPropertiesSet() throws Exception {
         if (mongo == null) {
             ServerAddress defaults = new ServerAddress();
-            MongoFactoryBean dbFactory = new MongoFactoryBean();
-            dbFactory.setHost(read(String.class, MONGO_HOST, connectionDetails, defaults.getHost()));
-            dbFactory.setPort(read(Integer.class, MONGO_PORT, connectionDetails, defaults.getPort()));
-            this.stateless = read(Boolean.class, MONGO_STATELESS, connectionDetails, false);
-            if (mongoOptions != null) {
-                dbFactory.setMongoOptions(mongoOptions);
-            }
+            String username = read(String.class, USERNAME, connectionDetails, null);
+            String password = read(String.class, PASSWORD, connectionDetails, null);
+            DocumentMappingContext dc = (DocumentMappingContext) getMappingContext();
+            String databaseName = dc.getDefaultDatabaseName();
 
-            dbFactory.afterPropertiesSet();
-            mongo = dbFactory.getObject();
+            List<MongoCredential> credentials = new ArrayList<MongoCredential>();
+            if(username != null && password != null) {
+                credentials.add(MongoCredential.createCredential(username,databaseName, password.toCharArray() ));
+            }
+            ServerAddress serverAddress = new ServerAddress(  read(String.class, MONGO_HOST, connectionDetails, defaults.getHost()),
+                                read(Integer.class, MONGO_PORT, connectionDetails, defaults.getPort())
+            );
+            this.stateless = read(Boolean.class, MONGO_STATELESS, connectionDetails, false);
+            if(mongoOptions != null) {
+                mongo = new MongoClient(serverAddress, credentials, mongoOptions);
+            }
+            else {
+                mongo = new MongoClient(serverAddress, credentials);
+            }
         }
 
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
@@ -223,7 +218,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         }
     }
 
-    protected void createMongoTemplate(PersistentEntity entity, Mongo mongoInstance) {
+    protected void createMongoTemplate(PersistentEntity entity, final Mongo mongoInstance) {
         DocumentMappingContext dc = (DocumentMappingContext) getMappingContext();
         String collectionName = entity.getDecapitalizedName();
         String databaseName = dc.getDefaultDatabaseName();
@@ -239,20 +234,25 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             }
         }
 
-        final SimpleMongoDbFactory dbf;
 
-        String username = read(String.class, USERNAME, connectionDetails, null);
-        String password = read(String.class, PASSWORD, connectionDetails, null);
+        final String finalDatabaseName = databaseName;
+        final MongoExceptionTranslator mongoExceptionTranslator = new MongoExceptionTranslator();
+        final MongoTemplate mt = new MongoTemplate(new MongoDbFactory() {
+            @Override
+            public DB getDb() throws DataAccessException {
+                return mongoInstance.getDB(finalDatabaseName);
+            }
 
-        if (username != null && password != null) {
-            this.userCrentials = new UserCredentials(username, password);
-            dbf = new SimpleMongoDbFactory(mongoInstance, databaseName, userCrentials);
-        }
-        else {
-            dbf = new SimpleMongoDbFactory(mongoInstance, databaseName);
-        }
+            @Override
+            public DB getDb(String dbName) throws DataAccessException {
+                return mongoInstance.getDB(dbName);
+            }
 
-        final MongoTemplate mt = new MongoTemplate(dbf);
+            @Override
+            public PersistenceExceptionTranslator getExceptionTranslator() {
+                return mongoExceptionTranslator;
+            }
+        });
 
         if (mongoCollection != null) {
             final WriteConcern writeConcern = mongoCollection.getWriteConcern();
@@ -260,10 +260,8 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                 final String collectionNameToUse = collectionName;
                 mt.executeInSession(new DbCallback<Object>() {
                     public Object doInDB(DB db) throws MongoException, DataAccessException {
-                        if (writeConcern != null) {
-                            DBCollection collection = db.getCollection(collectionNameToUse);
-                            collection.setWriteConcern(writeConcern);
-                        }
+                        DBCollection collection = db.getCollection(collectionNameToUse);
+                        collection.setWriteConcern(writeConcern);
                         return null;
                     }
                 });

@@ -30,6 +30,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     public static final String ENTITY_CLASS_RESOURCE_PATTERN = "/**/*.class"
 
+
     ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver()
     Collection<Class> persistentClasses = []
     Collection<String> packages = []
@@ -178,6 +179,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
             }
         }
     }
+
 
     abstract public Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry)
 
