@@ -1,3 +1,5 @@
+version = "${projectVersion}.BUILD-SNAPSHOT"
+
 configurations {
     optional
 }

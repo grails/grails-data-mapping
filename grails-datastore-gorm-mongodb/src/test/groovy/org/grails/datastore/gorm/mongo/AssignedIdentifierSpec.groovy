@@ -61,7 +61,6 @@ class AssignedIdentifierSpec extends GormDatastoreSpec {
             r.save flush:true
 
         then:"An error is produced"
-            River.count() == 1
             thrown DuplicateKeyException
 
         when:"A new session is created"

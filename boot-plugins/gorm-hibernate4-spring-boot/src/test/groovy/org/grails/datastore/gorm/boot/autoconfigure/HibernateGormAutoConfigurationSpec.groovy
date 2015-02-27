@@ -32,10 +32,12 @@ class HibernateGormAutoConfigurationSpec extends Specification{
         when:"The context is refreshed"
             context.refresh()
 
+            def result = Person.withTransaction {
+                Person.count()
+            }
 
         then:"GORM queries work"
-            Person.count() == 0
-            Person.list().size() == 0
+            result == 0
     }
 
     @Configuration

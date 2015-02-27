@@ -1,7 +1,6 @@
-//version = "4.0.0.BUILD-SNAPSHOT"
+version = "${projectVersion}.BUILD-SNAPSHOT"
 
 ext.neo4jVersion = "2.0.3"
-ext.gdmVersion = "2.0.7.RELEASE"
 
 sourceSets.main.java.srcDirs = []
 sourceSets.main.groovy.srcDirs += ["src/main/java"]
