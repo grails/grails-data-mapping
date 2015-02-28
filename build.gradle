@@ -44,7 +44,7 @@ allprojects {
         if(System.getProperty('useJbossNexus')) {
             // jboss-nexus contains Hibernate source code archives which aren't in maven central
             // usefull with eclipse and idea tasks, for example
-            // ./gradlew -PuseJbossNexus cleanEclipse eclipse            
+            // ./gradlew -PuseJbossNexus cleanEclipse eclipse
             maven {
                 name 'jboss-nexus'
                 url "https://repository.jboss.org/nexus/content/groups/public/"
@@ -53,7 +53,7 @@ allprojects {
         maven { url "https://repo.grails.org/grails/core" }
         if(isBuildSnapshot) {
             maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
-        }        
+        }
     }
 
     configurations {
@@ -68,7 +68,7 @@ allprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.9'
+    gradleVersion = '2.3'
 }
 
 subprojects {
@@ -116,18 +116,18 @@ subprojects {
         }
     }
 
-    def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") && 
-                                !project.name.endsWith("tck") && 
+    def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") &&
+                                !project.name.endsWith("tck") &&
                                 !project.name.endsWith("plugin-support") &&
                                 project.name != 'grails-datastore-gorm-hibernate-core'&&
                                 project.name != 'grails-datastore-gorm-rest-client'
 
-                                                
+
     def isDocumentationProject = project.name.startsWith("grails-documentation")
 
     dependencies {
         if (isStandardGroovyMavenProject) {
-            groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
+            compile group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
 
             testCompile "junit:junit:$junitVersion"
             testCompile (spockDependency) {
@@ -194,7 +194,7 @@ subprojects {
                 null
             }
         }
-        
+
         test {
             testLogging {
                 exceptionFormat ='full'
@@ -216,7 +216,7 @@ subprojects {
                 jvmArgs '-Xmx2g', '-Xdebug', '-Xnoagent', '-Djava.compiler=NONE',
                         '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
             }
-        }        
+        }
         test.doFirst {
             def tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.output.classesDir
             def thisProjectsTests = // surely there is a less hardcoded way to do this
@@ -259,7 +259,7 @@ subprojects {
             options.docEncoding "UTF-8"
             options.charSet "UTF-8"
             options.jFlags "-Xms64M", "-Xmx512M", "-XX:MaxPermSize=256m"
-        }        
+        }
 
         artifacts {
             archives jar
@@ -376,12 +376,12 @@ dependencies {
 }
 
 task coreApiDocs(type: Groovydoc) {
-   def coreDocs = [ 'grails-datastore-core', 
-                    'grails-datastore-gorm', 
-                    'grails-datastore-gorm-hibernate-core', 
-                    'grails-datastore-gorm-hibernate4', 
-                    'grails-datastore-simple', 
-                    'grails-datastore-web', 
+   def coreDocs = [ 'grails-datastore-core',
+                    'grails-datastore-gorm',
+                    'grails-datastore-gorm-hibernate-core',
+                    'grails-datastore-gorm-hibernate4',
+                    'grails-datastore-simple',
+                    'grails-datastore-web',
                     'grails-datastore-gorm-test']
    def projs = subprojects.findAll { project -> coreDocs.contains(project.name) }
    source projs.collect { project -> project.sourceSets.main.allGroovy } + projs.collect { project -> project.sourceSets.main.allJava }
@@ -404,7 +404,7 @@ task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
         if (projectName.endsWith("-core")) {
             mkdir "$allDocsDir/manual"
 
-            fileTree { from dir }.copy { into "$allDocsDir/manual" }            
+            fileTree { from dir }.copy { into "$allDocsDir/manual" }
         }
         else {
             def storeName = projectName["grails-documentation-".size()..-1]

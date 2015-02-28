@@ -135,9 +135,6 @@ sourceSets {
     main {
         compileClasspath += files(configurations.optional)
     }
-    javadoc {
-        classpath += files(configurations.optional)
-    }
 }
 
 idea {

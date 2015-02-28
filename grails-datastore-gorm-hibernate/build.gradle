@@ -36,9 +36,6 @@ sourceSets {
     main {
         compileClasspath += files(configurations.optional)
     }
-    javadoc {
-        classpath = files(configurations.compile) + files(configurations.optional)
-    }
 }
 idea {
     module {
