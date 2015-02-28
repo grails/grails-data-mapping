@@ -1,22 +1,18 @@
-configurations {
-    optional
-}
-
 dependencies {
     compile(project(":grails-datastore-gorm-hibernate-core"))
 
-    // Web dependencies optional
-    optional("org.grails:grails-web:$grailsVersion") {
+    // Web dependencies provided
+    provided("org.grails:grails-web:$grailsVersion") {
         transitive = false
     }
-    optional("org.grails:grails-spring:$grailsVersion") {
+    provided("org.grails:grails-spring:$grailsVersion") {
         transitive = false
     }
-    optional("org.springframework:spring-webmvc:$springVersion") {
+    provided("org.springframework:spring-webmvc:$springVersion") {
         transitive = false
     }
-    optional 'javax.servlet:servlet-api:2.5'
-    optional(project(":grails-datastore-web"))
+    provided 'javax.servlet:servlet-api:2.5'
+    provided(project(":grails-datastore-web"))
 
 
     testCompile project(":grails-datastore-gorm-test")
@@ -30,23 +26,6 @@ dependencies {
     testCompile "org.apache.tomcat:tomcat-jdbc:$tomcatVersion"
     testRuntime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:$tomcatVersion"
 
-}
-
-sourceSets {
-    main {
-        compileClasspath += files(configurations.optional)
-    }
-}
-idea {
-    module {
-        scopes.PROVIDED.plus += [configurations.optional]
-    }
-}
-
-eclipse {
-    classpath {
-        plusConfigurations += [configurations.optional]
-    }
 }
 
 test {

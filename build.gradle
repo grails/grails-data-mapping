@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        maven { url "https://repo.grails.org/grails/core" }
+        jcenter()
+    }
+    dependencies {
+        classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
+    }
+}
+
 project.ext {
     springVersion = "3.2.9.RELEASE"
     grailsVersion = "2.3.11"
@@ -98,6 +108,9 @@ subprojects {
         apply plugin: 'maven'
         apply plugin: 'idea'
         apply plugin: 'signing'
+        apply plugin: 'provided-base'
+        apply plugin: 'optional-base'
+
         sourceCompatibility = "1.6"
         targetCompatibility = "1.6"
 

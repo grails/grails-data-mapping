@@ -1,7 +1,4 @@
 version = "3.0.3.BUILD-SNAPSHOT"
-configurations {
-    optional
-}
 
 dependencies {
     compile "org.mongodb:mongo-java-driver:2.12.3"
@@ -59,7 +56,7 @@ dependencies {
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
 
-    optional "javax.servlet:servlet-api:2.5"
+    provided "javax.servlet:servlet-api:2.5"
     def excludes = {
         exclude group:"org.grails",module: "grails-plugin-url-mappings"
         exclude group:"org.grails",module: "grails-plugin-servlets"
@@ -76,20 +73,14 @@ dependencies {
         exclude group:"org.grails",module: "grails-datastore-simple"
         exclude group:"org.grails",module: "grails-datastore-gorm"
     }
-    optional "org.grails:grails-test:$grailsVersion", excludes
-    optional "org.grails:grails-plugin-testing:$grailsVersion", excludes
+    provided "org.grails:grails-test:$grailsVersion", excludes
+    provided "org.grails:grails-plugin-testing:$grailsVersion", excludes
 }
 
 tasks.withType(GroovyCompile) {
     configure(groovyOptions.forkOptions) {
         memoryMaximumSize = '1g'
         jvmArgs = ['-XX:MaxPermSize=512m', '-Xms512m', '-Xmx1g']
-    }
-}
-
-sourceSets {
-    main {
-        compileClasspath += files(configurations.optional)
     }
 }
 

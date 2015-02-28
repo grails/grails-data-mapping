@@ -1,7 +1,3 @@
-configurations {
-    optional
-}
-
 dependencies {
 
     compile(project(":grails-datastore-gorm-hibernate-core")) {
@@ -11,19 +7,19 @@ dependencies {
         exclude group:'org.hibernate', module:'hibernate-commons-annotations'
     }
 
-    // Web dependencies optional
-    optional("org.grails:grails-web:$grailsVersion") {
+    // Web dependencies provided
+    provided("org.grails:grails-web:$grailsVersion") {
         transitive = false
     }
-    optional("org.grails:grails-spring:$grailsVersion") {
+    provided("org.grails:grails-spring:$grailsVersion") {
         transitive = false
     }
-    optional("org.springframework:spring-webmvc:$springVersion") {
+    provided("org.springframework:spring-webmvc:$springVersion") {
         transitive = false
     }
 
-    optional 'javax.servlet:servlet-api:2.5'
-    optional(project(":grails-datastore-web"))
+    provided 'javax.servlet:servlet-api:2.5'
+    provided(project(":grails-datastore-web"))
 
     String hibernateVersion = '4.3.8.Final'
 
@@ -51,11 +47,11 @@ dependencies {
         exclude group: 'xml-apis', module:'xml-apis'
     }
 
-    optional ("net.sf.ehcache:ehcache-core:2.4.8") {
+    provided ("net.sf.ehcache:ehcache-core:2.4.8") {
         exclude group: 'commons-logging', module:'commons-logging'
     }
 
-    optional ("org.hibernate:hibernate-ehcache:$hibernateVersion") {
+    provided ("org.hibernate:hibernate-ehcache:$hibernateVersion") {
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'com.h2database', module:'h2'
@@ -76,7 +72,7 @@ dependencies {
     testCompile "net.sf.ehcache:ehcache-core:2.4.6"
     testCompile "org.hibernate:hibernate-ehcache:$hibernateVersion"
 
-    optional "javax.servlet:servlet-api:2.5"
+    provided "javax.servlet:servlet-api:2.5"
     def excludes = {
         exclude group:"org.grails",module: "grails-plugin-url-mappings"
         exclude group:"org.grails",module: "grails-plugin-servlets"
@@ -93,8 +89,8 @@ dependencies {
         exclude group:"org.grails",module: "grails-datastore-simple"
         exclude group:"org.grails",module: "grails-datastore-gorm"
     }
-    optional "org.grails:grails-test:$grailsVersion", excludes
-    optional "org.grails:grails-plugin-testing:$grailsVersion", excludes
+    provided "org.grails:grails-test:$grailsVersion", excludes
+    provided "org.grails:grails-plugin-testing:$grailsVersion", excludes
 
     def tomcatVersion = '7.0.50'
     testCompile "org.apache.tomcat:tomcat-jdbc:$tomcatVersion"
@@ -102,20 +98,8 @@ dependencies {
 
 }
 
-sourceSets {
-    main {
-        compileClasspath += files(configurations.optional)
-    }
-}
-idea {
-    module {
-        scopes.PROVIDED.plus += [configurations.optional]
-    }
-}
-
 eclipse {
     classpath {
-        plusConfigurations += [configurations.optional]
         file {
             whenMerged { classpath ->
                  // move grails-datastore-gorm-hibernate-core reference to end
