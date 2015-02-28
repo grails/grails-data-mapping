@@ -1,7 +1,3 @@
-configurations {
-    optional
-}
-
 dependencies {
     compile("org.grails:grails-async:$grailsVersion")
     compile("org.grails:grails-core:$grailsVersion") {
@@ -107,15 +103,15 @@ dependencies {
     }
 
 
-    optional(project(":grails-datastore-web"))
+    provided(project(":grails-datastore-web"))
 
 
-    optional('org.hibernate:hibernate-validator:4.1.0.Final') {
+    provided('org.hibernate:hibernate-validator:4.1.0.Final') {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'org.slf4j', module:'slf4j-api'
     }
-    optional('org.hibernate:hibernate-ehcache:3.6.10.Final') {
+    provided('org.hibernate:hibernate-ehcache:3.6.10.Final') {
          exclude group:'commons-logging', module:'commons-logging'
          exclude group:'commons-collections', module:'commons-collections'
          exclude group:'org.slf4j', module:'slf4j-api'
@@ -127,26 +123,8 @@ dependencies {
     }
 
     optional "org.springframework:spring-expression:$springVersion"
-    optional ("net.sf.ehcache:ehcache-core:2.4.8") {
+    provided ("net.sf.ehcache:ehcache-core:2.4.8") {
         exclude group: 'commons-logging', module:'commons-logging'
-    }
-
 }
 
-sourceSets {
-    main {
-        compileClasspath += files(configurations.optional)
-    }
-}
-
-idea {
-    module {
-        scopes.PROVIDED.plus += [configurations.optional]
-    }
-}
-
-eclipse {
-    classpath {
-        plusConfigurations += [configurations.optional]
-    }
 }
