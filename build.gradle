@@ -34,6 +34,8 @@ project.ext {
 
     isCiBuild = project.hasProperty("isCiBuild")
     isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
+
+    servletApiVersion = "3.0.1"
 }
 
 def groovyMajorVersion = groovyVersion[0..2]
@@ -533,4 +535,3 @@ task test(dependsOn: getTasksByName("test", true)) << {
         ant."clover-html-report"(initstring: mergedDb, outdir:"${cloverReportsDir}/html")
     }
 }
-

@@ -24,7 +24,7 @@ dependencies {
         transitive = false
     }
 
-    provided 'javax.servlet:servlet-api:2.5'
+    provided "javax.servlet:javax.servlet-api:$servletApiVersion"
     provided(project(":grails-datastore-web"))
 
     String hibernateVersion = '4.3.8.Final'
@@ -78,7 +78,7 @@ dependencies {
     testCompile "net.sf.ehcache:ehcache-core:2.4.6"
     testCompile "org.hibernate:hibernate-ehcache:$hibernateVersion"
 
-    provided "javax.servlet:servlet-api:2.5"
+    provided "javax.servlet:javax.servlet-api:$servletApiVersion"
     def excludes = {
         exclude group:"org.grails",module: "grails-plugin-url-mappings"
         exclude group:"org.grails",module: "grails-plugin-servlets"
