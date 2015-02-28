@@ -417,7 +417,7 @@ $ mkdir grails&#45;datastore&#45;gorm&#45;xyz</pre></div><p class="paragraph"/><
             project(':grails&#45;datastore&#45;web'),
             project(':grails&#45;datastore&#45;gorm&#45;plugin&#45;support')<p class="paragraph"/>    testCompile project(':grails&#45;datastore&#45;gorm&#45;test'),
                 project(':grails&#45;datastore&#45;gorm&#45;tck')
-    testRuntime 'javax.servlet:servlet&#45;api:2.5'
+    testRuntime <span class="java&#45;quote">"javax.servlet:javax.servlet&#45;api:$servletApiVersion"</span>
     testRuntime 'org.grails:grails&#45;gorm:$grailsVersion'
     testRuntime 'org.grails:grails&#45;web:$grailsVersion'<p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>Add new project to settings.gradle in root project:<p class="paragraph"/><div class="code"><pre>$ vi settings.gradle</pre></div><p class="paragraph"/>Changes shown below:<p class="paragraph"/><div class="code"><pre>// GORM Implementations
 'grails&#45;datastore&#45;gorm&#45;jpa',
