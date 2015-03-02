@@ -19,7 +19,6 @@ import grails.compiler.traits.TraitInjector
 import groovy.transform.CompileStatic
 
 import org.grails.core.artefact.DomainClassArtefactHandler
-import org.grails.io.support.GrailsResourceUtils
 
 /**
  *
@@ -32,11 +31,6 @@ class GormValidateableTraitInjector implements TraitInjector {
 
     Class getTrait() {
         GormValidateable
-    }
-
-    @Override
-    boolean shouldInject(URL url) {
-        GrailsResourceUtils.isDomainClass(url)
     }
 
     @Override
