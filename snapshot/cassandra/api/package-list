@@ -1,3 +1,4 @@
+grails.cassandra.bootstrap
 org.grails.compiler
 org.grails.datastore.gorm.cassandra
 org.grails.datastore.gorm.cassandra.bean.factory
