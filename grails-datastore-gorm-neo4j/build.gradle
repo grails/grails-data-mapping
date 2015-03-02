@@ -19,7 +19,7 @@ dependencies {
             "org.neo4j:neo4j-kernel:$neo4jVersion",
             "org.neo4j:neo4j-graphviz:$neo4jVersion",
             "org.codehaus.groovy:groovy-all:$groovyVersion",
-            "org.neo4j:neo4j-jdbc:2.1.4",
+            "org.neo4j:neo4j-jdbc:2.0.2",
             'org.apache.tomcat:tomcat-jdbc:8.0.20'
 
     // during development (aka snapshot version), use project dependencies
@@ -54,6 +54,5 @@ dependencies {
 
 test {
     maxParallelForks = 1
-    forkEvery = 30
 }
 
