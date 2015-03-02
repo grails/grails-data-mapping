@@ -19,24 +19,18 @@ import grails.compiler.traits.TraitInjector
 import groovy.transform.CompileStatic
 
 import org.grails.core.artefact.DomainClassArtefactHandler
-import org.grails.io.support.GrailsResourceUtils
 
 /**
- * 
+ *
  * @author Jeff Brown
  * @since 4.0
  *
  */
 @CompileStatic
 class GormEntityTraitInjector implements TraitInjector {
-    
+
     Class getTrait() {
         GormEntity
-    }
-
-    @Override
-    boolean shouldInject(URL url) {
-        GrailsResourceUtils.isDomainClass(url)
     }
 
     @Override
