@@ -29,7 +29,7 @@ dependencies {
     compile("org.grails:grails-bootstrap:$grailsVersion",excludes)
 
     testCompile project(":grails-datastore-gorm-tck")
-    testRuntime "javax.servlet:servlet-api:2.5"
+    testRuntime "javax.servlet:javax.servlet-api:$servletApiVersion"
     testRuntime "org.grails:grails-web:$grailsVersion",excludes
     testRuntime "log4j:log4j:1.2.16"
 }

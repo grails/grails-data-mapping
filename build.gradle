@@ -1,10 +1,12 @@
 buildscript {
     repositories {
         mavenLocal()
+        maven { url "https://repo.grails.org/grails/core" }
         jcenter()
     }
     dependencies {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1"
+        classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
     }
 }
 
@@ -36,6 +38,8 @@ project.ext {
 
     isCiBuild = project.hasProperty("isCiBuild")
     isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
+
+    servletApiVersion = "3.0.1"
 }
 
 def groovyMajorVersion = groovyVersion[0..2]
@@ -92,6 +96,10 @@ allprojects {
     }
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
+
 subprojects {
    if(project.name.endsWith("spring-boot")) return
    afterEvaluate { project ->
@@ -115,7 +123,8 @@ subprojects {
         apply plugin: 'maven-publish'
         apply plugin: 'com.jfrog.bintray'
         apply plugin: 'idea'
-//        apply plugin: 'signing'
+        apply plugin: 'provided-base'
+        apply plugin: 'optional-base'
         sourceCompatibility = "1.7"
         targetCompatibility = "1.7"
     }
