@@ -34,6 +34,7 @@ project.ext {
     hibernatePluginVersion = releaseType == 'RELEASE' ? "4.3.8.${projectPatchVersion}" : "4.3.8.${projectPatchVersion}.$releaseType"
     mongodbPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
     neo4jPluginVersion = "${projectVersion}-SNAPSHOT"
+    cassandraPluginVersion = "${projectVersion}-SNAPSHOT"
 
 
     isCiBuild = project.hasProperty("isCiBuild")
