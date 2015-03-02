@@ -26,7 +26,7 @@ class PublishingConvention {
 }
 
 ext {
-    isBuildSnapshot =  version.endsWith( "BUILD-SNAPSHOT" )
+    isBuildSnapshot =  version.endsWith( "-SNAPSHOT" )
 }
 
 def projectInfo = new PublishingConvention(project)
