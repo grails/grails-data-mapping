@@ -1,3 +1,4 @@
+sudo: false
 language: groovy
 services:
 - redis
@@ -5,6 +6,10 @@ services:
 - cassandra
 jdk:
 - oraclejdk7
+cache:
+  directories:
+  - $HOME/.gradle/wrapper
+  - $HOME/.gradle/caches
 env:
   global:
   - TERM=dumb
