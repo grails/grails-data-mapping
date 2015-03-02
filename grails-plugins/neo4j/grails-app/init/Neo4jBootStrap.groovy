@@ -1,5 +1,7 @@
+import groovy.util.logging.Commons
 import org.neo4j.kernel.AbstractGraphDatabase
 
+@Commons
 class Neo4jBootStrap {
 
     def graphDatabaseService

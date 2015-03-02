@@ -36,6 +36,7 @@ include ("grails-datastore-core",
 */
         'grails-plugins/hibernate',
         'grails-plugins/mongodb',
+        'grails-plugins/neo4j',
 
         // Boot Extensions
         'boot-plugins/gorm-hibernate4-spring-boot',

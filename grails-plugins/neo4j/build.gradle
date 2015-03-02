@@ -1,0 +1,72 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "http://repo.grails.org/grails/core" }
+    }
+    dependencies {
+        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+    }
+}
+
+plugins {
+    id "io.spring.dependency-management" version "0.3.1.RELEASE"
+}
+
+group = "org.grails.plugins"
+version = neo4jPluginVersion
+
+ext {
+    isGrailsPlugin = true
+}
+
+apply plugin: "org.grails.grails-plugin"
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply from:'../../gradle/maven-central-build.gradle'
+
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+    mavenLocal()
+    maven { url "http://repo.grails.org/grails/core" }
+    maven { url "http://m2.neo4j.org/content/repositories/releases/" }
+}
+
+dependencies {
+
+
+    provided("org.grails:grails-core:$grailsVersion")
+    provided("org.grails:grails-bootstrap:$grailsVersion")
+    provided("org.grails:grails-plugin-converters:$grailsVersion")
+    provided 'javax.servlet:javax.servlet-api:3.1.0'
+
+    compile("org.neo4j:neo4j-community:$neo4jVersion")
+    compile "org.neo4j:neo4j-jdbc:2.1.4"
+
+    compile project(":grails-datastore-gorm-plugin-support"), {
+        exclude group:'org.springframework', module:'spring-context'
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'org.springframework', module:'spring-beans'
+        exclude group:'org.springframework', module:'spring-tx'
+        exclude group:'org.grails', module:'grails-bootstrap'
+        exclude group:'org.codehaus.groovy', module:'groovy-all'
+        exclude group:'org.grails', module:'grails-core'
+        exclude group:'org.grails', module:'grails-async'
+        exclude group:'javax.transaction', module:'jta'
+    }
+    compile project(":grails-datastore-gorm-neo4j"), {
+        exclude group:'org.springframework', module:'spring-context'
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'org.springframework', module:'spring-beans'
+        exclude group:'org.springframework', module:'spring-tx'
+        exclude group:'org.grails', module:'grails-bootstrap'
+        exclude group:'org.codehaus.groovy', module:'groovy-all'
+        exclude group:'org.grails', module:'grails-core'
+        exclude group:'org.grails', module:'grails-async'
+        exclude group:'javax.transaction', module:'jta'
+    }
+
+    runtime(group:"org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:"tests")
+}
