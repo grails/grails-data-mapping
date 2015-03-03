@@ -43,7 +43,13 @@ publishing {
                     username = u
                     password = p
                 }
-                url  "https://repo.grails.org/grails/libs-snapshots-local"
+                if(isGrailsPlugin) {
+                    url  "https://repo.grails.org/grails/plugins3-snapshots-local"
+                }
+                else {
+                    url  "https://repo.grails.org/grails/libs-snapshots-local"
+                }
+
             }
         }
     }
@@ -119,7 +125,12 @@ bintray {
     publish = false
     dryRun = false
     pkg {
-        repo = 'plugins'
+        if(isGrailsPlugin) {
+            repo = 'plugins'
+        }
+        else {
+            repo = 'grails-core'
+        }
         userOrg = 'grails'
         def pkgName = "$group:$projectInfo.projectArtifactId"
         name = pkgName
