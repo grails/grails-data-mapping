@@ -14,7 +14,7 @@ project.ext {
     springVersion = "4.1.5.RELEASE"
     grailsVersion = "3.0.0.BUILD-SNAPSHOT"
     slf4jVersion = "1.7.5"
-    junitVersion = "4.12"
+    junitVersion = "4.11"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.4.1'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
