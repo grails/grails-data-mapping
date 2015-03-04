@@ -47,7 +47,7 @@ dependencies {
     }
     compile "org.springframework:spring-tx:4.0.5.RELEASE"
 
-    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+    testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
 }
 
 

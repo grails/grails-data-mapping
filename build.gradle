@@ -44,7 +44,7 @@ project.ext {
 }
 
 def groovyMajorVersion = groovyVersion[0..2]
-def spockDependency = "org.spockframework:spock-core:0.7-groovy-2.0"
+def spockDependency = "org.spockframework:spock-core:1.0-groovy-2.4"
 
 def groovyProjects() {
     subprojects.findAll { project -> isGroovyProject(project) }
