@@ -28,6 +28,7 @@ import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
+import org.springframework.validation.Validator
 
 @CompileStatic
 abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D> {
@@ -55,9 +56,7 @@ abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D
     boolean validate(D instance, List validatedFieldsList, Map arguments = Collections.emptyMap()) {
         Errors errors = setupErrorsProperty(instance);
 
-        if(validator == null && persistentEntity instanceof GrailsDomainClassPersistentEntity) {
-            validator = persistentEntity.domainClass?.validator
-        }
+        Validator validator = getValidator()
         if(validator == null) return true
 
         Boolean valid = Boolean.TRUE

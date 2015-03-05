@@ -15,6 +15,7 @@
 package org.grails.datastore.gorm
 
 import grails.validation.CascadingValidator
+import org.grails.datastore.gorm.config.GrailsDomainClassPersistentEntity
 import org.grails.datastore.gorm.support.BeforeValidateHelper
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.event.ValidationEvent
@@ -34,26 +35,37 @@ import org.springframework.validation.Validator
  */
 class GormValidationApi<D> extends AbstractGormApi<D> {
 
-    Validator validator
+    private Validator internalValidator
     BeforeValidateHelper beforeValidateHelper
 
     GormValidationApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
-        MappingContext context = datastore.mappingContext
-        def entity = context.getPersistentEntity(persistentClass.name)
-        validator = context.getEntityValidator(entity)
         beforeValidateHelper = new BeforeValidateHelper()
+    }
+
+    Validator getValidator() {
+        if (!internalValidator) {
+            if(persistentEntity instanceof GrailsDomainClassPersistentEntity) {
+                internalValidator = persistentEntity.domainClass.validator
+            }
+            if(!internalValidator) {
+                internalValidator = datastore.mappingContext.getEntityValidator(persistentEntity)
+            }
+        }
+        internalValidator
+    }
+
+    void setValidator(Validator validator) {
+        internalValidator = validator
     }
 
     private boolean doValidate(D instance, Map arguments, List fields) {
         beforeValidateHelper.invokeBeforeValidate instance, fields
         fireEvent(instance, fields)
 
-        if (!validator) {
-            validator = datastore.mappingContext.getEntityValidator(persistentEntity)
-            if (!validator) {
-                return true
-            }
+        Validator validator = getValidator()
+        if(validator == null) {
+            return true
         }
 
         def localErrors = new ValidationErrors(instance)
