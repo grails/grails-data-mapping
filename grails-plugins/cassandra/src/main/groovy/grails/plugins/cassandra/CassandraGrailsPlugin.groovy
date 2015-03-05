@@ -22,7 +22,7 @@ class CassandraGrailsPlugin extends Plugin {
 	def title = "Cassandra GORM"
 	def description = 'A plugin that integrates the Cassandra datastore into Grails, providing a GORM API onto it'
 
-	def documentation = "http://grails.github.io/grails-data-mapping/cassandra"
+	def documentation = "http://grails.github.io/grails-data-mapping/latest/cassandra"
 
 	@Override
 	Closure doWithSpring() {

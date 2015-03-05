@@ -28,7 +28,7 @@ class Neo4jGrailsPlugin extends Plugin {
     def title = "Neo4j GORM"    
     def description = 'A plugin that integrates the Neo4j graph database into Grails, providing a GORM API onto it'
 
-    def documentation = "http://projects.spring.io/grails-data-mapping/neo4j/manual/index.html"
+    def documentation = "http://grails.github.io/grails-data-mapping/latest/neo4j"
 
     def dependsOn = [:]
     // resources that are excluded from plugin packaging
