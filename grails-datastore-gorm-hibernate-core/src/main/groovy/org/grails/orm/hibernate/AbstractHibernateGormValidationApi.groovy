@@ -20,6 +20,7 @@ import grails.util.GrailsClassUtils
 import grails.validation.CascadingValidator
 import grails.validation.ValidationErrors
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.config.GrailsDomainClassPersistentEntity
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.grails.orm.hibernate.validation.AbstractPersistentConstraint
 import org.grails.datastore.gorm.GormValidationApi
@@ -53,6 +54,10 @@ abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D
 
     boolean validate(D instance, List validatedFieldsList, Map arguments = Collections.emptyMap()) {
         Errors errors = setupErrorsProperty(instance);
+
+        if(validator == null && persistentEntity instanceof GrailsDomainClassPersistentEntity) {
+            validator = persistentEntity.domainClass?.validator
+        }
         if(validator == null) return true
 
         Boolean valid = Boolean.TRUE
