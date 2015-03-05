@@ -20,8 +20,8 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
 @CompileStatic
 class HibernateGrailsPlugin extends Plugin {
 
-    def grailsVersion = '2.3.5 > *'
-    def author = 'Burt Beckwith'
+    def grailsVersion = '3.0.0 > *'
+    def author = 'Grails Core Team'
     def title = 'Hibernate 4 for Grails'
     def description = 'Provides integration between Grails and Hibernate 4 through GORM'
     def documentation = 'http://grails.org/plugin/hibernate4'
@@ -45,12 +45,13 @@ class HibernateGrailsPlugin extends Plugin {
         Map dataSources = config.getProperty('dataSources', Map, [:])
 
         if(dataSources) {
-            for (name in config.keySet()) {
-                if(name == 'dataSource') {
+            for (name in dataSources.keySet()) {
+                def nameAsString = name.toString()
+                if(nameAsString == 'dataSource') {
                     datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
                 }
                 else {
-                    datasourceNames << name
+                    datasourceNames << nameAsString
                 }
             }
         }

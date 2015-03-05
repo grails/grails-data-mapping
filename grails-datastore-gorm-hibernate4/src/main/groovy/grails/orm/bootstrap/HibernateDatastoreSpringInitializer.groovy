@@ -22,6 +22,7 @@ import groovy.util.logging.Commons
 import org.grails.config.PropertySourcesConfig
 import org.grails.orm.hibernate.*
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
+import org.grails.orm.hibernate.cfg.HibernateUtils
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler
 import org.grails.orm.hibernate.support.AggregatePersistenceContextInterceptor
 import org.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
@@ -115,10 +116,6 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             hibernateEventListeners(HibernateEventListeners)
             // Useful interceptor for wrapping Hibernate behavior
             persistenceInterceptor(AggregatePersistenceContextInterceptor)
-            // default interceptor, can be overridden for extensibility
-            if(!beanDefinitionRegistry.containsBeanDefinition("entityInterceptor")) {
-                entityInterceptor(EmptyInterceptor)
-            }
             // domain model mapping context, used for configuration
             grailsDomainClassMappingContext(GrailsDomainClassMappingContext, ref(GrailsApplication.APPLICATION_ID))
 
@@ -136,6 +133,11 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 def dsConfigPrefix = isDefault ? "dataSource" :"dataSources.$dataSourceName"
                 def ddlAutoSetting = config.getProperty("${dsConfigPrefix}.dbCreate", ddlAuto)
 
+                // default interceptor, can be overridden for extensibility
+                def entityInterceptorName = "entityInterceptor$suffix"
+                if(!beanDefinitionRegistry.containsBeanDefinition(entityInterceptorName)) {
+                    "$entityInterceptorName"(EmptyInterceptor)
+                }
 
 
                 def hibernateProperties = new Properties()
@@ -204,6 +206,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 if(!beanDefinitionRegistry.containsBeanDefinition(sessionFactoryName)) {
                     "$sessionFactoryName"(ConfigurableLocalSessionFactoryBean) { bean ->
                         bean.autowire = "byType"
+                        delegate.dataSourceName = dataSourceName
                         dataSource = ref("dataSource$suffix")
                         delegate.hibernateProperties = ref("hibernateProperties$suffix")
                         grailsApplication = ref(GrailsApplication.APPLICATION_ID)
@@ -243,11 +246,6 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                         sessionFactory = ref(sessionFactoryName)
                         dataSource = ref("dataSource$suffix")
                     }
-                }
-
-                "org.grails.gorm.hibernate.internal.GORM_ENHANCER_BEAN-${dataSourceName}$suffix"(HibernateGormEnhancer, ref("hibernateDatastore$suffix"), ref("transactionManager$suffix"), ref(GrailsApplication.APPLICATION_ID)) { bean ->
-                    bean.initMethod = 'enhance'
-                    bean.lazyInit = false
                 }
 
                 "org.grails.gorm.hibernate.internal.POST_INIT_BEAN-${dataSourceName}$suffix"(PostInitializationHandling) { bean ->
@@ -333,6 +331,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 datastoreMap[hibernateDatastore.sessionFactory] = hibernateDatastore
             }
             applicationContext.getBean(ClosureEventTriggeringInterceptor).datastores = datastoreMap
+            HibernateUtils.enhanceSessionFactories(applicationContext, grailsApplication)
         }
     }
 
