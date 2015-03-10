@@ -1,12 +1,12 @@
 // Datastore Project
 include ("grails-datastore-core",
-         "grails-datastore-gemfire",
+//         "grails-datastore-gemfire",
 //        "grails-datastore-jpa",
 /*        "grails-datastore-riak",*/
         "grails-datastore-simple",
         "grails-datastore-web",
-        "grails-datastore-simpledb",
-        "grails-datastore-dynamodb",
+//        "grails-datastore-simpledb",
+//        "grails-datastore-dynamodb",
         'grails-datastore-rest-client',
 /*
         "grails-datastore-jcr",*/
@@ -18,8 +18,8 @@ include ("grails-datastore-core",
         'grails-documentation-redis',
 /*        'grails-documentation-riak',*/
         'grails-documentation-neo4j',
-        'grails-documentation-simpledb',
-        'grails-documentation-dynamodb',
+//        'grails-documentation-simpledb',
+//        'grails-documentation-dynamodb',
         'grails-documentation-rest-client',
 		'grails-documentation-cassandra', 
 		
@@ -52,9 +52,9 @@ include ("grails-datastore-core",
         
 /*        'grails-datastore-gorm-riak',*/
         'grails-datastore-gorm-mongodb',
-        'grails-datastore-gorm-gemfire',
-        'grails-datastore-gorm-simpledb',
-        'grails-datastore-gorm-dynamodb',
+//        'grails-datastore-gorm-gemfire',
+//        'grails-datastore-gorm-simpledb',
+//        'grails-datastore-gorm-dynamodb',
         'grails-datastore-gorm-hibernate-core',
         'grails-datastore-gorm-hibernate',
         'grails-datastore-gorm-hibernate4'
