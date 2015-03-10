@@ -7,6 +7,7 @@ buildscript {
     dependencies {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1"
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
     }
 }
 
@@ -41,6 +42,9 @@ project.ext {
     isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
 
     servletApiVersion = "3.0.1"
+
+    nexusUsername = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
+    nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
 }
 
 def groovyMajorVersion = groovyVersion[0..2]
@@ -114,6 +118,44 @@ subprojects {
 
     version = "${projectVersion}.${releaseType}"
     group = "org.grails"
+    ext {
+        pomInfo = {
+            delegate.name 'Grails GORM'
+            delegate.description 'GORM - Grails Data Access Framework'
+            delegate.url 'http://grails.org/'
+
+            delegate.licenses {
+                delegate.license {
+                    delegate.name 'The Apache Software License, Version 2.0'
+                    delegate.url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    delegate.distribution 'repo'
+                }
+            }
+
+            delegate.scm {
+                delegate.url 'scm:git@github.com:grails/grails-data-mapping.git'
+                delegate.connection 'scm:git@github.com:grails/grails-data-mapping.git'
+                delegate.developerConnection 'scm:git@github.com:grails/grails-data-mapping.git'
+            }
+
+
+            delegate.developers {
+                delegate.developer {
+                    delegate.id 'graemerocher'
+                    delegate.name 'Graeme Rocher'
+                }
+                delegate.developer {
+                    delegate.id 'jeffscottbrown'
+                    delegate.name 'Jeff Brown'
+                }
+                delegate.developer {
+                    delegate.id 'burtbeckwith'
+                    delegate.name 'Burt Beckwith'
+                }
+            }
+
+        }
+    }
 
 
     def isStandardGroovyMavenProject = isGroovyProject(project)
@@ -121,6 +163,7 @@ subprojects {
     if (isStandardGroovyMavenProject) {
         apply plugin: 'groovy'
         apply plugin: 'eclipse'
+        apply plugin: 'com.bmuschko.nexus'
         apply plugin: 'maven-publish'
         apply plugin: 'com.jfrog.bintray'
         apply plugin: 'idea'
@@ -267,15 +310,6 @@ subprojects {
     }
 
     if (isStandardGroovyMavenProject) {
-        task sourcesJar(type: Jar, dependsOn:classes) {
-            classifier = 'sources'
-            from sourceSets.main.allSource
-        }
-
-        task javadocJar(type: Jar, dependsOn:javadoc) {
-            classifier = 'javadoc'
-            from javadoc.destinationDir
-        }
 
         configure([javadoc]) {
             options.encoding "UTF-8"
@@ -284,10 +318,12 @@ subprojects {
             options.jFlags "-Xms64M", "-Xmx512M", "-XX:MaxPermSize=256m"
         }
 
-        artifacts {
-            archives jar
-            archives sourcesJar
-            archives javadocJar
+        modifyPom {
+            delegate.project {
+                def updatePom = pomInfo.clone()
+                updatePom.delegate = delegate
+                updatePom()
+            }
         }
 
         publishing {
@@ -321,42 +357,7 @@ subprojects {
                         def xml = asNode()
                         def dependency = xml.dependencies.find { dep -> dep.artifactId == 'slf4j-simple' }
                         dependency?.optional = true
-                        xml.children().last() + {
-                            delegate.name 'Grails GORM'
-                            delegate.description 'GORM - Grails Data Access Framework'
-                            delegate.url 'http://grails.org/'
-
-                            delegate.licenses {
-                                delegate.license {
-                                    delegate.name 'The Apache Software License, Version 2.0'
-                                    delegate.url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                                    delegate.distribution 'repo'
-                                }
-                            }
-
-                            delegate.scm {
-                                delegate.url 'scm:git@github.com:grails/grails-data-mapping.git'
-                                delegate.connection 'scm:git@github.com:grails/grails-data-mapping.git'
-                                delegate.developerConnection 'scm:git@github.com:grails/grails-data-mapping.git'
-                            }
-
-
-                            delegate.developers {
-                                delegate.developer {
-                                    delegate.id 'graemerocher'
-                                    delegate.name 'Graeme Rocher'
-                                }
-                                delegate.developer {
-                                    delegate.id 'jeffscottbrown'
-                                    delegate.name 'Jeff Brown'
-                                }
-                                delegate.developer {
-                                    delegate.id 'burtbeckwith'
-                                    delegate.name 'Burt Beckwith'
-                                }
-                            }
-
-                        }
+                        xml.children().last() + pomInfo
                     }
 
                 }
