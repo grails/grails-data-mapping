@@ -165,7 +165,6 @@ subprojects {
         apply plugin: 'eclipse'
         apply plugin: 'com.bmuschko.nexus'
         apply plugin: 'maven-publish'
-        apply plugin: 'com.jfrog.bintray'
         apply plugin: 'idea'
         apply plugin: 'provided-base'
         apply plugin: 'optional-base'
@@ -363,45 +362,6 @@ subprojects {
                 }
             }
         }
-
-
-        bintray {
-            def u = System.getenv("BINTRAY_USER") ?: project.hasProperty("bintrayUser") ? project.bintrayUser : ''
-            def p = System.getenv("BINTRAY_KEY") ?: project.hasProperty("bintrayKey") ? project.bintrayKey : ''
-
-            user = u
-            key = p
-            publications = ['maven']
-            dryRun = false
-            publish = false
-            pkg {
-                repo = 'grails-core'
-                userOrg = 'grails'
-                name = 'org.grails:grails-data-mapping'
-                desc = 'Grails Data Mapping'
-                websiteUrl = 'http://grails.org'
-                issueTrackerUrl = 'http://jira.grails.org/browse/GRAILS'
-                vcsUrl = 'http://jira.grails.org/browse/GRAILS'
-                licenses = ['Apache-2.0']
-                publicDownloadNumbers = true
-                version {
-                    name = project.version
-                    gpg {
-                        sign = true
-                        passphrase = System.getenv("SIGNING_PASSPHRASE") ?: project.hasProperty("signingPassphrase") ? project.signingPassphrase : ''
-                    }
-                    mavenCentralSync {
-                        sync = false
-                        def ossUser = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
-                        def ossPass = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
-                        user = ossUser
-                        password = ossPass
-                    }
-
-                }
-            }
-        }
-
 
     }
 }

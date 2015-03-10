@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # use travis_after_all.py for publishing only after all builds are successfull.
-#if [[ "$BUILD_LEADER" == "YES" ]]; then
-#  if [[ "$BUILD_AGGREGATE_STATUS" != "others_succeeded" ]]; then
-#    echo "Some builds failed, not publishing."
-#    exit 0
-#  fi
-#else
-#  # not build leader, exit
-#  exit 0
-#fi
+if [[ "$BUILD_LEADER" == "YES" ]]; then
+  if [[ "$BUILD_AGGREGATE_STATUS" != "others_succeeded" ]]; then
+    echo "Some builds failed, not publishing."
+    exit 0
+  fi
+else
+  # not build leader, exit
+  exit 0
+fi
 
 echo "Publishing..."
 
@@ -21,9 +21,11 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
 
   gpg --keyserver keyserver.ubuntu.com --recv-key $SIGNING_KEY
   if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
-    ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" uploadArchives publish || EXIT_STATUS=$?
+    # for releases we upload to Bintray and Sonatype OSS
+    ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" uploadArchives bintrayUpload publish || EXIT_STATUS=$?
   else
-    ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" uploadArchives publish || EXIT_STATUS=$?
+    # for snapshots only to repo.grails.org
+    ./gradlew publish || EXIT_STATUS=$?
   fi
 
   ./gradlew allDocs || EXIT_STATUS=$?
