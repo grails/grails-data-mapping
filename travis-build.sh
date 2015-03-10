@@ -2,9 +2,9 @@
 EXIT_STATUS=0
 
 case "$GORM_IMPL"  in
-        ;;
     hibernate)
         ./gradlew grails-datastore-gorm-hibernate:test || EXIT_STATUS=$?
+        ;;
     hibernate4)
         ./gradlew grails-datastore-gorm-hibernate4:test --stacktrace || EXIT_STATUS=$?
         ;;
