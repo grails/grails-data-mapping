@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.2 Indexing Queries 1.0.0</title>
+    <title>3.3 Indexing Queries 1.0.0</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -73,7 +73,7 @@ function addJsClass() {
 
 
                 <div class="project">
-                    <h1>3.2 Indexing Queries - Reference Documentation</h1>
+                    <h1>3.3 Indexing Queries - Reference Documentation</h1>
 
                     <p><strong>Authors:</strong> Paras Lakhani</p>
 
@@ -86,7 +86,7 @@ function addJsClass() {
 
                 
 
-<h2 id="3.2 Indexing Queries">3.2 Indexing Queries</h2>
+<h2 id="3.2 Indexing Queries">3.3 Indexing Queries</h2>
 <h4>Basics</h4><p class="paragraph"/>Cassandra doesn't require that you specify indices to query. Cassandra supports creating an index on most columns, including a clustering column of a compound primary key or on the partition (primary) key itself.
 Indexing can impact performance greatly. Before creating an index, be aware of when and <a href="http://www.datastax.com/documentation/cql/3.1/cql/ddl/ddl_when_use_index_c.html#concept_ds_sgh_yzz_zj__when-no-index" target="blank">when not to create an index</a>.<p class="paragraph"/>With that in mind it is important to specify the properties you plan to query using the mapping block:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     <span class="java&#45;object">String</span> name
