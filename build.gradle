@@ -13,7 +13,7 @@ buildscript {
 
 project.ext {
     springVersion = "4.1.5.RELEASE"
-    grailsVersion = "3.0.0.BUILD-SNAPSHOT"
+    grailsVersion = "3.0.0.M2"
     slf4jVersion = "1.7.5"
     junitVersion = "4.12"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.4.1'
@@ -22,8 +22,8 @@ project.ext {
     projectMajorVersion = "4"
     projectMinorVersion = "0"
     projectPatchVersion = "0"
-//    releaseType = "M2"
-    releaseType = "BUILD-SNAPSHOT"
+    releaseType = "M3"
+//    releaseType = "BUILD-SNAPSHOT"
 
     // overall project version
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
