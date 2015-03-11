@@ -130,7 +130,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 def sessionFactoryName = isDefault ? defaultSessionFactoryBeanName : "sessionFactory$suffix"
 
                 def hibConfig = config.getProperty("hibernate$suffix", Map, Collections.emptyMap())
-                def dsConfigPrefix = isDefault ? "dataSource" :"dataSources.$dataSourceName"
+                def dsConfigPrefix = config.containsProperty('dataSources') ? "dataSources.${isDefault ? 'dataSource' : dataSourceName}" : 'dataSource'
                 def ddlAutoSetting = config.getProperty("${dsConfigPrefix}.dbCreate", ddlAuto)
 
                 // default interceptor, can be overridden for extensibility
