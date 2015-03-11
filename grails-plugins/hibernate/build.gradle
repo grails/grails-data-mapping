@@ -9,7 +9,7 @@ buildscript {
 }
 
 plugins {
-    id "io.spring.dependency-management" version "0.3.1.RELEASE"
+    id "io.spring.dependency-management" version "0.4.0.RELEASE"
 }
 
 ext {
@@ -33,9 +33,17 @@ repositories {
     maven { url "http://repo.grails.org/grails/core" }
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "org.grails:grails-bom:$grailsVersion"
+    }
+    applyMavenExclusions false
+}
+
+
 dependencies {
 
-    provided("org.grails:grails-core:$grailsVersion")
+    provided("org.grails:grails-core")
 
     compile project(":grails-datastore-gorm-hibernate4"), {
         exclude group:'org.springframework', module:'spring-context'

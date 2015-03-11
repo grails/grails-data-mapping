@@ -9,7 +9,7 @@ buildscript {
 }
 
 plugins {
-    id "io.spring.dependency-management" version "0.3.1.RELEASE"
+    id "io.spring.dependency-management" version "0.4.0.RELEASE"
 }
 
 group = "org.grails.plugins"
@@ -33,11 +33,19 @@ repositories {
     maven { url "http://repo.grails.org/grails/core" }
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "org.grails:grails-bom:$grailsVersion"
+    }
+    applyMavenExclusions false
+}
+
+
 dependencies {
 
 
-    provided("org.grails:grails-core:$grailsVersion")
-    provided("org.grails:grails-bootstrap:$grailsVersion")
+    provided("org.grails:grails-core")
+    provided("org.grails:grails-bootstrap")
 
     compile project(":grails-datastore-gorm-cassandra"), {
         exclude group:'org.springframework', module:'spring-context'
