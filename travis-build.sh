@@ -31,9 +31,8 @@ case "$GORM_IMPL"  in
         ;;
 esac
 
+./travis-publish.sh || EXIT_STATUS=$?
 
-
-./travis-publish.sh
 exit $EXIT_STATUS
 
 
