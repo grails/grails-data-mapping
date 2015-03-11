@@ -8,6 +8,7 @@ if [[ "$BUILD_LEADER" == "YES" ]]; then
   fi
 else
   # not build leader, exit
+  echo "Not build leader, exiting"
   exit 0
 fi
 
