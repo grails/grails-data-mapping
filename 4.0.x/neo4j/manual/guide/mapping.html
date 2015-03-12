@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Mapping domain classes to Neo4j node space 1.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3 Mapping domain classes to Neo4j node space - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Stefan Armbruster</p>
+
+                    <p><strong>Version:</strong> 1.0.0</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h1 id="mapping">3 Mapping domain classes to Neo4j node space</h1>
+Since the nodespace in Neo4j has no schema as opposed to SQL, there must be some structure applied to map a given
+set of domain classes.<p class="paragraph"/>Starting with <a href="http://api.neo4j.org/current/org/neo4j/graphdb/GraphDatabaseService.html#getReferenceNode()," target="blank">Neo4j's reference node</a>
+each domain class itself is represented by a subreference node. The subreference node has a relationship to the reference node,
+type "SUBREFERENCE". Each instance of this domain class is represented by a node connected to the respective subreference
+node by a relationship of type "INSTANCE".<p class="paragraph"/>All simple properties of a domain instance are mapped to the node's properties. Since a node can only store primitives,
+Strings and arrays of both, properties of any other type must be converted before persisting. The conversion uses Spring's
+ConversionService, <a href="https://github.com/SpringSource/grails-data-mapping/blob/master/grails-datastore-gorm-neo4j/src/main/groovy/org/grails/datastore/gorm/neo4j/Neo4jMappingContext.groovy" target="blank">Neo4jMappingContext</a>
+adds a couple of converters to it. References to other domain classes are mapped by relationships.<p class="paragraph"/><blockquote class="note">
+Type conversion is not 100% complete for now. If you experience conversion problems, please file a ticket in Github's
+issue tracker.
+</blockquote><p class="paragraph"/>The described mapping of domain classes to the node space is best illustrated with an picture:<p class="paragraph"/><img border="0" class="center" src="../img/mapping.png"></img>
+<img border="0" class="center" src="https://github.com/SpringSource/grails-data-mapping/raw/master/grails-documentation-neo4j/resources/img/mapping.png"></img>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Additional Gorm Methods</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/createInstanceForNode.html">createInstanceForNode</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/cypher.html">cypher</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/cypherStatic.html">cypherStatic</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/getNode.html">getNode</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/getSubreferenceNode.html">getSubreferenceNode</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/schemaless%20attributes.html">schemaless attributes</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/traverse.html">traverse</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/traverseStatic.html">traverseStatic</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Beans/graphDatabaseService.html">graphDatabaseService</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

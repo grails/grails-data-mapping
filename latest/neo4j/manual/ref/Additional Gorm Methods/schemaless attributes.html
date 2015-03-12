@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>GORM for Neo4j 1.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass(el) {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="reference corner-all">
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                <h1>schemaless attributes</h1><p class="paragraph"/><h2>Purpose</h2><p class="paragraph"/>For domain classes mapped by Neo4j you can put and get arbitrary attributes on a instances by using the dot operator or
+map semantics on the domain instance.<p class="paragraph"/><blockquote class="note">
+Setting arbitrary attribute in only allowed when the domain instance is persisted (aka <code>save</code> has been called)!
+</blockquote><p class="paragraph"/><h2>Example</h2><p class="paragraph"/>A simple domain class:
+<div class="code"><pre>class Person <span class="java&#45;keyword">implements</span> Serializable &#123;
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName
+    <span class="java&#45;object">Integer</span> age = 0
+&#125;</pre></div><p class="paragraph"/><h3>using map semantics</h3>
+<div class="code"><pre>when:
+def person = <span class="java&#45;keyword">new</span> Person(lastName:'person1').save()
+person&#91;'notDeclaredProperty'&#93; = 'someValue'   // n.b. the 'dot' notation is not valid <span class="java&#45;keyword">for</span> undeclared properties
+person&#91;'emptyArray'&#93; = &#91;&#93;
+person&#91;'someIntArray'&#93; = &#91;1,2,3&#93;
+person&#91;'someStringArray'&#93; = &#91;'a', 'b', 'c'&#93;
+person&#91;'someDoubleArray'&#93; = &#91;0.9, 1.0, 1.1&#93;
+session.flush()
+session.clear()
+person = Person.get(person.id)<p class="paragraph"/>then:
+person&#91;'notDeclaredProperty'&#93; == 'someValue'
+person&#91;'lastName'&#93; == 'person1'  // declared properties are also available via map semantics
+person&#91;'someIntArray'&#93; == &#91;1,2,3&#93;
+person&#91;'someStringArray'&#93; == &#91;'a', 'b', 'c'&#93;
+person&#91;'someDoubleArray'&#93; == &#91;0.9, 1.0, 1.1&#93;</pre></div><p class="paragraph"/><h3>using dot operator</h3>
+<div class="code"><pre>when:
+def person = <span class="java&#45;keyword">new</span> Person(lastName:'person1').save(flush:<span class="java&#45;keyword">true</span>)
+session.clear()
+person = Person.load(person.id)
+person.notDeclaredProperty = 'someValue'   // n.b. the 'dot' notation is not valid <span class="java&#45;keyword">for</span> undeclared properties
+person.emptyArray = &#91;&#93;
+person.someIntArray = &#91;1,2,3&#93;
+person.someStringArray = &#91;'a', 'b', 'c'&#93;
+person.someDoubleArray= &#91;0.9, 1.0, 1.1&#93;
+session.flush()
+session.clear()
+person = Person.get(person.id)<p class="paragraph"/>then:
+person.notDeclaredProperty == 'someValue'
+person.lastName == 'person1'  // declared properties are also available via map semantics
+person.someIntArray == &#91;1,2,3&#93;
+person.someStringArray == &#91;'a', 'b', 'c'&#93;
+person.emptyArray == &#91;&#93;
+person.someDoubleArray == &#91;0.9, 1.0, 1.1&#93;</pre></div><p class="paragraph"/><h2>Description</h2><p class="paragraph"/>The non declared attribtes are stored a regular properties on the domain instance's node. The values of the schemaless
+attributes must be a valid type for Neo4j property (String, primitives and arrays of the former two).<p class="paragraph"/>
+
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block">
+                        <h1 class="menu-title" onclick="toggleRef(nextElement(this))">Additional Gorm Methods</h1>
+                        <div class="menu-sub selected">
+                            
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/createInstanceForNode.html">createInstanceForNode</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/cypher.html">cypher</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/cypherStatic.html">cypherStatic</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/getNode.html">getNode</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/getSubreferenceNode.html">getSubreferenceNode</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/schemaless%20attributes.html">schemaless attributes</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/traverse.html">traverse</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/traverseStatic.html">traverseStatic</a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="menu-block">
+                        <h1 class="menu-title" onclick="toggleRef(nextElement(this))">Beans</h1>
+                        <div class="menu-sub">
+                            
+                            
+                            <div class="menu-item"><a href="../../ref/Beans/graphDatabaseService.html">graphDatabaseService</a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+
+<script type="text/javascript" src="../../js/docs.js"></script>
+
+</body>
+</html>
