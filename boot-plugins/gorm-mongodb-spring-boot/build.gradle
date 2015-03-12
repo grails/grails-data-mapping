@@ -6,8 +6,6 @@ apply plugin:'groovy'
 apply from:'../../gradle/maven-central-build.gradle'
 
 
-group = 'org.grails'
-version = "4.0.0.BUILD-SNAPSHOT"
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
@@ -33,7 +31,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-cli:$springBootVersion", {
         exclude group:'org.codehaus.groovy', module:'groovy'
     }
-    
+
     compile "org.springframework.boot:spring-boot-autoconfigure:$springBootVersion"
 
     compile 'org.codehaus.groovy:groovy-all:2.4.1'
@@ -49,8 +47,3 @@ dependencies {
 
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
 }
-
-
-
-
-

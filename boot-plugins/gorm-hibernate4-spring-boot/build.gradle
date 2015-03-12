@@ -7,8 +7,6 @@ buildscript {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1"
     }
 }
-group = 'org.grails'
-version = "4.0.0.BUILD-SNAPSHOT"
 
 ext {
     isGrailsPlugin = false
@@ -49,8 +47,3 @@ dependencies {
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
     testRuntime "com.h2database:h2:1.3.173"
 }
-
-
-
-
-
