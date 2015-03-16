@@ -79,6 +79,12 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
 
     protected void deleteEntry(String family, key, entry) {
         datastore[family].remove(key)
+        def parent = persistentEntity.parentEntity
+        while (parent != null) {
+            def f = getFamily(parent, parent.mapping)
+            datastore[f].remove(key)
+            parent = parent.parentEntity
+        }
     }
 
     @Override
@@ -339,13 +345,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
 
     protected void deleteEntries(String family, List<Object> keys) {
         keys?.each {
-            datastore[family].remove(it)
-            def parent = persistentEntity.parentEntity
-            while (parent != null) {
-                def f = getFamily(parent, parent.mapping)
-                datastore[f].remove(it)
-                parent = parent.parentEntity
-            }
+            deleteEntry(family, it, null)
         }
     }
 }
