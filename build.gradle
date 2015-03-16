@@ -1,20 +1,54 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "https://repo.grails.org/grails/core" }
+        jcenter()
+    }
+    dependencies {
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1"
+        classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
+    }
+}
+
 project.ext {
-    springVersion = "4.1.4.RELEASE"
-    grailsVersion = "3.0.0.BUILD-SNAPSHOT"
+    springVersion = "4.1.5.RELEASE"
+    grailsVersion = "3.0.0.RC1"
     slf4jVersion = "1.7.5"
-    junitVersion = "4.11"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.0-rc-2'
+    junitVersion = "4.12"
+    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.1'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
-    projectVersion = "4.0.0"
-//        releaseType = "RELEASE"
-    releaseType = "BUILD-SNAPSHOT"
+    projectMajorVersion = "4"
+    projectMinorVersion = "0"
+    projectPatchVersion = "0"
+    releaseType = "M4"
+//    releaseType = "BUILD-SNAPSHOT"
+
+    // overall project version
+    projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
+
+    // driver versions
+    neo4jVersion = '2.0.3'
+
+    // plugin versions
+    hibernatePluginVersion = releaseType == 'RELEASE' ? "4.3.8.${projectPatchVersion}" : "4.3.8.${projectPatchVersion}.$releaseType"
+    mongodbPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
+    neo4jPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
+    cassandraPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
+
+
     isCiBuild = project.hasProperty("isCiBuild")
     isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
+
+    servletApiVersion = "3.0.1"
+
+    nexusUsername = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
+    nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
 }
 
 def groovyMajorVersion = groovyVersion[0..2]
-def spockDependency = "org.spockframework:spock-core:0.7-groovy-2.0"
+def spockDependency = "org.spockframework:spock-core:1.0-groovy-2.4"
 
 def groovyProjects() {
     subprojects.findAll { project -> isGroovyProject(project) }
@@ -44,7 +78,7 @@ allprojects {
         if(System.getProperty('useJbossNexus')) {
             // jboss-nexus contains Hibernate source code archives which aren't in maven central
             // usefull with eclipse and idea tasks, for example
-            // ./gradlew -PuseJbossNexus cleanEclipse eclipse            
+            // ./gradlew -PuseJbossNexus cleanEclipse eclipse
             maven {
                 name 'jboss-nexus'
                 url "https://repository.jboss.org/nexus/content/groups/public/"
@@ -53,7 +87,7 @@ allprojects {
         maven { url "https://repo.grails.org/grails/core" }
         if(isBuildSnapshot) {
             maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
-        }        
+        }
     }
 
     configurations {
@@ -67,8 +101,15 @@ allprojects {
     }
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
+
 subprojects {
-    if(project.name.endsWith("spring-boot")) return
+   version = "${projectVersion}.${releaseType}"
+   group = "org.grails"
+
+   if(project.name.endsWith("spring-boot")) return
    afterEvaluate { project ->
         if (isGroovyProject(project)) {
             def hasSnapshotVersion = project.version.endsWith("-SNAPSHOT")
@@ -78,13 +119,45 @@ subprojects {
         }
     }
 
-    if(!project.hasProperty("artifactoryPublishPassword") && System.getenv("ARTIFACTORY_PASSWORD")) {
-        project.ext.artifactoryPublishPassword = System.getenv("ARTIFACTORY_PASSWORD")
+
+    ext {
+        pomInfo = {
+            delegate.name 'Grails GORM'
+            delegate.description 'GORM - Grails Data Access Framework'
+            delegate.url 'http://grails.org/'
+
+            delegate.licenses {
+                delegate.license {
+                    delegate.name 'The Apache Software License, Version 2.0'
+                    delegate.url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    delegate.distribution 'repo'
+                }
+            }
+
+            delegate.scm {
+                delegate.url 'scm:git@github.com:grails/grails-data-mapping.git'
+                delegate.connection 'scm:git@github.com:grails/grails-data-mapping.git'
+                delegate.developerConnection 'scm:git@github.com:grails/grails-data-mapping.git'
+            }
+
+
+            delegate.developers {
+                delegate.developer {
+                    delegate.id 'graemerocher'
+                    delegate.name 'Graeme Rocher'
+                }
+                delegate.developer {
+                    delegate.id 'jeffscottbrown'
+                    delegate.name 'Jeff Brown'
+                }
+                delegate.developer {
+                    delegate.id 'burtbeckwith'
+                    delegate.name 'Burt Beckwith'
+                }
+            }
+
+        }
     }
-
-
-    version = "${projectVersion}.${releaseType}"
-    group = "org.grails"
 
 
     def isStandardGroovyMavenProject = isGroovyProject(project)
@@ -92,34 +165,22 @@ subprojects {
     if (isStandardGroovyMavenProject) {
         apply plugin: 'groovy'
         apply plugin: 'eclipse'
-        apply plugin: 'maven'
+        apply plugin: 'com.bmuschko.nexus'
+        apply plugin: 'maven-publish'
         apply plugin: 'idea'
-        apply plugin: 'signing'
-        sourceCompatibility = "1.6"
-        targetCompatibility = "1.6"
-
-/*        apply from: "file:${rootDir}/clover.gradle"*/
-
-        install.doLast {
-            def gradleArtifactCache = new File(gradle.gradleUserHomeDir, "cache")
-            configurations.archives.artifacts.findAll { it.type == "jar" && !it.classifier }.each { artifact ->
-
-                // Gradle's cache layout is internal and may change in future versions, this is written for gradle 1.0-milestone-3
-                def artifactInCache = file("${gradleArtifactCache}/${project.group}/${project.name}/jars/${project.name}-${version}.jar")
-                if (artifactInCache.parentFile.mkdirs()) {
-                    artifactInCache.withOutputStream { destination ->  artifact.file.withInputStream { destination << it } }
-                }
-            }
-        }
+        apply plugin: 'provided-base'
+        apply plugin: 'optional-base'
+        sourceCompatibility = "1.7"
+        targetCompatibility = "1.7"
     }
 
-    def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") && 
-                                !project.name.endsWith("tck") && 
+    def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") &&
+                                !project.name.endsWith("tck") &&
                                 !project.name.endsWith("plugin-support") &&
                                 project.name != 'grails-datastore-gorm-hibernate-core'&&
                                 project.name != 'grails-datastore-gorm-rest-client'
 
-                                                
+
     def isDocumentationProject = project.name.startsWith("grails-documentation")
 
     dependencies {
@@ -201,7 +262,7 @@ subprojects {
                 null
             }
         }
-        
+
         test {
             testLogging {
                 exceptionFormat ='full'
@@ -223,7 +284,7 @@ subprojects {
                 jvmArgs '-Xmx2g', '-Xdebug', '-Xnoagent', '-Djava.compiler=NONE',
                         '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
             }
-        }        
+        }
         test.doFirst {
             def tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.output.classesDir
             def thisProjectsTests = // surely there is a less hardcoded way to do this
@@ -251,124 +312,63 @@ subprojects {
 
     if (isStandardGroovyMavenProject) {
 
-        task sourcesJar(type: Jar, dependsOn:classes) {
-            classifier = 'sources'
-            from sourceSets.main.allSource
-        }
-
-        task javadocJar(type: Jar, dependsOn:javadoc) {
-            classifier = 'javadoc'
-            from javadoc.destinationDir
-        }
-
         configure([javadoc]) {
             options.encoding "UTF-8"
             options.docEncoding "UTF-8"
             options.charSet "UTF-8"
             options.jFlags "-Xms64M", "-Xmx512M", "-XX:MaxPermSize=256m"
-        }        
-
-        artifacts {
-            archives jar
-            archives sourcesJar
-            archives javadocJar
         }
 
-        signing {
-            sign configurations.archives
-            required { !isBuildSnapshot && gradle.taskGraph.hasTask(uploadArchives) }
-        }
-
-        configure(install.repositories.mavenInstaller) {
-            pom.whenConfigured { pom ->
-                def dependency = pom.dependencies.find { dep -> dep.artifactId == 'slf4j-simple' }
-                dependency?.optional = true
-            }
-            pom.project {
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution 'http://github.com/SpringSource/grails-data-mapping/'
-                    }
-                }
+        modifyPom {
+            delegate.project {
+                def updatePom = pomInfo.clone()
+                updatePom.delegate = delegate
+                updatePom()
             }
         }
 
-        uploadArchives {
-            description = "Does a maven deploy of archives artifacts"
+        publishing {
 
-            // add a configuration with a classpath that includes our s3 maven deployer
-            configurations { deployerJars }
-            dependencies {
-                deployerJars "org.springframework.build.aws:org.springframework.build.aws.maven:3.0.0.RELEASE"
+            repositories {
+                maven {
+                    credentials {
+                        def u = System.getenv("ARTIFACTORY_USERNAME") ?: project.hasProperty("artifactoryPublishUsername") ? project.artifactoryPublishUsername : ''
+                        def p = System.getenv("ARTIFACTORY_PASSWORD") ?: project.hasProperty("artifactoryPublishPassword") ? project.artifactoryPublishPassword : ''
+                        username = u
+                        password = p
+                    }
+                    if(isBuildSnapshot) {
+                        url  "https://repo.grails.org/grails/libs-snapshots-local"
+                    }
+                    else {
+                        url  "https://repo.grails.org/grails/libs-releases-local"
+                    }
+
+                }
             }
 
-            repositories.mavenDeployer {
-                if(!isBuildSnapshot) {
-                beforeDeployment { MavenDeployment deployment ->
-                    signing.signPom(deployment)
+            publications {
+                maven(MavenPublication) {
+                    from components.java
+
+                    artifact sourcesJar {
+                        classifier "sources"
                     }
-                }
-
-                if(project.hasProperty("sonatypeUsername")) {
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: project.hasProperty("sonatypeUsername") ? project.sonatypeUsername : null,
-                            password: project.hasProperty("sonatypePassword") ?  project.sonatypePassword : null)
-                    }
-                }
-                if(project.hasProperty("artifactoryPublishUsername")) {
-                    snapshotRepository(url: "https://repo.grails.org/grails/libs-snapshots-local") {
-                    authentication(userName: project.hasProperty("artifactoryPublishUsername") ? project.artifactoryPublishUsername : null,
-                            password: project.hasProperty("artifactoryPublishPassword") ?  project.artifactoryPublishPassword : null)
-                }
-                }
-
-                pom.project {
-                    name 'Grails GORM'
-                    packaging 'jar'
-                    description 'GORM - Grails Data Access Framework'
-                    delegate.url 'http://grails.org/'
-
-                    licenses {
-                        license {
-                            name 'The Apache Software License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
+                    artifact javadocJar {
+                        classifier "javadoc"
                     }
 
-                    scm {
-                        delegate.url 'scm:git@github.com:grails/grails-data-mapping.git'
-                        connection 'scm:git@github.com:grails/grails-data-mapping.git'
-                        developerConnection 'scm:git@github.com:grails/grails-data-mapping.git'
+                    pom.withXml {
+                        def xml = asNode()
+                        def dependency = xml.dependencies.find { dep -> dep.artifactId == 'slf4j-simple' }
+                        dependency?.optional = true
+                        xml.children().last() + pomInfo
                     }
 
-                    licenses {
-                        license {
-                            name 'The Apache Software License, Version 2.0'
-                            delegate.url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id 'graemerocher'
-                            name 'Graeme Rocher'
-                        }
-                        developer {
-                            id 'jeffscottbrown'
-                            name 'Jeff Brown'
-                        }
-                        developer {
-                            id 'burtbeckwith'
-                            name 'Burt Beckwith'
-                        }
-                    }
                 }
             }
         }
+
     }
 }
 
@@ -382,13 +382,15 @@ dependencies {
     build "org.apache.ant:ant-nodeps:1.8.1"
 }
 
+task install(dependsOn: subprojects*.tasks*.withType(PublishToMavenLocal))
+
 task coreApiDocs(type: Groovydoc) {
-   def coreDocs = [ 'grails-datastore-core', 
-                    'grails-datastore-gorm', 
-                    'grails-datastore-gorm-hibernate-core', 
-                    'grails-datastore-gorm-hibernate4', 
-                    'grails-datastore-simple', 
-                    'grails-datastore-web', 
+   def coreDocs = [ 'grails-datastore-core',
+                    'grails-datastore-gorm',
+                    'grails-datastore-gorm-hibernate-core',
+                    'grails-datastore-gorm-hibernate4',
+                    'grails-datastore-simple',
+                    'grails-datastore-web',
                     'grails-datastore-gorm-test']
    def projs = subprojects.findAll { project -> coreDocs.contains(project.name) }
    source projs.collect { project -> project.sourceSets.main.allGroovy } + projs.collect { project -> project.sourceSets.main.allJava }
@@ -402,7 +404,7 @@ task coreApiDocs(type: Groovydoc) {
 task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
     def docTasks = getTasksByName("docs", true)
     def groovydocTasks = getTasksByName("groovydoc", true)
-    allDocsDir = "$buildDir/docs"
+    def allDocsDir = "$buildDir/docs"
     mkdir allDocsDir
     def stores = []
     for(task in docTasks) {
@@ -411,7 +413,10 @@ task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
         if (projectName.endsWith("-core")) {
             mkdir "$allDocsDir/manual"
 
-            fileTree { from dir }.copy { into "$allDocsDir/manual" }            
+            copy {
+                from dir
+                into "$allDocsDir/manual"
+            }
         }
         else {
             def storeName = projectName["grails-documentation-".size()..-1]
@@ -423,15 +428,21 @@ task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
             if (groovydocTask != null) {
                 mkdir "$docsDir/api"
                 groovydocTask.actions.each { it.execute(groovydocTask) }
-                fileTree { from groovydocTask.destinationDir }.copy { into "$docsDir/api"}
+                copy {
+                    from groovydocTask.destinationDir
+                    into "$docsDir/api"
+                }
             }
             mkdir "$docsDir/manual"
-            fileTree { from dir }.copy { into "$docsDir/manual" }
+            copy {
+                from dir
+                into "$docsDir/manual"
+            }
         }
 
         def engine = new groovy.text.SimpleTemplateEngine()
         def binding = [
-            datastores:stores.collect { "<li><a href=\"http://grails.github.io/grails-data-mapping/$it/index.html\">GORM for ${it[0].toUpperCase()}${it[1..-1]}</a></li>" }.join(System.getProperty("line.separator"))
+            datastores:stores.collect { "<li><a href=\"$it/index.html\">GORM for ${it[0].toUpperCase()}${it[1..-1]}</a></li>" }.join(System.getProperty("line.separator"))
         ]
         def template = engine.createTemplate(new File("src/docs/resources/core.template")).make(binding)
         new File("$allDocsDir/index.html").text = template.toString()

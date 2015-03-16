@@ -62,8 +62,8 @@ class RestClientDatastore extends AbstractDatastore     {
     Map<PersistentEntity, RestBuilder> syncRestClients = new ConcurrentHashMap<PersistentEntity, RestBuilder>().withDefault { PersistentEntity entity ->
         final template = new RestTemplate(((Endpoint) entity.mapping.mappedForm).httpRequestFactory)
         final converters = template.getMessageConverters()
-        converters.add(new PersistentEntityHttpConverter<Object>(entity, rendererRegistry, bindingSourceRegistry))
-        converters.add(new PersistentEntityListHttpConverter<Object>(entity, rendererRegistry, bindingSourceRegistry))
+        converters.add 0, new PersistentEntityListHttpConverter<Object>(entity, rendererRegistry, bindingSourceRegistry)
+        converters.add 0, new PersistentEntityHttpConverter<Object>(entity, rendererRegistry, bindingSourceRegistry)
         new RestBuilder(template)
     }
 

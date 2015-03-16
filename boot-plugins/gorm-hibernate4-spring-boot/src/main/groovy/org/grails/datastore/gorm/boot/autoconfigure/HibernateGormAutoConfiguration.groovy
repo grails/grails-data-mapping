@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.boot.autoconfigure
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import groovy.transform.CompileStatic
 import org.grails.compiler.gorm.GormTransformer
+import org.grails.config.PropertySourcesConfig
 import org.grails.orm.hibernate.HibernateGormEnhancer
 import org.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
 import org.grails.datastore.gorm.GormEnhancer
@@ -46,6 +47,8 @@ import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
 import org.springframework.core.env.Environment
+import org.springframework.core.env.MutablePropertySources
+import org.springframework.core.env.PropertiesPropertySource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
 
@@ -80,7 +83,11 @@ class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoader
 
         initializer = new HibernateDatastoreSpringInitializer(classLoader, packages as String[])
         initializer.resourceLoader = resourceLoader
-        initializer.setConfiguration(getDatastoreConfiguration())
+        def properties = getDatastoreConfiguration()
+
+        def propertySources = new MutablePropertySources()
+        propertySources.addFirst new PropertiesPropertySource("hibernateConfig", properties)
+        initializer.setConfiguration(new PropertySourcesConfig(propertySources))
         initializer.configureForBeanDefinitionRegistry(registry)
 
         registry.registerBeanDefinition("org.grails.internal.gorm.hibernate4.EAGER_INIT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))

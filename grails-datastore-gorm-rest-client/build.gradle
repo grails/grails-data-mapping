@@ -1,4 +1,3 @@
-//version = "4.0.0.BUILD-SNAPSHOT"
 dependencies {
     compile 'javax.servlet:javax.servlet-api:3.0.1'
     runtime "org.springframework:spring-webmvc:$springVersion"

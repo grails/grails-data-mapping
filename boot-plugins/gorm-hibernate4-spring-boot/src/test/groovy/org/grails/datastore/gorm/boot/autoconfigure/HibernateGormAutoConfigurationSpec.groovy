@@ -1,10 +1,8 @@
 package org.grails.datastore.gorm.boot.autoconfigure
 
 import grails.persistence.Entity
-import org.grails.orm.hibernate.HibernateDatastore
-import org.grails.orm.hibernate.HibernateGormEnhancer
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration
-import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration
@@ -24,6 +22,7 @@ class HibernateGormAutoConfigurationSpec extends Specification{
 
     void setup() {
 
+        AutoConfigurationPackages.register(context, "org.grails.datastore.gorm.boot.autoconfigure")
         this.context.register( TestConfiguration, EmbeddedDataSourceConfiguration.class,
                 PropertyPlaceholderAutoConfiguration.class);
     }
@@ -33,14 +32,15 @@ class HibernateGormAutoConfigurationSpec extends Specification{
         when:"The context is refreshed"
             context.refresh()
 
+            def result = Person.withTransaction {
+                Person.count()
+            }
 
         then:"GORM queries work"
-            Person.count() == 0
-            Person.list().size() == 0
+            result == 0
     }
 
     @Configuration
-    @TestAutoConfigurationPackage(Person)
     @Import(HibernateGormAutoConfiguration)
     static class TestConfiguration {
     }

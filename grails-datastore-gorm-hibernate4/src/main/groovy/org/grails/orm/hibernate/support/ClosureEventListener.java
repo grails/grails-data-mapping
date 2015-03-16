@@ -15,6 +15,8 @@
  */
 package org.grails.orm.hibernate.support;
 
+import grails.core.GrailsDomainClassProperty;
+import grails.util.GrailsClassUtils;
 import grails.validation.ValidationException;
 import groovy.lang.*;
 
@@ -26,8 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.grails.orm.hibernate.AbstractHibernateGormValidationApi;
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder;

@@ -872,10 +872,6 @@ class AuthorClass {
         }
         def pluginManager = pluginManagerMap as GrailsPluginManager
 
-        // no config property specified
-        def cfg = new ConfigSlurper().parse('''
-''')
-        grailsApplication.config.merge(cfg)
         def config = getDomainConfig(grailsApplication, pluginManager)
         def persistentClass = config.getClassMapping("WidgetClass")
         assertEquals("widget_class", persistentClass.table.name)
@@ -886,11 +882,7 @@ class AuthorClass {
         persistentClass = config.getClassMapping("AuthorClass")
         assertEquals("author_class", persistentClass.table.name)
 
-        // config property is true
-        cfg = new ConfigSlurper().parse('''
-grails.gorm.table.prefix.enabled = true
-''')
-        grailsApplication.config.merge(cfg)
+        grailsApplication.config['grails.gorm.table.prefix.enabled'] = true
         config = getDomainConfig(grailsApplication, pluginManager)
         persistentClass = config.getClassMapping("WidgetClass")
         assertEquals("widget_class", persistentClass.table.name)
@@ -901,11 +893,7 @@ grails.gorm.table.prefix.enabled = true
         persistentClass = config.getClassMapping("AuthorClass")
         assertEquals("publisher_author_class", persistentClass.table.name)
 
-        // config property is false
-        cfg = new ConfigSlurper().parse('''
-grails.gorm.table.prefix.enabled = false
-''')
-        grailsApplication.config.merge(cfg)
+        grailsApplication.config['grails.gorm.table.prefix.enabled'] = false
         config = getDomainConfig(grailsApplication, pluginManager)
         persistentClass = config.getClassMapping("WidgetClass")
         assertEquals("widget_class", persistentClass.table.name)
@@ -916,11 +904,7 @@ grails.gorm.table.prefix.enabled = false
         persistentClass = config.getClassMapping("AuthorClass")
         assertEquals("author_class", persistentClass.table.name)
 
-        // config property for one plugin is true
-        cfg = new ConfigSlurper().parse('''
-grails.gorm.publisher.table.prefix.enabled = true
-''')
-        grailsApplication.config.merge(cfg)
+        grailsApplication.config['grails.gorm.publisher.table.prefix.enabled'] = true
         config = getDomainConfig(grailsApplication, pluginManager)
         persistentClass = config.getClassMapping("WidgetClass")
         assertEquals("widget_class", persistentClass.table.name)
@@ -931,12 +915,8 @@ grails.gorm.publisher.table.prefix.enabled = true
         persistentClass = config.getClassMapping("AuthorClass")
         assertEquals("publisher_author_class", persistentClass.table.name)
 
-        // global config property is true and one plugin property is false
-        cfg = new ConfigSlurper().parse('''
-grails.gorm.table.prefix.enabled = true
-grails.gorm.myPlugin.table.prefix.enabled = false
-''')
-        grailsApplication.config.merge(cfg)
+        grailsApplication.config['grails.gorm.table.prefix.enabled'] = true
+        grailsApplication.config['grails.gorm.myPlugin.table.prefix.enabled'] = false
         config = getDomainConfig(grailsApplication, pluginManager)
         persistentClass = config.getClassMapping("WidgetClass")
         assertEquals("widget_class", persistentClass.table.name)

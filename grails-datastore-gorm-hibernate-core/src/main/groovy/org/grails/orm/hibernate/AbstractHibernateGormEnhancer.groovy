@@ -50,6 +50,7 @@ abstract class AbstractHibernateGormEnhancer extends GormEnhancer {
     }
 
     @Override
+    @CompileStatic
     void enhance(PersistentEntity e, boolean onlyExtendedMethods) {
         super.enhance(e, onlyExtendedMethods)
 
@@ -63,6 +64,7 @@ abstract class AbstractHibernateGormEnhancer extends GormEnhancer {
     }
 
     @Override
+    @CompileStatic
     protected void registerNamedQueries(PersistentEntity entity, Closure namedQueries) {
         if (grailsApplication == null) {
             return
@@ -75,6 +77,11 @@ abstract class AbstractHibernateGormEnhancer extends GormEnhancer {
 
     protected void registerAssociationIdentifierGetter(ProxyFactory proxyFactory, MetaClass metaClass, ToOne association) {
         // no-op
+    }
+
+    @Override
+    protected void addAssociationMethods(PersistentEntity e) {
+        // no-op, handled by addRelationshipManagementMethods
     }
 
     /**

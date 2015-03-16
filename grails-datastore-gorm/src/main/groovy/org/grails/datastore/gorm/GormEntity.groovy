@@ -17,25 +17,36 @@ package org.grails.datastore.gorm
 
 import grails.gorm.DetachedCriteria
 import org.grails.datastore.gorm.async.GormAsyncStaticApi
+import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.api.BuildableCriteria
 import org.grails.datastore.mapping.query.api.Criteria
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.validation.Errors
 
 /**
- * 
+ *
+ * A trait that turns any class into a GORM entity
+ *
  * @author Jeff Brown
+ * @authro Graeme Rocher
  * @since 4.0
  */
-trait GormEntity<D> {
+trait GormEntity<D> implements GormValidateable {
     
     private static GormInstanceApi internalInstanceApi
     private static GormStaticApi<D> internalStaticApi
 
+    /**
+     * Used to initialise the state of GORM. This method is used internally by the framework and SHOULD NOT be called by the developer
+     */
     static void initInternalApi(GormInstanceApi api) {
         internalInstanceApi = api
     }
 
+    /**
+     * Used to obtain the {@link GormInstanceApi} instance. This method is used internally by the framework and SHOULD NOT be called by the developer
+     */
     static GormInstanceApi currentGormInstanceApi() {
         if(internalInstanceApi == null) {
             throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
@@ -43,10 +54,16 @@ trait GormEntity<D> {
         internalInstanceApi
     }
 
+    /**
+     * Used to initialise the state of GORM. This method is used internally by the framework and SHOULD NOT be called by the developer
+     */
     static void initInternalStaticApi(GormStaticApi<D> api) {
         internalStaticApi = api
     }
 
+    /**
+     * Used to obtain the {@link GormInstanceApi} instance. This method is used internally by the framework and SHOULD NOT be called by the developer
+     */
     static GormStaticApi<D> currentGormStaticApi() {
         if(internalStaticApi == null) {
             throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
@@ -233,6 +250,17 @@ trait GormEntity<D> {
         currentGormInstanceApi().getPersistentValue this, fieldName
     }
 
+
+    /**
+     * @return The PersistentEntity for this class
+     */
+    static PersistentEntity getGormPersistentEntity() {
+        currentGormStaticApi().persistentEntity
+    }
+
+    static List<FinderMethod> getGormDynamicFinders() {
+        currentGormStaticApi().gormDynamicFinders
+    }
     /**
      *
      * @param callable Callable closure containing detached criteria definition
@@ -805,26 +833,79 @@ trait GormEntity<D> {
         currentGormStaticApi().getValidationSkipMap()
     }
 
+    /**
+     * Executes a query for the given String
+     *
+     * @param query The query represented by the given string
+     * @return A list of results
+     */
     static List<D> executeQuery(String query) {
         currentGormStaticApi().executeQuery query
     }
 
+    /**
+     * Executes a query for the given String
+     *
+     * @param query The query represented by the given string
+     * @param args The arguments to the query
+     *
+     * @return A list of results
+     *
+     */
     static List<D> executeQuery(String query, Map args) {
         currentGormStaticApi().executeQuery query, args
     }
 
+    /**
+     * Executes a query for the given String
+     *
+     * @param query The query represented by the given string
+     * @param params The named parameters to the query
+     * @param args The arguments to the query
+     *
+     * @return A list of results
+     *
+     */
     static List<D> executeQuery(String query, Map params, Map args) {
         currentGormStaticApi().executeQuery query, params, args
     }
 
+    /**
+     * Executes a query for the given String
+     *
+     * @param query The query represented by the given string
+     * @param params The positional parameters to the query
+     *
+     * @return A list of results
+     *
+     */
     static List<D> executeQuery(String query, Collection params) {
         currentGormStaticApi().executeQuery query, params
     }
 
+    /**
+     * Executes a query for the given String
+     *
+     * @param query The query represented by the given string
+     * @param params The positional parameters to the query
+     *
+     * @return A list of results
+     *
+     */
     static List<D> executeQuery(String query, Object...params) {
         currentGormStaticApi().executeQuery query, params
     }
 
+    /**
+     * Executes a query for the given String
+     *
+     * @param query The query represented by the given string
+     * @param params The positional parameters to the query
+     * @param args The arguments to the query
+     *
+     * @return A list of results
+     *
+     */
     static List<D> executeQuery(String query, Collection params, Map args) {
         currentGormStaticApi().executeQuery query, params, args
     }

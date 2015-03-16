@@ -1,37 +1,49 @@
 language: groovy
 services:
-  - redis
-  - mongodb
-  - cassandra
+- redis
+- mongodb
+- cassandra
 jdk:
-  - oraclejdk7
+- oraclejdk7
 env:
   global:
-    - TERM=dumb
-    - GRADLE_OPTS="-Xmx1024m -Xms256m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled"
-    - GIT_NAME="Graeme Rocher"
-    - GIT_EMAIL="graeme.rocher@gmail.com"
-    - secure: f2DAQhvxnzr4zptig+H8vPMWr+pMCLw29oHG+A1U20IBowgSrHThfpleIXRTi45Frmv7tSyD5S9Zq+v/tM5Mh2NLljVugYsg7EGIbLVGQQPmnjhG934RyYpwJM+CzypOR8QH9YqTQtzbFUDGpqJ01A2viHsM8nLCp1vxuhW1srU=
-    - secure: J+KWbE5RaZvcEibGWp2X4yR7bDKyRR0Yi+fm7Fyzs8PDpI3qJj/OqYiffgjGWPMFvGsYcH7pyhaYeFz1Z/8qcNGU6pw3/QV412WqWLO1pbWQZdrGbEgES0kpZzy/rliLBYwtuIS5DyjY3L3t4D2S2vcwZpvTWU9eqVikCC+R2eg=
-    - secure: YM7rkQX1UzKuvMdjw8qCAQ0kWHJFpHZBvOoPaF3kuUUEbfFj/LgEh0xERnKyKz5QduRQipEFgpy492yJT1cb1wrH2YPt1cP+oDq9KOQr6vJB6Z/Xz0WsrgrU80rUBm4KrKXPRe/DMq/Lv3twnnB3Deub3nKSERidDW40JSnMLIE=
-    - secure: X1ffz/ywsPMxaN73nH86Pr4RD7q0p0IaKI7v+5yPvX2g59LY4aJFYEl9Jt65e8+c0mkESNXxocQ1dnL4lehXBFrC4rTWhJvly4URa81clbY8l5EOTZQha/tyGXUOYyaGK409LrEcmLOGSvBTV3YsV83xhMTLhrOZ1VwI5zL6MjE=
+  - TERM=dumb
+  - MALLOC_ARENA_MAX=1
+  - GRADLE_OPTS="-Xmx1024m -Xms256m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled"
+  - GIT_NAME="Graeme Rocher"
+  - GIT_EMAIL="graeme.rocher@gmail.com"
+  - secure: f2DAQhvxnzr4zptig+H8vPMWr+pMCLw29oHG+A1U20IBowgSrHThfpleIXRTi45Frmv7tSyD5S9Zq+v/tM5Mh2NLljVugYsg7EGIbLVGQQPmnjhG934RyYpwJM+CzypOR8QH9YqTQtzbFUDGpqJ01A2viHsM8nLCp1vxuhW1srU=
+  - secure: J+KWbE5RaZvcEibGWp2X4yR7bDKyRR0Yi+fm7Fyzs8PDpI3qJj/OqYiffgjGWPMFvGsYcH7pyhaYeFz1Z/8qcNGU6pw3/QV412WqWLO1pbWQZdrGbEgES0kpZzy/rliLBYwtuIS5DyjY3L3t4D2S2vcwZpvTWU9eqVikCC+R2eg=
+  - secure: YM7rkQX1UzKuvMdjw8qCAQ0kWHJFpHZBvOoPaF3kuUUEbfFj/LgEh0xERnKyKz5QduRQipEFgpy492yJT1cb1wrH2YPt1cP+oDq9KOQr6vJB6Z/Xz0WsrgrU80rUBm4KrKXPRe/DMq/Lv3twnnB3Deub3nKSERidDW40JSnMLIE=
+  - secure: X1ffz/ywsPMxaN73nH86Pr4RD7q0p0IaKI7v+5yPvX2g59LY4aJFYEl9Jt65e8+c0mkESNXxocQ1dnL4lehXBFrC4rTWhJvly4URa81clbY8l5EOTZQha/tyGXUOYyaGK409LrEcmLOGSvBTV3YsV83xhMTLhrOZ1VwI5zL6MjE=
+  - secure: IuhdxpD1Q1of9F7zACAgzAukE3eqSZTVYr7WgH+YMKPwHBHQVpn9tBFdSGs2zYu2GSE5kVJI8uJdxe5nH6Qz+RR1xtGueqgxiXTtfz/bYT52YoFdzb4lmtrKDqFjJHiAkhCDRRCDne/4Jeijo0eXnZaHutJimNQhQMBkxyl00Qg=
+  - secure: UAhcoZ20NWTdGAUP830TD2jFVAsr3FAeuqEL7vwI43xbX0+KNG4RVn3oNEppl9LIdaKN8tjJ9753Falb7WeeTSWbHn4LLUbz0QkCABACiXIctJSg4IrnNixCH3rGHR01ds5qElOOLtqRMWFLO4cXaav9pgUtmsCBmVo+xXXw2No=
+  - secure: Q/1Dc356V+upCQZn5SZAdedEs7WdLeoCE/CKySIlicq1bC9AIGK1vwUXiwmcTJpIVvusEAdTMuZX4Zz7fVy3xzDq95D6j6HpfZach/O6XHoKQLon5+w7AHh0uv1CRSdYqKLXGW18YRDGQrK5fCovdNT0+ynGX5YAZBMnu9t2Qmk=
+  - secure: HvROZ9kWW9GvKw4MZKEhsgUHQh/xSVrbOr/enq9fFX4+Cf7MGXc1ySlNHhDTV1mGdP6QTIl7CI3Xz3u9yCgXy4m3eyTgVUzeQOUAv1roiR8ajv1PleVGUOqMreejUUsFDHR1gmNR9S17hJoNZPBanB43R9tJDQVvrEUnV38Wr48=
+  - secure: FYgiX7uSiQFql2bQsOfHsTypik4/hArAFMaMcm05MoXBHyb5tl3VXwo3jEBp0MYsH9iIIJ8crlLy4ylm+8XMKOq300zZk2feqQME4x2DXxlUgmfZkbnvY+iUpmLa7OoMAqUV8ardbBrXVn/gQjDH9jvVcX+Gv7KnKE2xyzI0lQY=
+  - secure: SbEE24W2zMdao0ArFBHTDP7ntDJn3wmaVl/T42ahkzQUSjQiND+TXwJLhaNADJDIyLg0zmFEIKUk7g7HUMOdw5a2foZbz7BESkz4Nnuhw5O7CgJdIYL6lfLNPkOA6pc7H7D0D5J39vLk4PDqpOJxUw+sgaH2gg2F13kWFk8YZVY=
+  - secure: D604qHBpW7UuFuxkhu/cqVzpEESkkipWTKyz3j75i2k+ocQXcYXSj3zDMk4Hmo/iTHszwCgXk1w/5aj+mxRVecewmXmpFk3Q63qPvJprAjcvatmxp82aBmmpPd9GHjKbyLmu6Gn3R8QtX6yAT75T9lf4Y1FMi9mVwFPOtLiSEs0=
   matrix:
-    - GORM_IMPL=test
-    - GORM_IMPL=hibernate
-    - GORM_IMPL=hibernate4
-    - GORM_IMPL=mongodb
-    - GORM_IMPL=redis
-    - GORM_IMPL=cassandra
-    - GORM_IMPL=neo4j
+  - GORM_IMPL=test
+  - GORM_IMPL=hibernate
+  - GORM_IMPL=hibernate4
+  - GORM_IMPL=mongodb
+  - GORM_IMPL=redis
+  - GORM_IMPL=cassandra
+  - GORM_IMPL=neo4j
+  - GORM_IMPL=restclient
+before_install:
+- openssl aes-256-cbc -pass pass:$SIGNING_PASSPHRASE -in secring.gpg.enc -out secring.gpg
+  -d
 matrix:
   fast_finish: true
 script: ./travis-build.sh
 install: true
 after_success:
-  - python ./travis/travis_after_all.py
-  - export $(cat .to_export_back)
-  - ./travis-publish.sh
-after_failure: 
-  - python ./travis/travis_after_all.py
-  - export $(cat .to_export_back)
-  - ./travis-after-failure.sh
+- python ./travis/travis_after_all.py
+- export $(cat .to_export_back)
+- ./travis-publish.sh
+after_failure:
+- python ./travis/travis_after_all.py
+- export $(cat .to_export_back)
+- ./travis-after-failure.sh

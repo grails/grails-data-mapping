@@ -20,10 +20,8 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
 @CompileStatic
 class HibernateGrailsPlugin extends Plugin {
 
-
-    def version = '4.3.5.5-SNAPSHOT'
-    def grailsVersion = '2.3.5 > *'
-    def author = 'Burt Beckwith'
+    def grailsVersion = '3.0.0 > *'
+    def author = 'Grails Core Team'
     def title = 'Hibernate 4 for Grails'
     def description = 'Provides integration between Grails and Hibernate 4 through GORM'
     def documentation = 'http://grails.org/plugin/hibernate4'
@@ -34,7 +32,7 @@ class HibernateGrailsPlugin extends Plugin {
     def pluginExcludes = ['src/templates/**']
 
     def license = 'APACHE'
-    def organization = [name: 'Pivotal', url: 'http://pivotal.io']
+    def organization = [name: 'Grails', url: 'http://grails.org']
     def issueManagement = [system: 'JIRA', url: 'http://jira.grails.org/browse/GPHIB']
     def scm = [url: 'https://github.com/grails-plugins/grails-hibernate4-plugin']
 
@@ -47,12 +45,13 @@ class HibernateGrailsPlugin extends Plugin {
         Map dataSources = config.getProperty('dataSources', Map, [:])
 
         if(dataSources) {
-            for (name in config.keySet()) {
-                if(name == 'dataSource') {
+            for (name in dataSources.keySet()) {
+                def nameAsString = name.toString()
+                if(nameAsString == 'dataSource') {
                     datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
                 }
                 else {
-                    datasourceNames << name
+                    datasourceNames << nameAsString
                 }
             }
         }

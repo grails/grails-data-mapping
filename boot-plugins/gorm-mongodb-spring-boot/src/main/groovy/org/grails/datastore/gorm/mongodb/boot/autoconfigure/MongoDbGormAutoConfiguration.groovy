@@ -15,10 +15,12 @@
 package org.grails.datastore.gorm.mongodb.boot.autoconfigure
 
 import com.mongodb.Mongo
+import com.mongodb.MongoClientOptions
 import com.mongodb.MongoOptions
 import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
 import groovy.transform.CompileStatic
 import org.grails.compiler.gorm.GormTransformer
+import org.grails.config.PropertySourcesConfig
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.springframework.beans.BeansException
@@ -39,6 +41,8 @@ import org.springframework.context.*
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
 import org.springframework.core.env.Environment
+import org.springframework.core.env.MutablePropertySources
+import org.springframework.core.env.PropertiesPropertySource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
 
@@ -62,7 +66,7 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
     Mongo mongo
 
     @Autowired(required = false)
-    MongoOptions mongoOptions
+    MongoClientOptions mongoOptions
 
     BeanFactory beanFactory
 
@@ -94,11 +98,15 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
             }
         }
         initializer.resourceLoader = resourceLoader
-        initializer.setConfiguration(getDatastoreConfiguration())
+        def properties = getDatastoreConfiguration()
+
+        def propertySources = new MutablePropertySources()
+        propertySources.addFirst new PropertiesPropertySource("mongoConfig", properties)
+        initializer.setConfiguration(new PropertySourcesConfig(propertySources))
         initializer.setMongo(mongo)
         initializer.setMongoOptions(mongoOptions)
-        if(properties != null) {
-            initializer.setDatabaseName(properties.database)
+        if(this.properties != null) {
+            initializer.setDatabaseName(this.properties.database)
         }
         else if(environment != null){
             def config = environment.getSubProperties("mongodb.")

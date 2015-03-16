@@ -18,6 +18,7 @@ package org.grails.datastore.gorm.plugin.support
 import grails.core.GrailsDomainClassProperty
 import grails.core.GrailsServiceClass
 import org.grails.validation.GrailsDomainClassValidator
+import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
 import java.lang.reflect.Method
 
@@ -36,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional
  * @since 1.0
  */
 abstract class SpringConfigurer {
+
+
 
     /**
      * The name of the datastore type (example "Mongo" or "Neo4j")
@@ -156,4 +159,6 @@ abstract class SpringConfigurer {
             return false
         }
     }
+
+
 }

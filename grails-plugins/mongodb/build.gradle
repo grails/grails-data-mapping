@@ -1,20 +1,53 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "http://repo.grails.org/grails/core" }
+    }
+    dependencies {
+        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+    }
+}
+
+plugins {
+    id "io.spring.dependency-management" version "0.4.0.RELEASE"
+}
 
 group = "org.grails.plugins"
-version = "4.0.0.BUILD-SNAPSHOT"
+version = mongodbPluginVersion
 
-apply from:'https://raw.githubusercontent.com/grails/grails-boot/master/gradle/maven-central-build.gradle'
-
-configurations {
-    provided
+ext {
+    isGrailsPlugin = true
 }
+
+apply plugin: "org.grails.grails-plugin"
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply from:'../../gradle/maven-central-build.gradle'
+
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+    mavenLocal()
+    maven { url "http://repo.grails.org/grails/core" }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.grails:grails-bom:$grailsVersion"
+    }
+    applyMavenExclusions false
+}
+
 
 dependencies {
 
 
-    provided("org.grails:grails-core:$grailsVersion")
-    provided("org.grails:grails-plugin-converters:$grailsVersion")
+    provided("org.grails:grails-core")
+    provided("org.grails:grails-bootstrap")
+    provided("org.grails:grails-plugin-converters")
     provided 'javax.servlet:javax.servlet-api:3.1.0'
-    compile 'org.codehaus.groovy:groovy:2.3.7'
 
     compile project(":grails-datastore-gorm-mongodb"), {
         exclude group:'org.springframework', module:'spring-context'
@@ -27,17 +60,4 @@ dependencies {
         exclude group:'org.grails', module:'grails-async'
         exclude group:'javax.transaction', module:'jta'
     }
-}
-
-sourceSets {
-    main {
-        compileClasspath += configurations.provided
-    }
-}
-
-def installer = install.repositories.mavenInstaller
-def deployer = uploadArchives.repositories.mavenDeployer
-
-[installer, deployer]*.pom*.whenConfigured { pom ->
-    pom.artifactId = 'mongodb'
 }

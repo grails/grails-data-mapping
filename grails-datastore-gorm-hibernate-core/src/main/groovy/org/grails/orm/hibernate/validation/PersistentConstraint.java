@@ -14,8 +14,8 @@
  */
 package org.grails.orm.hibernate.validation;
 
+import grails.validation.Constraint;
 import org.grails.orm.hibernate.IHibernateTemplate;
-import org.codehaus.groovy.grails.validation.Constraint;
 import org.springframework.context.ApplicationContextAware;
 
 /**

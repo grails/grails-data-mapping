@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.mongo.plugin.support
 import com.mongodb.MongoClientURI
 import org.grails.datastore.gorm.mongo.bean.factory.DefaultMappingHolder
 import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
+import org.grails.datastore.gorm.mongo.bean.factory.MongoClientOptionsFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoDatastoreFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoMappingContextFactoryBean
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
@@ -70,11 +71,9 @@ class MongoSpringConfigurer extends SpringConfigurer {
                 }
             }
 
-            mongoOptions(MongoOptionsFactoryBean) {
+            mongoOptions(MongoClientOptionsFactoryBean) {
                 if (mongoConfig?.options) {
-                    for (option in mongoConfig.remove("options")) {
-                        setProperty(option.key, option.value)
-                    }
+                    mongoOptions = mongoConfig?.options
                 }
             }
 
@@ -112,7 +111,7 @@ class MongoSpringConfigurer extends SpringConfigurer {
                     if (mongoPort) port = mongoPort
                 }
             }
-            mongoBean(mongo: "getMongo")
+            mongoBean(mongo: "getMongoClient")
             mongoDatastore(MongoDatastoreFactoryBean) {
                 mongo = ref("mongoBean")
                 mappingContext = mongoMappingContext

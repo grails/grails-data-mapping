@@ -9,7 +9,7 @@ import java.util.Currency;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import grails.core.GrailsDomainClassProperty;
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -18,6 +18,8 @@ import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.data.cassandra.mapping.CassandraSimpleTypeHolder;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
+import org.springframework.data.util.TypeInformation;
+import org.springframework.validation.Errors;
 
 /**
  * Extends default
@@ -33,7 +35,15 @@ public class BasicCassandraMappingContext extends org.springframework.data.cassa
 	public BasicCassandraMappingContext(CassandraMappingContext gormCassandraMappingContext) {
 		this.gormCassandraMappingContext = gormCassandraMappingContext;
 	}
-	
+
+	@Override
+	protected CassandraPersistentEntity<?> addPersistentEntity(TypeInformation<?> typeInformation) {
+		if(!typeInformation.getType().isInterface()) {
+			return super.addPersistentEntity(typeInformation);
+		}
+		return null;
+	}
+
 	@Override
 	public CassandraPersistentProperty createPersistentProperty(Field field, PropertyDescriptor descriptor, CassandraPersistentEntity<?> owner, SimpleTypeHolder simpleTypeHolder) {
 		PersistentEntity gormEntity = gormCassandraMappingContext.getPersistentEntity(owner.getName());			
@@ -49,9 +59,14 @@ public class BasicCassandraMappingContext extends org.springframework.data.cassa
 		if (field != null && Modifier.isTransient(field.getModifiers())) {
 			return transientProperty;
 		}
-		if (field != null && GrailsDomainClassProperty.ERRORS.equals(field.getName())) {
+		if (field != null && grails.core.GrailsDomainClassProperty.ERRORS.equals(field.getName())) {
 			return transientProperty;
 		}
+
+		if (field != null && field.getType().equals(Errors.class)) {
+			return transientProperty;
+		}
+
 		Class<?> rawType = field != null ? field.getType() : descriptor != null ? descriptor.getPropertyType() : null;
 		if (rawType == null) {
 			return transientProperty;

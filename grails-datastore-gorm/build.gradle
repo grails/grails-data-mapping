@@ -1,6 +1,3 @@
-configurations {
-    optional
-}
 dependencies {
 
     compile project(":grails-datastore-core")
@@ -50,7 +47,7 @@ dependencies {
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
 
-    optional "org.springframework:spring-web:$springVersion"
+    provided "org.springframework:spring-web:$springVersion"
 
     testCompile "org.grails:grails-spring:$grailsVersion"
 }
@@ -80,22 +77,5 @@ eclipse {
                  }
             }
         }
-    }
-}
-sourceSets {
-    main {
-        compileClasspath += files(configurations.optional)
-    }
-}
-
-idea {
-    module {
-        scopes.PROVIDED.plus += [configurations.optional]
-    }
-}
-
-eclipse {
-    classpath {
-        plusConfigurations += [configurations.optional]
     }
 }

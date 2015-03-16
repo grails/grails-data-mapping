@@ -86,22 +86,7 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
                 return;
             }
 
-            request = (WebRequest) RequestContextHolder.currentRequestAttributes();
-            if (!(request instanceof GrailsWebRequest)) {
-                super.afterCompletion(request, ex);
-                return;
-            }
-
-
-            try {
-                Session session = SessionFactoryUtils.getSession(getSessionFactory(), false);
-                if (session != null) {
-                    session.disconnect();
-                }
-            }
-            catch (IllegalStateException e) {
-                super.afterCompletion(request, ex);
-            }
+            super.afterCompletion(request, ex);
         } finally {
             AbstractHibernateGormInstanceApi.clearDisabledValidations();
         }

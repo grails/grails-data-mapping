@@ -15,41 +15,46 @@
 
 package org.grails.datastore.gorm.mongo.bean.factory
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
+import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
-import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.mongo.MongoDatastore
 
 import com.mongodb.Mongo
+import org.springframework.context.ConfigurableApplicationContext
 
 /**
  * Factory bean for constructing a {@link MongoDatastore} instance.
  *
  * @author Graeme Rocher
  */
+@CompileStatic
 class MongoDatastoreFactoryBean implements FactoryBean<MongoDatastore>, ApplicationContextAware {
 
     Mongo mongo
-    MappingContext mappingContext
+    MongoMappingContext mappingContext
     Map<String,String> config = [:]
     ApplicationContext applicationContext
 
     MongoDatastore getObject() {
 
         MongoDatastore datastore
+
+        def configurableApplicationContext = (ConfigurableApplicationContext) applicationContext
         if (mongo) {
-            datastore = new MongoDatastore(mappingContext, mongo, config, applicationContext)
+            datastore = new MongoDatastore(mappingContext, mongo, config, configurableApplicationContext)
         }
         else {
-            datastore = new MongoDatastore(mappingContext, config, applicationContext)
+            datastore = new MongoDatastore(mappingContext, config, configurableApplicationContext)
         }
 
 
-        applicationContext.addApplicationListener new DomainEventListener(datastore)
-        applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
+        configurableApplicationContext.addApplicationListener new DomainEventListener(datastore)
+        configurableApplicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
 
         datastore.afterPropertiesSet()
         datastore

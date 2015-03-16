@@ -7,10 +7,14 @@ import groovy.transform.CompileStatic
 import org.grails.compiler.gorm.GormTransformer
 import org.grails.config.PropertySourcesConfig
 import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
+import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.grails.validation.GrailsDomainClassValidator
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ResourceLoaderAware
+import org.springframework.core.env.MapPropertySource
 import org.springframework.core.env.MutablePropertySources
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
@@ -27,12 +31,15 @@ import org.springframework.util.ClassUtils
  */
 abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
+    public static final String TRANSACTION_MANAGER_BEAN = 'transactionManager'
     public static final String ENTITY_CLASS_RESOURCE_PATTERN = "/**/*.class"
+    public static final String OSIV_CLASS_NAME = 'org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor'
+
 
     ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver()
     Collection<Class> persistentClasses = []
     Collection<String> packages = []
-    Map configuration = new LinkedHashMap()
+    Config configuration = new PropertySourcesConfig(new MutablePropertySources())
     Config configurationObject = new PropertySourcesConfig()
     boolean registerApplicationIfNotPresent = true
 
@@ -58,7 +65,14 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     }
 
     AbstractDatastoreInitializer(Map configuration, Collection<Class> persistentClasses) {
-        this.configuration = configuration
+        if(configuration instanceof Config) {
+            this.configuration = (Config)configuration;
+        }
+        else {
+            def sources = new MutablePropertySources()
+            this.configuration = new PropertySourcesConfig(sources)
+            sources.addFirst(new MapPropertySource("hibernateConfig", configuration))
+        }
         this.persistentClasses = persistentClasses
         if(configuration instanceof Config) {
             this.configurationObject = (Config)configuration
@@ -171,7 +185,41 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         }
     }
 
+
     abstract public Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry)
+
+    /**
+     * Internal method aiding in datastore configuration.
+     *
+     * @param registry The BeanDefinitionRegistry
+     * @param type The type of the datastore
+     *
+     * @return A closure containing bean definitions
+     */
+    Closure getAdditionalBeansConfiguration(BeanDefinitionRegistry registry, String type) {
+        {->
+            "${type}TransactionManager"(DatastoreTransactionManager) {
+                datastore = ref("${type}Datastore")
+            }
+
+            if (!registry.containsBeanDefinition(TRANSACTION_MANAGER_BEAN)) {
+                registry.registerAlias("${type}TransactionManager",TRANSACTION_MANAGER_BEAN)
+            }
+
+            "${type}PersistenceInterceptor"(DatastorePersistenceContextInterceptor, ref("${type}Datastore"))
+
+            "${type}PersistenceContextInterceptorAggregator"(PersistenceContextInterceptorAggregator)
+
+
+            def classLoader = Thread.currentThread().contextClassLoader
+            if (registry.containsBeanDefinition('dispatcherServlet') && ClassUtils.isPresent(OSIV_CLASS_NAME, classLoader)) {
+                String interceptorName = "${type}OpenSessionInViewInterceptor"
+                "${interceptorName}"(ClassUtils.forName(OSIV_CLASS_NAME, classLoader)) {
+                    datastore = ref("${type}Datastore")
+                }
+            }
+        }
+    }
 
     static class GroovyBeanReaderInit {
         static boolean isAvailable() {

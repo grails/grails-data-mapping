@@ -25,7 +25,6 @@ class CassandraTransformTest extends GroovyTestCase {
         field = Basic.class.getDeclaredField("version")
         assertNonTransientField(field)
         
-        assertNonTransientField(Basic.class.getDeclaredField("errors"))
         assertTransientField(Basic.class.getDeclaredField("tran"))
         assertTransientField(Basic.class.getDeclaredField("service"))
                 

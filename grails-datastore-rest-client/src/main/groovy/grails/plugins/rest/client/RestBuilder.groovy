@@ -285,18 +285,20 @@ class RestBuilder {
         if(stringConverter) {
             messageConverters.remove(stringConverter)
         }
+        if(ClassUtils.isPresent("org.springframework.http.converter.json.MappingJackson2HttpMessageConverter", getClass().getClassLoader())) {
         final mappingJackson2HttpMessageConverter = messageConverters.find { HttpMessageConverter httpMessageConverter -> httpMessageConverter instanceof MappingJackson2HttpMessageConverter }
         if(mappingJackson2HttpMessageConverter) {
             messageConverters.remove(mappingJackson2HttpMessageConverter)
         }
-        if(ClassUtils.isPresent("com.google.gson.Gson", getClass().getClassLoader())) {
-            messageConverters.add(new GsonHttpMessageConverter())
         }
-        messageConverters.add(new NullSafeStringHttpMessageConverter())
-        messageConverters.add(new JsonHttpMessageConverter())
-        messageConverters.add(new GPathXmlHttpMessageConverter())
-        messageConverters.add(new GrailsConverterHttpMessageConverter())
-        messageConverters.add(new WritableHttpMessageConverter())
+        if(ClassUtils.isPresent("com.google.gson.Gson", getClass().getClassLoader())) {
+            messageConverters.add(0, new GsonHttpMessageConverter())
+        }
+        messageConverters.add(0, new NullSafeStringHttpMessageConverter())
+        messageConverters.add(0, new JsonHttpMessageConverter())
+        messageConverters.add(0, new GPathXmlHttpMessageConverter())
+        messageConverters.add(0, new GrailsConverterHttpMessageConverter())
+        messageConverters.add(0, new WritableHttpMessageConverter())
     }
 
 

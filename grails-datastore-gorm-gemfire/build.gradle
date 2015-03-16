@@ -1,4 +1,4 @@
-//version = "4.0.0.BUILD-SNAPSHOT"
+version = "${projectVersion}.BUILD-SNAPSHOT"
 
 repositories {
     maven { url "http://dist.gemstone.com/maven/release" }
@@ -9,6 +9,8 @@ dependencies {
     compile project(":grails-datastore-gorm"),
             project(":grails-datastore-gemfire"),
             project(":grails-datastore-core")
+
+    provided "org.springframework:spring-expression:$springVersion"
 
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")

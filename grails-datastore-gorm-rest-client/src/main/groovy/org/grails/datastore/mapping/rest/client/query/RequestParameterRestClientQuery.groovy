@@ -64,8 +64,8 @@ class RequestParameterRestClientQuery extends Query {
             Query.Conjunction conjunction = (Query.Conjunction)criteria
 
             for(Query.Criterion c in conjunction.getCriteria()) {
-                if(c instanceof Equals) {
-                    Equals equals = (Equals) c
+                if(c instanceof Query.Equals) {
+                    Query.Equals equals = (Query.Equals) c
                     urlBuilder.addParam(equals.getProperty(), equals.value)
                 }
                 else {

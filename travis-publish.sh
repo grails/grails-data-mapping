@@ -2,77 +2,88 @@
 
 # use travis_after_all.py for publishing only after all builds are successfull.
 if [[ "$BUILD_LEADER" == "YES" ]]; then
-    if [[ "$BUILD_AGGREGATE_STATUS" != "others_succeeded" ]]; then
-      echo "Some builds failed, not publishing."
-      exit 0
-    fi
-else
-    # not build leader, exit
+  if [[ "$BUILD_AGGREGATE_STATUS" != "others_succeeded" ]]; then
+    echo "Some builds failed, not publishing."
     exit 0
+  fi
+else
+  # not build leader, exit
+  echo "Not build leader, exiting"
+  exit 0
 fi
 
 echo "Publishing..."
 
 EXIT_STATUS=0
 
-version=$(grep 'projectVersion =' build.gradle)
-version=${version//[[:blank:]]/}
-version="${version#*=}";
-version=${version//\"/}
+if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST == 'false' && $EXIT_STATUS -eq 0 ]]; then
 
-releaseType=$(grep 'releaseType =' build.gradle | egrep -v ^[[:blank:]]*\/\/ | egrep -v ^[[:blank:]]*isBuildSnapshot)
-releaseType=${releaseType//[[:blank:]]/}
-releaseType="${releaseType#*=}";
-releaseType=${releaseType//\"/}
+  echo "Publishing archives"
+  echo "org.gradle.jvmargs=-XX\:MaxPermSize\=1024m -Xmx1500m -Dfile.encoding\=UTF-8 -Duser.country\=US -Duser.language\=en -Duser.variant" >> ~/.gradle/gradle.properties
+  echo "org.gradle.daemon=true" >> ~/.gradle/gradle.properties
+  ./gradlew --stop
 
-echo "Project Version: $version $releaseType"
-if [[ ( $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == '3.x' ) && $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST == 'false' 
-    && $EXIT_STATUS -eq 0 && $releaseType == *-SNAPSHOT* 
-    && -n "$ARTIFACTORY_PASSWORD" ]]; then
-    echo "Publishing archives"
-    ./gradlew -PartifactoryPublishUsername=travis-gdm upload || EXIT_STATUS=$?
-fi
 
-if [[ $releaseType != *-SNAPSHOT* ]]
-then
-    ./gradlew allDocs
+  gpg --keyserver keyserver.ubuntu.com --recv-key $SIGNING_KEY
+  if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
+    # for releases we upload to Bintray and Sonatype OSS
+    ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" uploadArchives bintrayUpload  || EXIT_STATUS=$?
+  else
+    # for snapshots only to repo.grails.org
+    ./gradlew publish || EXIT_STATUS=$?
+  fi
 
-    base_dir=$(pwd)
+  if [[ $EXIT_STATUS -eq 0 ]]; then
+      ./gradlew allDocs || EXIT_STATUS=$?
 
-    echo "BASE DIR = $base_dir"
+      git config --global user.name "$GIT_NAME"
+      git config --global user.email "$GIT_EMAIL"
+      git config --global credential.helper "store --file=~/.git-credentials"
+      echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
-    git config --global user.name "$GIT_NAME"
-    git config --global user.email "$GIT_EMAIL"
-    git config --global credential.helper "store --file=~/.git-credentials"
-    echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
+      git clone https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git -b gh-pages gh-pages --single-branch > /dev/null
+      cd gh-pages
 
-    git clone https://${GH_TOKEN}@github.com/grails/grails-data-mapping.git -b gh-pages gh-pages --single-branch > /dev/null
-    cd gh-pages
-    echo "Making directory for Version: $version"
-    mkdir -p "$version"
-    cd "$version"    
-    current_dir=$(pwd)
-    git rm -rf .    
-    mkdir -p "$current_dir"
+      # If this is the master branch then update the snapshot
+      if [[ $TRAVIS_BRANCH == 'master' ]]; then
+        mkdir -p snapshot
+        cp -r ../build/docs/. ./snapshot/
 
-    echo "Current Directory: $current_dir"
-    cp -r "$base_dir/build/docs/." "$current_dir/"
-    cd ..
-    mkdir -p current
-    cd current
-    current_dir=$(pwd)
-    git rm -rf .
-    mkdir -p "$current_dir"
-    
-    echo "Current Directory: $current_dir"
-    cp -r "$base_dir/build/docs/." "$current_dir/"
-    cd ..
-    cp -r "$base_dir/build/docs/." ./
-    git add .
-    git commit -a -m "Updating docs for Travis build: https://travis-ci.org/grails/grails-data-mapping/builds/$TRAVIS_BUILD_ID"
-    git push origin HEAD
-    cd ..
-    rm -rf gh-pages
+        git add snapshot/*
+      fi
+
+      # If there is a tag present then this becomes the latest
+      if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
+        version="$TRAVIS_TAG"
+        version=${version:1}
+        milestone=${version:5}
+        if [[ -n $milestone ]]; then
+          mkdir -p latest
+          cp -r ../build/docs/. ./latest/
+          git add latest/*
+        fi
+
+        majorVersion=${version:0:4}
+        majorVersion="${majorVersion}x"
+
+        mkdir -p "$version"
+        cp -r ../build/docs/. "./$version/"
+        git add "$version/*"
+
+        mkdir -p "$majorVersion"
+        cp -r ../build/docs/. "./$majorVersion/"
+        git add "$majorVersion/*"
+
+      fi
+
+      git commit -a -m "Updating docs for Travis build: https://travis-ci.org/$TRAVIS_REPO_SLUG/builds/$TRAVIS_BUILD_ID"
+      git push origin HEAD
+      cd ..
+      rm -rf gh-pages
+  else
+      echo "Error occured during publishing, skipping docs"
+  fi
+
 fi
 
 exit $EXIT_STATUS

@@ -100,7 +100,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
             // become problematic if http://jira.codehaus.org/browse/GROOVY-5876 is addressed...
             final argumentsForMethod
             if(varArgs == null) {
-                argumentsForMethod = [null]
+                argumentsForMethod = [null] as Object[]
             } else if(varArgs.length == 1 && varArgs[0].getClass().isArray()) {
                 argumentsForMethod = varArgs[0]
             } else {
