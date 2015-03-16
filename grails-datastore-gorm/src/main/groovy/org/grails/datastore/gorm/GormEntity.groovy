@@ -17,6 +17,8 @@ package org.grails.datastore.gorm
 
 import grails.gorm.DetachedCriteria
 import org.grails.datastore.gorm.async.GormAsyncStaticApi
+import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.api.BuildableCriteria
 import org.grails.datastore.mapping.query.api.Criteria
 import org.springframework.transaction.TransactionDefinition
@@ -248,6 +250,17 @@ trait GormEntity<D> implements GormValidateable {
         currentGormInstanceApi().getPersistentValue this, fieldName
     }
 
+
+    /**
+     * @return The PersistentEntity for this class
+     */
+    static PersistentEntity getGormPersistentEntity() {
+        currentGormStaticApi().persistentEntity
+    }
+
+    static List<FinderMethod> getGormDynamicFinders() {
+        currentGormStaticApi().gormDynamicFinders
+    }
     /**
      *
      * @param callable Callable closure containing detached criteria definition

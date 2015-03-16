@@ -17,6 +17,7 @@ package org.grails.datastore.gorm
 import grails.util.GrailsMetaClassUtils
 import grails.util.GrailsNameUtils
 import grails.validation.ConstrainedProperty
+import groovy.transform.CompileStatic
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -91,6 +92,7 @@ class GormEnhancer {
      *
      * @param onlyExtendedMethods If only to add additional methods provides by subclasses of the GORM APIs
      */
+    @CompileStatic
     void enhance(boolean onlyExtendedMethods = false) {
         for (PersistentEntity e in datastore.mappingContext.persistentEntities) {
             enhance e, onlyExtendedMethods
@@ -103,8 +105,8 @@ class GormEnhancer {
      * @param e The entity
      * @param onlyExtendedMethods If only to add additional methods provides by subclasses of the GORM APIs
      */
+    @CompileStatic
     void enhance(PersistentEntity e, boolean onlyExtendedMethods = false) {
-        // TODO
         def cls = e.javaClass
         try {
             InvokerHelper.invokeStaticMethod(cls, "initInternalApi", getInstanceApi(cls))
@@ -127,7 +129,8 @@ class GormEnhancer {
 
         addStaticMethods(e, onlyExtendedMethods)
     }
-    
+
+    @CompileStatic
     protected void addStaticMethods(PersistentEntity e, boolean onlyExtendedMethods) {
         def cls = e.javaClass
         ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
@@ -140,14 +143,18 @@ class GormEnhancer {
                 if (parameterTypes != null) {
                     boolean realMethodExists = doesRealMethodExist(mc, methodName, parameterTypes, true)
                     if(!realMethodExists) {
-                        def callable = new StaticMethodInvokingClosure(staticApiProvider, methodName, parameterTypes)
-                        mc.static."$methodName" = callable
+                        registerStaticMethod(mc, methodName, parameterTypes, staticApiProvider)
                     }
                 }
             }
         }
     }
-    
+
+    protected void registerStaticMethod(ExpandoMetaClass mc, String methodName, Class<?>[] parameterTypes, GormStaticApi staticApiProvider) {
+        def callable = new StaticMethodInvokingClosure(staticApiProvider, methodName, parameterTypes)
+        mc.static."$methodName" = callable
+    }
+
     protected void addAssociationMethods(PersistentEntity e) {
         Class cls = e.javaClass
         ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
@@ -242,10 +249,12 @@ class GormEnhancer {
         }
     }
 
+    @CompileStatic
     protected <D> List<AbstractGormApi<D>> getInstanceMethodApiProviders(Class cls) {
         [getInstanceApi(cls), getValidationApi(cls)]
     }
-    
+
+    @CompileStatic
     protected void addInstanceMethods(PersistentEntity e, boolean onlyExtendedMethods) {
         Class cls = e.javaClass
         ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
@@ -279,7 +288,8 @@ class GormEnhancer {
                 }
         mc.registerInstanceMethod(closureMethod)
     }
-    
+
+    @CompileStatic
     protected static boolean doesRealMethodExist(final MetaClass mc, final String methodName, final Class[] parameterTypes, boolean staticScope) {
         boolean realMethodExists = false
         try {
@@ -294,7 +304,8 @@ class GormEnhancer {
             }
         }
     }
-        
+
+    @CompileStatic
     protected static boolean isRealMethod(MetaMethod existingMethod) {
         existingMethod instanceof CachedMethod
     }
@@ -315,24 +326,29 @@ class GormEnhancer {
         }
     }
 
+    @CompileStatic
     protected void registerNamedQueries(PersistentEntity entity, Closure namedQueries) {
         new NamedQueriesBuilder(entity, getFinders()).evaluate(namedQueries)
     }
 
+    @CompileStatic
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
         new GormStaticApi<D>(cls, datastore, getFinders(), transactionManager)
     }
 
+    @CompileStatic
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
         def instanceApi = new GormInstanceApi<D>(cls, datastore)
         instanceApi.failOnError = failOnError
         return instanceApi
     }
 
+    @CompileStatic
     protected <D> GormValidationApi<D> getValidationApi(Class<D> cls) {
         new GormValidationApi(cls, datastore)
     }
 
+    @CompileStatic
     protected List<FinderMethod> createDynamicFinders() {
         [new FindOrCreateByFinder(datastore),
          new FindOrSaveByFinder(datastore),
