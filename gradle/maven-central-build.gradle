@@ -122,7 +122,7 @@ bintray {
     user = u
     key = p
     publications = ['maven']
-    publish = false
+    publish = true
     dryRun = false
     pkg {
         if(isGrailsPlugin) {
