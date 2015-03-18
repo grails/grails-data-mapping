@@ -368,8 +368,8 @@ subprojects {
                             name 'Jeff Brown'
                         }
                         developer {
-                            id 'burtbeckwith'
-                            name 'Burt Beckwith'
+                            id 'lhotari'
+                            name 'Lari Hotari'
                         }
                     }
                 }
