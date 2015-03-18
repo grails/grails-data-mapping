@@ -84,7 +84,21 @@ task wrapper(type: Wrapper) {
 subprojects {
     if(project.name.endsWith("spring-boot")) return
     afterEvaluate { project ->
-        if (isGroovyProject(project)) {
+        def snapshotProjects = ['grails-datastore-dynamodb',
+            'grails-datastore-gorm-dynamodb',
+            'grails-datastore-gemfire',
+            'grails-datastore-gorm-gemfire',
+            'grails-datastore-gorm-jpa',
+            'grails-datastore-jpa',
+            'grails-datastore-gorm-redis',
+            'grails-datastore-gorm-riak',
+            'grails-datastore-riak',
+            'grails-datastore-gorm-simpledb',
+            'grails-datastore-simpledb',
+            'grails-datastore-gorm-cassandra',
+            'grails-datastore-gorm-neo4j'
+            ]
+        if (isGroovyProject(project) && !(project.name in snapshotProjects)) {
             def hasSnapshotVersion = project.version.endsWith("-SNAPSHOT")
             if(isBuildSnapshot != hasSnapshotVersion) {
                 throw new StopExecutionException("${project.name} has version \"${project.version}\" which is${isBuildSnapshot ? 'n\'t' : ''} a snapshot version. Current release type is ${releaseType}")
