@@ -15,7 +15,7 @@ class MongodbGrailsPlugin {
     def issueManagement = [system: "JIRA", url: "http://jira.grails.org/browse/GPMONGODB"]
     def scm = [url: "https://github.com/grails/grails-data-mapping"]
 
-    def version = "3.0.2"
+    def version = "3.0.3"
     def grailsVersion = "2.3.2 > *"
     def observe = ['services', 'domainClass']
     def loadAfter = ['domainClass', 'hibernate', 'hibernate4', 'services', 'cloudFoundry']
@@ -28,7 +28,7 @@ class MongodbGrailsPlugin {
 
     def doWithSpring = new MongoSpringConfigurer().getConfiguration()
 
-    def doWithApplicationContext = { 
+    def doWithApplicationContext = {
         JSON.registerObjectMarshaller DBObject, { dbo, json ->
             JSONWriter writer = json.getWriter();
 
@@ -69,7 +69,7 @@ class MongodbGrailsPlugin {
     def doWithDynamicMethods = { ctx ->
         def datastore = ctx.mongoDatastore
         def transactionManager = ctx.mongoTransactionManager
-        def methodsConfigurer = new MongoMethodsConfigurer(datastore, transactionManager)    
+        def methodsConfigurer = new MongoMethodsConfigurer(datastore, transactionManager)
         methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")
         def foe = application?.config?.grails?.gorm?.failOnError
         methodsConfigurer.failOnError = foe instanceof Boolean ? foe : false
@@ -78,7 +78,7 @@ class MongodbGrailsPlugin {
 
     def onChange = { event ->
         if(event.ctx) {
-            new MongoOnChangeHandler(event.ctx.mongoDatastore, event.ctx.mongoTransactionManager).onChange(delegate, event)            
+            new MongoOnChangeHandler(event.ctx.mongoDatastore, event.ctx.mongoTransactionManager).onChange(delegate, event)
         }
-    }   
+    }
 }
