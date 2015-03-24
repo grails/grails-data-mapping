@@ -17,6 +17,7 @@ package grails.gorm
 
 import grails.async.Promise
 import grails.async.Promises
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 
@@ -1111,7 +1112,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param args The arguments
      * @return The result of the method call
      */
-    @CompileStatic(TypeCheckingMode.SKIP)
+    @CompileDynamic
     def methodMissing(String methodName, args) {
         initialiseIfNecessary(targetClass)
         def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
@@ -1140,7 +1141,8 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         add associationCriteria
 
 
-        final callable = args[-1]
+        Closure callable = args[-1]
+        callable.resolveStrategy = Closure.DELEGATE_FIRST
         callable.delegate = associationCriteria
         callable.call()
     }
