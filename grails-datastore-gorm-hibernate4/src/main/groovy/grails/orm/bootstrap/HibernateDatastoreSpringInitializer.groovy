@@ -129,7 +129,6 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 String prefix = isDefault ? '' : dataSourceName + '_'
                 def sessionFactoryName = isDefault ? defaultSessionFactoryBeanName : "sessionFactory$suffix"
 
-                def hibConfig = config.getProperty("hibernate$suffix", Map, Collections.emptyMap())
                 def dsConfigPrefix = config.containsProperty('dataSources') ? "dataSources.${isDefault ? 'dataSource' : dataSourceName}" : 'dataSource'
                 def ddlAutoSetting = config.getProperty("${dsConfigPrefix}.dbCreate", ddlAuto)
 
@@ -139,12 +138,10 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                     "$entityInterceptorName"(EmptyInterceptor)
                 }
 
-
                 def hibernateProperties = new Properties()
-                if(hibConfig) {
-                    for(key in hibConfig.keySet()) {
-                        hibernateProperties["hibernate.${key}".toString()] = hibConfig.get(key)
-                    }
+                def hibConfig = config.findAll { String key, Object value -> key.startsWith("hibernate$suffix.") }
+                if (hibConfig) {
+                    hibernateProperties.putAll(hibConfig)
                 }
 
                 String logSql = config.getProperty("${dsConfigPrefix}.logSql", "")
