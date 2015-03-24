@@ -11,12 +11,13 @@ buildscript {
     }
 }
 
+
 project.ext {
     springVersion = "4.1.5.RELEASE"
     grailsVersion = "3.0.0.RC1"
     slf4jVersion = "1.7.5"
     junitVersion = "4.12"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.1'
+    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.3'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectMajorVersion = "4"
@@ -64,6 +65,7 @@ configurations {
    all*.exclude group: "commons-logging"
 }
 
+
 apply plugin: 'idea'
 apply plugin: 'project-report'
 
@@ -93,6 +95,9 @@ allprojects {
     configurations {
         all {
             resolutionStrategy {
+                    force "org.codehaus.groovy:groovy:$groovyVersion"
+                    force "org.codehaus.groovy:groovy-xml:$groovyVersion"
+
 //                def cacheHours = isCiBuild ? 1 : 24
 //                cacheDynamicVersionsFor cacheHours, 'hours'
 //                cacheChangingModulesFor cacheHours, 'hours'

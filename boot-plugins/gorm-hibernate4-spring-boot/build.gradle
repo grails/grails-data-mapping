@@ -36,11 +36,11 @@ task javadocJar(type: Jar, dependsOn:javadoc) {
 }
 
 dependencies {
-    def springBootVersion = '1.2.1.RELEASE'
+    def springBootVersion = '1.2.2.RELEASE'
     compile "org.springframework.boot:spring-boot-cli:$springBootVersion", {
         exclude group:'org.codehaus.groovy', module:'groovy'
     }
-    compile 'org.codehaus.groovy:groovy-all:2.4.1'
+    compile "org.codehaus.groovy:groovy:$groovyVersion"
     compile "org.springframework.boot:spring-boot-autoconfigure:$springBootVersion"
     compile project(":grails-datastore-gorm-hibernate4")
 

@@ -34,7 +34,7 @@ dependencies {
 
     compile "org.springframework.boot:spring-boot-autoconfigure:$springBootVersion"
 
-    compile 'org.codehaus.groovy:groovy-all:2.4.1'
+    compile "org.codehaus.groovy:groovy:$groovyVersion"
     compile project(":grails-datastore-gorm-mongodb"), {
         exclude group:'org.grails', module:'grails-datastore-gorm-plugin-support'
         exclude group:"org.springframework.data", module:"spring-data-mongodb"
