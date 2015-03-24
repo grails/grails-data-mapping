@@ -34,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
  */
 @SuppressWarnings("rawtypes")
 public class ClassPropertyFetcher {
-    private static final Log LOG = LogFactory.getLog(ClassPropertyFetcher.class);
 
     private final Class clazz;
     // static fetchers for this class, but also for all super classes with the property.
@@ -253,8 +252,8 @@ public class ClassPropertyFetcher {
             try {
                 return fetcher.get(thisCallback);
             } catch (Exception e) {
-                LOG.warn("Error fetching property's "
-                        + name + " value from class " + clazz.getName(), e);
+                System.err.println("Error fetching property's "
+                        + name + " value from class " + clazz.getName() + ": " + e.getMessage());
             }
         }
         return null;
