@@ -18,6 +18,7 @@ import grails.core.GrailsApplication
 import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
+import org.grails.config.NavigableMap
 import org.grails.orm.hibernate.*
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.HibernateUtils
@@ -143,8 +144,9 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
                 def hibernateProperties = new Properties()
                 if(hibConfig) {
-                    for(key in hibConfig.keySet()) {
-                        hibernateProperties["hibernate.${key}".toString()] = hibConfig.get(key)
+                    def subProps = hibConfig instanceof NavigableMap ? ((NavigableMap)hibConfig).toProperties() : hibConfig
+                    for(key in subProps.keySet()) {
+                        hibernateProperties["hibernate.${key}".toString()] = subProps.get(key)
                     }
                 }
 
