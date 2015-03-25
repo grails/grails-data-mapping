@@ -7,8 +7,10 @@ import grails.core.GrailsDomainClassProperty
 import grails.core.support.GrailsApplicationAware
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import grails.plugins.Plugin
+import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.orm.hibernate.validation.UniqueConstraint
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
 /**
@@ -72,4 +74,8 @@ class HibernateGrailsPlugin extends Plugin {
         beans.call()
     }}
 
+    @Override
+    void onShutdown(Map<String, Object> event) {
+        ConstrainedProperty.removeConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
+    }
 }

@@ -17,6 +17,7 @@ package grails.orm.bootstrap
 import grails.core.GrailsApplication
 import grails.core.GrailsDomainClassProperty
 import grails.util.Environment
+import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
 import org.grails.config.PropertySourcesConfig
@@ -32,6 +33,8 @@ import org.grails.orm.hibernate.support.HibernateDialectDetectorFactoryBean
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
+import org.grails.orm.hibernate.validation.PersistentConstraintFactory
+import org.grails.orm.hibernate.validation.UniqueConstraint
 import org.hibernate.EmptyInterceptor
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.ImprovedNamingStrategy
@@ -106,6 +109,9 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             Object vendorToDialect = getVenderToDialectMappings()
 
 
+            ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT,
+                    new PersistentConstraintFactory((ApplicationContext)beanDefinitionRegistry,
+                            UniqueConstraint))
 
 
             // for unwrapping / inspecting proxies
