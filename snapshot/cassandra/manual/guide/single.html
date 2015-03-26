@@ -86,9 +86,9 @@ function addJsClass(el) {
                             
                             <div class="toc-item" style="margin-left:10px"><a href="#3.1%20Identity%20Generation"><strong>3.1</strong><span>Identity Generation</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.2%20Indexing%20Queries"><strong>3.2</strong><span>Indexing Queries</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#3.2%20Compound%20Primary%20Key"><strong>3.2</strong><span>Compound Primary Key</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.2%20Compound%20Primary%20Key"><strong>3.3</strong><span>Compound Primary Key</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#3.2%20Indexing%20Queries"><strong>3.3</strong><span>Indexing Queries</span></a></div>
                             
                             <div class="toc-item" style="margin-left:10px"><a href="#3.3%20Table%20Properties"><strong>3.4</strong><span>Table Properties</span></a></div>
                             
@@ -334,18 +334,7 @@ session.clear() or p.discard()
 p.update()</pre></div>
 
 
-<h2 id="3.2 Indexing Queries">3.2 Indexing Queries</h2>
-<h4>Basics</h4><p class="paragraph"/>Cassandra doesn't require that you specify indices to query. Cassandra supports creating an index on most columns, including a clustering column of a compound primary key or on the partition (primary) key itself.
-Indexing can impact performance greatly. Before creating an index, be aware of when and <a href="http://www.datastax.com/documentation/cql/3.1/cql/ddl/ddl_when_use_index_c.html#concept_ds_sgh_yzz_zj__when-no-index" target="blank">when not to create an index</a>.<p class="paragraph"/>With that in mind it is important to specify the properties you plan to query using the mapping block:<p class="paragraph"/><div class="code"><pre>class Person &#123;
-    <span class="java&#45;object">String</span> name
-    <span class="java&#45;keyword">static</span> mapping = &#123;
-        name index:<span class="java&#45;keyword">true</span>
-    &#125;
-&#125;</pre></div><p class="paragraph"/>The above mapping will generate the following Cassandra index if schema creation is on:<p class="paragraph"/><div class="code"><pre>CREATE INDEX IF NOT EXISTS  ON person (name)</pre></div>
-
-
-
-<h2 id="3.2 Compound Primary Key">3.3 Compound Primary Key</h2>
+<h2 id="3.2 Compound Primary Key">3.2 Compound Primary Key</h2>
 In Cassandra, a compound primary key consists of more than one column and treats only one column as the partition key. The other columns are treated as clustering columns.
 To define a compound primary key on a domain class, each property that is part of the key has to be defined in the mapping block with a <code>primaryKey</code> map. Example:<p class="paragraph"/><div class="code"><pre>class Person  &#123;<p class="paragraph"/>    <span class="java&#45;object">String</span> lastName
     <span class="java&#45;object">String</span> firstName    
@@ -379,6 +368,17 @@ You should then add the <code>primaryKey</code> map to all columns of the compou
 </ul><p class="paragraph"/><h4>Persistence and Querying for Compound/Composite Primary Key domain classes</h4>
 Where you need to pass in an id to a persistence or query method, use a map containing the components of the compound/composite primary key instead.<p class="paragraph"/>Example:<p class="paragraph"/><div class="code"><pre>def person = Person.get(&#91;firstName:<span class="java&#45;quote">"Bob"</span>, lastName: <span class="java&#45;quote">"Wilson"</span>, age: 25&#93;)
 Person.updateProperties(&#91;firstName:<span class="java&#45;quote">"Bob"</span>, lastName: <span class="java&#45;quote">"Wilson"</span>, age: 25&#93;, &#91;location: <span class="java&#45;quote">"London"</span>&#93;, &#91;flush:<span class="java&#45;keyword">true</span>&#93;)</pre></div>
+
+
+
+<h2 id="3.2 Indexing Queries">3.3 Indexing Queries</h2>
+<h4>Basics</h4><p class="paragraph"/>Cassandra doesn't require that you specify indices to query. Cassandra supports creating an index on most columns, including a clustering column of a compound primary key or on the partition (primary) key itself.
+Indexing can impact performance greatly. Before creating an index, be aware of when and <a href="http://www.datastax.com/documentation/cql/3.1/cql/ddl/ddl_when_use_index_c.html#concept_ds_sgh_yzz_zj__when-no-index" target="blank">when not to create an index</a>.<p class="paragraph"/>With that in mind it is important to specify the properties you plan to query using the mapping block:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> name
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        name index:<span class="java&#45;keyword">true</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>The above mapping will generate the following Cassandra index if schema creation is on:<p class="paragraph"/><div class="code"><pre>CREATE INDEX IF NOT EXISTS  ON person (name)</pre></div>
 
 
 
