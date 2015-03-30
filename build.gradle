@@ -81,6 +81,8 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
 }
 
+apply from: "gradle/idea.gradle"
+
 subprojects {
     if(project.name.endsWith("spring-boot")) return
     afterEvaluate { project ->
