@@ -31,6 +31,7 @@ idea {
                 // Disable Spring framework detection
                 node.append(new NodeBuilder().component(name: 'FrameworkDetectionExcludesConfiguration') {
                   type(id: 'Spring')
+                  type(id: 'web')
                 })
             }
         }
