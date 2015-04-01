@@ -31,8 +31,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.StringHttpMessageConverter
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter
 import org.springframework.util.ClassUtils
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
@@ -285,16 +283,10 @@ class RestBuilder {
             messageConverters.remove(stringConverter)
         }
         if(ClassUtils.isPresent("org.springframework.http.converter.json.MappingJackson2HttpMessageConverter", getClass().getClassLoader())) {
-            final mappingJackson2HttpMessageConverter = messageConverters.find { HttpMessageConverter httpMessageConverter -> httpMessageConverter instanceof MappingJackson2HttpMessageConverter }
-            if(mappingJackson2HttpMessageConverter) {
-                messageConverters.remove(mappingJackson2HttpMessageConverter)
-            }
+            messageConverters.removeAll { HttpMessageConverter httpMessageConverter -> httpMessageConverter.getClass().name == "org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"}
         }
         if(ClassUtils.isPresent("org.springframework.http.converter.json.MappingJacksonHttpMessageConverter", getClass().getClassLoader())) {
-            final mappingJacksonHttpMessageConverter = messageConverters.find { HttpMessageConverter httpMessageConverter -> httpMessageConverter instanceof MappingJacksonHttpMessageConverter }
-            if(mappingJacksonHttpMessageConverter) {
-                messageConverters.remove(mappingJacksonHttpMessageConverter)
-            }
+            messageConverters.removeAll { HttpMessageConverter httpMessageConverter -> httpMessageConverter.getClass().name == "org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"}
         }
         if(ClassUtils.isPresent("com.google.gson.Gson", getClass().getClassLoader())) {
             messageConverters.add(new GsonHttpMessageConverter())
