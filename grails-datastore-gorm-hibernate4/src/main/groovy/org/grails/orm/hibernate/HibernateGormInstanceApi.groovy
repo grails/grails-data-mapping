@@ -41,7 +41,7 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
         def grailsApplication = datastore.getGrailsApplication()
         if (grailsApplication) {
             GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
-            config = (Map)grailsApplication.getFlatConfig().get('grails.gorm')
+            config = (Map)grailsApplication.getConfig().getProperty('grails.gorm',Map)
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication, datastore.getDefaultFlushMode())
         }
         else {
