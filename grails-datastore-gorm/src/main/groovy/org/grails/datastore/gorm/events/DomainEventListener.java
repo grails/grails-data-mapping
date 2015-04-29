@@ -127,8 +127,24 @@ public class DomainEventListener extends AbstractPersistenceEventListener
             }
         }
 
+        if (entity.hasProperty("dateCreated", Date.class)) {
+            setDateCreated(ea);
+        }
+
+        if (entity.hasProperty("lastUpdated", Date.class)) {
+            setLastUpdated(ea);
+        }
+
         return invokeEvent(EVENT_BEFORE_INSERT, entity, ea, event);
-    }    
+    }
+
+    protected void setDateCreated(final EntityAccess ea) {
+        ea.setProperty("dateCreated", new Date());
+    }
+
+    protected void setLastUpdated(final EntityAccess ea) {
+        ea.setProperty("lastUpdated", new Date());
+    }
 
     protected void setVersion(final EntityAccess ea) {
         if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
@@ -147,6 +163,9 @@ public class DomainEventListener extends AbstractPersistenceEventListener
     }
 
     public boolean beforeUpdate(final PersistentEntity entity, final EntityAccess ea, PreUpdateEvent event) {
+        if (entity.hasProperty("lastUpdated", Date.class)) {
+            setLastUpdated(ea);
+        }
         return invokeEvent(EVENT_BEFORE_UPDATE, entity, ea, event);
     }    
 
