@@ -22,12 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.event.*;
-import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -129,16 +127,12 @@ public class DomainEventListener extends AbstractPersistenceEventListener
             }
         }
 
-        ClassMapping<?> classMapping = entity.getMapping();
-        Entity mappedForm = classMapping.getMappedForm();
-        if (mappedForm == null || mappedForm.isAutoTimestamp()) {
-            if (entity.hasProperty("dateCreated", Date.class)) {
-                setDateCreated(ea);
-            }
+        if (entity.hasProperty("dateCreated", Date.class)) {
+            setDateCreated(ea);
+        }
 
-            if (entity.hasProperty("lastUpdated", Date.class)) {
-                setLastUpdated(ea);
-            }
+        if (entity.hasProperty("lastUpdated", Date.class)) {
+            setLastUpdated(ea);
         }
 
         return invokeEvent(EVENT_BEFORE_INSERT, entity, ea, event);
@@ -169,12 +163,8 @@ public class DomainEventListener extends AbstractPersistenceEventListener
     }
 
     public boolean beforeUpdate(final PersistentEntity entity, final EntityAccess ea, PreUpdateEvent event) {
-        ClassMapping<?> classMapping = entity.getMapping();
-        Entity mappedForm = classMapping.getMappedForm();
-        if (mappedForm == null || mappedForm.isAutoTimestamp()) {
-            if (entity.hasProperty("lastUpdated", Date.class)) {
-                setLastUpdated(ea);
-            }
+        if (entity.hasProperty("lastUpdated", Date.class)) {
+            setLastUpdated(ea);
         }
         return invokeEvent(EVENT_BEFORE_UPDATE, entity, ea, event);
     }    
