@@ -219,6 +219,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                         delegate.hibernateProperties = ref("hibernateProperties$suffix")
                         grailsApplication = ref(GrailsApplication.APPLICATION_ID)
                         entityInterceptor = ref("entityInterceptor$suffix")
+                        sessionFactoryBeanName = sessionFactoryName
 
                         List hibConfigLocations = []
                         def cl = Thread.currentThread().contextClassLoader
