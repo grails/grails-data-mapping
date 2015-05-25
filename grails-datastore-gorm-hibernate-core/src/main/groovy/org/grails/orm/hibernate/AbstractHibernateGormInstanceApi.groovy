@@ -235,6 +235,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
     @Override
     D lock(D instance) {
         hibernateTemplate.lock(instance, LockMode.PESSIMISTIC_WRITE)
+        instance
     }
 
     @Override
@@ -266,7 +267,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
             if (flush) {
                 flushSession session
             }
-            return merged
+            return (D)merged
         }
     }
 
@@ -346,7 +347,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
             return false
         }
 
-        if (arguments.containsKey(ARGUMENT_VALIDATE)) {
+        if (arguments?.containsKey(ARGUMENT_VALIDATE)) {
             return GrailsClassUtils.getBooleanFromMap(ARGUMENT_VALIDATE, arguments)
         }
         return true
