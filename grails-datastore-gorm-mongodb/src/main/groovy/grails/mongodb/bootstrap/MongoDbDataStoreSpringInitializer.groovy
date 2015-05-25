@@ -36,6 +36,7 @@ import org.springframework.context.support.GenericApplicationContext
 class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
 
     public static final String DEFAULT_DATABASE_NAME = "test"
+    public static final String SETTING_DATABASE_NAME = 'grails.mongodb.databaseName'
     public static final String SETTING_CONNECTION_STRING = 'grails.mongodb.connectionString'
     public static final String SETTING_DEFAULT_MAPPING = 'grails.mongodb.default.mapping'
     public static final String SETTING_OPTIONS = 'grails.mongodb.options'
@@ -101,6 +102,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
         return {
             final config = configurationObject
             String connectionString = config.getProperty(SETTING_CONNECTION_STRING,'') ?: null
+            databaseName = config.getProperty(SETTING_DATABASE_NAME, '') ?: DEFAULT_DATABASE_NAME
             Closure defaultMapping = config.getProperty(SETTING_DEFAULT_MAPPING,Closure, this.defaultMapping)
             Map mongoOptions = config.getProperty(SETTING_OPTIONS, Map, null)
             String hostSetting = config.getProperty(SETTING_HOST, '')
