@@ -429,7 +429,11 @@ class SimpleMapQuery extends Query {
         },
         (Query.Equals): { Query.Equals equals, PersistentProperty property, Closure function = null, boolean onValue = false ->
             def indexer = entityPersister.getPropertyIndexer(property)
-            final value = subqueryIfNecessary(equals)
+            def value = subqueryIfNecessary(equals)
+
+            if(value && property instanceof ToOne && property.type.isInstance(value)) {
+               value = entityPersister.getObjectIdentifier(value)
+            }
 
             if (function != null) {
                 def allEntities = datastore[family]

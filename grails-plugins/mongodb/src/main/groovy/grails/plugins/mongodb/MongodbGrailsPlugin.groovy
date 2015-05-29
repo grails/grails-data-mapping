@@ -91,6 +91,7 @@ class MongodbGrailsPlugin extends Plugin {
         methodsConfigurer.configure()
     }
 
+
     @Override
     @CompileStatic
     void onChange(Map<String, Object> event) {

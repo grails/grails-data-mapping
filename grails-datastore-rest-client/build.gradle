@@ -1,6 +1,6 @@
 //version = "4.0.0.BUILD-SNAPSHOT"
 dependencies {
-    compile 'javax.servlet:javax.servlet-api:3.0.1'
+    provided 'javax.servlet:javax.servlet-api:3.0.1'
 //    compile("org.grails:grails-plugin-codecs:$grailsVersion") {
 //        exclude group:'org.grails', module:'grails-plugin-converters'
 //        exclude group:'org.grails', module:'grails-web'
@@ -68,5 +68,3 @@ dependencies {
 //            project(":grails-datastore-core")
 
 }
-
-

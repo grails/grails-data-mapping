@@ -112,6 +112,8 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
 }
 
+apply from: "gradle/idea.gradle"
+
 subprojects {
    version = "${projectVersion}.${releaseType}"
    group = "org.grails"

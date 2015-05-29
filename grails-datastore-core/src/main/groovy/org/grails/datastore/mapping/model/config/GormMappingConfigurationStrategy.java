@@ -77,6 +77,7 @@ import static org.grails.datastore.mapping.model.config.GormProperties.*;
 public class GormMappingConfigurationStrategy implements MappingConfigurationStrategy {
     private static final String IDENTITY_PROPERTY = IDENTITY;
     private static final String VERSION_PROPERTY = VERSION;
+    public static final String MAPPED_BY_NONE = "none";
     private MappingFactory propertyFactory;
     private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass"));
     private boolean canExpandMappingContext = true;
@@ -356,7 +357,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             }
 
             // We've run out of options. The given "mappedBy" setting is invalid.
-            if (pd == null) {
+            if (pd == null && !MAPPED_BY_NONE.equals(mappingProperty)) {
                 if (entity.isExternal()) {
                     return null;
                 }
@@ -364,10 +365,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                         "] specified for property [" + property.getName() +
                         "] in class [" + entity.getJavaClass().getName() + "]");
             }
-
-            // Tie the properties together.
-            relatedClassPropertyType = pd.getPropertyType();
-            referencedPropertyName = pd.getName();
+            else if(pd != null) {
+                // Tie the properties together.
+                relatedClassPropertyType = pd.getPropertyType();
+                referencedPropertyName = pd.getName();
+            }
         }
         else {
 

@@ -1,5 +1,4 @@
 //version = "4.0.0.BUILD-SNAPSHOT"
-
 dependencies {
     compile "org.mongodb:mongo-java-driver:2.13.0"
     compile("org.springframework.data:spring-data-mongodb:1.6.2.RELEASE") {

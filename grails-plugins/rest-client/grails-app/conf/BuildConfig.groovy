@@ -47,23 +47,23 @@ grails.project.dependency.resolution = {
         }
 
 
-        def datastoreVersion = "3.1.0.RELEASE"
+        def datastoreVersion = "3.1.4.RELEASE"
 
-        compile ("org.grails:grails-datastore-rest-client:1.0.0.RELEASE",
-                 "org.grails:grails-datastore-gorm-rest-client:1.0.0.M2",excludes)
+        compile ("org.grails:grails-datastore-rest-client:$datastoreVersion",
+                 "org.grails:grails-datastore-gorm-rest-client:$datastoreVersion",excludes)
         compile("org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
                 "org.grails:grails-datastore-gorm:$datastoreVersion",
-                "org.grails:grails-datastore-core:$datastoreVersion",                
+                "org.grails:grails-datastore-core:$datastoreVersion",
                 "org.grails:grails-datastore-web:$datastoreVersion",excludes)
-        
+
         runtime 'org.javassist:javassist:3.17.1-GA'
 
         build 'org.apache.maven:maven-repository-metadata:2.1.0'
     }
 
     plugins {
-        build(":release:3.0.1",
-              ":rest-client-builder:2.0.1") {
+        build(":release:3.1.0",
+              ":rest-client-builder:2.1.0") {
             export = false
         }
     }

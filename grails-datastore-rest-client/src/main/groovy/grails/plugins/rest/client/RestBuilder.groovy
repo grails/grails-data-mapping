@@ -286,10 +286,10 @@ class RestBuilder {
             messageConverters.remove(stringConverter)
         }
         if(ClassUtils.isPresent("org.springframework.http.converter.json.MappingJackson2HttpMessageConverter", getClass().getClassLoader())) {
-        final mappingJackson2HttpMessageConverter = messageConverters.find { HttpMessageConverter httpMessageConverter -> httpMessageConverter instanceof MappingJackson2HttpMessageConverter }
-        if(mappingJackson2HttpMessageConverter) {
-            messageConverters.remove(mappingJackson2HttpMessageConverter)
+            messageConverters.removeAll { HttpMessageConverter httpMessageConverter -> httpMessageConverter.getClass().name == "org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"}
         }
+        if(ClassUtils.isPresent("org.springframework.http.converter.json.MappingJacksonHttpMessageConverter", getClass().getClassLoader())) {
+            messageConverters.removeAll { HttpMessageConverter httpMessageConverter -> httpMessageConverter.getClass().name == "org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"}
         }
         if(ClassUtils.isPresent("com.google.gson.Gson", getClass().getClassLoader())) {
             messageConverters.add(0, new GsonHttpMessageConverter())

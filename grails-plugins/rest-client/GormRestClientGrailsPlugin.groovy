@@ -19,7 +19,7 @@ import org.grails.datastore.gorm.rest.client.plugin.support.*
  */
 class GormRestClientGrailsPlugin {
     // the plugin version
-    def version = "1.0.0.M2"
+    def version = "1.0.0"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.3 > *"
     // resources that are excluded from plugin packaging
@@ -31,7 +31,7 @@ class GormRestClientGrailsPlugin {
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@gmail.com"
     def description = '''\
-A GORM implementation that can back onto a REST web service 
+A GORM implementation that can back onto a REST web service
 '''
 
     // URL to the plugin's documentation
@@ -59,8 +59,8 @@ A GORM implementation that can back onto a REST web service
     def doWithDynamicMethods = { ctx ->
         def datastore = ctx.getBean("restclientDatastore")
         def transactionManager = ctx.getBean("restclientTransactionManager")
-        def methodsConfigurer = new RestClientMethodsConfigurer(datastore, transactionManager)    
-        methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")        
+        def methodsConfigurer = new RestClientMethodsConfigurer(datastore, transactionManager)
+        methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")
         def foe = application?.config?.grails?.gorm?.failOnError
         methodsConfigurer.failOnError = foe instanceof Boolean ? foe : false
         methodsConfigurer.configure()
