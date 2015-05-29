@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
-import org.codehaus.groovy.grails.orm.hibernate.GormSpec
+import org.grails.orm.hibernate.GormSpec
 import org.hibernate.FetchMode
 import org.hibernate.collection.internal.PersistentSet
 import org.hibernate.criterion.DetachedCriteria
