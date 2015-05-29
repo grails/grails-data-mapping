@@ -126,7 +126,14 @@ public class EventListenerIntegrator implements Integrator {
 
         Object listener = listeners.get(eventType.eventName());
         if (listener != null) {
-            listenerRegistry.appendListeners(eventType, (T)listener);
+            if(listener instanceof org.hibernate.event.internal.DefaultSaveOrUpdateEventListener) {
+                // since ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventListener we want to override instead of append the listener here
+                // to avoid there being 2 implementations which would impact performance too
+                listenerRegistry.setListeners(eventType, (T) listener);
+            }
+            else {
+                listenerRegistry.appendListeners(eventType, (T)listener);
+            }
         }
     }
 
