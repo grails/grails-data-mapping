@@ -30,6 +30,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -69,25 +70,38 @@ public class CountByPersistentMethod extends AbstractClausedStaticPersistentMeth
                 Map argsMap = (arguments.length > 1 && (arguments[1] instanceof Map)) ? (Map) arguments[1] : Collections.EMPTY_MAP;
                 GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, crit,  argsMap, conversionService, false);
 
-                populateCriteriaWithExpressions(crit, operator, expressions);
-                return (Long) crit.uniqueResult();
+                if( populateCriteriaWithExpressions(crit, operator, expressions) ) {
+                    return (Long) crit.uniqueResult();
+                }
+                else {
+                    return 0L;
+                }
             }
         });
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected void populateCriteriaWithExpressions(Criteria crit, String operator, List expressions) {
+    protected boolean populateCriteriaWithExpressions(Criteria crit, String operator, List expressions) {
         if (operator.equals(OPERATOR_OR)) {
             Disjunction dis = Restrictions.disjunction();
             for (GrailsMethodExpression current : (List<GrailsMethodExpression>)expressions) {
-                dis.add(current.getCriterion());
+                final Criterion criterion = current.getCriterion();
+                if(criterion == GrailsMethodExpression.FORCE_NO_RESULTS) {
+                    return false;
+                }
+                dis.add(criterion);
             }
             crit.add(dis);
         }
         else {
             for (GrailsMethodExpression current : (List<GrailsMethodExpression>)expressions) {
-                crit.add(current.getCriterion());
+                final Criterion criterion = current.getCriterion();
+                if(criterion == GrailsMethodExpression.FORCE_NO_RESULTS) {
+                    return false;
+                }
+                crit.add(criterion);
             }
         }
+        return true;
     }
 }
