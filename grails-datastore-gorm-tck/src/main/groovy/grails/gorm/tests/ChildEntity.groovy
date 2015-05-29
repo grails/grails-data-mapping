@@ -11,6 +11,13 @@ class ChildEntity implements Serializable {
     Long version
     String name
 
+    static transients = ['beforeValidateCounter']
+    int beforeValidateCounter = 0
+
+    def beforeValidate() {
+        beforeValidateCounter++
+    }
+
     static mapping = {
         name index:true
     }

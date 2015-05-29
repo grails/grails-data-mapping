@@ -30,6 +30,17 @@ class ValidationSpec extends GormDatastoreSpec {
             !t.hasErrors()
     }
 
+    void 'Test beforeValidate during cascaded validation'() {
+        given:
+        def t = new TestEntity(name: 'Geddy')
+        t.child = new ChildEntity(name: 'Alex')
+
+        when:
+        t.validate()
+
+        then:
+        t.child.beforeValidateCounter == 1
+    }
 
     void "Test that validate is called on save()"() {
 
