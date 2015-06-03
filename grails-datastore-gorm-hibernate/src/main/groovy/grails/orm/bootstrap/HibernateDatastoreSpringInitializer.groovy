@@ -15,6 +15,7 @@
 package grails.orm.bootstrap
 
 import grails.core.GrailsApplication
+import grails.validation.CascadingValidator
 import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
@@ -33,6 +34,7 @@ import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.grails.orm.hibernate.validation.UniqueConstraint
+import org.grails.validation.GrailsDomainClassValidator
 import org.hibernate.EmptyInterceptor
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.ImprovedNamingStrategy
@@ -307,6 +309,10 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
 
         @Autowired
         GrailsApplication grailsApplication
+
+        // required to force initialisation of validators
+        @Autowired(required = false)
+        CascadingValidator[] validators = []
 
         ApplicationContext applicationContext
 

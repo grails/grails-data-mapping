@@ -115,9 +115,22 @@ public class EventListenerIntegrator implements Integrator {
         EventListenerGroup<T> group = listenerRegistry.getEventListenerGroup(eventType);
         for (T listener : listeners) {
             if (listener != null) {
-                group.appendListener(listener);
+                if(shouldOverrideListeners(eventType, listener)) {
+                    // since ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventListener we want to override instead of append the listener here
+                    // to avoid there being 2 implementations which would impact performance too
+                    group.clear();
+                    group.appendListener(listener);
+                }
+                else {
+                    group.appendListener(listener);
+                }
             }
         }
+    }
+
+    private <T> boolean shouldOverrideListeners(EventType<T> eventType, Object listener) {
+        return (listener instanceof org.hibernate.event.internal.DefaultSaveOrUpdateEventListener)
+                && eventType.equals(EventType.SAVE_UPDATE);
     }
 
     @SuppressWarnings("unchecked")
@@ -126,7 +139,7 @@ public class EventListenerIntegrator implements Integrator {
 
         Object listener = listeners.get(eventType.eventName());
         if (listener != null) {
-            if(listener instanceof org.hibernate.event.internal.DefaultSaveOrUpdateEventListener) {
+            if(shouldOverrideListeners(eventType, listener)) {
                 // since ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventListener we want to override instead of append the listener here
                 // to avoid there being 2 implementations which would impact performance too
                 listenerRegistry.setListeners(eventType, (T) listener);

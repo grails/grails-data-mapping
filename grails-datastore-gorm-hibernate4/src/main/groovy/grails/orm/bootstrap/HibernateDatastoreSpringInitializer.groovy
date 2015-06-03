@@ -17,6 +17,7 @@ package grails.orm.bootstrap
 import grails.core.GrailsApplication
 import grails.core.GrailsDomainClassProperty
 import grails.util.Environment
+import grails.validation.CascadingValidator
 import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
@@ -327,6 +328,9 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
 
         @Autowired
         GrailsApplication grailsApplication
+        // required to force initialisation of validators
+        @Autowired(required = false)
+        CascadingValidator[] validators = []
 
         ApplicationContext applicationContext
 
