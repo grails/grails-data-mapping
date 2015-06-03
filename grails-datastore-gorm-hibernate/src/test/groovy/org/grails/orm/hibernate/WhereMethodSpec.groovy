@@ -18,6 +18,58 @@ class WhereMethodSpec extends GormSpec {
         [Face, Nose, Person, Pet, Rectangle]
     }
 
+    def "Test trait that invokes where query"() {
+        given:
+            createPeopleWithPets()
+        when:"An object that implements a trait that invokes a where query is called"
+            def controller = queryForObjectUsingTrait().newInstance().run()
+
+        then:"The trait works"
+        controller.test1().firstName == "Fred"
+        controller.test2().owner.firstName == "Fred"
+    }
+
+    def queryForObjectUsingTrait() {
+        def gcl = new GroovyClassLoader(getClass().classLoader)
+        gcl.parseClass('''
+import  org.grails.orm.hibernate.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+
+
+@ApplyDetachedCriteriaTransform
+trait MyTrait {
+    def testTrait1() {
+        def query = Person.where {
+            firstName == 'Fred'
+        }
+        query.find()
+    }
+    def testTrait2() {
+        def query = Pet.where {
+            owner.firstName == 'Fred'
+        }
+        query.find()
+    }
+}
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class IndexController implements MyTrait {
+    def test1() {
+        testTrait1()
+    }
+    def test2() {
+        testTrait2()
+    }
+}
+
+new IndexController()
+''')
+    }
+
     @Issue('GRAILS-8526')
     def "Test association query with referenced arguments"() {
         given:"some people and pets"
@@ -1313,4 +1365,21 @@ class Rectangle implements Serializable {
 
     Integer width
     Integer length
+}
+
+class IndexController implements MyTrait {
+    def index() {
+        new Person(name:'Marcio').save(flush:true)
+        respond test()
+    }
+}
+
+@ApplyDetachedCriteriaTransform
+trait MyTrait {
+    def test() {
+        def query = Person.where {
+            firstName == 'Fred'
+        }
+        query.find()
+    }
 }

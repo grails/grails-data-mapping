@@ -68,6 +68,7 @@ import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.*;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.messages.LocatedMessage;
+import org.codehaus.groovy.transform.trait.Traits;
 import org.grails.compiler.injection.GrailsASTUtils;
 import org.codehaus.groovy.syntax.Token;
 import org.grails.datastore.mapping.query.Query;
@@ -1016,7 +1017,12 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             if (objectExpression instanceof VariableExpression) {
                 VariableExpression ve = (VariableExpression) objectExpression;
 
-                associationMethodCalls.add(ve.getName());
+                String propertyName = ve.getName();
+                // handle trait
+                if(!(propertyName.equals("$self") && Traits.isTrait(objectExpression.getType()))) {
+                    associationMethodCalls.add(propertyName);
+                }
+
 
                 Collections.reverse(associationMethodCalls);
 
@@ -1059,6 +1065,10 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
         } else if (objectExpression instanceof VariableExpression) {
             String propertyName = objectExpression.getText();
+            // handle trait
+            if(propertyName.equals("$self") && Traits.isTrait(objectExpression.getType())) {
+                propertyName = pe.getPropertyAsString();
+            }
             Object aliased = aliases.get(propertyName);
             if (propertyNames.contains(propertyName) || (aliased != null && propertyNames.contains(aliased))) {
                 String associationProperty = pe.getPropertyAsString();
@@ -1066,31 +1076,37 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                 ClassNode classNode = currentClassNode;
                 ClassNode type = getPropertyTypeFromGenerics(actualPropertyName, classNode);
-                List<String> associationPropertyNames = getPropertyNamesForAssociation(type);
-                if (associationPropertyNames == null) {
-                    associationPropertyNames = getPropertyNamesForAssociation(classNode);
+                if(!isDomainClass(type)) {
+                    addCriteriaCallMethodExpression(newCode, operator, pe, oppositeSide, associationProperty, Collections.<String>emptyList(), false, variableScope);
                 }
+                else {
 
-                ClosureAndArguments closureAndArguments = new ClosureAndArguments(variableScope);
-                BlockStatement currentBody = closureAndArguments.getCurrentBody();
-                ArgumentListExpression arguments = closureAndArguments.getArguments();
-
-                boolean hasNoProperties = associationPropertyNames.isEmpty();
-                if (!hasNoProperties && !associationPropertyNames.contains(associationProperty)) {
-                    sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query property \"" + associationProperty + "\" - no such property on class " + type.getName() + " exists.", Token.newString(propertyName, pe.getLineNumber(), pe.getColumnNumber()), sourceUnit));
-                }
-                ClassNode existing = this.currentClassNode;
-                try {
-                    this.currentClassNode = type;
-                    if (functionName != null) {
-                        handleFunctionCall(currentBody, operator, oppositeSide, functionName, new ConstantExpression(associationProperty));
-                    } else {
-                        addCriteriaCallMethodExpression(currentBody, operator, pe, oppositeSide, associationProperty, associationPropertyNames, hasNoProperties, variableScope);
+                    List<String> associationPropertyNames = getPropertyNamesForAssociation(type);
+                    if (associationPropertyNames == null) {
+                        associationPropertyNames = getPropertyNamesForAssociation(classNode);
                     }
-                } finally {
-                    this.currentClassNode = existing;
+
+                    ClosureAndArguments closureAndArguments = new ClosureAndArguments(variableScope);
+                    BlockStatement currentBody = closureAndArguments.getCurrentBody();
+                    ArgumentListExpression arguments = closureAndArguments.getArguments();
+
+                    boolean hasNoProperties = associationPropertyNames.isEmpty();
+                    if (!hasNoProperties && !associationPropertyNames.contains(associationProperty)) {
+                        sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query property \"" + associationProperty + "\" - no such property on class " + type.getName() + " exists.", Token.newString(propertyName, pe.getLineNumber(), pe.getColumnNumber()), sourceUnit));
+                    }
+                    ClassNode existing = this.currentClassNode;
+                    try {
+                        this.currentClassNode = type;
+                        if (functionName != null) {
+                            handleFunctionCall(currentBody, operator, oppositeSide, functionName, new ConstantExpression(associationProperty));
+                        } else {
+                            addCriteriaCallMethodExpression(currentBody, operator, pe, oppositeSide, associationProperty, associationPropertyNames, hasNoProperties, variableScope);
+                        }
+                    } finally {
+                        this.currentClassNode = existing;
+                    }
+                    newCode.addStatement(new ExpressionStatement(new MethodCallExpression(new VariableExpression("delegate"), actualPropertyName, arguments)));
                 }
-                newCode.addStatement(new ExpressionStatement(new MethodCallExpression(new VariableExpression("delegate"), actualPropertyName, arguments)));
             } else if((aliased instanceof ClassNode) && (oppositeSide instanceof PropertyExpression)) {
                 String rootReference = pe.getText();
                 PropertyExpression oppositeProperty = (PropertyExpression) oppositeSide;
