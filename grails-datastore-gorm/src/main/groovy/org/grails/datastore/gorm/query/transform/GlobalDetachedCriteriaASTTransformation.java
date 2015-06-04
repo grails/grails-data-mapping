@@ -30,7 +30,7 @@ import java.util.List;
  * @author Graeme Rocher
  * @since 1.0
  */
-@GroovyASTTransformation(phase= CompilePhase.SEMANTIC_ANALYSIS)
+@GroovyASTTransformation(phase= CompilePhase.CANONICALIZATION)
 public class GlobalDetachedCriteriaASTTransformation implements ASTTransformation{
     /**
      * The method is invoked when an AST Transformation is active. For local transformations, it is invoked once
