@@ -38,6 +38,13 @@ class HibernateGormAutoConfigurationSpec extends Specification{
 
         then:"GORM queries work"
             result == 0
+
+        when:"The addTo* methods are called"
+            def p = new Person()
+            p.addToChildren(firstName:"Bob")
+
+        then:"They work too"
+            p.children.size() == 1
     }
 
     @Configuration
@@ -53,4 +60,9 @@ class Person {
     String firstName
     String lastName
     Integer age = 18
+
+    Set children = []
+    static hasMany = [children: Person]
 }
+
+
