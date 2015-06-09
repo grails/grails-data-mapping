@@ -2,7 +2,8 @@ To get started with GORM for Mongo you need configure it as a dependency in @Bui
 
 {code}
 plugins {
-	compile ':mongodb:3.0.0.RC1' // or whatever is the latest vesrion
+	compile ':mongodb:3.0.0.RC1'            // or whatever is the latest version; 2.x
+	compile 'org.grails.plugins:mongodb'    // 3.x
 }
 {code}
 
@@ -28,16 +29,14 @@ Tue Mar 18 14:16:35.297 [initandlisten] waiting for connections on port 27017
 
 As you can see the server is running on port 27017, but don't worry the Mongodb plugin for Grails will automatically configure itself to look for Mongodb on that port by default.
 
-If you want to configure how Grails connects to Mongo then you can do so using the following settings in @grails-app/conf/DataSource.groovy@:
+If you want to configure how Grails connects to Mongo then you can do so using the following settings in @grails-app/conf/application.yml@:
 
 {code}
-grails {
-    mongo {
-        host = "localhost"
-        port = 27017
-        username = "blah"
-        password = "blah"
-        databaseName = "foo"
-    }
-}
+grails:
+    mongodb:
+        host: "localhost"
+        port: 27017
+        username: "blah"
+        password: "blah"
+        databaseName: "foo"
 {code}
