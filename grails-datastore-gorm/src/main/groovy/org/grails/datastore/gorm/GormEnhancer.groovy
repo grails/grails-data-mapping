@@ -303,6 +303,7 @@ class GormEnhancer {
                 existingMethod.name == methodName && existingMethod.isStatic()==staticScope && isRealMethod(existingMethod) && ((!parameterTypes && !existingMethod.parameterTypes) || parameterTypes==existingMethod.parameterTypes)
             }
         }
+        return realMethodExists
     }
 
     @CompileStatic

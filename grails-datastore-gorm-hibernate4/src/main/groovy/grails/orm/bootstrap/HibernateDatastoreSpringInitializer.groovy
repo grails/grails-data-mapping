@@ -111,9 +111,11 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             Object vendorToDialect = getVenderToDialectMappings()
 
 
-            ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT,
-                    new PersistentConstraintFactory((ApplicationContext)beanDefinitionRegistry,
-                            UniqueConstraint))
+            if(beanDefinitionRegistry instanceof ApplicationContext) {
+                ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT,
+                        new PersistentConstraintFactory((ApplicationContext)beanDefinitionRegistry,
+                                UniqueConstraint))
+            }
 
 
             // for unwrapping / inspecting proxies
