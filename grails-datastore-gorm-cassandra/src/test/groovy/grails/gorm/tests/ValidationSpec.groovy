@@ -12,6 +12,12 @@ import spock.lang.Ignore
  */
 class ValidationSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        return [ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,
+                ClassWithOverloadedBeforeValidate]
+    }
+
     void 'Test validating an object that has had values rejected with an ObjectError'() {
         given:
             def t = new TestEntity(name: 'someName')

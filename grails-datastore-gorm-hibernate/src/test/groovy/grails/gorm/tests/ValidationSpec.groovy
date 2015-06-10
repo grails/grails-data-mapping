@@ -1,12 +1,20 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
 import org.springframework.transaction.support.TransactionSynchronizationManager
 import spock.lang.Ignore
+import spock.lang.Issue
 
 /**
  * Tests validation semantics.
  */
 class ValidationSpec extends GormDatastoreSpec {
+
+    @Override
+    List getDomainClasses() {
+        return [ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,
+                ClassWithOverloadedBeforeValidate, ValidatingParent, ValidatingChild]
+    }
 
     void "Test validate() method"() {
         // test assumes name cannot be blank
@@ -175,5 +183,42 @@ class ValidationSpec extends GormDatastoreSpec {
             !session.datastore.hasCurrentSession()
             t != null
             1 == TestEntity.count()
+    }
+
+    @Issue('https://github.com/grails/grails-core/issues/2274')
+    def "Test that beforeValidate fires for cascading child classes"() {
+        when:"A save is called on a parent with a child entity"
+        def p = new ValidatingParent()
+
+        def child = new ValidatingChild()
+        p.addToChildren(child)
+        p.save flush:true
+
+        then:"The beforeValidate() is called on the child"
+        ValidatingParent.count() == 1
+        ValidatingChild.count() == 1
+        child.name == 'hard coded in beforeValidate'
+    }
+}
+
+@Entity
+class ValidatingParent {
+    Long id
+    Long version
+    Set children
+    static hasMany = [children:ValidatingChild]
+}
+
+@Entity
+class ValidatingChild {
+    Long id
+    Long version
+    ValidatingParent parent
+    static belongsTo = [parent:ValidatingParent]
+
+    String name
+
+    def beforeValidate() {
+        name = 'hard coded in beforeValidate'
     }
 }
