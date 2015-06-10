@@ -7,6 +7,13 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 class ValidationSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        return [ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,
+                ClassWithOverloadedBeforeValidate]
+    }
+
+
     void "Test validate() method"() {
         // test assumes name cannot be blank
         given:

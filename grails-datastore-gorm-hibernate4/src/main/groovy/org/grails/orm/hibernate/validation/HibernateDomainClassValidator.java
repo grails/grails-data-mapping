@@ -15,12 +15,22 @@
  */
 package org.grails.orm.hibernate.validation;
 
+<<<<<<< HEAD:grails-datastore-gorm-hibernate4/src/main/groovy/org/grails/orm/hibernate/validation/HibernateDomainClassValidator.java
 import grails.core.GrailsDomainClass;
 import grails.core.GrailsDomainClassProperty;
 import grails.core.support.proxy.ProxyHandler;
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.validation.GrailsDomainClassValidator;
+=======
+import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
+import org.codehaus.groovy.grails.commons.GrailsDomainClass;
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
+import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
+import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator;
+import org.grails.datastore.gorm.support.BeforeValidateHelper;
+>>>>>>> 3.x:grails-datastore-gorm-hibernate4/src/main/groovy/org/codehaus/groovy/grails/orm/hibernate/validation/HibernateDomainClassValidator.java
 import org.hibernate.FlushMode;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -31,6 +41,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.validation.Errors;
 
+import java.util.ArrayList;
+
 /**
  * First checks if the Hibernate PersistentCollection instance has been initialised before bothering
  * to cascade.
@@ -40,6 +52,7 @@ import org.springframework.validation.Errors;
  */
 public class HibernateDomainClassValidator extends GrailsDomainClassValidator implements MessageSourceAware {
 
+    private BeforeValidateHelper beforeValidateHelper = new BeforeValidateHelper();
     private SessionFactory sessionFactory;
     private ProxyHandler proxyHandler = new HibernateProxyHandler();
 
@@ -106,7 +119,17 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
     protected void cascadeValidationToOne(Errors errors, BeanWrapper bean, Object associatedObject, GrailsDomainClassProperty persistentProperty, String propertyName, Object indexOrKey) {
         if(proxyHandler.isInitialized(associatedObject)) {
             associatedObject = proxyHandler.isProxy(associatedObject) ? proxyHandler.unwrapIfProxy(associatedObject) : associatedObject;
-            super.cascadeValidationToOne(errors, bean, associatedObject, persistentProperty, propertyName, indexOrKey);
+            if(associatedObject != null) {
+                cascadeBeforeValidate(associatedObject);
+                super.cascadeValidationToOne(errors, bean, associatedObject, persistentProperty, propertyName, indexOrKey);
+            }
+        }
+    }
+
+    protected void cascadeBeforeValidate(Object associatedObject) {
+        final GrailsDomainClass associatedDomainClass = getAssociatedDomainClassFromApplication(associatedObject);
+        if(associatedDomainClass != null) {
+            beforeValidateHelper.invokeBeforeValidate(associatedObject, new ArrayList<Object>(associatedDomainClass.getConstrainedProperties().keySet()));
         }
     }
 

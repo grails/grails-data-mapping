@@ -8,6 +8,12 @@ import org.grails.datastore.mapping.validation.ValidatingEventListener
  * so for dynamo we will be testing 'bad' data with null value
  */
 class ValidationSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        return [ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,
+                ClassWithOverloadedBeforeValidate]
+    }
+
 
     void "Test disable validation"() {
         session.datastore.applicationContext.addApplicationListener(
