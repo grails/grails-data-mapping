@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-import org.codehaus.groovy.grails.orm.hibernate.GormSpec
+import org.grails.orm.hibernate.GormSpec
 import spock.lang.Issue
 
 /*

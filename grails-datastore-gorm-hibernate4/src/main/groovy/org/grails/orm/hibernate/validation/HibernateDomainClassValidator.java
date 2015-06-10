@@ -15,22 +15,13 @@
  */
 package org.grails.orm.hibernate.validation;
 
-<<<<<<< HEAD:grails-datastore-gorm-hibernate4/src/main/groovy/org/grails/orm/hibernate/validation/HibernateDomainClassValidator.java
 import grails.core.GrailsDomainClass;
 import grails.core.GrailsDomainClassProperty;
 import grails.core.support.proxy.ProxyHandler;
+import org.grails.datastore.gorm.support.BeforeValidateHelper;
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.validation.GrailsDomainClassValidator;
-=======
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
-import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
-import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator;
-import org.grails.datastore.gorm.support.BeforeValidateHelper;
->>>>>>> 3.x:grails-datastore-gorm-hibernate4/src/main/groovy/org/codehaus/groovy/grails/orm/hibernate/validation/HibernateDomainClassValidator.java
 import org.hibernate.FlushMode;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
