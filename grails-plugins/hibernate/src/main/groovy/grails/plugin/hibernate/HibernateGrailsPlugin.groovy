@@ -3,25 +3,14 @@ package grails.plugin.hibernate
 import grails.config.Config
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
-import grails.core.GrailsDomainClass
-import grails.core.GrailsDomainClassProperty
-import grails.core.support.GrailsApplicationAware
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import grails.plugins.Plugin
 import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
-import org.grails.orm.hibernate.SessionFactoryHolder
-import org.grails.orm.hibernate.SessionFactoryProxy
-import org.grails.orm.hibernate.cfg.GrailsDomainBinder
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor
 import org.grails.orm.hibernate.validation.UniqueConstraint
-import org.hibernate.SessionFactory
-import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ConfigurableApplicationContext
-
 /**
  * Plugin that integrates Hibernate into a Grails application
  *
@@ -31,7 +20,10 @@ import org.springframework.context.ConfigurableApplicationContext
 @CompileStatic
 class HibernateGrailsPlugin extends Plugin {
 
+    public static final String DEFAULT_DATA_SOURCE_NAME = HibernateDatastoreSpringInitializer.DEFAULT_DATA_SOURCE_NAME
+
     def grailsVersion = '3.0.0 > *'
+
     def author = 'Grails Core Team'
     def title = 'Hibernate 4 for Grails'
     def description = 'Provides integration between Grails and Hibernate 4 through GORM'
@@ -52,7 +44,7 @@ class HibernateGrailsPlugin extends Plugin {
     Closure doWithSpring() {{->
         GrailsApplication grailsApplication = grailsApplication
         Config config = grailsApplication.config
-        dataSourceNames = calculateDataSourceNames(grailsApplication)
+        dataSourceNames = AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.calculateDataSourceNames(grailsApplication)
 
 
         def springInitializer = new HibernateDatastoreSpringInitializer(config, grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
@@ -63,30 +55,6 @@ class HibernateGrailsPlugin extends Plugin {
         beans.delegate = delegate
         beans.call()
     }}
-
-    Set<String> calculateDataSourceNames(GrailsApplication grailsApplication) {
-        Set<String> datasourceNames = []
-
-        Config config = grailsApplication.config
-        Map dataSources = config.getProperty('dataSources', Map, [:])
-
-        if (dataSources) {
-            for (name in dataSources.keySet()) {
-                def nameAsString = name.toString()
-                if (nameAsString == 'dataSource') {
-                    datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
-                } else {
-                    datasourceNames << nameAsString
-                }
-            }
-        } else {
-            Map dataSource = config.getProperty('dataSource', Map, [:])
-            if (dataSource) {
-                datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
-            }
-        }
-        datasourceNames
-    }
 
     @Override
     void onShutdown(Map<String, Object> event) {

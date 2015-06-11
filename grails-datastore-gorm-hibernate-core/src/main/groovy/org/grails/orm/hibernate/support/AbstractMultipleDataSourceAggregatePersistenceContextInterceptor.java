@@ -16,13 +16,12 @@
 package org.grails.orm.hibernate.support;
 
 import grails.config.Config;
+import grails.core.GrailsApplication;
 import grails.core.GrailsDomainClassProperty;
 import grails.core.support.GrailsConfigurationAware;
 import grails.persistence.support.PersistenceContextInterceptor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -36,6 +35,10 @@ import org.springframework.context.ApplicationContextAware;
  * @since 2.0.7
  */
 public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInterceptor implements PersistenceContextInterceptor, InitializingBean, ApplicationContextAware, GrailsConfigurationAware {
+
+    public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory";
+    public static final String DEFAULT_DATA_SOURCE_NAME = "dataSource";
+    public static final String DATA_SOURCES = "dataSources";
 
     protected List<PersistenceContextInterceptor> interceptors = new ArrayList<PersistenceContextInterceptor>();
     protected ApplicationContext applicationContext;
@@ -138,19 +141,43 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
         // noop, here for compatibility
     }
 
-    private List<String> aggregateDataSourceNames() {
-        List<String> dataSourceNames = new ArrayList<String>();
-        if(config != null && applicationContext != null) {
-            Set<String> configKeys = config.keySet();
-            if (configKeys.contains("dataSource") && applicationContext.containsBean("dataSource")) {
-                dataSourceNames.add(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE);
-            }
-            for (String name : configKeys) {
-                if (name.startsWith("dataSource_") && applicationContext.containsBean(name)) {
-                    dataSourceNames.add(name.replaceFirst("dataSource_", ""));
-                }
+    private Set<String> aggregateDataSourceNames() {
+        if(applicationContext == null) return Collections.emptySet();
+        Set<String> resolvedDataSourceNames = new HashSet<String>();
+        Set<String> dataSourceNames = calculateDataSourceNames(applicationContext.getBean(GrailsApplication.class));
+        for (String dataSourceName : dataSourceNames) {
+            if (applicationContext.containsBean(dataSourceName.equals(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE) ? "dataSource" : "dataSource_" + dataSourceName)) {
+                resolvedDataSourceNames.add(dataSourceName);
             }
         }
-        return dataSourceNames;
+        return resolvedDataSourceNames;
+    }
+
+    private static Set<String> datasourceNames = null;
+    public static Set<String> calculateDataSourceNames(GrailsApplication grailsApplication) {
+        if(datasourceNames != null) return datasourceNames;
+
+        datasourceNames = new HashSet<String>();
+
+
+        Config config = grailsApplication.getConfig();
+        Map dataSources = config.getProperty(DATA_SOURCES, Map.class, Collections.emptyMap());
+
+        if (dataSources != null) {
+            for (Object name : dataSources.keySet()) {
+                String nameAsString = name.toString();
+                if (nameAsString.equals( DEFAULT_DATA_SOURCE_NAME) ) {
+                    datasourceNames.add( GrailsDomainClassProperty.DEFAULT_DATA_SOURCE );
+                } else {
+                    datasourceNames.add( nameAsString );
+                }
+            }
+        } else {
+            Map dataSource = config.getProperty(DEFAULT_DATA_SOURCE_NAME, Map.class, Collections.emptyMap());
+            if (!dataSource.isEmpty()) {
+                datasourceNames.add( GrailsDomainClassProperty.DEFAULT_DATA_SOURCE);
+            }
+        }
+        return datasourceNames;
     }
 }

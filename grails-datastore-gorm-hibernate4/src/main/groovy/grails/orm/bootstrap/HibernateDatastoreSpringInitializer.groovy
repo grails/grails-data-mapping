@@ -59,6 +59,7 @@ import javax.sql.DataSource
 @Commons
 class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory"
+    public static final String DEFAULT_DATA_SOURCE_NAME = 'dataSource'
 
     String defaultDataSourceBeanName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
     String defaultSessionFactoryBeanName = SESSION_FACTORY_BEAN_NAME
@@ -140,7 +141,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 def sessionFactoryName = isDefault ? defaultSessionFactoryBeanName : "sessionFactory$suffix"
 
                 def hibConfig = config.getProperty("hibernate$suffix", Map, Collections.emptyMap())
-                def dsConfigPrefix = config.containsProperty('dataSources') ? "dataSources.${isDefault ? 'dataSource' : dataSourceName}" : 'dataSource'
+                def dsConfigPrefix = config.containsProperty('dataSources') ? "dataSources.${isDefault ? DEFAULT_DATA_SOURCE_NAME : dataSourceName}" : DEFAULT_DATA_SOURCE_NAME
                 def ddlAutoSetting = config.getProperty("${dsConfigPrefix}.dbCreate", ddlAuto)
 
                 // default interceptor, can be overridden for extensibility
@@ -172,10 +173,32 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                     hibernateProperties['hibernate.hbm2ddl.auto'] = ddlAutoSetting
                 }
 
-                def noDialect = !hibernateProperties['hibernate.dialect']
+                def dialect = config.getProperty("${dsConfigPrefix}.dialect", (String)hibernateProperties['hibernate.dialect']?.toString())
+                def noDialect = !dialect
+                // Used to detect the database dialect to use
+                def hibConfigClass = config.getProperty("${dsConfigPrefix}.configClass", (String)hibernateProperties['hibernate.config_class']?.toString())
+
+
+                if (dialect) {
+                    if (dialect instanceof Class) {
+                        hibernateProperties."hibernate.dialect" = dialect.name
+                    }
+                    else {
+                        hibernateProperties."hibernate.dialect" = dialect.toString()
+                    }
+                }
+                else if(noDialect) {
+                    "dialectDetector$suffix"(HibernateDialectDetectorFactoryBean) {
+                        dataSource = ref("dataSource$suffix")
+                        vendorNameDialectMappings = vendorToDialect
+                    }
+                }
+
+
                 if (noDialect) {
                     hibernateProperties['hibernate.dialect'] = ref("dialectDetector")
                 }
+
                 "hibernateProperties$suffix"(PropertiesFactoryBean) { bean ->
                     bean.scope = "prototype"
                     properties = hibernateProperties
@@ -190,13 +213,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                         sessionFactory = ref(sessionFactoryName)
                     }
                 }
-                // Used to detect the database dialect to use
-                if(noDialect) {
-                    "dialectDetector$suffix"(HibernateDialectDetectorFactoryBean) {
-                        dataSource = ref("dataSource$suffix")
-                        vendorNameDialectMappings = vendorToDialect
-                    }
-                }
+
 
                 def namingStrategy = config.getProperty("hibernate${suffix}.naming_strategy") ?: ImprovedNamingStrategy
                 try {
@@ -230,9 +247,8 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                             hibConfigLocations << 'classpath:' + prefix + 'hibernate.cfg.xml'
                         }
                         configLocations = hibConfigLocations
-                        def configClassSetting = config.getProperty("hibernate${suffix}.config_class")
-                        if(configClassSetting) {
-                            configClass = configClassSetting
+                        if(hibConfigClass) {
+                            configClass = hibConfigClass
                         }
                         eventListeners = [
                                 'save': eventTriggeringInterceptor,
