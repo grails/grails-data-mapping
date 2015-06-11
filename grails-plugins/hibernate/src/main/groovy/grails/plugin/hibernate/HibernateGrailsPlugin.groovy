@@ -3,6 +3,7 @@ package grails.plugin.hibernate
 import grails.config.Config
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
+import grails.core.GrailsDomainClass
 import grails.core.GrailsDomainClassProperty
 import grails.core.support.GrailsApplicationAware
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
@@ -10,8 +11,16 @@ import grails.plugins.Plugin
 import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.orm.hibernate.SessionFactoryHolder
+import org.grails.orm.hibernate.SessionFactoryProxy
+import org.grails.orm.hibernate.cfg.GrailsDomainBinder
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.orm.hibernate.validation.UniqueConstraint
+import org.hibernate.SessionFactory
+import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ConfigurableApplicationContext
 
 /**
  * Plugin that integrates Hibernate into a Grails application
@@ -38,44 +47,93 @@ class HibernateGrailsPlugin extends Plugin {
     def issueManagement = [system: 'JIRA', url: 'http://jira.grails.org/browse/GPHIB']
     def scm = [url: 'https://github.com/grails-plugins/grails-hibernate4-plugin']
 
+    Set<String> dataSourceNames
 
     Closure doWithSpring() {{->
         GrailsApplication grailsApplication = grailsApplication
-        Set<String> datasourceNames = []
-
         Config config = grailsApplication.config
-        Map dataSources = config.getProperty('dataSources', Map, [:])
-
-        if(dataSources) {
-            for (name in dataSources.keySet()) {
-                def nameAsString = name.toString()
-                if(nameAsString == 'dataSource') {
-                    datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
-                }
-                else {
-                    datasourceNames << nameAsString
-                }
-            }
-        }
-        else {
-            Map dataSource = config.getProperty('dataSource', Map, [:])
-            if(dataSource) {
-                datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
-            }
-        }
+        dataSourceNames = calculateDataSourceNames(grailsApplication)
 
 
         def springInitializer = new HibernateDatastoreSpringInitializer(config, grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
         springInitializer.registerApplicationIfNotPresent = false
-        springInitializer.dataSources = datasourceNames
+        springInitializer.dataSources = dataSourceNames
         def beans = springInitializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
 
         beans.delegate = delegate
         beans.call()
     }}
 
+    Set<String> calculateDataSourceNames(GrailsApplication grailsApplication) {
+        Set<String> datasourceNames = []
+
+        Config config = grailsApplication.config
+        Map dataSources = config.getProperty('dataSources', Map, [:])
+
+        if (dataSources) {
+            for (name in dataSources.keySet()) {
+                def nameAsString = name.toString()
+                if (nameAsString == 'dataSource') {
+                    datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
+                } else {
+                    datasourceNames << nameAsString
+                }
+            }
+        } else {
+            Map dataSource = config.getProperty('dataSource', Map, [:])
+            if (dataSource) {
+                datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
+            }
+        }
+        datasourceNames
+    }
+
     @Override
     void onShutdown(Map<String, Object> event) {
         ConstrainedProperty.removeConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
     }
+
+    /*@Override
+    void onChange(Map<String, Object> event) {
+
+        if(event.source instanceof Class) {
+            Class cls = (Class)event.source
+            GrailsDomainClass dc = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, cls.name)
+
+            if(!dc || !GrailsHibernateUtil.isMappedWithHibernate(dc)) {
+                return
+            }
+
+            GrailsDomainBinder.clearMappingCache(cls)
+
+            ApplicationContext applicationContext = applicationContext
+            for(String dataSourceName in dataSourceNames) {
+                boolean isDefault = dataSourceName == GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
+                String suffix = isDefault ? '' : '_' + dataSourceName
+                String sessionFactoryName = isDefault ? HibernateDatastoreSpringInitializer.SESSION_FACTORY_BEAN_NAME : "sessionFactory$suffix"
+
+                if(applicationContext instanceof BeanDefinitionRegistry) {
+                    BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) applicationContext
+
+                    def holder = applicationContext.getBean("${SessionFactoryHolder.BEAN_ID}${suffix}", SessionFactoryHolder)
+                    holder.sessionFactory.close()
+
+                    def sessionFactoryBeanDefinition = beanDefinitionRegistry.getBeanDefinition(sessionFactoryName)
+                    sessionFactoryBeanDefinition.propertyValues.add("proxyIfReloadEnabled", false)
+                    applicationContext.registerBeanDefinition("\$${sessionFactoryName}", sessionFactoryBeanDefinition)
+
+                    def newSessionFactory = applicationContext.getBean("\$${sessionFactoryName}", SessionFactory)
+
+                    holder.setSessionFactory(
+                            newSessionFactory
+                    )
+                }
+            }
+
+            def postInit = new HibernateDatastoreSpringInitializer.PostInitializationHandling()
+            postInit.applicationContext = applicationContext
+            postInit.grailsApplication = grailsApplication
+            postInit.afterPropertiesSet()
+        }
+    }*/
 }

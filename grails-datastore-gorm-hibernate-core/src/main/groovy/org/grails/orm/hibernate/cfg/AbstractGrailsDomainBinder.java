@@ -1347,11 +1347,11 @@ public abstract class AbstractGrailsDomainBinder {
         return domainClass == null ? null : MAPPING_CACHE.get(domainClass.getClazz());
     }
 
-    public void clearMappingCache() {
+    public static void clearMappingCache() {
         MAPPING_CACHE.clear();
     }
 
-    public void clearMappingCache(Class<?> theClass) {
+    public static void clearMappingCache(Class<?> theClass) {
         String className = theClass.getName();
         for(Iterator<Map.Entry<Class<?>, Mapping>> it = MAPPING_CACHE.entrySet().iterator(); it.hasNext();) {
             Map.Entry<Class<?>, Mapping> entry = it.next();
