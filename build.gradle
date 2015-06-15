@@ -14,7 +14,7 @@ buildscript {
 
 project.ext {
     springVersion = "4.1.6.RELEASE"
-    grailsVersion = "3.0.0"
+    grailsVersion = "3.0.1"
     slf4jVersion = "1.7.5"
     junitVersion = "4.12"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.4.3'
