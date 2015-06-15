@@ -163,7 +163,7 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
         Config config = grailsApplication.getConfig();
         Map dataSources = config.getProperty(DATA_SOURCES, Map.class, Collections.emptyMap());
 
-        if (dataSources != null) {
+        if (dataSources != null && !dataSources.isEmpty()) {
             for (Object name : dataSources.keySet()) {
                 String nameAsString = name.toString();
                 if (nameAsString.equals( DEFAULT_DATA_SOURCE_NAME) ) {
