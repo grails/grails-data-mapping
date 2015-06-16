@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4 Querying and Persistence Options 4.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/3.%20Mapping%20Domain%20Classes%20to%20Cassandra%20Tables.html"><strong>3</strong><span>Mapping Domain Classes to Cassandra Tables</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20Querying%20and%20Persistence%20Options.html"><strong>4</strong><span>Querying and Persistence Options</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Low-level%20API.html"><strong>5</strong><span>Low-level API</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/3.%20Mapping%20Domain%20Classes%20to%20Cassandra%20Tables.html">&lt;&lt; <strong>3</strong><span>Mapping Domain Classes to Cassandra Tables</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/5.%20Low-level%20API.html"><strong>5</strong><span>Low-level API</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>4 Querying and Persistence Options - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Paras Lakhani</p>
+
+                    <p><strong>Version:</strong> 4.0.0</p>
+
+                    
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#4.1%20Querying%20Options"><strong>4.1</strong><span>Querying Options</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="4. Querying and Persistence Options">4 Querying and Persistence Options</h1>
+The GORM for Cassandra plugin supports passing various options to Cassandra when querying or persisting.<p class="paragraph"/>
+
+
+
+<h2 id="4.1 Querying Options">4.1 Querying Options</h2>
+<h4>Limiting results</h4>
+Using the <code>max</code> parameter, you can specify that the query return a limited number of rows. Example:
+<div class="code"><pre>def people = Person.list(max:2)</pre></div><p class="paragraph"/>Note that Cassandra does not support the <code>offset</code> parameter, so you cannot page results this way.<p class="paragraph"/><h4>Fetch Size</h4>
+Setting the <a href="http://www.datastax.com/documentation/developer/java-driver/2.0/java-driver/reference/queryBuilderOverview.html?scroll=queryBuilderOverview__setting-query-options-querybuilder-api" target="blank">fetch size</a>, or number of rows returned simultaneously by a select query, is typically needed when queries return extremely large numbers of rows. 
+To do this you can use the <code>fetchSize</code> argument:<p class="paragraph"/><div class="code"><pre>def people = Person.list(&#91;fetchSize: 200&#93;)
+people = Person.findAllByFirstName(<span class="java&#45;quote">"Barney"</span>, &#91;fetchSize: 200&#93;)</pre></div><p class="paragraph"/>Setting the fetch size to small values is discouraged as it will yield very poor performance.<p class="paragraph"/>In some cases you may want or have to disable paging entirely, for example when using order by and IN, in which case set the <code>fetchSize</code> to Integer.MAX_VALUE. Example:<p class="paragraph"/><div class="code"><pre>People.createCriteria().list &#123;
+    'in' <span class="java&#45;quote">"lastName"</span>, &#91;<span class="java&#45;quote">"Flintstone"</span>, <span class="java&#45;quote">"Rubble"</span>&#93;
+    order <span class="java&#45;quote">"name"</span>
+    fetchSize <span class="java&#45;object">Integer</span>.MAX_VALUE
+&#125;</pre></div><p class="paragraph"/><h4>Allow filtering</h4>
+When you attempt a potentially expensive query Cassandra may throw an exception mentioning <a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_reference/select_r.html?scroll=reference_ds_d35_v2q_xj__selAllFltr" target="blank">ALLOW FILTERING</a>.
+To run the query, you can use the <code>allowFiltering</code> argument which is passed onto Cassandra. Imposing a limit using the <code>max</code> parameter is recommended to reduce memory used.<p class="paragraph"/>Example:
+<div class="code"><pre>def people = Person.findAllByFirstNameAndAgeLessThanEquals('Barney', 35, &#91;allowFiltering:<span class="java&#45;keyword">true</span>, max:5&#93;)
+def person = Person.findOrSaveWhere(firstName: 'Rubble', age: 35, &#91;allowFiltering:<span class="java&#45;keyword">true</span>, flush:<span class="java&#45;keyword">true</span>&#93;)
+def criteria = Person.createCriteria()  
+people = criteria.list (allowFiltering:<span class="java&#45;keyword">true</span>, max:5) &#123;
+            and &#123;
+                eq('firstName', 'Fred')
+                eq('age', 40)
+            &#125;
+         &#125;  
+people = criteria.list &#123;
+            projections &#123;
+                eq('firstName', 'Bob')
+                between(<span class="java&#45;quote">"age"</span>, 40, 43)                   
+            &#125;
+            allowFiltering <span class="java&#45;keyword">true</span>
+            max 5    
+         &#125;</pre></div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/3.%20Mapping%20Domain%20Classes%20to%20Cassandra%20Tables.html">&lt;&lt; <strong>3</strong><span>Mapping Domain Classes to Cassandra Tables</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/5.%20Low-level%20API.html"><strong>5</strong><span>Low-level API</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Beans/cassandraTemplate.html">cassandraTemplate</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/appendTo.html">appendTo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/deleteAtFrom.html">deleteAtFrom</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/deleteFrom.html">deleteFrom</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/prependTo.html">prependTo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/replaceAtIn.html">replaceAtIn</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/updateProperties.html">updateProperties</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/updateProperty.html">updateProperty</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/updateSingleTypes.html">updateSingleTypes</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

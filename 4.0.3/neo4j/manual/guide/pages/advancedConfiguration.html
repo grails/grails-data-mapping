@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2.3 Advanced Configuration 4.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2.3 Advanced Configuration - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Stefan Armbruster</p>
+
+                    <p><strong>Version:</strong> 4.0.0</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h2 id="advancedConfiguration">2.3 Advanced Configuration</h2>
+As mentioned the GORM for Neo4j plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    neo4j &#123;
+        type = <span class="java&#45;quote">"embedded"</span>
+        location = <span class="java&#45;quote">"/<span class="java&#45;keyword">var</span>/neo4j"</span>
+        params = &#91;&#93;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>The <code>type</code> provides currently the following choices:<p class="paragraph"/><h4>type = "embedded"</h4>
+Runs the Neo4j in embedded mode, Neo4j and Tomcat use the same JVM. No seperate setup outside the Grails application is required. <code>location</code> specifies the directory where Neo4j stores its data.<p class="paragraph"/>Example:
+<div class="code"><pre>grails &#123;
+    neo4j &#123;
+        type = <span class="java&#45;quote">"embedded"</span>
+        location = <span class="java&#45;quote">"/<span class="java&#45;keyword">var</span>/neo4j"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/><blockquote class="note">
+If your configuration is empty, 'embedded' is used as default.
+</blockquote><p class="paragraph"/><h4>type = "rest"</h4>
+Uses a <code>org.neo4j.rest.graphdb.RestGraphDatabase</code> instance to connect to a Neo4j database. See <a href="http://docs.neo4j.org/chunked/stable/server.html" target="blank">http://docs.neo4j.org/chunked/stable/server.html</a> for how to setup a Neo4j server.<p class="paragraph"/><code>location</code> specifies the URL of he Neo4j REST server. When using the Heroku neo4j addon, omit the location. In this case location will default to env.NEO4J_URL that is provided by Heroku.<p class="paragraph"/>Example:
+<div class="code"><pre>grails &#123;
+    neo4j &#123;
+        type = <span class="java&#45;quote">"<span class="java&#45;keyword">rest</span>"</span>
+        location = <span class="java&#45;quote">"http://localhost:7474/db/data/"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Additionally you must add another dependency to your application's <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>compile(<span class="java&#45;quote">"org.neo4j:neo4j&#45;<span class="java&#45;keyword">rest</span>&#45;graphdb:1.6"</span>)</pre></div><p class="paragraph"/><h4>type = "ha"</h4>
+Uses a Neo4j HA setup, for details see <a href="http://docs.neo4j.org/chunked/stable/ha.html" target="blank">http://docs.neo4j.org/chunked/stable/ha.html</a>. In this case params must at least contain<p class="paragraph"/><blockquote class="note">
+For Neo4j HA either a commercial license is <a href="http://neo4j.org/licensing-guide/" target="blank">required</a>, or you could use AGPL.
+</blockquote><p class="paragraph"/>Example:
+<div class="code"><pre>grails &#123;
+    neo4j &#123;
+        type = <span class="java&#45;quote">"ha"</span>
+        location = <span class="java&#45;quote">"/<span class="java&#45;keyword">var</span>/neo4j"</span>
+        params = &#91; // see http://docs.neo4j.org/chunked/stable/ha&#45;configuration.html
+                'ha.server_id': 1,
+                'ha.coordinators': 'localhost:2181,localhost:2182,localhost:2183'
+        &#93;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Additionally you must add another dependency to your application's <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>compile('org.neo4j:neo4j&#45;enterprise:1.8.RC1')</pre></div><p class="paragraph"/><h4>type = "impermanent"</h4>
+Uses <a href="https://github.com/neo4j/community/blob/master/kernel/src/test/java/org/neo4j/test/ImpermanentGraphDatabase.java" target="blank">ImpermanentGraphDatabase</a>.
+This option required a dependency to artifact group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests' in BuildConfig.groovy.
+ImpermanentGraphDatabase is intended to be used for testing.<p class="paragraph"/><h4>custom graph database</h4>
+If you use a custom implementation of GraphDatabaseService, you can use
+<div class="code"><pre>grails &#123;
+    neo4j &#123;
+        type = <span class="java&#45;quote">"my.fancy.custom.GraphDatabaseServiceImplementation"</span>
+        location = <span class="java&#45;quote">"/<span class="java&#45;keyword">var</span>/neo4j"</span>
+        params = &#91; :&#93;
+    &#125;
+&#125;</pre></div>
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Additional Gorm Methods</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/createInstanceForNode.html">createInstanceForNode</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/cypher.html">cypher</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/cypherStatic.html">cypherStatic</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/getNode.html">getNode</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/getSubreferenceNode.html">getSubreferenceNode</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/schemaless%20attributes.html">schemaless attributes</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/traverse.html">traverse</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/traverseStatic.html">traverseStatic</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Beans/graphDatabaseService.html">graphDatabaseService</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
