@@ -36,6 +36,7 @@ import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.BooleanClause
 import org.apache.lucene.search.TermQuery
 import org.apache.lucene.index.Term
+import org.apache.lucene.queryParser.QueryParser
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 import org.apache.lucene.search.MatchAllDocsQuery
@@ -128,7 +129,7 @@ class Neo4jQuery extends Query {
             case Equals:
                 def value = criterion.value
                 if (value instanceof String) {
-                    value = "\"$value\""
+                    value = "\"${QueryParser.escape(value)}\""
                 } else {
                     value = value?.toString()
                 }
