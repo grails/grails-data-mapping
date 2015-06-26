@@ -107,7 +107,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
     }
 
     static void resetMethodExpressionPattern() {
-        String expressionPattern = DefaultGroovyMethods.join(methodExpressions.keySet(), "|");
+        String expressionPattern = DefaultGroovyMethods.join((Iterable)methodExpressions.keySet(), "|");
         methodExpressinPattern = Pattern.compile("\\p{Upper}[\\p{Lower}\\d]+(" + expressionPattern + ")");
     }
 

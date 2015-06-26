@@ -28,6 +28,7 @@ include ("grails-datastore-core",
         'grails-datastore-gorm-tck',
         'grails-datastore-gorm-test',
         'grails-datastore-gorm-plugin-support',
+        'grails-datastore-test-support',
 
         // Grails Plugins
 /*

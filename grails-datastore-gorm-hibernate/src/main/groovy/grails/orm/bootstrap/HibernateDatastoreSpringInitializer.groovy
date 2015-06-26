@@ -204,7 +204,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                         sessionFactoryBeanName = sessionFactoryName
 
                         List hibConfigLocations = []
-                        def cl = classLoader ?: Thread.currentThread().contextClassLoader
+                        def cl = this.classLoader ?: Thread.currentThread().contextClassLoader
                         if (cl.getResource(prefix + 'hibernate.cfg.xml')) {
                             hibConfigLocations << 'classpath:' + prefix + 'hibernate.cfg.xml'
                         }

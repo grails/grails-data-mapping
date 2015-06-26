@@ -75,6 +75,7 @@ import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.NameUtils;
+import org.grails.io.support.GrailsResourceUtils;
 
 /**
  * ClassCodeVisitorSupport that transforms where methods into detached criteria queries
@@ -1329,7 +1330,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         String filePath = classNode.getModule() != null ? classNode.getModule().getDescription() : null;
         if (filePath != null) {
             try {
-                if (org.codehaus.groovy.grails.io.support.GrailsResourceUtils.isDomainClass(new File(filePath).toURI().toURL())) {
+                if (GrailsResourceUtils.isDomainClass(new File(filePath).toURI().toURL())) {
                     return true;
                 }
             } catch (MalformedURLException e) {
