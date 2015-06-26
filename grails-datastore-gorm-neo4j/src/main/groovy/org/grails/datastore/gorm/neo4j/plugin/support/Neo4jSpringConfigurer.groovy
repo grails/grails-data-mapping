@@ -53,6 +53,7 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
 
             def m = neo4jUrl =~ /$JDBC_NEO4J_PREFIX(\w+)/
 
+            boolean hasGraphDatabaseService = false
             if (m.matches()) {
 
                 def instanceName = m[0][1]
@@ -71,6 +72,7 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                 graphDatabaseService(graphDbBuilderFinal: "newGraphDatabase") { bean ->
                     bean.destroyMethod = 'shutdown'
                 }
+                hasGraphDatabaseService = true
 
                 neo4jProperties[instanceName] = ref('graphDatabaseService')
 
@@ -94,7 +96,7 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                 bean.destroyMethod = 'close'
             }
 
-            cypherEngine(JdbcCypherEngine, neo4jDataSource)
+            cypherEngine(JdbcCypherEngine, neo4jDataSource, hasGraphDatabaseService ? graphDatabaseService : null)
 
             neo4jMappingContext(Neo4jMappingContextFactoryBean) {
                 grailsApplication = ref('grailsApplication')

@@ -67,4 +67,11 @@ public class Neo4jDatastoreTransactionManager extends DatastoreTransactionManage
             throw new CannotCreateTransactionException("Could not open Datastore Session for transaction", ex);
         }
     }
+
+    @Override
+    protected boolean isExistingTransaction(Object transaction) throws TransactionException {
+        TransactionObject txObject = (TransactionObject) transaction;
+        Transaction<?> tx = txObject == null ? null : txObject.getTransaction();
+        return tx != null && tx.isActive();
+    }
 }

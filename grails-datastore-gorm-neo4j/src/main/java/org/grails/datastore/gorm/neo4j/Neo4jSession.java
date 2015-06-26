@@ -37,8 +37,9 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, CypherEngine cypherEngine) {
         super(datastore, mappingContext, publisher, stateless);
+        log.warn("session created");
         this.cypherEngine = cypherEngine;
-        cypherEngine.beginTx();
+//        cypherEngine.beginTx();
     }
 
 

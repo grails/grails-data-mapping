@@ -15,14 +15,21 @@
 package org.grails.datastore.gorm.neo4j.engine;
 
 import org.grails.datastore.gorm.neo4j.Neo4jUtils;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.kernel.GraphDatabaseAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.springframework.transaction.TransactionDefinition.*;
@@ -35,11 +42,18 @@ public class JdbcCypherEngine implements CypherEngine {
 
     private static Logger log = LoggerFactory.getLogger(JdbcCypherEngine.class);
     private final DataSource dataSource;
+    private final GraphDatabaseService graphDatabaseService;
     final private ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<Connection>();
     final private ThreadLocal<AtomicInteger> transactionNestingDepth = new ThreadLocal<AtomicInteger>() {
         @Override
         protected AtomicInteger initialValue() {
             return new AtomicInteger();
+        }
+    };
+    final private ThreadLocal<Map<Integer, Transaction>> suspendedTransactionsByDepthThreadLocal = new ThreadLocal<Map<Integer, Transaction>>() {
+        @Override
+        protected Map<Integer, Transaction> initialValue() {
+            return new HashMap<Integer, Transaction>();
         }
     };
     final private ThreadLocal<Boolean> doRollback = new ThreadLocal<Boolean>() {
@@ -49,8 +63,9 @@ public class JdbcCypherEngine implements CypherEngine {
         }
     };
 
-    public JdbcCypherEngine(DataSource dataSource) {
+    public JdbcCypherEngine(DataSource dataSource, GraphDatabaseService graphDatabaseService) {
         this.dataSource = dataSource;
+        this.graphDatabaseService = graphDatabaseService;
     }
 
     private Connection getOrInitConnectionThreadLocal() {
@@ -122,13 +137,31 @@ public class JdbcCypherEngine implements CypherEngine {
     public void beginTx(TransactionDefinition transactionDefinition) {
         switch (transactionDefinition.getPropagationBehavior()) {
             case PROPAGATION_REQUIRED:
-            case PROPAGATION_REQUIRES_NEW:
                 int depth = transactionNestingDepth.get().getAndIncrement();
                 if (depth == 0) {
                     getOrInitConnectionThreadLocal();
                     doRollback.set(Boolean.FALSE);
                 }
                 Neo4jUtils.logWithCause(log, "beginTx", depth);
+                break;
+            case PROPAGATION_REQUIRES_NEW:
+                depth = transactionNestingDepth.get().getAndIncrement();
+                if (depth == 0) {
+                    getOrInitConnectionThreadLocal();
+                    doRollback.set(Boolean.FALSE);
+                }
+                if (graphDatabaseService != null) {
+                    TransactionManager transactionManager = ((GraphDatabaseAPI) graphDatabaseService).getDependencyResolver().resolveDependency(TransactionManager.class);
+                    try {
+                        Transaction tx = transactionManager.suspend();
+                        if (tx!=null) {
+                            suspendedTransactionsByDepthThreadLocal.get().put(depth, tx);
+                        }
+                    } catch (SystemException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                Neo4jUtils.logWithCause(log, "beginTx propagation NEW", depth);
                 break;
             case PROPAGATION_MANDATORY:
             case PROPAGATION_NESTED:
@@ -139,7 +172,6 @@ public class JdbcCypherEngine implements CypherEngine {
                 throw new IllegalStateException("neo4j plugin does not yet know how to handle propagation " + transactionDefinition.getPropagationBehavior());
         }
     }
-
 
     @Override
     public void commit() {
@@ -152,10 +184,27 @@ public class JdbcCypherEngine implements CypherEngine {
             if (depth == 0) {
                 finishTransactionWithCommitOrRollback();
             }
+            eventuallyResumeTransaction(depth);
         } else {
             transactionNestingDepth.get().incrementAndGet();
         }
 
+    }
+
+    private void eventuallyResumeTransaction(int depth) {
+        if (graphDatabaseService!=null) {
+            Transaction tx = suspendedTransactionsByDepthThreadLocal.get().remove(depth);
+            if (tx!=null) {
+                TransactionManager transactionManager = ((GraphDatabaseAPI)graphDatabaseService).getDependencyResolver().resolveDependency(TransactionManager.class);
+                try {
+                    transactionManager.resume(tx);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+
+        }
     }
 
     /**
@@ -193,6 +242,7 @@ public class JdbcCypherEngine implements CypherEngine {
         if (depth == 0) {
             finishTransactionWithCommitOrRollback();
         }
+        eventuallyResumeTransaction(depth);
     }
 
 }

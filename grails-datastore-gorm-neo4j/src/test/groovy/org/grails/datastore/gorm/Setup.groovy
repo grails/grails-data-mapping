@@ -98,7 +98,7 @@ class Setup {
         datastore = new Neo4jDatastore(
                 mappingContext,
                 ctx,
-                new JdbcCypherEngine(dataSource)
+                new JdbcCypherEngine(dataSource, graphDb)
         )
         datastore.skipIndexSetup = skipIndexSetup
         datastore.mappingContext.proxyFactory = new HashcodeEqualsAwareProxyFactory()
