@@ -28,6 +28,7 @@ import org.grails.config.PropertySourcesConfig
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.spring.beans.factory.InstanceFactoryBean
 import org.grails.test.support.GrailsTestTransactionInterceptor
+import org.springframework.context.ApplicationContext
 import org.springframework.core.env.MutablePropertySources
 import org.springframework.core.env.PropertiesPropertySource
 
@@ -55,11 +56,15 @@ class HibernateTestPlugin implements TestPlugin {
     
     void connectPersistenceInterceptor(TestRuntime runtime) {
         GrailsApplication grailsApplication = getGrailsApplication(runtime)
-        if(grailsApplication.getMainContext().containsBean("persistenceInterceptor")) {
-            def persistenceInterceptor = grailsApplication.getMainContext().getBean("persistenceInterceptor", PersistenceContextInterceptor)
+
+        def mainContext = grailsApplication.getMainContext()
+        if(mainContext.containsBean("persistenceInterceptor")) {
+            def persistenceInterceptor = mainContext.getBean("persistenceInterceptor", PersistenceContextInterceptor)
             persistenceInterceptor.init()
             runtime.putValue("hibernateInterceptor", persistenceInterceptor)
         }
+        // force init
+        mainContext.getBean(HibernateDatastoreSpringInitializer.PostInitializationHandling)
     }
 
     void destroyPersistenceInterceptor(TestRuntime runtime) {
