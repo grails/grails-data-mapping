@@ -36,7 +36,7 @@ project.ext {
 
     // plugin versions
     hibernateVersion = "4.3.10"
-    hibernatePluginVersion = releaseType == 'RELEASE' ? "${hibernateVersion}.${projectPatchVersion}" : "4.3.8.${projectPatchVersion}.$releaseType"
+    hibernatePluginVersion = releaseType == 'RELEASE' ? "${hibernateVersion}.${projectPatchVersion}" : "${hibernateVersion}.${projectPatchVersion}.$releaseType"
     mongodbPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
     neo4jPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
     cassandraPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"

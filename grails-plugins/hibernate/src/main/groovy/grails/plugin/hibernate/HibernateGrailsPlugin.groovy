@@ -3,14 +3,22 @@ package grails.plugin.hibernate
 import grails.config.Config
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
+import grails.core.GrailsDomainClass
+import grails.core.GrailsDomainClassProperty
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import grails.plugins.Plugin
 import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.orm.hibernate.SessionFactoryHolder
+import org.grails.orm.hibernate.cfg.GrailsDomainBinder
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor
 import org.grails.orm.hibernate.validation.UniqueConstraint
+import org.hibernate.SessionFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.context.ApplicationContext
+
 /**
  * Plugin that integrates Hibernate into a Grails application
  *
@@ -61,7 +69,7 @@ class HibernateGrailsPlugin extends Plugin {
         ConstrainedProperty.removeConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
     }
 
-    /*@Override
+    @Override
     void onChange(Map<String, Object> event) {
 
         if(event.source instanceof Class) {
@@ -88,9 +96,10 @@ class HibernateGrailsPlugin extends Plugin {
 
                     def sessionFactoryBeanDefinition = beanDefinitionRegistry.getBeanDefinition(sessionFactoryName)
                     sessionFactoryBeanDefinition.propertyValues.add("proxyIfReloadEnabled", false)
-                    applicationContext.registerBeanDefinition("\$${sessionFactoryName}", sessionFactoryBeanDefinition)
+                    applicationContext.removeBeanDefinition(sessionFactoryName)
+                    applicationContext.registerBeanDefinition(sessionFactoryName, sessionFactoryBeanDefinition)
 
-                    def newSessionFactory = applicationContext.getBean("\$${sessionFactoryName}", SessionFactory)
+                    def newSessionFactory = applicationContext.getBean(sessionFactoryName, SessionFactory)
 
                     holder.setSessionFactory(
                             newSessionFactory
@@ -103,5 +112,5 @@ class HibernateGrailsPlugin extends Plugin {
             postInit.grailsApplication = grailsApplication
             postInit.afterPropertiesSet()
         }
-    }*/
+    }
 }
