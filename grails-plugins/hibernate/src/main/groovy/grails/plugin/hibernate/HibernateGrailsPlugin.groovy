@@ -7,8 +7,8 @@ import grails.core.GrailsDomainClass
 import grails.core.GrailsDomainClassProperty
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import grails.plugins.Plugin
-import grails.spring.BeanBuilder
 import grails.validation.ConstrainedProperty
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
@@ -16,13 +16,12 @@ import org.grails.orm.hibernate.SessionFactoryHolder
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor
+import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.orm.hibernate.validation.UniqueConstraint
-import org.hibernate.SessionFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
-import org.springframework.beans.factory.support.DefaultListableBeanFactory
 import org.springframework.beans.factory.support.RootBeanDefinition
 import org.springframework.context.ApplicationContext
-
+import org.springframework.validation.Validator
 /**
  * Plugin that integrates Hibernate into a Grails application
  *
@@ -93,6 +92,7 @@ class HibernateGrailsPlugin extends Plugin {
                 String suffix = isDefault ? '' : '_' + dataSourceName
                 String sessionFactoryName = isDefault ? HibernateDatastoreSpringInitializer.SESSION_FACTORY_BEAN_NAME : "sessionFactory$suffix"
 
+
                 if(applicationContext instanceof BeanDefinitionRegistry) {
                     BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) applicationContext
 
@@ -116,6 +116,9 @@ class HibernateGrailsPlugin extends Plugin {
                     holder.setSessionFactory(
                             newSessionFactory
                     )
+
+                    registerNewBeans(dc, suffix, sessionFactoryName)
+                    dc.validator = applicationContext.getBean("${cls.name}Validator$suffix", Validator)
                 }
             }
 
@@ -123,6 +126,18 @@ class HibernateGrailsPlugin extends Plugin {
             postInit.applicationContext = applicationContext
             postInit.grailsApplication = grailsApplication
             postInit.afterPropertiesSet()
+        }
+    }
+
+    @CompileDynamic
+    protected registerNewBeans(GrailsDomainClass cls, String suffix, String sessionFactoryName) {
+        beans {
+            "${cls.name}Validator$suffix"(HibernateDomainClassValidator) {
+                messageSource = ref("messageSource")
+                domainClass = ref("${cls.name}DomainClass")
+                delegate.grailsApplication = ref(GrailsApplication.APPLICATION_ID)
+                sessionFactory = ref(sessionFactoryName)
+            }
         }
     }
 }
