@@ -58,6 +58,16 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
         this.mappingContext = mappingContext;
     }
 
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof PersistentEntity && getName().equals(((PersistentEntity) obj).getName());
+    }
+
     /**
      * @return The wrapped GrailsDomainClass instance
      */

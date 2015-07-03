@@ -7,9 +7,11 @@ import grails.core.GrailsDomainClass
 import grails.core.GrailsDomainClassProperty
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import grails.plugins.Plugin
+import grails.spring.BeanBuilder
 import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.orm.hibernate.SessionFactoryHolder
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -17,6 +19,8 @@ import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersi
 import org.grails.orm.hibernate.validation.UniqueConstraint
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.factory.support.DefaultListableBeanFactory
+import org.springframework.beans.factory.support.RootBeanDefinition
 import org.springframework.context.ApplicationContext
 
 /**
@@ -83,6 +87,7 @@ class HibernateGrailsPlugin extends Plugin {
             GrailsDomainBinder.clearMappingCache(cls)
 
             ApplicationContext applicationContext = applicationContext
+            applicationContext.getBean(GrailsDomainClassMappingContext).addPersistentEntity(cls, true)
             for(String dataSourceName in dataSourceNames) {
                 boolean isDefault = dataSourceName == GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
                 String suffix = isDefault ? '' : '_' + dataSourceName
@@ -96,10 +101,17 @@ class HibernateGrailsPlugin extends Plugin {
 
                     def sessionFactoryBeanDefinition = beanDefinitionRegistry.getBeanDefinition(sessionFactoryName)
                     sessionFactoryBeanDefinition.propertyValues.add("proxyIfReloadEnabled", false)
-                    applicationContext.removeBeanDefinition(sessionFactoryName)
-                    applicationContext.registerBeanDefinition(sessionFactoryName, sessionFactoryBeanDefinition)
 
-                    def newSessionFactory = applicationContext.getBean(sessionFactoryName, SessionFactory)
+
+                    def newHolder = new RootBeanDefinition(SessionFactoryHolder)
+                    newHolder.propertyValues.add("sessionFactory", sessionFactoryBeanDefinition)
+
+                    def reloadedHolderBeanName = "${SessionFactoryHolder.BEAN_ID}${suffix}-reloaded"
+                    beanDefinitionRegistry.registerBeanDefinition(reloadedHolderBeanName,
+                            newHolder
+                    )
+
+                    def newSessionFactory = applicationContext.getBean(reloadedHolderBeanName, SessionFactoryHolder).getSessionFactory()
 
                     holder.setSessionFactory(
                             newSessionFactory
