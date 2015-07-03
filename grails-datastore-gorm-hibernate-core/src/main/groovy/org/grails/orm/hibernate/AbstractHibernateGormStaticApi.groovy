@@ -144,6 +144,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
      */
     @Override
     D find(String query, Map queryNamedArgs, Map args) {
+        query = normalizeMultiLineQueryString(query)
         if (!queryPattern.matcher(query).matches()) {
             throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
         }
@@ -164,6 +165,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     D find(String query, Collection params, Map args) {
+        query = normalizeMultiLineQueryString(query)
         if (!queryPattern.matcher(query).matches()) {
             throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
         }
@@ -189,6 +191,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     List<D> findAll(String query, Map params, Map args) {
+        query = normalizeMultiLineQueryString(query)
         if (!queryPattern.matcher(query).matches()) {
             throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
         }
@@ -210,6 +213,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     List<D> findAll(String query, Collection params, Map args) {
+        query = normalizeMultiLineQueryString(query)
         if (!queryPattern.matcher(query).matches()) {
             throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
         }
@@ -487,5 +491,11 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
 
         args.remove(DynamicFinder.ARGUMENT_CACHE)
+    }
+
+    private String normalizeMultiLineQueryString(String query) {
+        if (query.indexOf('\n') != -1)
+           return query.trim().replace('\n', ' ')
+        return query
     }
 }
