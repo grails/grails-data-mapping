@@ -118,7 +118,11 @@ class HibernateGrailsPlugin extends Plugin {
                     )
 
                     registerNewBeans(dc, suffix, sessionFactoryName)
-                    dc.validator = applicationContext.getBean("${cls.name}Validator$suffix", Validator)
+
+                    def validatorName = "${cls.name}Validator$suffix"
+
+                    def validator = applicationContext.getBean(validatorName, Validator)
+                    dc.validator = validator
                 }
             }
 
@@ -132,9 +136,9 @@ class HibernateGrailsPlugin extends Plugin {
     @CompileDynamic
     protected registerNewBeans(GrailsDomainClass cls, String suffix, String sessionFactoryName) {
         beans {
-            "${cls.name}Validator$suffix"(HibernateDomainClassValidator) {
+            "${cls.fullName}Validator$suffix"(HibernateDomainClassValidator) {
                 messageSource = ref("messageSource")
-                domainClass = ref("${cls.name}DomainClass")
+                domainClass = ref("${cls.fullName}DomainClass")
                 delegate.grailsApplication = ref(GrailsApplication.APPLICATION_ID)
                 sessionFactory = ref(sessionFactoryName)
             }
