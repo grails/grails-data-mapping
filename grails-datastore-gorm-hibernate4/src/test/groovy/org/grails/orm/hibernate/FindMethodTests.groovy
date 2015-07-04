@@ -25,6 +25,19 @@ class FindMethodTests extends AbstractGrailsHibernateTests {
     }
 
     @Test
+    void testFindMethodWithHQLWithMultiline() {
+        assertNotNull "should have saved", FindMethodTestClass.newInstance(one:"one", two:2).save(flush:true)
+
+        session.clear()
+
+        assert FindMethodTestClass.find("""
+                                    FROM FindMethodTestClass as f 
+                                    where f.one = ? 
+                                    and f.two = ?
+                                    """, ["one", 2]) : "should have returned a result"
+    }
+
+    @Test
     void testUsingHibernateCache() {
         def stats = sessionFactory.statistics
         stats.statisticsEnabled = true
