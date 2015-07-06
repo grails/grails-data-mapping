@@ -20,5 +20,14 @@ class ListOrderBySpec extends GormDatastoreSpec {
             results[0].name == "Jack"
             results[1].name == "Bob"
             results[2].name == "Fred"
+
+        when:
+        results = TestEntity.listOrderByAge(order:"desc")
+
+        then:
+        results.size() == 3
+        results[2].name == "Jack"
+        results[1].name == "Bob"
+        results[0].name == "Fred"
     }
 }

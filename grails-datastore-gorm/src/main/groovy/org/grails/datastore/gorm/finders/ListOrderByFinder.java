@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.finders;
 
 import groovy.lang.Closure;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,11 +66,18 @@ public class ListOrderByFinder extends AbstractFinder {
             public Object doInSession(final Session session) {
                 Query q = session.createQuery(clazz);
                 applyAdditionalCriteria(q, additionalCriteria);
+
+                boolean ascending = true;
                 if (arguments.length > 0 && (arguments[0] instanceof Map)) {
-                    DynamicFinder.populateArgumentsForCriteria(clazz, q, (Map) arguments[0]);
+                    final Map args = new LinkedHashMap( (Map) arguments[0] );
+                    final Object order = args.remove(DynamicFinder.ARGUMENT_ORDER);
+                    if(order != null && "desc".equalsIgnoreCase(order.toString())) {
+                        ascending = false;
+                    }
+                    DynamicFinder.populateArgumentsForCriteria(clazz, q, args);
                 }
 
-                q.order(Query.Order.asc(propertyName));
+                q.order( ascending ? Query.Order.asc(propertyName) : Query.Order.desc(propertyName));
                 q.projections().distinct();
                 return invokeQuery(q);
             }
