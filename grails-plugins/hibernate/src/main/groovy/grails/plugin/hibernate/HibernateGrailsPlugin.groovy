@@ -8,17 +8,20 @@ import grails.core.GrailsDomainClassProperty
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import grails.plugins.Plugin
 import grails.validation.ConstrainedProperty
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.orm.hibernate.SessionFactoryHolder
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor
+import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.orm.hibernate.validation.UniqueConstraint
-import org.hibernate.SessionFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.factory.support.RootBeanDefinition
 import org.springframework.context.ApplicationContext
-
+import org.springframework.validation.Validator
 /**
  * Plugin that integrates Hibernate into a Grails application
  *
@@ -83,10 +86,12 @@ class HibernateGrailsPlugin extends Plugin {
             GrailsDomainBinder.clearMappingCache(cls)
 
             ApplicationContext applicationContext = applicationContext
+            applicationContext.getBean(GrailsDomainClassMappingContext).addPersistentEntity(cls, true)
             for(String dataSourceName in dataSourceNames) {
                 boolean isDefault = dataSourceName == GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
                 String suffix = isDefault ? '' : '_' + dataSourceName
                 String sessionFactoryName = isDefault ? HibernateDatastoreSpringInitializer.SESSION_FACTORY_BEAN_NAME : "sessionFactory$suffix"
+
 
                 if(applicationContext instanceof BeanDefinitionRegistry) {
                     BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry) applicationContext
@@ -96,14 +101,28 @@ class HibernateGrailsPlugin extends Plugin {
 
                     def sessionFactoryBeanDefinition = beanDefinitionRegistry.getBeanDefinition(sessionFactoryName)
                     sessionFactoryBeanDefinition.propertyValues.add("proxyIfReloadEnabled", false)
-                    applicationContext.removeBeanDefinition(sessionFactoryName)
-                    applicationContext.registerBeanDefinition(sessionFactoryName, sessionFactoryBeanDefinition)
 
-                    def newSessionFactory = applicationContext.getBean(sessionFactoryName, SessionFactory)
+
+                    def newHolder = new RootBeanDefinition(SessionFactoryHolder)
+                    newHolder.propertyValues.add("sessionFactory", sessionFactoryBeanDefinition)
+
+                    def reloadedHolderBeanName = "${SessionFactoryHolder.BEAN_ID}${suffix}-reloaded"
+                    beanDefinitionRegistry.registerBeanDefinition(reloadedHolderBeanName,
+                            newHolder
+                    )
+
+                    def newSessionFactory = applicationContext.getBean(reloadedHolderBeanName, SessionFactoryHolder).getSessionFactory()
 
                     holder.setSessionFactory(
                             newSessionFactory
                     )
+
+                    registerNewBeans(dc, suffix, sessionFactoryName)
+
+                    def validatorName = "${cls.name}Validator$suffix"
+
+                    def validator = applicationContext.getBean(validatorName, Validator)
+                    dc.validator = validator
                 }
             }
 
@@ -111,6 +130,18 @@ class HibernateGrailsPlugin extends Plugin {
             postInit.applicationContext = applicationContext
             postInit.grailsApplication = grailsApplication
             postInit.afterPropertiesSet()
+        }
+    }
+
+    @CompileDynamic
+    protected registerNewBeans(GrailsDomainClass cls, String suffix, String sessionFactoryName) {
+        beans {
+            "${cls.fullName}Validator$suffix"(HibernateDomainClassValidator) {
+                messageSource = ref("messageSource")
+                domainClass = ref("${cls.fullName}DomainClass")
+                delegate.grailsApplication = ref(GrailsApplication.APPLICATION_ID)
+                sessionFactory = ref(sessionFactoryName)
+            }
         }
     }
 }
