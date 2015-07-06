@@ -735,9 +735,8 @@ class PersistenceMethodTests extends AbstractGrailsHibernateTests {
         assertEquals 1, returnList.size()
 
         // test list with order by desc
-        argsMap = [order: "desc", sort: "firstName"]
 
-        returnValue = domainClass.listOrderByFirstName(argsMap)
+        returnValue = domainClass.listOrderByFirstName(order: "desc")
         assertNotNull returnValue
         assertTrue returnValue instanceof List
 
