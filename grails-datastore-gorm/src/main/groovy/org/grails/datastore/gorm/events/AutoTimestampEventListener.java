@@ -14,8 +14,10 @@
  */
 package org.grails.datastore.gorm.events;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.grails.datastore.gorm.timestamp.DefaultTimestampProvider;
 import org.grails.datastore.gorm.timestamp.TimestampProvider;
@@ -44,8 +46,9 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
     public static final String DATE_CREATED_PROPERTY = "dateCreated";
     public static final String LAST_UPDATED_PROPERTY = "lastUpdated";
 
-    protected Map<PersistentEntity, Boolean> entitiesWithDateCreated = new ConcurrentHashMap<PersistentEntity, Boolean>();
-    protected Map<PersistentEntity, Boolean> entitiesWithLastUpdated = new ConcurrentHashMap<PersistentEntity, Boolean>();
+    protected Map<String, Boolean> entitiesWithDateCreated = new ConcurrentHashMap<String, Boolean>();
+    protected Map<String, Boolean> entitiesWithLastUpdated = new ConcurrentHashMap<String, Boolean>();
+    protected Collection<String> uninitializedEntities = new ConcurrentLinkedQueue<String>();
     
     
     private TimestampProvider timestampProvider = new DefaultTimestampProvider();
@@ -77,14 +80,16 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
     }
 
     public boolean beforeInsert(PersistentEntity entity, EntityAccess ea) {
+        final String name = entity.getName();
+        initializeIfNecessary(entity, name);
         Class<?> dateCreatedType = null;
         Object timestamp = null;
-        if (hasDateCreated(entity)) {
+        if (hasDateCreated(name)) {
             dateCreatedType = ea.getPropertyType(DATE_CREATED_PROPERTY);
             timestamp = timestampProvider.createTimestamp(dateCreatedType);
             ea.setProperty(DATE_CREATED_PROPERTY, timestamp);
         }
-        if (hasLastupdated(entity)) {
+        if (hasLastUpdated(name)) {
             Class<?> lastUpdateType = ea.getPropertyType(LAST_UPDATED_PROPERTY);
             if(dateCreatedType == null || !lastUpdateType.isAssignableFrom(dateCreatedType)) {
                 timestamp = timestampProvider.createTimestamp(lastUpdateType);
@@ -93,9 +98,16 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
         }
         return true;
     }
-    
+
+    private void initializeIfNecessary(PersistentEntity entity, String name) {
+        if(uninitializedEntities.contains(name)) {
+            storeDateCreatedAndLastUpdatedInfo(entity);
+            uninitializedEntities.remove(name);
+        }
+    }
+
     public boolean beforeUpdate(PersistentEntity entity, EntityAccess ea) {
-        if (hasLastupdated(entity)) {
+        if (hasLastUpdated(entity.getName())) {
             Class<?> lastUpdateType = ea.getPropertyType(LAST_UPDATED_PROPERTY);
             Object timestamp = timestampProvider.createTimestamp(lastUpdateType);
             ea.setProperty(LAST_UPDATED_PROPERTY, timestamp);
@@ -103,25 +115,49 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
         return true;
     }
 
-    protected boolean hasLastupdated(PersistentEntity entity) {
-        return entitiesWithLastUpdated.containsKey(entity) && entitiesWithLastUpdated.get(entity);
+    /**
+     * Here for binary compatibility. Deprecated.
+     *
+     * @deprecated Use {@link #hasLastUpdated(String)} instead
+     */
+    protected boolean hasLastUpdated(PersistentEntity entity) {
+        return hasLastUpdated(entity.getName());
     }
 
+    protected boolean hasLastUpdated(String n) {
+        return entitiesWithLastUpdated.containsKey(n) && entitiesWithLastUpdated.get(n);
+    }
+
+    /**
+     * Here for binary compatibility. Deprecated.
+     *
+     * @deprecated Use {@link #hasDateCreated(String)} instead
+     */
     protected boolean hasDateCreated(PersistentEntity entity) {
-        return entitiesWithDateCreated.containsKey(entity)&& entitiesWithDateCreated.get(entity);
+        return hasDateCreated(entity.getName());
+    }
+
+    protected boolean hasDateCreated(String n) {
+        return entitiesWithDateCreated.containsKey(n)&& entitiesWithDateCreated.get(n);
     }
 
     protected void storeDateCreatedAndLastUpdatedInfo(PersistentEntity persistentEntity) {
-        ClassMapping<?> classMapping = persistentEntity.getMapping();
-        Entity mappedForm = classMapping.getMappedForm();
-        if(mappedForm == null || mappedForm.isAutoTimestamp()) {
-            storeTimestampAvailability(entitiesWithDateCreated, persistentEntity, persistentEntity.getPropertyByName(DATE_CREATED_PROPERTY));
-            storeTimestampAvailability(entitiesWithLastUpdated, persistentEntity, persistentEntity.getPropertyByName(LAST_UPDATED_PROPERTY));
+        if(persistentEntity.isInitialized()) {
+
+            ClassMapping<?> classMapping = persistentEntity.getMapping();
+            Entity mappedForm = classMapping.getMappedForm();
+            if(mappedForm == null || mappedForm.isAutoTimestamp()) {
+                storeTimestampAvailability(entitiesWithDateCreated, persistentEntity, persistentEntity.getPropertyByName(DATE_CREATED_PROPERTY));
+                storeTimestampAvailability(entitiesWithLastUpdated, persistentEntity, persistentEntity.getPropertyByName(LAST_UPDATED_PROPERTY));
+            }
+        }
+        else {
+            uninitializedEntities.add(persistentEntity.getName());
         }
     }
 
-    protected void storeTimestampAvailability(Map<PersistentEntity, Boolean> timestampAvailabilityMap, PersistentEntity persistentEntity, PersistentProperty<?> property) {
-        timestampAvailabilityMap.put(persistentEntity, property != null ? timestampProvider.supportsCreating(property.getType()) : false);
+    protected void storeTimestampAvailability(Map<String, Boolean> timestampAvailabilityMap, PersistentEntity persistentEntity, PersistentProperty<?> property) {
+        timestampAvailabilityMap.put(persistentEntity.getName(), property != null && timestampProvider.supportsCreating(property.getType()));
     }
 
     public void persistentEntityAdded(PersistentEntity entity) {
