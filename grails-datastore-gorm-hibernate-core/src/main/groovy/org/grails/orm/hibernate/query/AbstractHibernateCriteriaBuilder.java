@@ -1117,11 +1117,6 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
 
     /**
      * Applies a sql restriction to the results to allow something like:
-     <pre>
-     def results = Person.withCriteria {
-     sqlRestriction "char_length(first_name) <= 4"
-     }
-     </pre>
      *
      * @param sqlRestriction the sql restriction
      * @return a Criteria instance
@@ -1136,11 +1131,6 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
 
     /**
      * Applies a sql restriction to the results to allow something like:
-     <pre>
-     def results = Person.withCriteria {
-     sqlRestriction "char_length(first_name) < ? AND char_length(first_name) > ?", [4, 9]
-     }
-     </pre>
      *
      * @param sqlRestriction the sql restriction
      * @param values jdbc parameters
@@ -1922,7 +1912,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
     /**
      * Join an association using the specified join-type, assigning an alias
      * to the joined association.
-     * <p/>
+     * sub
      * The joinType is expected to be one of CriteriaSpecification.INNER_JOIN (the default),
      * CriteriaSpecificationFULL_JOIN, or CriteriaSpecificationLEFT_JOIN.
      *
