@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 import org.bson.types.ObjectId
+import spock.lang.Ignore
 import spock.lang.Issue
 
 /**
@@ -11,6 +12,7 @@ import spock.lang.Issue
 class MongoDynamicPropertyOnEmbeddedSpec extends GormDatastoreSpec{
 
     @Issue('GPMONGODB-290')
+    @Ignore
     void "Test that accessing dynamic attributes on embedded objects use the embedded collection"() {
         when:"An embedded collection is created"
             Container.collection.insert(name:'big box of items',
