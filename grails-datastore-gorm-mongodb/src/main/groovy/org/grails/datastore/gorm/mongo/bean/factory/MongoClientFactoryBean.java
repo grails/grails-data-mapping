@@ -15,27 +15,34 @@
 package org.grails.datastore.gorm.mongo.bean.factory;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import com.gmongo.GMongoClient;
 import com.mongodb.*;
+import groovy.lang.GString;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.BsonReader;
+import org.bson.BsonWriter;
+import org.bson.codecs.Codec;
+import org.bson.codecs.DecoderContext;
+import org.bson.codecs.EncoderContext;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.codehaus.groovy.runtime.GStringImpl;
 import org.grails.datastore.mapping.model.DatastoreConfigurationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-import com.gmongo.GMongo;
 
 /**
- * A Factory bean for initializing a {@link GMongo} instance
+ * A Factory bean for initializing a {@link com.mongodb.MongoClient} instance
  *
  * @author Graeme Rocher
  */
-public class GMongoFactoryBean implements FactoryBean<GMongoClient>, InitializingBean/*,
+public class MongoClientFactoryBean implements FactoryBean<MongoClient>, InitializingBean/*,
     PersistenceExceptionTranslator*/, DisposableBean {
 
     /**
@@ -54,6 +61,11 @@ public class GMongoFactoryBean implements FactoryBean<GMongoClient>, Initializin
     private List<ServerAddress> replicaPair;
     private String connectionString;
     private MongoClientURI clientURI;
+    private List<CodecRegistry> codecRegistries = new ArrayList<CodecRegistry>() { {
+        add(MongoClient.getDefaultCodecRegistry());
+        add(new DefaultGrailsCodecRegistry());
+
+    }};
 
     public void setReplicaPair(List<ServerAddress> replicaPair) {
         this.replicaPair = replicaPair;
@@ -95,15 +107,17 @@ public class GMongoFactoryBean implements FactoryBean<GMongoClient>, Initializin
         this.clientURI = clientURI;
     }
 
-    public GMongoClient getObject() throws Exception {
-        Assert.notNull(mongo, "Mongo must not be null");
-        GMongoClient mongoClient = new GMongoClient();
-        mongoClient.setMongoClient(mongo);
-        return mongoClient;
+    @Autowired(required = false)
+    public void setCodecRegistries(Collection<CodecRegistry> codecRegistries) {
+        this.codecRegistries.addAll(codecRegistries);
     }
 
-    public Class<? extends GMongo> getObjectType() {
-        return GMongo.class;
+    public MongoClient getObject() throws Exception {
+        return mongo;
+    }
+
+    public Class<? extends MongoClient> getObjectType() {
+        return MongoClient.class;
     }
 
     public boolean isSingleton() {
@@ -121,8 +135,9 @@ public class GMongoFactoryBean implements FactoryBean<GMongoClient>, Initializin
         List<MongoCredential> credentials = new ArrayList<MongoCredential>();
         if (mongoOptions == null) {
             MongoClientOptions.Builder builder = MongoClientOptions.builder();
-
-
+            builder.codecRegistry(
+                    CodecRegistries.fromRegistries( codecRegistries )
+            );
             mongoOptions = builder.build();
         }
         // If username/pw exists and we are not authenticated, authenticate now
@@ -164,5 +179,34 @@ public class GMongoFactoryBean implements FactoryBean<GMongoClient>, Initializin
 
         mongo.close();
         mongo = null;
+    }
+
+    public static class DefaultGrailsCodecRegistry implements CodecRegistry {
+
+        private static Map<Class, Codec> CODECS  = new HashMap<Class, Codec>() {
+            {
+                put(GStringImpl.class, new Codec() {
+                    @Override
+                    public Object decode(BsonReader reader, DecoderContext decoderContext) {
+                        return reader.readString();
+                    }
+
+                    @Override
+                    public void encode(BsonWriter writer, Object value, EncoderContext encoderContext) {
+                        writer.writeString(value.toString());
+                    }
+
+                    @Override
+                    public Class getEncoderClass() {
+                        return GString.class;
+                    }
+                });
+            }
+        };
+
+        @Override
+        public <T> Codec<T> get(Class<T> clazz) {
+            return CODECS.get(clazz);
+        }
     }
 }

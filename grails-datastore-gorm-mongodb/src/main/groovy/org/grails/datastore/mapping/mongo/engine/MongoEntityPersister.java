@@ -188,7 +188,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         boolean reference = isReference(association);
         for (Object foreignKey : keys) {
             if (reference) {
-                dbRefs.add(new DBRef((DB) session.getNativeInterface(), getCollectionName(association.getAssociatedEntity()), foreignKey));
+                dbRefs.add(new DBRef(getCollectionName(association.getAssociatedEntity()), foreignKey));
             } else {
                 dbRefs.add(foreignKey);
             }
@@ -364,14 +364,14 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     while (true) {
                         DBObject result = dbCollection.findAndModify(new BasicDBObject(MONGO_ID_FIELD, collectionName), null, null, false, new BasicDBObject("$inc", new BasicDBObject("next_id", 1)), true, true);
                         // result should never be null and we shouldn't come back with an error ,but you never know. We should just retry if this happens...
-                        if (result != null && con.getLastError().ok()) {
+                        if (result != null) {
                             long nextId = getMappingContext().getConversionService().convert(result.get("next_id"), Long.class);
                             nativeEntry.put(MONGO_ID_FIELD, nextId);
                             break;
                         } else {
                             attempts++;
                             if (attempts > 3) {
-                                throw new IdentityGenerationException("Unable to generate identity using findAndModify after 3 attempts: " + con.getLastError().getErrorMessage());
+                                throw new IdentityGenerationException("Unable to generate identity for ["+persistentEntity.getName()+"] using findAndModify after 3 attempts");
                             }
                         }
                     }
@@ -442,10 +442,9 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
     protected Object formulateDatabaseReference(PersistentEntity persistentEntity, Association association, Serializable associationId) {
-        DB db = (DB) session.getNativeInterface();
         boolean isReference = isReference(association);
         if (isReference) {
-            return new DBRef(db, getCollectionName(association.getAssociatedEntity()), associationId);
+            return new DBRef(getCollectionName(association.getAssociatedEntity()), associationId);
         }
         return associationId;
     }
@@ -692,11 +691,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 if (versioned && !((SessionImplementor)getSession()).isStateless(persistentEntity)) {
                     // ok, we need to check whether the write worked:
                     // note that this will use the standard write concern unless it wasn't at least ACKNOWLEDGE:
-                    CommandResult error = result.getLastError(WriteConcern.ACKNOWLEDGED);
-                    // may as well handle any networking errors:
-                    error.throwOnError();
-                    // if the document count "n" of the update was 0, the versioning check must have failed:
-                    if (error.getInt("n") == 0) {
+                    // if the document count "n" of the update was 0, the version check must have failed:
+                    if (result.wasAcknowledged() && result.getN() == 0) {
                         if(currentVersion != null) {
                             ea.setProperty(GormProperties.VERSION, currentVersion);
                         }
@@ -844,7 +840,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 List dbRefs = new ArrayList();
                 for (Object foreignKey : foreignKeys) {
                     if (isReference) {
-                        dbRefs.add(new DBRef(db, getCollectionName(association.getAssociatedEntity()), foreignKey));
+                        dbRefs.add(new DBRef(getCollectionName(association.getAssociatedEntity()), foreignKey));
                     }
                     else {
                         dbRefs.add(foreignKey);

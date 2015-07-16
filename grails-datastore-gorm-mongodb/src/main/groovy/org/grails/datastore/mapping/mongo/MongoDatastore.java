@@ -21,8 +21,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.mongodb.*;
+import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
+import org.grails.datastore.gorm.mongo.bean.factory.*;
+import org.grails.datastore.gorm.mongo.bean.factory.MongoClientFactoryBean;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.StatelessDatastore;
@@ -206,7 +209,12 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                 mongo = new MongoClient(serverAddress, credentials, mongoOptions);
             }
             else {
-                mongo = new MongoClient(serverAddress, credentials);
+                MongoClientOptions.Builder builder = MongoClientOptions.builder();
+                builder.codecRegistry(
+                        CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(), new MongoClientFactoryBean.DefaultGrailsCodecRegistry())
+                );
+                mongoOptions = builder.build();
+                mongo = new MongoClient(serverAddress, credentials, mongoOptions);
             }
         }
 
@@ -258,7 +266,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             final WriteConcern writeConcern = mongoCollection.getWriteConcern();
             if (writeConcern != null) {
                 final String collectionNameToUse = collectionName;
-                mt.executeInSession(new DbCallback<Object>() {
+                mt.execute(new DbCallback<Object>() {
                     public Object doInDB(DB db) throws MongoException, DataAccessException {
                         DBCollection collection = db.getCollection(collectionNameToUse);
                         collection.setWriteConcern(writeConcern);

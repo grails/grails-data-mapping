@@ -2,7 +2,7 @@ package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.Person
 
-import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
+import org.grails.datastore.gorm.mongo.bean.factory.MongoClientFactoryBean
 import org.springframework.context.support.GenericApplicationContext
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
@@ -21,7 +21,7 @@ class GMongoSpec extends Specification {
 
     def "Test configure and use gmongo"() {
         given:
-            def gfb = new GMongoFactoryBean()
+            def gfb = new MongoClientFactoryBean()
             gfb.afterPropertiesSet()
 
         when:
@@ -35,7 +35,7 @@ class GMongoSpec extends Specification {
         when:
             def ctx = new GenericApplicationContext()
             ctx.refresh()
-            def datastore = new MongoDatastore(new MongoMappingContext("test"), gmongo.mongoClient, ctx)
+            def datastore = new MongoDatastore(new MongoMappingContext("test"), gmongo, ctx)
             def session = datastore.connect()
             def entity = datastore.mappingContext.addPersistentEntity(Person)
             new MongoGormEnhancer(datastore).enhance entity
@@ -47,7 +47,9 @@ class GMongoSpec extends Specification {
             def p = new Person(firstName:"Fred", lastName:"Flintstone").save(flush:true)
 
         then:
+            p != null
             Person.count() == 1
+            Person.first().firstName == "Fred"
             Person.withSession {
                 Person.collection.count() == 1
                 Person.collection.findOne(firstName:"Fred").lastName == "Flintstone"
@@ -56,5 +58,13 @@ class GMongoSpec extends Specification {
                 db[Person.collectionName].findOne(firstName:"Fred").lastName == "Flintstone"
 
             }
+
+        when:"we insert a list of maps"
+            Person.withSession {
+                Person.collection.insert( [ [firstName:"Bob"], [firstName:"Joe"]])
+            }
+
+        then:"It works"
+            Person.count() == 3
     }
 }

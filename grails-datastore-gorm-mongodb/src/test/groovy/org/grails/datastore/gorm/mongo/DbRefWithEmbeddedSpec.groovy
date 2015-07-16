@@ -24,7 +24,7 @@ class DbRefWithEmbeddedSpec extends GormDatastoreSpec {
             final link2one = Two.collection.findOne().link2one?.link
         then:""
             link2one instanceof DBRef
-            ((DBRef) link2one).fetch().name == "My Foo"
+            Two.DB.getCollection(link2one.collectionName).findOne(link2one.id).name == "My Foo"
 
     }
 

@@ -1,6 +1,5 @@
 package org.grails.datastore.gorm.mongo.plugin.support
 
-import com.gmongo.GMongo
 import com.mongodb.MongoClientURI
 import grails.core.DefaultGrailsApplication
 import grails.core.GrailsApplication

@@ -14,26 +14,12 @@
  */
 package org.grails.datastore.gorm.mongo
 
-import com.gmongo.internal.DBCollectionPatcher
-import com.mongodb.BasicDBObject
-import com.mongodb.DB
-import com.mongodb.DBCollection
-import com.mongodb.DBObject
-import org.grails.datastore.gorm.finders.DynamicFinder
-import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.core.Session
-import org.grails.datastore.mapping.core.SessionCallback
-import org.grails.datastore.mapping.core.SessionImplementor
-import org.grails.datastore.mapping.mongo.MongoSession
-import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
-import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.springframework.transaction.PlatformTransactionManager
-import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
-
 /**
  * GORM enhancer for Mongo.
  *

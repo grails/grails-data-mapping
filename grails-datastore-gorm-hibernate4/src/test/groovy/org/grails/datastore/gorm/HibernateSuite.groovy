@@ -34,7 +34,7 @@ import org.junit.runners.Suite.SuiteClasses
 //  ValidationSpec,
 //  GroovyProxySpec,
 //  CommonTypesPersistenceSpec
-    UniqueConstraintSpec
+//    UniqueConstraintSpec
 //  OneToManySpec,
 //  SaveAllSpec,
 //  GormEnhancerSpec,
@@ -56,6 +56,7 @@ import org.junit.runners.Suite.SuiteClasses
 //  CrudOperationsSpec,
 //  SaveAllSpec,
 //  DeleteAllSpec
+    ListOrderBySpec
 ])
 class HibernateSuite {
 

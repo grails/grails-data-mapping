@@ -14,7 +14,6 @@
  */
 package org.grails.datastore.gorm.mongo
 
-import com.gmongo.internal.DBCollectionPatcher
 import com.mongodb.AggregationOptions
 import com.mongodb.BasicDBObject
 import com.mongodb.DB
@@ -83,7 +82,6 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
             def template = ms.getMongoTemplate(persistentEntity)
 
             def coll = template.getCollection(ms.getCollectionName(persistentEntity))
-            DBCollectionPatcher.patch(coll)
             return coll
         } as SessionCallback<DBCollection>)
     }

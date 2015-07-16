@@ -159,9 +159,9 @@ public class MongoSession extends AbstractSession<DB> {
 
                     WriteResult writeResult = writeConcernToUse != null ? collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcernToUse )
                                                                             : collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]));
-                    if (writeResult.getError() != null) {
+                    if (!writeResult.wasAcknowledged()) {
                         errorOccured = true;
-                        throw new DataIntegrityViolationException(writeResult.getError());
+                        throw new DataIntegrityViolationException("Write operation was not acknowledged");
                     }
                     for (PendingOperation pendingOperation : postOperations) {
                         pendingOperation.run();

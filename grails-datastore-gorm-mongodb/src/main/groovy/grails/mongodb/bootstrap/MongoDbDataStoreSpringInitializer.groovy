@@ -159,7 +159,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
                 }
 
                 if(registerMongoBean) {
-                    "gmongo"(GMongoFactoryBean) {
+                    "$mongoBeanName"(MongoClientFactoryBean) {
                         delegate.mongoOptions = ref("$mongoOptionsBeanName")
                         if(username && password) {
                             delegate.username = username
@@ -193,7 +193,6 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
                         }
                     }
 
-                    "$mongoBeanName"(gmongo:"getMongoClient")
                 }
 
             }
