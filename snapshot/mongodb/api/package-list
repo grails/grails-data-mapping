@@ -2,6 +2,7 @@ grails.mongodb.bootstrap
 grails.mongodb.geo
 org.grails.datastore.gorm.mongo
 org.grails.datastore.gorm.mongo.bean.factory
+org.grails.datastore.gorm.mongo.extensions
 org.grails.datastore.gorm.mongo.geo
 org.grails.datastore.gorm.mongo.plugin.support
 org.grails.datastore.gorm.mongo.simple
