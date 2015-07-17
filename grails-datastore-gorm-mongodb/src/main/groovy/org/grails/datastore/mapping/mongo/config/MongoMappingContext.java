@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.bson.BSONObject;
+import org.bson.Document;
 import org.bson.types.BSONTimestamp;
 import org.bson.types.Code;
 import org.bson.types.CodeWScope;
@@ -85,7 +86,7 @@ public class MongoMappingContext extends DocumentMappingContext {
      */
     public static boolean isMongoNativeType(Class clazz) {
         return MongoMappingContext.MONGO_NATIVE_TYPES.contains(clazz.getName()) ||
-                DBObject.class.isAssignableFrom(clazz.getClass());
+                Document.class.isAssignableFrom(clazz.getClass()) || DBObject.class.isAssignableFrom(clazz.getClass());
     }
 
     private final class MongoDocumentMappingFactory extends

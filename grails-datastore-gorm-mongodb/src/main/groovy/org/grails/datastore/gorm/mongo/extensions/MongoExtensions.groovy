@@ -37,6 +37,7 @@ import org.bson.BsonObjectId
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
+import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 
 import java.util.concurrent.TimeUnit
 
@@ -195,13 +196,30 @@ class MongoExtensions {
     }
 
     static Document findOne(MongoCollection<Document> collection, ObjectId id) {
-        def query = new HashMap<String,Object>(['_id': id])
-        findOne(collection, query)
+        def query = new Document()
+        query.put(MongoEntityPersister.MONGO_ID_FIELD, id)
+        collection.find((Bson)query)
+                  .limit(1)
+                  .first()
     }
 
     static Document findOne(MongoCollection<Document> collection, CharSequence id) {
-        def query = new HashMap<String,Object>(['_id': id])
-        findOne(collection, query)
+        def query = new Document()
+        query.put(MongoEntityPersister.MONGO_ID_FIELD, id)
+
+        collection.find((Bson)query)
+                .limit(1)
+                .first()
+    }
+
+    static <T> T findOne(MongoCollection<Document> collection, Serializable id, Class<T> type) {
+        def query = new Document()
+        query.put(MongoEntityPersister.MONGO_ID_FIELD, id)
+
+        collection
+                .find((Bson)query, type)
+                .limit(1)
+                .first()
     }
 
     /**
@@ -298,21 +316,25 @@ class MongoExtensions {
     /**
      * @see DBCollection#findOne(com.mongodb.DBObject)
      */
-    static FindIterable<Document> find(MongoCollection<Document> collection, final Map query) {
+    static FindIterable<Document> find(MongoCollection<Document> collection, final Map<String, Object> query) {
         collection.find((Bson)new Document(query))
+    }
+
+    static <T>  FindIterable<T> find(MongoCollection<T> collection, final Map<String, Object> query, Class<T> type) {
+        collection.find((Bson)new Document(query), type)
     }
 
     /**
      * @see DBCollection#findOne(com.mongodb.DBObject, com.mongodb.DBObject)
      */
-    static DBCursor find(DBCollection collection, final Map query, final Map projection) {
+    static DBCursor find(DBCollection collection, final Map<String, Object> query, final Map<String, Object> projection) {
         collection.find((DBObject)new BasicDBObject(query), (DBObject)new BasicDBObject(projection))
     }
 
     /**
      * @see DBCollection#findOne(com.mongodb.DBObject, com.mongodb.DBObject)
      */
-    static FindIterable<Document> find(MongoCollection<Document> collection, final Map query, final Map projection) {
+    static FindIterable<Document> find(MongoCollection<Document> collection, final Map<String, Object> query, final Map<String, Object> projection) {
         collection.find((Bson)new Document(query))
                   .projection( new Document(projection) )
     }

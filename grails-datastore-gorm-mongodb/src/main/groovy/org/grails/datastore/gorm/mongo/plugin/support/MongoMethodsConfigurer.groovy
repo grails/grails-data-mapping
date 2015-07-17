@@ -24,7 +24,6 @@ import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.gorm.mongo.MongoGormInstanceApi
 import org.grails.datastore.gorm.mongo.MongoGormStaticApi
 import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
-import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.grails.datastore.mapping.mongo.query.MongoQuery
@@ -92,7 +91,7 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
         FindIterable.metaClass.toList = { Class cls ->
             MongoEntityPersister p = datastore.currentSession.getPersister(cls)
             if (p)
-                return new MongoQuery.MongoCursorList(((FindIterable<Document>)delegate).iterator(),0,p)
+                return new MongoQuery.MongoResultList(((FindIterable<Document>)delegate).iterator(),0,p)
             else {
                 throw new IllegalArgumentException("Cannot convert DBCursor [$delegate] to target type $cls. Type is not a persistent entity")
             }

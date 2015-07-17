@@ -86,7 +86,7 @@ public class MongoSession extends AbstractSession<MongoClient> {
     }
 
     @Override
-    public MongoQuery createQuery(@SuppressWarnings("rawtypes") Class type) {
+    public Query createQuery(@SuppressWarnings("rawtypes") Class type) {
         return (MongoQuery) super.createQuery(type);
     }
 
@@ -276,12 +276,11 @@ public class MongoSession extends AbstractSession<MongoClient> {
             public void run() {
                 String collectionName = getCollectionName(entity);
                 WriteConcern writeConcern = getDeclaredWriteConcern(entity);
-                if(writeConcern != null) {
+                if (writeConcern != null) {
                     getNativeInterface()
                             .getDB(defaultDatabase)
                             .getCollection(collectionName).remove(nativeQuery, writeConcern);
-                }
-                else {
+                } else {
                     getNativeInterface()
                             .getDB(defaultDatabase)
                             .getCollection(collectionName).remove(nativeQuery);
@@ -392,5 +391,13 @@ public class MongoSession extends AbstractSession<MongoClient> {
         }
 
         return mongoQuery.getMongoQuery();
+    }
+
+    public com.mongodb.client.MongoCollection getCollection(PersistentEntity entity) {
+        final String database = getDatabase(entity);
+        final String collectionName = getCollectionName(entity);
+        return getNativeInterface()
+                .getDatabase(database)
+                .getCollection(collectionName);
     }
 }
