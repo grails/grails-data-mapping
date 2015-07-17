@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.mongo
 
+import com.mongodb.MongoClient
 import grails.gorm.tests.GormDatastoreSpec
 
 import org.grails.datastore.mapping.document.config.DocumentPersistentEntity
@@ -19,7 +20,9 @@ class MongoEntityConfigSpec extends GormDatastoreSpec{
     def "Test custom collection config"() {
         given:
             session.mappingContext.addPersistentEntity MyMongoEntity
-            DB db = session.nativeInterface
+
+            def client = (MongoClient)session.nativeInterface
+            DB db = client.getDB(session.defaultDatabase)
 
             db.dropDatabase()
             // db.resetIndexCache() // this method is missing from more recent driver versions

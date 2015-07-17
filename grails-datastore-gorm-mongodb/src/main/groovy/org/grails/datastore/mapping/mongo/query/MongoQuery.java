@@ -21,10 +21,14 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import com.mongodb.*;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCursor;
 import grails.mongodb.geo.*;
 import groovy.lang.Closure;
 import org.bson.BasicBSONObject;
+import org.bson.Document;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.grails.datastore.gorm.mongo.extensions.MongoExtensions;
 import org.grails.datastore.gorm.mongo.geo.GeoJSONType;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
@@ -55,6 +59,8 @@ import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
+
+import javax.print.Doc;
 
 /**
  * A {@link org.grails.datastore.mapping.query.Query} implementation for the Mongo document store.
@@ -1967,6 +1973,179 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 cursor = this.cursor;
             }
             return new MongoResultList(cursor,offset, mongoEntityPersister);
+        }
+
+        @Override
+        public void close() throws IOException {
+            cursor.close();
+        }
+    }
+
+
+    @SuppressWarnings("serial")
+    public static class MongoCursorList extends AbstractList implements Closeable {
+
+        private MongoEntityPersister mongoEntityPersister;
+        private MongoCursor<Document> cursor;
+        private int offset = 0;
+        private int internalIndex;
+        private List initializedObjects = new ArrayList();
+        private Integer size;
+        private boolean initialized = false;
+
+        @SuppressWarnings("unchecked")
+        public MongoCursorList(MongoCursor<Document> cursor, int offset, MongoEntityPersister mongoEntityPersister) {
+            this.cursor = cursor;
+            this.mongoEntityPersister = mongoEntityPersister;
+            this.offset = offset;
+        }
+
+        @Override
+        public String toString() {
+            initializeFully();
+            return initializedObjects.toString();
+        }
+
+        /**
+         * @return The underlying MongoDB cursor instance
+         */
+        public MongoCursor<Document> getCursor() {
+            return cursor;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            if(initialized) return initializedObjects.isEmpty();
+            else {
+                return initializedObjects.isEmpty() && !cursor.hasNext();
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Object get(int index) {
+            if(initializedObjects.size() > index) {
+                return initializedObjects.get(index);
+            }
+            else if(!initialized) {
+                while(cursor.hasNext()) {
+                    if(internalIndex > index) throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
+                    Object o = convertDBObject(cursor.next());
+                    initializedObjects.add(internalIndex,o);
+                    if(index == internalIndex++) {
+                        return o;
+                    }
+                }
+                initialized = true;
+            }
+            throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
+        }
+
+        @Override
+        public Object set(int index, Object o) {
+            if(index > (size()-1)) {
+                throw new ArrayIndexOutOfBoundsException("Cannot set element at index " + index + " for cursor size " + size());
+            }
+            else {
+                // initialize
+                get(index);
+                return initializedObjects.set(index, o);
+            }
+        }
+
+        @Override
+        public ListIterator listIterator() {
+            return listIterator(0);
+        }
+
+        @Override
+        public ListIterator listIterator(int index) {
+            initializeFully();
+            return initializedObjects.listIterator(index);
+        }
+
+        private void initializeFully() {
+            if(initialized) return;
+
+            while(cursor.hasNext()) {
+                Document dbo = cursor.next();
+                Object current = convertDBObject(MongoExtensions.toDBObject(dbo));
+                initializedObjects.add(current);
+            }
+            initialized = true;
+        }
+
+        /**
+         * Override to transform elements if necessary during iteration.
+         * @return an iterator over the elements in this list in proper sequence
+         */
+        @Override
+        public Iterator iterator() {
+            if(initialized) {
+                return initializedObjects.iterator();
+            }
+
+
+            return new Iterator() {
+                Object current;
+                int index = 0;
+
+                public boolean hasNext() {
+                    boolean hasMore = cursor.hasNext();
+                    if(!hasMore) {
+                        initialized = true;
+                    }
+                    return hasMore;
+                }
+
+                @SuppressWarnings("unchecked")
+                public Object next() {
+                    Document dbo = cursor.next();
+                    current = convertDBObject(dbo);
+                    if(index < initializedObjects.size())
+                        initializedObjects.set(index++, current);
+                    else {
+                        index++;
+                        initializedObjects.add(current);
+                    }
+                    return current;
+                }
+
+                public void remove() {
+                    initializedObjects.remove(current);
+                }
+            };
+        }
+
+        @Override
+        public int size() {
+            if(initialized) {
+                return initializedObjects.size();
+            }
+            if(this.size == null) {
+                    this.size = 0;
+                    while(cursor.hasNext()) {
+                        Document object = cursor.next();
+                        initializedObjects.add( convertDBObject(object) );
+                        this.size++;
+                    }
+                    initialized = true;
+            }
+            return size;
+        }
+
+        protected Object convertDBObject(Object object) {
+            final DBObject dbObject = (DBObject) object;
+            Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
+            SessionImplementor session = (SessionImplementor) mongoEntityPersister.getSession();
+            Class type = mongoEntityPersister.getPersistentEntity().getJavaClass();
+            Object instance = session.getCachedInstance(type, (Serializable) id);
+            if (instance == null) {
+                instance = mongoEntityPersister.createObjectFromNativeEntry(
+                        mongoEntityPersister.getPersistentEntity(), (Serializable) id, dbObject);
+                session.cacheInstance(type, (Serializable) id, instance);
+            }
+            return instance;
         }
 
         @Override

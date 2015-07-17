@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.mongodb.*;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.impl.PendingInsert;
 import org.grails.datastore.mapping.core.impl.PendingOperation;
@@ -39,28 +40,22 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
-
 /**
  * A {@link org.grails.datastore.mapping.core.Session} implementation for the Mongo document store.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public class MongoSession extends AbstractSession<DB> {
+public class MongoSession extends AbstractSession<MongoClient> {
 
     private static final Map<PersistentEntity, WriteConcern> declaredWriteConcerns = new ConcurrentHashMap<PersistentEntity, WriteConcern>();
+    protected final String defaultDatabase;
     MongoDatastore mongoDatastore;
     private WriteConcern writeConcern = null;
     private boolean errorOccured = false;
     protected Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
     protected Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
+    protected Map<PersistentEntity, String> mongoDatabases = new ConcurrentHashMap<PersistentEntity, String>();
 
 
     public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
@@ -69,6 +64,25 @@ public class MongoSession extends AbstractSession<DB> {
     public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless) {
         super(datastore, mappingContext, publisher, stateless);
         mongoDatastore = datastore;
+        this.defaultDatabase = getDocumentMappingContext().getDefaultDatabaseName();
+    }
+
+    /**
+     * @return The name of the default database
+     */
+    public String getDefaultDatabase() {
+        return defaultDatabase;
+    }
+
+    /**
+     * @return The name of the default database
+     */
+    public String getDatabase(PersistentEntity entity) {
+        final String name = mongoDatabases.get(entity);
+        if(name != null) {
+            return name;
+        }
+        return defaultDatabase;
     }
 
     @Override
@@ -195,9 +209,8 @@ public class MongoSession extends AbstractSession<DB> {
         return writeConcern;
     }
 
-    public DB getNativeInterface() {
-        return ((MongoDatastore)getDatastore()).getMongo().getDB(
-             getDocumentMappingContext().getDefaultDatabaseName());
+    public MongoClient getNativeInterface() {
+        return ((MongoDatastore)getDatastore()).getMongoClient();
     }
 
     public DocumentMappingContext getDocumentMappingContext() {
@@ -211,8 +224,8 @@ public class MongoSession extends AbstractSession<DB> {
     }
 
     @Override
-    protected Transaction<DB> beginTransactionInternal() {
-        return new SessionOnlyTransaction<DB>(getNativeInterface(), this);
+    protected Transaction<MongoClient> beginTransactionInternal() {
+        return new SessionOnlyTransaction<MongoClient>(getNativeInterface(), this);
     }
 
     public MongoTemplate getMongoTemplate(PersistentEntity entity) {
@@ -248,6 +261,7 @@ public class MongoSession extends AbstractSession<DB> {
         MongoTemplate currentTemplate = mongoTemplates.containsKey(entity) ? mongoTemplates.get(entity) : mongoDatastore.getMongoTemplate(entity);
         String currentDatabase = currentTemplate.getDb().getName();
         mongoTemplates.put(entity, new MongoTemplate(mongoDatastore.getMongo(), databaseName, mongoDatastore.getUserCrentials()));
+        mongoDatabases.put(entity, databaseName);
         return currentDatabase;
     }
 
@@ -263,10 +277,14 @@ public class MongoSession extends AbstractSession<DB> {
                 String collectionName = getCollectionName(entity);
                 WriteConcern writeConcern = getDeclaredWriteConcern(entity);
                 if(writeConcern != null) {
-                    getNativeInterface().getCollection(collectionName).remove(nativeQuery, writeConcern);
+                    getNativeInterface()
+                            .getDB(defaultDatabase)
+                            .getCollection(collectionName).remove(nativeQuery, writeConcern);
                 }
                 else {
-                    getNativeInterface().getCollection(collectionName).remove(nativeQuery);
+                    getNativeInterface()
+                            .getDB(defaultDatabase)
+                            .getCollection(collectionName).remove(nativeQuery);
                 }
             }
         });
@@ -309,10 +327,14 @@ public class MongoSession extends AbstractSession<DB> {
                         nativeQuery.put( MongoEntityPersister.MONGO_ID_FIELD, new BasicDBObject(MongoQuery.MONGO_IN_OPERATOR, identifiers));
                         WriteConcern writeConcern = getDeclaredWriteConcern(persistentEntity);
                         if(writeConcern != null) {
-                            getNativeInterface().getCollection(collectionName).remove(nativeQuery, writeConcern);
+                            getNativeInterface()
+                                    .getDB(defaultDatabase)
+                                    .getCollection(collectionName).remove(nativeQuery, writeConcern);
                         }
                         else {
-                            getNativeInterface().getCollection(collectionName).remove(nativeQuery);
+                            getNativeInterface()
+                                    .getDB(defaultDatabase)
+                                    .getCollection(collectionName).remove(nativeQuery);
                         }
                     }
                 });
@@ -335,11 +357,13 @@ public class MongoSession extends AbstractSession<DB> {
                 WriteConcern writeConcern = getDeclaredWriteConcern(entity);
                 if(writeConcern != null) {
                     getNativeInterface()
+                            .getDB(defaultDatabase)
                             .getCollection(collectionName)
                             .update(nativeQuery, new BasicDBObject("$set", properties), false, true, writeConcern);
                 }
                 else {
                     getNativeInterface()
+                            .getDB(defaultDatabase)
                             .getCollection(collectionName)
                             .update(nativeQuery, new BasicDBObject("$set", properties), false, true);
                 }

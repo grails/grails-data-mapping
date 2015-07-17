@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm.mongo.plugin.support
 
+import com.mongodb.client.FindIterable
+import org.bson.Document
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
@@ -52,18 +54,25 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
             MongoEntityPersister p = datastore.currentSession.getPersister(cls)
             if (p != null) {
                 if (delegate instanceof DBCursor) {
-                    def mongoResults = new MongoQuery.MongoResultList(delegate,0, p)
+                    def mongoResults = new MongoQuery.MongoResultList(delegate, 0, p)
                     if (!mongoResults.isEmpty()) {
                         return mongoResults.get(0)
-                    }
-                    else {
+                    } else {
                         return null
                     }
                 }
-                else {
+                else if(delegate instanceof FindIterable) {
+                    return ((FindIterable)delegate).first().asType(cls)
+                }
+                else if( delegate instanceof DBObject ){
                     DBObject dbo = delegate
                     def key = dbo.get(MongoEntityPersister.MONGO_ID_FIELD)
                     return p.createObjectFromNativeEntry(p.persistentEntity, key, dbo)
+                }
+                else if( delegate instanceof Document ){
+                    Document dbo = delegate
+                    def key = dbo.get(MongoEntityPersister.MONGO_ID_FIELD)
+                    return p.createObjectFromNativeEntry(p.persistentEntity, key, dbo.toDBObject())
                 }
             }
             else {
@@ -75,9 +84,19 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
                 }
             }
         }
+        Document.metaClass.asType = asTypeHook
         DBObject.metaClass.asType = asTypeHook
         BasicDBObject.metaClass.asType = asTypeHook
         DBCursor.metaClass.asType = asTypeHook
+        FindIterable.metaClass.asType = asTypeHook
+        FindIterable.metaClass.toList = { Class cls ->
+            MongoEntityPersister p = datastore.currentSession.getPersister(cls)
+            if (p)
+                return new MongoQuery.MongoCursorList(((FindIterable<Document>)delegate).iterator(),0,p)
+            else {
+                throw new IllegalArgumentException("Cannot convert DBCursor [$delegate] to target type $cls. Type is not a persistent entity")
+            }
+        }
         DBCursor.metaClass.toList = { Class cls ->
             MongoEntityPersister p = datastore.currentSession.getPersister(cls)
             if (p)

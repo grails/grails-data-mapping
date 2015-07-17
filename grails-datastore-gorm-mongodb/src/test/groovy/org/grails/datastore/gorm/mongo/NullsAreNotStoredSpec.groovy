@@ -4,6 +4,7 @@ import grails.gorm.tests.GormDatastoreSpec
 import com.mongodb.Mongo
 import com.mongodb.DB
 import com.mongodb.DBObject
+import org.bson.Document
 import org.bson.types.ObjectId
 import grails.persistence.Entity
 
@@ -22,11 +23,11 @@ class NullsAreNotStoredSpec extends GormDatastoreSpec {
             session.clear()
 
         when:"The instance is read from the database"
-            DBObject personObj = NANSPerson.collection.findOne(person.id)
+            Document personObj = NANSPerson.collection.findOne(person.id)
 
         then:"The null-valued fields are not stored"
             personObj != null
-            !personObj.containsField("name")
+            !personObj.containsKey("name")
     }
 
     void "Test that null values are not stored on domain update"() {
@@ -40,11 +41,11 @@ class NullsAreNotStoredSpec extends GormDatastoreSpec {
             person.name = null
             person.save(flush: true)
             session.clear()
-            DBObject personObj = NANSPerson.collection.findOne(person.id)
+            Document personObj = NANSPerson.collection.findOne(person.id)
 
         then:"The null-valued fields are not stored"
             personObj != null
-            !personObj.containsField("name")
+            !personObj.containsKey("name")
     }
 }
 

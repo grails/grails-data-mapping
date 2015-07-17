@@ -15,11 +15,31 @@
  */
 package org.grails.datastore.gorm.mongo.extensions
 import com.mongodb.*
+import com.mongodb.client.DistinctIterable
+import com.mongodb.client.FindIterable
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.MongoDatabase
+import com.mongodb.client.MongoIterable
+import com.mongodb.client.model.CountOptions
+import com.mongodb.client.model.CreateCollectionOptions
+import com.mongodb.client.model.FindOneAndDeleteOptions
+import com.mongodb.client.model.FindOneAndReplaceOptions
+import com.mongodb.client.model.FindOneAndUpdateOptions
+import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.InsertManyOptions
+import com.mongodb.client.model.UpdateOptions
+import com.mongodb.client.result.DeleteResult
+import com.mongodb.client.result.UpdateResult
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.bson.BSONObject
+import org.bson.BsonObjectId
+import org.bson.Document
+import org.bson.conversions.Bson
+import org.bson.types.ObjectId
 
 import java.util.concurrent.TimeUnit
 
-import static com.mongodb.AggregationOptions.OutputMode.INLINE
 import static java.util.Arrays.asList
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 /**
@@ -32,6 +52,59 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS
  */
 @CompileStatic
 class MongoExtensions {
+
+    @CompileStatic
+    static DBObject toDBObject(Document document) {
+        def object = new BasicDBObject()
+        for(key in document.keySet()) {
+            def value = document.get(key)
+            if(value instanceof Document) {
+                value = toDBObject((Document)value)
+            }
+            else if(value instanceof Collection) {
+                Collection col = (Collection)value
+                Collection newCol = []
+                for(i in col) {
+                    if(i instanceof Document) {
+                        newCol << toDBObject((Document)i)
+                    }
+                    else {
+                        newCol << i
+                    }
+                }
+                value = newCol
+            }
+            object.put(key, value)
+        }
+        return object
+    }
+    static DistinctIterable<Document> filter(DistinctIterable<Document> iterable, Map<String,Object> filter) {
+        iterable.filter(new Document(filter))
+    }
+
+    static FindIterable<Document> filter(FindIterable<Document> iterable, Map<String,Object> filter) {
+        iterable.filter(new Document(filter))
+    }
+
+    static FindIterable<Document> modifiers(FindIterable<Document> iterable, Map<String,Object> modifiers) {
+        iterable.modifiers(new Document(modifiers))
+    }
+
+    static FindIterable<Document> projection(FindIterable<Document> iterable, Map<String,Object> projection) {
+        iterable.projection(new Document(projection))
+    }
+
+    static  FindIterable<Document> sort(FindIterable<Document> iterable, Map<String,Object> sort) {
+        iterable.sort(new Document(sort))
+    }
+
+    static DBCursor sort(DBCursor cursor, Map<String,Object> sort) {
+        cursor.sort( (DBObject)new BasicDBObject(sort) )
+    }
+
+    static DBCursor hint(DBCursor cursor, Map<String,Object> sort) {
+        cursor.hint( (DBObject)new BasicDBObject(sort) )
+    }
 
     /**
      * Adds a method to return a collection using the dot syntax
@@ -51,19 +124,84 @@ class MongoExtensions {
      * @param name The collection name
      * @return A {@link DBCollection}
      */
+    static Object getProperty(MongoDatabase db, String name) {
+        db.getCollection(name)
+    }
+
+    /**
+     * Adds a method to return a collection using the dot syntax
+     *
+     * @param db The database object
+     * @param name The collection name
+     * @return A {@link DBCollection}
+     */
     static Object getAt(DB db, String name) {
         db.getCollection(name)
+    }
+
+    /**
+     * Adds a method to return a collection using the dot syntax
+     *
+     * @param db The database object
+     * @param name The collection name
+     * @return A {@link DBCollection}
+     */
+    static Object getAt(MongoDatabase db, String name) {
+        db.getCollection(name)
+    }
+
+    static MongoIterable<String> getCollectionNames(MongoDatabase db) {
+        db.listCollectionNames()
     }
 
     static DBCollection createCollection(DB db, final String collectionName, final Map options) {
         db.createCollection(collectionName, (DBObject)new BasicDBObject(options))
     }
 
+    static void createCollection(MongoDatabase db, final String collectionName, final Map<String, Object> options) {
+        db.createCollection(collectionName, mapToObject(CreateCollectionOptions, options))
+    }
+
+    @CompileDynamic
+    private static <T> T mapToObject(Class<T> targetType, Map<String,Object> values) {
+        T t = targetType.newInstance()
+        for(String name in values.keySet()) {
+            if(t.respondsTo(name)) {
+                t."$name"( values.get(name) )
+            }
+        }
+        return t
+    }
+
+
     /**
      * @see DBCollection#findOne(com.mongodb.DBObject)
      */
     static DBObject findOne(DBCollection collection, final Map query) {
         collection.findOne((DBObject)new BasicDBObject(query))
+    }
+
+
+
+    static String getName(MongoCollection<Document> collection) {
+        collection.namespace.collectionName
+    }
+
+    /**
+     * @see DBCollection#findOne(com.mongodb.DBObject)
+     */
+    static Document findOne(MongoCollection<Document> collection, final Map<String, Object> query) {
+        collection.find( (Bson)new Document(query) ).limit(1).first()
+    }
+
+    static Document findOne(MongoCollection<Document> collection, ObjectId id) {
+        def query = new HashMap<String,Object>(['_id': id])
+        findOne(collection, query)
+    }
+
+    static Document findOne(MongoCollection<Document> collection, CharSequence id) {
+        def query = new HashMap<String,Object>(['_id': id])
+        findOne(collection, query)
     }
 
     /**
@@ -74,10 +212,39 @@ class MongoExtensions {
     }
 
     /**
+     * @see DBCollection#findOne(com.mongodb.DBObject, com.mongodb.DBObject)
+     */
+    static Document findOne(MongoCollection<Document> collection, final Map<String,Object> query, final Map projection) {
+        collection
+                .find( (Bson)new Document(query) )
+                .projection( new Document(projection) )
+                .limit(1)
+                .first()
+    }
+
+    /**
      * @see DBCollection#findOne(com.mongodb.DBObject, com.mongodb.DBObject, com.mongodb.DBObject)
      */
     static DBObject findOne(DBCollection collection, final Map query, final Map projection, final Map sort) {
         collection.findOne((DBObject)new BasicDBObject(query), (DBObject)new BasicDBObject(projection), (DBObject)new BasicDBObject(sort))
+    }
+
+    /**
+     * @see DBCollection#findOne(com.mongodb.DBObject, com.mongodb.DBObject, com.mongodb.DBObject)
+     */
+    static Document findOne(MongoCollection<Document> collection, final Map query, final Map projection, final Map sort) {
+        collection
+                .find( (Bson)new Document(query) )
+                .projection( new Document(projection) )
+                .sort( new Document(sort) )
+                .limit(1)
+                .first()
+    }
+
+    static Document findOne(MongoCollection<Document> collection) {
+        collection
+                .find()
+                .first()
     }
 
     /**
@@ -90,11 +257,36 @@ class MongoExtensions {
     /**
      * @see DBCollection#findOne(com.mongodb.DBObject, com.mongodb.DBObject, com.mongodb.DBObject, com.mongodb.ReadPreference)
      */
+    static Document findOne(MongoCollection<Document> collection, final Map query, final Map projection, final ReadPreference readPreference) {
+        collection
+                .withReadPreference(readPreference)
+                .find( (Bson)new Document(query) )
+                .projection( new Document(projection) )
+                .limit(1)
+                .first()
+    }
+
+    /**
+     * @see DBCollection#findOne(com.mongodb.DBObject, com.mongodb.DBObject, com.mongodb.DBObject, com.mongodb.ReadPreference)
+     */
     static DBObject findOne(DBCollection collection, final Map query, final Map projection, final Map sort,
                             final ReadPreference readPreference) {
         collection.findOne((DBObject)new BasicDBObject(query), (DBObject)new BasicDBObject(projection), (DBObject)new BasicDBObject(sort), readPreference)
     }
 
+    /**
+     * @see DBCollection#findOne(com.mongodb.DBObject, com.mongodb.DBObject, com.mongodb.DBObject, com.mongodb.ReadPreference)
+     */
+    static Document findOne(MongoCollection<Document> collection, final Map query, final Map projection, final Map sort,
+                            final ReadPreference readPreference) {
+        collection
+                .withReadPreference(readPreference)
+                .find( (Bson)new Document(query) )
+                .projection( new Document(projection) )
+                .sort( new Document(sort) )
+                .limit(1)
+                .first()
+    }
 
     /**
      * @see DBCollection#findOne(com.mongodb.DBObject)
@@ -104,10 +296,25 @@ class MongoExtensions {
     }
 
     /**
+     * @see DBCollection#findOne(com.mongodb.DBObject)
+     */
+    static FindIterable<Document> find(MongoCollection<Document> collection, final Map query) {
+        collection.find((Bson)new Document(query))
+    }
+
+    /**
      * @see DBCollection#findOne(com.mongodb.DBObject, com.mongodb.DBObject)
      */
     static DBCursor find(DBCollection collection, final Map query, final Map projection) {
         collection.find((DBObject)new BasicDBObject(query), (DBObject)new BasicDBObject(projection))
+    }
+
+    /**
+     * @see DBCollection#findOne(com.mongodb.DBObject, com.mongodb.DBObject)
+     */
+    static FindIterable<Document> find(MongoCollection<Document> collection, final Map query, final Map projection) {
+        collection.find((Bson)new Document(query))
+                  .projection( new Document(projection) )
     }
 
 
@@ -115,13 +322,39 @@ class MongoExtensions {
         getCount(collection, query, null)
     }
 
+    static long count(MongoCollection<Document> collection, final Map<String, Object> query) {
+        getCount(collection, query)
+    }
+
+    static long count(MongoCollection<Document> collection, final Map<String, Object> query, final ReadPreference readPreference) {
+        getCount(collection, query, readPreference);
+    }
+
+    static long count(MongoCollection<Document> collection, final Map query, final Map<String, Object> options) {
+        getCount(collection, query, options);
+    }
+
     static long count(DBCollection collection, final Map query, final ReadPreference readPreference) {
         getCount(collection, query, null, readPreference);
     }
 
-
     static long getCount(DBCollection collection, final Map query) {
         getCount(collection, query, null);
+    }
+
+    static long getCount(MongoCollection<Document> collection, final Map<String, Object> query) {
+        collection.count((Bson)new Document(query))
+    }
+
+    static long getCount(MongoCollection<Document> collection, final Map<String, Object> query, final ReadPreference readPreference) {
+        collection
+                .withReadPreference(readPreference)
+                .count((Bson)new Document(query))
+    }
+
+    static long getCount(MongoCollection<Document> collection, final Map<String, Object> query, final  Map<String, Object> options) {
+        collection
+                .count((Bson)new Document(query), mapToObject(CountOptions, options))
     }
 
     static long getCount(DBCollection collection, final Map query, final Map projection) {
@@ -132,9 +365,11 @@ class MongoExtensions {
         getCount(collection, query, projection, 0, 0, readPreference)
     }
 
+
     static long getCount(DBCollection collection, final Map query, final Map projection, final long limit, final long skip) {
         collection.getCount((DBObject)new BasicDBObject(query), (DBObject)new BasicDBObject(projection), limit, skip)
     }
+
 
     static long getCount(DBCollection collection, final Map query, final Map projection, final long limit, final long skip,
                          final ReadPreference readPreference) {
@@ -157,11 +392,38 @@ class MongoExtensions {
         collection.createIndex((DBObject)new BasicDBObject(keys), (DBObject)new BasicDBObject(options))
     }
 
+    static void createIndex(MongoCollection<Document> collection, final Map keys, final String name) {
+        createIndex(collection, keys, name, false)
+    }
+
+    static void createIndex(MongoCollection<Document> collection, final Map keys, final String name, final boolean unique) {
+        collection.createIndex((Bson)new Document(keys), new IndexOptions().name(name).unique(unique))
+    }
+
+    static void createIndex(final MongoCollection<Document> collection, final Map<String, Object> keys) {
+        collection.createIndex((Bson)new Document(keys))
+    }
+
+    static void createIndex(final MongoCollection<Document> collection, final Map<String, Object> keys, final IndexOptions options) {
+        collection.createIndex((Bson)new Document(keys), options)
+    }
+
+    static void createIndex(final MongoCollection<Document> collection, final Map<String, Object> keys, final Map<String, Object> options) {
+        collection.createIndex((Bson)new Document(keys), mapToObject(IndexOptions, options))
+    }
     static void dropIndex(final DBCollection collection, final Map index) {
         collection.dropIndex((DBObject)new BasicDBObject(index))
     }
 
+    static void dropIndex(final MongoCollection<Document> collection, final Map<String, Object> index) {
+        collection.dropIndex((Bson)new Document(index))
+    }
+
     static WriteResult insert(final DBCollection collection, final Map document) {
+        insert(collection, asList(document))
+    }
+
+    static void insert(final MongoCollection<Document> collection, final Map<String, Object> document) {
         insert(collection, asList(document))
     }
 
@@ -173,15 +435,32 @@ class MongoExtensions {
         insert(collection, asList(document), writeConcern);
     }
 
+    static MongoCollection<Document> insert(final MongoCollection<Document> collection, final Map<String, Object> document, final WriteConcern writeConcern) {
+        insert(collection, asList(document), writeConcern);
+    }
+
     static WriteResult insert(final DBCollection collection, final Map... documents) {
         collection.insert documents.collect() { Map m -> new BasicDBObject(m) } as List<DBObject>
+    }
+
+    static void insert(final MongoCollection<Document> collection, final Map<String, Object>... documents) {
+        collection.insertMany documents.collect() { Map m -> new Document(m) } as List<Document>
     }
 
     static WriteResult leftShift(final DBCollection collection, final Map... documents) {
         insert(collection, documents)
     }
 
+    static MongoCollection<Document> leftShift(final MongoCollection<Document> collection, final Map<String, Object>... documents) {
+        insert(collection, documents)
+        return collection
+    }
+
     static WriteResult insert(final DBCollection collection, final WriteConcern writeConcern, final Map... documents) {
+        insert(collection, documents, writeConcern);
+    }
+
+    static MongoCollection<Document> insert(final MongoCollection<Document> collection, final WriteConcern writeConcern, final Map<String, Object>... documents) {
         insert(collection, documents, writeConcern);
     }
 
@@ -189,8 +468,17 @@ class MongoExtensions {
         insert(collection, asList(documents), writeConcern);
     }
 
+    static MongoCollection<Document> insert(final MongoCollection<Document> collection, final Map<String,Object>[] documents, final WriteConcern writeConcern) {
+        insert(collection, asList(documents), writeConcern);
+    }
+
     static WriteResult insert(final DBCollection collection, final List<? extends Map> documents) {
         collection.insert documents.collect() { Map m -> new BasicDBObject(m) } as List<DBObject>
+    }
+
+    static MongoCollection<Document> insert(final MongoCollection<Document> collection, final List<? extends Map<String, Object>> documents) {
+        collection.insertMany documents.collect() { Map m -> new Document(m) } as List<Document>
+        return collection
     }
 
     static WriteResult leftShift(final DBCollection collection, final List<? extends Map> documents) {
@@ -198,6 +486,10 @@ class MongoExtensions {
     }
 
     static WriteResult insert(final DBCollection collection, final List<? extends Map> documents, final WriteConcern aWriteConcern) {
+        return insert(collection, documents, aWriteConcern, null);
+    }
+
+    static MongoCollection<Document> insert(final MongoCollection<Document> collection, final List<? extends Map<String, Object>> documents, final WriteConcern aWriteConcern) {
         return insert(collection, documents, aWriteConcern, null);
     }
 
@@ -213,12 +505,48 @@ class MongoExtensions {
         collection.insert documents.collect() { Map m -> new BasicDBObject(m) } as List<DBObject>, insertOptions
     }
 
+    static MongoCollection<Document> insert(final MongoCollection<Document> collection, final List<? extends Map<String, Object>> documents, final WriteConcern writeConcern, final InsertManyOptions insertOptions) {
+        collection
+                .withWriteConcern(writeConcern)
+                .insertMany documents.collect() { Map m -> new Document(m) } as List<Document>, insertOptions
+        return collection
+    }
+
+    static MongoCollection<Document> insert(final MongoCollection<Document> collection, final List<? extends Map> documents, final InsertManyOptions insertOptions) {
+        collection.insertMany documents.collect() { Map m -> new Document(m) } as List<Document>, insertOptions
+        return collection
+    }
+
     static  WriteResult save(final DBCollection collection, final Map document) {
         collection.save( (DBObject)new BasicDBObject(document) )
     }
 
     static WriteResult save(final DBCollection collection, final Map document, final WriteConcern writeConcern) {
         collection.save( (DBObject)new BasicDBObject(document), writeConcern )
+    }
+
+    static  MongoCollection save(final MongoCollection<Document> collection, final Map<String, Object> document) {
+        insert collection, document
+    }
+
+    static  MongoCollection save(final MongoCollection<Document> collection, final Map<String, Object> document, final WriteConcern writeConcern) {
+        insert collection, document, writeConcern
+    }
+
+    static UpdateResult updateOne(final MongoCollection<Document> collection, Map<String,Object> filter, Map<String, Object> update) {
+        collection.updateOne((Bson)new Document(filter), new Document(update))
+    }
+
+    static UpdateResult update(final MongoCollection<Document> collection, Map<String,Object> filter, Map<String, Object> update) {
+        collection.updateOne((Bson)new Document(filter), new Document(update))
+    }
+
+    static UpdateResult updateOne(final MongoCollection<Document> collection, Map<String,Object> filter, Map<String, Object> update, Map<String, Object> options) {
+        collection.updateOne((Bson)new Document(filter), new Document(update), mapToObject(UpdateOptions, options))
+    }
+
+    static UpdateResult update(final MongoCollection<Document> collection, Map<String,Object> filter, Map<String, Object> update, Map<String, Object> options) {
+        collection.updateOne((Bson)new Document(filter), new Document(update), mapToObject(UpdateOptions, options))
     }
 
     static WriteResult update(final DBCollection collection, final Map query, final Map update, final boolean upsert, final boolean multi,
@@ -236,6 +564,14 @@ class MongoExtensions {
 
     static WriteResult update(final DBCollection collection, final Map query, final Map update) {
         collection.update((DBObject)new BasicDBObject(query), (DBObject)new BasicDBObject(update))
+    }
+
+    static UpdateResult updateMany(final MongoCollection<Document> collection, Map<String,Object> filter, Map<String, Object> update) {
+        collection.updateMany((Bson)new Document(filter), new Document(update))
+    }
+
+    static UpdateResult updateMany(final MongoCollection<Document> collection, Map<String,Object> filter, Map<String, Object> update, Map<String, Object> options) {
+        collection.updateMany((Bson)new Document(filter), new Document(update), mapToObject(UpdateOptions, options))
     }
 
     static WriteResult updateMulti(final DBCollection collection, final Map query, final Map update) {
@@ -256,6 +592,35 @@ class MongoExtensions {
 
     static WriteResult remove(final DBCollection collection, final Map query, final WriteConcern writeConcern, final DBEncoder encoder) {
         collection.remove( (DBObject)new BasicDBObject(query), writeConcern, encoder )
+    }
+
+    static DeleteResult deleteMany(final MongoCollection<Document> collection, final Map<String,Object> query) {
+        collection.deleteMany( (Bson)new Document(query) )
+    }
+
+    static DeleteResult remove(final MongoCollection<Document> collection, final Map<String,Object> query) {
+        deleteMany collection, query
+    }
+
+    static MongoCollection<Document> rightShift(final MongoCollection<Document> collection, final Map<String, Object> query) {
+        deleteMany collection, query
+        return collection
+    }
+
+    static DeleteResult deleteMany(final MongoCollection<Document> collection, final Map<String,Object> query, final WriteConcern writeConcern) {
+        collection
+                .withWriteConcern(writeConcern)
+                .deleteMany( (Bson) new Document(query) )
+    }
+
+    static DeleteResult deleteOne(final MongoCollection<Document> collection, final Map<String,Object> query) {
+        collection.deleteOne( (Bson)new Document(query) )
+    }
+
+    static DeleteResult deleteOne(final MongoCollection<Document> collection, final Map<String,Object> query, final WriteConcern writeConcern) {
+        collection
+                .withWriteConcern(writeConcern)
+                .deleteOne( (Bson) new Document(query) )
     }
 
     static void setHintFields(final DBCollection collection, final List<? extends Map> indexes) {
@@ -293,6 +658,28 @@ class MongoExtensions {
 
     static List distinct(final DBCollection collection, final String fieldName, final Map query, final ReadPreference readPreference) {
         collection.distinct(fieldName, (DBObject)new BasicDBObject(query), readPreference)
+    }
+
+    static DistinctIterable<Document> distinct(final MongoCollection<Document> collection, final String fieldName) {
+        collection.distinct(fieldName, Document)
+    }
+
+    static DistinctIterable<Document> distinct(final MongoCollection<Document> collection, final String fieldName, final ReadPreference readPreference) {
+        collection
+                .withReadPreference(readPreference)
+                .distinct(fieldName, Document)
+    }
+
+    static DistinctIterable<Document> distinct(final MongoCollection<Document> collection, final String fieldName, Map<String, Object> query) {
+        collection.distinct(fieldName, Document)
+                  .filter( new Document(query) )
+    }
+
+    static DistinctIterable<Document> distinct(final MongoCollection<Document> collection, final String fieldName, Map<String, Object> query, final ReadPreference readPreference) {
+        collection
+                .withReadPreference(readPreference)
+                .distinct(fieldName, Document)
+                .filter( new Document(query) )
     }
 
     static AggregationOutput aggregate(final DBCollection collection, final List<? extends Map> pipeline) {
@@ -335,6 +722,39 @@ class MongoExtensions {
                                      final MapReduceCommand.OutputType outputType, final Map query,
                                      final ReadPreference readPreference) {
         collection.mapReduce(map, reduce,  outputTarget, outputType, (DBObject)new BasicDBObject(query), readPreference)
+    }
+
+
+    static UpdateResult replaceOne(MongoCollection<Document> collection, Map<String, Object> filter, Document replacement) {
+        collection.replaceOne((Bson)new Document(filter), replacement)
+    }
+
+    static UpdateResult replaceOne(MongoCollection<Document> collection, Map<String, Object> filter, Document replacement, Map<String,Object> options) {
+        collection.replaceOne((Bson)new Document(filter), replacement, mapToObject(UpdateOptions, options))
+    }
+
+    static Document findOneAndDelete(MongoCollection<Document> collection, Map<String, Object> filter) {
+        collection.findOneAndDelete( (Bson)new Document(filter) )
+    }
+
+    static Document findOneAndDelete(MongoCollection<Document> collection, Map<String, Object> filter, Map<String, Object> options) {
+        collection.findOneAndDelete( (Bson)new Document(filter), mapToObject(FindOneAndDeleteOptions, options) )
+    }
+
+    static Document findOneAndReplace(MongoCollection<Document> collection, Map<String, Object> filter, Map<String, Object> replacement) {
+        collection.findOneAndReplace( (Bson)new Document(filter), new Document(replacement) )
+    }
+
+    static Document findOneAndReplace(MongoCollection<Document> collection, Map<String, Object> filter, Map<String, Object> replacement, Map<String, Object> options) {
+        collection.findOneAndReplace( (Bson)new Document(filter), new Document(replacement), mapToObject(FindOneAndReplaceOptions, options) )
+    }
+
+    static Document findOneAndUpdate(MongoCollection<Document> collection, Map<String, Object> filter, Map<String, Object> update) {
+        collection.findOneAndUpdate( (Bson)new Document(filter), new Document(update) )
+    }
+
+    static Document findOneAndUpdate(MongoCollection<Document> collection, Map<String, Object> filter, Map<String, Object> update, Map<String, Object> options) {
+        collection.findOneAndUpdate( (Bson)new Document(filter), new Document(update), mapToObject(FindOneAndUpdateOptions, options) )
     }
 
 }

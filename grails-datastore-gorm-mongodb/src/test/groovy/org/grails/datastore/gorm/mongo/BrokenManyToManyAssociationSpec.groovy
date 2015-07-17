@@ -21,7 +21,7 @@ class BrokenManyToManyAssociationSpec extends GormDatastoreSpec {
         session.clear()
 
         when:'Low-level deleting 1 owned entity to simulate a broken relationship'
-        ((DBCollection) ReferencedEntity.collection).remove(new BasicDBObject('_id', ReferencedEntity.find{}.id))
+        ReferencedEntity.collection.remove('_id': ReferencedEntity.find{}.id)
         session.clear()
         referencing = ReferencingEntity.find{}
 

@@ -19,7 +19,12 @@ import com.mongodb.BasicDBObject
 import com.mongodb.DB
 import com.mongodb.DBCollection
 import com.mongodb.DBObject
+import com.mongodb.MongoClient
 import com.mongodb.ReadPreference
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.MongoDatabase
+import groovy.transform.CompileStatic
+import org.bson.Document
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
@@ -54,16 +59,18 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
     /**
      * @return The database for this domain class
      */
-    DB getDB() {
+    MongoDatabase getDB() {
         execute( { Session session ->
             MongoSession ms = (MongoSession)session
-            ms.getMongoTemplate(persistentEntity).getDb()
-        } as SessionCallback<DB>)
+            def name = ms.getDatabase(persistentEntity)
+            ms.nativeInterface.getDatabase(name)
+        } as SessionCallback<MongoDatabase>)
     }
 
     /**
      * @return The name of the Mongo collection that entity maps to
      */
+    @CompileStatic
     String getCollectionName() {
         execute( { Session session ->
             MongoSession ms = (MongoSession)session
@@ -76,14 +83,13 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      *
      * @return The actual collection
      */
-    DBCollection getCollection() {
+    @CompileStatic
+    MongoCollection<Document> getCollection() {
         execute( { Session session ->
             MongoSession ms = (MongoSession)session
-            def template = ms.getMongoTemplate(persistentEntity)
-
-            def coll = template.getCollection(ms.getCollectionName(persistentEntity))
-            return coll
-        } as SessionCallback<DBCollection>)
+            def client = (MongoClient)ms.nativeInterface
+            client.getDatabase( ms.defaultDatabase ).getCollection( ms.getCollectionName(persistentEntity ))
+        } as SessionCallback<MongoCollection<Document>>)
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.mongo
 
+import com.mongodb.client.MongoCollection
 import grails.gorm.tests.GormDatastoreSpec
 
 import com.mongodb.DBCollection
@@ -25,7 +26,7 @@ class MongoGormEnhancerSpec extends GormDatastoreSpec{
             session.mappingContext.addPersistentEntity MyMongoEntity
 
         when:
-            DBCollection collection = MyMongoEntity.collection
+            MongoCollection collection = MyMongoEntity.collection
 
         then:
             collection.name == 'mycollection'

@@ -10,7 +10,7 @@ class EnumPersistenceSpec extends AbstractMongoTest {
 
         MongoSession session = md.connect()
 
-        session.nativeInterface.dropDatabase()
+        session.nativeInterface.dropDatabase(session.defaultDatabase)
 
         def te = new TestEnumEntity(name:"Bob", type:TestType.T1)
 

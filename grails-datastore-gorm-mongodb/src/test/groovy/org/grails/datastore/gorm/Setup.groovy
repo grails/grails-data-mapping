@@ -35,7 +35,7 @@ class Setup {
     static MongoSession session
 
     static destroy() {
-        session.nativeInterface.dropDatabase()
+        session.nativeInterface.dropDatabase( session.defaultDatabase )
         session.disconnect()
         mongo.destroy()
     }

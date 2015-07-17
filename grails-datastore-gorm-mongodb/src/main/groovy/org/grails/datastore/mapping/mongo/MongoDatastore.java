@@ -59,7 +59,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     public static final String MONGO_STATELESS = "stateless";
     public static final String INDEX_ATTRIBUTES = "indexAttributes";
 
-    protected Mongo mongo;
+    protected MongoClient mongo;
     protected MongoClientOptions mongoOptions;
     protected Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
     protected Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
@@ -123,7 +123,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             }
         });
 
-        mappingContext.getConverterRegistry().addConverter(new Converter<Binary,byte[] >() {
+        mappingContext.getConverterRegistry().addConverter(new Converter<Binary, byte[]>() {
             public byte[] convert(Binary source) {
                 return source.getData();
             }
@@ -138,9 +138,39 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * Constructor for creating a MongoDatastore using an existing Mongo instance
      * @param mappingContext The MappingContext
      * @param mongo The existing Mongo instance
+     *
+     * @deprecated The {@link Mongo} class is deprecated
      */
+    @Deprecated
     public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
               ConfigurableApplicationContext ctx) {
+        this(mappingContext, Collections.<String, String>emptyMap(), ctx);
+        this.mongo = (MongoClient)mongo;
+    }
+
+    /**
+     * Constructor for creating a MongoDatastore using an existing Mongo instance. In this case
+     * the connection details are only used to supply a USERNAME and PASSWORD
+     *
+     * @param mappingContext The MappingContext
+     * @param mongo The existing Mongo instance
+     *
+     * @deprecated The {@link Mongo} class is deprecated
+     */
+    @Deprecated
+    public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
+           Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
+        this(mappingContext, connectionDetails, ctx);
+        this.mongo = (MongoClient) mongo;
+    }
+
+    /**
+     * Constructor for creating a MongoDatastore using an existing Mongo instance
+     * @param mappingContext The MappingContext
+     * @param mongo The existing Mongo instance
+     */
+    public MongoDatastore(MongoMappingContext mappingContext, MongoClient mongo,
+                          ConfigurableApplicationContext ctx) {
         this(mappingContext, Collections.<String, String>emptyMap(), ctx);
         this.mongo = mongo;
     }
@@ -152,13 +182,21 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * @param mappingContext The MappingContext
      * @param mongo The existing Mongo instance
      */
-    public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
-           Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
+    public MongoDatastore(MongoMappingContext mappingContext, MongoClient mongo,
+                          Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         this(mappingContext, connectionDetails, ctx);
         this.mongo = mongo;
     }
 
+    /**
+     * @deprecated Use {@link #getMongoClient()} instead
+     */
+    @Deprecated
     public Mongo getMongo() {
+        return mongo;
+    }
+
+    public MongoClient getMongoClient() {
         return mongo;
     }
 

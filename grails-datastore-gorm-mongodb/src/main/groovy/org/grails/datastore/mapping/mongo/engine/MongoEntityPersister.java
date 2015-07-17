@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.grails.datastore.mapping.core.IdentityGenerationException;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
@@ -60,16 +61,6 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.DBRef;
-import com.mongodb.MongoException;
-import com.mongodb.WriteConcern;
-import com.mongodb.WriteResult;
 
 /**
  * A {@link org.grails.datastore.mapping.engine.EntityPersister} implementation for the Mongo document store
@@ -836,7 +827,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             // if the association is a unidirectional one-to-many we store the keys
             // embedded in the owning entity, otherwise we use a foreign key
             if (!association.isBidirectional()) {
-                DB db = session.getNativeInterface();
+                final MongoClient client = session.getNativeInterface();
+                DB db = client.getDB(session.getDefaultDatabase());
                 List dbRefs = new ArrayList();
                 for (Object foreignKey : foreignKeys) {
                     if (isReference) {

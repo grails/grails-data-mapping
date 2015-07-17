@@ -4,6 +4,7 @@ import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
 import com.mongodb.DBObject
+import org.bson.Document
 
 class EmbeddedWithNonEmbeddedAssociationsSpec extends GormDatastoreSpec {
 
@@ -48,7 +49,7 @@ class EmbeddedWithNonEmbeddedAssociationsSpec extends GormDatastoreSpec {
         then:"It is correctly defined"
             boatDbo.name == "The Float"
             Captain.collection.findOne(boatDbo.captain).name == "Bob"
-            boatDbo.firstMate instanceof DBObject
+            boatDbo.firstMate instanceof Document
             boatDbo.firstMate.name == "Jim"
             boatDbo.crew.size() == 2
             boatDbo.crew[0].name == "Fred"

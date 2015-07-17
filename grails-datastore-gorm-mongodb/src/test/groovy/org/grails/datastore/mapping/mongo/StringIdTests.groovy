@@ -10,7 +10,7 @@ class StringIdTests extends AbstractMongoTest {
 
         MongoSession session = md.connect()
 
-        session.nativeInterface.dropDatabase()
+        session.nativeInterface.dropDatabase(session.defaultDatabase)
 
         def te = new MongoStringIdEntity(name:"Bob")
 
