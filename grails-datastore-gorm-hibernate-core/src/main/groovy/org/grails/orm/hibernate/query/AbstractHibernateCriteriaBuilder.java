@@ -541,7 +541,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
 
     /**
      * Join an association, assigning an alias to the joined association.
-     * <p/>
+     *
      * Functionally equivalent to createAlias(String, String, int) using
      * CriteriaSpecificationINNER_JOIN for the joinType.
      *

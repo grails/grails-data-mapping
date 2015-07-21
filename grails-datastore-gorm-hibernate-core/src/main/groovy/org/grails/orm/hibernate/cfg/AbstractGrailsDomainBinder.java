@@ -967,7 +967,7 @@ public abstract class AbstractGrailsDomainBinder {
      * Binds a many-to-many relationship. A many-to-many consists of
      * - a key (a DependentValue)
      * - an element
-     * <p/>
+     *
      * The element is a ManyToOne from the association table to the target entity
      *
      * @param property The grails property
