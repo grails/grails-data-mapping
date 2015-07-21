@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * CypherEngine implementation backed by a Neo4j JDBC datasource
- * @author Stefan Armbruster <stefan@armbruster-it.de>
+ * @author Stefan Armbruster (stefan@armbruster-it.de)
  */
 public class JdbcCypherEngine implements CypherEngine {
 

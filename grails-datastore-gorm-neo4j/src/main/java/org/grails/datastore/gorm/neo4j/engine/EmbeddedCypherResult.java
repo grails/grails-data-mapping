@@ -10,7 +10,7 @@ import java.util.Map;
  * implementation based on a {@link org.neo4j.cypher.javacompat.ExecutionEngine}
  *
  * while iterating over the result a returned node is converted to a map of its properties
- * @deprecated due to usage of {@link org.grails.datastore.gorm.neo4j.engine.JdbcCypherResultD}
+ * @deprecated due to usage of {@link org.grails.datastore.gorm.neo4j.engine.JdbcCypherResult}
  */
 @Deprecated
 public class EmbeddedCypherResult implements CypherResult {

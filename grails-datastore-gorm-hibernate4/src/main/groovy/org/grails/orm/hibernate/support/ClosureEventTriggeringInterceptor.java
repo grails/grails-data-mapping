@@ -221,7 +221,6 @@ public class ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventL
      *
      * ThreadLocal is used to pass the "insert:true" information to Hibernate.
      *
-     * @see org.hibernate.event.def.AbstractSaveEventListener#getAssumedUnsaved()
      */
     @Override
     protected Boolean getAssumedUnsaved() {

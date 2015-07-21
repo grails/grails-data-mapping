@@ -35,7 +35,7 @@ import java.util.Set;
 
 /**
  * Datastore implementation for Neo4j backend
- * @author Stefan Armbruster <stefan@armbruster-it.de>
+ * @author Stefan Armbruster (stefan@armbruster-it.de)
  */
 public class Neo4jDatastore extends AbstractDatastore implements InitializingBean, DisposableBean, StatelessDatastore {
 

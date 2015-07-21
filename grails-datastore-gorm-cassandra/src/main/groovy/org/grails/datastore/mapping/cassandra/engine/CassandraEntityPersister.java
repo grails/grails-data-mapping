@@ -76,8 +76,6 @@ import com.datastax.driver.core.querybuilder.Update;
 
 /**
  * @author Graeme Rocher
- * @param <T>
- * @param <K>
  * @since 1.0
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })

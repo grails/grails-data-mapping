@@ -25,7 +25,7 @@ import java.util.*;
 import static org.grails.datastore.mapping.query.Query.*;
 
 /**
- * @author Stefan Armbruster <stefan@armbruster-it.de>
+ * @author Stefan Armbruster (stefan@armbruster-it.de)
  */
 public class Neo4jEntityPersister extends EntityPersister {
 

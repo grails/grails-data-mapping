@@ -20,12 +20,12 @@ can either be called with a sorted unmodifiable array (default constructor)
 or with an array that can be cloned and sorted beforehand if desired. 
 Example:
 <PRE>
-   FinalSet<String> f=new FinalSet("a","b","c");
+   FinalSet&lt;String&gt; f=new FinalSet("a","b","c");
    // equivalently: 
-   //   FinalSet<String> f=new FinalSet(new String[]{"a","b","c"});
-   //   FinalSet<String> f=new FinalSet(SHALLNOTBECLONED,ISSORTED,"a","b","c");
+   //   FinalSet&lt;String&gt; f=new FinalSet(new String[]{"a","b","c"});
+   //   FinalSet&lt;String&gt; f=new FinalSet(SHALLNOTBECLONED,ISSORTED,"a","b","c");
    System.out.println(f.get(1));
-   --> b
+   --&gt; b
 </PRE>
 */
 public class FinalSet<T extends Comparable<?>> extends AbstractList<T> implements Set<T>{

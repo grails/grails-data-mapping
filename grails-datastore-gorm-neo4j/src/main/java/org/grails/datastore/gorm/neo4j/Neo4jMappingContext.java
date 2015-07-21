@@ -25,7 +25,7 @@ import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrateg
 import java.util.Collection;
 
 /**
- * @author Stefan Armbruster <stefan@armbruster-it.de>
+ * @author Stefan Armbruster (stefan@armbruster-it.de)
  */
 public class Neo4jMappingContext extends AbstractMappingContext  {
 

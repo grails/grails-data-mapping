@@ -1271,7 +1271,6 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
 
     /**
      * Geospacial query for values within a given box. A box is defined as a multi-dimensional list in the form
-     * <p/>
      * [[40.73083, -73.99756], [40.741404,  -73.988135]]
      *
      * @param property The property
@@ -1309,7 +1308,6 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
 
     /**
      * Geospacial query for values within a given polygon. A polygon is defined as a multi-dimensional list in the form
-     * <p/>
      * [[0, 0], [3, 6], [6, 0]]
      *
      * @param property The property
@@ -1323,7 +1321,6 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
 
     /**
      * Geospacial query for values within a given circle. A circle is defined as a multi-dimensial list containing the position of the center and the radius:
-     * <p/>
      * [[50, 50], 10]
      *
      * @param property The property

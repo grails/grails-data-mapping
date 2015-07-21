@@ -42,23 +42,23 @@ import java.util.Map;
  
  // Here are some tricks with enums
  enum T {a,b,c};
- EnumSet&lt;T> i=D.intersection(EnumSet.of(T.a,T.b),EnumSet.of(T.b,T.c));
- EnumSet&lt;T> u=D.union(EnumSet.of(T.a,T.b),EnumSet.of(T.b,T.c));
+ EnumSet&lt;T&gt; i=D.intersection(EnumSet.of(T.a,T.b),EnumSet.of(T.b,T.c));
+ EnumSet&lt;T&gt; u=D.union(EnumSet.of(T.a,T.b),EnumSet.of(T.b,T.c));
  
  // Here is how to compare things, even if they are NULL
  D.compare(object1, object2);
  
  // Here is how to add something to maps that contain lists
- Map&lt;String,List&lt;String>> string2list=new TreeMap&lt;String,List&lt;String>>();
+ Map&lt;String,List&lt;String&gt;&gt; string2list=new TreeMap&lt;String,List&lt;String&gt;&gt;();
  D.addKeyValue(string2list,"key","new list element",ArrayList.class); 
- // now, the map contains "key" -> [ "new list element" ]
+ // now, the map contains "key" -&gt; [ "new list element" ]
  D.addKeyValue(string2list,"key","again a new list element",ArrayList.class);
- // now, the map contains "key" -> [ "new list element", "again a new list element" ]  
+ // now, the map contains "key" -&gt; [ "new list element", "again a new list element" ]
 
  // Here is how to add something to maps that contain integers
- Map&lt;String,Integer> string2list=new TreeMap&lt;String,Integer>();
- D.addKeyValue(string2list,"key",7); // map now contains "key" -> 7
- D.addKeyValue(string2list,"key",3); // map now contains "key" -> 10
+ Map&lt;String,Integer&gt; string2list=new TreeMap&lt;String,Integer&gt;();
+ D.addKeyValue(string2list,"key",7); // map now contains "key" -&gt; 7
+ D.addKeyValue(string2list,"key",3); // map now contains "key" -&gt; 10
 
  </PRE>  
  */
@@ -67,7 +67,7 @@ public class D {
   /** Indentation margin. All methods indent their output by indent spaces */
   public static int indent = 0;
 
-  /** Prints <indent> spaces */
+  /** Prints indent spaces */
   protected static void i() {
     for (int i = 0; i < indent; i++)
       System.out.print(" ");

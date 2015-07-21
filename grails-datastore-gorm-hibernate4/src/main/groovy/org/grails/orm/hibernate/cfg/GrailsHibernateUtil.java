@@ -234,7 +234,7 @@ public class GrailsHibernateUtil implements HibernateQueryConstants{
      * @param c The criteria instance
      * @param argMap The arguments map
      *
-     * @deprecated Use {@link #populateArgumentsForCriteria(org.codehaus.groovy.grails.commons.GrailsApplication, Class, org.hibernate.Criteria, java.util.Map)} instead
+     * @deprecated Use {@link #populateArgumentsForCriteria(org.hibernate.Criteria, java.util.Map, org.springframework.core.convert.ConversionService)}  instead
      */
     @Deprecated
     @SuppressWarnings("rawtypes")

@@ -145,7 +145,7 @@ public class PositionTracker {
    *  text along the modifications to the corresp. position in the modified text 
    *  after each round (one round=consecutive changes along the text) you need to call closeRun() before submitting more position changes from a new round,
    *  i.e. whenever you passed the string to be modified once call closeRun() before starting to run over the string again with more replacements
-   *  REMARK: NOT TESTED WITH MORE THAN ONE ROUND! may be ERRORNOUS with multiple rounds -> use with care (works with a single round though)
+   *  REMARK: NOT TESTED WITH MORE THAN ONE ROUND! may be ERRORNOUS with multiple rounds -&gt; use with care (works with a single round though)
    * @author smetzger
    *
    */

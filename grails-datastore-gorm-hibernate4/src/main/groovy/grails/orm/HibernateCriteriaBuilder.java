@@ -41,7 +41,6 @@ import java.util.Map;
 /**
  * <p>Wraps the Hibernate Criteria API in a builder. The builder can be retrieved through the "createCriteria()" dynamic static
  * method of Grails domain classes (Example in Groovy):
- * <p/>
  * <pre>
  *         def c = Account.createCriteria()
  *         def results = c {
@@ -57,9 +56,7 @@ import java.util.Map;
  *             order("holderLastName", "desc")
  *         }
  * </pre>
- * <p/>
  * <p>The builder can also be instantiated standalone with a SessionFactory and persistent Class instance:
- * <p/>
  * <pre>
  *      new HibernateCriteriaBuilder(clazz, sessionFactory).list {
  *         eq("firstName", "Fred")
@@ -126,7 +123,6 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
     /**
      * Join an association using the specified join-type, assigning an alias
      * to the joined association.
-     * <p/>
      * The joinType is expected to be one of CriteriaSpecification.INNER_JOIN (the default),
      * CriteriaSpecificationFULL_JOIN, or CriteriaSpecificationLEFT_JOIN.
      *
