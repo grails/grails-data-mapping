@@ -32,12 +32,10 @@ import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.UpdateResult
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.bson.BSONObject
-import org.bson.BsonObjectId
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
-import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
+import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
 
 import java.util.concurrent.TimeUnit
 
@@ -197,7 +195,7 @@ class MongoExtensions {
 
     static Document findOne(MongoCollection<Document> collection, ObjectId id) {
         def query = new Document()
-        query.put(MongoEntityPersister.MONGO_ID_FIELD, id)
+        query.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, id)
         collection.find((Bson)query)
                   .limit(1)
                   .first()
@@ -205,7 +203,7 @@ class MongoExtensions {
 
     static Document findOne(MongoCollection<Document> collection, CharSequence id) {
         def query = new Document()
-        query.put(MongoEntityPersister.MONGO_ID_FIELD, id)
+        query.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, id)
 
         collection.find((Bson)query)
                 .limit(1)
@@ -214,7 +212,7 @@ class MongoExtensions {
 
     static <T> T findOne(MongoCollection<Document> collection, Serializable id, Class<T> type) {
         def query = new Document()
-        query.put(MongoEntityPersister.MONGO_ID_FIELD, id)
+        query.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, id)
 
         collection
                 .find((Bson)query, type)

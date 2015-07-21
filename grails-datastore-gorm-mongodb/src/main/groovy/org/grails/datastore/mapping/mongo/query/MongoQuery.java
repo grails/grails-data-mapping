@@ -21,7 +21,6 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import com.mongodb.*;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import grails.mongodb.geo.*;
 import groovy.lang.Closure;
@@ -33,7 +32,6 @@ import org.grails.datastore.gorm.mongo.geo.GeoJSONType;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.EntityAccess;
-import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
@@ -47,6 +45,7 @@ import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
+import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
@@ -59,8 +58,6 @@ import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
-
-import javax.print.Doc;
 
 /**
  * A {@link org.grails.datastore.mapping.query.Query} implementation for the Mongo document store.
@@ -141,7 +138,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
             public void handle(Session session, IdEquals criterion, DBObject query, PersistentEntity entity) {
-                query.put(MongoEntityPersister.MONGO_ID_FIELD, criterion.getValue());
+                query.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, criterion.getValue());
             }
         });
 
@@ -640,7 +637,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         groupByProjectionHandlers.put(CountProjection.class, new ProjectionHandler<CountProjection>() {
             @Override
             public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, CountProjection projection) {
-                projectObject.put(MongoEntityPersister.MONGO_ID_FIELD, 1);
+                projectObject.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, 1);
                 String projectionKey = "count";
                 groupBy.put(projectionKey, new BasicDBObject(SUM_OPERATOR, 1));
                 return projectionKey;
@@ -698,7 +695,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 DBObject id = getIdObjectForGroupBy(groupBy);
                 id.put(property, "$"+property);
                 // we add the id to the grouping to make it not distinct
-                id.put(MongoEntityPersister.MONGO_ID_FIELD, "$"+MongoEntityPersister.MONGO_ID_FIELD);
+                id.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, "$"+ AbstractMongoObectEntityPersister.MONGO_ID_FIELD);
                 return property;
             }
         });
@@ -706,11 +703,11 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         projectProjectionHandlers.put(IdProjection.class, new ProjectionHandler<IdProjection>() {
             @Override
             public String handle(PersistentEntity entity, DBObject projectObject, DBObject groupBy, IdProjection projection) {
-                projectObject.put(MongoEntityPersister.MONGO_ID_FIELD, 1);
+                projectObject.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, 1);
                 DBObject id = getIdObjectForGroupBy(groupBy);
-                id.put(MongoEntityPersister.MONGO_ID_FIELD, "$_id");
+                id.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, "$_id");
 
-                return MongoEntityPersister.MONGO_ID_FIELD;
+                return AbstractMongoObectEntityPersister.MONGO_ID_FIELD;
             }
         });
 
@@ -725,14 +722,14 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
     private static DBObject getIdObjectForGroupBy(DBObject groupBy) {
-        Object value = groupBy.get(MongoEntityPersister.MONGO_ID_FIELD);
+        Object value = groupBy.get(AbstractMongoObectEntityPersister.MONGO_ID_FIELD);
         DBObject id;
         if(value instanceof DBObject) {
             id = (DBObject) value;
         }
         else {
             id = new BasicDBObject();
-            groupBy.put(MongoEntityPersister.MONGO_ID_FIELD, id);
+            groupBy.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, id);
         }
         return id;
     }
@@ -849,7 +846,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         }
                         else {
                             dbObject = collection.findOne(new BasicDBObject(
-                                  MongoEntityPersister.MONGO_CLASS_FIELD, entity.getDiscriminator()));
+                                  AbstractMongoObectEntityPersister.MONGO_CLASS_FIELD, entity.getDiscriminator()));
                         }
                     }
                     else {
@@ -903,7 +900,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
 
                 BasicDBObject groupByObject = new BasicDBObject();
-                groupByObject.put(MongoEntityPersister.MONGO_ID_FIELD, 0);
+                groupByObject.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, 0);
                 BasicDBObject additionalGroupBy = null;
 
 
@@ -937,7 +934,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                             projectedKeys.add(projectedProperty);
 
                             if(projection instanceof CountDistinctProjection) {
-                                BasicDBObject finalCount = new BasicDBObject(MongoEntityPersister.MONGO_ID_FIELD, 1);
+                                BasicDBObject finalCount = new BasicDBObject(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, 1);
                                 finalCount.put(projectedProperty.projectionKey, new BasicDBObject(SUM_OPERATOR, 1));
                                 additionalGroupBy = new BasicDBObject(GROUP_OPERATOR, finalCount);
                             }
@@ -1056,7 +1053,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             query = new BasicDBObject();
         }
         else {
-            query = new BasicDBObject(MongoEntityPersister.MONGO_CLASS_FIELD, persistentEntity.getDiscriminator());
+            query = new BasicDBObject(AbstractMongoObectEntityPersister.MONGO_CLASS_FIELD, persistentEntity.getDiscriminator());
         }
         return query;
     }
@@ -1109,7 +1106,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     private static String getPropertyName(PersistentEntity entity, String propertyName) {
         if (entity.isIdentityName(propertyName)) {
-            propertyName = MongoEntityPersister.MONGO_ID_FIELD;
+            propertyName = AbstractMongoObectEntityPersister.MONGO_ID_FIELD;
         }
         else {
             PersistentProperty property = entity.getPropertyByName(propertyName);
@@ -1131,7 +1128,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     private Object createObjectFromDBObject(DBObject dbObject) {
         // we always use the session cached version where available.
-        final Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
+        final Object id = dbObject.get(AbstractMongoObectEntityPersister.MONGO_ID_FIELD);
         Class type = mongoEntityPersister.getPersistentEntity().getJavaClass();
         Object instance = mongoSession.getCachedInstance(type, (Serializable) id);
         if (instance == null) {
@@ -1756,7 +1753,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             Object value;
             if(projectionKey.startsWith("id.")) {
                 projectionKey = projectionKey.substring(3);
-                DBObject id = (DBObject) dbo.get(MongoEntityPersister.MONGO_ID_FIELD);
+                DBObject id = (DBObject) dbo.get(AbstractMongoObectEntityPersister.MONGO_ID_FIELD);
                 value = id.get(projectionKey);
             }
             else {
@@ -1947,7 +1944,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         protected Object convertDBObject(Object object) {
             final DBObject dbObject = (DBObject) object;
-            Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
+            Object id = dbObject.get(AbstractMongoObectEntityPersister.MONGO_ID_FIELD);
             SessionImplementor session = (SessionImplementor) mongoEntityPersister.getSession();
             Class type = mongoEntityPersister.getPersistentEntity().getJavaClass();
             Object instance = session.getCachedInstance(type, (Serializable) id);
@@ -2136,7 +2133,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         protected Object convertDBObject(Object object) {
             final DBObject dbObject = (DBObject) object;
-            Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
+            Object id = dbObject.get(AbstractMongoObectEntityPersister.MONGO_ID_FIELD);
             SessionImplementor session = (SessionImplementor) mongoEntityPersister.getSession();
             Class type = mongoEntityPersister.getPersistentEntity().getJavaClass();
             Object instance = session.getCachedInstance(type, (Serializable) id);

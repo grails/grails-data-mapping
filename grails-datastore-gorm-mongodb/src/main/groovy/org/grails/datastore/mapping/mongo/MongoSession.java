@@ -28,6 +28,7 @@ import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
+import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
@@ -323,7 +324,7 @@ public class MongoSession extends AbstractSession<MongoClient> {
                     public void run() {
                         String collectionName = getCollectionName(persistentEntity);
                         DBObject nativeQuery = new BasicDBObject();
-                        nativeQuery.put( MongoEntityPersister.MONGO_ID_FIELD, new BasicDBObject(MongoQuery.MONGO_IN_OPERATOR, identifiers));
+                        nativeQuery.put( AbstractMongoObectEntityPersister.MONGO_ID_FIELD, new BasicDBObject(MongoQuery.MONGO_IN_OPERATOR, identifiers));
                         WriteConcern writeConcern = getDeclaredWriteConcern(persistentEntity);
                         if(writeConcern != null) {
                             getNativeInterface()

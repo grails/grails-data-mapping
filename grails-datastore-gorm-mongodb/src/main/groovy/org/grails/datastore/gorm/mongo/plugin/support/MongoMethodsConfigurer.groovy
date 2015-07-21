@@ -25,6 +25,7 @@ import org.grails.datastore.gorm.mongo.MongoGormInstanceApi
 import org.grails.datastore.gorm.mongo.MongoGormStaticApi
 import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
 import org.grails.datastore.mapping.mongo.MongoDatastore
+import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.springframework.transaction.PlatformTransactionManager
@@ -65,12 +66,12 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
                 }
                 else if( delegate instanceof DBObject ){
                     DBObject dbo = delegate
-                    def key = dbo.get(MongoEntityPersister.MONGO_ID_FIELD)
+                    def key = dbo.get(AbstractMongoObectEntityPersister.MONGO_ID_FIELD)
                     return p.createObjectFromNativeEntry(p.persistentEntity, key, dbo)
                 }
                 else if( delegate instanceof Document ){
                     Document dbo = delegate
-                    def key = dbo.get(MongoEntityPersister.MONGO_ID_FIELD)
+                    def key = dbo.get(AbstractMongoObectEntityPersister.MONGO_ID_FIELD)
                     return p.createObjectFromNativeEntry(p.persistentEntity, key, dbo.toDBObject())
                 }
             }

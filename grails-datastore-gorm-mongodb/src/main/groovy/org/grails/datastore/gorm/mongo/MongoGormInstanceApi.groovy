@@ -23,6 +23,7 @@ import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.core.SessionImplementor
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.mongo.MongoDatastore
+import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 
 /**
@@ -81,7 +82,7 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
                         MongoEntityPersister persister = (MongoEntityPersister)session.getPersister(instance)
                         def id = persister.getObjectIdentifier(instance)
                         final updateObject = new BasicDBObject('$set', new BasicDBObject(name, value))
-                        coll.update(new BasicDBObject(MongoEntityPersister.MONGO_ID_FIELD,id), updateObject)
+                        coll.update(new BasicDBObject(AbstractMongoObectEntityPersister.MONGO_ID_FIELD,id), updateObject)
                         return updateObject
                     }
                     else {

@@ -56,7 +56,7 @@ class MongoCodecEntityPersister extends EntityPersister {
         MongoCollection mongoCollection = getMongoCollection(pe)
 
         Map<String,Object> query = [:]
-        query.put(MongoEntityPersister.MONGO_ID_FIELD, [(MongoQuery.MONGO_IN_OPERATOR): keys])
+        query.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, [(MongoQuery.MONGO_IN_OPERATOR): keys])
         MongoCursor<Document> cursor = mongoCollection
                 .find(new Document(query), pe.getJavaClass())
                 .iterator()
@@ -81,7 +81,7 @@ class MongoCodecEntityPersister extends EntityPersister {
 
     protected Document createIdQuery(Object key) {
         Map<String, Object> query = [:]
-        query.put(MongoEntityPersister.MONGO_ID_FIELD, key)
+        query.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, key)
         def idQuery = new Document(query)
         idQuery
     }
@@ -115,7 +115,7 @@ class MongoCodecEntityPersister extends EntityPersister {
         MongoCollection mongoCollection = getMongoCollection(pe)
         Map<String, Object> keys = [:]
         keys.put(
-                (MongoEntityPersister.MONGO_ID_FIELD),
+                (AbstractMongoObectEntityPersister.MONGO_ID_FIELD),
                 [(MongoQuery.MONGO_IN_OPERATOR): objects.collect() { getObjectIdentifier(it) }.findAll { it != null }]
         )
 
