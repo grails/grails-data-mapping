@@ -51,13 +51,7 @@ public abstract class EventTriggerCaller {
     }
 
     private static EventTriggerCaller resolveMetaMethodCaller(String eventMethodName, MetaClass metaClass) {
-        MetaMethod metaMethod = null;
-        for(MetaMethod mm : metaClass.getMetaMethods()) {
-            if(eventMethodName.equals(mm.getName())) {
-                metaMethod = mm;
-                break;
-            }
-        }
+        MetaMethod metaMethod = metaClass.getMetaMethod(eventMethodName, EMPTY_ARRAY);
         if (metaMethod != null) {
             return new MetaMethodCaller(metaMethod);
         }
