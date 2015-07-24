@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.grails.datastore.gorm.finders.MethodExpression;
-import org.grails.datastore.mapping.mongo.query.MongoQuery;
+import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery;
 import org.grails.datastore.mapping.query.Query.Criterion;
 import org.springframework.util.Assert;
 
@@ -21,7 +21,7 @@ public class WithinPolygon extends MethodExpression {
 
     @Override
     public Criterion createCriterion() {
-        return new MongoQuery.WithinPolygon(propertyName, (List<?>) arguments[0]);
+        return new MongoDocumentQuery.WithinPolygon(propertyName, (List<?>) arguments[0]);
     }
 
     @Override
