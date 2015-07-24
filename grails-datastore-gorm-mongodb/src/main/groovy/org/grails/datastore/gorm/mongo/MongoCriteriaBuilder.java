@@ -25,11 +25,11 @@ import grails.mongodb.geo.GeoJSON;
 import grails.mongodb.geo.Point;
 import grails.mongodb.geo.Shape;
 import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery;
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery.Near;
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery.WithinBox;
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery.WithinPolygon;
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery.WithinCircle;
+import org.grails.datastore.mapping.mongo.query.MongoQuery;
+import org.grails.datastore.mapping.mongo.query.MongoQuery.Near;
+import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinBox;
+import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinPolygon;
+import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinCircle;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.Criteria;
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
@@ -138,7 +138,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      */
     public Criteria nearSphere(String property, List<?> value) {
         validatePropertyName(property, "nearSphere");
-        addToCriteria(new MongoDocumentQuery.NearSphere(property, value));
+        addToCriteria(new MongoQuery.NearSphere(property, value));
         return this;
     }
 
@@ -151,7 +151,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      */
     public Criteria nearSphere(String property, List<?> value, Number maxDistance) {
         validatePropertyName(property, "nearSphere");
-        addToCriteria(new MongoDocumentQuery.NearSphere(property, value, maxDistance));
+        addToCriteria(new MongoQuery.NearSphere(property, value, maxDistance));
         return this;
     }
 
@@ -164,7 +164,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      */
     public Criteria nearSphere(String property, List<?> value, Distance maxDistance) {
         validatePropertyName(property, "nearSphere");
-        addToCriteria(new MongoDocumentQuery.NearSphere(property, value, maxDistance));
+        addToCriteria(new MongoQuery.NearSphere(property, value, maxDistance));
         return this;
     }
 
@@ -177,7 +177,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      */
     public Criteria nearSphere(String property, Point value) {
         validatePropertyName(property, "nearSphere");
-        addToCriteria(new MongoDocumentQuery.NearSphere(property, value));
+        addToCriteria(new MongoQuery.NearSphere(property, value));
         return this;
     }
 
@@ -190,7 +190,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      */
     public Criteria nearSphere(String property, Point value, Number maxDistance) {
         validatePropertyName(property, "nearSphere");
-        addToCriteria(new MongoDocumentQuery.NearSphere(property, value, maxDistance));
+        addToCriteria(new MongoQuery.NearSphere(property, value, maxDistance));
         return this;
     }
 
@@ -203,7 +203,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      */
     public Criteria nearSphere(String property, Point value, Distance maxDistance) {
         validatePropertyName(property, "nearSphere");
-        addToCriteria(new MongoDocumentQuery.NearSphere(property, value, maxDistance));
+        addToCriteria(new MongoQuery.NearSphere(property, value, maxDistance));
         return this;
     }
     /**
@@ -260,7 +260,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      */
     public Criteria geoWithin(String property, Shape shape) {
         validatePropertyName(property, "geoWithin");
-        addToCriteria(new MongoDocumentQuery.GeoWithin(property, shape));
+        addToCriteria(new MongoQuery.GeoWithin(property, shape));
         return this;
     }
 
@@ -273,7 +273,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      */
     public Criteria geoIntersects(String property, GeoJSON shape) {
         validatePropertyName(property, "geoIntersects");
-        addToCriteria(new MongoDocumentQuery.GeoIntersects(property, shape));
+        addToCriteria(new MongoQuery.GeoIntersects(property, shape));
         return this;
     }
 

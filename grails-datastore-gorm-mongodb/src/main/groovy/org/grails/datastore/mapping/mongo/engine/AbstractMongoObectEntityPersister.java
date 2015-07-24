@@ -33,7 +33,7 @@ public abstract class AbstractMongoObectEntityPersister<T> extends NativeEntryEn
     public static final String MONGO_ID_FIELD = "_id";
     public static final String MONGO_CLASS_FIELD = "_class";
     protected static final String NEXT_ID_SUFFIX = ".next_id";
-    static Logger log = LoggerFactory.getLogger(MongoEntityPersister.class);
+    static Logger log = LoggerFactory.getLogger(AbstractMongoObectEntityPersister.class);
     protected boolean hasNumericalIdentifier = false;
     protected boolean hasStringIdentifier = false;
 

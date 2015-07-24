@@ -19,7 +19,6 @@ import grails.mongodb.geo.Point
 import grails.mongodb.geo.Shape
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.finders.MethodExpression
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query
 import org.springframework.util.Assert
@@ -38,7 +37,7 @@ class GeoWithin extends MethodExpression {
 
     @Override
     Query.Criterion createCriterion() {
-        return new MongoDocumentQuery.GeoWithin(propertyName, arguments[0]);
+        return new MongoQuery.GeoWithin(propertyName, arguments[0]);
     }
 
     @Override

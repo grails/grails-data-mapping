@@ -15,7 +15,7 @@
 package org.grails.datastore.gorm.mongo;
 
 import grails.mongodb.geo.Distance;
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery;
+import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
 
 /**
@@ -31,7 +31,7 @@ public class NearSphere extends Near{
 
     @Override
     public Query.Criterion createCriterion() {
-        MongoDocumentQuery.NearSphere near = new MongoDocumentQuery.NearSphere(propertyName, arguments[0]);
+        MongoQuery.NearSphere near = new MongoQuery.NearSphere(propertyName, arguments[0]);
 
         if(arguments.length > 1) {
             Object o = arguments[1];

@@ -20,7 +20,7 @@ import java.util.List;
 
 import grails.mongodb.geo.Box;
 import org.grails.datastore.gorm.finders.MethodExpression;
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery;
+import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query.Criterion;
 import org.springframework.util.Assert;
 
@@ -40,10 +40,10 @@ public class WithinBox extends MethodExpression {
     public Criterion createCriterion() {
         Object argument = arguments[0];
         if(argument instanceof Box) {
-            return new MongoDocumentQuery.WithinBox(propertyName, ((Box)argument).asList());
+            return new MongoQuery.WithinBox(propertyName, ((Box)argument).asList());
         }
         else {
-            return new MongoDocumentQuery.WithinBox(propertyName, (List<?>) argument);
+            return new MongoQuery.WithinBox(propertyName, (List<?>) argument);
         }
     }
 

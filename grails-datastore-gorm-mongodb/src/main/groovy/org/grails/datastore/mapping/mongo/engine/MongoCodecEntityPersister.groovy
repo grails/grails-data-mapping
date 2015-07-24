@@ -24,7 +24,6 @@ import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.mongo.MongoSession
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query
 import org.springframework.context.ApplicationEventPublisher
@@ -56,11 +55,11 @@ class MongoCodecEntityPersister extends EntityPersister {
         MongoCollection mongoCollection = getMongoCollection(pe)
 
         Map<String,Object> query = [:]
-        query.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, [(MongoDocumentQuery.MONGO_IN_OPERATOR): keys])
+        query.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, [(MongoQuery.MONGO_IN_OPERATOR): keys])
         MongoCursor<Document> cursor = mongoCollection
                 .find(new Document(query), pe.getJavaClass())
                 .iterator()
-        new MongoDocumentQuery.MongoResultList(cursor,0, this)
+        new MongoQuery.MongoResultList(cursor,0, this)
 
     }
 
@@ -116,7 +115,7 @@ class MongoCodecEntityPersister extends EntityPersister {
         Map<String, Object> keys = [:]
         keys.put(
                 (AbstractMongoObectEntityPersister.MONGO_ID_FIELD),
-                [(MongoDocumentQuery.MONGO_IN_OPERATOR): objects.collect() { getObjectIdentifier(it) }.findAll { it != null }]
+                [(MongoQuery.MONGO_IN_OPERATOR): objects.collect() { getObjectIdentifier(it) }.findAll { it != null }]
         )
 
         def idQuery = new Document(keys)

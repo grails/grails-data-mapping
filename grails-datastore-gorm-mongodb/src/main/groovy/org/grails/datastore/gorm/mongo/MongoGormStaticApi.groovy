@@ -15,13 +15,8 @@
 package org.grails.datastore.gorm.mongo
 
 import com.mongodb.AggregationOptions
-import com.mongodb.BasicDBObject
-import com.mongodb.DB
-import com.mongodb.DBCollection
-import com.mongodb.DBObject
 import com.mongodb.MongoClient
 import com.mongodb.ReadPreference
-import com.mongodb.client.AggregateIterable
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import groovy.transform.CompileStatic
@@ -34,8 +29,6 @@ import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.mongo.MongoSession
-import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -190,7 +183,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
                 aggregateIterable.batchSize(options.batchSize)
             }
 
-            new MongoDocumentQuery.MongoResultList(aggregateIterable.iterator(), 0, (EntityPersister)session.getPersister(persistentEntity) as EntityPersister)
+            new MongoQuery.MongoResultList(aggregateIterable.iterator(), 0, (EntityPersister)session.getPersister(persistentEntity) as EntityPersister)
         } as SessionCallback<List<D>>)
     }
 
@@ -213,7 +206,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
             aggregateIterable.allowDiskUse(options.allowDiskUse)
             aggregateIterable.batchSize(options.batchSize)
 
-            new MongoDocumentQuery.MongoResultList(aggregateIterable.iterator(), 0, (EntityPersister)session.getPersister(persistentEntity))
+            new MongoQuery.MongoResultList(aggregateIterable.iterator(), 0, (EntityPersister)session.getPersister(persistentEntity))
         } as SessionCallback<List<D>>)
     }
 
@@ -237,7 +230,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
             int max = options.max instanceof Number ? ((Number)options.max).intValue() : -1
             if(offset > 0) cursor.skip(offset)
             if(max > -1) cursor.limit(max)
-            new MongoDocumentQuery.MongoResultList(cursor.iterator(), offset, (EntityPersister)session.getPersister(persistentEntity))
+            new MongoQuery.MongoResultList(cursor.iterator(), offset, (EntityPersister)session.getPersister(persistentEntity))
         } as SessionCallback<List<D>>)
     }
 
@@ -263,7 +256,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
                                 .sort((Bson)score)
                                 .limit(limit)
 
-            new MongoDocumentQuery.MongoResultList(cursor.iterator(), 0, persister)
+            new MongoQuery.MongoResultList(cursor.iterator(), 0, persister)
         } as SessionCallback<List<D>>)
     }
 

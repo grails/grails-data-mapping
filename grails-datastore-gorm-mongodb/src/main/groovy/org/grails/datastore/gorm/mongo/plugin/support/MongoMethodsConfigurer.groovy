@@ -26,15 +26,9 @@ import org.grails.datastore.gorm.mongo.MongoGormStaticApi
 import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
-import org.grails.datastore.mapping.mongo.engine.MongoDocumentEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.springframework.transaction.PlatformTransactionManager
-
-import com.mongodb.BasicDBObject
-import com.mongodb.DBCursor
-import com.mongodb.DBObject
 
 /**
  * Mongo specific dynamic methods configurer.
@@ -53,7 +47,7 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
         super.configure()
 
         def asTypeHook = { Class cls ->
-            MongoDocumentEntityPersister p = datastore.currentSession.getPersister(cls)
+            MongoEntityPersister p = datastore.currentSession.getPersister(cls)
             if (p != null) {
                 if(delegate instanceof FindIterable) {
                     return ((FindIterable)delegate).first().asType(cls)
@@ -76,9 +70,9 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
         Document.metaClass.asType = asTypeHook
         FindIterable.metaClass.asType = asTypeHook
         FindIterable.metaClass.toList = { Class cls ->
-            MongoDocumentEntityPersister p = datastore.currentSession.getPersister(cls)
+            MongoEntityPersister p = datastore.currentSession.getPersister(cls)
             if (p)
-                return new MongoDocumentQuery.MongoResultList(((FindIterable<Document>)delegate).iterator(),0,p)
+                return new MongoQuery.MongoResultList(((FindIterable<Document>)delegate).iterator(),0,p)
             else {
                 throw new IllegalArgumentException("Cannot convert DBCursor [$delegate] to target type $cls. Type is not a persistent entity")
             }

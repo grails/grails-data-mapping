@@ -18,7 +18,6 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.bson.Document
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery
 
 import java.lang.reflect.Array
 
@@ -185,10 +184,10 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, Document
             if (criterion instanceof Equals) {
                 nativeQuery.put(queryKey, enumValue(property, criterion.value))
             } else if (criterion instanceof NotEquals) {
-                nativeQuery.put(queryKey, [(MongoDocumentQuery.MONGO_NE_OPERATOR): enumValue(property, criterion.value)])
+                nativeQuery.put(queryKey, [(MongoQuery.MONGO_NE_OPERATOR): enumValue(property, criterion.value)])
             } else if (criterion instanceof Between) {
-                criteriaObject.put(MongoDocumentQuery.MONGO_GTE_OPERATOR, enumValue(property, ((Between) criterion).getFrom()))
-                criteriaObject.put(MongoDocumentQuery.MONGO_LTE_OPERATOR, enumValue(property, ((Between) criterion).getTo()))
+                criteriaObject.put(MongoQuery.MONGO_GTE_OPERATOR, enumValue(property, ((Between) criterion).getFrom()))
+                criteriaObject.put(MongoQuery.MONGO_LTE_OPERATOR, enumValue(property, ((Between) criterion).getTo()))
 
                 nativeQuery.put(queryKey, criteriaObject)
             } else if (criterion instanceof In) {
@@ -197,7 +196,7 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, Document
                     criteriaValues << enumValue(property, crtieriaValue)
                 }
 
-                criteriaObject.put(MongoDocumentQuery.MONGO_IN_OPERATOR, criteriaValues)
+                criteriaObject.put(MongoQuery.MONGO_IN_OPERATOR, criteriaValues)
                 nativeQuery.put(queryKey, criteriaObject)
             }
 

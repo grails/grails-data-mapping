@@ -18,10 +18,9 @@ package org.grails.datastore.gorm.mongo;
 import java.util.Collection;
 import java.util.List;
 
-import grails.mongodb.geo.Box;
 import grails.mongodb.geo.Circle;
 import org.grails.datastore.gorm.finders.MethodExpression;
-import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery;
+import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query.Criterion;
 import org.springframework.util.Assert;
 
@@ -41,10 +40,10 @@ public class WithinCircle extends MethodExpression {
     public Criterion createCriterion() {
         Object argument = arguments[0];
         if(argument instanceof Circle) {
-            return new MongoDocumentQuery.WithinCircle(propertyName, ((Circle)argument).asList());
+            return new MongoQuery.WithinCircle(propertyName, ((Circle)argument).asList());
         }
         else {
-            return new MongoDocumentQuery.WithinCircle(propertyName, (List<?>) argument);
+            return new MongoQuery.WithinCircle(propertyName, (List<?>) argument);
         }
     }
 

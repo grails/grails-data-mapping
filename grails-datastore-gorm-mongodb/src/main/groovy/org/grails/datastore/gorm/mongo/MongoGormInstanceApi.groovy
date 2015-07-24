@@ -25,9 +25,7 @@ import org.grails.datastore.mapping.core.VoidSessionCallback
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.mongo.MongoSession
-import org.grails.datastore.mapping.mongo.config.MongoCollection
 import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
-import org.grails.datastore.mapping.mongo.engine.MongoDocumentEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 
 /**
@@ -79,7 +77,7 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
 
                 if (si.isStateless(persistentEntity)) {
                     def coll = session.getCollection(persistentEntity)
-                    MongoDocumentEntityPersister persister = (MongoDocumentEntityPersister)session.getPersister(instance)
+                    MongoEntityPersister persister = (MongoEntityPersister)session.getPersister(instance)
                     def id = persister.getObjectIdentifier(instance)
                     final updateObject = new Document('$set', new Document(name, value))
                     coll.update(new Document(AbstractMongoObectEntityPersister.MONGO_ID_FIELD,id), updateObject)
@@ -136,12 +134,12 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
         execute( { MongoSession session ->
             // check first for embedded cached entries
             SessionImplementor<Document> si = (SessionImplementor<Document>) session;
-            def dbo = si.getCachedEntry(persistentEntity, MongoDocumentEntityPersister.createEmbeddedCacheEntryKey(instance))
+            def dbo = si.getCachedEntry(persistentEntity, MongoEntityPersister.createEmbeddedCacheEntryKey(instance))
             if(dbo != null) return dbo
             // otherwise check if instance is contained within session
             if (!session.contains(instance)) {
                 dbo = new Document()
-                si.cacheEntry(persistentEntity, MongoDocumentEntityPersister.createInstanceCacheEntryKey(instance), dbo)
+                si.cacheEntry(persistentEntity, MongoEntityPersister.createInstanceCacheEntryKey(instance), dbo)
                 return dbo
             }
 
@@ -150,7 +148,7 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
             dbo = ((SessionImplementor)session).getCachedEntry(persister.getPersistentEntity(), id)
             if (dbo == null) {
                 com.mongodb.client.MongoCollection<Document> coll = session.getCollection(persistentEntity)
-                dbo = coll.find((Bson)new Document(MongoDocumentEntityPersister.MONGO_ID_FIELD, id))
+                dbo = coll.find((Bson)new Document(MongoEntityPersister.MONGO_ID_FIELD, id))
                             .limit(1)
                             .first()
 
