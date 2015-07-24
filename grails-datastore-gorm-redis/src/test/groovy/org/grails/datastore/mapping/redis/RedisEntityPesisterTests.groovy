@@ -20,6 +20,7 @@ class RedisEntityPesisterTests extends AbstractRedisTest {
         TestEntity t = new TestEntity()
         t.name = "bob"
         session.persist(t)
+        session.flush()
 
         assert t.id != null
 

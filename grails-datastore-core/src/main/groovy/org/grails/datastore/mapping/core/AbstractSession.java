@@ -721,6 +721,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
 
         p.delete(obj);
+        clear(obj);
     }
 
     public void delete(final Iterable objects) {

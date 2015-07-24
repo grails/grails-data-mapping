@@ -411,6 +411,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             return;
         }
 
+        getSession().clear(obj);
         for (Association association: pe.getAssociations()) {
             if (association.isOwningSide() && association.doesCascade(CascadeType.REMOVE)) {
                 log.debug("cascading delete for property " + association.getName());

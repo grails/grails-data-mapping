@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.tests.Plant
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+import spock.lang.IgnoreIf
 
 /**
  * Created by graemerocher on 20/03/14.
@@ -28,6 +29,8 @@ class BatchUpdateDeleteSpec extends GormDatastoreSpec {
             Plant.count() == 4
     }
 
+    // Ignore on Travis infrastructure which doesn't support MongoDB 26
+    @IgnoreIf({ System.getenv("TRAVIS")})
     void "Test that batch update works"() {
         when:"Some test data"
             createTestData()

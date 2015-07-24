@@ -2,6 +2,7 @@ package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
 import grails.gorm.PagedResultList
+import spock.lang.IgnoreIf
 import spock.lang.IgnoreRest
 
 class DetachedCriteriaSpec extends GormDatastoreSpec {
@@ -81,6 +82,9 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
         then:"The count method returns the right results"
             criteria.asBoolean() == true
     }
+
+    // Ignore on Travis infrastructure which doesn't support MongoDB 26
+    @IgnoreIf({ System.getenv("TRAVIS")})
     void "Test updateAll method"() {
         given:"A bunch of people"
             createPeople()
@@ -90,8 +94,6 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
                 eq 'lastName', 'Simpson'
             }
             int total = criteria.updateAll(lastName:"Bloggs")
-
-            println "TOTAL IS $total"
         then:"The number of deletions is correct"
             total == 4
             Person.count() == 6
