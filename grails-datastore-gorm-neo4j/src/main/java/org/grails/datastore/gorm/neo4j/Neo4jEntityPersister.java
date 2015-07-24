@@ -486,6 +486,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                         ((GraphPersistentEntity)pe).getLabelsAsString()), Collections.singletonList(ids));
 
         for (EntityAccess entityAccess: entityAccesses) {
+            getSession().clear(entityAccess.getEntity());
             firePostDeleteEvent(pe, entityAccess);
         }
     }
