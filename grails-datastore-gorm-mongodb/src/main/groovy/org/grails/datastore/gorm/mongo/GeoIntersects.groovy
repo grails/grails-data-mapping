@@ -19,6 +19,7 @@ import grails.mongodb.geo.LineString
 import grails.mongodb.geo.Point
 import grails.mongodb.geo.Shape
 import org.grails.datastore.gorm.finders.MethodExpression
+import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query
 import org.springframework.util.Assert
@@ -36,7 +37,7 @@ class GeoIntersects extends MethodExpression{
 
     @Override
     Query.Criterion createCriterion() {
-        return new MongoQuery.GeoIntersects(propertyName, arguments[0]);
+        return new MongoDocumentQuery.GeoIntersects(propertyName, arguments[0]);
     }
 
     @Override

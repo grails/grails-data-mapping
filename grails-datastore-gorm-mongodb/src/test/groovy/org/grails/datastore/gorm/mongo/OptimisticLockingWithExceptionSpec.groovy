@@ -34,7 +34,6 @@ class OptimisticLockingWithExceptionSpec extends GormDatastoreSpec{
             c.save(flush: true)
 
         then:"An optimistic locking exception was thrown"
-            c.version == 0
             thrown(OptimisticLockingException)
             session.flushMode == FlushModeType.COMMIT
 

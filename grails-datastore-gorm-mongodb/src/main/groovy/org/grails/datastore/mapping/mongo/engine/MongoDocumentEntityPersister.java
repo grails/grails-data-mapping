@@ -36,7 +36,9 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.grails.datastore.mapping.core.IdentityGenerationException;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
+import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
+import org.grails.datastore.mapping.core.impl.PendingDeleteAdapter;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
@@ -152,14 +154,13 @@ public class MongoDocumentEntityPersister extends AbstractMongoObectEntityPersis
 
     @Override
     protected void deleteEntry(String family, final Object key, final Object entry) {
-        final MongoSession mongoSession = getMongoSession();
-        final MongoCollection mongoCollection = mongoSession.getCollection(getPersistentEntity());
-        WriteConcern writeConcern = mongoSession.getDeclaredWriteConcern(getPersistentEntity());
-
-        Document dbo = createDBObjectWithKey(key);
-        mongoCollection
-                .withWriteConcern(writeConcern)
-                .deleteOne(dbo);
+        final MongoSession session = (MongoSession) getSession();
+        session.
+            addPendingDelete(new PendingDeleteAdapter(getPersistentEntity(), key, entry) {
+                public void run() {
+                    session.clear(entry);
+                }
+            });
 
     }
 
@@ -169,7 +170,15 @@ public class MongoDocumentEntityPersister extends AbstractMongoObectEntityPersis
 
         String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
-        final MongoCollection<Document> dbCollection = getMongoSession().getCollection(persistentEntity);
+
+        final MongoSession mongoSession = getMongoSession();
+        final MongoClient client = mongoSession
+                                        .getNativeInterface();
+
+        final MongoCollection<Document>  dbCollection = client
+                                                            .getDatabase(mongoSession.getDatabase(persistentEntity))
+                                                            .getCollection(collectionName + NEXT_ID_SUFFIX);
+
 
         // If there is a numeric identifier then we need to rely on optimistic concurrency controls to obtain a unique identifer
         // sequence. If the identifier is not numeric then we assume BSON ObjectIds.
@@ -353,7 +362,6 @@ public class MongoDocumentEntityPersister extends AbstractMongoObectEntityPersis
     protected Object storeEntry(final PersistentEntity persistentEntity, final EntityAccess entityAccess,
                                 final Object storeId, final Document nativeEntry) {
 
-        removeNullEntries(nativeEntry);
         nativeEntry.put(MONGO_ID_FIELD, storeId);
         return nativeEntry.get(MONGO_ID_FIELD);
     }
@@ -410,45 +418,7 @@ public class MongoDocumentEntityPersister extends AbstractMongoObectEntityPersis
     @Override
     public void updateEntry(final PersistentEntity persistentEntity, final EntityAccess ea,
                             final Object key, final Document entry) {
-        MongoCollection dbCollection = getMongoSession().getCollection(persistentEntity);
-        Document dbo = createDBObjectWithKey(key);
-
-        boolean versioned = isVersioned(ea);
-        Object currentVersion = null;
-        if (versioned) {
-            currentVersion = getCurrentVersion(ea);
-            incrementVersion(ea);
-            // query for old version to ensure atomicity
-            if (currentVersion != null) {
-                dbo.put(GormProperties.VERSION, currentVersion);
-            }
-        }
-
-        Document newEntry = modifyNullsToUnsets(entry);
-
-        MongoSession mongoSession = (MongoSession) session;
-        WriteConcern writeConcern = mongoSession.getDeclaredWriteConcern(getPersistentEntity());
-        UpdateResult result;
-        if (writeConcern != null) {
-            result = dbCollection
-                    .withWriteConcern(writeConcern)
-                    .updateOne(dbo, newEntry, new UpdateOptions().upsert(false));
-        }
-        else {
-            result = dbCollection
-                    .updateOne(dbo, newEntry, new UpdateOptions().upsert(false));
-        }
-        if (versioned && !((SessionImplementor)getSession()).isStateless(persistentEntity)) {
-            // ok, we need to check whether the write worked:
-            // note that this will use the standard write concern unless it wasn't at least ACKNOWLEDGE:
-            // if the document count "n" of the update was 0, the version check must have failed:
-            if (result.wasAcknowledged() && result.getModifiedCount() == 0) {
-                if(currentVersion != null) {
-                    ea.setProperty(GormProperties.VERSION, currentVersion);
-                }
-                throw new OptimisticLockingException(persistentEntity, key);
-            }
-        }
+        // no-op, handled by flush()
     }
 
     @Override

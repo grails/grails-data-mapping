@@ -2,7 +2,7 @@ package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
-
+import org.bson.Document
 import org.bson.types.ObjectId
 
 import com.mongodb.DBObject
@@ -41,12 +41,12 @@ class BasicArraySpec extends GormDatastoreSpec{
             Data data = new Data(str: "baz", byteArray: 'hello'.bytes).save(flush:true)
             session.clear()
             data = Data.findByStr("baz")
-            DBObject dbo = data.dbo
+            Document dbo = data.dbo
 
         then:"The array is saved correct"
             data.str == "baz"
             data.byteArray == 'hello'.bytes
-            dbo.byteArray == 'hello'.bytes
+            dbo.byteArray.data == 'hello'.bytes
     }
 
     @Override

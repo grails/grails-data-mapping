@@ -14,11 +14,12 @@
  */
 package org.grails.datastore.gorm.mongo.geo
 
-import com.mongodb.DBObject
 import grails.mongodb.geo.GeoJSON
 import grails.mongodb.geo.Shape
+import groovy.transform.CompileStatic
 import org.bson.BSONObject
 import org.bson.BasicBSONObject
+import org.bson.Document
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.query.Query
@@ -29,7 +30,8 @@ import org.grails.datastore.mapping.query.Query
  * @author Graeme Rocher
  * @since 2.0
  */
-abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTypeMarshaller<T, DBObject, DBObject> {
+@CompileStatic
+abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTypeMarshaller<T, Document, Document> {
 
     public static final String COORDINATES = "coordinates"
     public static final String GEO_TYPE = "type"
@@ -39,14 +41,15 @@ abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTy
     }
 
     @Override
-    protected Object writeInternal(PersistentProperty property, String key, T value, DBObject nativeTarget) {
+    protected Object writeInternal(PersistentProperty property, String key, T value, Document nativeTarget) {
         if(value != null) {
-            BasicBSONObject pointData = convertToGeoJSON((Shape)value)
+            Document pointData = convertToGeoDocument((Shape)value)
             nativeTarget.put(key, pointData)
             return pointData
         }
     }
 
+    @Deprecated
     static BasicBSONObject convertToGeoJSON(Shape value) {
         def geoJson = new BasicBSONObject()
         geoJson.put(GEO_TYPE, value.getClass().simpleName)
@@ -54,11 +57,18 @@ abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTy
         return geoJson
     }
 
+    static Document convertToGeoDocument(Shape value) {
+        def geoJson = new Document()
+        geoJson.put(GEO_TYPE, value.getClass().simpleName)
+        geoJson.put(COORDINATES, value.asList())
+        return geoJson
+    }
+
     @Override
-    protected T readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+    protected T readInternal(PersistentProperty property, String key, Document nativeSource) {
         def obj = nativeSource.get(key)
-        if(obj instanceof BSONObject) {
-            BSONObject pointData = (BSONObject)obj
+        if(obj instanceof Document) {
+            Document pointData = (Document)obj
             def coords = pointData.get(COORDINATES)
 
             if(coords instanceof List) {
@@ -71,13 +81,13 @@ abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTy
     abstract T createFromCoords(List<List<Double>> coords)
 
     @Override
-    protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion value, DBObject nativeQuery) {
+    protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion value, Document nativeQuery) {
         if(value instanceof Query.Equals) {
             def v = value.getValue()
             if(v instanceof GeoJSON) {
                 Shape shape = (Shape) v
 
-                def geoJson = convertToGeoJSON(shape)
+                def geoJson = convertToGeoDocument(shape)
                 nativeQuery.put(key, geoJson)
             }
             else if( v instanceof Shape) {

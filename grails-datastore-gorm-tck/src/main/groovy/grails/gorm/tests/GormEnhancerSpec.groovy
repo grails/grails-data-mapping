@@ -68,7 +68,9 @@ class GormEnhancerSpec extends GormDatastoreSpec {
         when:
             def results = TestEntity.findAllByNameOrAge("Barney", 40)
             def barney = results.find { it.name == "Barney" }
-            def bob = results.find { it.age == 40 }
+            def bob = results.find {
+                it.age == 40
+            }
 
         then:
             3 == TestEntity.count()

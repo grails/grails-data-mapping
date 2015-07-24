@@ -233,7 +233,7 @@ public interface Session {
      * @param criteria The criteria
      * @return The total number of records deleted
      */
-    int deleteAll(QueryableCriteria criteria);
+    long deleteAll(QueryableCriteria criteria);
 
     /**
      * Updates all objects matching the given criteria and property values
@@ -241,7 +241,7 @@ public interface Session {
      * @param properties The properties
      * @return The total number of records updated
      */
-    int updateAll(QueryableCriteria criteria, Map<String, Object> properties);
+    long updateAll(QueryableCriteria criteria, Map<String, Object> properties);
 
     /**
      * Retrieves several objects for the specified keys

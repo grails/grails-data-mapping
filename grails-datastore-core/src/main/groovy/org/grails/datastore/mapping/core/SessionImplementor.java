@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
+import org.grails.datastore.mapping.core.impl.PendingDelete;
 import org.grails.datastore.mapping.core.impl.PendingInsert;
 import org.grails.datastore.mapping.core.impl.PendingUpdate;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -67,7 +68,7 @@ public interface SessionImplementor<T> {
     /**
      * @return The pending deletes
      */
-    Collection<Runnable> getPendingDeletes();
+    Map<PersistentEntity, Collection<PendingDelete>> getPendingDeletes();
 
     /**
      * Caches a native entry
@@ -142,4 +143,16 @@ public interface SessionImplementor<T> {
      * @param runnable The runnable
      */
     void addPostFlushOperation(Runnable runnable);
+
+    /**
+     * @param obj Whether the given object is already pending
+     * @return True if it is
+     */
+    boolean isPendingAlready(T obj);
+
+    /**
+     * Register a pending object
+     * @param obj The object to register
+     */
+    void registerPending(T obj);
 }

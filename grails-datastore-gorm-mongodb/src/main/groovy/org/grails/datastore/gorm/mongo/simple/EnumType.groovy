@@ -14,6 +14,12 @@
  */
 package org.grails.datastore.gorm.mongo.simple
 
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
+import org.bson.Document
+import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
+import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery
+
 import java.lang.reflect.Array
 
 import javax.persistence.EnumType as JEnumType
@@ -32,7 +38,6 @@ import org.grails.datastore.mapping.query.Query.NotEquals
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 
 import com.mongodb.BasicDBObject
-import com.mongodb.DBObject
 
 /**
  * A custom type for persisting Enum which have an id field in domain classes.
@@ -60,7 +65,8 @@ import com.mongodb.DBObject
  * @since 3.1.3
  *
  */
-class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject, DBObject> {
+@CompileStatic
+class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, Document, Document> {
 
     /**
      * Get type of collection by looking at <code>hasMany</code> static field in
@@ -70,7 +76,9 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
     private static Class getCollectionType(PersistentProperty property) {
         PersistentEntity owner = property.owner
         ClassPropertyFetcher propertyFetcher = ClassPropertyFetcher.forClass(property.owner.getJavaClass())
-        Map hasManyMap = owner.context.getMappingSyntaxStrategy().getAssociationMap(propertyFetcher)
+
+        GormMappingConfigurationStrategy strategy = (GormMappingConfigurationStrategy)owner.mappingContext.getMappingSyntaxStrategy()
+        Map hasManyMap = strategy.getAssociationMap(propertyFetcher)
 
         hasManyMap[property.name]
     }
@@ -107,7 +115,7 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
      * if enum has id, returns the id,
      * otherwise return the name of enum itself.
      */
-    private static def enumValue(PersistentProperty property, def value, Class enumType = null) {
+    private static Object enumValue(PersistentProperty property, Object value, Class enumType = null) {
         if (value == null) {
             return null
         }
@@ -126,13 +134,18 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
             if (isOrdinalTypeEnum(property)) {
                 value = ((Enum) value).ordinal()
             } else if (value.hasProperty("id")) {
-                value = value.id
+                value = getId((Enum)value)
             } else {
-                value = value.name()
+                value = ((Enum)value).name()
             }
         }
 
         value
+    }
+
+    @CompileDynamic
+    protected static Object getId(Enum value) {
+        value.id
     }
 
     EnumType() {
@@ -165,17 +178,17 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
      * Now we have to place value of status to the blank field.
      * This method searches that empty place and put the value to the right place.
      */
-    private void putValueToProperPlace(PersistentProperty property, String queryKey, Query.PropertyCriterion criterion, DBObject nativeQuery) {
+    private void putValueToProperPlace(PersistentProperty property, String queryKey, Query.PropertyCriterion criterion, Document nativeQuery) {
         if (!nativeQuery || nativeQuery.isEmpty()) {     // If criteria empty, means we got the place to insert.
             BasicDBObject criteriaObject = new BasicDBObject()
 
             if (criterion instanceof Equals) {
                 nativeQuery.put(queryKey, enumValue(property, criterion.value))
             } else if (criterion instanceof NotEquals) {
-                nativeQuery.put(queryKey, [(MongoQuery.MONGO_NE_OPERATOR): enumValue(property, criterion.value)])
+                nativeQuery.put(queryKey, [(MongoDocumentQuery.MONGO_NE_OPERATOR): enumValue(property, criterion.value)])
             } else if (criterion instanceof Between) {
-                criteriaObject.put(MongoQuery.MONGO_GTE_OPERATOR, enumValue(property, ((Between) criterion).getFrom()))
-                criteriaObject.put(MongoQuery.MONGO_LTE_OPERATOR, enumValue(property, ((Between) criterion).getTo()))
+                criteriaObject.put(MongoDocumentQuery.MONGO_GTE_OPERATOR, enumValue(property, ((Between) criterion).getFrom()))
+                criteriaObject.put(MongoDocumentQuery.MONGO_LTE_OPERATOR, enumValue(property, ((Between) criterion).getTo()))
 
                 nativeQuery.put(queryKey, criteriaObject)
             } else if (criterion instanceof In) {
@@ -184,7 +197,7 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
                     criteriaValues << enumValue(property, crtieriaValue)
                 }
 
-                criteriaObject.put(MongoQuery.MONGO_IN_OPERATOR, criteriaValues)
+                criteriaObject.put(MongoDocumentQuery.MONGO_IN_OPERATOR, criteriaValues)
                 nativeQuery.put(queryKey, criteriaObject)
             }
 
@@ -192,9 +205,10 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
         }
 
         // Iterate each field in the query deeply to get the blank field
-        nativeQuery.each { key, value ->
+        for(String key in nativeQuery.keySet()) {
+            def value = nativeQuery.get(key)
             if (value instanceof Collection) {
-                value.each { BasicDBObject queryObject ->
+                value.each { Document queryObject ->
                     if (queryObject.isEmpty()) {
                         // Recursive call the same method.
                         putValueToProperPlace(property, queryKey, criterion, queryObject)
@@ -205,12 +219,13 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
     }
 
     @Override
-    protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, DBObject nativeQuery) {
+    protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, Document nativeQuery) {
         putValueToProperPlace(property, key, criterion, nativeQuery)
     }
 
     @Override
-    protected Object readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+    @CompileDynamic
+    protected Object readInternal(PersistentProperty property, String key, Document nativeSource) {
         final def value = nativeSource.get(key)
         if (value == null) {
             return null
@@ -219,7 +234,7 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
         Class propertyType = property.getType()
 
         if (isOrdinalTypeEnum(property)) {
-            return getEnumValueForOrdinal(value, propertyType)
+            return getEnumValueForOrdinal((Number)value, propertyType)
         }
 
         def finalValue
@@ -251,7 +266,7 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, DBObject
     }
 
     @Override
-    protected Object writeInternal(PersistentProperty property, String key, Object value, DBObject nativeTarget) {
+    protected Object writeInternal(PersistentProperty property, String key, Object value, Document nativeTarget) {
         if (!value) {
             nativeTarget.put(key, null)
             return null

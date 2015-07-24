@@ -18,7 +18,6 @@ class IndexAttributesAndCompoundKeySpec extends GormDatastoreSpec{
 
             ServerStream.collection.listIndexes()[1].key == [server:1, stream:1]
             ServerStream.collection.listIndexes()[1].unique
-            ServerStream.collection.listIndexes()[1].dropDups
 
     }
     @Override

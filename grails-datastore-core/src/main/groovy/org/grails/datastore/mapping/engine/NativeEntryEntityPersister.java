@@ -122,8 +122,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
         EntityAccess entityAccess = createEntityAccess(persistentEntity, obj);
         PreDeleteEvent event = new PreDeleteEvent(session.getDatastore(), persistentEntity, entityAccess);
-        publisher.publishEvent(event);
-        if (event.isCancelled()) {
+        if(cancelDelete(persistentEntity, entityAccess)) {
             return;
         }
 
@@ -817,6 +816,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         final NativeEntryModifyingEntityAccess entityAccess = (NativeEntryModifyingEntityAccess) createEntityAccess(persistentEntity, obj, tmp);
 
         K k = readObjectIdentifier(entityAccess, persistentEntity.getMapping());
+
         boolean isUpdate = k != null && !isInsert;
         boolean assignedId = false;
         if (isUpdate && !getSession().isDirty(obj)) {
@@ -827,6 +827,14 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
         PropertyMapping mapping = persistentEntity.getIdentity().getMapping();
         SessionImplementor<Object> si = (SessionImplementor<Object>) session;
+
+        if(si.isPendingAlready(obj)) {
+            return (Serializable) k;
+        }
+        else {
+            si.registerPending(obj);
+        }
+
         if (mapping != null) {
             Property p = mapping.getMappedForm();
             assignedId = p != null && "assigned".equals(p.getGenerator());
@@ -872,7 +880,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             final K finalK = k;
             pendingOperation = new PendingUpdateAdapter<T, K>(persistentEntity, finalK, finalTmp, entityAccess) {
                 public void run() {
-                    if (cancelUpdate(persistentEntity, entityAccess)) return;
+                    if (cancelUpdate(persistentEntity, entityAccess)) {
+                        setVetoed(true);
+                        return;
+                    }
                     updateEntry(persistentEntity, entityAccess, getNativeKey(), getNativeEntry());
                     updateTPCache(persistentEntity, finalTmp, (Serializable) finalK);
                     firePostUpdateEvent(persistentEntity, entityAccess);
@@ -901,6 +912,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             if ((prop instanceof Simple) ) {
 
                 Object propValue = entityAccess.getProperty(prop.getName());
+                if(propValue == null && !isUpdate) {
+                    continue;
+                }
 
                 handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, propValue);
 
@@ -916,6 +930,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
                 else {
                     Object propValue = entityAccess.getProperty(prop.getName());
+                    if(propValue == null && !isUpdate) {
+                        continue;
+                    }
+
 
                     handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, propValue);
                     setEntryValue(e, key, propValue);
@@ -925,6 +943,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();
                 if (customTypeMarshaller.supports(getSession().getDatastore())) {
                     Object propValue = entityAccess.getProperty(prop.getName());
+                    if(propValue == null && !isUpdate) {
+                        continue;
+                    }
+
                     Object customValue = customTypeMarshaller.write(prop, propValue, e);
                     handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, customValue);
                 }
@@ -1212,7 +1234,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     }
 
     protected T handleEmbeddedInstance(Association association, Object embeddedInstance) {
-        return handleEmbeddedInstance(association, embeddedInstance, true);
+        return handleEmbeddedInstance(association, embeddedInstance, false);
     }
     protected T handleEmbeddedInstance(Association association, Object embeddedInstance, boolean includeNulls) {
         NativeEntryEntityPersister<T,K> embeddedPersister = (NativeEntryEntityPersister<T,K>) session.getPersister(embeddedInstance);

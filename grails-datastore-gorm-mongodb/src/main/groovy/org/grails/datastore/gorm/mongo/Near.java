@@ -21,7 +21,7 @@ import java.util.Map;
 import grails.mongodb.geo.Distance;
 import grails.mongodb.geo.Point;
 import org.grails.datastore.gorm.finders.MethodExpression;
-import org.grails.datastore.mapping.mongo.query.MongoQuery;
+import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery;
 import org.grails.datastore.mapping.query.Query.Criterion;
 import org.springframework.util.Assert;
 
@@ -33,7 +33,7 @@ public class Near extends MethodExpression {
 
     @Override
     public Criterion createCriterion() {
-        MongoQuery.Near near = new MongoQuery.Near(propertyName, arguments[0]);
+        MongoDocumentQuery.Near near = new MongoDocumentQuery.Near(propertyName, arguments[0]);
 
         if(arguments.length > 1) {
             Object o = arguments[1];

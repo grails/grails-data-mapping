@@ -119,12 +119,13 @@ class DBObjectConversionSpec extends GormDatastoreSpec {
     }
 
     private createCrew() {
-        final captain = new Captain(name: "Bob").save()
+        final captain = new Captain(name: "Bob")
         final firstMate = new Sailor(name: "Jim", captain: captain)
         def boat = new Boat(name: "The Float", captain: captain, firstMate: firstMate)
         boat.crew << new Sailor(name: "Fred", captain: captain)
         boat.crew << new Sailor(name: "Joe", captain: captain)
         captain.shipmates << new Sailor(name: "Jeff", captain: captain)
+        captain.save()
         boat.save flush: true
         session.clear()
     }

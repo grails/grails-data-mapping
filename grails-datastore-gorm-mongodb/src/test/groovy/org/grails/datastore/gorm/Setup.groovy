@@ -4,6 +4,7 @@ package org.grails.datastore.gorm
 import com.mongodb.BasicDBObject
 import com.mongodb.DBObject
 import grails.gorm.tests.GormDatastoreSpec
+import org.bson.Document
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.mongo.Birthday
@@ -47,16 +48,16 @@ class Setup {
         mongo.applicationContext = ctx
         mongo.afterPropertiesSet()
 
-        mongo.mappingContext.mappingFactory.registerCustomType(new AbstractMappingAwareCustomTypeMarshaller<Birthday, DBObject, DBObject>(Birthday) {
+        mongo.mappingContext.mappingFactory.registerCustomType(new AbstractMappingAwareCustomTypeMarshaller<Birthday, Document, Document>(Birthday) {
             @Override
-            protected Object writeInternal(PersistentProperty property, String key, Birthday value, DBObject nativeTarget) {
+            protected Object writeInternal(PersistentProperty property, String key, Birthday value, Document nativeTarget) {
                 final converted = value.date.time
                 nativeTarget.put(key, converted)
                 return converted
             }
 
             @Override
-            protected void queryInternal(PersistentProperty property, String key, PropertyCriterion criterion, DBObject nativeQuery) {
+            protected void queryInternal(PersistentProperty property, String key, PropertyCriterion criterion, Document nativeQuery) {
                 if (criterion instanceof Between) {
                     def dbo = new BasicDBObject()
                     dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time)
@@ -69,7 +70,7 @@ class Setup {
             }
 
             @Override
-            protected Birthday readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+            protected Birthday readInternal(PersistentProperty property, String key, Document nativeSource) {
                 final num = nativeSource.get(key)
                 if (num instanceof Long) {
                     return new Birthday(new Date(num))

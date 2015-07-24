@@ -39,6 +39,11 @@ public interface PendingOperation<E, K> extends Runnable {
     PersistentEntity getEntity();
 
     /**
+     * @return The target object of the pending operation
+     */
+    Object getObject();
+
+    /**
      * @return The native key to insert
      */
     K getNativeKey();

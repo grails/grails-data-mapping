@@ -24,6 +24,10 @@ import org.grails.datastore.mapping.query.Query;
  *
  * @author Graeme Rocher
  * @since 1.0
+ *
+ * @param <T> The target type to be marshalled
+ * @param <N> The native database type
+ * @param <Q> The return type of the query
  */
 public interface CustomTypeMarshaller<T, N, Q> {
 

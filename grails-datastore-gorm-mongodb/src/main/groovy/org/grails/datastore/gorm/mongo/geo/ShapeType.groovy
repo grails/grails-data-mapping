@@ -14,12 +14,13 @@
  */
 package org.grails.datastore.gorm.mongo.geo
 
-import com.mongodb.DBObject
 import grails.mongodb.geo.GeoJSON
 import grails.mongodb.geo.LineString
 import grails.mongodb.geo.Point
 import grails.mongodb.geo.Polygon
 import grails.mongodb.geo.Shape
+import groovy.transform.CompileStatic
+import org.bson.Document
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.springframework.dao.DataAccessResourceFailureException
 import org.springframework.dao.InvalidDataAccessResourceUsageException
@@ -39,7 +40,7 @@ class ShapeType extends GeoJSONType<Shape>{
     }
 
     @Override
-    protected Object writeInternal(PersistentProperty property, String key, Shape value, DBObject nativeTarget) {
+    protected Object writeInternal(PersistentProperty property, String key, Shape value, Document nativeTarget) {
         if(value instanceof GeoJSON) {
             return super.writeInternal(property, key, value, nativeTarget)
         }
@@ -49,9 +50,9 @@ class ShapeType extends GeoJSONType<Shape>{
     }
 
     @Override
-    protected Shape readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+    protected Shape readInternal(PersistentProperty property, String key, Document nativeSource) {
         def geoData = nativeSource.get(key)
-        if(geoData && geoData instanceof DBObject) {
+        if(geoData && (geoData instanceof Map) ) {
             def geoType = geoData.get(GEO_TYPE)
             def coords = geoData.get(COORDINATES)
             if(geoType) {

@@ -14,40 +14,20 @@
  */
 package org.grails.datastore.mapping.mongo.engine;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.grails.datastore.mapping.core.IdentityGenerationException;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.SessionImplementor;
-import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.EntityAccess;
-import org.grails.datastore.mapping.engine.Persister;
-import org.grails.datastore.mapping.engine.PropertyValueIndexer;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.PropertyMapping;
 import org.grails.datastore.mapping.model.config.GormProperties;
-import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.EmbeddedCollection;
-import org.grails.datastore.mapping.model.types.Identity;
-import org.grails.datastore.mapping.model.types.ManyToMany;
 import org.grails.datastore.mapping.mongo.MongoSession;
-import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
@@ -57,6 +37,9 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * A {@link org.grails.datastore.mapping.engine.EntityPersister} implementation for the Mongo document store

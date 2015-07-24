@@ -48,4 +48,13 @@ public abstract class PendingUpdateAdapter<E, K> extends PendingOperationAdapter
     public EntityAccess getEntityAccess() {
         return entityAccess;
     }
+
+    @Override
+    public Object getObject() {
+        final EntityAccess ea = getEntityAccess();
+        if(ea != null) {
+            return ea.getEntity();
+        }
+        return null;
+    }
 }

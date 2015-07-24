@@ -215,16 +215,16 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     @Override
     protected Session createSession(Map<String, String> connDetails) {
         if(stateless) {
-            return createStatelessSession(connectionDetails);
+            return new MongoDocumentSession(this, getMappingContext(), getApplicationEventPublisher(), true);
         }
         else {
-            return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), false);
+            return new MongoDocumentSession(this, getMappingContext(), getApplicationEventPublisher(), false);
         }
     }
 
     @Override
     protected Session createStatelessSession(Map<String, String> connectionDetails) {
-        return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), true);
+        return new MongoDocumentSession(this, getMappingContext(), getApplicationEventPublisher(), true);
     }
 
     public void afterPropertiesSet() throws Exception {

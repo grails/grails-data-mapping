@@ -21,17 +21,21 @@ import com.mongodb.DBCollection
 import com.mongodb.DBObject
 import com.mongodb.MongoClient
 import com.mongodb.ReadPreference
+import com.mongodb.client.AggregateIterable
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import groovy.transform.CompileStatic
 import org.bson.Document
+import org.bson.conversions.Bson
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.mongo.MongoSession
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
+import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -174,13 +178,19 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return A mongodb result list
      */
     List<D> aggregate(List pipeline, AggregationOptions options = AggregationOptions.builder().build()) {
-        execute( { Session session ->
-            List newPipeline = cleanPipeline(pipeline)
-            MongoSession ms = (MongoSession)session
-            def template = ms.getMongoTemplate(persistentEntity)
-            def coll = template.getCollection(ms.getCollectionName(persistentEntity))
-            MongoEntityPersister persister = (MongoEntityPersister)ms.getPersister(persistentClass)
-            new MongoQuery.MongoResultList(coll.aggregate(newPipeline, options),0, persister)
+        execute( { MongoSession session ->
+
+            List<Document> newPipeline = cleanPipeline(pipeline)
+            def mongoCollection = session.getCollection(persistentEntity)
+            def aggregateIterable = mongoCollection.aggregate(newPipeline)
+            if(options.allowDiskUse) {
+                aggregateIterable.allowDiskUse(options.allowDiskUse)
+            }
+            if(options.batchSize) {
+                aggregateIterable.batchSize(options.batchSize)
+            }
+
+            new MongoDocumentQuery.MongoResultList(aggregateIterable.iterator(), 0, (EntityPersister)session.getPersister(persistentEntity) as EntityPersister)
         } as SessionCallback<List<D>>)
     }
 
@@ -194,15 +204,16 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return A mongodb result list
      */
     List<D> aggregate(List pipeline, AggregationOptions options, ReadPreference readPreference) {
-        execute( { Session session ->
-            List newPipeline = cleanPipeline(pipeline)
-            MongoSession ms = (MongoSession)session
-            def template = ms.getMongoTemplate(persistentEntity)
-            def coll = template.getCollection(ms.getCollectionName(persistentEntity))
-            MongoEntityPersister persister = (MongoEntityPersister)ms.getPersister(persistentClass)
+        execute( { MongoSession session ->
 
-            def cursor = coll.aggregate(newPipeline, options, readPreference)
-            new MongoQuery.MongoResultList(cursor,0, persister)
+            List<Document> newPipeline = cleanPipeline(pipeline)
+            def mongoCollection = session.getCollection(persistentEntity)
+                                         .withReadPreference(readPreference)
+            def aggregateIterable = mongoCollection.aggregate(newPipeline)
+            aggregateIterable.allowDiskUse(options.allowDiskUse)
+            aggregateIterable.batchSize(options.batchSize)
+
+            new MongoDocumentQuery.MongoResultList(aggregateIterable.iterator(), 0, (EntityPersister)session.getPersister(persistentEntity))
         } as SessionCallback<List<D>>)
     }
 
@@ -213,23 +224,20 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return The results
      */
     List<D> search(String query, Map options = Collections.emptyMap()) {
-        execute( { Session session ->
-            MongoSession ms = (MongoSession)session
-            def template = ms.getMongoTemplate(persistentEntity)
-            def coll = template.getCollection(ms.getCollectionName(persistentEntity))
-            MongoEntityPersister persister = (MongoEntityPersister)ms.getPersister(persistentClass)
+        execute( { MongoSession session ->
+            def coll = session.getCollection(persistentEntity)
 
             def searchArgs = ['$search': query]
             if(options.language) {
                 searchArgs['$language'] = options.language.toString()
             }
-            def cursor = coll.find(new BasicDBObject(['$text': searchArgs]))
+            def cursor = coll.find((Bson)new Document(['$text': searchArgs]))
 
             int offset = options.offset instanceof Number ? ((Number)options.offset).intValue() : 0
             int max = options.max instanceof Number ? ((Number)options.max).intValue() : -1
             if(offset > 0) cursor.skip(offset)
             if(max > -1) cursor.limit(max)
-            new MongoQuery.MongoResultList(cursor, offset, persister)
+            new MongoDocumentQuery.MongoResultList(cursor.iterator(), offset, (EntityPersister)session.getPersister(persistentEntity))
         } as SessionCallback<List<D>>)
     }
 
@@ -241,33 +249,32 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return The results
      */
     List<D> searchTop(String query, int limit = 5, Map options = Collections.emptyMap()) {
-        execute( { Session session ->
-            MongoSession ms = (MongoSession)session
-            def template = ms.getMongoTemplate(persistentEntity)
-            def coll = template.getCollection(ms.getCollectionName(persistentEntity))
-            MongoEntityPersister persister = (MongoEntityPersister)ms.getPersister(persistentClass)
+        execute( { MongoSession session ->
+            def coll = session.getCollection(persistentEntity)
+            EntityPersister persister = (EntityPersister)session.getPersister(persistentClass)
 
             def searchArgs = ['$search': query]
             if(options.language) {
                 searchArgs['$language'] = options.language.toString()
             }
 
-            def score = new BasicDBObject([score: ['$meta': 'textScore']])
-            def cursor = coll.find(new BasicDBObject(['$text': searchArgs]), score)
-                                .sort(score)
+            def score = new Document([score: ['$meta': 'textScore']])
+            def cursor = coll.find(new Document(['$text': searchArgs]), score)
+                                .sort((Bson)score)
                                 .limit(limit)
 
-            new MongoQuery.MongoResultList(cursor, 0, persister)
+            new MongoDocumentQuery.MongoResultList(cursor.iterator(), 0, persister)
         } as SessionCallback<List<D>>)
     }
 
-    private List cleanPipeline(List pipeline) {
-        List newPipeline = new ArrayList()
+    @CompileStatic
+    private List<Document> cleanPipeline(List pipeline) {
+        List<Document> newPipeline = new ArrayList<Document>()
         for (o in pipeline) {
-            if (o instanceof DBObject) {
-                newPipeline << o
+            if (o instanceof Document) {
+                newPipeline << (Document)o
             } else if (o instanceof Map) {
-                newPipeline << new BasicDBObject((Map) o)
+                newPipeline << new Document((Map) o)
             }
         }
         newPipeline

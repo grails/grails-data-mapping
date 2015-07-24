@@ -24,10 +24,7 @@ import javax.persistence.FlushModeType;
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.collection.PersistentCollection;
 import org.grails.datastore.mapping.config.Entity;
-import org.grails.datastore.mapping.core.impl.PendingInsert;
-import org.grails.datastore.mapping.core.impl.PendingOperation;
-import org.grails.datastore.mapping.core.impl.PendingOperationExecution;
-import org.grails.datastore.mapping.core.impl.PendingUpdate;
+import org.grails.datastore.mapping.core.impl.*;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport;
 import org.grails.datastore.mapping.engine.EntityPersister;
@@ -78,6 +75,13 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         }
     };
 
+    private static final EvictionListener<PersistentEntity, Collection<PendingDelete>> EXCEPTION_THROWING_DELETE_LISTENER =
+            new EvictionListener<PersistentEntity, Collection<PendingDelete>>() {
+                public void onEviction(PersistentEntity key, Collection<PendingDelete> value) {
+                    throw new DataAccessResourceFailureException("Maximum number (5000) of delete operations to flush() exceeded. Flush the session periodically to avoid this error for batch operations.");
+                }
+            };
+
     protected Map<Class, Persister> persisters = new ConcurrentHashMap<Class,Persister>();
     private MappingContext mappingContext;
     protected ConcurrentLinkedQueue lockedObjects = new ConcurrentLinkedQueue();
@@ -91,6 +95,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     protected TPCacheAdapterRepository cacheAdapterRepository;
 
+    private Collection<Integer> objectsPendingOperations = new ConcurrentLinkedQueue<Integer>();
     private Map<PersistentEntity, Collection<PendingInsert>> pendingInserts =
         new Builder<PersistentEntity, Collection<PendingInsert>>()
            .listener(EXCEPTION_THROWING_INSERT_LISTENER)
@@ -101,7 +106,11 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
            .listener(EXCEPTION_THROWING_UPDATE_LISTENER)
            .maximumWeightedCapacity(5000).build();
 
-    protected Collection<Runnable> pendingDeletes = new ConcurrentLinkedQueue<Runnable>();
+    private Map<PersistentEntity, Collection<PendingDelete>> pendingDeletes =
+            new Builder<PersistentEntity, Collection<PendingDelete>>()
+                    .listener(EXCEPTION_THROWING_DELETE_LISTENER)
+                    .maximumWeightedCapacity(5000).build();
+
     protected Collection<Runnable> postFlushOperations = new ConcurrentLinkedQueue<Runnable>();
     private boolean exceptionOccurred;
     protected ApplicationEventPublisher publisher;
@@ -145,7 +154,11 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public void addPendingInsert(PendingInsert insert) {
-
+        final Object o = insert.getObject();
+        if(o != null) {
+            final int hashCode = o.hashCode();
+            objectsPendingOperations.add(hashCode);
+        }
         Collection<PendingInsert> inserts = pendingInserts.get(insert.getEntity());
         if (inserts == null) {
             inserts = new ConcurrentLinkedQueue<PendingInsert>();
@@ -155,7 +168,25 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         inserts.add(insert);
     }
 
+    @Override
+    public boolean isPendingAlready(Object obj) {
+        return objectsPendingOperations.contains(System.identityHashCode(obj));
+    }
+
+    @Override
+    public void registerPending(Object obj) {
+        if(obj != null) {
+            objectsPendingOperations.add(System.identityHashCode(obj));
+        }
+    }
+
     public void addPendingUpdate(PendingUpdate update) {
+        final Object o = update.getObject();
+        if(o != null) {
+            final int hashCode = o.hashCode();
+            objectsPendingOperations.add(hashCode);
+        }
+
         Collection<PendingUpdate> inserts = pendingUpdates.get(update.getEntity());
         if (inserts == null) {
             inserts = new ConcurrentLinkedQueue<PendingUpdate>();
@@ -163,6 +194,22 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         }
 
         inserts.add(update);
+    }
+
+    public void addPendingDelete(PendingDelete delete) {
+        final Object o = delete.getObject();
+        if(o != null) {
+            final int hashCode = o.hashCode();
+            objectsPendingOperations.add(hashCode);
+        }
+
+        Collection<PendingDelete> deletes = pendingDeletes.get(delete.getEntity());
+        if (deletes == null) {
+            deletes = new ConcurrentLinkedQueue<PendingDelete>();
+            pendingDeletes.put(delete.getEntity(), deletes);
+        }
+
+        deletes.add(delete);
     }
 
     public Object getCachedEntry(PersistentEntity entity, Serializable key) {
@@ -228,7 +275,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         return pendingUpdates;
     }
 
-    public Collection<Runnable> getPendingDeletes() {
+    public Map<PersistentEntity, Collection<PendingDelete>> getPendingDeletes() {
         return pendingDeletes;
     }
 
@@ -265,7 +312,11 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         flushPendingUpdates(pendingUpdates);
         pendingUpdates.clear();
 
-        executePendings(pendingDeletes);
+        final Collection<Collection<PendingDelete>> deletes = pendingDeletes.values();
+        for (Collection<PendingDelete> delete : deletes) {
+            executePendings(delete);
+        }
+
 
         handleDirtyCollections();
         firstLevelCollectionCache.clear();
@@ -380,7 +431,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         // do nothing
     }
 
-    private void executePendings(Collection<Runnable> pendings) {
+    private void executePendings(Collection<? extends Runnable> pendings) {
         try {
             for (Runnable pending : pendings) {
                 pending.run();
@@ -398,11 +449,16 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         clearMaps(firstLevelEntryCache);
         clearMaps(firstLevelEntryCacheDirtyCheck);
         firstLevelCollectionCache.clear();
+        clearPendingOperations();
+        attributes.clear();
+        exceptionOccurred = false;
+    }
+
+    protected void clearPendingOperations() {
+        objectsPendingOperations.clear();
         pendingInserts.clear();
         pendingUpdates.clear();
         pendingDeletes.clear();
-        attributes.clear();
-        exceptionOccurred = false;
     }
 
     private void clearMaps(Map<Class, Map<Serializable, Object>> mapOfMaps) {
@@ -627,7 +683,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
      *
      * @param criteria The criteria
      */
-    public int deleteAll(QueryableCriteria criteria) {
+    public long deleteAll(QueryableCriteria criteria) {
         List list = criteria.list();
         delete(list);
         return list.size();
@@ -641,7 +697,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
      * @param criteria The criteria
      * @param properties The properties
      */
-    public int updateAll(QueryableCriteria criteria, Map<String, Object> properties) {
+    public long updateAll(QueryableCriteria criteria, Map<String, Object> properties) {
         List list = criteria.list();
         for (Object o : list) {
             BeanWrapper bean = new BeanWrapperImpl(o);
@@ -658,17 +714,13 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             return;
         }
 
-        getPendingDeletes().add(new Runnable() {
-            public void run() {
-                Persister p = getPersister(obj);
-                if (p == null) {
-                    return;
-                }
+        final EntityPersister p = (EntityPersister)getPersister(obj);
+        if (p == null) {
+            return;
+        }
 
-                p.delete(obj);
-                clear(obj);
-            }
-        });
+
+        p.delete(obj);
     }
 
     public void delete(final Iterable objects) {
@@ -694,16 +746,20 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         }
         // for each type (usually only 1 type), set up a pendingDelete of that type
         for (Map.Entry<Persister, List> entry : toDelete.entrySet()) {
-            final Persister p = entry.getKey();
+            final EntityPersister p = (EntityPersister) entry.getKey();
             final List objectsForP = entry.getValue();
-            pendingDeletes.add(new Runnable() {
-                public void run() {
-                    p.delete(objectsForP);
-                    for (Object o : objectsForP) {
-                        clear(o);
+            for (Object o : objectsForP) {
+                addPendingDelete(new PendingDeleteAdapter(p.getPersistentEntity(), getObjectIdentifier(o), o) {
+                    @Override
+                    public void run() {
+                        p.delete(objectsForP);
+                        for (Object o : objectsForP) {
+                            clear(o);
+                        }
                     }
-                }
-            });
+                });
+            }
+
         }
     }
 

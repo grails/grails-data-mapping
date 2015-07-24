@@ -78,4 +78,9 @@ public abstract class PendingOperationAdapter<E, K> implements PendingOperation<
     public E getNativeEntry() {
         return nativeEntry;
     }
+
+    @Override
+    public Object getObject() {
+        return nativeEntry;
+    }
 }

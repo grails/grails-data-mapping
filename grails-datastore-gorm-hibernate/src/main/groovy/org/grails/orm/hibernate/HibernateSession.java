@@ -94,7 +94,7 @@ public class HibernateSession extends AbstractHibernateSession {
      * @param criteria The criteria
      * @return The total number of records deleted
      */
-    public int deleteAll(final QueryableCriteria criteria) {
+    public long deleteAll(final QueryableCriteria criteria) {
         return getHibernateTemplate().execute(new HibernateCallback<Integer>() {
             public Integer doInHibernate(Session session) throws HibernateException, SQLException {
                 JpaQueryBuilder builder = new JpaQueryBuilder(criteria);

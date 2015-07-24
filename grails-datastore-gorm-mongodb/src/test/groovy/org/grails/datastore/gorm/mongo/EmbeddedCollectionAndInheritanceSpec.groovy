@@ -11,7 +11,6 @@ class EmbeddedCollectionAndInheritanceSpec extends GormDatastoreSpec {
     def "Test read and write embedded collection inherited from parent"() {
         when:"A embedded subclass entity is added to a collection"
             def p = new ECAISPerson()
-            p.save()
             p.pets << new ECAISDog(name:"Joe",anotherField:"foo")
             p.save(flush:true)
             session.clear()

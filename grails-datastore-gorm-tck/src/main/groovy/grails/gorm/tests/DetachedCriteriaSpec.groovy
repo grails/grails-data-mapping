@@ -91,8 +91,9 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             }
             int total = criteria.updateAll(lastName:"Bloggs")
 
-
+            println "TOTAL IS $total"
         then:"The number of deletions is correct"
+            total == 4
             Person.count() == 6
             criteria.count() == 0
             Person.countByLastName("Bloggs") == 4
@@ -110,6 +111,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
 
 
         then:"The number of deletions is correct"
+            total == 4
             Person.count() == 2
     }
 
@@ -265,6 +267,6 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
         new Person(firstName: "Bart", lastName: "Simpson").save()
         new Person(firstName: "Lisa", lastName: "Simpson").save()
         new Person(firstName: "Barney", lastName: "Rubble").save()
-        new Person(firstName: "Fred", lastName: "Flinstone").save()
+        new Person(firstName: "Fred", lastName: "Flinstone").save(flush:true)
     }
 }

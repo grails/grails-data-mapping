@@ -24,7 +24,6 @@ import com.mongodb.*;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
 import grails.mongodb.geo.*;
 import groovy.lang.Closure;
 import org.bson.BasicBSONObject;
@@ -822,9 +821,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
     @Override
     protected List executeQuery(final PersistentEntity entity, final Junction criteria) {
         final MongoSession mongoSession = this.mongoSession;
-        final MongoClient client = mongoSession.getNativeInterface();
-        final MongoDatabase database = client.getDatabase(mongoSession.getDatabase(entity));
-        final com.mongodb.client.MongoCollection<Document> collection = database.getCollection( mongoSession.getCollectionName(entity) );
+        final com.mongodb.client.MongoCollection<Document> collection = mongoSession.getCollection(entity);
 
         if (uniqueResult) {
             final Document dbObject;
@@ -965,7 +962,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
                 }
             }
         } else {
-            return new MongoResultList(aggregateCursor,0, (EntityPersister) session.getPersister(entity.getJavaClass()));
+            return new AggregatedResultList(getSession(), aggregateCursor, projectedKeys);
         }
 
         return projectedResults;
@@ -1073,6 +1070,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
             }
         }
     }
+
 
     protected static String getPropertyName(PersistentEntity entity, PropertyNameCriterion criterion) {
         String propertyName = criterion.getProperty();
@@ -1490,7 +1488,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
 
     public static class AggregatedResultList extends AbstractList implements Closeable {
 
-        private Cursor cursor;
+        private MongoCursor cursor;
         private List<ProjectedProperty> projectedProperties;
         private List initializedObjects = new ArrayList();
         private int internalIndex = 0;
@@ -1498,7 +1496,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
         private boolean containsAssociations = false;
         private Session session;
 
-        public AggregatedResultList(Session session, Cursor cursor, List<ProjectedProperty> projectedProperties) {
+        public AggregatedResultList(Session session, MongoCursor<Document> cursor, List<ProjectedProperty> projectedProperties) {
             this.cursor = cursor;
             this.projectedProperties = projectedProperties;
             this.session = session;
@@ -1524,7 +1522,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
                 boolean hasResults = false;
                 while (cursor.hasNext()) {
                     hasResults = true;
-                    DBObject dbo = cursor.next();
+                    Document dbo = (Document) cursor.next();
                     Object projected = addInitializedObject(dbo);
                     if (index == internalIndex) {
                         return projected;
@@ -1564,7 +1562,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
                     boolean hasResults = false;
                     while (cursor.hasNext()) {
                         hasResults = true;
-                        DBObject dbo = cursor.next();
+                        Document dbo = (Document) cursor.next();
                         Object id = getProjectedValue(dbo, projectedProperty.projectionKey);
                         identifiers.add((Serializable) id);
                     }
@@ -1579,7 +1577,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
                     boolean hasResults = false;
                     while (cursor.hasNext()) {
                         hasResults = true;
-                        DBObject dbo = cursor.next();
+                        Document dbo = (Document) cursor.next();
                         List<Object> projectedResult = new ArrayList<Object>();
                         int index = 0;
                         for (ProjectedProperty projectedProperty : projectedProperties) {
@@ -1628,7 +1626,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
                 boolean hasResults = false;
                 while (cursor.hasNext()) {
                     hasResults = true;
-                    DBObject dbo = cursor.next();
+                    Document dbo = (Document) cursor.next();
                     addInitializedObject(dbo);
                 }
                 if (!hasResults) {
@@ -1683,7 +1681,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
 
                 @Override
                 public Object next() {
-                    DBObject dbo = cursor.next();
+                    Document dbo = (Document) cursor.next();
                     return addInitializedObject(dbo);
                 }
 
@@ -1694,7 +1692,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
             };
         }
 
-        private Object addInitializedObject(DBObject dbo) {
+        private Object addInitializedObject(Document dbo) {
             if (projectedProperties.size() > 1) {
 
                 List<Object> projected = new ArrayList<Object>();
@@ -1712,10 +1710,11 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
                 initializedObjects.add(internalIndex, projected);
                 internalIndex++;
                 return projected;
+
             }
         }
 
-        private Object getProjectedValue(DBObject dbo, String projectionKey) {
+        private Object getProjectedValue(Document dbo, String projectionKey) {
             Object value;
             if (projectionKey.startsWith("id.")) {
                 projectionKey = projectionKey.substring(3);
@@ -1840,8 +1839,12 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
          */
         @Override
         public Iterator iterator() {
-            if (initialized) {
-                return initializedObjects.iterator();
+            if (initialized || !cursor.hasNext()) {
+                if(!initialized) {
+                    initializeFully();
+                }
+                final Iterator i = initializedObjects.iterator();
+                return i;
             }
 
 

@@ -14,16 +14,20 @@
  */
 package org.grails.datastore.gorm.mongo
 
-import com.mongodb.BasicDBObject
-import com.mongodb.DBObject
+import groovy.transform.CompileStatic
+import org.bson.Document
+import org.bson.conversions.Bson
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.core.SessionImplementor
+import org.grails.datastore.mapping.core.VoidSessionCallback
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
-import org.grails.datastore.mapping.mongo.MongoDatastore
+import org.grails.datastore.mapping.engine.EntityPersister
+import org.grails.datastore.mapping.mongo.MongoSession
+import org.grails.datastore.mapping.mongo.config.MongoCollection
 import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
+import org.grails.datastore.mapping.mongo.engine.MongoDocumentEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 
 /**
@@ -70,31 +74,26 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
             setProperty(instance, name, value)
         }
         else {
-            execute (new SessionCallback<DBObject>() {
-                DBObject doInSession(Session session) {
-                    SessionImplementor si = (SessionImplementor)session
+            execute ( { MongoSession session ->
+                SessionImplementor si = (SessionImplementor)session
 
-                    if (si.isStateless(persistentEntity)) {
-                        MongoDatastore ms = (MongoDatastore)datastore
-                        def template = ms.getMongoTemplate(persistentEntity)
-
-                        def coll = template.getCollection(ms.getCollectionName(persistentEntity))
-                        MongoEntityPersister persister = (MongoEntityPersister)session.getPersister(instance)
-                        def id = persister.getObjectIdentifier(instance)
-                        final updateObject = new BasicDBObject('$set', new BasicDBObject(name, value))
-                        coll.update(new BasicDBObject(AbstractMongoObectEntityPersister.MONGO_ID_FIELD,id), updateObject)
-                        return updateObject
-                    }
-                    else {
-                        final dbo = getDbo(instance)
-                        dbo?.put name, value
-                        if (instance instanceof DirtyCheckable) {
-                            ((DirtyCheckable)instance).markDirty()
-                        }
-                        return dbo
-                    }
+                if (si.isStateless(persistentEntity)) {
+                    def coll = session.getCollection(persistentEntity)
+                    MongoDocumentEntityPersister persister = (MongoDocumentEntityPersister)session.getPersister(instance)
+                    def id = persister.getObjectIdentifier(instance)
+                    final updateObject = new Document('$set', new Document(name, value))
+                    coll.update(new Document(AbstractMongoObectEntityPersister.MONGO_ID_FIELD,id), updateObject)
+                    return updateObject
                 }
-            })
+                else {
+                    final dbo = getDbo(instance)
+                    dbo?.put name, value
+                    if (instance instanceof DirtyCheckable) {
+                        ((DirtyCheckable)instance).markDirty()
+                    }
+                    return dbo
+                }
+            } as VoidSessionCallback)
 
         }
     }
@@ -116,7 +115,7 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
         }
 
         def dbo = getDbo(instance)
-        if (dbo != null && dbo.containsField(name)) {
+        if (dbo != null && dbo.containsKey(name)) {
             return dbo.get(name)
         }
         return null
@@ -132,35 +131,31 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param instance The instance
      * @return The DBObject instance
      */
-    DBObject getDbo(D instance) {
-        execute (new SessionCallback<DBObject>() {
-            DBObject doInSession(Session session) {
-
-                // check first for embedded cached entries
-                SessionImplementor<DBObject> si = (SessionImplementor<DBObject>) session;
-                def dbo = si.getCachedEntry(persistentEntity, MongoEntityPersister.createEmbeddedCacheEntryKey(instance))
-                if(dbo != null) return dbo
-                // otherwise check if instance is contained within session
-                if (!session.contains(instance)) {
-                    dbo = new BasicDBObject()
-                    si.cacheEntry(persistentEntity, MongoEntityPersister.createInstanceCacheEntryKey(instance), dbo)
-                    return dbo
-                }
-
-                MongoEntityPersister persister = session.getPersister(instance)
-                def id = persister.getObjectIdentifier(instance)
-                dbo = ((SessionImplementor)session).getCachedEntry(persister.getPersistentEntity(), id)
-                if (dbo == null) {
-                    MongoDatastore ms = (MongoDatastore)datastore
-                    def template = ms.getMongoTemplate(persistentEntity)
-
-                    def coll = template.getCollection(ms.getCollectionName(persistentEntity))
-                    dbo = coll.findOne( id )
-
-                }
+    @CompileStatic
+    Document getDbo(D instance) {
+        execute( { MongoSession session ->
+            // check first for embedded cached entries
+            SessionImplementor<Document> si = (SessionImplementor<Document>) session;
+            def dbo = si.getCachedEntry(persistentEntity, MongoDocumentEntityPersister.createEmbeddedCacheEntryKey(instance))
+            if(dbo != null) return dbo
+            // otherwise check if instance is contained within session
+            if (!session.contains(instance)) {
+                dbo = new Document()
+                si.cacheEntry(persistentEntity, MongoDocumentEntityPersister.createInstanceCacheEntryKey(instance), dbo)
                 return dbo
             }
 
-        })
+            EntityPersister persister = (EntityPersister)session.getPersister(instance)
+            def id = persister.getObjectIdentifier(instance)
+            dbo = ((SessionImplementor)session).getCachedEntry(persister.getPersistentEntity(), id)
+            if (dbo == null) {
+                com.mongodb.client.MongoCollection<Document> coll = session.getCollection(persistentEntity)
+                dbo = coll.find((Bson)new Document(MongoDocumentEntityPersister.MONGO_ID_FIELD, id))
+                            .limit(1)
+                            .first()
+
+            }
+            return dbo
+        } as SessionCallback<Document> )
     }
 }

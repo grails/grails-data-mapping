@@ -105,7 +105,7 @@ public abstract class AbstractMongoObectEntityPersister<T> extends NativeEntryEn
         return null;
     }
 
-    protected Object getCurrentVersion(final EntityAccess ea) {
+    public Object getCurrentVersion(final EntityAccess ea) {
         Object currentVersion = ea.getProperty(GormProperties.VERSION);
         if (Number.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
             currentVersion = currentVersion != null ? ((Number)currentVersion).longValue() : currentVersion;

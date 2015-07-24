@@ -26,7 +26,9 @@ import org.grails.datastore.gorm.mongo.MongoGormStaticApi
 import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
+import org.grails.datastore.mapping.mongo.engine.MongoDocumentEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
+import org.grails.datastore.mapping.mongo.query.MongoDocumentQuery
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -51,33 +53,20 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
         super.configure()
 
         def asTypeHook = { Class cls ->
-            MongoEntityPersister p = datastore.currentSession.getPersister(cls)
+            MongoDocumentEntityPersister p = datastore.currentSession.getPersister(cls)
             if (p != null) {
-                if (delegate instanceof DBCursor) {
-                    def mongoResults = new MongoQuery.MongoResultList(delegate, 0, p)
-                    if (!mongoResults.isEmpty()) {
-                        return mongoResults.get(0)
-                    } else {
-                        return null
-                    }
-                }
-                else if(delegate instanceof FindIterable) {
+                if(delegate instanceof FindIterable) {
                     return ((FindIterable)delegate).first().asType(cls)
-                }
-                else if( delegate instanceof DBObject ){
-                    DBObject dbo = delegate
-                    def key = dbo.get(AbstractMongoObectEntityPersister.MONGO_ID_FIELD)
-                    return p.createObjectFromNativeEntry(p.persistentEntity, key, dbo)
                 }
                 else if( delegate instanceof Document ){
                     Document dbo = delegate
                     def key = dbo.get(AbstractMongoObectEntityPersister.MONGO_ID_FIELD)
-                    return p.createObjectFromNativeEntry(p.persistentEntity, key, dbo.toDBObject())
+                    return p.createObjectFromNativeEntry(p.persistentEntity, key, dbo)
                 }
             }
             else {
-                if((delegate instanceof DBObject) && cls.name == 'grails.converters.JSON') {
-                    return cls.newInstance( delegate.toMap() )
+                if((delegate instanceof Document) && cls.name == 'grails.converters.JSON') {
+                    return cls.newInstance( delegate )
                 }
                 else {
                     throw new IllegalArgumentException("Cannot convert DBOject [$delegate] to target type $cls. Type is not a persistent entity")
@@ -85,22 +74,11 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
             }
         }
         Document.metaClass.asType = asTypeHook
-        DBObject.metaClass.asType = asTypeHook
-        BasicDBObject.metaClass.asType = asTypeHook
-        DBCursor.metaClass.asType = asTypeHook
         FindIterable.metaClass.asType = asTypeHook
         FindIterable.metaClass.toList = { Class cls ->
-            MongoEntityPersister p = datastore.currentSession.getPersister(cls)
+            MongoDocumentEntityPersister p = datastore.currentSession.getPersister(cls)
             if (p)
-                return new MongoQuery.MongoResultList(((FindIterable<Document>)delegate).iterator(),0,p)
-            else {
-                throw new IllegalArgumentException("Cannot convert DBCursor [$delegate] to target type $cls. Type is not a persistent entity")
-            }
-        }
-        DBCursor.metaClass.toList = { Class cls ->
-            MongoEntityPersister p = datastore.currentSession.getPersister(cls)
-            if (p)
-                return new MongoQuery.MongoResultList(delegate,0,p)
+                return new MongoDocumentQuery.MongoResultList(((FindIterable<Document>)delegate).iterator(),0,p)
             else {
                 throw new IllegalArgumentException("Cannot convert DBCursor [$delegate] to target type $cls. Type is not a persistent entity")
             }

@@ -17,7 +17,7 @@ class EmbeddedWithNonEmbeddedCollectionsSpec extends GormDatastoreSpec{
 
     void "Test that embedded collections can have non-embedded collections"() {
         given:"A domain model with embedded associations that have non-embedded collections"
-        final captain = new Captain(name: "Bob").save()
+        final captain = new Captain(name: "Bob")
         final firstMate = new Sailor(name:"Jim", captain:captain)
         def ship = new Ship(name:"The Float")
         ship.crew.firstMate = firstMate

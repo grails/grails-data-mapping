@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.mongo
 
+import com.mongodb.MongoBulkWriteException
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
@@ -61,7 +62,7 @@ class AssignedIdentifierSpec extends GormDatastoreSpec {
             r.save flush:true
 
         then:"An error is produced"
-            thrown DuplicateKeyException
+            thrown MongoBulkWriteException
 
         when:"A new session is created"
             def totalRivers = 0

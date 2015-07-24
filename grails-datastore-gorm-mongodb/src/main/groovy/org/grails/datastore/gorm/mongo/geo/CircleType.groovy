@@ -14,8 +14,8 @@
  */
 package org.grails.datastore.gorm.mongo.geo
 
-import com.mongodb.DBObject
 import grails.mongodb.geo.Circle
+import org.bson.Document
 import org.grails.datastore.mapping.model.PersistentProperty
 
 /**
@@ -30,7 +30,7 @@ class CircleType extends AbstractShapeCoordsType<Circle>{
     }
 
     @Override
-    protected Circle readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+    protected Circle readInternal(PersistentProperty property, String key, Document nativeSource) {
         def coords = nativeSource.get(key)
         if(coords instanceof List) {
             return Circle.valueOf(coords)

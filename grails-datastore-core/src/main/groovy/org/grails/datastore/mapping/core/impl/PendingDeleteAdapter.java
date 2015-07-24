@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 SpringSource
+/* Copyright (C) 2015 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,18 @@ import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
 /**
- * Provides default implementation for most of the methods in the {@link PendingInsert} interafce
+ * Adapter for the {@link org.grails.datastore.mapping.core.impl.PendingDelete} interface
  *
- * @param <E> The native entry to persist
- *
+ * @since 5.0.0
  * @author Graeme Rocher
- * @since 1.0
  */
-public abstract class PendingInsertAdapter<E, K> extends PendingOperationAdapter<E, K> implements PendingInsert<E, K>{
+public abstract class PendingDeleteAdapter<E, K> extends PendingOperationAdapter<E, K> implements PendingDelete<E, K>{
 
-    private EntityAccess entityAccess;
 
     private boolean vetoed;
 
-    public PendingInsertAdapter(PersistentEntity entity, K nativeKey, E nativeEntry, EntityAccess ea) {
+    public PendingDeleteAdapter(PersistentEntity entity, K nativeKey,  E nativeEntry) {
         super(entity, nativeKey, nativeEntry);
-        this.entityAccess = ea;
     }
 
     public boolean isVetoed() {
@@ -45,16 +41,8 @@ public abstract class PendingInsertAdapter<E, K> extends PendingOperationAdapter
         this.vetoed = vetoed;
     }
 
-    public EntityAccess getEntityAccess() {
-        return entityAccess;
-    }
-
     @Override
     public Object getObject() {
-        final EntityAccess ea = getEntityAccess();
-        if(ea != null) {
-            return ea.getEntity();
-        }
-        return null;
+        return getNativeEntry();
     }
 }

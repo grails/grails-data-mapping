@@ -20,7 +20,7 @@ class SimpleHasManySpec extends GormDatastoreSpec{
             c2.save();
 
             def book = new Book(name: "mybook");
-            book.save();
+            book.save(flush:true);
             if(!book.chapters) {
                 book.chapters = new HashSet();
             }

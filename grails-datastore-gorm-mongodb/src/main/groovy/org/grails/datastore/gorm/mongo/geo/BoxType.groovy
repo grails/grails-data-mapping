@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.mongo.geo
 import com.mongodb.DBObject
 import grails.mongodb.geo.Box
 import groovy.transform.CompileStatic
+import org.bson.Document
 import org.grails.datastore.mapping.model.PersistentProperty
 
 /**
@@ -32,7 +33,7 @@ class BoxType extends AbstractShapeCoordsType<Box>{
     }
 
     @Override
-    protected Box readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+    protected Box readInternal(PersistentProperty property, String key, Document nativeSource) {
         def coords = nativeSource.get(key)
         if(coords instanceof List) {
             return Box.valueOf(coords)

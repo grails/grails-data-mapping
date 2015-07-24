@@ -14,9 +14,10 @@
  */
 package org.grails.datastore.gorm.mongo.geo
 
-import com.mongodb.DBObject
 import grails.mongodb.geo.Box
 import grails.mongodb.geo.Shape
+import groovy.transform.CompileStatic
+import org.bson.Document
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.query.Query
@@ -24,14 +25,15 @@ import org.grails.datastore.mapping.query.Query
 /**
  * Abstract implementation for custom types that persist shapes using their coordinate values
  */
-abstract class AbstractShapeCoordsType<T extends Shape> extends AbstractMappingAwareCustomTypeMarshaller<T, DBObject, DBObject>{
+@CompileStatic
+abstract class AbstractShapeCoordsType<T extends Shape> extends AbstractMappingAwareCustomTypeMarshaller<T, Document, Document>{
     AbstractShapeCoordsType(Class<T> targetType) {
         super(targetType)
     }
 
 
     @Override
-    protected Object writeInternal(PersistentProperty property, String key, T value, DBObject nativeTarget) {
+    protected Object writeInternal(PersistentProperty property, String key, T value, Document nativeTarget) {
         if(value) {
             def coords = value.asList()
             nativeTarget.put(key, coords)
@@ -41,7 +43,7 @@ abstract class AbstractShapeCoordsType<T extends Shape> extends AbstractMappingA
 
 
     @Override
-    protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, DBObject nativeQuery) {
+    protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, Document nativeQuery) {
         if(criterion instanceof Query.Equals) {
             def value = criterion.value
             if(value instanceof Box) {

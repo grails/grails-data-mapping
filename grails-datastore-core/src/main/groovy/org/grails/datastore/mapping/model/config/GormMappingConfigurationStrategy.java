@@ -756,7 +756,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
      * @param cpf The ClassPropertyFetcher instance
      * @return The association map
      */
-    protected Map getAssociationMap(ClassPropertyFetcher cpf) {
+    public Map getAssociationMap(ClassPropertyFetcher cpf) {
         return getAssociationMap(cpf, HAS_MANY);
     }
 

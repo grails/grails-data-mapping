@@ -18,6 +18,7 @@ import com.mongodb.BasicDBObject
 import com.mongodb.DBObject
 import grails.mongodb.geo.GeometryCollection
 import groovy.transform.CompileStatic
+import org.bson.Document
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
 import org.grails.datastore.mapping.model.PersistentProperty
 
@@ -28,7 +29,7 @@ import org.grails.datastore.mapping.model.PersistentProperty
  * @since 3.0
  */
 @CompileStatic
-class GeometryCollectionType extends AbstractMappingAwareCustomTypeMarshaller<GeometryCollection, DBObject, DBObject>{
+class GeometryCollectionType extends AbstractMappingAwareCustomTypeMarshaller<GeometryCollection, Document, Document>{
 
     public static final String GEOMETRIES = "geometries"
 
@@ -37,7 +38,7 @@ class GeometryCollectionType extends AbstractMappingAwareCustomTypeMarshaller<Ge
     }
 
     @Override
-    protected Object writeInternal(PersistentProperty property, String key, GeometryCollection value, DBObject nativeTarget) {
+    protected Object writeInternal(PersistentProperty property, String key, GeometryCollection value, Document nativeTarget) {
         if(value != null) {
             def col = new BasicDBObject()
             col.put(GeoJSONType.GEO_TYPE, GeometryCollection.simpleName)
@@ -48,10 +49,10 @@ class GeometryCollectionType extends AbstractMappingAwareCustomTypeMarshaller<Ge
     }
 
     @Override
-    protected GeometryCollection readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+    protected GeometryCollection readInternal(PersistentProperty property, String key, Document nativeSource) {
         if(nativeSource != null) {
             def col = nativeSource.get(key)
-            if(col instanceof DBObject) {
+            if(col instanceof Document) {
                 def geometries = col.get(GEOMETRIES)
                 if(geometries instanceof List) {
                     def geoCol = GeometryCollection.valueOf((List) geometries)

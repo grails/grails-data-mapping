@@ -315,9 +315,9 @@ public abstract class EntityPersister implements Persister {
                 session.getDatastore(), persistentEntity, entityAccess));
     }
 
-    protected boolean isVersioned(final EntityAccess ea) {
+    public boolean isVersioned(final EntityAccess ea) {
 
-        if (!ea.getPersistentEntity().isVersioned()) {
+        if (ea != null && !ea.getPersistentEntity().isVersioned()) {
             return false;
         }
 
@@ -325,7 +325,7 @@ public abstract class EntityPersister implements Persister {
         return Number.class.isAssignableFrom(type) || Date.class.isAssignableFrom(type);
     }
 
-    protected void incrementVersion(final EntityAccess ea) {
+    public void incrementVersion(final EntityAccess ea) {
         if (Number.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
             Number currentVersion = (Number) ea.getProperty(GormProperties.VERSION);
             if (currentVersion == null) {
