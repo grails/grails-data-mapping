@@ -1841,16 +1841,16 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 if(!initialized) {
                     initializeFully();
                 }
-                final Iterator i = initializedObjects.iterator();
-                return i;
+                return initializedObjects.iterator();
             }
 
 
             return new Iterator() {
                 Object current;
-                int index = 0;
+                int index = initializedObjects.size();
 
                 public boolean hasNext() {
+
                     boolean hasMore = cursor.hasNext();
                     if (!hasMore) {
                         initialized = true;
@@ -1862,8 +1862,10 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 public Object next() {
                     Document dbo = cursor.next();
                     current = convertDBObject(dbo);
-                    if (index < initializedObjects.size())
+                    if (index < initializedObjects.size()){
+
                         initializedObjects.set(index++, current);
+                    }
                     else {
                         index++;
                         initializedObjects.add(current);
