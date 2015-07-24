@@ -111,7 +111,7 @@ public class HibernateSession extends AbstractHibernateSession {
      * @param properties The properties
      * @return The total number of records updated
      */
-    public int updateAll(final QueryableCriteria criteria, final Map<String, Object> properties) {
+    public long updateAll(final QueryableCriteria criteria, final Map<String, Object> properties) {
         return getHibernateTemplate().execute(new GrailsHibernateTemplate.HibernateCallback<Integer>() {
             public Integer doInHibernate(Session session) throws HibernateException, SQLException {
                 JpaQueryBuilder builder = new JpaQueryBuilder(criteria);
