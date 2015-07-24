@@ -948,6 +948,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
                     Object customValue = customTypeMarshaller.write(prop, propValue, e);
                     handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, customValue);
+                    if(customValue == null) {
+                        setEntryValue(e, key, null);
+                    }
                 }
             }
             else if (prop instanceof OneToMany) {

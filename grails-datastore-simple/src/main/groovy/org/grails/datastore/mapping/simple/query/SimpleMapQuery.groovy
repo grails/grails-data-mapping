@@ -443,11 +443,7 @@ class SimpleMapQuery extends Query {
                 }.collect { it.key }
             }
             else {
-                if (value == null && (property instanceof ToOne)) {
-                    def allEntities = datastore[family]
-                    return allEntities.findAll { it.value[property.name] == null }.collect { it.key }
-                }
-                else if (equals.property.contains('.')) {
+                if (equals.property.contains('.') || value == null) {
                     def allEntities = datastore[family]
                     return allEntities.findAll { resolveIfEmbedded(equals.property, it.value) == value }.collect { it.key }
                 }

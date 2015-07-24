@@ -499,7 +499,12 @@ public class MongoSession extends AbstractSession<MongoClient> {
         updateOptions.upsert(false);
         final UpdateResult updateResult = collection.updateMany(nativeQuery, new Document("$set", properties), updateOptions);
         if(updateResult.wasAcknowledged()) {
-            return updateResult.getModifiedCount();
+            try {
+                return updateResult.getModifiedCount();
+            } catch (UnsupportedOperationException e) {
+                // not supported on versions of MongoDB earlier than 2.6
+                return -1;
+            }
         }
         else {
             return 0;

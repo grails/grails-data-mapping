@@ -70,7 +70,9 @@ class EmbeddedPropertyQuerySpec extends GormDatastoreSpec {
             book.save(flush: true, failOnError: true)
             session.clear()
         when:
-            book = Book2.createCriteria().get { isNotNull 'publishPeriod.endDate' }
+            book = Book2.createCriteria().get {
+                isNotNull 'publishPeriod.endDate'
+            }
         then:
             book != null
     }

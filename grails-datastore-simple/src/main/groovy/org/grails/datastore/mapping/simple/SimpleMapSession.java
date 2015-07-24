@@ -42,6 +42,11 @@ public class SimpleMapSession extends AbstractSession<Map> {
     }
 
     @Override
+    public boolean isPendingAlready(Object obj) {
+        return false;
+    }
+
+    @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
         if (entity == null) {

@@ -36,7 +36,6 @@ class Setup {
             @Override
             protected Object writeInternal(PersistentProperty property, String key, Birthday value, Map nativeTarget) {
                 if (value == null) {
-                    nativeTarget.remove(key)
                     return null
                 }
 
