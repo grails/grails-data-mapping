@@ -73,6 +73,7 @@ class CrudOperationsSpec extends GormDatastoreSpec {
 			p.location = "UK"
 			p.save(flush:true)
 			session.clear()
+			sleep 2000 // eventual consistency ugh
 			results = TestEntity.list()
 			t = TestEntity.get(t.id)
 			results2 = PersonLastNamePartitionKey.list()

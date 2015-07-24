@@ -121,7 +121,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         }
 
         EntityAccess entityAccess = createEntityAccess(persistentEntity, obj);
-        PreDeleteEvent event = new PreDeleteEvent(session.getDatastore(), persistentEntity, entityAccess);
         if(cancelDelete(persistentEntity, entityAccess)) {
             return;
         }

@@ -91,9 +91,10 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
         when:"A detached criteria is created that deletes all matching records"
             def criteria = new DetachedCriteria(PersonLastNamePartitionKey).build {
                 eq 'location', 'USA'
-            }                       
+            }
+            sleep 2000
             int total = criteria.updateAll(location: "Springfield")
-
+            sleep 2000
 
         then:"The number of deletions is correct"
             PersonLastNamePartitionKey.count() == 6

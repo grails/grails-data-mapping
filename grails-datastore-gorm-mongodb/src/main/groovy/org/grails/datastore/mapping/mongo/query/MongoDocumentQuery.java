@@ -325,7 +325,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
                 if ((value instanceof List) || (value instanceof Map)) {
                     MongoDocumentEntityPersister.setDBObjectValue(nearQuery, nearOperator, value, entity.getMappingContext());
                 } else if (value instanceof Point) {
-                    BasicBSONObject geoJson = GeoJSONType.convertToGeoJSON((Point) value);
+                    Document geoJson = GeoJSONType.convertToGeoDocument((Point) value);
                     Document geometry = new Document();
                     geometry.put(GEOMETRY_OPERATOR, geoJson);
                     if (near.maxDistance != null) {
@@ -352,7 +352,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
                     Shape shape = (Shape) value;
                     if (shape instanceof Polygon) {
                         Polygon p = (Polygon) shape;
-                        BasicBSONObject geoJson = GeoJSONType.convertToGeoJSON(p);
+                        Document geoJson = GeoJSONType.convertToGeoDocument(p);
                         queryGeoWithin.put(GEOMETRY_OPERATOR, geoJson);
                     } else if (shape instanceof Box) {
                         queryGeoWithin.put(BOX_OPERATOR, shape.asList());
@@ -378,7 +378,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
                 Object value = geoIntersects.getValue();
                 if (value instanceof GeoJSON) {
                     Shape shape = (Shape) value;
-                    BasicBSONObject geoJson = GeoJSONType.convertToGeoJSON(shape);
+                    Document geoJson = GeoJSONType.convertToGeoDocument(shape);
                     queryGeoWithin.put(GEOMETRY_OPERATOR, geoJson);
                 } else if (value instanceof Map) {
                     queryGeoWithin.putAll((Map) value);
@@ -1826,7 +1826,7 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
 
             while (cursor.hasNext()) {
                 Document dbo = cursor.next();
-                Object current = convertDBObject(MongoExtensions.toDBObject(dbo));
+                Object current = convertDBObject(dbo);
                 initializedObjects.add(current);
             }
             initialized = true;

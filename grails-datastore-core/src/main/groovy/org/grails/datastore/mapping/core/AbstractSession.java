@@ -296,33 +296,34 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public void flush() {
-        if (exceptionOccurred) {
-            throw new InvalidDataAccessResourceUsageException(
-                 "Do not flush() the Session after an exception occurs");
+        boolean hasInserts;
+        try {
+            if (exceptionOccurred) {
+                throw new InvalidDataAccessResourceUsageException(
+                     "Do not flush() the Session after an exception occurs");
+            }
+
+            hasInserts = hasUpdates();
+            if (!hasInserts) {
+                return;
+            }
+
+            flushPendingInserts(pendingInserts);
+            flushPendingUpdates(pendingUpdates);
+
+            final Collection<Collection<PendingDelete>> deletes = pendingDeletes.values();
+            for (Collection<PendingDelete> delete : deletes) {
+                executePendings(delete);
+            }
+
+
+            handleDirtyCollections();
+            firstLevelCollectionCache.clear();
+
+            executePendings(postFlushOperations);
+        } finally {
+            clearPendingOperations();
         }
-
-        boolean hasInserts = hasUpdates();
-        if (!hasInserts) {
-            return;
-        }
-
-        flushPendingInserts(pendingInserts);
-        pendingInserts.clear();
-
-        flushPendingUpdates(pendingUpdates);
-        pendingUpdates.clear();
-
-        final Collection<Collection<PendingDelete>> deletes = pendingDeletes.values();
-        for (Collection<PendingDelete> delete : deletes) {
-            executePendings(delete);
-        }
-
-
-        handleDirtyCollections();
-        firstLevelCollectionCache.clear();
-
-        executePendings(postFlushOperations);
-
         postFlush(hasInserts);
     }
 
@@ -748,19 +749,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         // for each type (usually only 1 type), set up a pendingDelete of that type
         for (Map.Entry<Persister, List> entry : toDelete.entrySet()) {
             final EntityPersister p = (EntityPersister) entry.getKey();
-            final List objectsForP = entry.getValue();
-            for (Object o : objectsForP) {
-                addPendingDelete(new PendingDeleteAdapter(p.getPersistentEntity(), getObjectIdentifier(o), o) {
-                    @Override
-                    public void run() {
-                        p.delete(objectsForP);
-                        for (Object o : objectsForP) {
-                            clear(o);
-                        }
-                    }
-                });
-            }
-
+            p.delete(entry.getValue());
         }
     }
 
