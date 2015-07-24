@@ -1884,14 +1884,9 @@ public class MongoDocumentQuery extends Query implements QueryArgumentsAware {
             if (initialized) {
                 return initializedObjects.size();
             }
-            if (this.size == null) {
-                this.size = 0;
-                while (cursor.hasNext()) {
-                    Document object = cursor.next();
-                    initializedObjects.add(convertDBObject(object));
-                    this.size++;
-                }
-                initialized = true;
+            else if (this.size == null) {
+                initializeFully();
+                this.size = initializedObjects.size();
             }
             return size;
         }
