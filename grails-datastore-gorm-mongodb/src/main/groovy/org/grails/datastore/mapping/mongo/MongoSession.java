@@ -42,9 +42,7 @@ import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.transactions.SessionOnlyTransaction;
 import org.grails.datastore.mapping.transactions.Transaction;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import javax.persistence.FlushModeType;
@@ -123,6 +121,11 @@ public class MongoSession extends AbstractSession<MongoClient> {
     @Override
     protected void cacheEntry(Serializable key, Object entry, Map<Serializable, Object> entryCache, boolean forDirtyCheck) {
         entryCache.put(key, entry);
+    }
+
+    @Override
+    public void flush() {
+        flush(this.writeConcern);
     }
 
     public void flush(WriteConcern writeConcern) {
@@ -327,54 +330,6 @@ public class MongoSession extends AbstractSession<MongoClient> {
         super.disconnect();
     }
 
-
-
-    @Override
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    protected void flushPendingInserts(final Map<PersistentEntity, Collection<PendingInsert>> inserts) {
-        // Optimizes saving multipe entities at once
-        for (final PersistentEntity entity : inserts.keySet()) {
-            final MongoTemplate template = getMongoTemplate(entity.isRoot() ? entity : entity.getRootEntity());
-            final String collectionNameToUse = getCollectionName(entity.isRoot() ? entity : entity.getRootEntity());
-            template.execute(new DbCallback<Object>() {
-                public Object doInDB(DB db) throws MongoException, DataAccessException {
-
-                    WriteConcern writeConcernToUse = getDeclaredWriteConcern(entity);
-                    final DBCollection collection = db.getCollection(collectionNameToUse);
-
-                    final Collection<PendingInsert> pendingInserts = inserts.get(entity);
-                    List<DBObject> dbObjects = new LinkedList<DBObject>();
-                    List<PendingOperation> postOperations = new LinkedList<PendingOperation>();
-
-                    for (PendingInsert pendingInsert : pendingInserts) {
-
-                        final List<PendingOperation> preOperations = pendingInsert.getPreOperations();
-                        for (PendingOperation preOperation : preOperations) {
-                            preOperation.run();
-                        }
-
-
-                        pendingInsert.run();
-                        if(!pendingInsert.isVetoed()) {
-                            dbObjects.add((DBObject) pendingInsert.getNativeEntry());
-                            postOperations.addAll(pendingInsert.getCascadeOperations());
-                        }
-                    }
-
-                    WriteResult writeResult = writeConcernToUse != null ? collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcernToUse )
-                                                                            : collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]));
-                    if (!writeResult.wasAcknowledged()) {
-                        errorOccured = true;
-                        throw new DataIntegrityViolationException("Write operation was not acknowledged");
-                    }
-                    for (PendingOperation pendingOperation : postOperations) {
-                        pendingOperation.run();
-                    }
-                    return null;
-                }
-            });
-        }
-    }
 
     public WriteConcern getDeclaredWriteConcern(PersistentEntity entity) {
         return getDeclaredWriteConcern(this.writeConcern, entity);
