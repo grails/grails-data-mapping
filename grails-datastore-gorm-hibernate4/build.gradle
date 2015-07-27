@@ -21,7 +21,7 @@ dependencies {
     provided 'javax.servlet:servlet-api:2.5'
     provided(project(":grails-datastore-web"))
 
-    String hibernateVersion = '4.3.8.Final'
+    String hibernateVersion = '4.3.10.Final'
 
     compile("org.hibernate:hibernate-core:$hibernateVersion") {
         exclude group:'commons-logging', module:'commons-logging'
