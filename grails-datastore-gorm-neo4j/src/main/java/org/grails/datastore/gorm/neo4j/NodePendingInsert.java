@@ -2,9 +2,9 @@ package org.grails.datastore.gorm.neo4j;
 
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter;
+import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Simple;
 
@@ -52,7 +52,7 @@ class NodePendingInsert extends PendingInsertAdapter<Object, Long> {
                 cypher = String.format("MATCH (a%s {__id__:{1}}), (b%s {__id__:{2}}) MERGE (a)-[:%s]->(b)", labels, gpe.getLabelsWithInheritance(o), e.getKey() );
                 List params = new ArrayList();
                 params.add(nativeKey);
-                params.add(new EntityAccess(gpe, o).getIdentifier());
+                params.add(new BeanEntityAccess(gpe, o).getIdentifier());
                 cypherEngine.execute(cypher, params);
             }
         }

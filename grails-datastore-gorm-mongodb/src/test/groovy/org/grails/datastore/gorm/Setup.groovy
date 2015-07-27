@@ -15,6 +15,7 @@ import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeM
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.mongo.AbstractMongoSession
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.MongoSession
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
@@ -33,7 +34,7 @@ import org.springframework.validation.Validator
 class Setup {
 
     static MongoDatastore mongo
-    static MongoSession session
+    static AbstractMongoSession session
 
     static destroy() {
         session.nativeInterface.dropDatabase( session.defaultDatabase )

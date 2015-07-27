@@ -25,10 +25,8 @@ import java.util.Map;
 import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
 
-import org.grails.datastore.mapping.core.AbstractDatastore;
-import org.grails.datastore.mapping.core.ConnectionNotFoundException;
 import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -609,7 +607,7 @@ public abstract class Query implements Cloneable{
             return ep.getObjectIdentifier(value);
         }
 
-        return (Serializable)new EntityAccess(session
+        return (Serializable)new BeanEntityAccess(session
                 .getMappingContext()
                 .getPersistentEntity(value.getClass().getName()), value)
                 .getIdentifier();

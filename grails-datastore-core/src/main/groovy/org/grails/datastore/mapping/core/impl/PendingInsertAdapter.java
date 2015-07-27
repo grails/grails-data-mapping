@@ -15,6 +15,7 @@
 
 package org.grails.datastore.mapping.core.impl;
 
+import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.PersistentEntity;
 

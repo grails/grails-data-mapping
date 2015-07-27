@@ -40,10 +40,7 @@ import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.core.impl.PendingUpdate;
 import org.grails.datastore.mapping.core.impl.PendingUpdateAdapter;
-import org.grails.datastore.mapping.engine.AssociationIndexer;
-import org.grails.datastore.mapping.engine.EntityAccess;
-import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
-import org.grails.datastore.mapping.engine.PropertyValueIndexer;
+import org.grails.datastore.mapping.engine.*;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -263,14 +260,6 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 				return null;
 			}
 		});
-	}
-
-	protected Object getCurrentVersion(final EntityAccess ea) {
-		Object currentVersion = ea.getProperty(GormProperties.VERSION);
-		if (Number.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
-			currentVersion = currentVersion != null ? ((Number) currentVersion).longValue() : currentVersion;
-		}
-		return currentVersion;
 	}
 
 	@Override

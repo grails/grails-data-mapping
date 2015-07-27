@@ -21,7 +21,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.mongodb.*;
+import org.bson.codecs.Codec;
+import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.grails.datastore.gorm.mongo.bean.factory.*;
@@ -30,14 +33,21 @@ import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.StatelessDatastore;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
+import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext;
+import org.grails.datastore.mapping.mongo.engine.FastClassData;
+import org.grails.datastore.mapping.mongo.engine.FastEntityAccess;
+import org.grails.datastore.mapping.mongo.engine.codecs.AdditionalCodecs;
+import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.authentication.UserCredentials;
@@ -63,8 +73,10 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     protected MongoClientOptions mongoOptions;
     protected Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
     protected Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
+    protected Map<String, FastClassData> fastClassData = new ConcurrentHashMap<String, FastClassData>();
     protected boolean stateless = false;
     protected UserCredentials userCrentials;
+    protected CodecRegistry codecRegistry;
 
     /**
      * Constructs a MongoDatastore using the default database name of "test" and defaults for the host and port.
@@ -105,29 +117,39 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
         initializeConverters(mappingContext);
 
-        mappingContext.getConverterRegistry().addConverter(new Converter<String, ObjectId>() {
+        final ConverterRegistry converterRegistry = mappingContext.getConverterRegistry();
+        converterRegistry.addConverter(new Converter<String, ObjectId>() {
             public ObjectId convert(String source) {
                 return new ObjectId(source);
             }
         });
 
-        mappingContext.getConverterRegistry().addConverter(new Converter<ObjectId, String>() {
+        converterRegistry.addConverter(new Converter<ObjectId, String>() {
             public String convert(ObjectId source) {
                 return source.toString();
             }
         });
 
-        mappingContext.getConverterRegistry().addConverter(new Converter<byte[], Binary>() {
+        converterRegistry.addConverter(new Converter<byte[], Binary>() {
             public Binary convert(byte[] source) {
                 return new Binary(source);
             }
         });
 
-        mappingContext.getConverterRegistry().addConverter(new Converter<Binary, byte[]>() {
+        converterRegistry.addConverter(new Converter<Binary, byte[]>() {
             public byte[] convert(Binary source) {
                 return source.getData();
             }
         });
+
+        for (Converter converter : AdditionalCodecs.getBsonConverters()) {
+            converterRegistry.addConverter(converter);
+        }
+
+        codecRegistry = CodecRegistries.fromRegistries(
+                MongoClient.getDefaultCodecRegistry(),
+                CodecRegistries.fromProviders(new AdditionalCodecs(), new PersistentEntityCodeRegistry())
+        );
     }
 
     public MongoDatastore(MongoMappingContext mappingContext) {
@@ -188,6 +210,31 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         this.mongo = mongo;
     }
 
+    @Autowired(required = false)
+    public void setCodecRegistries(List<CodecRegistry> codecRegistries) {
+        this.codecRegistry = CodecRegistries.fromRegistries(
+                this.codecRegistry,
+                CodecRegistries.fromRegistries(codecRegistries));
+    }
+
+    @Autowired(required = false)
+    public void setCodecProviders(List<CodecProvider> codecProviders) {
+        this.codecRegistry = CodecRegistries.fromRegistries(
+                this.codecRegistry,
+                CodecRegistries.fromProviders(codecProviders));
+    }
+
+    @Autowired(required = false)
+    public void setCodecs(List<Codec<?>> codecs) {
+        this.codecRegistry = CodecRegistries.fromRegistries(
+                this.codecRegistry,
+                CodecRegistries.fromCodecs(codecs));
+    }
+
+    public CodecRegistry getCodecRegistry() {
+        return codecRegistry;
+    }
+
     /**
      * @deprecated Use {@link #getMongoClient()} instead
      */
@@ -210,6 +257,16 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
     public UserCredentials getUserCrentials() {
         return userCrentials;
+    }
+
+    public FastClassData getFastClassData(PersistentEntity entity) {
+        final String entityN = entity.getName();
+        FastClassData data = fastClassData.get(entityN);
+        if(data == null) {
+            data = new FastClassData(entity);
+            fastClassData.put(entityN, data);
+        }
+        return data;
     }
 
     @Override
@@ -424,4 +481,25 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     }
 
 
+    public EntityAccess createEntityAccess(PersistentEntity entity, Object instance) {
+        return new FastEntityAccess(instance, getFastClassData(entity), getMappingContext().getConversionService());
+    }
+
+    class PersistentEntityCodeRegistry implements CodecProvider {
+
+        Map<String, PersistentEntityCodec> codecs = new HashMap<String, PersistentEntityCodec>();
+        @Override
+        public <T> Codec<T> get(Class<T> clazz, CodecRegistry registry) {
+            final String entityName = clazz.getName();
+            PersistentEntityCodec codec = codecs.get(entityName);
+            if(codec == null) {
+                final PersistentEntity entity = getMappingContext().getPersistentEntity(entityName);
+                if(entity != null) {
+                    codec = new PersistentEntityCodec(MongoDatastore.this, entity);
+                    codecs.put(entityName, codec);
+                }
+            }
+            return codec;
+        }
+    }
 }

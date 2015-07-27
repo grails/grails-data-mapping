@@ -24,6 +24,7 @@ import org.grails.datastore.mapping.core.SessionImplementor
 import org.grails.datastore.mapping.core.VoidSessionCallback
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.engine.EntityPersister
+import org.grails.datastore.mapping.mongo.AbstractMongoSession
 import org.grails.datastore.mapping.mongo.MongoSession
 import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
@@ -131,7 +132,7 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
      */
     @CompileStatic
     Document getDbo(D instance) {
-        execute( { MongoSession session ->
+        execute( { AbstractMongoSession session ->
             // check first for embedded cached entries
             SessionImplementor<Document> si = (SessionImplementor<Document>) session;
             def dbo = si.getCachedEntry(persistentEntity, MongoEntityPersister.createEmbeddedCacheEntryKey(instance))

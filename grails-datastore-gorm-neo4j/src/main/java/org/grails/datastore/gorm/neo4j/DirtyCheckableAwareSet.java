@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.neo4j;
 
+import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.types.Association;
 

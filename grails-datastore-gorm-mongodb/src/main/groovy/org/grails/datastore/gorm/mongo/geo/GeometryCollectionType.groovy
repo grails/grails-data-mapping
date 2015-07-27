@@ -40,7 +40,7 @@ class GeometryCollectionType extends AbstractMappingAwareCustomTypeMarshaller<Ge
     @Override
     protected Object writeInternal(PersistentProperty property, String key, GeometryCollection value, Document nativeTarget) {
         if(value != null) {
-            def col = new BasicDBObject()
+            def col = new Document()
             col.put(GeoJSONType.GEO_TYPE, GeometryCollection.simpleName)
             col.put(GEOMETRIES, value.asList())
             nativeTarget.put(key, col)

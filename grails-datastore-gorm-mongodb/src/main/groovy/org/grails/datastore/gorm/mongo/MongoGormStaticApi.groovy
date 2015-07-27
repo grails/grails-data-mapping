@@ -28,6 +28,7 @@ import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.engine.EntityPersister
+import org.grails.datastore.mapping.mongo.AbstractMongoSession
 import org.grails.datastore.mapping.mongo.MongoSession
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.springframework.transaction.PlatformTransactionManager
@@ -171,7 +172,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return A mongodb result list
      */
     List<D> aggregate(List pipeline, AggregationOptions options = AggregationOptions.builder().build()) {
-        execute( { MongoSession session ->
+        execute( { AbstractMongoSession session ->
 
             List<Document> newPipeline = cleanPipeline(pipeline)
             def mongoCollection = session.getCollection(persistentEntity)

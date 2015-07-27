@@ -6,6 +6,7 @@ import org.grails.datastore.gorm.neo4j.engine.CypherResult;
 import org.grails.datastore.gorm.neo4j.parsers.PlingStemmer;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
+import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -139,7 +140,7 @@ public class Neo4jEntityPersister extends EntityPersister {
     private Object unmarshall(PersistentEntity persistentEntity, Long id, Map<String, Object> data) {
 
         log.debug( "unmarshalling entity {}, props {}, {}", id, data);
-        EntityAccess entityAccess = new EntityAccess(persistentEntity, persistentEntity.newInstance());
+        BeanEntityAccess entityAccess = new BeanEntityAccess(persistentEntity, persistentEntity.newInstance());
         entityAccess.setConversionService(persistentEntity.getMappingContext().getConversionService());
         entityAccess.setIdentifier(id);
         data.remove("__id__");
@@ -389,7 +390,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                                 getSession().addPendingInsert(new RelationshipPendingDelete(entityAccess, relType, null , getCypherEngine()));
                             }
                             getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, relType,
-                                    new EntityAccess(to.getAssociatedEntity(), propertyValue),
+                                    new BeanEntityAccess(to.getAssociatedEntity(), propertyValue),
                                     getCypherEngine()));
                         }
 
@@ -513,7 +514,7 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected EntityAccess createEntityAccess(PersistentEntity pe, Object obj) {
-        return new EntityAccess(pe, obj);
+        return new BeanEntityAccess(pe, obj);
     }
 
     public CypherEngine getCypherEngine() {

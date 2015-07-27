@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.persistence.FlushModeType;
 
+import org.grails.datastore.mapping.engine.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
 import org.grails.datastore.mapping.core.AbstractSession;
@@ -31,10 +32,6 @@ import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.impl.PendingInsert;
 import org.grails.datastore.mapping.core.impl.PendingOperation;
 import org.grails.datastore.mapping.core.impl.PendingUpdate;
-import org.grails.datastore.mapping.engine.EntityAccess;
-import org.grails.datastore.mapping.engine.LockableEntityPersister;
-import org.grails.datastore.mapping.engine.NonPersistentTypeException;
-import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.redis.collection.RedisSet;

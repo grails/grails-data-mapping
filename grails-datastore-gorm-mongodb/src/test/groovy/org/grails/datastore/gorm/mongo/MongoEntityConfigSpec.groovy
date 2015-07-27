@@ -54,7 +54,6 @@ class MongoEntityConfigSpec extends GormDatastoreSpec{
 
         when:
             MongoSession ms = session
-            MongoTemplate mt = ms.getMongoTemplate(entity)
         then:
             ms.getCollectionName(entity) == "mycollection"
     }

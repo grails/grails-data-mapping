@@ -15,7 +15,10 @@
 package org.grails.datastore.mapping.model.types;
 
 import java.beans.PropertyDescriptor;
+import java.util.Collection;
+import java.util.Map;
 
+import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -30,14 +33,37 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 public abstract class Basic extends Association {
 
     private CustomTypeMarshaller customTypeMarshaller;
+    private Class componentType;
 
     public Basic(PersistentEntity owner, MappingContext context,
             PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
+        initializeComponentType();
     }
 
     public Basic(PersistentEntity owner, MappingContext context, String name, Class type) {
         super(owner, context, name, type);
+        initializeComponentType();
+    }
+
+    private void initializeComponentType() {
+        final Class type = getType();
+        if(Map.class.isAssignableFrom(type)) {
+            this.componentType = MappingUtils.getGenericTypeForMapProperty( getOwner().getJavaClass(), getName(), false );
+        }
+        else if(Collection.class.isAssignableFrom(type)) {
+            this.componentType = MappingUtils.getGenericTypeForProperty( getOwner().getJavaClass(), getName() );
+        }
+        else if(type.isArray()) {
+            this.componentType = type.getComponentType();
+        }
+        else {
+            this.componentType = Object.class;
+        }
+    }
+
+    public Class getComponentType() {
+        return componentType;
     }
 
     @Override

@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.event.PostDeleteEvent;
 import org.grails.datastore.mapping.engine.event.PostInsertEvent;
@@ -30,6 +31,7 @@ import org.grails.datastore.mapping.engine.event.PreLoadEvent;
 import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PropertyMapping;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -101,7 +103,7 @@ public abstract class EntityPersister implements Persister {
         if (pf.isProxy(obj)) {
             return pf.getIdentifier(obj);
         }
-        return (Serializable) new EntityAccess(getPersistentEntity(), obj).getIdentifier();
+        return (Serializable) new BeanEntityAccess(getPersistentEntity(), obj).getIdentifier();
     }
 
     @Override
@@ -136,7 +138,7 @@ public abstract class EntityPersister implements Persister {
      * @param obj The object
      */
     public void setObjectIdentifier(Object obj, Serializable id) {
-        new EntityAccess(getPersistentEntity(), obj).setIdentifier(id);
+        new BeanEntityAccess(getPersistentEntity(), obj).setIdentifier(id);
     }
 
     /**
@@ -174,6 +176,14 @@ public abstract class EntityPersister implements Persister {
 
     protected abstract List<Object> retrieveAllEntities(PersistentEntity pe, Serializable[] keys);
 
+    public Object getCurrentVersion(final EntityAccess ea) {
+        Object currentVersion = ea.getProperty(GormProperties.VERSION);
+        if (Number.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
+            currentVersion = currentVersion != null ? ((Number)currentVersion).longValue() : currentVersion;
+        }
+        return currentVersion;
+    }
+
     protected abstract List<Object> retrieveAllEntities(PersistentEntity pe, Iterable<Serializable> keys);
 
     protected abstract List<Serializable> persistEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objs);
@@ -201,6 +211,16 @@ public abstract class EntityPersister implements Persister {
      * @return The object or null if it doesn't exist
      */
     protected abstract Object retrieveEntity(PersistentEntity pe, Serializable key);
+
+    protected boolean isAssignedId(PersistentEntity persistentEntity) {
+        boolean assignedId = false;
+        PropertyMapping mapping = persistentEntity.getIdentity().getMapping();
+        if (mapping != null) {
+            Property p = mapping.getMappedForm();
+            assignedId = p != null && "assigned".equals(p.getGenerator());
+        }
+        return assignedId;
+    }
 
     /**
      * Persist the given persistent entity
@@ -232,13 +252,13 @@ public abstract class EntityPersister implements Persister {
     protected abstract void deleteEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objects);
 
     protected EntityAccess createEntityAccess(PersistentEntity pe, Object obj) {
-        return new EntityAccess(persistentEntity, obj);
+        return new BeanEntityAccess(persistentEntity, obj);
     }
 
     protected Object newEntityInstance(PersistentEntity persistentEntity) {
         Object o = persistentEntity.newInstance();
         publisher.publishEvent(new PreLoadEvent(session.getDatastore(), getPersistentEntity(),
-                new EntityAccess(persistentEntity, o)));
+                new BeanEntityAccess(persistentEntity, o)));
         return o;
     }
 

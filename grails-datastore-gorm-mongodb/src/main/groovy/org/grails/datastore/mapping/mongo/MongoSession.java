@@ -24,10 +24,10 @@ import com.mongodb.client.model.*;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
-import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.impl.*;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
+import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.engine.Persister;
@@ -53,19 +53,7 @@ import javax.persistence.FlushModeType;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class MongoSession extends AbstractSession<MongoClient> {
-
-    public static final String MONGO_SET_OPERATOR = "$set";
-    public static final String MONGO_UNSET_OPERATOR = "$unset";
-
-    private static final Map<PersistentEntity, WriteConcern> declaredWriteConcerns = new ConcurrentHashMap<PersistentEntity, WriteConcern>();
-    protected final String defaultDatabase;
-    MongoDatastore mongoDatastore;
-    private WriteConcern writeConcern = null;
-    protected boolean errorOccured = false;
-    protected Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
-    protected Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
-    protected Map<PersistentEntity, String> mongoDatabases = new ConcurrentHashMap<PersistentEntity, String>();
+public class MongoSession extends AbstractMongoSession {
 
 
     public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
@@ -73,48 +61,11 @@ public class MongoSession extends AbstractSession<MongoClient> {
     }
     public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless) {
         super(datastore, mappingContext, publisher, stateless);
-        mongoDatastore = datastore;
-        this.defaultDatabase = getDocumentMappingContext().getDefaultDatabaseName();
-    }
-
-    /**
-     * @return The name of the default database
-     */
-    public String getDefaultDatabase() {
-        return defaultDatabase;
-    }
-
-    /**
-     * @return The name of the default database
-     */
-    public String getDatabase(PersistentEntity entity) {
-        final String name = mongoDatabases.get(entity);
-        if(name != null) {
-            return name;
-        }
-        return defaultDatabase;
     }
 
     @Override
     public Query createQuery(@SuppressWarnings("rawtypes") Class type) {
         return super.createQuery(type);
-    }
-
-    /**
-     * Sets the WriteConcern to use for the session
-     *
-     * @param writeConcern The WriteConcern to use
-     */
-    public void setWriteConcern(WriteConcern writeConcern) {
-        this.writeConcern = writeConcern;
-    }
-
-    /**
-     * Obtains the WriteConcern to use for the session
-     * @return the WriteConcern
-     */
-    public WriteConcern getWriteConcern() {
-        return writeConcern;
     }
 
 
@@ -123,13 +74,8 @@ public class MongoSession extends AbstractSession<MongoClient> {
         entryCache.put(key, entry);
     }
 
-    @Override
-    public void flush() {
-        flush(this.writeConcern);
-    }
-
     public void flush(WriteConcern writeConcern) {
-        WriteConcern currentWriteConcern = this.writeConcern;
+        WriteConcern currentWriteConcern = this.getWriteConcern();
         try {
             this.writeConcern = writeConcern;
             final Map<PersistentEntity, Collection<PendingUpdate>> pendingUpdates = getPendingUpdates();
@@ -311,18 +257,10 @@ public class MongoSession extends AbstractSession<MongoClient> {
         return entityWrites;
     }
 
-    protected void addPostFlushOperations(List<PendingOperation> cascadeOperations) {
-        for (PendingOperation cascadeOperation : cascadeOperations) {
-            addPostFlushOperation(cascadeOperation);
-        }
-    }
-
     @Override
     protected void flushPendingUpdates(Map<PersistentEntity, Collection<PendingUpdate>> updates) {
         // noop, ignore
     }
-
-
 
 
     @Override
@@ -330,37 +268,6 @@ public class MongoSession extends AbstractSession<MongoClient> {
         super.disconnect();
     }
 
-
-    public WriteConcern getDeclaredWriteConcern(PersistentEntity entity) {
-        return getDeclaredWriteConcern(this.writeConcern, entity);
-    }
-
-    private WriteConcern getDeclaredWriteConcern(WriteConcern defaultConcern, PersistentEntity entity) {
-        WriteConcern writeConcern = declaredWriteConcerns.get(entity);
-        if (writeConcern == null) {
-            Object mappedForm = entity.getMapping().getMappedForm();
-            if (mappedForm instanceof MongoCollection) {
-                MongoCollection mc = (MongoCollection) mappedForm;
-                writeConcern = mc.getWriteConcern();
-                if (writeConcern == null) {
-                    writeConcern = defaultConcern;
-                }
-            }
-
-            if (writeConcern != null) {
-                declaredWriteConcerns.put(entity, writeConcern);
-            }
-        }
-        return writeConcern;
-    }
-
-    public MongoClient getNativeInterface() {
-        return ((MongoDatastore)getDatastore()).getMongoClient();
-    }
-
-    public DocumentMappingContext getDocumentMappingContext() {
-        return (DocumentMappingContext) getMappingContext();
-    }
 
     @Override
     protected Persister createPersister(@SuppressWarnings("rawtypes") Class cls, MappingContext mappingContext) {
@@ -373,44 +280,6 @@ public class MongoSession extends AbstractSession<MongoClient> {
         return new SessionOnlyTransaction<MongoClient>(getNativeInterface(), this);
     }
 
-    public MongoTemplate getMongoTemplate(PersistentEntity entity) {
-        MongoTemplate mongoTemplate = mongoTemplates.get(entity);
-        return mongoTemplate != null ? mongoTemplate : mongoDatastore.getMongoTemplate(entity);
-    }
-
-    public String getCollectionName(PersistentEntity entity) {
-        entity = entity.isRoot() ? entity : entity.getRootEntity();
-        return mongoCollections.containsKey(entity) ? mongoCollections.get(entity) : mongoDatastore.getCollectionName(entity);
-    }
-
-    /**
-     * Use the given collection for the given entity
-     *
-     * @param entity The entity
-     * @param collectionName The collection
-     * @return The previous collection that was used
-     */
-    public String useCollection(PersistentEntity entity, String collectionName) {
-        entity = entity.isRoot() ? entity : entity.getRootEntity();
-        String current = mongoCollections.containsKey(entity) ? mongoCollections.get(entity) : mongoDatastore.getCollectionName(entity);
-        mongoCollections.put(entity, collectionName);
-        return current;
-    }
-
-    /**
-     * Use the given database name for the given entity
-     *
-     * @param entity The entity name
-     * @param databaseName The database name
-     * @return The name of the previous database
-     */
-    public String useDatabase(PersistentEntity entity, String databaseName) {
-        MongoTemplate currentTemplate = mongoTemplates.containsKey(entity) ? mongoTemplates.get(entity) : mongoDatastore.getMongoTemplate(entity);
-        String currentDatabase = currentTemplate.getDb().getName();
-        mongoTemplates.put(entity, new MongoTemplate(mongoDatastore.getMongo(), databaseName, mongoDatastore.getUserCrentials()));
-        mongoDatabases.put(entity, databaseName);
-        return currentDatabase;
-    }
 
     @Override
     public void delete(Iterable objects) {
@@ -425,7 +294,7 @@ public class MongoSession extends AbstractSession<MongoClient> {
                 @Override
                 public void run() {
                     for (Object o : toDelete.get(persistentEntity)) {
-                        if( !persister.cancelDelete(persistentEntity, new EntityAccess(persistentEntity, o)) ) {
+                        if( !persister.cancelDelete(persistentEntity, new BeanEntityAccess(persistentEntity, o)) ) {
                             clear(o);
                         }
                     }
@@ -433,19 +302,6 @@ public class MongoSession extends AbstractSession<MongoClient> {
             });
         }
 
-    }
-    public com.mongodb.client.MongoCollection<Document> getCollection(PersistentEntity entity) {
-        if(entity.isRoot()) {
-            final String database = getDatabase(entity);
-            final String collectionName = getCollectionName(entity);
-            return getNativeInterface()
-                    .getDatabase(database)
-                    .getCollection(collectionName);
-        }
-        else {
-            final PersistentEntity root = entity.getRootEntity();
-            return getCollection(root);
-        }
     }
 
 

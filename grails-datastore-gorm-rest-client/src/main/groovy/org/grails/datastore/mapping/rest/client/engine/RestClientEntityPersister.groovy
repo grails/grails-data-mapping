@@ -39,7 +39,7 @@ import org.springframework.http.HttpStatus
 
 import java.util.concurrent.TimeUnit
 import org.grails.datastore.mapping.core.impl.PendingUpdateAdapter
-import org.grails.datastore.mapping.engine.EntityAccess
+import org.grails.datastore.mapping.engine.BeanEntityAccess
 import org.grails.datastore.mapping.rest.client.config.RestClientMappingContext
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter
 import org.grails.datastore.mapping.rest.client.RestClientException
@@ -164,7 +164,7 @@ class RestClientEntityPersister extends EntityPersister {
                         PromiseList<RestResponse> updateResponses = new PromiseList<RestResponse>()
                         int count = 0
                         for(update in updates) {
-                            final entityAccess = new EntityAccess(entity, update)
+                            final entityAccess = new BeanEntityAccess(entity, update)
                             if( cancelUpdate(entity, entityAccess) ) continue
                             if( (update instanceof DirtyCheckable) && !getSession().isDirty(update) ) continue
 
@@ -208,7 +208,7 @@ class RestClientEntityPersister extends EntityPersister {
                 AsyncRestBuilder restBuilder = datastore.asyncRestClients.get(entity)
                 PromiseList<RestResponse> insertResponses = new PromiseList<RestResponse>()
                 int count = 0
-                inserts = inserts.findAll() { !cancelInsert(entity, new EntityAccess(entity, it)) }
+                inserts = inserts.findAll() { !cancelInsert(entity, new BeanEntityAccess(entity, it)) }
                 for(insert in inserts) {
                     count++
                     final url = establishUrl(datastore.baseUrl, endpoint, entity)
@@ -221,7 +221,7 @@ class RestClientEntityPersister extends EntityPersister {
                         body insert
                     }.then { RestResponse response ->
                         if(response.statusCode.series() == HttpStatus.Series.SUCCESSFUL) {
-                            firePostInsertEvent(entity, new EntityAccess(entity, insert))
+                            firePostInsertEvent(entity, new BeanEntityAccess(entity, insert))
                         }
 
                         return response
@@ -319,7 +319,7 @@ class RestClientEntityPersister extends EntityPersister {
         final body = response.body
         if(body) {
             if(pe.javaClass.isInstance(body)) {
-                final entityAccess = new EntityAccess(pe, body)
+                final entityAccess = new BeanEntityAccess(pe, body)
                 if( cancelLoad(pe, entityAccess)) return null
                 else {
                     try {
@@ -339,7 +339,7 @@ class RestClientEntityPersister extends EntityPersister {
 
                     DataBindingUtils.bindObjectToInstance(instance, bindingSource)
                 }
-                final entityAccess = new EntityAccess(pe, body)
+                final entityAccess = new BeanEntityAccess(pe, body)
                 if( cancelLoad(pe, entityAccess)) return null
                 else {
                     try {
@@ -364,7 +364,7 @@ class RestClientEntityPersister extends EntityPersister {
         final identifier = getObjectIdentifier(obj)
         if(identifier) {
             // do update
-            final entityAccess = new EntityAccess(pe, obj)
+            final entityAccess = new BeanEntityAccess(pe, obj)
             if( cancelUpdate(pe, entityAccess) ) return getObjectIdentifier(obj)
             if( (obj instanceof DirtyCheckable) && !session.isDirty(obj) ) {
                 return getObjectIdentifier(obj)
@@ -372,7 +372,7 @@ class RestClientEntityPersister extends EntityPersister {
 
             SessionImplementor impl = (SessionImplementor) session
             if(endpoint.async) {
-                impl.addPendingUpdate(new PendingUpdateAdapter<AsyncRestBuilder, Object>(pe, identifier, datastore.asyncRestClients.get(pe), new EntityAccess(pe, obj)) {
+                impl.addPendingUpdate(new PendingUpdateAdapter<AsyncRestBuilder, Object>(pe, identifier, datastore.asyncRestClients.get(pe), new BeanEntityAccess(pe, obj)) {
                     @Override
                     void run() {
                         AsyncRestBuilder builder = getNativeEntry()
@@ -404,7 +404,7 @@ class RestClientEntityPersister extends EntityPersister {
                             throw new RestClientException("Status code [${response.statusCode}] returned for PUT request to URL [$url]", response)
                         }
                         else {
-                            firePostUpdateEvent(pe, new EntityAccess(pe, obj))
+                            firePostUpdateEvent(pe, new BeanEntityAccess(pe, obj))
                         }
                     }
                 })
@@ -456,7 +456,7 @@ class RestClientEntityPersister extends EntityPersister {
         if(identifier) {
             RestClientDatastore datastore = (RestClientDatastore)getSession().datastore
             SessionImplementor impl = (SessionImplementor)getSession()
-            impl.addPendingInsert(new PendingInsertAdapter<Object, Object>(entity, identifier, datastore.asyncRestClients.get(entity), new EntityAccess(entity, obj)) {
+            impl.addPendingInsert(new PendingInsertAdapter<Object, Object>(entity, identifier, datastore.asyncRestClients.get(entity), new BeanEntityAccess(entity, obj)) {
 
                 @Override
                 void run() {
@@ -478,7 +478,7 @@ class RestClientEntityPersister extends EntityPersister {
         final url = sessionUrl ? sessionUrl.toString() : establishUrl(datastore.baseUrl, endpoint, pe)
         RestResponse response
         MimeType mimeType = new MimeType(endpoint.contentType)
-        final entityAccess = new EntityAccess(pe, obj)
+        final entityAccess = new BeanEntityAccess(pe, obj)
         if( cancelInsert(pe, entityAccess) ) return null
         if (endpoint.async) {
             AsyncRestBuilder builder = datastore.asyncRestClients.get(pe)
@@ -582,7 +582,7 @@ class RestClientEntityPersister extends EntityPersister {
     @Override
     protected void deleteEntity(PersistentEntity pe, Object object) {
         if(object) {
-            final entityAccess = new EntityAccess(pe, object)
+            final entityAccess = new BeanEntityAccess(pe, object)
             if( cancelDelete(pe, entityAccess) ) return
             final id = getObjectIdentifier(object)
             if(id) {
@@ -659,7 +659,7 @@ class RestClientEntityPersister extends EntityPersister {
             PromiseList<RestResponse> promiseList = new PromiseList<RestResponse>()
             int count = 0
             for(obj in objects) {
-                if( cancelDelete(pe, new EntityAccess(pe, obj)) ) continue
+                if( cancelDelete(pe, new BeanEntityAccess(pe, obj)) ) continue
                 count++
                 final id = getObjectIdentifier(obj)
                 if(id) {
@@ -671,7 +671,7 @@ class RestClientEntityPersister extends EntityPersister {
                     }
                     deletePromise.then { RestResponse response ->
                         if(response && response.statusCode.series() == HttpStatus.Series.SUCCESSFUL)
-                            firePostDeleteEvent(pe, new EntityAccess(pe, obj))
+                            firePostDeleteEvent(pe, new BeanEntityAccess(pe, obj))
                     }
                     promiseList << deletePromise
                 }

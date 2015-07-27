@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.neo4j;
 
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter;
+import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

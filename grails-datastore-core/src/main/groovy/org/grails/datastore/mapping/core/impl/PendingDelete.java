@@ -14,8 +14,6 @@
  */
 package org.grails.datastore.mapping.core.impl;
 
-import org.grails.datastore.mapping.engine.EntityAccess;
-
 /**
  * Represents a pending delete, that is an object that is due to be deleted as part of a flush() operation
  *

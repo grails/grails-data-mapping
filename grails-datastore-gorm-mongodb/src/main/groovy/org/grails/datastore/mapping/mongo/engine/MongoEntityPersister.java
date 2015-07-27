@@ -32,6 +32,7 @@ import org.bson.types.ObjectId;
 import org.grails.datastore.mapping.core.IdentityGenerationException;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.core.impl.PendingDeleteAdapter;
+import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -142,21 +143,19 @@ public class MongoEntityPersister extends AbstractMongoObectEntityPersister<Docu
     @Override
     protected Object generateIdentifier(final PersistentEntity persistentEntity, final Document nativeEntry) {
 
-        String collectionName = getCollectionName(persistentEntity, nativeEntry);
-
-
-        final MongoSession mongoSession = getMongoSession();
-        final MongoClient client = mongoSession
-                                        .getNativeInterface();
-
-        final MongoCollection<Document>  dbCollection = client
-                                                            .getDatabase(mongoSession.getDatabase(persistentEntity))
-                                                            .getCollection(collectionName + NEXT_ID_SUFFIX);
-
-
+        final boolean hasNumericalIdentifier = this.hasNumericalIdentifier;
         // If there is a numeric identifier then we need to rely on optimistic concurrency controls to obtain a unique identifer
         // sequence. If the identifier is not numeric then we assume BSON ObjectIds.
         if (hasNumericalIdentifier) {
+            final String collectionName = getCollectionName(persistentEntity, nativeEntry);
+            final MongoSession mongoSession = getMongoSession();
+            final MongoClient client = mongoSession
+                    .getNativeInterface();
+
+            final MongoCollection<Document>  dbCollection = client
+                    .getDatabase(mongoSession.getDatabase(persistentEntity))
+                    .getCollection(collectionName + NEXT_ID_SUFFIX);
+
 
             int attempts = 0;
             while (true) {

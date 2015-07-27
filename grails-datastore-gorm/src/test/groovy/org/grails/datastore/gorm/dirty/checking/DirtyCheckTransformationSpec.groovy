@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.dirty.checking
 
 import grails.gorm.dirty.checking.DirtyCheck
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Issue
 
@@ -109,13 +110,28 @@ class FundProduct {
 
 			then: "getOrginal Value returns null"
 				book.getOriginalValue('title') == null
-		}
+    }
+
+    @Ignore // currently fails, TODO: add support for dirty checking collection/map changes
+    void "Test that you can dirty check changes to simple collections"() {
+        given: "A new book is created"
+        def book = new Book()
+
+        when: "a simple collection is modified"
+        book.title = "Title"
+        book.trackChanges()
+        book.simple << 1
+
+        then: "getOrginal Value returns null"
+        book.hasChanged('simple')
+    }
 }
 
 @DirtyCheck
 class Book {
     String title
     Date releaseDate
+    List<Integer> simple = []
 
     private String author
 

@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.neo4j;
 
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
+import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.Association;
@@ -32,7 +33,7 @@ public abstract class DirtyCheckableAwareCollection<T> implements Collection<T> 
         relType = RelationshipUtils.relationshipTypeUsedFor(association);
 
         for (T obj: delegate) {
-            session.addPendingInsert(new RelationshipPendingInsert(owner, relType, new EntityAccess(association.getAssociatedEntity(), obj), session.getNativeInterface()));
+            session.addPendingInsert(new RelationshipPendingInsert(owner, relType, new BeanEntityAccess(association.getAssociatedEntity(), obj), session.getNativeInterface()));
         }
     }
 
@@ -80,7 +81,7 @@ public abstract class DirtyCheckableAwareCollection<T> implements Collection<T> 
         if (session.getMappingContext().getProxyFactory().isProxy(t)) {
             if (!isDomainInstance(t)) return;
         }
-        EntityAccess target = new EntityAccess(association.getAssociatedEntity(), t);
+        EntityAccess target = new BeanEntityAccess(association.getAssociatedEntity(), t);
         if (association.isBidirectional()) {
             if (association instanceof ManyToMany) {
                 Collection coll = (Collection) target.getProperty(association.getReferencedPropertyName());
@@ -132,7 +133,7 @@ public abstract class DirtyCheckableAwareCollection<T> implements Collection<T> 
         }
         if (!reversed) {
             session.addPendingInsert(new RelationshipPendingDelete(owner, relType,
-                    new EntityAccess(association.getAssociatedEntity(), o),
+                    new BeanEntityAccess(association.getAssociatedEntity(), o),
                     session.getNativeInterface()));
         }
     }

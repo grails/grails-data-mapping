@@ -19,6 +19,7 @@ import org.grails.datastore.mapping.core.IdentityGenerationException
 import org.grails.datastore.mapping.core.OptimisticLockingException
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.AssociationIndexer
+import org.grails.datastore.mapping.engine.BeanEntityAccess
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.engine.PropertyValueIndexer

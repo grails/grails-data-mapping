@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import grails.validation.ValidationException
+import spock.lang.IgnoreRest
 
 /**
  * @author graemerocher
@@ -29,11 +30,12 @@ class CrudOperationsSpec extends GormDatastoreSpec {
             t == null
     }
 
+    @IgnoreRest
     void "Test basic CRUD operations"() {
         given:
 
             def t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
-            t.save()
+            t.save(flush:true)
 
         when:
             def results = TestEntity.list()

@@ -27,11 +27,13 @@ import com.mongodb.client.MongoCursor;
 import grails.mongodb.geo.*;
 import groovy.lang.Closure;
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.mongo.geo.GeoJSONType;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
-import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
@@ -43,6 +45,7 @@ import org.grails.datastore.mapping.model.types.Custom;
 import org.grails.datastore.mapping.model.types.Embedded;
 import org.grails.datastore.mapping.model.types.EmbeddedCollection;
 import org.grails.datastore.mapping.model.types.ToOne;
+import org.grails.datastore.mapping.mongo.AbstractMongoSession;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
@@ -756,7 +759,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             if (entity.getMappingContext().isPersistentEntity(value)) {
                 PersistentEntity pe = entity.getMappingContext().getPersistentEntity(
                         value.getClass().getName());
-                values.add(new EntityAccess(pe, value).getIdentifier());
+                values.add(new BeanEntityAccess(pe, value).getIdentifier());
             } else {
                 value = MongoEntityPersister.getSimpleNativePropertyValue(value, entity.getMappingContext());
                 values.add(value);
@@ -786,15 +789,19 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         query.put(propertyName, regex);
     }
 
-    private MongoSession mongoSession;
-    private MongoEntityPersister mongoEntityPersister;
+    private AbstractMongoSession mongoSession;
+    private EntityPersister mongoEntityPersister;
     private ManualProjections manualProjections;
+    private boolean isCodecPersister = false;
 
-    public MongoQuery(MongoSession session, PersistentEntity entity) {
+    public MongoQuery(AbstractMongoSession session, PersistentEntity entity) {
         super(session, entity);
         this.mongoSession = session;
         this.manualProjections = new ManualProjections(entity);
-        this.mongoEntityPersister = (MongoEntityPersister) session.getPersister(entity);
+        this.mongoEntityPersister = (EntityPersister) session.getPersister(entity);
+        if(this.mongoEntityPersister instanceof MongoCodecEntityPersister) {
+            this.isCodecPersister = true;
+        }
     }
 
     @Override
@@ -818,11 +825,17 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     @Override
     protected List executeQuery(final PersistentEntity entity, final Junction criteria) {
-        final MongoSession mongoSession = this.mongoSession;
-        final com.mongodb.client.MongoCollection<Document> collection = mongoSession.getCollection(entity);
+        final AbstractMongoSession mongoSession = this.mongoSession;
+        com.mongodb.client.MongoCollection<Document> collection = mongoSession.getCollection(entity);
+
 
         if (uniqueResult) {
-            final Document dbObject;
+            if(isCodecPersister) {
+                collection = collection
+                        .withDocumentClass(entity.getJavaClass())
+                        .withCodecRegistry( mongoSession.getDatastore().getCodecRegistry());
+            }
+            final Object dbObject;
             if (criteria.isEmpty()) {
                 if (entity.isRoot()) {
                     dbObject = collection
@@ -840,7 +853,12 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         .limit(1)
                         .first();;
             }
-            return wrapObjectResultInList(createObjectFromDBObject(dbObject));
+            if(isCodecPersister) {
+                return wrapObjectResultInList(dbObject);
+            }
+            else {
+                return wrapObjectResultInList(createObjectFromDBObject((Document)dbObject));
+            }
         }
 
         MongoCursor<Document> cursor;
@@ -849,11 +867,16 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         final List<Projection> projectionList = projections().getProjectionList();
         if (projectionList.isEmpty()) {
+            if(isCodecPersister) {
+                collection = collection
+                        .withDocumentClass(entity.getJavaClass())
+                        .withCodecRegistry( mongoSession.getDatastore().getCodecRegistry());
+            }
             cursor = executeQuery(entity, criteria, collection, query);
             return new MongoResultList(cursor, offset, mongoEntityPersister);
         }
 
-        populateMongoQuery((MongoSession) session, query, criteria, entity);
+        populateMongoQuery((AbstractMongoSession) session, query, criteria, entity);
         List projectedResults = new ArrayList();
         List<Document> aggregationPipeline = new ArrayList<Document>();
 
@@ -974,7 +997,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         if (criteria.isEmpty()) {
             cursor = executeQueryAndApplyPagination(collection, query);
         } else {
-            populateMongoQuery((MongoSession) session, query, criteria, entity);
+            populateMongoQuery((AbstractMongoSession) session, query, criteria, entity);
             cursor = executeQueryAndApplyPagination(collection, query);
         }
 
@@ -1030,7 +1053,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
     @SuppressWarnings("unchecked")
-    public static void populateMongoQuery(MongoSession session, Document query, Junction criteria, PersistentEntity entity) {
+    public static void populateMongoQuery(AbstractMongoSession session, Document query, Junction criteria, PersistentEntity entity) {
 
         List subList = null;
         // if a query combines more than 1 item, wrap the items in individual $and or $or arguments
@@ -1102,7 +1125,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         Class type = mongoEntityPersister.getPersistentEntity().getJavaClass();
         Object instance = mongoSession.getCachedInstance(type, (Serializable) id);
         if (instance == null) {
-            instance = mongoEntityPersister.createObjectFromNativeEntry(
+            instance = ((MongoEntityPersister)mongoEntityPersister).createObjectFromNativeEntry(
                     mongoEntityPersister.getPersistentEntity(), (Serializable) id, dbObject);
             mongoSession.cacheInstance(type, (Serializable) id, instance);
         }
@@ -1742,17 +1765,19 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     public static class MongoResultList extends AbstractList implements Closeable {
 
         private EntityPersister mongoEntityPersister;
-        private MongoCursor<Document> cursor;
+        private MongoCursor cursor;
         private int offset = 0;
         private int internalIndex;
         private List initializedObjects = new ArrayList();
         private Integer size;
         private boolean initialized = false;
+        private boolean isCodecPersister;
 
         @SuppressWarnings("unchecked")
-        public MongoResultList(MongoCursor<Document> cursor, int offset, EntityPersister mongoEntityPersister) {
+        public MongoResultList(MongoCursor cursor, int offset, EntityPersister mongoEntityPersister) {
             this.cursor = cursor;
             this.mongoEntityPersister = mongoEntityPersister;
+            this.isCodecPersister = mongoEntityPersister instanceof MongoCodecEntityPersister;
             this.offset = offset;
         }
 
@@ -1765,7 +1790,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         /**
          * @return The underlying MongoDB cursor instance
          */
-        public MongoCursor<Document> getCursor() {
+        public MongoCursor getCursor() {
             return cursor;
         }
 
@@ -1786,7 +1811,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 while (cursor.hasNext()) {
                     if (internalIndex > index)
                         throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
-                    Object o = convertDBObject(cursor.next());
+                    Object o = isCodecPersister ? cursor.next() : convertDBObject(cursor.next());
                     initializedObjects.add(internalIndex, o);
                     if (index == internalIndex++) {
                         return o;
@@ -1823,8 +1848,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             if (initialized) return;
 
             while (cursor.hasNext()) {
-                Document dbo = cursor.next();
-                Object current = convertDBObject(dbo);
+                Object dbo = cursor.next();
+                Object current = isCodecPersister ? dbo : convertDBObject(dbo) ;
                 initializedObjects.add(current);
             }
             initialized = true;
@@ -1860,8 +1885,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
                 @SuppressWarnings("unchecked")
                 public Object next() {
-                    Document dbo = cursor.next();
-                    current = convertDBObject(dbo);
+                    Object dbo = cursor.next();
+                    current = isCodecPersister ? dbo : convertDBObject(dbo);
                     if (index < initializedObjects.size()){
 
                         initializedObjects.set(index++, current);

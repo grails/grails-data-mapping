@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.mongo
 
+import grails.gorm.tests.CommonTypesPersistenceSpec
 import grails.gorm.tests.CriteriaBuilderSpec
 import grails.gorm.tests.CrudOperationsSpec
 import grails.gorm.tests.DeleteAllSpec
@@ -25,7 +26,7 @@ import grails.gorm.tests.OneToManySpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-    OneToManySpec
+    CommonTypesPersistenceSpec
 ])
 class MongoSuite {
 }

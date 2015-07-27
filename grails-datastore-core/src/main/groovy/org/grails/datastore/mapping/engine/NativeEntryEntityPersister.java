@@ -29,11 +29,9 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import javax.persistence.CascadeType;
-import javax.persistence.EnumType;
 import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
 
-import org.grails.datastore.mapping.cache.TPCacheAdapter;
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.collection.AbstractPersistentCollection;
 import org.grails.datastore.mapping.collection.PersistentCollection;
@@ -51,7 +49,6 @@ import org.grails.datastore.mapping.core.impl.PendingOperationExecution;
 import org.grails.datastore.mapping.core.impl.PendingUpdate;
 import org.grails.datastore.mapping.core.impl.PendingUpdateAdapter;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
-import org.grails.datastore.mapping.engine.event.PreDeleteEvent;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.ClassMapping;
@@ -83,10 +80,9 @@ import org.springframework.dao.CannotAcquireLockException;
  * @since  1.0
  */
 @SuppressWarnings({"unused", "rawtypes", "unchecked"})
-public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPersister {
+public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEntityPersister<T> {
     public static final String EMBEDDED_PREFIX = "embedded:";
     protected ClassMapping classMapping;
-    protected TPCacheAdapterRepository<T> cacheAdapterRepository;
 
     public NativeEntryEntityPersister(MappingContext mappingContext, PersistentEntity entity,
               Session session, ApplicationEventPublisher publisher) {
@@ -96,9 +92,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
     public NativeEntryEntityPersister(MappingContext mappingContext, PersistentEntity entity,
               Session session, ApplicationEventPublisher publisher, TPCacheAdapterRepository<T> cacheAdapterRepository) {
-        super(mappingContext, entity, session, publisher);
+        super(mappingContext, entity, session, publisher, cacheAdapterRepository);
         classMapping = entity.getMapping();
-        this.cacheAdapterRepository = cacheAdapterRepository;
     }
 
     public abstract String getEntityFamily();
@@ -159,7 +154,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
     @Override
     protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj) {
-        EntityAccess entityAccess = new EntityAccess(persistentEntity, obj);
+        BeanEntityAccess entityAccess = new BeanEntityAccess(persistentEntity, obj);
         entityAccess.setConversionService(getMappingContext().getConversionService());
         return entityAccess;
     }
@@ -412,7 +407,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     protected void refreshObjectStateFromNativeEntry(PersistentEntity persistentEntity, Object obj,
                                                      Serializable nativeKey, T nativeEntry, boolean isEmbedded) {
         EntityAccess ea = createEntityAccess(persistentEntity, obj, nativeEntry);
-        ea.setConversionService(getMappingContext().getConversionService());
+
         if (!(persistentEntity instanceof EmbeddedPersistentEntity)) {
             String idName = ea.getIdentifierName();
             ea.setProperty(idName, nativeKey);
@@ -438,7 +433,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
                 else {
                     Object entryValue = getEntryValue(nativeEntry, propKey);
-                    entryValue = convertBasicEntryValue(persistentEntity, prop, entryValue);
+                    entryValue = convertBasicEntryValue(persistentEntity, (Basic)prop, entryValue);
                     ea.setProperty(prop.getName(), entryValue);
                 }
             }
@@ -659,7 +654,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      * @param entryValue The value of the entry
      * @return The transformed entry type.
      */
-    protected Object convertBasicEntryValue(PersistentEntity persistentEntity, PersistentProperty prop, Object entryValue) {
+    protected Object convertBasicEntryValue(PersistentEntity persistentEntity, Basic prop, Object entryValue) {
         // In both cases, we use a BeanWrapper to provide all possible conversions, including those from the
         // ConversionService as well as standard property editor conversions, etc.
         // Enums are handled automatically, as are other standard types such as Locale, URI, Integer, etc.
@@ -667,8 +662,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             Map nativeMap = (Map) entryValue;
             LinkedHashMap targetMap = new LinkedHashMap();
             Class propertyType = prop.getType();
-            Class genericType = MappingUtils.getGenericTypeForMapProperty(persistentEntity.getJavaClass(),
-                    prop.getName(), false);
+            Class genericType = prop.getComponentType();
             if (genericType != null) {
                 ConversionService conversionService = getMappingContext().getConversionService();
                 for (Object o : nativeMap.entrySet()) {
@@ -689,7 +683,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             Collection collection = MappingUtils.createConcreteCollection(prop.getType());
 
             Class propertyType = prop.getType();
-            Class genericType = MappingUtils.getGenericTypeForProperty(persistentEntity.getJavaClass(), prop.getName());
+            Class genericType = prop.getComponentType();
             Collection collectionValue = (Collection) entryValue;
             if (genericType != null) {
                 ConversionService conversionService = getMappingContext().getConversionService();
@@ -817,14 +811,12 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         K k = readObjectIdentifier(entityAccess, persistentEntity.getMapping());
 
         boolean isUpdate = k != null && !isInsert;
-        boolean assignedId = false;
         if (isUpdate && !getSession().isDirty(obj)) {
             return (Serializable) k;
         }
 
         PendingOperation<T, K> pendingOperation;
 
-        PropertyMapping mapping = persistentEntity.getIdentity().getMapping();
         SessionImplementor<Object> si = (SessionImplementor<Object>) session;
 
         if(si.isPendingAlready(obj)) {
@@ -834,12 +826,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             si.registerPending(obj);
         }
 
-        if (mapping != null) {
-            Property p = mapping.getMappedForm();
-            assignedId = p != null && "assigned".equals(p.getGenerator());
-            if (isNotUpdateForAssignedId(persistentEntity, obj, isUpdate, assignedId, si)) {
-                    isUpdate = false;
-            }
+        boolean assignedId = isAssignedId(persistentEntity);
+        if (isNotUpdateForAssignedId(persistentEntity, obj, isUpdate, assignedId, si)) {
+            isUpdate = false;
         }
         String family = getEntityFamily();
 
@@ -1044,7 +1033,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                 if (association.isBidirectional()) {
                                     Association inverseSide = association.getInverseSide();
                                     if (inverseSide != null) {
-                                        EntityAccess inverseAccess = new EntityAccess(inverseSide.getOwner(), associatedObject);
+                                        EntityAccess inverseAccess = createEntityAccess(inverseSide.getOwner(), associatedObject);
                                         inverseAccess.setProperty(inverseSide.getName(), obj);
                                     }
                                 }
@@ -1659,30 +1648,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return newId;
     }
 
-    protected void updateTPCache(PersistentEntity persistentEntity, T e, Serializable id) {
-        if (cacheAdapterRepository == null) {
-            return;
-        }
-
-        TPCacheAdapter<T> cacheAdapter = cacheAdapterRepository.getTPCacheAdapter(persistentEntity);
-        if (cacheAdapter != null) {
-            cacheAdapter.cacheEntry(id, e);
-        }
-    }
-
-    protected T getFromTPCache(PersistentEntity persistentEntity, Serializable id) {
-        if (cacheAdapterRepository == null) {
-            return null;
-        }
-
-        TPCacheAdapter<T> cacheAdapter = cacheAdapterRepository.getTPCacheAdapter(persistentEntity);
-        if (cacheAdapter != null) {
-            return cacheAdapter.getCachedEntry(id);
-        }
-        return null;
-    }
-
-    protected class NativeEntryModifyingEntityAccess extends EntityAccess {
+    protected class NativeEntryModifyingEntityAccess extends BeanEntityAccess {
 
         T nativeEntry;
         private Map<PersistentProperty, Object> toIndex;
