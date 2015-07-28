@@ -29,6 +29,7 @@ import org.bson.codecs.configuration.CodecRegistry
 import org.bson.types.ObjectId
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository
 import org.grails.datastore.mapping.core.IdentityGenerationException
+import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.impl.PendingDeleteAdapter
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter
 import org.grails.datastore.mapping.core.impl.PendingOperationAdapter
@@ -88,6 +89,10 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
         }
     }
 
+    @Override
+    MongoCodecSession getSession() {
+        return (MongoCodecSession)super.getSession()
+    }
     /**
      * Obtains an objects identifer
      * @param obj The object

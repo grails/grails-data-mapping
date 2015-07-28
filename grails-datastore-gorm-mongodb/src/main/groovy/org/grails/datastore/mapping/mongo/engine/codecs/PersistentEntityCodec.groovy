@@ -18,6 +18,8 @@ package org.grails.datastore.mapping.mongo.engine.codecs
 import groovy.transform.CompileStatic
 import org.bson.BsonArray
 import org.bson.BsonBinary
+import org.bson.BsonDocument
+import org.bson.BsonDocumentWriter
 import org.bson.BsonReader
 import org.bson.BsonType
 import org.bson.BsonWriter
@@ -26,7 +28,12 @@ import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
 import org.bson.codecs.configuration.CodecRegistry
+import org.bson.conversions.Bson
 import org.bson.types.ObjectId
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckingCollection
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckingMap
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.internal.MappingUtils
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
@@ -35,6 +42,7 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Basic
 import org.grails.datastore.mapping.model.types.Custom
+import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.model.types.Simple
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.engine.MongoCodecEntityPersister
@@ -51,10 +59,15 @@ import org.springframework.core.convert.ConversionService
 class PersistentEntityCodec implements Codec {
     private static final Map<Class, PropertyEncoder> ENCODERS = [:]
     private static final Map<Class, PropertyDecoder> DECODERS = [:]
+    private static final String BLANK_STRING = ""
+    public static final String MONGO_SET_OPERATOR = '$set'
+    public static final String MONGO_UNSET_OPERATOR = '$unset'
 
     static {
         ENCODERS[Simple] = new SimpleEncoder()
         DECODERS[Simple] = new SimpleDecoder()
+        ENCODERS[Embedded] = new EmbeddedEncoder()
+        DECODERS[Embedded] = new EmbeddedDecoder()
         ENCODERS[Custom] = new CustomTypeEncoder()
         DECODERS[Custom] = new CustomTypeDecoder()
         ENCODERS[Basic] = new BasicCollectionTypeEncoder()
@@ -126,26 +139,94 @@ class PersistentEntityCodec implements Codec {
 
     @Override
     void encode(BsonWriter writer, Object value, EncoderContext encoderContext) {
-        def access = createEntityAccess(value)
-        def id = access.getIdentifier()
-        writer.writeStartDocument()
-        writer.writeName(MongoCodecEntityPersister.MONGO_ID_FIELD)
+        boolean includeIdentifier = true
 
-        if(id instanceof ObjectId) {
-            writer.writeObjectId(MongoCodecEntityPersister.MONGO_ID_FIELD, id)
-        }
-        else if(id instanceof Number) {
-            writer.writeInt64(((Number)id).toLong())
+        encode(writer, value, encoderContext, includeIdentifier)
+    }
+
+    /**
+     * This method will encode an update for the given object based
+     * @param value A {@link Bson} that is the update object
+     * @return A Bson
+     */
+    Bson encodeUpdate(Object value, EntityAccess access = createEntityAccess(value), EncoderContext encoderContext = EncoderContext.builder().build()) {
+        Document update = new Document()
+        if(value instanceof DirtyCheckable) {
+            def sets = new BsonDocument()
+            def unsets = new Document()
+            def writer = new BsonDocumentWriter(sets)
+            writer.writeStartDocument()
+            DirtyCheckable dirty = (DirtyCheckable)value
+            Set<String> processed = []
+            for(propertyName in dirty.listDirtyPropertyNames()) {
+                def prop = entity.getPropertyByName(propertyName)
+                if(prop != null) {
+
+                    processed << propertyName
+                    Object v = access.getProperty(prop.name)
+                    if (v != null) {
+                        def propKind = prop.getClass().superclass
+                        ENCODERS[propKind]?.encode(writer, prop, v, encoderContext, datastore)
+                    }
+                    else {
+                        unsets[prop.name] = BLANK_STRING
+                    }
+                }
+            }
+
+            for(association in entity.associations) {
+                if(processed.contains( association.name )) continue
+
+                def v = access.getProperty(association.name)
+                if( v instanceof DirtyCheckable ) {
+                    DirtyCheckable d = (DirtyCheckable)v
+                    if(d.hasChanged()) {
+                        def propKind = association.getClass().superclass
+                        ENCODERS[propKind]?.encode(writer, association, v, encoderContext, datastore)
+                    }
+                }
+
+                // TODO: handle unprocessed association
+            }
+
+            writer.writeEndDocument()
+
+            if(sets) {
+                update[MONGO_SET_OPERATOR] = sets
+            }
+            if(unsets) {
+                update[MONGO_UNSET_OPERATOR] = unsets
+            }
         }
         else {
-            writer.writeString( id.toString() )
+            // TODO: Support non-dirty checkable objects?
         }
 
-        for(PersistentProperty prop in entity.persistentProperties) {
+        return update
+    }
+
+    void encode(BsonWriter writer, value, EncoderContext encoderContext, boolean includeIdentifier) {
+        writer.writeStartDocument()
+        def access = createEntityAccess(value)
+        if (includeIdentifier) {
+
+            def id = access.getIdentifier()
+            writer.writeName(MongoCodecEntityPersister.MONGO_ID_FIELD)
+
+            if (id instanceof ObjectId) {
+                writer.writeObjectId(id)
+            } else if (id instanceof Number) {
+                writer.writeInt64(((Number) id).toLong())
+            } else {
+                writer.writeString(id.toString())
+            }
+        }
+
+        for (PersistentProperty prop in entity.persistentProperties) {
             def propKind = prop.getClass().superclass
             Object v = access.getProperty(prop.name)
-            if( v != null) {
-                ENCODERS[propKind]?.encode( writer, (PersistentProperty)prop, v, encoderContext, datastore)
+            if (v != null) {
+                ENCODERS[propKind]?.encode(writer, (PersistentProperty) prop, v, encoderContext, datastore)
             }
         }
 
@@ -460,6 +541,50 @@ class PersistentEntityCodec implements Codec {
     }
 
     /**
+     * A {@PropertyEncoder} capable of encoding {@Embedded} association types
+     */
+    static class EmbeddedEncoder implements PropertyEncoder<Embedded> {
+
+        @Override
+        void encode(BsonWriter writer, Embedded property, Object value, EncoderContext encoderContext, MongoDatastore datastore) {
+            if(value) {
+                def associatedEntity = property.associatedEntity
+                def registry = datastore.codecRegistry
+                writer.writeName property.name
+                def access = datastore.createEntityAccess(associatedEntity, value)
+
+                PersistentEntityCodec codec = (PersistentEntityCodec)registry.get(associatedEntity.javaClass)
+                codec.encode(writer, value, encoderContext, access.identifier ? true : false)
+            }
+        }
+    }
+
+    /**
+     * A {@PropertyDecoder} capable of decoding {@Embedded} association types
+     */
+    static class EmbeddedDecoder implements PropertyDecoder<Embedded> {
+
+        @Override
+        void decode(BsonReader reader, Embedded property, EntityAccess entityAccess, DecoderContext decoderContext, MongoDatastore datastore) {
+            def associatedEntity = property.associatedEntity
+            def registry = datastore.codecRegistry
+
+
+            PersistentEntityCodec codec = (PersistentEntityCodec)registry.get(associatedEntity.javaClass)
+
+            def decoded = codec.decode(reader, decoderContext)
+            if(decoded instanceof DirtyCheckable) {
+                decoded.trackChanges()
+            }
+            entityAccess.setPropertyNoConversion(
+                    property.name,
+                    decoded
+            )
+
+        }
+    }
+
+    /**
      * A {@PropertyDecoder} capable of decoding {@Basic} collection types
      */
     static class BasicCollectionTypeDecoder implements PropertyDecoder<Basic> {
@@ -476,15 +601,26 @@ class PersistentEntityCodec implements Codec {
                 def componentType = property.componentType
                 Codec codec = datastore.codecRegistry.get(property.type)
                 def value = codec.decode(reader, decoderContext)
+                def entity = entityAccess.entity
                 if(value instanceof Collection) {
-                    entityAccess.setProperty( property.name, value.collect() { conversionService.convert(it, componentType) } )
+                    def converted = value.collect() { conversionService.convert(it, componentType) }
+
+
+                    if(entity instanceof DirtyCheckable) {
+                        converted = DirtyCheckingSupport.wrap(converted, (DirtyCheckable) entity, property.name)
+                    }
+                    entityAccess.setProperty( property.name, converted )
                 }
                 else if(value instanceof Map) {
-                    entityAccess.setProperty( property.name, value.collectEntries () {  Map.Entry entry ->
+                    def converted = value.collectEntries() { Map.Entry entry ->
                         def v = entry.value
                         entry.value = conversionService.convert(v, componentType)
                         return entry
-                    } )
+                    }
+                    if(entity instanceof DirtyCheckable) {
+                        converted = new DirtyCheckingMap(converted, (DirtyCheckable) entity, property.name)
+                    }
+                    entityAccess.setProperty( property.name, converted)
                 }
             }
         }

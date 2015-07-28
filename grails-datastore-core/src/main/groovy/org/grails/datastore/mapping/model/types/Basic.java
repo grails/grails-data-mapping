@@ -57,9 +57,11 @@ public abstract class Basic extends Association {
         else if(type.isArray()) {
             this.componentType = type.getComponentType();
         }
-        else {
+
+        if(componentType == null) {
             this.componentType = Object.class;
         }
+
     }
 
     public Class getComponentType() {

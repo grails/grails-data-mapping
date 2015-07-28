@@ -18,6 +18,7 @@ import com.mongodb.WriteConcern
 import com.mongodb.bulk.BulkWriteResult
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.DeleteManyModel
+import com.mongodb.client.model.DeleteOneModel
 import com.mongodb.client.model.InsertOneModel
 import com.mongodb.client.model.UpdateOneModel
 import com.mongodb.client.model.UpdateOptions
@@ -26,6 +27,7 @@ import groovy.transform.CompileStatic
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
+import org.bson.conversions.Bson
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.OptimisticLockingException
 import org.grails.datastore.mapping.core.impl.PendingDelete
@@ -39,8 +41,11 @@ import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.datastore.mapping.model.types.Embedded
+import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.mongo.engine.MongoCodecEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
+import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.transactions.Transaction
 import org.springframework.context.ApplicationEventPublisher
@@ -126,51 +131,37 @@ class MongoCodecSession extends AbstractMongoSession {
                         if(update.vetoed) continue
 
                         DirtyCheckable changedObject = (DirtyCheckable) update.getNativeEntry()
-                        def changedProperties = changedObject.listDirtyPropertyNames()
-                        Document updateDoc = new Document()
+                        PersistentEntityCodec codec = (PersistentEntityCodec)datastore.codecRegistry.get(changedObject.getClass())
+
                         def entityAccess = update.entityAccess
-                        Document sets = new Document()
-                        Document unsets = new Document()
-                        for(prop in changedProperties) {
-                            if(persistentEntity.getPropertyByName(prop) == null) continue
-                            def v = entityAccess.getProperty(prop)
-                            if(v == null) {
-                                unsets[prop] = v
+                        def updateDoc = codec.encodeUpdate(changedObject, entityAccess)
+
+                        if(updateDoc) {
+
+                            final Object nativeKey = update.nativeKey
+                            final Document id = new Document(MongoEntityPersister.MONGO_ID_FIELD, nativeKey)
+                            MongoCodecEntityPersister documentEntityPersister = (MongoCodecEntityPersister) getPersister(persistentEntity);
+                            if(documentEntityPersister.isVersioned(entityAccess)) {
+                                def currentVersion = documentEntityPersister.getCurrentVersion(entityAccess)
+                                documentEntityPersister.incrementVersion(entityAccess)
+
+                                // if the entity is versioned we add to the query the current version
+                                // if the query doesn't match a result this means the document has been updated by
+                                // another thread and an optimistic locking exception should be thrown
+                                id[GormProperties.VERSION] = currentVersion
+                                numberOfOptimisticUpdates[name]++
                             }
                             else {
-                                sets[prop] = v
+                                numberOfPessimisticUpdates[name]++
                             }
+                            final options = new UpdateOptions()
+
+                            entityWrites << new UpdateOneModel<Document>(id, updateDoc, options.upsert(false))
+
+                            final List cascadeOperations = update.cascadeOperations
+                            addPostFlushOperations cascadeOperations
                         }
 
-                        if(sets) {
-                            updateDoc['$set'] = sets
-                        }
-                        if(unsets) {
-                            updateDoc['$unset'] = unsets
-                        }
-
-                        final Object nativeKey = update.nativeKey
-                        final Document id = new Document(MongoEntityPersister.MONGO_ID_FIELD, nativeKey)
-                        MongoCodecEntityPersister documentEntityPersister = (MongoCodecEntityPersister) getPersister(persistentEntity);
-                        if(documentEntityPersister.isVersioned(entityAccess)) {
-                            Object currentVersion = documentEntityPersister.getCurrentVersion(entityAccess);
-                            documentEntityPersister.incrementVersion(entityAccess);
-
-                            // if the entity is versioned we add to the query the current version
-                            // if the query doesn't match a result this means the document has been updated by
-                            // another thread an an optimistic locking exception should be thrown
-                            id[GormProperties.VERSION] = currentVersion
-                            numberOfOptimisticUpdates[name]++
-                        }
-                        else {
-                            numberOfPessimisticUpdates[name]++
-                        }
-                        final UpdateOptions options = new UpdateOptions();
-
-                        entityWrites.add(new UpdateOneModel<Document>(id, updateDoc, options.upsert(false)));
-
-                        final List cascadeOperations = update.getCascadeOperations();
-                        addPostFlushOperations(cascadeOperations);
                     }
                 }
             }
@@ -194,7 +185,12 @@ class MongoCodecSession extends AbstractMongoSession {
                         }
 
                     }
-                    entityWrites<< new DeleteManyModel<Document>(new Document( MongoEntityPersister.MONGO_ID_FIELD, new Document(MongoQuery.MONGO_IN_OPERATOR, nativeKeys)))
+                    if(nativeKeys.size() == 1) {
+                        entityWrites << new DeleteOneModel<Document>(new Document( MongoEntityPersister.MONGO_ID_FIELD, nativeKeys.get(0)))
+                    }
+                    else {
+                        entityWrites << new DeleteManyModel<Document>(new Document( MongoEntityPersister.MONGO_ID_FIELD, new Document(MongoQuery.MONGO_IN_OPERATOR, nativeKeys)))
+                    }
                 }
             }
 

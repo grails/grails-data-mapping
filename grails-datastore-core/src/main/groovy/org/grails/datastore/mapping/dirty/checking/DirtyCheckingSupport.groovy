@@ -74,4 +74,22 @@ class DirtyCheckingSupport {
         }
         return false
     }
+
+    /**
+     * Wraps a collection in dirty checking capability
+     *
+     * @param coll The collection
+     * @param parent The parent
+     * @param property The property
+     * @return The wrapped collection
+     */
+    static Collection wrap(Collection coll, DirtyCheckable parent, String property) {
+        if(coll instanceof List) {
+            return new DirtyCheckingList(coll, parent, property)
+        }
+        if(coll instanceof Set) {
+            return new DirtyCheckingSet(coll, parent, property)
+        }
+        return new DirtyCheckingCollection(coll, parent, property)
+    }
 }

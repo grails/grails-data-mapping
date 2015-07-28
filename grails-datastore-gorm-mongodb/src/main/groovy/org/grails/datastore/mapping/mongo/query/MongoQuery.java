@@ -26,11 +26,16 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import grails.mongodb.geo.*;
 import groovy.lang.Closure;
+import org.bson.BsonDocument;
+import org.bson.BsonDocumentWriter;
 import org.bson.Document;
+import org.bson.codecs.Codec;
+import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.mongo.geo.GeoJSONType;
+import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.BeanEntityAccess;
@@ -46,11 +51,14 @@ import org.grails.datastore.mapping.model.types.Embedded;
 import org.grails.datastore.mapping.model.types.EmbeddedCollection;
 import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.mongo.AbstractMongoSession;
+import org.grails.datastore.mapping.mongo.MongoCodecSession;
+import org.grails.datastore.mapping.mongo.MongoDatastore;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.engine.MongoCodecEntityPersister;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
+import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec;
 import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
@@ -136,6 +144,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     public static final String EXISTS_OPERATOR = "$exists";
 
+    public static final EncoderContext ENCODER_CONTEXT = EncoderContext.builder().build();
+
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
             public void handle(Session session, IdEquals criterion, Document query, PersistentEntity entity) {
@@ -155,7 +165,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     query.put(propertyKey, collectionQuery);
                 } else if (associatedEntity instanceof EmbeddedPersistentEntity || association instanceof Embedded) {
                     Document associatedEntityQuery = new Document();
-                    populateMongoQuery((MongoSession) session, associatedEntityQuery, criterion.getCriteria(), associatedEntity);
+                    populateMongoQuery((AbstractMongoSession) session, associatedEntityQuery, criterion.getCriteria(), associatedEntity);
                     for (String property : associatedEntityQuery.keySet()) {
                         String propertyKey = getPropertyName(entity, association.getName());
                         query.put(propertyKey + '.' + property, associatedEntityQuery.get(property));
@@ -172,8 +182,17 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 PersistentProperty persistentProperty = entity.getPropertyByName(criterion.getProperty());
                 Object value;
                 if ((persistentProperty instanceof Embedded) && criterion.getValue() != null) {
-                    MongoEntityPersister persister = (MongoEntityPersister) session.getPersister(entity.getJavaClass());
-                    value = persister.createNativeObjectForEmbedded((Association) persistentProperty, criterion.getValue());
+                    if(session instanceof MongoCodecSession) {
+                        final MongoDatastore datastore = (MongoDatastore) session.getDatastore();
+                        final PersistentEntityCodec codec = (PersistentEntityCodec)datastore.getCodecRegistry().get(persistentProperty.getType());
+                        final BsonDocument doc = new BsonDocument();
+                        codec.encode(new BsonDocumentWriter(doc), criterion.getValue(), ENCODER_CONTEXT, false);
+                        value = doc;
+                    }
+                    else {
+                        MongoEntityPersister persister = (MongoEntityPersister) session.getPersister(entity.getJavaClass());
+                        value = persister.createNativeObjectForEmbedded((Association) persistentProperty, criterion.getValue());
+                    }
                 } else {
                     value = criterion.getValue();
                 }
@@ -1811,7 +1830,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 while (cursor.hasNext()) {
                     if (internalIndex > index)
                         throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
-                    Object o = isCodecPersister ? cursor.next() : convertDBObject(cursor.next());
+                    Object o = isCodecPersister ? nextDecoded() : convertDBObject(nextDecoded());
                     initializedObjects.add(internalIndex, o);
                     if (index == internalIndex++) {
                         return o;
@@ -1820,6 +1839,16 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 initialized = true;
             }
             throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
+        }
+
+        protected Object nextDecoded() {
+            final Object o = cursor.next();
+            if(isCodecPersister) {
+                final MongoDatastore datastore = (MongoDatastore) mongoEntityPersister.getSession().getDatastore();
+                final PersistentEntity entity = mongoEntityPersister.getPersistentEntity();
+                mongoEntityPersister.firePostLoadEvent(entity, datastore.createEntityAccess(entity, o));
+            }
+            return o;
         }
 
         @Override
@@ -1848,7 +1877,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             if (initialized) return;
 
             while (cursor.hasNext()) {
-                Object dbo = cursor.next();
+                Object dbo = nextDecoded();
                 Object current = isCodecPersister ? dbo : convertDBObject(dbo) ;
                 initializedObjects.add(current);
             }
@@ -1885,7 +1914,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
                 @SuppressWarnings("unchecked")
                 public Object next() {
-                    Object dbo = cursor.next();
+                    Object dbo = nextDecoded();
                     current = isCodecPersister ? dbo : convertDBObject(dbo);
                     if (index < initializedObjects.size()){
 

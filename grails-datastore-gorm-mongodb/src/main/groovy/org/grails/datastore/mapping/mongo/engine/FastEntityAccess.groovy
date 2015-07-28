@@ -36,16 +36,12 @@ class FastEntityAccess implements EntityAccess {
     final Map<String, FastMethod> fastSetters
     final ConversionService conversionService
     final FastClassData fastClassData
-    final Map<String, Class> propertyTypes = new HashMap<String, Class>().withDefault { String name ->
-        persistentEntity.getPropertyByName(name).type
-    }
 
     FastEntityAccess(Object entity, FastClassData fastClassData, ConversionService conversionService) {
         this.entity = entity
         this.fastClassData = fastClassData
         this.persistentEntity = fastClassData.entity
         this.identifierName = persistentEntity.identity.name
-        propertyTypes[identifierName] = fastClassData.idReader.returnType
         this.fastGetters = fastClassData.fastGetters
         this.fastSetters = fastClassData.fastSetters
         this.conversionService = conversionService
@@ -53,7 +49,8 @@ class FastEntityAccess implements EntityAccess {
 
     @Override
     void setProperty(String property, Object newValue) {
-        fastSetters[property].invoke(entity, conversionService.convert(newValue, propertyTypes[property] ))
+        def converted = conversionService.convert(newValue, fastGetters[property].returnType)
+        fastSetters[property].invoke(entity, converted)
     }
 
     @Override
@@ -78,7 +75,7 @@ class FastEntityAccess implements EntityAccess {
 
     @Override
     void setIdentifier(Object id) {
-        fastSetters[identifierName].invoke(entity, conversionService.convert(id, propertyTypes[identifierName]))
+        fastSetters[identifierName].invoke(entity, conversionService.convert(id, fastClassData.idReader.returnType))
     }
 
     @Override
