@@ -8,7 +8,7 @@ package org.grails.datastore.mapping.dirty.checking
  */
 class DirtyCheckingSet extends DirtyCheckingCollection implements Set {
 
-    @Delegate List target
+    @Delegate Set target
 
     DirtyCheckingSet(Set target, DirtyCheckable parent, String property) {
         super(target, parent, property)

@@ -21,6 +21,7 @@ import org.bson.BsonBinary
 import org.bson.BsonDocument
 import org.bson.BsonDocumentWriter
 import org.bson.BsonReader
+import org.bson.BsonString
 import org.bson.BsonType
 import org.bson.BsonValue
 import org.bson.BsonWriter
@@ -32,6 +33,7 @@ import org.bson.codecs.configuration.CodecRegistry
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
 import org.grails.datastore.mapping.config.Property
+import org.grails.datastore.mapping.core.DatastoreException
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingCollection
@@ -51,6 +53,7 @@ import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.model.types.EmbeddedCollection
 import org.grails.datastore.mapping.model.types.Identity
 import org.grails.datastore.mapping.model.types.ManyToOne
+import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.model.types.OneToOne
 import org.grails.datastore.mapping.model.types.Simple
 import org.grails.datastore.mapping.model.types.ToOne
@@ -128,6 +131,7 @@ class PersistentEntityCodec implements Codec {
                                 .newInstance()
                     access = createEntityAccess(childEntity, instance)
                 }
+                bsonType = bsonReader.readBsonType()
                 continue
             }
 
@@ -198,12 +202,15 @@ class PersistentEntityCodec implements Codec {
             Set<String> processed = []
 
             def dirtyProperties = dirty.listDirtyPropertyNames()
-            println "DIRTY = $dirtyProperties"
             boolean isNew = dirtyProperties.isEmpty() && dirty.hasChanged()
             if(isNew) {
                 // if it is new it can only be an embedded entity that has now been updated
                 // so we get all properties
                 dirtyProperties = entity.persistentPropertyNames
+                if(!entity.isRoot()) {
+                    sets[MongoCodecEntityPersister.MONGO_CLASS_FIELD] = new BsonString(entity.discriminator)
+                }
+
             }
 
             for(propertyName in dirtyProperties) {
@@ -225,7 +232,7 @@ class PersistentEntityCodec implements Codec {
                         }
 
                     }
-                    else {
+                    else if(!isNew) {
                         unsets[prop.name] = BLANK_STRING
                     }
                 }
@@ -233,13 +240,28 @@ class PersistentEntityCodec implements Codec {
 
             for(association in entity.associations) {
                 if(processed.contains( association.name )) continue
-
-                def v = access.getProperty(association.name)
-                if( v != null ) {
-                    encodeEmbeddedUpdate(sets, association, v)
+                if(association instanceof OneToMany) {
+                    def v = access.getProperty(association.name)
+                    if (v != null) {
+                        // TODO: handle unprocessed association
+                    }
                 }
-
-                // TODO: handle unprocessed association
+                else if(association instanceof ToOne) {
+                    def v = access.getProperty(association.name)
+                    if( v instanceof DirtyCheckable ) {
+                        if(((DirtyCheckable)v).hasChanged()) {
+                            encodeEmbeddedUpdate(sets, association, v)
+                        }
+                    }
+                }
+                else if(association instanceof EmbeddedCollection) {
+                    def v = access.getProperty(association.name)
+                    if( v instanceof DirtyCheckableCollection ) {
+                        if(((DirtyCheckableCollection)v).hasChanged()) {
+                            encodeEmbeddedCollectionUpdate(access, sets, association, v)
+                        }
+                    }
+                }
             }
 
             writer.writeEndDocument()
@@ -260,7 +282,7 @@ class PersistentEntityCodec implements Codec {
 
     protected void encodeEmbeddedCollectionUpdate(EntityAccess parentAccess, BsonDocument sets, Association association, v) {
         if(v instanceof Collection) {
-            if(v instanceof DirtyCheckableCollection) {
+            if((v instanceof DirtyCheckableCollection) && !((DirtyCheckableCollection)v).hasChangedSize()) {
                 int i = 0
                 for(o in v) {
                     def embeddedUpdate = encodeUpdate(o)
@@ -269,20 +291,39 @@ class PersistentEntityCodec implements Codec {
 
                         def map = (Map) embeddedSets
                         for (key in map.keySet()) {
-                            sets.put("${association.name}.${i++}.$key", (BsonValue) map.get(key))
+                            sets.put("${association.name}.${i}.$key", (BsonValue) map.get(key))
                         }
                     }
+                    i++
                 }
             }
             else {
-                // if this is not a dirty checkable collection then a whole new collection has been
+                // if this is not a dirty checkable collection or the collection has changed size then a whole new collection has been
                 // set so we overwrite existing
                 def associatedEntity = association.associatedEntity
-                def entityCodec = datastore.getPersistentEntityCodec( associatedEntity.javaClass )
+                def rootClass = associatedEntity.javaClass
+                def mongoDatastore = this.datastore
+                def entityCodec = mongoDatastore.getPersistentEntityCodec(rootClass)
                 def inverseProperty = association.inverseSide
                 List<BsonValue> documents =[]
                 for(o in v) {
-                    def ea = createEntityAccess(associatedEntity, o)
+                    if(o == null) {
+                        documents << null
+                        continue
+                    }
+                    PersistentEntity entity = associatedEntity
+                    PersistentEntityCodec codec = entityCodec
+
+                    def cls = o.getClass()
+                    if(rootClass != cls) {
+                        // a subclass, so lookup correct codec
+                        entity = mongoDatastore.mappingContext.getPersistentEntity(cls.name)
+                        if(entity == null) {
+                            throw new DatastoreException("Value [$o] is not a valid type for association [$association]" )
+                        }
+                        codec = mongoDatastore.getPersistentEntityCodec(cls)
+                    }
+                    def ea = createEntityAccess(entity, o)
                     if(inverseProperty != null) {
                         if(inverseProperty instanceof ToOne) {
                             ea.setPropertyNoConversion( inverseProperty.name, parentAccess.entity)
@@ -291,7 +332,7 @@ class PersistentEntityCodec implements Codec {
                     }
                     def doc = new BsonDocument()
                     def id = ea.identifier
-                    entityCodec.encode( new BsonDocumentWriter(doc), o, DEFAULT_ENCODER_CONTEXT, id != null )
+                    codec.encode( new BsonDocumentWriter(doc), o, DEFAULT_ENCODER_CONTEXT, id != null )
                     documents << doc
                 }
                 def bsonArray = new BsonArray(documents)
@@ -964,6 +1005,23 @@ class PersistentEntityCodec implements Codec {
                 writer.writeName( MappingUtils.getTargetKey(property) )
                 Codec codec = datastore.codecRegistry.get(property.type)
                 codec.encode(writer, value, encoderContext)
+                def parent = parentAccess.entity
+                if(parent instanceof DirtyCheckable) {
+                    if(value instanceof Collection) {
+                        def propertyName = property.name
+                        parentAccess.setPropertyNoConversion(
+                                propertyName,
+                                DirtyCheckingSupport.wrap(value, parent, propertyName)
+                        )
+                    }
+                    else if(value instanceof Map) {
+                        def propertyName = property.name
+                        parentAccess.setPropertyNoConversion(
+                                propertyName,
+                                new DirtyCheckingMap(value, parent, propertyName)
+                        )
+                    }
+                }
             }
         }
     }

@@ -14,11 +14,28 @@ class DirtyCheckingMap implements Map, DirtyCheckableCollection {
     final @Delegate Map target
     final DirtyCheckable parent
     final String property
+    final int originalSize
 
     DirtyCheckingMap(Map target, DirtyCheckable parent, String property) {
         this.target = target
         this.parent = parent
         this.property = property
+        this.originalSize = target.size()
+    }
+
+    @Override
+    boolean hasGrown() {
+        return size() > originalSize
+    }
+
+    @Override
+    boolean hasShrunk() {
+        return size() < originalSize
+    }
+
+    @Override
+    boolean hasChangedSize() {
+        return size() != originalSize
     }
 
     boolean hasChanged() {
