@@ -134,6 +134,7 @@ class EmbeddedAssociationSpec extends GormDatastoreSpec {
             i.address.postCode == '30483'
             i.otherAddresses != null
             i.otherAddresses.size() == 2
+            i.otherAddresses[0] instanceof Address
             i.otherAddresses[0].postCode == '12345'
             i.otherAddresses[1].postCode == '23456'
 
@@ -322,8 +323,12 @@ class Address {
     }
 }
 
+
+
 @Entity
 class LongAddress extends Address {
     String firstLine
     String city
+
+
 }

@@ -30,6 +30,7 @@ import org.bson.types.ObjectId;
 import org.grails.datastore.gorm.mongo.bean.factory.*;
 import org.grails.datastore.gorm.mongo.bean.factory.MongoClientFactoryBean;
 import org.grails.datastore.mapping.core.AbstractDatastore;
+import org.grails.datastore.mapping.core.ConnectionNotFoundException;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.StatelessDatastore;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
@@ -235,6 +236,19 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         return codecRegistry;
     }
 
+    public PersistentEntityCodec getPersistentEntityCodec(Class entityClass) {
+        if(entityClass == null) {
+            throw new IllegalArgumentException("Argument [entityClass] cannot be null");
+        }
+
+        final PersistentEntity entity = getMappingContext().getPersistentEntity(entityClass.getName());
+        if(entity == null) {
+            throw new IllegalArgumentException("Argument ["+entityClass+"] is not an entity");
+        }
+
+        return (PersistentEntityCodec) getCodecRegistry().get(entity.getJavaClass());
+    }
+
     /**
      * @deprecated Use {@link #getMongoClient()} instead
      */
@@ -272,11 +286,16 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     @Override
     protected Session createSession(Map<String, String> connDetails) {
         if(stateless) {
-            return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), true);
+            return createStatelessSession(connDetails);
         }
         else {
             return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), false);
         }
+    }
+
+    @Override
+    public AbstractMongoSession getCurrentSession() throws ConnectionNotFoundException {
+        return (AbstractMongoSession) super.getCurrentSession();
     }
 
     @Override

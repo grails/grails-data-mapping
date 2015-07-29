@@ -9,7 +9,7 @@ import groovy.transform.CompileStatic
  * @since 4.1
  */
 @CompileStatic
-class DirtyCheckingCollection implements Collection {
+class DirtyCheckingCollection implements Collection, DirtyCheckableCollection {
 
     final @Delegate Collection target
     final DirtyCheckable parent
@@ -19,6 +19,10 @@ class DirtyCheckingCollection implements Collection {
         this.target = target
         this.parent = parent
         this.property = property
+    }
+
+    boolean hasChanged() {
+        parent.hasChanged(property)
     }
 
     @Override

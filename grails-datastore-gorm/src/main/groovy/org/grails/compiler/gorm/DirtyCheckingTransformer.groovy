@@ -31,8 +31,10 @@ import org.codehaus.groovy.classgen.GeneratorContext
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.grails.compiler.injection.AstTransformer
 import grails.compiler.ast.GrailsArtefactClassInjector
+import org.grails.compiler.injection.GrailsASTUtils
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.core.support.GrailsDomainConfigurationUtil
+import org.yaml.snakeyaml.tokens.DirectiveToken
 
 import static org.grails.compiler.injection.GrailsASTUtils.*
 import grails.compiler.ast.GrailsDomainClassInjector
@@ -81,7 +83,9 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
         MethodNode containsKeyMethodNode = mapClassNode.getMethods("containsKey")[0]
         final markDirtyMethodNode = changeTrackableClassNode.getMethod(METHOD_NAME_MARK_DIRTY, new Parameter(ClassHelper.STRING_TYPE, "propertyName"))
 
-        final shouldWeave = classNode.getSuperClass().equals(OBJECT_CLASS_NODE)
+
+        def superClass = classNode.getSuperClass()
+        final shouldWeave = superClass.equals(OBJECT_CLASS_NODE)
         if (shouldWeave) {
             FieldNode changingTrackingField = new FieldNode(CHANGE_TRACKING_FIELD_NAME, (PROTECTED | TRANSIENT).intValue(), mapClassNode, classNode, null);
             if(!classNode.getField(CHANGE_TRACKING_FIELD_NAME)) {
@@ -201,6 +205,11 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                 final newMethod = classNode.addMethod(METHOD_NAME_GET_PERSISTENT_VALUE, PUBLIC, ClassHelper.OBJECT_TYPE, propertyNameParameterArray, null, methodBody)
                 newMethod.addAnnotation(persistenceMethodAnnotation)
             }
+
+        }
+
+
+        if(shouldWeave || isSubclassOfOrImplementsInterface(  superClass, changeTrackableClassNode)) {
             // Now we go through all the properties, if the property is a persistent property and change tracking has been initiated then we add to the setter of the property
             // code that will mark the property as dirty. Note that if the property has no getter we have to add one, since only adding the setter results in a read-only property
             final propertyNodes = classNode.getProperties()
@@ -286,6 +295,8 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                 }
             }
         }
+
+
     }
 
     @Override

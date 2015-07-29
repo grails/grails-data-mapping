@@ -39,6 +39,7 @@ import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.BeanEntityAccess;
+import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
@@ -159,7 +160,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 PersistentEntity associatedEntity = association.getAssociatedEntity();
                 if (association instanceof EmbeddedCollection) {
                     Document associationCollectionQuery = new Document();
-                    populateMongoQuery((MongoSession) session, associationCollectionQuery, criterion.getCriteria(), associatedEntity);
+                    populateMongoQuery((AbstractMongoSession) session, associationCollectionQuery, criterion.getCriteria(), associatedEntity);
                     Document collectionQuery = new Document("$elemMatch", associationCollectionQuery);
                     String propertyKey = getPropertyName(entity, association.getName());
                     query.put(propertyKey, collectionQuery);
@@ -1844,9 +1845,14 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         protected Object nextDecoded() {
             final Object o = cursor.next();
             if(isCodecPersister) {
-                final MongoDatastore datastore = (MongoDatastore) mongoEntityPersister.getSession().getDatastore();
+                final AbstractMongoSession session = (AbstractMongoSession) mongoEntityPersister.getSession();
                 final PersistentEntity entity = mongoEntityPersister.getPersistentEntity();
-                mongoEntityPersister.firePostLoadEvent(entity, datastore.createEntityAccess(entity, o));
+                final EntityAccess entityAccess = session.createEntityAccess(entity, o);
+                final Object id = entityAccess.getIdentifier();
+                if(id != null) {
+                    session.cacheInstance(entity.getJavaClass(), (Serializable) id, o);
+                }
+                mongoEntityPersister.firePostLoadEvent(entity, entityAccess);
             }
             return o;
         }

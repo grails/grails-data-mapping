@@ -11,6 +11,7 @@ import spock.lang.Issue
  */
 class DirtyCheckTransformationSpec extends Specification {
 
+
     void "Test dirty check with generic types"() {
         when:"A Dirty checkable class with generic types is parsed"
             def gcl = new GroovyClassLoader()
@@ -22,6 +23,11 @@ import grails.gorm.dirty.checking.DirtyCheck
 @DirtyCheck
 class Author {
     Set<Book> books
+}
+
+@DirtyCheck
+class ChildAuthor extends Author {
+    int age
 }
 
 ''')
@@ -125,6 +131,17 @@ class FundProduct {
         then: "getOrginal Value returns null"
         book.hasChanged('simple')
     }
+
+    void "Test dirty check with inheritance"() {
+        when:"An inherited property is updated"
+            def b = new KidsBook()
+            b.age = 10
+            b.trackChanges()
+            b.age = 12
+        then:"It is dirty"
+            b.hasChanged()
+            b.hasChanged("age")
+    }
 }
 
 @DirtyCheck
@@ -141,5 +158,10 @@ class Book {
     String getAuthor() {
         return this.author
     }
+}
+
+@DirtyCheck
+class KidsBook extends Book{
+    int age
 }
 

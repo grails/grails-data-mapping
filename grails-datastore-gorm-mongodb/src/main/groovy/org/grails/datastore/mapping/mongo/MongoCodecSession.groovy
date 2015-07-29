@@ -61,6 +61,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 @CompileStatic
 class MongoCodecSession extends AbstractMongoSession {
+    public static final String ENTITY_ACCESS = "org.grails.mongodb.ENTITY_ACCESS"
     protected Map<Class, MongoCodecEntityPersister> mongoCodecEntityPersisterMap = new ConcurrentHashMap<Class, MongoCodecEntityPersister>().withDefault { Class type ->
         def context = getDocumentMappingContext()
         def entity = context.getPersistentEntity(type.name)
@@ -81,6 +82,7 @@ class MongoCodecSession extends AbstractMongoSession {
     MongoDatastore getDatastore() {
         return (MongoDatastore)super.getDatastore()
     }
+
 
     @Override
     void flush(WriteConcern writeConcern) {

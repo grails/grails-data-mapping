@@ -359,7 +359,7 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
 
     @Override
     protected EntityAccess createEntityAccess(PersistentEntity pe, Object obj) {
-        return mongoSession.datastore.createEntityAccess(pe, obj)
+        return mongoSession.createEntityAccess(pe, obj)
     }
 
     @Override

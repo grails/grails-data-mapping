@@ -21,6 +21,7 @@ import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.impl.PendingOperation;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
+import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
@@ -65,6 +66,17 @@ public abstract class AbstractMongoSession extends AbstractSession<MongoClient> 
     @Override
     public void flush() {
         flush(this.getWriteConcern());
+    }
+
+    public EntityAccess createEntityAccess(PersistentEntity entity, Object instance) {
+        Object access = getAttribute(instance, MongoCodecSession.ENTITY_ACCESS);
+        if (access != null) {
+            return (EntityAccess) access;
+        } else {
+            EntityAccess ea = getDatastore().createEntityAccess(entity, instance);
+            setAttribute(instance, MongoCodecSession.ENTITY_ACCESS, ea);
+            return ea;
+        }
     }
 
     public abstract void flush(WriteConcern writeConcern);

@@ -3,10 +3,13 @@ package org.grails.datastore.mapping.dirty.checking
 import groovy.transform.CompileStatic
 
 /**
- * Created by graemerocher on 27/07/15.
+ * A map that can be dirty checked
+ *
+ * @author Graeme Rocher
+ * @since 4.1
  */
 @CompileStatic
-class DirtyCheckingMap implements Map {
+class DirtyCheckingMap implements Map, DirtyCheckableCollection {
 
     final @Delegate Map target
     final DirtyCheckable parent
@@ -16,6 +19,10 @@ class DirtyCheckingMap implements Map {
         this.target = target
         this.parent = parent
         this.property = property
+    }
+
+    boolean hasChanged() {
+        parent.hasChanged(property)
     }
 
     @Override
