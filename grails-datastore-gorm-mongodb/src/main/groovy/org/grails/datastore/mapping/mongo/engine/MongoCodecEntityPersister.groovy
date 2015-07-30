@@ -192,6 +192,7 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
 
         final boolean idIsNull = id == null
         final boolean isUpdate = !idIsNull && !isInsert
+        def mongoCodecSession = mongoSession
 
         if (isUpdate && !getSession().isDirty(obj)) {
             return (Serializable) id;
@@ -211,9 +212,11 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
             else if(idIsNull) {
                 throw new DataIntegrityViolationException("Entity [$obj] has null identifier when identifier strategy is manual assignment. Assign an appropriate identifier before persisting.")
             }
+            else if(isAssigned) {
+               isUpdate = mongoCodecSession.contains(obj)
+            }
 
             // now we must ensure that all cascades are handled and inserts / updates scheduled
-            def mongoCodecSession = mongoSession
             for( association in entity.associations ) {
                 if( association.doesCascade(CascadeType.PERSIST) && association.isOwningSide() ) {
                     if(association instanceof ToOne) {
@@ -380,7 +383,7 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
                     def entityAccess = self.createEntityAccess(pe, obj)
                     if( !self.cancelDelete( pe, entityAccess) ) {
                         mongoSession.clear(obj)
-                        addCascadeOperation(new PendingOperationAdapter() {
+                        addCascadeOperation(new PendingOperationAdapter(pe, id, obj) {
                             @Override
                             void run() {
                                 self.firePostDeleteEvent pe, entityAccess
@@ -392,6 +395,17 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
                     }
                 }
             })
+            def access = createEntityAccess(pe, obj)
+            for(association in pe.associations) {
+                if(association.isOwningSide() && association.doesCascade(CascadeType.REMOVE)) {
+                    if(!association.isEmbedded()) {
+                        def v = access.getProperty(association.name)
+                        if(v != null) {
+                            mongoSession.delete( v )
+                        }
+                    }
+                }
+            }
         }
     }
 

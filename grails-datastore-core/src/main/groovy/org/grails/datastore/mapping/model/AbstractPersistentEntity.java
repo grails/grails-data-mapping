@@ -53,6 +53,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     private boolean external;
     private MappingProperties mappingProperties = new MappingProperties();
     private boolean initialized = false;
+    private boolean versionCompatibleType;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         Assert.notNull(javaClass, "The argument [javaClass] cannot be null");
@@ -112,10 +113,16 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
             getMapping().getMappedForm(); // initialize mapping
 
             if (mappingProperties.isVersioned()) {
-                version = propertiesByName.get("version");
+                version = propertiesByName.get(GormProperties.VERSION);
                 if(version == null) {
                     mappingProperties.setVersion(false);
                 }
+            }
+
+            final PersistentProperty v = getVersion();
+            if(v != null) {
+                final Class type = v.getType();
+                this.versionCompatibleType = Number.class.isAssignableFrom(type) || Date.class.isAssignableFrom(type);
             }
         }
 
@@ -206,7 +213,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
 
     public boolean isVersioned() {
         initializeMappingProperties();
-        return mappingProperties.isVersioned();
+        return this.versionCompatibleType && mappingProperties.isVersioned();
     }
 
     public Class getJavaClass() {
