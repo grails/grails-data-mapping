@@ -346,10 +346,6 @@ public abstract class EntityPersister implements Persister {
     }
 
     public void incrementVersion(final EntityAccess ea) {
-        incrementEntityVersion(ea);
-    }
-
-    public static void incrementEntityVersion(EntityAccess ea) {
         if (Number.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
             Number currentVersion = (Number) ea.getProperty(GormProperties.VERSION);
             if (currentVersion == null) {
@@ -358,7 +354,7 @@ public abstract class EntityPersister implements Persister {
             ea.setProperty(GormProperties.VERSION, currentVersion.longValue() + 1);
         }
         else {
-            setDateVersionInternal(ea);
+            setDateVersion(ea);
         }
     }
 
@@ -372,10 +368,6 @@ public abstract class EntityPersister implements Persister {
     }
 
     protected void setDateVersion(final EntityAccess ea) {
-        setDateVersionInternal(ea);
-    }
-
-    private static void setDateVersionInternal(EntityAccess ea) {
         if (Timestamp.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
             ea.setProperty(GormProperties.VERSION, new Timestamp(System.currentTimeMillis()));
         }

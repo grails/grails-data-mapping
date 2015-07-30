@@ -89,13 +89,6 @@ public abstract class Association<T> extends AbstractPersistentProperty {
         return cascadeOperation != null && (cascades.contains(CascadeType.ALL) || cascades.contains(cascadeOperation));
     }
 
-    /**
-     * @return Whether this association is embedded
-     */
-    public boolean isEmbedded() {
-        return this instanceof Embedded || this instanceof EmbeddedCollection;
-    }
-
     protected List<CascadeType> getCascadeOperations() {
         List<CascadeType> cascades;
         if (cascadeOperations.isEmpty()) {

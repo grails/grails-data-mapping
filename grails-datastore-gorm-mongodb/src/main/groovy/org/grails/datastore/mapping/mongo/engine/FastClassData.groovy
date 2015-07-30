@@ -16,11 +16,9 @@ package org.grails.datastore.mapping.mongo.engine
 
 import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
-import org.grails.datastore.mapping.engine.internal.MappingUtils
 import org.grails.datastore.mapping.model.ClassMapping
 import org.grails.datastore.mapping.model.IdentityMapping
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.PersistentProperty
 import org.springframework.cglib.reflect.FastClass
 import org.springframework.cglib.reflect.FastMethod
 
@@ -43,9 +41,6 @@ class FastClassData {
 
     FastClassData(PersistentEntity entity) {
         this.entity = entity
-        if(!entity.isInitialized()) {
-            entity.initialize()
-        }
         this.fastClass = FastClass.create(entity.javaClass)
         if(entity.identity != null) {
             def identifierName = getIdentifierName(entity.mapping)
@@ -58,23 +53,10 @@ class FastClassData {
             idReader = null
         }
 
-
-        def version = entity.version
-        if(version != null) {
-            def versionName = version.name
-            def getterName = MappingUtils.getGetterName(versionName)
-            def setterName = MappingUtils.getSetterName(versionName)
-            fastGetters[versionName] = fastClass.getMethod(getterName, ZERO_CLASS_ARRAY)
-            fastSetters[versionName] = fastClass.getMethod(setterName, [version.type] as Class[])
-        }
-
         for(prop in entity.persistentProperties) {
             def name = prop.name
-
-            def getterName = MappingUtils.getGetterName(name)
-            def setterName = MappingUtils.getSetterName(name)
-            fastGetters[name] = fastClass.getMethod(getterName, ZERO_CLASS_ARRAY)
-            fastSetters[name] = fastClass.getMethod(setterName, [prop.type] as Class[])
+            fastGetters[name] = fastClass.getMethod( GrailsNameUtils.getGetterName(name), ZERO_CLASS_ARRAY)
+            fastSetters[name] = fastClass.getMethod( GrailsNameUtils.getSetterName(name), [prop.type] as Class[])
         }
     }
 

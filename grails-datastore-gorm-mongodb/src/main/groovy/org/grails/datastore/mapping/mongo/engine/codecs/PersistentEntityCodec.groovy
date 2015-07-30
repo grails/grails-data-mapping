@@ -32,14 +32,12 @@ import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingMap
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport
 import org.grails.datastore.mapping.engine.EntityAccess
-import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.engine.internal.MappingUtils
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.PropertyMapping
-import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.*
 import org.grails.datastore.mapping.mongo.AbstractMongoSession
 import org.grails.datastore.mapping.mongo.MongoDatastore
@@ -113,9 +111,7 @@ class PersistentEntityCodec implements Codec {
                     persistentEntity = childEntity
                     instance = childEntity
                                 .newInstance()
-                    def newAccess = createEntityAccess(childEntity, instance)
-                    newAccess.setIdentifier( access.identifier )
-                    access = newAccess
+                    access = createEntityAccess(childEntity, instance)
                 }
                 bsonType = bsonReader.readBsonType()
                 continue
@@ -214,7 +210,6 @@ class PersistentEntityCodec implements Codec {
 
             def dirtyProperties = dirty.listDirtyPropertyNames()
             boolean isNew = dirtyProperties.isEmpty() && dirty.hasChanged()
-            def isVersioned = entity.isVersioned()
             if(isNew) {
                 // if it is new it can only be an embedded entity that has now been updated
                 // so we get all properties
@@ -223,14 +218,8 @@ class PersistentEntityCodec implements Codec {
                     sets[MongoCodecEntityPersister.MONGO_CLASS_FIELD] = new BsonString(entity.discriminator)
                 }
 
-                if(isVersioned) {
-                    EntityPersister.incrementEntityVersion(access)
-                }
-
             }
 
-
-            def mongoDatastore = datastore
             for(propertyName in dirtyProperties) {
                 def prop = entity.getPropertyByName(propertyName)
                 if(prop != null) {
@@ -246,7 +235,7 @@ class PersistentEntityCodec implements Codec {
                         }
                         else {
                             def propKind = prop.getClass().superclass
-                            ENCODERS[propKind]?.encode(writer, prop, v, access, encoderContext, mongoDatastore)
+                            ENCODERS[propKind]?.encode(writer, prop, v, access, encoderContext, datastore)
                         }
 
                     }
@@ -268,9 +257,7 @@ class PersistentEntityCodec implements Codec {
                     def v = access.getProperty(association.name)
                     if( v instanceof DirtyCheckable ) {
                         if(((DirtyCheckable)v).hasChanged()) {
-                            if(association instanceof Embedded) {
-                                encodeEmbeddedUpdate(sets, association, v)
-                            }
+                            encodeEmbeddedUpdate(sets, association, v)
                         }
                     }
                 }
@@ -284,23 +271,12 @@ class PersistentEntityCodec implements Codec {
                 }
             }
 
-
-            boolean hasSets = !sets.isEmpty()
-            boolean hasUnsets = !unsets.isEmpty()
-
-            if(hasSets && isVersioned) {
-                def version = entity.version
-                def propKind = version.getClass().superclass
-                def v = access.getProperty(GormProperties.VERSION)
-                ENCODERS[propKind]?.encode(writer, version, v, access, encoderContext, mongoDatastore)
-            }
-
             writer.writeEndDocument()
 
-            if(hasSets) {
+            if(sets) {
                 update[MONGO_SET_OPERATOR] = sets
             }
-            if(hasUnsets) {
+            if(unsets) {
                 update[MONGO_UNSET_OPERATOR] = unsets
             }
         }
@@ -878,21 +854,21 @@ class PersistentEntityCodec implements Codec {
         void encode(BsonWriter writer, ToOne property, Object value, EntityAccess parentAccess, EncoderContext encoderContext, MongoDatastore datastore) {
             if(value) {
                 def associatedEntity = property.associatedEntity
+                def proxyFactory = datastore.mappingContext.proxyFactory
+                def codecRegistry = datastore.codecRegistry
 
                 Object associationId
                 if(property.doesCascade(CascadeType.PERSIST) && associatedEntity != null) {
-                    if(!property.isForeignKeyInChild()) {
-                        def proxyFactory = datastore.mappingContext.proxyFactory
-                        def codecRegistry = datastore.codecRegistry
-                        if(proxyFactory.isProxy(value)) {
-                            associationId = proxyFactory.getIdentifier(value)
-                        }
-                        else {
-                            AbstractMongoSession mongoSession = (AbstractMongoSession)datastore.currentSession
-                            def associationAccess = mongoSession.createEntityAccess(associatedEntity, value)
-                            associationId = associationAccess.identifier
-                        }
-                        if(associationId != null) {
+                    if(proxyFactory.isProxy(value)) {
+                        associationId = proxyFactory.getIdentifier(value)
+                    }
+                    else {
+                        AbstractMongoSession mongoSession = (AbstractMongoSession)datastore.currentSession
+                        def associationAccess = mongoSession.createEntityAccess(associatedEntity, value)
+                        associationId = associationAccess.identifier
+                    }
+                    if(associationId != null) {
+                        if(!property.isForeignKeyInChild()) {
                             writer.writeName MappingUtils.getTargetKey(property)
                             codecRegistry.get(associationId.getClass()).encode( writer, associationId, encoderContext)
                         }
