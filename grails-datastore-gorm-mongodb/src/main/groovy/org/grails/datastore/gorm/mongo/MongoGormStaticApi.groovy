@@ -59,7 +59,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      */
     MongoDatabase getDB() {
         execute( { Session session ->
-            MongoSession ms = (MongoSession)session
+            AbstractMongoSession ms = (AbstractMongoSession)session
             def name = ms.getDatabase(persistentEntity)
             ms.nativeInterface.getDatabase(name)
         } as SessionCallback<MongoDatabase>)
@@ -71,7 +71,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
     @CompileStatic
     String getCollectionName() {
         execute( { Session session ->
-            MongoSession ms = (MongoSession)session
+            AbstractMongoSession ms = (AbstractMongoSession)session
             ms.getCollectionName(persistentEntity)
         } as SessionCallback<String>)
     }
@@ -84,7 +84,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
     @CompileStatic
     MongoCollection<Document> getCollection() {
         execute( { Session session ->
-            MongoSession ms = (MongoSession)session
+            AbstractMongoSession ms = (AbstractMongoSession)session
             def client = (MongoClient)ms.nativeInterface
             client.getDatabase( ms.defaultDatabase ).getCollection( ms.getCollectionName(persistentEntity ))
         } as SessionCallback<MongoCollection<Document>>)
@@ -98,7 +98,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      */
     def withCollection(String collectionName, Closure callable) {
         execute( { Session session ->
-            MongoSession ms = (MongoSession)session
+            AbstractMongoSession ms = (AbstractMongoSession)session
             final previous = ms.useCollection(persistentEntity, collectionName)
             try {
                 callable.call(ms)
@@ -118,7 +118,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      */
     String useCollection(String collectionName) {
         execute( { Session session ->
-            MongoSession ms = (MongoSession)session
+            AbstractMongoSession ms = (AbstractMongoSession)session
             ms.useCollection(persistentEntity, collectionName)
         } as SessionCallback<String>)
     }
@@ -131,7 +131,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      */
     def withDatabase(String databaseName, Closure callable) {
         execute( { Session session ->
-            MongoSession ms = (MongoSession)session
+            AbstractMongoSession ms = (AbstractMongoSession)session
             final previous = ms.useDatabase(persistentEntity, databaseName)
             try {
                 callable.call(ms)
@@ -150,7 +150,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      */
     String useDatabase(String databaseName) {
         execute( { Session session ->
-            MongoSession ms = (MongoSession)session
+            AbstractMongoSession ms = (AbstractMongoSession)session
             ms.useDatabase(persistentEntity, databaseName)
         } as SessionCallback<String>)
     }

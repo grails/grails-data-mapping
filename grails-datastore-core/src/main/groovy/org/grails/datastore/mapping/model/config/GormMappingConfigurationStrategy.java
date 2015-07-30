@@ -296,7 +296,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         Class relatedClassType = hasManyMap.get(property.getName());
         // try a bit harder for embedded collections (could make this the default, rendering 'hasMany' optional
         // if generics are used)
-        if (relatedClassType == null && embedded) {
+        if (relatedClassType == null && entity != null) {
             Class javaClass = entity.getJavaClass();
 
             Class genericClass = MappingUtils.getGenericTypeForProperty(javaClass, property.getName());

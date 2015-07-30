@@ -17,6 +17,8 @@ package org.grails.datastore.mapping.collection;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.query.Query;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -40,11 +42,73 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
     private boolean dirty = false;
 
     protected final Collection collection;
+    private int originalSize;
 
     protected AbstractPersistentCollection(Class childType, Session session, Collection collection) {
         this.childType = childType;
         this.collection = collection;
         this.session = session;
+    }
+
+    protected AbstractPersistentCollection(final Association association, Serializable associationKey, final Session session, Collection collection) {
+        this.collection = collection;
+        this.session = session;
+        this.associationKey = associationKey;
+        this.indexer = new AssociationIndexer() {
+            @Override
+            public void preIndex(Object primaryKey, List foreignKeys) {
+                // no-op
+            }
+
+            @Override
+            public void index(Object primaryKey, List foreignKeys) {
+                // no-op
+            }
+
+            @Override
+            public List query(Object primaryKey) {
+                Association inverseSide = association.getInverseSide();
+                Query query = session.createQuery(association.getAssociatedEntity().getJavaClass());
+                query.eq(inverseSide.getName(), primaryKey);
+                query.projections().id();
+                return query.list();
+            }
+
+            @Override
+            public PersistentEntity getIndexedEntity() {
+                return association.getAssociatedEntity();
+            }
+
+            @Override
+            public void index(Object primaryKey, Object foreignKey) {
+                // no op
+            }
+        };
+    }
+
+    @Override
+    public boolean hasChanged() {
+        return isDirty();
+    }
+
+    @Override
+    public int getOriginalSize() {
+        return originalSize;
+    }
+
+    @Override
+    public boolean hasGrown() {
+        return isInitialized() && (size() > originalSize);
+    }
+
+    @Override
+    public boolean hasShrunk() {
+        return isInitialized() && (size() < originalSize);
+    }
+
+    @Override
+    public boolean hasChangedSize() {
+        return isInitialized() && (size() != originalSize);
     }
 
     protected AbstractPersistentCollection(Collection keys, Class childType,
@@ -217,6 +281,7 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
                 addAll(session.retrieveAll(entity.getJavaClass(), results));
             }
         }
+        this.originalSize = size();
     }
 
     public boolean isDirty() {

@@ -2,6 +2,7 @@ package org.grails.datastore.mapping.collection;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
+import org.grails.datastore.mapping.model.types.Association;
 
 import java.io.Serializable;
 import java.util.*;
@@ -14,6 +15,9 @@ import java.util.*;
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class PersistentSortedSet extends AbstractPersistentCollection implements SortedSet {
+    public PersistentSortedSet(Association association, Serializable associationKey, Session session) {
+        super(association, associationKey, session, new TreeSet());
+    }
 
     public PersistentSortedSet(Class childType, Session session, SortedSet collection) {
         super(childType, session, collection);

@@ -18,6 +18,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.bson.Document
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
+import org.grails.datastore.mapping.model.types.Association
 
 import java.lang.reflect.Array
 
@@ -73,13 +74,13 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, Document
      * @Example: Will return String class for list of String mapped by hasMany.
      */
     private static Class getCollectionType(PersistentProperty property) {
-        PersistentEntity owner = property.owner
-        ClassPropertyFetcher propertyFetcher = ClassPropertyFetcher.forClass(property.owner.getJavaClass())
-
-        GormMappingConfigurationStrategy strategy = (GormMappingConfigurationStrategy)owner.mappingContext.getMappingSyntaxStrategy()
-        Map hasManyMap = strategy.getAssociationMap(propertyFetcher)
-
-        hasManyMap[property.name]
+        if(property instanceof Basic) {
+            return ((Basic)property).componentType;
+        }
+        else if(property instanceof Association) {
+            return ((Association)property).associatedEntity.javaClass
+        }
+        return null
     }
 
     private static Object getEnumValueForOrdinal(Number value, Class type) {
@@ -96,10 +97,10 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, Document
         if (!(property instanceof Basic)) {
             return false
         }
-
-        Class collectionType = getCollectionType(property)
-
-        collectionType && (collectionType.isEnum())
+        else {
+            Basic basic = (Basic)property;
+            return basic.componentType.isEnum()
+        }
     }
 
     private static boolean isOrdinalTypeEnum(PersistentProperty property) {

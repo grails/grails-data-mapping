@@ -25,6 +25,7 @@ import org.bson.BsonDouble
 import org.bson.BsonInt32
 import org.bson.BsonInt64
 import org.bson.BsonNull
+import org.bson.BsonObjectId
 import org.bson.BsonReader
 import org.bson.BsonRegularExpression
 import org.bson.BsonString
@@ -32,12 +33,22 @@ import org.bson.BsonTimestamp
 import org.bson.BsonType
 import org.bson.BsonValue
 import org.bson.BsonWriter
+import org.bson.codecs.BooleanCodec
 import org.bson.codecs.BsonValueCodecProvider
+import org.bson.codecs.ByteArrayCodec
 import org.bson.codecs.Codec
+import org.bson.codecs.DateCodec
 import org.bson.codecs.DecoderContext
+import org.bson.codecs.DocumentCodec
+import org.bson.codecs.DoubleCodec
 import org.bson.codecs.EncoderContext
+import org.bson.codecs.IntegerCodec
+import org.bson.codecs.LongCodec
+import org.bson.codecs.ObjectIdCodec
+import org.bson.codecs.StringCodec
 import org.bson.codecs.configuration.CodecProvider
 import org.bson.codecs.configuration.CodecRegistry
+import org.bson.types.ObjectId
 import org.codehaus.groovy.runtime.GStringImpl
 import org.springframework.core.convert.converter.Converter
 
@@ -55,6 +66,18 @@ class AdditionalCodecs implements CodecProvider{
     private static final Map<Class<? extends BsonValue>, List<Converter>> BSON_VALUE_CONVERTERS = new LinkedHashMap<Class<? extends BsonValue>, List<Converter>>().withDefault { Class<? extends BsonValue> cls ->
         new ArrayList<Converter>()
     }
+    private static final Map<BsonType, Codec<?>> BSON_TYPE_CODECS = [
+            (BsonType.ARRAY) : new ListCodec(),
+            (BsonType.DOCUMENT) : new DocumentCodec(),
+            (BsonType.BINARY) : new ByteArrayCodec(),
+            (BsonType.BOOLEAN) : new BooleanCodec(),
+            (BsonType.DATE_TIME) : new DateCodec(),
+            (BsonType.DOUBLE) : new DoubleCodec(),
+            (BsonType.INT32) : new IntegerCodec(),
+            (BsonType.INT64) : new LongCodec(),
+            (BsonType.STRING) : new StringCodec(),
+            (BsonType.OBJECT_ID) : new ObjectIdCodec()
+    ]
 
     static {
         ADDITIONAL_CODECS[IntRange] = new IntRangeCodec()
@@ -69,6 +92,12 @@ class AdditionalCodecs implements CodecProvider{
             @Override
             byte[] convert(BsonBinary source) {
                 return source.data
+            }
+        }
+        BSON_VALUE_CONVERTERS[BsonObjectId] << new Converter<BsonObjectId, ObjectId>() {
+            @Override
+            ObjectId convert(BsonObjectId source) {
+                source.value
             }
         }
         BSON_VALUE_CONVERTERS[BsonTimestamp] << new Converter<BsonTimestamp, Date>() {
@@ -201,6 +230,17 @@ class AdditionalCodecs implements CodecProvider{
         BSON_VALUE_CONVERTERS.values().flatten()
     }
 
+    static Codec getCodecForBsonType(BsonType bsonType, CodecRegistry registry) {
+        def codec = BSON_TYPE_CODECS.get(bsonType)
+        if(codec != null) {
+            if(codec instanceof CodecRegistryAware) {
+                codec.codecRegistry = registry
+            }
+            return codec
+        }
+        return null
+    }
+
     @Override
     def <T> Codec<T> get(Class<T> clazz, CodecRegistry registry) {
         def codec = ADDITIONAL_CODECS.get(clazz)
@@ -276,8 +316,9 @@ class AdditionalCodecs implements CodecProvider{
                 BsonValue bsonValue = readValue(reader, decoderContext)
                 Object value = null
                 if(bsonValue != null) {
-                    def converter = BSON_VALUE_CONVERTERS.get(bsonValue.getClass())?.first()
-                    value = converter ? converter.convert(bsonValue) : bsonValue
+                    def converters = BSON_VALUE_CONVERTERS.get(bsonValue.getClass())
+                    Converter converter = !converters.isEmpty() ? converters?.first() : null
+                    value = converter != null ? converter.convert(bsonValue) : bsonValue
                 }
                 list << value
                 bsonType = reader.readBsonType()
@@ -307,7 +348,11 @@ class AdditionalCodecs implements CodecProvider{
         }
 
         protected BsonValue readValue(final BsonReader reader, final DecoderContext decoderContext) {
-            return codecRegistry.get(BsonValueCodecProvider.getClassForBsonType(reader.getCurrentBsonType())).decode(reader, decoderContext);
+            def currentBsonType = reader.getCurrentBsonType()
+            def targetClass = BsonValueCodecProvider.getClassForBsonType(currentBsonType)
+
+            def codec = codecRegistry.get(targetClass)
+            return codec.decode(reader, decoderContext);
         }
     }
 

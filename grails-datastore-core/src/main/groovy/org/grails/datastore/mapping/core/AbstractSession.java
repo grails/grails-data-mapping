@@ -799,10 +799,18 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         for (int i = 0; i < list.size(); i++) {
             Object o = list.get(i);
             if (o == null) {
-                Object next = retrievedIterator.next();
-                Serializable key = keyIterator.next();
-                list.set(i, next);
-                cacheInstance(type, key, next);
+                if(retrievedIterator.hasNext()) {
+
+                    Object next = retrievedIterator.next();
+                    list.set(i, next);
+                    if(keyIterator.hasNext()) {
+                        Serializable key = keyIterator.next();
+                        cacheInstance(type, key, next);
+                    }
+                }
+                else {
+                    break;
+                }
             }
         }
         return list;

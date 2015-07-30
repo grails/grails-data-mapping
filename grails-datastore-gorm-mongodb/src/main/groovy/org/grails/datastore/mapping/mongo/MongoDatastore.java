@@ -236,6 +236,14 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         return codecRegistry;
     }
 
+    public PersistentEntityCodec getPersistentEntityCodec(PersistentEntity entity) {
+        if(entity instanceof EmbeddedPersistentEntity) {
+            return new PersistentEntityCodec(this, entity);
+        }
+        else {
+            return getPersistentEntityCodec(entity.getJavaClass());
+        }
+    }
     public PersistentEntityCodec getPersistentEntityCodec(Class entityClass) {
         if(entityClass == null) {
             throw new IllegalArgumentException("Argument [entityClass] cannot be null");
@@ -294,13 +302,13 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     }
 
     @Override
-    public AbstractMongoSession getCurrentSession() throws ConnectionNotFoundException {
-        return (AbstractMongoSession) super.getCurrentSession();
+    protected Session createStatelessSession(Map<String, String> connectionDetails) {
+        return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), true);
     }
 
     @Override
-    protected Session createStatelessSession(Map<String, String> connectionDetails) {
-        return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), true);
+    public AbstractMongoSession getCurrentSession() throws ConnectionNotFoundException {
+        return (AbstractMongoSession) super.getCurrentSession();
     }
 
     public void afterPropertiesSet() throws Exception {

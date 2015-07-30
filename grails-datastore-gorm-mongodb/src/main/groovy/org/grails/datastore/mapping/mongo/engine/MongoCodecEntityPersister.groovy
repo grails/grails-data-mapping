@@ -28,12 +28,17 @@ import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.types.ObjectId
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository
+import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.core.IdentityGenerationException
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.impl.PendingDeleteAdapter
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter
 import org.grails.datastore.mapping.core.impl.PendingOperationAdapter
 import org.grails.datastore.mapping.core.impl.PendingUpdateAdapter
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckingCollection
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.ThirdPartyCacheEntityPersister
 import org.grails.datastore.mapping.model.ClassMapping
@@ -41,6 +46,10 @@ import org.grails.datastore.mapping.model.IdentityMapping
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.Embedded
+import org.grails.datastore.mapping.model.types.ManyToMany
+import org.grails.datastore.mapping.model.types.OneToMany
+import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.mongo.MongoCodecSession
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec
@@ -51,6 +60,9 @@ import org.springframework.cglib.reflect.FastClass
 import org.springframework.cglib.reflect.FastMethod
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.CannotAcquireLockException
+import org.springframework.dao.DataIntegrityViolationException
+
+import javax.persistence.CascadeType
 
 
 /**
@@ -105,7 +117,7 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
         if (pf.isProxy(obj)) {
             return pf.getIdentifier(obj)
         }
-        return (Serializable)fastClassData.idReader.invoke(obj)
+        return (Serializable)fastClassData.getIdentifier(obj)
     }
 
     protected String getIdentifierName(ClassMapping cm) {
@@ -189,15 +201,80 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
             boolean isAssigned = isAssignedId(entity)
             if(!isAssigned && idIsNull) {
                 id = generateIdentifier(entity)
-                entityAccess.setIdentifier(id)
+                if(id != null) {
+                    entityAccess.setIdentifier(id)
+                }
+                else {
+                    throw new DataIntegrityViolationException("Failed to generate a valid identifier for entity [$obj]")
+                }
             }
             else if(idIsNull) {
-                // TODO: throw exception for null assigned id
+                throw new DataIntegrityViolationException("Entity [$obj] has null identifier when identifier strategy is manual assignment. Assign an appropriate identifier before persisting.")
+            }
+
+            // now we must ensure that all cascades are handled and inserts / updates scheduled
+            def mongoCodecSession = mongoSession
+            for( association in entity.associations ) {
+                if( association.doesCascade(CascadeType.PERSIST) && association.isOwningSide() ) {
+                    if(association instanceof ToOne) {
+                        if(association instanceof Embedded) continue
+                        def propertyName = association.name
+                        def value = entityAccess.getProperty(propertyName)
+                        if(value != null) {
+                            if(association.isBidirectional()) {
+                                def inverseAccess = createEntityAccess(association.associatedEntity, value)
+                                inverseAccess.setPropertyNoConversion(
+                                        association.inverseSide.name,
+                                        obj
+                                )
+                            }
+                            if( proxyFactory.isInitialized(value) ) {
+                                def dirtyCheckable = (DirtyCheckable) value
+                                if(dirtyCheckable.hasChanged()) {
+                                    mongoCodecSession.persist(value)
+                                }
+                            }
+                        }
+                    }
+                    else if( (association instanceof OneToMany) || (association instanceof ManyToMany) ) {
+                        def propertyName = association.name
+                        def value = entityAccess.getProperty(propertyName)
+                        boolean shouldPersist = false
+                        if(value != null) {
+                            if(!isUpdate) {
+                                shouldPersist = true
+                            }
+                            else {
+                                if(value instanceof DirtyCheckableCollection) {
+                                    DirtyCheckableCollection coll = (DirtyCheckableCollection)value
+                                    if(coll.hasChanged()) {
+                                        shouldPersist = true
+                                    }
+                                }
+                                else {
+                                    shouldPersist = true
+                                }
+                            }
+
+                            if(shouldPersist) {
+
+                                mongoCodecSession.setAttribute(
+                                        obj,
+                                        "${association}.ids",
+                                        mongoCodecSession.persist( (Iterable) value )
+                                )
+
+                                def dirtyCheckingCollection = DirtyCheckingSupport.wrap((Collection) value, (DirtyCheckable) obj, propertyName)
+                                entityAccess.setPropertyNoConversion(propertyName, dirtyCheckingCollection)
+                            }
+                        }
+                    }
+                }
             }
 
             if(!isUpdate) {
                 MongoCodecEntityPersister self = this
-                mongoSession.addPendingInsert(new PendingInsertAdapter(entity, id, obj, entityAccess) {
+                mongoCodecSession.addPendingInsert(new PendingInsertAdapter(entity, id, obj, entityAccess) {
                     @Override
                     void run() {
                         if (!cancelInsert(entity, entityAccess)) {
@@ -216,7 +293,7 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
                 })
             }
             else {
-                mongoSession.addPendingUpdate(new PendingUpdateAdapter( entity, id, obj, entityAccess) {
+                mongoCodecSession.addPendingUpdate(new PendingUpdateAdapter( entity, id, obj, entityAccess) {
                     @Override
                     void run() {
                         if (!cancelUpdate(entity, entityAccess)) {

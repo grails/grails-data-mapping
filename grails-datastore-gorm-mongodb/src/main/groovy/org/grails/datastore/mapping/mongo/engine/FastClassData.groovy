@@ -42,15 +42,26 @@ class FastClassData {
     FastClassData(PersistentEntity entity) {
         this.entity = entity
         this.fastClass = FastClass.create(entity.javaClass)
-        def identifierName = getIdentifierName(entity.mapping)
-        this.idReader = fastClass.getMethod(GrailsNameUtils.getGetterName(identifierName), ZERO_CLASS_ARRAY)
-        fastGetters[identifierName] = idReader
-        fastSetters[identifierName] = fastClass.getMethod(GrailsNameUtils.getSetterName(identifierName), [entity.identity.type] as Class[])
+        if(entity.identity != null) {
+            def identifierName = getIdentifierName(entity.mapping)
+            this.idReader = fastClass.getMethod(GrailsNameUtils.getGetterName(identifierName), ZERO_CLASS_ARRAY)
+            fastGetters[identifierName] = idReader
+            fastSetters[identifierName] = fastClass.getMethod(GrailsNameUtils.getSetterName(identifierName), [entity.identity.type] as Class[])
+
+        }
+        else {
+            idReader = null
+        }
+
         for(prop in entity.persistentProperties) {
             def name = prop.name
             fastGetters[name] = fastClass.getMethod( GrailsNameUtils.getGetterName(name), ZERO_CLASS_ARRAY)
             fastSetters[name] = fastClass.getMethod( GrailsNameUtils.getSetterName(name), [prop.type] as Class[])
         }
+    }
+
+    Object getIdentifier(Object o) {
+        idReader?.invoke(o)
     }
 
     Class getPropertyType(String name) {

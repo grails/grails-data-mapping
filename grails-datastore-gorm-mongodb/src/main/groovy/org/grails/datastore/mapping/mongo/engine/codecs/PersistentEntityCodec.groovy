@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 package org.grails.datastore.mapping.mongo.engine.codecs
-
 import groovy.transform.CompileStatic
-import org.bson.BsonArray
-import org.bson.BsonBinary
-import org.bson.BsonDocument
-import org.bson.BsonDocumentWriter
-import org.bson.BsonReader
-import org.bson.BsonString
-import org.bson.BsonType
-import org.bson.BsonValue
-import org.bson.BsonWriter
-import org.bson.Document
+import org.bson.*
 import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
-import org.bson.codecs.configuration.CodecRegistry
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
+import org.grails.datastore.mapping.collection.PersistentList
+import org.grails.datastore.mapping.collection.PersistentSet
+import org.grails.datastore.mapping.collection.PersistentSortedSet
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.DatastoreException
+import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection
-import org.grails.datastore.mapping.dirty.checking.DirtyCheckingCollection
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingMap
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport
 import org.grails.datastore.mapping.engine.EntityAccess
@@ -46,28 +38,14 @@ import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.PropertyMapping
-import org.grails.datastore.mapping.model.types.Association
-import org.grails.datastore.mapping.model.types.Basic
-import org.grails.datastore.mapping.model.types.Custom
-import org.grails.datastore.mapping.model.types.Embedded
-import org.grails.datastore.mapping.model.types.EmbeddedCollection
-import org.grails.datastore.mapping.model.types.Identity
-import org.grails.datastore.mapping.model.types.ManyToOne
-import org.grails.datastore.mapping.model.types.OneToMany
-import org.grails.datastore.mapping.model.types.OneToOne
-import org.grails.datastore.mapping.model.types.Simple
-import org.grails.datastore.mapping.model.types.ToOne
+import org.grails.datastore.mapping.model.types.*
 import org.grails.datastore.mapping.mongo.AbstractMongoSession
 import org.grails.datastore.mapping.mongo.MongoDatastore
-import org.grails.datastore.mapping.mongo.engine.FastClassData
 import org.grails.datastore.mapping.mongo.engine.MongoCodecEntityPersister
-import org.grails.datastore.mapping.proxy.ProxyFactory
-import org.springframework.core.convert.ConversionService
+import org.grails.datastore.mapping.query.Query
 
 import javax.persistence.CascadeType
 import javax.persistence.FetchType
-
-
 /**
  * A MongoDB codec for persisting {@link PersistentEntity} instances
  *
@@ -96,6 +74,10 @@ class PersistentEntityCodec implements Codec {
         DECODERS[OneToOne] = new ToOneDecoder()
         ENCODERS[ManyToOne] = new ToOneEncoder()
         DECODERS[ManyToOne] = new ToOneDecoder()
+        ENCODERS[OneToMany] = new OneToManyEncoder()
+        DECODERS[OneToMany] = new OneToManyDecoder()
+        ENCODERS[ManyToMany] = new OneToManyEncoder()
+        DECODERS[ManyToMany] = new OneToManyDecoder()
         ENCODERS[Custom] = new CustomTypeEncoder()
         DECODERS[Custom] = new CustomTypeDecoder()
         ENCODERS[Basic] = new BasicCollectionTypeEncoder()
@@ -117,7 +99,7 @@ class PersistentEntityCodec implements Codec {
         bsonReader.readStartDocument()
         def persistentEntity = entity
         def instance = persistentEntity.javaClass.newInstance()
-        EntityAccess access = createEntityAccess(instance)
+        EntityAccess access = createEntityAccess(persistentEntity, instance)
         BsonType bsonType = bsonReader.readBsonType()
         while(bsonType != BsonType.END_OF_DOCUMENT) {
 
@@ -159,6 +141,31 @@ class PersistentEntityCodec implements Codec {
             bsonType = bsonReader.readBsonType()
         }
         bsonReader.readEndDocument()
+
+        def session = datastore.currentSession
+        for( association in entity.associations ) {
+            if(association instanceof OneToMany) {
+                if(association.isBidirectional()) {
+                    OneToManyDecoder.initializePersistentCollection(session, access, association)
+                }
+            }
+            else if(association instanceof OneToOne) {
+                if(((ToOne)association).isForeignKeyInChild()) {
+                    def associatedClass = association.associatedEntity.javaClass
+                    Query query = session.createQuery(associatedClass)
+                    query.eq(association.inverseSide.name, access.identifier)
+                            .projections().id()
+
+                    def id = query.singleResult()
+                    boolean lazy = association.mapping.mappedForm.fetchStrategy == FetchType.LAZY
+                    access.setPropertyNoConversion(
+                            association.name,
+                            lazy ? session.proxy( associatedClass, (Serializable) id) : session.retrieve( associatedClass, (Serializable) id)
+                    )
+
+                }
+            }
+        }
         return instance
 
     }
@@ -476,31 +483,41 @@ class PersistentEntityCodec implements Codec {
                 }
             }
             SIMPLE_TYPE_DECODERS[Short] = convertingIntReader
+            SIMPLE_TYPE_DECODERS[short.class] = convertingIntReader
             SIMPLE_TYPE_DECODERS[Byte] = convertingIntReader
-            SIMPLE_TYPE_DECODERS[Integer] = new TypeDecoder() {
+            SIMPLE_TYPE_DECODERS[byte.class] = convertingIntReader
+            def intDecoder = new TypeDecoder() {
                 @Override
                 void decode(BsonReader reader, Simple property, EntityAccess entityAccess) {
                     entityAccess.setPropertyNoConversion( property.name, reader.readInt32() )
                 }
             }
-            SIMPLE_TYPE_DECODERS[Long] = new TypeDecoder() {
+            SIMPLE_TYPE_DECODERS[Integer] = intDecoder
+            SIMPLE_TYPE_DECODERS[int.class] = intDecoder
+            def longDecoder = new TypeDecoder() {
                 @Override
                 void decode(BsonReader reader, Simple property, EntityAccess entityAccess) {
                     entityAccess.setPropertyNoConversion( property.name, reader.readInt64() )
                 }
             }
-            SIMPLE_TYPE_DECODERS[Double] = new TypeDecoder() {
+            SIMPLE_TYPE_DECODERS[Long] = longDecoder
+            SIMPLE_TYPE_DECODERS[long.class] = longDecoder
+            def doubleDecoder = new TypeDecoder() {
                 @Override
                 void decode(BsonReader reader, Simple property, EntityAccess entityAccess) {
                     entityAccess.setPropertyNoConversion( property.name, reader.readDouble() )
                 }
             }
-            SIMPLE_TYPE_DECODERS[Boolean] = new TypeDecoder() {
+            SIMPLE_TYPE_DECODERS[Double] = doubleDecoder
+            SIMPLE_TYPE_DECODERS[double.class] = doubleDecoder
+            def booleanDecoder = new TypeDecoder() {
                 @Override
                 void decode(BsonReader reader, Simple property, EntityAccess entityAccess) {
                     entityAccess.setPropertyNoConversion( property.name, reader.readBoolean() )
                 }
             }
+            SIMPLE_TYPE_DECODERS[Boolean] = booleanDecoder
+            SIMPLE_TYPE_DECODERS[boolean.class] = booleanDecoder
 
             SIMPLE_TYPE_DECODERS[([] as byte[]).getClass()] = new TypeDecoder() {
                 @Override
@@ -569,7 +586,7 @@ class PersistentEntityCodec implements Codec {
         static {
 
 
-            SIMPLE_TYPE_ENCODERS = new HashMap<Class, TypeEncoder>().withDefault { Class ->
+            SIMPLE_TYPE_ENCODERS = new HashMap<Class, TypeEncoder>().withDefault { Class c ->
                 DEFAULT_ENCODER
             }
 
@@ -586,26 +603,35 @@ class PersistentEntityCodec implements Codec {
             SIMPLE_TYPE_ENCODERS[BigInteger] = DEFAULT_ENCODER
             SIMPLE_TYPE_ENCODERS[BigDecimal] = DEFAULT_ENCODER
             SIMPLE_TYPE_ENCODERS[Byte] = smallNumberEncoder
+            SIMPLE_TYPE_ENCODERS[byte.class] = smallNumberEncoder
             SIMPLE_TYPE_ENCODERS[Integer] = smallNumberEncoder
+            SIMPLE_TYPE_ENCODERS[int.class] = smallNumberEncoder
             SIMPLE_TYPE_ENCODERS[Short] = smallNumberEncoder
-            SIMPLE_TYPE_ENCODERS[Double] = new TypeEncoder() {
+            SIMPLE_TYPE_ENCODERS[short.class] = smallNumberEncoder
+            TypeEncoder doubleEncoder = new TypeEncoder() {
                 @Override
                 void encode(BsonWriter writer, Simple property, Object value) {
                     writer.writeDouble( (Double)value )
                 }
             }
-            SIMPLE_TYPE_ENCODERS[Long] = new TypeEncoder() {
+            SIMPLE_TYPE_ENCODERS[Double] = doubleEncoder
+            SIMPLE_TYPE_ENCODERS[double.class] = doubleEncoder
+            TypeEncoder longEncoder = new TypeEncoder() {
                 @Override
                 void encode(BsonWriter writer, Simple property, Object value) {
                     writer.writeInt64( (Long)value )
                 }
             }
-            SIMPLE_TYPE_ENCODERS[Boolean] = new TypeEncoder() {
+            SIMPLE_TYPE_ENCODERS[Long] = longEncoder
+            SIMPLE_TYPE_ENCODERS[long.class] = longEncoder
+            TypeEncoder booleanEncoder = new TypeEncoder() {
                 @Override
                 void encode(BsonWriter writer, Simple property, Object value) {
                     writer.writeBoolean( (Boolean)value )
                 }
             }
+            SIMPLE_TYPE_ENCODERS[Boolean] = booleanEncoder
+            SIMPLE_TYPE_ENCODERS[boolean.class] = booleanEncoder
             SIMPLE_TYPE_ENCODERS[Calendar] = new TypeEncoder() {
                 @Override
                 void encode(BsonWriter writer, Simple property, Object value) {
@@ -669,27 +695,13 @@ class PersistentEntityCodec implements Codec {
         }
 
         protected static void decode(MongoDatastore datastore, BsonReader reader, DecoderContext decoderContext, CustomTypeMarshaller marshaller, PersistentProperty property, EntityAccess entityAccess) {
-            def registry = datastore.getCodecRegistry()
-            def documentCodec = registry.get(Document)
             def bsonType = reader.currentBsonType
-            if(bsonType == BsonType.DOCUMENT) {
-
-                Document doc = documentCodec.decode(reader, decoderContext)
-
+            def codec = AdditionalCodecs.getCodecForBsonType(bsonType, datastore.codecRegistry)
+            if(codec != null) {
+                def decoded = codec.decode(reader, decoderContext)
                 def value = marshaller.read(property, new Document(
                         MappingUtils.getTargetKey(property),
-                        doc
-                ))
-                if (value != null) {
-                    entityAccess.setPropertyNoConversion(property.name, value)
-                }
-            }
-            else if(bsonType == BsonType.ARRAY) {
-                def arrayCodec = registry.get(List)
-                def array = arrayCodec.decode(reader, decoderContext)
-                def value = marshaller.read(property, new Document(
-                        MappingUtils.getTargetKey(property),
-                        array
+                        decoded
                 ))
                 if (value != null) {
                     entityAccess.setPropertyNoConversion(property.name, value)
@@ -719,18 +731,115 @@ class PersistentEntityCodec implements Codec {
             marshaller.write(property, value, document)
 
             Object converted = document.get(targetName)
-            if (converted instanceof Document) {
+            if(converted != null) {
                 Codec codec = (Codec) datastore.codecRegistry.get(converted.getClass())
                 if (codec) {
                     writer.writeName(targetName)
                     codec.encode(writer, converted, encoderContext)
                 }
+
             }
-            else if(converted instanceof List) {
-                Codec<List> codec = datastore.codecRegistry.get(List)
-                if(codec) {
-                    writer.writeName(targetName)
-                    codec.encode(writer, converted, encoderContext)
+        }
+    }
+
+    static class OneToManyDecoder implements PropertyDecoder<Association> {
+        @Override
+        void decode(BsonReader reader, Association property, EntityAccess entityAccess, DecoderContext decoderContext, MongoDatastore datastore) {
+            def session = datastore.currentSession
+            if(property.isBidirectional() && !(property instanceof ManyToMany)) {
+
+                initializePersistentCollection(session, entityAccess, property)
+            }
+            else {
+                def type = property.type
+                def propertyName = property.name
+
+                def codecRegistry = datastore.codecRegistry
+
+                def listCodec = codecRegistry.get(List)
+                def identifiers = listCodec.decode(reader, decoderContext)
+                def associatedType = property.associatedEntity.javaClass
+                if(SortedSet.isAssignableFrom(type)) {
+                    entityAccess.setPropertyNoConversion(
+                            propertyName,
+                            new PersistentSortedSet( identifiers, associatedType, session)
+                    )
+                }
+                else if(Set.isAssignableFrom(type)) {
+                    entityAccess.setPropertyNoConversion(
+                            propertyName,
+                            new PersistentSet( identifiers, associatedType, session)
+                    )
+                }
+                else {
+                    entityAccess.setPropertyNoConversion(
+                            propertyName,
+                            new PersistentList( identifiers, associatedType, session)
+                    )
+                }
+            }
+        }
+
+        static initializePersistentCollection(Session session, EntityAccess entityAccess, Association property) {
+            def type = property.type
+            def propertyName = property.name
+            def identifier = (Serializable) entityAccess.identifier
+
+            if(SortedSet.isAssignableFrom(type)) {
+                entityAccess.setPropertyNoConversion(
+                        propertyName,
+                        new PersistentSortedSet( property, identifier, session)
+                )
+            }
+            else if(Set.isAssignableFrom(type)) {
+                entityAccess.setPropertyNoConversion(
+                        propertyName,
+                        new PersistentSet( property, identifier, session)
+                )
+            }
+            else {
+                entityAccess.setPropertyNoConversion(
+                        propertyName,
+                        new PersistentList( property, identifier, session)
+                )
+            }
+        }
+    }
+    static class OneToManyEncoder implements PropertyEncoder<Association> {
+
+        @Override
+        void encode(BsonWriter writer, Association property, Object value, EntityAccess parentAccess, EncoderContext encoderContext, MongoDatastore datastore) {
+            boolean shouldEncodeIds = !property.isBidirectional() || (property instanceof ManyToMany)
+            if(shouldEncodeIds) {
+                // if it is unidirectional we encode the values inside the current
+                // document, otherwise nothing to do, encoding foreign key stored in inverse side
+
+                def associatedEntity = property.associatedEntity
+                def mongoSession = datastore.currentSession
+                if(value instanceof Collection) {
+                    boolean updateCollection = false
+                    if((value instanceof DirtyCheckableCollection)) {
+                        def persistentCollection = (DirtyCheckableCollection) value
+                        updateCollection = persistentCollection.hasChanged()
+                    }
+                    else {
+                        // write new collection
+                        updateCollection = true
+                    }
+
+                    if(updateCollection) {
+                        // update existing collection
+                        Collection identifiers = (Collection)mongoSession.getAttribute(parentAccess.entity, "${property}.ids")
+                        if(identifiers == null) {
+                            def fastClassData = datastore.getFastClassData(associatedEntity)
+                            identifiers = ((Collection)value).collect() {
+                                fastClassData.getIdentifier(it)
+                            }
+                        }
+                        writer.writeName MappingUtils.getTargetKey((PersistentProperty)property)
+                        def listCodec = datastore.codecRegistry.get(List)
+                        listCodec.encode writer, identifiers.toList(), encoderContext
+                    }
                 }
             }
         }
@@ -758,10 +867,11 @@ class PersistentEntityCodec implements Codec {
                         def associationAccess = mongoSession.createEntityAccess(associatedEntity, value)
                         associationId = associationAccess.identifier
                     }
-
                     if(associationId != null) {
-                        writer.writeName MappingUtils.getTargetKey(property)
-                        codecRegistry.get(associationId.getClass()).encode( writer, associationId, encoderContext)
+                        if(!property.isForeignKeyInChild()) {
+                            writer.writeName MappingUtils.getTargetKey(property)
+                            codecRegistry.get(associationId.getClass()).encode( writer, associationId, encoderContext)
+                        }
                     }
                 }
             }
@@ -833,11 +943,11 @@ class PersistentEntityCodec implements Codec {
         void encode(BsonWriter writer, Embedded property, Object value, EntityAccess parentAccess, EncoderContext encoderContext, MongoDatastore datastore) {
             if(value) {
                 def associatedEntity = property.associatedEntity
-                def registry = datastore.codecRegistry
                 writer.writeName property.name
-                def access = datastore.createEntityAccess(associatedEntity, value)
 
-                PersistentEntityCodec codec = (PersistentEntityCodec)registry.get(associatedEntity.javaClass)
+                AbstractMongoSession mongoSession = (AbstractMongoSession)datastore.currentSession
+                def access = mongoSession.createEntityAccess(associatedEntity, value)
+                PersistentEntityCodec codec = datastore.getPersistentEntityCodec(associatedEntity)
                 codec.encode(writer, value, encoderContext, access.identifier ? true : false)
             }
         }
@@ -851,10 +961,7 @@ class PersistentEntityCodec implements Codec {
         @Override
         void decode(BsonReader reader, Embedded property, EntityAccess entityAccess, DecoderContext decoderContext, MongoDatastore datastore) {
             def associatedEntity = property.associatedEntity
-            def registry = datastore.codecRegistry
-
-
-            PersistentEntityCodec codec = (PersistentEntityCodec)registry.get(associatedEntity.javaClass)
+            PersistentEntityCodec codec = datastore.getPersistentEntityCodec(associatedEntity)
 
             def decoded = codec.decode(reader, decoderContext)
             if(decoded instanceof DirtyCheckable) {
@@ -880,7 +987,7 @@ class PersistentEntityCodec implements Codec {
             writer.writeStartArray()
 
             def associatedEntity = property.associatedEntity
-            PersistentEntityCodec associatedCodec = datastore.getPersistentEntityCodec( associatedEntity.javaClass )
+            PersistentEntityCodec associatedCodec = datastore.getPersistentEntityCodec( associatedEntity )
             def isBidirectional = property.isBidirectional()
             Association inverseSide = isBidirectional ? property.inverseSide : null
             String inverseProperty = isBidirectional ? inverseSide.name : null
@@ -931,7 +1038,7 @@ class PersistentEntityCodec implements Codec {
         @Override
         void decode(BsonReader reader, EmbeddedCollection property, EntityAccess entityAccess, DecoderContext decoderContext, MongoDatastore datastore) {
             def associatedEntity = property.associatedEntity
-            def associationCodec = datastore.getPersistentEntityCodec(associatedEntity.javaClass)
+            def associationCodec = datastore.getPersistentEntityCodec(associatedEntity)
             if(Collection.isAssignableFrom(property.type)) {
                 reader.readStartArray()
                 def bsonType = reader.readBsonType()

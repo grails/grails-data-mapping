@@ -41,7 +41,7 @@ class FastEntityAccess implements EntityAccess {
         this.entity = entity
         this.fastClassData = fastClassData
         this.persistentEntity = fastClassData.entity
-        this.identifierName = persistentEntity.identity.name
+        this.identifierName = persistentEntity.identity?.name
         this.fastGetters = fastClassData.fastGetters
         this.fastSetters = fastClassData.fastSetters
         this.conversionService = conversionService
@@ -70,12 +70,15 @@ class FastEntityAccess implements EntityAccess {
 
     @Override
     Object getIdentifier() {
-        return fastGetters[identifierName].invoke(entity)
+        return fastClassData.getIdentifier(entity)
     }
 
     @Override
     void setIdentifier(Object id) {
-        fastSetters[identifierName].invoke(entity, conversionService.convert(id, fastClassData.idReader.returnType))
+        if(identifierName != null) {
+            def idType = fastClassData.idReader?.returnType
+            fastSetters[identifierName].invoke(entity, conversionService.convert(id, idType))
+        }
     }
 
     @Override

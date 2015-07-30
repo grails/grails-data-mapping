@@ -14,13 +14,7 @@
  */
 package org.grails.datastore.mapping.mongo.query;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.*;
-import java.util.regex.Pattern;
-
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
@@ -29,13 +23,9 @@ import groovy.lang.Closure;
 import org.bson.BsonDocument;
 import org.bson.BsonDocumentWriter;
 import org.bson.Document;
-import org.bson.codecs.Codec;
 import org.bson.codecs.EncoderContext;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.mongo.geo.GeoJSONType;
-import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.BeanEntityAccess;
@@ -46,15 +36,10 @@ import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.Custom;
-import org.grails.datastore.mapping.model.types.Embedded;
-import org.grails.datastore.mapping.model.types.EmbeddedCollection;
-import org.grails.datastore.mapping.model.types.ToOne;
+import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.mongo.AbstractMongoSession;
 import org.grails.datastore.mapping.mongo.MongoCodecSession;
 import org.grails.datastore.mapping.mongo.MongoDatastore;
-import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.engine.MongoCodecEntityPersister;
@@ -68,6 +53,12 @@ import org.grails.datastore.mapping.query.projections.ManualProjections;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * A {@link org.grails.datastore.mapping.query.Query} implementation for the Mongo document store.
@@ -461,7 +452,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(Conjunction.class, new QueryHandler<Conjunction>() {
             public void handle(Session session, Conjunction criterion, Document query, PersistentEntity entity) {
-                populateMongoQuery((MongoSession) session, query, criterion, entity);
+                populateMongoQuery((AbstractMongoSession) session, query, criterion, entity);
             }
         });
 
@@ -482,7 +473,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         queryHandlers.put(Disjunction.class, new QueryHandler<Disjunction>() {
             @SuppressWarnings("unchecked")
             public void handle(Session session, Disjunction criterion, Document query, PersistentEntity entity) {
-                populateMongoQuery((MongoSession) session, query, criterion, entity);
+                populateMongoQuery((AbstractMongoSession) session, query, criterion, entity);
             }
         });
 
@@ -839,7 +830,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
      */
     public Document getMongoQuery() {
         Document query = createQueryObject(entity);
-        populateMongoQuery((MongoSession) getSession(), query, criteria, entity);
+        populateMongoQuery((AbstractMongoSession) getSession(), query, criteria, entity);
         return query;
     }
 

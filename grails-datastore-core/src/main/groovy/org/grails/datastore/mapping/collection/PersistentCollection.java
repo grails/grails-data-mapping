@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.mapping.collection;
 
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection;
+
 import java.util.Collection;
 
 /**
@@ -23,7 +25,7 @@ import java.util.Collection;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public interface PersistentCollection extends Collection {
+public interface PersistentCollection extends Collection, DirtyCheckableCollection {
 
     /**
      * Check whether the collection has been loaded.

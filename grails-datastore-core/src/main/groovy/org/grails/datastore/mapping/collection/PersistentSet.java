@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
+import org.grails.datastore.mapping.model.types.Association;
 
 /**
  * A lazy loaded set.
@@ -31,15 +32,23 @@ import org.grails.datastore.mapping.engine.AssociationIndexer;
 @SuppressWarnings("rawtypes")
 public class PersistentSet extends AbstractPersistentCollection implements Set {
 
+    public PersistentSet(Association association, Serializable associationKey, Session session) {
+        super(association, associationKey, session, createCollection());
+    }
+
     public PersistentSet(Class childType, Session session, Collection collection) {
         super(childType, session, collection);
     }
 
     public PersistentSet(Collection keys, Class childType, Session session) {
-        super(keys, childType, session, new HashSet());
+        super(keys, childType, session, createCollection());
+    }
+
+    protected static HashSet createCollection() {
+        return new HashSet();
     }
 
     public PersistentSet(Serializable associationKey, Session session, AssociationIndexer indexer) {
-        super(associationKey, session, indexer, new HashSet());
+        super(associationKey, session, indexer, createCollection());
     }
 }
