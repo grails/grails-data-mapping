@@ -135,16 +135,18 @@ class MongoCodecSession extends AbstractMongoSession {
                         DirtyCheckable changedObject = (DirtyCheckable) update.getNativeEntry()
                         PersistentEntityCodec codec = (PersistentEntityCodec)datastore.codecRegistry.get(changedObject.getClass())
 
+                        final Object nativeKey = update.nativeKey
+                        final Document id = new Document(MongoEntityPersister.MONGO_ID_FIELD, nativeKey)
+
                         def entityAccess = update.entityAccess
+                        def isVersioned = persistentEntity.isVersioned()
+                        def currentVersion = isVersioned ? entityAccess.getProperty(GormProperties.VERSION) : null
                         def updateDoc = codec.encodeUpdate(changedObject, entityAccess)
 
                         if(updateDoc) {
 
-                            final Object nativeKey = update.nativeKey
-                            final Document id = new Document(MongoEntityPersister.MONGO_ID_FIELD, nativeKey)
-                            MongoCodecEntityPersister documentEntityPersister = (MongoCodecEntityPersister) getPersister(persistentEntity);
-                            if(documentEntityPersister.isVersioned(entityAccess)) {
-                                def currentVersion = documentEntityPersister.getCurrentVersion(entityAccess)
+                            if(isVersioned) {
+                                MongoCodecEntityPersister documentEntityPersister = (MongoCodecEntityPersister) getPersister(persistentEntity);
                                 documentEntityPersister.incrementVersion(entityAccess)
 
                                 // if the entity is versioned we add to the query the current version
