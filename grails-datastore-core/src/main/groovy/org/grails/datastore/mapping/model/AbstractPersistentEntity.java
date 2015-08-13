@@ -53,6 +53,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     private boolean external;
     private MappingProperties mappingProperties = new MappingProperties();
     private boolean initialized = false;
+    private boolean propertiesInitialized = false;
     private boolean versionCompatibleType;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
@@ -81,11 +82,13 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     public void initialize() {
         if(!initialized) {
 
-            initialized = true;
 
             initializeMappingProperties();
-            owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);
-            persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(this, context, getMapping());
+            initialized = true;
+
+            final MappingConfigurationStrategy mappingSyntaxStrategy = context.getMappingSyntaxStrategy();
+            owners = mappingSyntaxStrategy.getOwningEntities(javaClass, context);
+            persistentProperties = mappingSyntaxStrategy.getPersistentProperties(this, context, getMapping());
             identity = resolveIdentifier();
             persistentPropertyNames = new ArrayList<String>();
             associations = new ArrayList();
@@ -124,7 +127,11 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
                 final Class type = v.getType();
                 this.versionCompatibleType = Number.class.isAssignableFrom(type) || Date.class.isAssignableFrom(type);
             }
+
+
         }
+
+        propertiesInitialized = true;
 
     }
 
@@ -212,8 +219,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     }
 
     public boolean isVersioned() {
-        initializeMappingProperties();
-        return this.versionCompatibleType && mappingProperties.isVersioned();
+        return (this.versionCompatibleType || !propertiesInitialized) && mappingProperties.isVersioned();
     }
 
     public Class getJavaClass() {

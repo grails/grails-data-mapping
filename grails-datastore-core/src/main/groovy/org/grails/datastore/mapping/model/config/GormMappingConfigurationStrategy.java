@@ -174,15 +174,15 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 // non-persistent getter or setter
                 continue;
             }
-            if (descriptor.getName().equals(VERSION) && !entity.isVersioned()) {
+            final String propertyName = descriptor.getName();
+            if (propertyName.equals(VERSION) && !entity.isVersioned()) {
                 continue;
             }
 
-            Field field = cpf.getDeclaredField(descriptor.getName());
+            Field field = cpf.getDeclaredField(propertyName);
             if (field != null && java.lang.reflect.Modifier.isTransient(field.getModifiers())) {
                 continue;
             }
-            final String propertyName = descriptor.getName();
             if (isExcludedProperty(propertyName, classMapping, transients)) continue;
             Class<?> propertyType = descriptor.getPropertyType();
             Class currentPropType = propertyType;

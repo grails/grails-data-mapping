@@ -29,6 +29,7 @@ import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.event.*;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.util.ReflectionUtils;
@@ -132,14 +133,15 @@ public class DomainEventListener extends AbstractPersistenceEventListener
     }    
 
     protected void setVersion(final EntityAccess ea) {
-        if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
-            ea.setProperty("version", 0);
+        final Class versionType = ea.getPersistentEntity().getVersion().getType();
+        if (Number.class.isAssignableFrom(versionType)) {
+            ea.setProperty(GormProperties.VERSION, 0);
         }
-        else if (Timestamp.class.isAssignableFrom(ea.getPropertyType("version"))) {
-            ea.setProperty("version", new Timestamp(System.currentTimeMillis()));
+        else if (Timestamp.class.isAssignableFrom(versionType)) {
+            ea.setProperty(GormProperties.VERSION, new Timestamp(System.currentTimeMillis()));
         }
-        else if (Date.class.isAssignableFrom(ea.getPropertyType("version"))) {
-            ea.setProperty("version", new Date());
+        else if (Date.class.isAssignableFrom(versionType)) {
+            ea.setProperty(GormProperties.VERSION, new Date());
         }
     }
 

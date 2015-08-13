@@ -111,7 +111,9 @@ class MongoCodecSession extends AbstractMongoSession {
 
                         if(insert.vetoed) continue
 
-                        entityWrites << new InsertOneModel<?>( insert.nativeEntry )
+
+                        def object = insert.nativeEntry
+                        entityWrites << new InsertOneModel<?>(object)
 
                         final List<PendingOperation> cascadeOperations = insert.cascadeOperations
                         addPostFlushOperations cascadeOperations
