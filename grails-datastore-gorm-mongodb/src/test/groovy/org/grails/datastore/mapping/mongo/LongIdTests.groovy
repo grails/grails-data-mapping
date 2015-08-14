@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.mongo
 
+import grails.gorm.dirty.checking.DirtyCheck
 import org.junit.Test
 
 class LongIdTests extends AbstractMongoTest {
@@ -8,7 +9,7 @@ class LongIdTests extends AbstractMongoTest {
     void testBasicPersistenceOperations() {
         md.mappingContext.addPersistentEntity(MongoLongIdEntity)
 
-        MongoSession session = md.connect()
+        AbstractMongoSession session = md.connect()
 
         session.nativeInterface.dropDatabase(session.defaultDatabase)
 
@@ -55,6 +56,7 @@ class LongIdTests extends AbstractMongoTest {
     }
 }
 
+@DirtyCheck
 class MongoLongIdEntity {
     Long id
     String name

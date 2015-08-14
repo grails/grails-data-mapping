@@ -500,7 +500,13 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             return false;
         }
 
-        return getInstanceCache(o.getClass()).containsValue(o);
+        final Serializable identifier = getObjectIdentifier(o);
+        if(identifier != null) {
+            return getInstanceCache(o.getClass()).containsKey(identifier);
+        }
+        else {
+            return getInstanceCache(o.getClass()).containsValue(o);
+        }
     }
 
     public boolean isCached(Class type, Serializable key) {
@@ -775,7 +781,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public List retrieveAll(Class type, Iterable keys) {
-        Persister p = getPersister(type);
+        EntityPersister p = (EntityPersister) getPersister(type);
         if (p == null) {
             throw new NonPersistentTypeException("Cannot retrieve objects with keys [" + keys +
                     "]. The class [" + type.getName() + "] is not a known persistent type.");
@@ -794,22 +800,23 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         }
         List<Object> retrieved = p.retrieveAll(toRetrieve);
         Iterator<Serializable> keyIterator = toRetrieve.iterator();
-        Iterator retrievedIterator = retrieved.iterator();
+        Map<Serializable, Object> retrievedMap = new HashMap<Serializable, Object>();
+        for (Object o : retrieved) {
+            final Serializable identifier = p.getObjectIdentifier(o);
+            if(identifier != null) {
+                retrievedMap.put(identifier, o);
+            }
+        }
         // now fill in the null entries (possibly with more nulls)
         for (int i = 0; i < list.size(); i++) {
             Object o = list.get(i);
             if (o == null) {
-                if(retrievedIterator.hasNext()) {
-
-                    Object next = retrievedIterator.next();
+                if(keyIterator.hasNext()) {
+                    Serializable key = keyIterator.next();
+                    key = (Serializable) mappingContext.getConversionService().convert( key, p.getPersistentEntity().getIdentity().getType() );
+                    final Object next = retrievedMap.get(key);
                     list.set(i, next);
-                    if(keyIterator.hasNext()) {
-                        Serializable key = keyIterator.next();
-                        cacheInstance(type, key, next);
-                    }
-                }
-                else {
-                    break;
+                    cacheInstance(type, key, next);
                 }
             }
         }

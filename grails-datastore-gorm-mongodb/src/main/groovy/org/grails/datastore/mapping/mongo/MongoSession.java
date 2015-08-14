@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.mongodb.*;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
@@ -35,6 +36,7 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
+import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
@@ -365,6 +367,21 @@ public class MongoSession extends AbstractMongoSession {
         else {
             return 0;
         }
+    }
+
+    @Override
+    public Object decode(Class type, Object nativeObject) {
+        if(nativeObject instanceof FindIterable) {
+            return decode(type, ((FindIterable) nativeObject).first());
+        }
+        else if( nativeObject instanceof Document ){
+            Document dbo = (Document) nativeObject;
+            Serializable key = (Serializable)dbo.get(AbstractMongoObectEntityPersister.MONGO_ID_FIELD);
+            final Persister persister = getPersister(type);
+            final MongoEntityPersister mongoEntityPersister = (MongoEntityPersister) persister;
+            return mongoEntityPersister.createObjectFromNativeEntry(mongoEntityPersister.getPersistentEntity(), key, dbo);
+        }
+        return null;
     }
 
     private Document buildNativeDocumentQueryFromCriteria(QueryableCriteria criteria, PersistentEntity entity) {

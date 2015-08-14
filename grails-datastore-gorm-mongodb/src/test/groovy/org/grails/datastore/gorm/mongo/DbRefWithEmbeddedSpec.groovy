@@ -26,6 +26,12 @@ class DbRefWithEmbeddedSpec extends GormDatastoreSpec {
             link2one instanceof DBRef
             Two.DB.getCollection(link2one.collectionName).findOne(link2one.id).name == "My Foo"
 
+        when:"The entity is loaded again"
+            two = Two.first()
+
+        then:"It is correct"
+            two.link2one.link.name == 'My Foo'
+
     }
 
     @Override

@@ -24,6 +24,7 @@ import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.gorm.mongo.MongoGormInstanceApi
 import org.grails.datastore.gorm.mongo.MongoGormStaticApi
 import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
+import org.grails.datastore.mapping.mongo.AbstractMongoSession
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
@@ -47,16 +48,9 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
         super.configure()
 
         def asTypeHook = { Class cls ->
-            MongoEntityPersister p = datastore.currentSession.getPersister(cls)
-            if (p != null) {
-                if(delegate instanceof FindIterable) {
-                    return ((FindIterable)delegate).first().asType(cls)
-                }
-                else if( delegate instanceof Document ){
-                    Document dbo = delegate
-                    def key = dbo.get(AbstractMongoObectEntityPersister.MONGO_ID_FIELD)
-                    return p.createObjectFromNativeEntry(p.persistentEntity, key, dbo)
-                }
+            AbstractMongoSession session = (AbstractMongoSession)datastore.currentSession
+            if (session != null) {
+                return session.decode(cls, delegate)
             }
             else {
                 if((delegate instanceof Document) && cls.name == 'grails.converters.JSON') {

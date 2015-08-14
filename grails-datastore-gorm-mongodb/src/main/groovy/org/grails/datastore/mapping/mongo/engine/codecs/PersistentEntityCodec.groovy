@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 package org.grails.datastore.mapping.mongo.engine.codecs
+
+import com.mongodb.DBRef
 import groovy.transform.CompileStatic
 import org.bson.*
+import org.bson.codecs.BsonValueCodecProvider
 import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
+import org.bson.codecs.configuration.CodecRegistry
 import org.bson.conversions.Bson
+import org.bson.types.Binary
 import org.bson.types.ObjectId
 import org.grails.datastore.mapping.collection.PersistentList
 import org.grails.datastore.mapping.collection.PersistentSet
@@ -33,8 +38,10 @@ import org.grails.datastore.mapping.dirty.checking.DirtyCheckingMap
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.EntityPersister
+import org.grails.datastore.mapping.engine.Persister
 import org.grails.datastore.mapping.engine.internal.MappingUtils
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
+import org.grails.datastore.mapping.model.EmbeddedPersistentEntity
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
@@ -43,8 +50,10 @@ import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.*
 import org.grails.datastore.mapping.mongo.AbstractMongoSession
 import org.grails.datastore.mapping.mongo.MongoDatastore
+import org.grails.datastore.mapping.mongo.config.MongoAttribute
 import org.grails.datastore.mapping.mongo.engine.MongoCodecEntityPersister
 import org.grails.datastore.mapping.query.Query
+import org.springframework.core.convert.converter.Converter
 
 import javax.persistence.CascadeType
 import javax.persistence.FetchType
@@ -62,6 +71,8 @@ class PersistentEntityCodec implements Codec {
     public static final String MONGO_SET_OPERATOR = '$set'
     public static final String MONGO_UNSET_OPERATOR = '$unset'
     public static final EncoderContext DEFAULT_ENCODER_CONTEXT = EncoderContext.builder().build()
+    public static final String DB_REF_ID_FIELD = '$id'
+    public static final String SCHEMALESS_ATTRIBUTES = "schemaless.attributes"
 
     static {
         ENCODERS[Identity] = new IdentityEncoder()
@@ -89,10 +100,12 @@ class PersistentEntityCodec implements Codec {
     final MongoDatastore datastore
     final MappingContext mappingContext
     final PersistentEntity entity
+    final CodecRegistry codecRegistry
 
     PersistentEntityCodec(MongoDatastore datastore, PersistentEntity entity) {
         this.datastore = datastore
         this.mappingContext = datastore.mappingContext
+        this.codecRegistry = datastore.codecRegistry
         this.entity = entity
     }
 
@@ -101,52 +114,71 @@ class PersistentEntityCodec implements Codec {
         bsonReader.readStartDocument()
         def persistentEntity = entity
         def instance = persistentEntity.javaClass.newInstance()
-        EntityAccess access = createEntityAccess(persistentEntity, instance)
+        AbstractMongoSession mongoSession = (AbstractMongoSession)datastore.currentSession
+        EntityAccess access = createEntityAccess(mongoSession, persistentEntity, instance)
+        Document schemalessAttributes = new Document()
         BsonType bsonType = bsonReader.readBsonType()
+        boolean abortReading = false
         while(bsonType != BsonType.END_OF_DOCUMENT) {
 
             def name = bsonReader.readName()
-            if(MongoCodecEntityPersister.MONGO_CLASS_FIELD == name) {
-                def childEntity = mappingContext
-                                        .getChildEntityByDiscriminator(persistentEntity.rootEntity, bsonReader.readString())
-                if(childEntity != null) {
-                    persistentEntity = childEntity
-                    instance = childEntity
-                                .newInstance()
-                    def newAccess = createEntityAccess(childEntity, instance)
-                    newAccess.setIdentifier( access.identifier )
-                    access = newAccess
-                }
-                bsonType = bsonReader.readBsonType()
-                continue
-            }
+            if(!abortReading) {
 
-            if(MongoCodecEntityPersister.MONGO_ID_FIELD == name) {
-                DECODERS[Identity].decode( bsonReader, persistentEntity.identity, access, decoderContext, datastore)
-            }
-            else {
-                def property = persistentEntity.getPropertyByName(name)
-                if(property && bsonType != BsonType.NULL) {
-                    def propKind = property.getClass().superclass
-                    switch(property.type) {
-                        case CharSequence:
-                            access.setPropertyNoConversion(name, bsonReader.readString())
-                        break
-                        default:
-                            DECODERS[propKind]?.decode(bsonReader, property, access, decoderContext, datastore)
+                if(MongoCodecEntityPersister.MONGO_CLASS_FIELD == name) {
+                    def childEntity = mappingContext
+                            .getChildEntityByDiscriminator(persistentEntity.rootEntity, bsonReader.readString())
+                    if(childEntity != null) {
+                        persistentEntity = childEntity
+                        instance = childEntity
+                                .newInstance()
+                        def newAccess = createEntityAccess(childEntity, instance)
+                        newAccess.setIdentifier( access.identifier )
+                        access = newAccess
+                    }
+                    bsonType = bsonReader.readBsonType()
+                    continue
+                }
+
+                if(MongoCodecEntityPersister.MONGO_ID_FIELD == name) {
+                    DECODERS[Identity].decode( bsonReader, persistentEntity.identity, access, decoderContext, datastore)
+                    if(mongoSession.contains(instance)) {
+                        instance = mongoSession.retrieve( persistentEntity.javaClass, (Serializable)access.identifier )
+                        abortReading = true
+                    }
+                }
+                else {
+                    def property = persistentEntity.getPropertyByName(name)
+                    if(property && bsonType != BsonType.NULL) {
+                        def propKind = property.getClass().superclass
+                        switch(property.type) {
+                            case CharSequence:
+                                access.setPropertyNoConversion(property.name, bsonReader.readString())
+                                break
+                            default:
+                                DECODERS[propKind]?.decode(bsonReader, property, access, decoderContext, datastore)
+                        }
+
+                    }
+                    else if(!abortReading) {
+                        readSchemaless(bsonReader, schemalessAttributes, name, decoderContext)
+                    }
+                    else {
+                        bsonReader.skipValue()
                     }
 
                 }
-                else {
-                    bsonReader.skipValue()
-                }
-
+            }
+            else if(!abortReading){
+                readSchemaless(bsonReader, schemalessAttributes, name, decoderContext)
+            }
+            else {
+                bsonReader.skipValue()
             }
             bsonType = bsonReader.readBsonType()
         }
         bsonReader.readEndDocument()
 
-        def session = datastore.currentSession
+        def session = mongoSession
         for( association in entity.associations ) {
             if(association instanceof OneToMany) {
                 if(association.isBidirectional()) {
@@ -170,8 +202,28 @@ class PersistentEntityCodec implements Codec {
                 }
             }
         }
+        if(!schemalessAttributes.isEmpty()) {
+            mongoSession.setAttribute(instance, SCHEMALESS_ATTRIBUTES, schemalessAttributes)
+        }
         return instance
 
+    }
+
+    protected void readSchemaless(BsonReader bsonReader, Document schemalessAttributes, String name, DecoderContext decoderContext) {
+        def currentBsonType = bsonReader.getCurrentBsonType()
+        def targetClass = BsonValueCodecProvider.getClassForBsonType(currentBsonType)
+
+        def codec = codecRegistry.get(targetClass)
+
+        BsonValue bsonValue = (BsonValue)codec.decode(bsonReader, decoderContext)
+        if(bsonValue != null) {
+
+            def converter = AdditionalCodecs.getBsonConverter(bsonValue.getClass())
+            schemalessAttributes.put(
+                    name,
+                    converter != null ? converter.convert( bsonValue ) : bsonValue
+            )
+        }
     }
 
     protected EntityAccess createEntityAccess(Object instance) {
@@ -181,6 +233,10 @@ class PersistentEntityCodec implements Codec {
 
     protected EntityAccess createEntityAccess(PersistentEntity entity, instance) {
         AbstractMongoSession session = (AbstractMongoSession) getDatastore().currentSession
+        return createEntityAccess(session, entity, instance)
+    }
+
+    protected EntityAccess createEntityAccess(AbstractMongoSession session, PersistentEntity entity, instance) {
         return session.createEntityAccess(entity, instance)
     }
 
@@ -256,6 +312,21 @@ class PersistentEntityCodec implements Codec {
                 }
             }
 
+            Document schemaless = (Document)datastore.currentSession.getAttribute(value, SCHEMALESS_ATTRIBUTES)
+            if(schemaless != null) {
+                for(name in schemaless.keySet()) {
+                    def v = schemaless.get(name)
+                    if(v == null) {
+                        unsets[name] = BLANK_STRING
+                    }
+                    else {
+                        writer.writeName(name)
+                        def codec = codecRegistry.get(v.getClass())
+                        codec.encode(writer, v, encoderContext)
+                    }
+                }
+            }
+
             for(association in entity.associations) {
                 if(processed.contains( association.name )) continue
                 if(association instanceof OneToMany) {
@@ -291,7 +362,8 @@ class PersistentEntityCodec implements Codec {
             if(hasSets && isVersioned) {
                 def version = entity.version
                 def propKind = version.getClass().superclass
-                def v = access.getProperty(GormProperties.VERSION)
+                MongoCodecEntityPersister.incrementEntityVersion(access)
+                def v = access.getProperty(version.name)
                 ENCODERS[propKind]?.encode(writer, version, v, access, encoderContext, mongoDatastore)
             }
 
@@ -412,6 +484,18 @@ class PersistentEntityCodec implements Codec {
             Object v = access.getProperty(prop.name)
             if (v != null) {
                 ENCODERS[propKind]?.encode(writer, (PersistentProperty) prop, v, access, encoderContext, mongoDatastore)
+            }
+        }
+
+        AbstractMongoSession mongoSession = (AbstractMongoSession)datastore.currentSession
+
+        Document schemaless = (Document)mongoSession.getAttribute(access.entity, SCHEMALESS_ATTRIBUTES)
+        if(schemaless != null) {
+            for(name in schemaless.keySet()) {
+                writer.writeName name
+                Object v = schemaless.get(name)
+                def codec = codecRegistry.get(v.getClass())
+                codec.encode(writer, v, encoderContext)
             }
         }
 
@@ -566,6 +650,17 @@ class PersistentEntityCodec implements Codec {
                     entityAccess.setPropertyNoConversion( property.name, calendar)
                 }
             }
+
+            SIMPLE_TYPE_DECODERS[Binary] = new TypeDecoder() {
+                @Override
+                void decode(BsonReader reader, Simple property, EntityAccess entityAccess) {
+
+                    entityAccess.setPropertyNoConversion(
+                            property.name,
+                            new Binary(reader.readBinaryData().data)
+                    )
+                }
+            }
         }
 
         @Override
@@ -680,6 +775,12 @@ class PersistentEntityCodec implements Codec {
                     writer.writeBinaryData( new BsonBinary((byte[])value))
                 }
             }
+            SIMPLE_TYPE_ENCODERS[Binary] = new TypeEncoder() {
+                @Override
+                void encode(BsonWriter writer, Simple property, Object value) {
+                    writer.writeBinaryData( new BsonBinary(((Binary)value).data))
+                }
+            }
         }
 
         @Override
@@ -769,7 +870,7 @@ class PersistentEntityCodec implements Codec {
     static class OneToManyDecoder implements PropertyDecoder<Association> {
         @Override
         void decode(BsonReader reader, Association property, EntityAccess entityAccess, DecoderContext decoderContext, MongoDatastore datastore) {
-            def session = datastore.currentSession
+            AbstractMongoSession session = (AbstractMongoSession)datastore.currentSession
             if(property.isBidirectional() && !(property instanceof ManyToMany)) {
 
                 initializePersistentCollection(session, entityAccess, property)
@@ -782,6 +883,18 @@ class PersistentEntityCodec implements Codec {
 
                 def listCodec = codecRegistry.get(List)
                 def identifiers = listCodec.decode(reader, decoderContext)
+                MongoAttribute attr = (MongoAttribute)property.mapping.mappedForm
+                if(attr?.isReference()) {
+                    identifiers = identifiers.collect {
+                        if(it instanceof DBRef) {
+                            return ((DBRef)it).id
+                        }
+                        else if(it instanceof Map) {
+                            return ((Map)it).get(DB_REF_ID_FIELD)
+                        }
+                        return it
+                    }
+                }
                 def associatedType = property.associatedEntity.javaClass
                 if(SortedSet.isAssignableFrom(type)) {
                     entityAccess.setPropertyNoConversion(
@@ -839,7 +952,7 @@ class PersistentEntityCodec implements Codec {
                 // document, otherwise nothing to do, encoding foreign key stored in inverse side
 
                 def associatedEntity = property.associatedEntity
-                def mongoSession = datastore.currentSession
+                def mongoSession = (AbstractMongoSession)datastore.currentSession
                 if(value instanceof Collection) {
                     boolean updateCollection = false
                     if((value instanceof DirtyCheckableCollection)) {
@@ -862,7 +975,16 @@ class PersistentEntityCodec implements Codec {
                         }
                         writer.writeName MappingUtils.getTargetKey((PersistentProperty)property)
                         def listCodec = datastore.codecRegistry.get(List)
-                        listCodec.encode writer, identifiers.toList(), encoderContext
+
+                        def identifierList = identifiers.toList()
+                        MongoAttribute attr = (MongoAttribute)property.mapping.mappedForm
+                        if(attr?.isReference()) {
+                            def collectionName = mongoSession.getCollectionName(property.associatedEntity)
+                            identifierList = identifierList.findAll(){ it != null }.collect {
+                                new DBRef(collectionName, it)
+                            }
+                        }
+                        listCodec.encode writer, identifierList, encoderContext
                     }
                 }
             }
@@ -894,7 +1016,18 @@ class PersistentEntityCodec implements Codec {
                         }
                         if(associationId != null) {
                             writer.writeName MappingUtils.getTargetKey(property)
-                            codecRegistry.get(associationId.getClass()).encode( writer, associationId, encoderContext)
+                            MongoAttribute attr = (MongoAttribute)property.mapping.mappedForm
+                            if(attr?.isReference()) {
+                                AbstractMongoSession mongoSession = (AbstractMongoSession)datastore.currentSession
+                                def identityEncoder = codecRegistry.get(DBRef)
+
+                                def ref = new DBRef(mongoSession.getCollectionName( associatedEntity),associationId)
+                                identityEncoder.encode writer, ref, encoderContext
+                            }
+                            else {
+                                def identityEncoder = codecRegistry.get(associationId.getClass())
+                                identityEncoder.encode writer, associationId, encoderContext
+                            }
                         }
                     }
                 }
@@ -910,7 +1043,8 @@ class PersistentEntityCodec implements Codec {
         @Override
         void decode(BsonReader bsonReader, ToOne property, EntityAccess entityAccess, DecoderContext decoderContext, MongoDatastore datastore) {
             def mongoSession = datastore.currentSession
-            boolean isLazy = isLazyAssociation(property.mapping)
+            MongoAttribute attr = (MongoAttribute)property.mapping.mappedForm
+            boolean isLazy = isLazyAssociation(attr)
             def associatedEntity = property.associatedEntity
             if(associatedEntity == null) {
                 bsonReader.skipValue()
@@ -918,19 +1052,28 @@ class PersistentEntityCodec implements Codec {
             }
 
             Serializable associationId
-            switch(associatedEntity.identity.type) {
-                case ObjectId:
-                    associationId = bsonReader.readObjectId()
-                    break
-                case Long:
-                    associationId = (Long)bsonReader.readInt64()
-                    break
-                case Integer:
-                    associationId =  (Integer)bsonReader.readInt32()
-                    break
-                default:
-                    associationId = bsonReader.readString()
+
+            if(attr.reference && bsonReader.currentBsonType == BsonType.DOCUMENT) {
+                def dbRefCodec = datastore.codecRegistry.get(Document)
+                def dBRef = dbRefCodec.decode(bsonReader, decoderContext)
+                associationId = (Serializable)dBRef.get(DB_REF_ID_FIELD)
             }
+            else {
+                switch(associatedEntity.identity.type) {
+                    case ObjectId:
+                        associationId = bsonReader.readObjectId()
+                        break
+                    case Long:
+                        associationId = (Long)bsonReader.readInt64()
+                        break
+                    case Integer:
+                        associationId =  (Integer)bsonReader.readInt32()
+                        break
+                    default:
+                        associationId = bsonReader.readString()
+                }
+            }
+
 
             if(isLazy) {
                 entityAccess.setPropertyNoConversion(
@@ -947,13 +1090,12 @@ class PersistentEntityCodec implements Codec {
 
         }
 
-        private boolean isLazyAssociation(PropertyMapping<Property> associationPropertyMapping) {
-            if (associationPropertyMapping == null) {
+        private boolean isLazyAssociation(MongoAttribute attribute) {
+            if (attribute == null) {
                 return true
             }
 
-            Property kv = associationPropertyMapping.getMappedForm()
-            return kv.getFetchStrategy() == FetchType.LAZY
+            return attribute.getFetchStrategy() == FetchType.LAZY
         }
 
     }
@@ -965,14 +1107,23 @@ class PersistentEntityCodec implements Codec {
 
         @Override
         void encode(BsonWriter writer, Embedded property, Object value, EntityAccess parentAccess, EncoderContext encoderContext, MongoDatastore datastore) {
-            if(value) {
-                def associatedEntity = property.associatedEntity
-                writer.writeName property.name
+            if(value != null) {
+                PersistentEntity associatedEntity = datastore.mappingContext.getPersistentEntity(value.getClass().name)
+                if(associatedEntity == null) {
+                    associatedEntity = property.associatedEntity
+                }
+
+                writer.writeName MappingUtils.getTargetKey(property)
 
                 AbstractMongoSession mongoSession = (AbstractMongoSession)datastore.currentSession
                 def access = mongoSession.createEntityAccess(associatedEntity, value)
                 PersistentEntityCodec codec = datastore.getPersistentEntityCodec(associatedEntity)
-                codec.encode(writer, value, encoderContext, access.identifier ? true : false)
+
+
+                def identifier = access.identifier
+
+                def hasIdentifier = identifier != null
+                codec.encode(writer, value, encoderContext, hasIdentifier)
             }
         }
     }
@@ -1007,8 +1158,7 @@ class PersistentEntityCodec implements Codec {
         @Override
         void encode(BsonWriter writer, EmbeddedCollection property, Object value, EntityAccess parentAccess, EncoderContext encoderContext, MongoDatastore datastore) {
 
-            writer.writeName property.name
-            writer.writeStartArray()
+            writer.writeName MappingUtils.getTargetKey(property)
 
             def associatedEntity = property.associatedEntity
             PersistentEntityCodec associatedCodec = datastore.getPersistentEntityCodec( associatedEntity )
@@ -1018,39 +1168,62 @@ class PersistentEntityCodec implements Codec {
             def isToOne = inverseSide instanceof ToOne
             def mappingContext = datastore.mappingContext
 
-            for(v in value) {
-                if(v != null) {
-                    PersistentEntityCodec codec = associatedCodec
-                    PersistentEntity entity = associatedEntity
+            if(Collection.isInstance(value)) {
+                writer.writeStartArray()
 
-                    def cls = v.getClass()
-                    if(cls != associatedEntity.javaClass) {
-                        // try subclass
+                for(v in value) {
+                    if(v != null) {
+                        PersistentEntityCodec codec = associatedCodec
+                        PersistentEntity entity = associatedEntity
 
-                        def childEntity = mappingContext.getPersistentEntity(cls.name)
-                        if(childEntity != null) {
-                            entity = childEntity
-                            codec = datastore.getPersistentEntityCodec(cls)
+                        def cls = v.getClass()
+                        if(cls != associatedEntity.javaClass) {
+                            // try subclass
+
+                            def childEntity = mappingContext.getPersistentEntity(cls.name)
+                            if(childEntity != null) {
+                                entity = childEntity
+                                codec = datastore.getPersistentEntityCodec(cls)
+                            }
+                            else {
+                                continue
+                            }
                         }
-                        else {
-                            continue
+
+                        def ea = ((AbstractMongoSession)datastore.currentSession)
+                                .createEntityAccess(entity, v)
+                        def id = ea.getIdentifier()
+                        if(isBidirectional) {
+                            if(isToOne) {
+                                ea.setPropertyNoConversion(inverseProperty, parentAccess.entity)
+                            }
                         }
+
+                        codec.encode(writer, v, encoderContext, id != null)
                     }
-
-                    def ea = ((AbstractMongoSession)datastore.currentSession)
-                            .createEntityAccess(entity, v)
-                    def id = ea.getIdentifier()
-                    if(isBidirectional) {
-                        if(isToOne) {
-                            ea.setPropertyNoConversion(inverseProperty, parentAccess.entity)
-                        }
-                    }
-
-                    codec.encode(writer, v, encoderContext, id != null)
                 }
+                writer.writeEndArray()
+            }
+            else if(Map.isInstance(value)) {
+                writer.writeStartDocument()
+
+                for(e in value) {
+                    Map.Entry<String, Object> entry = (Map.Entry<String, Object>)e
+
+                    writer.writeName entry.key
+
+
+                    def v = entry.value
+                    def ea = ((AbstractMongoSession)datastore.currentSession)
+                            .createEntityAccess(associatedEntity, v)
+                    def id = ea.getIdentifier()
+
+                    associatedCodec.encode(writer, v, encoderContext, id != null)
+
+                }
+                writer.writeEndDocument()
             }
 
-            writer.writeEndArray()
 
         }
     }
@@ -1076,6 +1249,24 @@ class PersistentEntityCodec implements Codec {
                         property.name,
                         DirtyCheckingSupport.wrap(collection, (DirtyCheckable)entityAccess.entity, property.name)
                 )
+            }
+            else if(Map.isAssignableFrom(property.type)) {
+                reader.readStartDocument()
+                def bsonType = reader.readBsonType()
+                def map = [:]
+                while(bsonType != BsonType.END_OF_DOCUMENT) {
+                    def key = reader.readName()
+                    map[key] = associationCodec.decode(reader, decoderContext)
+                    bsonType = reader.readBsonType()
+                }
+                reader.readEndDocument()
+                entityAccess.setPropertyNoConversion(
+                        property.name,
+                        new DirtyCheckingMap(map, (DirtyCheckable)entityAccess.entity, property.name)
+                )
+            }
+            else {
+                reader.skipValue()
             }
         }
     }
@@ -1145,7 +1336,7 @@ class PersistentEntityCodec implements Codec {
                                 DirtyCheckingSupport.wrap(value, parent, propertyName)
                         )
                     }
-                    else if(value instanceof Map) {
+                    else if(value instanceof Map &&  !(value instanceof Bson)) {
                         def propertyName = property.name
                         parentAccess.setPropertyNoConversion(
                                 propertyName,

@@ -865,6 +865,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         .first();;
             }
             if(isCodecPersister) {
+                final EntityAccess entityAccess = mongoSession.createEntityAccess(entity, dbObject);
+                mongoSession.cacheInstance(dbObject.getClass(), (Serializable) entityAccess.getIdentifier(), dbObject);
                 return wrapObjectResultInList(dbObject);
             }
             else {

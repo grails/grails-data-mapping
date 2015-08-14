@@ -229,6 +229,10 @@ class AdditionalCodecs implements CodecProvider{
     static Collection<Converter> getBsonConverters() {
         BSON_VALUE_CONVERTERS.values().flatten()
     }
+    static Converter getBsonConverter(Class<? extends BsonValue> type) {
+        BSON_VALUE_CONVERTERS.get(type).first()
+    }
+
 
     static Codec getCodecForBsonType(BsonType bsonType, CodecRegistry registry) {
         def codec = BSON_TYPE_CODECS.get(bsonType)

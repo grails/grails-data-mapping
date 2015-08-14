@@ -350,21 +350,23 @@ public abstract class EntityPersister implements Persister {
     }
 
     public static void incrementEntityVersion(EntityAccess ea) {
-        if (Number.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
-            Number currentVersion = (Number) ea.getProperty(GormProperties.VERSION);
+        final String versionName = ea.getPersistentEntity().getVersion().getName();
+        if (Number.class.isAssignableFrom(ea.getPropertyType(versionName))) {
+            Number currentVersion = (Number) ea.getProperty(versionName);
             if (currentVersion == null) {
                 currentVersion = 0L;
             }
-            ea.setProperty(GormProperties.VERSION, currentVersion.longValue() + 1);
+            ea.setProperty(versionName, currentVersion.longValue() + 1);
         }
         else {
-            setDateVersionInternal(ea);
+            setDateVersionInternal(versionName, ea);
         }
     }
 
     protected void setVersion(final EntityAccess ea) {
-        if (Number.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
-            ea.setProperty(GormProperties.VERSION, 0);
+        final String versionName = ea.getPersistentEntity().getVersion().getName();
+        if (Number.class.isAssignableFrom(ea.getPropertyType(versionName))) {
+            ea.setProperty(versionName, 0);
         }
         else {
             setDateVersion(ea);
@@ -372,15 +374,15 @@ public abstract class EntityPersister implements Persister {
     }
 
     protected void setDateVersion(final EntityAccess ea) {
-        setDateVersionInternal(ea);
+        setDateVersionInternal(ea.getPersistentEntity().getVersion().getName(), ea);
     }
 
-    private static void setDateVersionInternal(EntityAccess ea) {
-        if (Timestamp.class.isAssignableFrom(ea.getPropertyType(GormProperties.VERSION))) {
-            ea.setProperty(GormProperties.VERSION, new Timestamp(System.currentTimeMillis()));
+    private static void setDateVersionInternal(String versionName, EntityAccess ea) {
+        if (Timestamp.class.isAssignableFrom(ea.getPropertyType(versionName))) {
+            ea.setProperty(versionName, new Timestamp(System.currentTimeMillis()));
         }
         else {
-            ea.setProperty(GormProperties.VERSION, new Date());
+            ea.setProperty(versionName, new Date());
         }
     }
 }

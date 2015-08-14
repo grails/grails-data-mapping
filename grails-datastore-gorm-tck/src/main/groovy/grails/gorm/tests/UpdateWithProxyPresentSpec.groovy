@@ -2,7 +2,7 @@ package grails.gorm.tests
 
 import grails.gorm.dirty.checking.DirtyCheck
 import grails.persistence.Entity
-
+import groovy.transform.EqualsAndHashCode
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
@@ -97,7 +97,8 @@ class Pet implements Serializable {
 @DirtyCheck
 @Entity
 @ApplyDetachedCriteriaTransform
-//@groovy.transform.EqualsAndHashCode - breaks gorm-neo4j: TODO: http://jira.grails.org/browse/GPNEO4J-10 
+//@groovy.transform.EqualsAndHashCode - breaks gorm-neo4j: TODO: http://jira.grails.org/browse/GPNEO4J-10
+@EqualsAndHashCode(includes = ['firstName', 'lastName', 'age'])
 class Person implements Serializable, Comparable<Person> {
     static simpsons = where {
          lastName == "Simpson"

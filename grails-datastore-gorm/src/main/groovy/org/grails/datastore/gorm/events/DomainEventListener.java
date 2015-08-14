@@ -248,13 +248,20 @@ public class DomainEventListener extends AbstractPersistenceEventListener
 
         
         final Object result;
-        if (eventMethod.getParameterTypes().length == 1) {
-            result = ReflectionUtils.invokeMethod(eventMethod, ea.getEntity(), event); 
+        if(ea != null) {
+            final Object o = ea.getEntity();
+
+            if (eventMethod.getParameterTypes().length == 1) {
+                result = ReflectionUtils.invokeMethod(eventMethod, o, event);
+            }
+            else {
+                result = ReflectionUtils.invokeMethod(eventMethod, o);
+            }
         }
         else {
-            result = ReflectionUtils.invokeMethod(eventMethod, ea.getEntity());
+            result = null;
         }
-        
+
         boolean booleanResult = (result instanceof Boolean) ? (Boolean)result : true;
         if (booleanResult && REFRESH_EVENTS.contains(eventName)) {
             ea.refresh();

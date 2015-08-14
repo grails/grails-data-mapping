@@ -24,10 +24,13 @@ import org.grails.datastore.mapping.core.SessionImplementor
 import org.grails.datastore.mapping.core.VoidSessionCallback
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.engine.EntityPersister
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.mongo.AbstractMongoSession
+import org.grails.datastore.mapping.mongo.MongoCodecSession
 import org.grails.datastore.mapping.mongo.MongoSession
 import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
+import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec
 
 /**
  * Mongo GORM instance level API
@@ -73,7 +76,7 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
             setProperty(instance, name, value)
         }
         else {
-            execute ( { MongoSession session ->
+            execute ( { AbstractMongoSession session ->
                 SessionImplementor si = (SessionImplementor)session
 
                 if (si.isStateless(persistentEntity)) {
@@ -85,7 +88,7 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
                     return updateObject
                 }
                 else {
-                    final dbo = getDbo(instance)
+                    final dbo = getDboInternal(instance)
                     dbo?.put name, value
                     if (instance instanceof DirtyCheckable) {
                         ((DirtyCheckable)instance).markDirty()
@@ -108,12 +111,13 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param name The name of the field
      * @return the value
      */
+    @CompileStatic
     def getAt(D instance, String name) {
         if (instance.hasProperty(name)) {
             return getProperty(instance, name)
         }
 
-        def dbo = getDbo(instance)
+        Document dbo = getDboInternal(instance)
         if (dbo != null && dbo.containsKey(name)) {
             return dbo.get(name)
         }
@@ -124,6 +128,22 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
         return instance.getProperty(name)
     }
 
+    @CompileStatic
+    Document getDboInternal(D instance) {
+        AbstractMongoSession session = (AbstractMongoSession)datastore.currentSession
+
+        if(session instanceof MongoCodecSession) {
+            Document schemaless = (Document)session.getAttribute(instance, PersistentEntityCodec.SCHEMALESS_ATTRIBUTES)
+            if(schemaless == null) {
+                schemaless = new Document()
+                session.setAttribute(instance, PersistentEntityCodec.SCHEMALESS_ATTRIBUTES, schemaless)
+            }
+            return schemaless
+        }
+        else {
+            return getDbo(instance)
+        }
+    }
     /**
      * Return the DBObject instance for the entity
      *

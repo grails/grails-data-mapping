@@ -58,6 +58,7 @@ class AssignedIdentifierSpec extends GormDatastoreSpec {
             r.country == "Brazil"
 
         when:"A second object with the same id is saved"
+            session.clear()
             r = new River(name:"Amazon", country: "Brazil")
             r.save flush:true
 

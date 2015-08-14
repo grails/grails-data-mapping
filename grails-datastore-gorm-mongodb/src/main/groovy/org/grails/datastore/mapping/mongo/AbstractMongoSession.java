@@ -196,6 +196,8 @@ public abstract class AbstractMongoSession extends AbstractSession<MongoClient> 
         }
     }
 
+    public abstract Object decode(Class type, Object nativeObject);
+
     protected void addPostFlushOperations(List<PendingOperation> cascadeOperations) {
         for (PendingOperation cascadeOperation : cascadeOperations) {
             addPostFlushOperation(cascadeOperation);

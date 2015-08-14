@@ -43,6 +43,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     protected List<PersistentProperty> persistentProperties;
     protected List<Association> associations;
     protected Map<String, PersistentProperty> propertiesByName = new HashMap<String,PersistentProperty>();
+    protected Map<String, PersistentProperty> mappedPropertiesByName = new HashMap<String,PersistentProperty>();
     protected MappingContext context;
     protected PersistentProperty identity;
     protected PersistentProperty version;
@@ -104,6 +105,10 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
                 }
 
                 propertiesByName.put(persistentProperty.getName(), persistentProperty);
+                final String targetName = persistentProperty.getMapping().getMappedForm().getTargetName();
+                if(targetName != null) {
+                    mappedPropertiesByName.put(targetName, persistentProperty);
+                }
             }
 
             Class superClass = javaClass.getSuperclass();
@@ -239,7 +244,11 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     }
 
     public PersistentProperty getPropertyByName(String name) {
-        return propertiesByName.get(name);
+        PersistentProperty pp = propertiesByName.get(name);
+        if(pp != null) {
+            return pp;
+        }
+        return mappedPropertiesByName.get(name);
     }
 
     private void initializeMappingProperties() {

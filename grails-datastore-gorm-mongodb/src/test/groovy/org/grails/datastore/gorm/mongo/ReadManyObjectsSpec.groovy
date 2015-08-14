@@ -50,7 +50,7 @@ class ReadManyObjectsSpec extends GormDatastoreSpec {
     void createData() {
         ProfileDoc.collection.drop()
         100000.times {
-            ProfileDoc.collection.insert(n1:"Plane $it".toString(),n2:it,n3:it, date: new Date())
+            ProfileDoc.collection.insert(n1:"Plane $it".toString(),n2:it,n3:it.toLong(), date: new Date())
         }
     }
 

@@ -9,6 +9,7 @@ import grails.gorm.tests.DomainEventsSpec
 import grails.gorm.tests.FindWhereSpec
 import grails.gorm.tests.GormEnhancerSpec
 import grails.gorm.tests.InheritanceSpec
+import grails.gorm.tests.ListOrderBySpec
 import grails.gorm.tests.OneToOneSpec
 import grails.gorm.tests.OptimisticLockingSpec
 import grails.gorm.tests.ProxyLoadingSpec
@@ -26,7 +27,7 @@ import grails.gorm.tests.OneToManySpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-    CommonTypesPersistenceSpec
+    OneToManySpec
 ])
 class MongoSuite {
 }

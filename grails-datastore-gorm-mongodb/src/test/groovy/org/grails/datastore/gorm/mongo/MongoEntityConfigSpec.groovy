@@ -5,6 +5,7 @@ import grails.gorm.tests.GormDatastoreSpec
 
 import org.grails.datastore.mapping.document.config.DocumentPersistentEntity
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.mongo.AbstractMongoSession
 import org.grails.datastore.mapping.mongo.MongoSession
 import org.grails.datastore.mapping.mongo.config.MongoAttribute
 import org.grails.datastore.mapping.mongo.config.MongoCollection
@@ -53,7 +54,7 @@ class MongoEntityConfigSpec extends GormDatastoreSpec{
             coll.indices[0].definition == [summary:"text"]
 
         when:
-            MongoSession ms = session
+            AbstractMongoSession ms = session
         then:
             ms.getCollectionName(entity) == "mycollection"
     }

@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.mongo
 import com.mongodb.MongoClient
 import com.mongodb.WriteConcern
 import com.mongodb.bulk.BulkWriteResult
+import com.mongodb.client.FindIterable
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.DeleteManyModel
 import com.mongodb.client.model.DeleteOneModel
@@ -23,8 +24,14 @@ import com.mongodb.client.model.InsertOneModel
 import com.mongodb.client.model.UpdateOneModel
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.model.WriteModel
+import com.mongodb.client.result.DeleteResult
+import com.mongodb.client.result.UpdateResult
 import groovy.transform.CompileStatic
+import org.bson.BsonDocumentReader
+import org.bson.BsonDocumentWrapper
 import org.bson.Document
+import org.bson.codecs.Codec
+import org.bson.codecs.DecoderContext
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.conversions.Bson
@@ -47,6 +54,9 @@ import org.grails.datastore.mapping.mongo.engine.MongoCodecEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec
 import org.grails.datastore.mapping.mongo.query.MongoQuery
+import org.grails.datastore.mapping.query.Query
+import org.grails.datastore.mapping.query.api.QueryableCriteria
+import org.grails.datastore.mapping.transactions.SessionOnlyTransaction
 import org.grails.datastore.mapping.transactions.Transaction
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.DataIntegrityViolationException
@@ -68,7 +78,7 @@ class MongoCodecSession extends AbstractMongoSession {
         if(entity) {
             return new MongoCodecEntityPersister(context, entity, this, publisher, cacheAdapterRepository )
         }
-        return null
+        throw new IllegalArgumentException("Type [$type] is not an entity")
     }
 
     public MongoCodecSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
@@ -142,18 +152,21 @@ class MongoCodecSession extends AbstractMongoSession {
 
                         def entityAccess = update.entityAccess
                         def isVersioned = persistentEntity.isVersioned()
-                        def currentVersion = isVersioned ? entityAccess.getProperty(GormProperties.VERSION) : null
+                        def currentVersion = null
+                        if(isVersioned) {
+                            currentVersion = entityAccess.getProperty( persistentEntity.version.name )
+                        }
                         def updateDoc = codec.encodeUpdate(changedObject, entityAccess)
 
                         if(updateDoc) {
 
                             if(isVersioned) {
-                                MongoCodecEntityPersister documentEntityPersister = (MongoCodecEntityPersister) getPersister(persistentEntity);
-                                documentEntityPersister.incrementVersion(entityAccess)
-
                                 // if the entity is versioned we add to the query the current version
                                 // if the query doesn't match a result this means the document has been updated by
                                 // another thread and an optimistic locking exception should be thrown
+                                if(currentVersion == null) {
+                                    currentVersion = entityAccess.getProperty( persistentEntity.version.name )
+                                }
                                 id[GormProperties.VERSION] = currentVersion
                                 numberOfOptimisticUpdates[name]++
                             }
@@ -265,7 +278,7 @@ class MongoCodecSession extends AbstractMongoSession {
 
     @Override
     protected Transaction beginTransactionInternal() {
-        throw new UnsupportedOperationException("MongoDB does not support transactions")
+        return new SessionOnlyTransaction<MongoClient>(getNativeInterface(), this);
     }
 
     @Override
@@ -273,4 +286,64 @@ class MongoCodecSession extends AbstractMongoSession {
         return mongoCodecEntityPersisterMap[cls]
     }
 
+    @Override
+    long deleteAll(QueryableCriteria criteria) {
+        final PersistentEntity entity = criteria.getPersistentEntity();
+        final Document nativeQuery = buildNativeDocumentQueryFromCriteria(criteria, entity);
+
+        final MongoCollection collection = getCollection(entity)
+        final DeleteResult deleteResult = collection.deleteMany((Bson)nativeQuery)
+        if( deleteResult.wasAcknowledged() ) {
+            return deleteResult.deletedCount
+        }
+        else {
+            return 0
+        }
+    }
+
+    @Override
+    long updateAll(QueryableCriteria criteria, Map<String, Object> properties) {
+        final PersistentEntity entity = criteria.persistentEntity
+        final Document nativeQuery = buildNativeDocumentQueryFromCriteria(criteria, entity)
+        final MongoCollection collection = getCollection(entity)
+        final updateOptions = new UpdateOptions()
+        updateOptions.upsert(false)
+        final UpdateResult updateResult = collection.updateMany(nativeQuery, new Document(MONGO_SET_OPERATOR, properties), updateOptions)
+        if(updateResult.wasAcknowledged()) {
+            try {
+                return updateResult.modifiedCount
+            } catch (UnsupportedOperationException e) {
+                // not supported on versions of MongoDB earlier than 2.6
+                return -1
+            }
+        }
+        else {
+            return 0
+        }
+    }
+
+    @Override
+    Object decode(Class type, Object nativeObject) {
+        if(nativeObject instanceof FindIterable) {
+            return decode(type, ((FindIterable) nativeObject).first())
+        }
+        else if( nativeObject instanceof Document ) {
+
+            def registry = datastore.getCodecRegistry()
+            def codec = registry.get(type)
+
+            def reader = new BsonDocumentReader(new BsonDocumentWrapper(nativeObject, registry.get(Document)))
+            return codec.decode(reader, DecoderContext.builder().build())
+        }
+        return null
+    }
+
+    private Document buildNativeDocumentQueryFromCriteria(QueryableCriteria criteria, PersistentEntity entity) {
+        def mongoQuery = new MongoQuery(this, entity)
+        for(Query.Criterion c in criteria.criteria) {
+            mongoQuery.add(c)
+        }
+
+        return mongoQuery.mongoQuery
+    }
 }

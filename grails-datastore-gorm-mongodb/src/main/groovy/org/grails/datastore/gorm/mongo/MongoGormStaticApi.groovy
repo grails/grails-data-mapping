@@ -29,6 +29,7 @@ import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.mongo.AbstractMongoSession
+import org.grails.datastore.mapping.mongo.MongoCodecSession
 import org.grails.datastore.mapping.mongo.MongoSession
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.springframework.transaction.PlatformTransactionManager
@@ -173,9 +174,14 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      */
     List<D> aggregate(List pipeline, AggregationOptions options = AggregationOptions.builder().build()) {
         execute( { AbstractMongoSession session ->
+            def mongoCollection = session.getCollection(persistentEntity)
+            if(session instanceof MongoCodecSession) {
+                mongoCollection = mongoCollection
+                        .withDocumentClass(persistentEntity.javaClass)
+                        .withCodecRegistry(session.datastore.codecRegistry)
+            }
 
             List<Document> newPipeline = cleanPipeline(pipeline)
-            def mongoCollection = session.getCollection(persistentEntity)
             def aggregateIterable = mongoCollection.aggregate(newPipeline)
             if(options.allowDiskUse) {
                 aggregateIterable.allowDiskUse(options.allowDiskUse)
@@ -218,9 +224,13 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return The results
      */
     List<D> search(String query, Map options = Collections.emptyMap()) {
-        execute( { MongoSession session ->
+        execute( { AbstractMongoSession session ->
             def coll = session.getCollection(persistentEntity)
-
+            if(session instanceof MongoCodecSession) {
+                coll = coll
+                            .withDocumentClass(persistentEntity.javaClass)
+                            .withCodecRegistry(session.datastore.codecRegistry)
+            }
             def searchArgs = ['$search': query]
             if(options.language) {
                 searchArgs['$language'] = options.language.toString()
@@ -243,8 +253,13 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      * @return The results
      */
     List<D> searchTop(String query, int limit = 5, Map options = Collections.emptyMap()) {
-        execute( { MongoSession session ->
+        execute( { AbstractMongoSession session ->
             def coll = session.getCollection(persistentEntity)
+            if(session instanceof MongoCodecSession) {
+                coll = coll
+                        .withDocumentClass(persistentEntity.javaClass)
+                        .withCodecRegistry(session.datastore.codecRegistry)
+            }
             EntityPersister persister = (EntityPersister)session.getPersister(persistentClass)
 
             def searchArgs = ['$search': query]

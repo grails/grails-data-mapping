@@ -29,8 +29,10 @@ import org.bson.codecs.configuration.CodecRegistry
 import org.bson.types.ObjectId
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository
 import org.grails.datastore.mapping.collection.PersistentCollection
+import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
 import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.SessionImplementor
 import org.grails.datastore.mapping.core.impl.PendingDeleteAdapter
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter
 import org.grails.datastore.mapping.core.impl.PendingOperationAdapter
@@ -41,11 +43,14 @@ import org.grails.datastore.mapping.dirty.checking.DirtyCheckingCollection
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.ThirdPartyCacheEntityPersister
+import org.grails.datastore.mapping.engine.internal.MappingUtils
 import org.grails.datastore.mapping.model.ClassMapping
 import org.grails.datastore.mapping.model.IdentityMapping
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.PropertyMapping
+import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
@@ -184,16 +189,31 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
 
     @Override
     protected Serializable persistEntity(PersistentEntity entity, Object obj, boolean isInsert) {
+
+
         ProxyFactory proxyFactory = getProxyFactory()
         // if called internally, obj can potentially be a proxy, which won't work.
         obj = proxyFactory.unwrap(obj)
 
         Serializable id = getObjectIdentifier(obj)
 
-        final boolean idIsNull = id == null
-        final boolean isUpdate = !idIsNull && !isInsert
-        def mongoCodecSession = mongoSession
+        SessionImplementor<Object> si = (SessionImplementor<Object>) session
 
+        if(si.isPendingAlready(obj)) {
+            return (Serializable) id
+        }
+        else {
+            si.registerPending(obj)
+        }
+
+
+        final boolean idIsNull = id == null
+        boolean isUpdate = !idIsNull && !isInsert
+        def mongoCodecSession = mongoSession
+        boolean assignedId = isAssignedId(persistentEntity)
+        if (isNotUpdateForAssignedId(persistentEntity, obj, isUpdate, assignedId, si)) {
+            isUpdate = false
+        }
         if (isUpdate && !getSession().isDirty(obj)) {
             return (Serializable) id;
         }
@@ -216,64 +236,8 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
                isUpdate = mongoCodecSession.contains(obj)
             }
 
-            // now we must ensure that all cascades are handled and inserts / updates scheduled
-            for( association in entity.associations ) {
-                if( association.doesCascade(CascadeType.PERSIST) && association.isOwningSide() ) {
-                    if(association instanceof ToOne) {
-                        if(association instanceof Embedded) continue
-                        def propertyName = association.name
-                        def value = entityAccess.getProperty(propertyName)
-                        if(value != null) {
-                            if(association.isBidirectional()) {
-                                def inverseAccess = createEntityAccess(association.associatedEntity, value)
-                                inverseAccess.setPropertyNoConversion(
-                                        association.inverseSide.name,
-                                        obj
-                                )
-                            }
-                            if( proxyFactory.isInitialized(value) ) {
-                                def dirtyCheckable = (DirtyCheckable) value
-                                if(dirtyCheckable.hasChanged()) {
-                                    mongoCodecSession.persist(value)
-                                }
-                            }
-                        }
-                    }
-                    else if( (association instanceof OneToMany) || (association instanceof ManyToMany) ) {
-                        def propertyName = association.name
-                        def value = entityAccess.getProperty(propertyName)
-                        boolean shouldPersist = false
-                        if(value != null) {
-                            if(!isUpdate) {
-                                shouldPersist = true
-                            }
-                            else {
-                                if(value instanceof DirtyCheckableCollection) {
-                                    DirtyCheckableCollection coll = (DirtyCheckableCollection)value
-                                    if(coll.hasChanged()) {
-                                        shouldPersist = true
-                                    }
-                                }
-                                else {
-                                    shouldPersist = true
-                                }
-                            }
 
-                            if(shouldPersist) {
-
-                                mongoCodecSession.setAttribute(
-                                        obj,
-                                        "${association}.ids",
-                                        mongoCodecSession.persist( (Iterable) value )
-                                )
-
-                                def dirtyCheckingCollection = DirtyCheckingSupport.wrap((Collection) value, (DirtyCheckable) obj, propertyName)
-                                entityAccess.setPropertyNoConversion(propertyName, dirtyCheckingCollection)
-                            }
-                        }
-                    }
-                }
-            }
+            processAssociations(mongoCodecSession, entity, entityAccess, obj, proxyFactory, isUpdate)
 
             if(!isUpdate) {
                 MongoCodecEntityPersister self = this
@@ -281,9 +245,6 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
                     @Override
                     void run() {
                         if (!cancelInsert(entity, entityAccess)) {
-                            if(entity.isVersioned()) {
-                                incrementVersion(entityAccess)
-                            }
                             updateCaches(entity, obj, id)
                             addCascadeOperation(new PendingOperationAdapter(entity, id, obj) {
                                 @Override
@@ -321,11 +282,136 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
         return id
     }
 
+    protected boolean isAssignedId(PersistentEntity persistentEntity) {
+        Property mapping = persistentEntity.identity.mapping.mappedForm
+        return "assigned".equals(mapping?.generator)
+    }
+
+    private boolean isNotUpdateForAssignedId(PersistentEntity persistentEntity, Object obj, boolean update, boolean assignedId, SessionImplementor<Object> si) {
+        return assignedId && update && !si.isStateless(persistentEntity) &&  !session.contains(obj);
+    }
+
+    protected void processAssociations(MongoCodecSession mongoCodecSession, PersistentEntity entity, EntityAccess entityAccess, obj, ProxyFactory proxyFactory, boolean isUpdate) {
+        // now we must ensure that all cascades are handled and inserts / updates scheduled
+        for (association in entity.associations) {
+            if (association.doesCascade(CascadeType.PERSIST)) {
+                def associatedEntity = association.associatedEntity
+                if (association instanceof ToOne) {
+                    if (association instanceof Embedded) {
+                        def propertyName = association.name
+                        def value = entityAccess.getProperty(propertyName)
+                        if( !proxyFactory.isInitialized(value) ) {
+                            continue
+                        }
+                        if(value != null) {
+                            processAssociations(    mongoCodecSession,
+                                                    associatedEntity,
+                                                    createEntityAccess(associatedEntity, value),
+                                                    value,
+                                                    proxyFactory,
+                                                    isUpdate )
+                        }
+                    } else {
+                        def propertyName = association.name
+                        def value = entityAccess.getProperty(propertyName)
+                        if (value != null) {
+                            if (association.isBidirectional()) {
+                                def inverseAccess = createEntityAccess(associatedEntity, value)
+                                def inverseSide = association.inverseSide
+
+                                def inverseName = inverseSide.name
+                                if (inverseSide instanceof ToOne) {
+                                    inverseAccess.setPropertyNoConversion(
+                                            inverseName,
+                                            obj
+                                    )
+                                }
+                                else if(inverseSide instanceof OneToMany ) {
+                                    if(isUpdate) continue
+
+                                    def inverseCollection = inverseAccess.getProperty(inverseName)
+
+                                    if(inverseCollection == null) {
+                                        inverseCollection = MappingUtils.createConcreteCollection( inverseSide.type )
+                                        inverseAccess.setPropertyNoConversion(
+                                                inverseName,
+                                                inverseCollection
+                                        )
+                                    }
+                                    if(inverseCollection instanceof Collection) {
+                                        def coll = (Collection) inverseCollection
+                                        if(!coll.contains(obj)) {
+                                            coll << obj
+                                        }
+                                    }
+
+                                }
+                            }
+                            if (proxyFactory.isInitialized(value)) {
+                                def dirtyCheckable = (DirtyCheckable) value
+                                if (dirtyCheckable.hasChanged()) {
+                                    if(!isUpdate || association.isOwningSide()) {
+                                        mongoCodecSession.persist(value)
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                } else if ((association instanceof OneToMany) || (association instanceof ManyToMany)) {
+                    def propertyName = association.name
+                    def value = entityAccess.getProperty(propertyName)
+                    boolean shouldPersist = false
+                    if (value != null) {
+                        if (!isUpdate) {
+                            shouldPersist = true
+                        } else {
+                            if (value instanceof DirtyCheckableCollection) {
+                                DirtyCheckableCollection coll = (DirtyCheckableCollection) value
+                                if (coll.hasChanged()) {
+                                    shouldPersist = true
+                                }
+                            } else {
+                                shouldPersist = true
+                            }
+                        }
+
+                        if (shouldPersist) {
+
+                            def associatedEntities = (Iterable) value
+                            if (association.isBidirectional()) {
+                                def inverseSide = association.inverseSide
+                                def inverseName = inverseSide.name
+                                if(inverseSide instanceof ToOne) {
+
+                                    for (ae in associatedEntities) {
+                                        createEntityAccess(associatedEntity, ae)
+                                                .setPropertyNoConversion(inverseName, obj)
+                                    }
+                                }
+                            }
+
+                            def identifiers = mongoCodecSession.persist(associatedEntities)
+                            mongoCodecSession.setAttribute(
+                                    obj,
+                                    "${association}.ids",
+                                    identifiers
+                            )
+
+                            def dirtyCheckingCollection = DirtyCheckingSupport.wrap((Collection) value, (DirtyCheckable) obj, propertyName)
+                            entityAccess.setPropertyNoConversion(propertyName, dirtyCheckingCollection)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     protected void updateCaches(PersistentEntity persistentEntity, Object e, Serializable id) {
         updateTPCache(persistentEntity, e, id)
     }
 
-    protected Serializable generateIdentifier(final PersistentEntity persistentEntity) {
+    public Serializable generateIdentifier(final PersistentEntity persistentEntity) {
         // If there is a numeric identifier then we need to rely on optimistic concurrency controls to obtain a unique identifer
         // sequence. If the identifier is not numeric then we assume BSON ObjectIds.
         if (hasNumericalIdentifier) {
@@ -403,8 +489,15 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
                 if(association.isOwningSide() && association.doesCascade(CascadeType.REMOVE)) {
                     if(!association.isEmbedded()) {
                         def v = access.getProperty(association.name)
-                        if(v != null) {
-                            mongoSession.delete( v )
+                        if(association instanceof ToOne) {
+                            if(v != null) {
+                                mongoSession.delete( v )
+                            }
+                        }
+                        else {
+                            if(v != null) {
+                                mongoSession.delete( (Iterable) v )
+                            }
                         }
                     }
                 }

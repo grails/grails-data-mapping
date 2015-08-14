@@ -29,10 +29,7 @@ import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.grails.datastore.gorm.mongo.bean.factory.*;
 import org.grails.datastore.gorm.mongo.bean.factory.MongoClientFactoryBean;
-import org.grails.datastore.mapping.core.AbstractDatastore;
-import org.grails.datastore.mapping.core.ConnectionNotFoundException;
-import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.core.StatelessDatastore;
+import org.grails.datastore.mapping.core.*;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.*;
@@ -43,6 +40,7 @@ import org.grails.datastore.mapping.mongo.engine.FastClassData;
 import org.grails.datastore.mapping.mongo.engine.FastEntityAccess;
 import org.grails.datastore.mapping.mongo.engine.codecs.AdditionalCodecs;
 import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec;
+import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -308,7 +306,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
     @Override
     public AbstractMongoSession getCurrentSession() throws ConnectionNotFoundException {
-        return (AbstractMongoSession) super.getCurrentSession();
+        return (AbstractMongoSession) DatastoreUtils.doGetSession(this, true);
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -509,7 +507,17 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
 
     public EntityAccess createEntityAccess(PersistentEntity entity, Object instance) {
-        return new FastEntityAccess(instance, getFastClassData(entity), getMappingContext().getConversionService());
+        final MappingContext context = getMappingContext();
+        final ProxyFactory proxyFactory = context.getProxyFactory();
+        instance = proxyFactory.unwrap(instance);
+        if(entity.getJavaClass() != instance.getClass()) {
+            // try subclass
+            final PersistentEntity subEntity = context.getPersistentEntity(instance.getClass().getName());
+            if(subEntity != null) {
+                entity = subEntity;
+            }
+        }
+        return new FastEntityAccess(instance, getFastClassData(entity), context.getConversionService());
     }
 
     class PersistentEntityCodeRegistry implements CodecProvider {

@@ -48,9 +48,10 @@ class GMongoSpec extends Specification {
 
         then:
             p != null
-            Person.count() == 1
-            Person.first().firstName == "Fred"
             Person.withSession {
+                Person.count() == 1
+                Person.first().firstName == "Fred"
+
                 Person.collection.count() == 1
                 Person.collection.findOne(firstName:"Fred").lastName == "Flintstone"
 
