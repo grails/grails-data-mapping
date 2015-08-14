@@ -66,7 +66,9 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     public static final String MONGO_PORT = "port";
     public static final String MONGO_HOST = "host";
     public static final String MONGO_STATELESS = "stateless";
+    public static final String MONGO_ENGINE = "engine";
     public static final String INDEX_ATTRIBUTES = "indexAttributes";
+    public static final String CODEC_ENGINE = "codec";
 
     protected MongoClient mongo;
     protected MongoClientOptions mongoOptions;
@@ -74,6 +76,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     protected Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
     protected Map<String, FastClassData> fastClassData = new ConcurrentHashMap<String, FastClassData>();
     protected boolean stateless = false;
+    protected boolean codecEngine = false;
     protected UserCredentials userCrentials;
     protected CodecRegistry codecRegistry;
 
@@ -295,13 +298,23 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             return createStatelessSession(connDetails);
         }
         else {
-            return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), false);
+            if(codecEngine) {
+                return new MongoCodecSession(this, getMappingContext(), getApplicationEventPublisher(), false);
+            }
+            else {
+                return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), false);
+            }
         }
     }
 
     @Override
     protected Session createStatelessSession(Map<String, String> connectionDetails) {
-        return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), true);
+        if(codecEngine) {
+            return new MongoCodecSession(this, getMappingContext(), getApplicationEventPublisher(), true);
+        }
+        else {
+            return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), true);
+        }
     }
 
     @Override
@@ -325,6 +338,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                                 read(Integer.class, MONGO_PORT, connectionDetails, defaults.getPort())
             );
             this.stateless = read(Boolean.class, MONGO_STATELESS, connectionDetails, false);
+            this.codecEngine = read(String.class, MONGO_ENGINE, connectionDetails, CODEC_ENGINE).equals(CODEC_ENGINE);
             if(mongoOptions != null) {
                 mongo = new MongoClient(serverAddress, credentials, mongoOptions);
             }
