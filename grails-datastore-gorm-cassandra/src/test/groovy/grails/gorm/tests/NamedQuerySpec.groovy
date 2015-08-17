@@ -431,10 +431,10 @@ class NamedQuerySpec extends GormDatastoreSpec {
             new PublicationTitlePartitionKey(title: "Book 3",
                             datePublished: now - 10, paperback: true).save()
 
-            new PublicationTitlePartitionKey(title: "Some Title",
-                            datePublished: now - 10, paperback: false).save()
-            new PublicationTitlePartitionKey(title: "Some Title",
-                            datePublished: now - 1000, paperback: false).save()
+//            new PublicationTitlePartitionKey(title: "Some Title",
+//                            datePublished: now - 10, paperback: false).save()
+//            new PublicationTitlePartitionKey(title: "Some Title",
+//                            datePublished: now - 1000, paperback: false).save()
             new PublicationTitlePartitionKey(title: "Some Title",
                             datePublished: now - 10, paperback: true).save(flush:true)
             session.clear()
@@ -450,18 +450,18 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
 
-            new PublicationTitlePartitionKey(title: "Some Book",
+            new PublicationTitlePartitionKey(title: "Some Book 1",
                             datePublished: now - 10, paperback: false).save()
-            new PublicationTitlePartitionKey(title: "Some Book",
+            new PublicationTitlePartitionKey(title: "Some Book 2",
                             datePublished: now - 1000, paperback: true).save()
-            new PublicationTitlePartitionKey(title: "Some Book",
+            new PublicationTitlePartitionKey(title: "Some Book 3",
                             datePublished: now - 2, paperback: true).save()
 
-            new PublicationTitlePartitionKey(title: "Some Title",
+            new PublicationTitlePartitionKey(title: "Some Title 1",
                             datePublished: now - 2, paperback: false).save()
-            new PublicationTitlePartitionKey(title: "Some Title",
+            new PublicationTitlePartitionKey(title: "Some Title 2",
                             datePublished: now - 1000, paperback: false).save()
-            new PublicationTitlePartitionKey(title: "Some Title",
+            new PublicationTitlePartitionKey(title: "Some Title 3",
                             datePublished: now - 2, paperback: true).save(flush:true)
             session.clear()
 
@@ -1025,15 +1025,15 @@ class NamedQuerySpec extends GormDatastoreSpec {
             (1..5).each {num ->
                 3.times {
                     PublicationTitlePartitionKey.newInstance(
-                        title: "Book Number ${num}",
+                        title: "Book Number ${num} - $it",
                         datePublished: now).save(failOnError: true)
                 }
             }
 
         when:
-            def pub = PublicationTitlePartitionKey.recentPublications.findWhere(title: 'Book Number 2')
+            def pub = PublicationTitlePartitionKey.recentPublications.findWhere(title: 'Book Number 2 - 1')
         then:
-            'Book Number 2' == pub.title
+            'Book Number 2 - 1' == pub.title
     }
 }
 
