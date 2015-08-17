@@ -89,7 +89,6 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
      */
     @CompileStatic
     ApplicationContext configure() {
-        ExpandoMetaClass.enableGlobally()
         GenericApplicationContext applicationContext = new GenericApplicationContext()
         applicationContext.beanFactory.registerSingleton( mongoBeanName, mongo)
         configureForBeanDefinitionRegistry(applicationContext)

@@ -140,8 +140,6 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
         scanForPersistentClasses()
 
-        ExpandoMetaClass.enableGlobally()
-
         if( GroovyBeanReaderInit.isAvailable() ) {
             GroovyBeanReaderInit.registerBeans(beanDefinitionRegistry, getBeanDefinitions(beanDefinitionRegistry))
         }

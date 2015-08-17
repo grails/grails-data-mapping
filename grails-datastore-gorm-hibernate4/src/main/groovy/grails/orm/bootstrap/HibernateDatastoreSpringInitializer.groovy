@@ -94,7 +94,6 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
     @CompileStatic
     ApplicationContext configureForDataSource(DataSource dataSource) {
-        ExpandoMetaClass.enableGlobally()
         GenericApplicationContext applicationContext = new GenericApplicationContext()
         applicationContext.beanFactory.registerSingleton("dataSource", dataSource)
         configureForBeanDefinitionRegistry(applicationContext)
