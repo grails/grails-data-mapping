@@ -36,11 +36,11 @@ public class MongoCollection extends Collection {
     private List<Index> indices = new ArrayList<Index>();
 
 
-    public void index(Map<String, String> definition) {
-        index(definition, Collections.<String,String>emptyMap());
+    public void index(Map<String, Object> definition) {
+        index(definition, Collections.<String,Object>emptyMap());
     }
 
-    public void index(Map<String, String> definition, Map<String, String> options) {
+    public void index(Map<String, Object> definition, Map<String, Object> options) {
         if(definition != null && !definition.isEmpty()) {
             indices.add(new Index(definition, options));
         }
@@ -131,24 +131,24 @@ public class MongoCollection extends Collection {
      * Definition of an index
      */
     public static class Index {
-        Map<String, String> definition = new HashMap<String, String>();
-        Map<String, String> options = new HashMap<String, String>();
+        Map<String, Object> definition = new HashMap<String, Object>();
+        Map<String, Object> options = new HashMap<String, Object>();
 
 
-        public Index(Map<String, String> definition) {
+        public Index(Map<String, Object> definition) {
             this.definition = definition;
         }
 
-        public Index(Map<String, String> definition, Map<String, String> options) {
+        public Index(Map<String, Object> definition, Map<String, Object> options) {
             this.definition = definition;
             this.options = options;
         }
 
-        public Map<String, String> getDefinition() {
+        public Map<String, Object> getDefinition() {
             return definition;
         }
 
-        public Map<String, String> getOptions() {
+        public Map<String, Object> getOptions() {
             return options;
         }
     }

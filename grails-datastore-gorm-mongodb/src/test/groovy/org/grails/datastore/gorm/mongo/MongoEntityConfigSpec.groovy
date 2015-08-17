@@ -12,7 +12,6 @@ import org.grails.datastore.mapping.mongo.config.MongoCollection
 
 import com.mongodb.DB
 import com.mongodb.WriteConcern
-import org.springframework.data.mongodb.core.MongoTemplate
 import spock.lang.*
 
 class MongoEntityConfigSpec extends GormDatastoreSpec{

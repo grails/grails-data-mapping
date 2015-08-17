@@ -18,7 +18,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
 import org.bson.Document;
 import org.grails.datastore.mapping.core.AbstractSession;
-import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.impl.PendingOperation;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.engine.EntityAccess;
@@ -92,11 +91,12 @@ public abstract class AbstractMongoSession extends AbstractSession<MongoClient> 
      * @return The name of the default database
      */
     public String getDatabase(PersistentEntity entity) {
+
         final String name = mongoDatabases.get(entity);
         if(name != null) {
             return name;
         }
-        return defaultDatabase;
+        return getDatastore().getDatabaseName(entity);
     }
 
     /**

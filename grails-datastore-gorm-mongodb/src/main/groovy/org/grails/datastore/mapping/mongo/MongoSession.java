@@ -15,11 +15,8 @@
 
 package org.grails.datastore.mapping.mongo;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.mongodb.*;
+import com.mongodb.MongoClient;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.DeleteResult;
@@ -27,7 +24,6 @@ import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.impl.*;
-import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
@@ -35,7 +31,6 @@ import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.config.GormProperties;
-import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
@@ -45,9 +40,10 @@ import org.grails.datastore.mapping.transactions.SessionOnlyTransaction;
 import org.grails.datastore.mapping.transactions.Transaction;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 import javax.persistence.FlushModeType;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * A {@link org.grails.datastore.mapping.core.Session} implementation for the Mongo document store.

@@ -21,6 +21,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.mongodb.*;
+import com.mongodb.client.model.IndexOptions;
+import org.bson.Document;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -29,6 +31,7 @@ import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.grails.datastore.gorm.mongo.bean.factory.*;
 import org.grails.datastore.gorm.mongo.bean.factory.MongoClientFactoryBean;
+import org.grails.datastore.gorm.mongo.extensions.MongoExtensions;
 import org.grails.datastore.mapping.core.*;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.engine.EntityAccess;
@@ -47,11 +50,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.support.PersistenceExceptionTranslator;
-import org.springframework.data.authentication.UserCredentials;
-import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.*;
 
 /**
  * A Datastore implementation for the Mongo document store.
@@ -72,12 +70,12 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
     protected MongoClient mongo;
     protected MongoClientOptions mongoOptions;
-    protected Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
+    protected final String defaultDatabase;
     protected Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
+    protected Map<PersistentEntity, String> mongoDatabases = new ConcurrentHashMap<PersistentEntity, String>();
     protected Map<String, FastClassData> fastClassData = new ConcurrentHashMap<String, FastClassData>();
     protected boolean stateless = false;
     protected boolean codecEngine = false;
-    protected UserCredentials userCrentials;
     protected CodecRegistry codecRegistry;
 
     /**
@@ -91,11 +89,11 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     /**
      * Constructs a MongoDatastore using the given MappingContext and connection details map.
      *
-     * @param mappingContext The MongoMappingContext
+     * @param mappingContext    The MongoMappingContext
      * @param connectionDetails The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings
      */
     public MongoDatastore(MongoMappingContext mappingContext,
-            Map<String, String> connectionDetails, MongoClientOptions mongoOptions, ConfigurableApplicationContext ctx) {
+                          Map<String, String> connectionDetails, MongoClientOptions mongoOptions, ConfigurableApplicationContext ctx) {
 
         this(mappingContext, connectionDetails, ctx);
         if (mongoOptions != null) {
@@ -106,16 +104,18 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     /**
      * Constructs a MongoDatastore using the given MappingContext and connection details map.
      *
-     * @param mappingContext The MongoMappingContext
+     * @param mappingContext    The MongoMappingContext
      * @param connectionDetails The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings
      */
     public MongoDatastore(MongoMappingContext mappingContext,
-            Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
+                          Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         super(mappingContext, connectionDetails, ctx);
 
         if (mappingContext != null) {
             mappingContext.addMappingContextListener(this);
         }
+
+        this.defaultDatabase = mappingContext.getDefaultDatabaseName();
 
         initializeConverters(mappingContext);
 
@@ -160,16 +160,16 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
     /**
      * Constructor for creating a MongoDatastore using an existing Mongo instance
-     * @param mappingContext The MappingContext
-     * @param mongo The existing Mongo instance
      *
+     * @param mappingContext The MappingContext
+     * @param mongo          The existing Mongo instance
      * @deprecated The {@link Mongo} class is deprecated
      */
     @Deprecated
     public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
-              ConfigurableApplicationContext ctx) {
+                          ConfigurableApplicationContext ctx) {
         this(mappingContext, Collections.<String, String>emptyMap(), ctx);
-        this.mongo = (MongoClient)mongo;
+        this.mongo = (MongoClient) mongo;
     }
 
     /**
@@ -177,21 +177,21 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * the connection details are only used to supply a USERNAME and PASSWORD
      *
      * @param mappingContext The MappingContext
-     * @param mongo The existing Mongo instance
-     *
+     * @param mongo          The existing Mongo instance
      * @deprecated The {@link Mongo} class is deprecated
      */
     @Deprecated
     public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
-           Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
+                          Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         this(mappingContext, connectionDetails, ctx);
         this.mongo = (MongoClient) mongo;
     }
 
     /**
      * Constructor for creating a MongoDatastore using an existing Mongo instance
+     *
      * @param mappingContext The MappingContext
-     * @param mongo The existing Mongo instance
+     * @param mongo          The existing Mongo instance
      */
     public MongoDatastore(MongoMappingContext mappingContext, MongoClient mongo,
                           ConfigurableApplicationContext ctx) {
@@ -204,7 +204,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * the connection details are only used to supply a USERNAME and PASSWORD
      *
      * @param mappingContext The MappingContext
-     * @param mongo The existing Mongo instance
+     * @param mongo          The existing Mongo instance
      */
     public MongoDatastore(MongoMappingContext mappingContext, MongoClient mongo,
                           Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
@@ -238,21 +238,21 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     }
 
     public PersistentEntityCodec getPersistentEntityCodec(PersistentEntity entity) {
-        if(entity instanceof EmbeddedPersistentEntity) {
+        if (entity instanceof EmbeddedPersistentEntity) {
             return new PersistentEntityCodec(this, entity);
-        }
-        else {
+        } else {
             return getPersistentEntityCodec(entity.getJavaClass());
         }
     }
+
     public PersistentEntityCodec getPersistentEntityCodec(Class entityClass) {
-        if(entityClass == null) {
+        if (entityClass == null) {
             throw new IllegalArgumentException("Argument [entityClass] cannot be null");
         }
 
         final PersistentEntity entity = getMappingContext().getPersistentEntity(entityClass.getName());
-        if(entity == null) {
-            throw new IllegalArgumentException("Argument ["+entityClass+"] is not an entity");
+        if (entity == null) {
+            throw new IllegalArgumentException("Argument [" + entityClass + "] is not an entity");
         }
 
         return (PersistentEntityCodec) getCodecRegistry().get(entity.getJavaClass());
@@ -270,22 +270,20 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         return mongo;
     }
 
-    public MongoTemplate getMongoTemplate(PersistentEntity entity) {
-        return mongoTemplates.get(entity);
-    }
-
     public String getCollectionName(PersistentEntity entity) {
-        return mongoCollections.get(entity);
-    }
-
-    public UserCredentials getUserCrentials() {
-        return userCrentials;
+        final String collectionName = mongoCollections.get(entity);
+        if(collectionName == null) {
+            final String decapitalizedName = entity.getDecapitalizedName();
+            mongoCollections.put(entity, decapitalizedName);
+            return decapitalizedName;
+        }
+        return collectionName;
     }
 
     public FastClassData getFastClassData(PersistentEntity entity) {
         final String entityN = entity.getName();
         FastClassData data = fastClassData.get(entityN);
-        if(data == null) {
+        if (data == null) {
             data = new FastClassData(entity);
             fastClassData.put(entityN, data);
         }
@@ -294,14 +292,12 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
     @Override
     protected Session createSession(Map<String, String> connDetails) {
-        if(stateless) {
+        if (stateless) {
             return createStatelessSession(connDetails);
-        }
-        else {
-            if(codecEngine) {
+        } else {
+            if (codecEngine) {
                 return new MongoCodecSession(this, getMappingContext(), getApplicationEventPublisher(), false);
-            }
-            else {
+            } else {
                 return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), false);
             }
         }
@@ -309,10 +305,9 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
     @Override
     protected Session createStatelessSession(Map<String, String> connectionDetails) {
-        if(codecEngine) {
+        if (codecEngine) {
             return new MongoCodecSession(this, getMappingContext(), getApplicationEventPublisher(), true);
-        }
-        else {
+        } else {
             return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), true);
         }
     }
@@ -331,18 +326,17 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             String databaseName = dc.getDefaultDatabaseName();
 
             List<MongoCredential> credentials = new ArrayList<MongoCredential>();
-            if(username != null && password != null) {
-                credentials.add(MongoCredential.createCredential(username,databaseName, password.toCharArray() ));
+            if (username != null && password != null) {
+                credentials.add(MongoCredential.createCredential(username, databaseName, password.toCharArray()));
             }
-            ServerAddress serverAddress = new ServerAddress(  read(String.class, MONGO_HOST, connectionDetails, defaults.getHost()),
-                                read(Integer.class, MONGO_PORT, connectionDetails, defaults.getPort())
+            ServerAddress serverAddress = new ServerAddress(read(String.class, MONGO_HOST, connectionDetails, defaults.getHost()),
+                    read(Integer.class, MONGO_PORT, connectionDetails, defaults.getPort())
             );
             this.stateless = read(Boolean.class, MONGO_STATELESS, connectionDetails, false);
             this.codecEngine = read(String.class, MONGO_ENGINE, connectionDetails, CODEC_ENGINE).equals(CODEC_ENGINE);
-            if(mongoOptions != null) {
+            if (mongoOptions != null) {
                 mongo = new MongoClient(serverAddress, credentials, mongoOptions);
-            }
-            else {
+            } else {
                 MongoClientOptions.Builder builder = MongoClientOptions.builder();
                 builder.codecRegistry(
                         CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(), new MongoClientFactoryBean.DefaultGrailsCodecRegistry())
@@ -355,156 +349,117 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
             // Only create Mongo templates for entities that are mapped with Mongo
             if (!entity.isExternal()) {
-                createMongoTemplate(entity, mongo);
+                initializeIndices(entity);
             }
         }
     }
 
-    protected void createMongoTemplate(PersistentEntity entity, final Mongo mongoInstance) {
-        DocumentMappingContext dc = (DocumentMappingContext) getMappingContext();
-        String collectionName = entity.getDecapitalizedName();
-        String databaseName = dc.getDefaultDatabaseName();
-        @SuppressWarnings("unchecked") ClassMapping<MongoCollection> mapping = entity.getMapping();
-        final MongoCollection mongoCollection = mapping.getMappedForm() != null ? mapping.getMappedForm() : null;
-
-        if (mongoCollection != null) {
-            if (mongoCollection.getCollection() != null) {
-                collectionName = mongoCollection.getCollection();
-            }
-            if (mongoCollection.getDatabase() != null) {
-                databaseName = mongoCollection.getDatabase();
-            }
-        }
-
-
-        final String finalDatabaseName = databaseName;
-        final MongoExceptionTranslator mongoExceptionTranslator = new MongoExceptionTranslator();
-        final MongoTemplate mt = new MongoTemplate(new MongoDbFactory() {
-            @Override
-            public DB getDb() throws DataAccessException {
-                return mongoInstance.getDB(finalDatabaseName);
-            }
-
-            @Override
-            public DB getDb(String dbName) throws DataAccessException {
-                return mongoInstance.getDB(dbName);
-            }
-
-            @Override
-            public PersistenceExceptionTranslator getExceptionTranslator() {
-                return mongoExceptionTranslator;
-            }
-        });
-
-        if (mongoCollection != null) {
-            final WriteConcern writeConcern = mongoCollection.getWriteConcern();
-            if (writeConcern != null) {
-                final String collectionNameToUse = collectionName;
-                mt.execute(new DbCallback<Object>() {
-                    public Object doInDB(DB db) throws MongoException, DataAccessException {
-                        DBCollection collection = db.getCollection(collectionNameToUse);
-                        collection.setWriteConcern(writeConcern);
-                        return null;
-                    }
-                });
-            }
-        }
-
-        mongoTemplates.put(entity, mt);
-        mongoCollections.put(entity, collectionName);
-
-        initializeIndices(entity, mt);
+    @Override
+    public DocumentMappingContext getMappingContext() {
+        return (DocumentMappingContext) super.getMappingContext();
     }
 
     /**
      * Indexes any properties that are mapped with index:true
+     *
      * @param entity The entity
-     * @param template The template
      */
-    protected void initializeIndices(final PersistentEntity entity, final MongoTemplate template) {
-        template.execute(new DbCallback<Object>() {
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            public Object doInDB(DB db) throws MongoException, DataAccessException {
-                final DBCollection collection = db.getCollection(getCollectionName(entity));
+    protected void initializeIndices(final PersistentEntity entity) {
+        String collectionName = entity.getDecapitalizedName();
+        String databaseName = getMappingContext().getDefaultDatabaseName();
+
+        MongoCollection collectionMapping = (MongoCollection)entity.getMapping().getMappedForm();
+        if(collectionMapping.getCollection() != null) {
+            collectionName = collectionMapping.getCollection();
+        }
+        if(collectionMapping.getDatabase() != null) {
+            databaseName = collectionMapping.getDatabase();
+        }
+
+        mongoCollections.put(entity, collectionName);
+        mongoDatabases.put(entity,databaseName);
+
+        final com.mongodb.client.MongoCollection<Document> collection = getMongoClient().getDatabase(databaseName)
+                .getCollection(collectionName);
 
 
-                final ClassMapping<MongoCollection> classMapping = entity.getMapping();
-                if (classMapping != null) {
-                    final MongoCollection mappedForm = classMapping.getMappedForm();
-                    if (mappedForm != null) {
-                        List<MongoCollection.Index> indices = mappedForm.getIndices();
-                        for (MongoCollection.Index index : indices) {
-                            collection.createIndex(new BasicDBObject(index.getDefinition()), new BasicDBObject(index.getOptions()));
-                        }
+        final ClassMapping<MongoCollection> classMapping = entity.getMapping();
+        if (classMapping != null) {
+            final MongoCollection mappedForm = classMapping.getMappedForm();
+            if (mappedForm != null) {
+                List<MongoCollection.Index> indices = mappedForm.getIndices();
+                for (MongoCollection.Index index : indices) {
+                    final Map<String, Object> options = index.getOptions();
+                    final IndexOptions indexOptions = MongoExtensions.mapToObject(IndexOptions.class, options);
+                    collection.createIndex(new Document(index.getDefinition()), indexOptions);
+                }
 
-                        for (Map compoundIndex : mappedForm.getCompoundIndices()) {
+                for (Map compoundIndex : mappedForm.getCompoundIndices()) {
 
-                            Map indexAttributes = null;
-                            if(compoundIndex.containsKey(INDEX_ATTRIBUTES)) {
-                                Object o = compoundIndex.remove(INDEX_ATTRIBUTES);
-                                if(o instanceof Map) {
-                                    indexAttributes = (Map) o;
-                                }
-                            }
-                            DBObject indexDef = new BasicDBObject(compoundIndex);
-                            if(indexAttributes != null) {
-                                collection.createIndex(indexDef, new BasicDBObject(indexAttributes));
-                            }
-                            else {
-                                collection.createIndex(indexDef);
-                            }
+                    Map indexAttributes = null;
+                    if (compoundIndex.containsKey(INDEX_ATTRIBUTES)) {
+                        Object o = compoundIndex.remove(INDEX_ATTRIBUTES);
+                        if (o instanceof Map) {
+                            indexAttributes = (Map) o;
                         }
                     }
-                }
-
-                for (PersistentProperty<MongoAttribute> property : entity.getPersistentProperties()) {
-                    final boolean indexed = isIndexed(property);
-
-                    if (indexed) {
-                        final MongoAttribute mongoAttributeMapping = property.getMapping().getMappedForm();
-                        DBObject dbObject = new BasicDBObject();
-                        final String fieldName = getMongoFieldNameForProperty(property);
-                        dbObject.put(fieldName,1);
-                        DBObject options = new BasicDBObject();
-                        if (mongoAttributeMapping != null) {
-                            Map attributes = mongoAttributeMapping.getIndexAttributes();
-                            if (attributes != null) {
-                                attributes = new HashMap(attributes);
-                                if (attributes.containsKey(MongoAttribute.INDEX_TYPE)) {
-                                    dbObject.put(fieldName, attributes.remove(MongoAttribute.INDEX_TYPE));
-                                }
-                                options.putAll(attributes);
-                            }
-                        }
-                        // continue using deprecated method to support older versions of MongoDB
-                        if (options.toMap().isEmpty()) {
-                            collection.createIndex(dbObject);
-                        }
-                        else {
-                            collection.createIndex(dbObject, options);
-                        }
+                    Document indexDef = new Document(compoundIndex);
+                    if (indexAttributes != null) {
+                        final IndexOptions indexOptions = MongoExtensions.mapToObject(IndexOptions.class, indexAttributes);
+                        collection.createIndex(indexDef, indexOptions);
+                    } else {
+                        collection.createIndex(indexDef);
                     }
                 }
-
-                return null;
             }
+        }
 
-            String getMongoFieldNameForProperty(PersistentProperty<MongoAttribute> property) {
-                PropertyMapping<MongoAttribute> pm = property.getMapping();
-                String propKey = null;
-                if (pm.getMappedForm() != null) {
-                    propKey = pm.getMappedForm().getField();
+        for (PersistentProperty<MongoAttribute> property : entity.getPersistentProperties()) {
+            final boolean indexed = isIndexed(property);
+
+            if (indexed) {
+                final MongoAttribute mongoAttributeMapping = property.getMapping().getMappedForm();
+                Document dbObject = new Document();
+                final String fieldName = getMongoFieldNameForProperty(property);
+                dbObject.put(fieldName, 1);
+                Document options = new Document();
+                if (mongoAttributeMapping != null) {
+                    Map attributes = mongoAttributeMapping.getIndexAttributes();
+                    if (attributes != null) {
+                        attributes = new HashMap(attributes);
+                        if (attributes.containsKey(MongoAttribute.INDEX_TYPE)) {
+                            dbObject.put(fieldName, attributes.remove(MongoAttribute.INDEX_TYPE));
+                        }
+                        options.putAll(attributes);
+                    }
                 }
-                if (propKey == null) {
-                    propKey = property.getName();
+                // continue using deprecated method to support older versions of MongoDB
+                if (options.isEmpty()) {
+                    collection.createIndex(dbObject);
+                } else {
+                    final IndexOptions indexOptions = MongoExtensions.mapToObject(IndexOptions.class, options);
+                    collection.createIndex(dbObject, indexOptions);
                 }
-                return propKey;
             }
-        });
+        }
+
+
+    }
+
+    String getMongoFieldNameForProperty(PersistentProperty<MongoAttribute> property) {
+        PropertyMapping<MongoAttribute> pm = property.getMapping();
+        String propKey = null;
+        if (pm.getMappedForm() != null) {
+            propKey = pm.getMappedForm().getField();
+        }
+        if (propKey == null) {
+            propKey = property.getName();
+        }
+        return propKey;
     }
 
     public void persistentEntityAdded(PersistentEntity entity) {
-        createMongoTemplate(entity, mongo);
+        initializeIndices(entity);
     }
 
     public void destroy() throws Exception {
@@ -524,26 +479,36 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         final MappingContext context = getMappingContext();
         final ProxyFactory proxyFactory = context.getProxyFactory();
         instance = proxyFactory.unwrap(instance);
-        if(entity.getJavaClass() != instance.getClass()) {
+        if (entity.getJavaClass() != instance.getClass()) {
             // try subclass
             final PersistentEntity subEntity = context.getPersistentEntity(instance.getClass().getName());
-            if(subEntity != null) {
+            if (subEntity != null) {
                 entity = subEntity;
             }
         }
         return new FastEntityAccess(instance, getFastClassData(entity), context.getConversionService());
     }
 
+    public String getDatabaseName(PersistentEntity entity) {
+        final String databaseName = mongoDatabases.get(entity);
+        if(databaseName == null) {
+            mongoDatabases.put(entity, defaultDatabase);
+            return defaultDatabase;
+        }
+        return databaseName;
+    }
+
     class PersistentEntityCodeRegistry implements CodecProvider {
 
         Map<String, PersistentEntityCodec> codecs = new HashMap<String, PersistentEntityCodec>();
+
         @Override
         public <T> Codec<T> get(Class<T> clazz, CodecRegistry registry) {
             final String entityName = clazz.getName();
             PersistentEntityCodec codec = codecs.get(entityName);
-            if(codec == null) {
+            if (codec == null) {
                 final PersistentEntity entity = getMappingContext().getPersistentEntity(entityName);
-                if(entity != null) {
+                if (entity != null) {
                     codec = new PersistentEntityCodec(MongoDatastore.this, entity);
                     codecs.put(entityName, codec);
                 }
