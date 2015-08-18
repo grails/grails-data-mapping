@@ -82,6 +82,13 @@ class FastEntityAccess implements EntityAccess {
     }
 
     @Override
+    void setIdentifierNoConversion(Object id) {
+        if(identifierName != null) {
+            fastSetters[identifierName].invoke(entity, id)
+        }
+    }
+
+    @Override
     void refresh() {
         // no-op
     }

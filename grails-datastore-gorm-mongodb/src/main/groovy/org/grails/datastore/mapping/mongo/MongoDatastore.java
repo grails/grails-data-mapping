@@ -376,6 +376,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             databaseName = collectionMapping.getDatabase();
         }
 
+        fastClassData.put(entity.getName(), new FastClassData(entity));
         mongoCollections.put(entity, collectionName);
         mongoDatabases.put(entity,databaseName);
 

@@ -24,7 +24,19 @@ public class Entity {
 
     private boolean stateless = false;
     private boolean autoTimestamp = true;
+    private boolean autowire = true;
     private Object defaultSort = null;
+
+    /**
+     * @return Whether the entity should be autowired
+     */
+    public boolean isAutowire() {
+        return autowire;
+    }
+
+    public void setAutowire(boolean autowire) {
+        this.autowire = autowire;
+    }
 
     /**
      * @return Whether automatic time stamps should be applied to 'lastUpdate' and 'dateCreated' properties

@@ -653,6 +653,11 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 		}
 
 		@Override
+		public void setIdentifierNoConversion(Object id) {
+			setIdentifier(id);
+		}
+
+		@Override
 		public void setProperty(String name, Object value) {
 			final Table table = (Table) classMapping.getMappedForm();
 			if (table.isPrimaryKey(name) && value instanceof Map) {

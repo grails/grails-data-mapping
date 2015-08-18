@@ -103,6 +103,12 @@ public class BeanEntityAccess implements EntityAccess {
         setProperty(idName, id);
     }
 
+    @Override
+    public void setIdentifierNoConversion(Object id) {
+        String idName = getIdentifierName(persistentEntity.getMapping());
+        setPropertyNoConversion(idName, id);
+    }
+
     protected String getIdentifierName(ClassMapping cm) {
         final IdentityMapping identifier = cm.getIdentifier();
         if (identifier != null && identifier.getIdentifierName() != null) {

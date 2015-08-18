@@ -132,7 +132,7 @@ class PersistentEntityCodec implements Codec {
                         instance = childEntity
                                 .newInstance()
                         def newAccess = createEntityAccess(childEntity, instance)
-                        newAccess.setIdentifier( access.identifier )
+                        newAccess.setIdentifierNoConversion( access.identifier )
                         access = newAccess
                     }
                     bsonType = bsonReader.readBsonType()
@@ -531,16 +531,16 @@ class PersistentEntityCodec implements Codec {
         void decode(BsonReader bsonReader, Identity property, EntityAccess access, DecoderContext decoderContext, MongoDatastore datastore) {
             switch(property.type) {
                 case ObjectId:
-                    access.setIdentifier( bsonReader.readObjectId() )
+                    access.setIdentifierNoConversion( bsonReader.readObjectId() )
                     break
                 case Long:
-                    access.setIdentifier( bsonReader.readInt64() )
+                    access.setIdentifierNoConversion( bsonReader.readInt64() )
                     break
                 case Integer:
-                    access.setIdentifier( bsonReader.readInt32() )
+                    access.setIdentifierNoConversion( bsonReader.readInt32() )
                     break
                 default:
-                    access.setIdentifier( bsonReader.readString())
+                    access.setIdentifierNoConversion( bsonReader.readString())
             }
 
         }

@@ -54,6 +54,12 @@ public interface EntityAccess {
     void setIdentifier(Object id);
 
     /**
+     * Sets the entity identifier to the given value
+     * @param id The value to set
+     */
+    void setIdentifierNoConversion(Object id);
+
+    /**
      * @return The name of the identifier property
      */
     String getIdentifierName();

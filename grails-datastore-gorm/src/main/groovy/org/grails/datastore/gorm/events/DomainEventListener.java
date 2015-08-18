@@ -208,7 +208,9 @@ public class DomainEventListener extends AbstractPersistenceEventListener
 
     public void afterLoad(final PersistentEntity entity, final EntityAccess ea, PostLoadEvent event) {
         activateDirtyChecking(ea);
-        autowireBeanProperties(ea.getEntity());
+        if ( entity.getMapping().getMappedForm().isAutowire() ) {
+            autowireBeanProperties(ea.getEntity());
+        }
         invokeEvent(EVENT_AFTER_LOAD, entity, ea, event);
     }
 

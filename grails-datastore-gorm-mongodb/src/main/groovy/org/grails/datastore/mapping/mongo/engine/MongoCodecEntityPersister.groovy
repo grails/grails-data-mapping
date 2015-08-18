@@ -20,18 +20,12 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.ReturnDocument
 import grails.gorm.DetachedCriteria
-import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
 import org.bson.Document
-import org.bson.codecs.Codec
-import org.bson.codecs.configuration.CodecRegistries
-import org.bson.codecs.configuration.CodecRegistry
 import org.bson.types.ObjectId
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository
-import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
-import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionImplementor
 import org.grails.datastore.mapping.core.impl.PendingDeleteAdapter
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter
@@ -39,37 +33,25 @@ import org.grails.datastore.mapping.core.impl.PendingOperationAdapter
 import org.grails.datastore.mapping.core.impl.PendingUpdateAdapter
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection
-import org.grails.datastore.mapping.dirty.checking.DirtyCheckingCollection
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.ThirdPartyCacheEntityPersister
 import org.grails.datastore.mapping.engine.internal.MappingUtils
-import org.grails.datastore.mapping.model.ClassMapping
-import org.grails.datastore.mapping.model.IdentityMapping
-import org.grails.datastore.mapping.model.MappingContext
-import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.PersistentProperty
-import org.grails.datastore.mapping.model.PropertyMapping
-import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.*
 import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.mongo.MongoCodecSession
 import org.grails.datastore.mapping.mongo.MongoDatastore
-import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.proxy.ProxyFactory
 import org.grails.datastore.mapping.query.Query
-import org.springframework.cglib.reflect.FastClass
-import org.springframework.cglib.reflect.FastMethod
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.CannotAcquireLockException
 import org.springframework.dao.DataIntegrityViolationException
 
 import javax.persistence.CascadeType
-
-
 /**
  * An {@org.grails.datastore.mapping.engine.EntityPersister} that uses the MongoDB 3.0 {@link org.bson.codecs.configuration.CodecRegistry} infrastructure
  *
@@ -85,7 +67,7 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
     protected static final String NEXT_ID = "next_id";
     protected static final String NEXT_ID_SUFFIX = ".$NEXT_ID";
     public static final String INC_OPERATOR = '$inc'
-
+    public static final String ASSIGNED_IDENTIFIER_MAPPING = "assigned"
 
 
     protected final MongoCodecSession mongoSession
@@ -172,19 +154,19 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
                     .limit(1)
                     .first()
 
-            if(o != null) {
-                firePostLoadEvent( pe, createEntityAccess(pe, o) )
+            if(o != null)
+            {
+                if(!cancelLoad( pe, createEntityAccess(pe, o))) {
+                    firePostLoadEvent( pe, createEntityAccess(pe, o) )
+                    return o
+                }
             }
-
-            return o
         }
+        return null
     }
 
     protected Document createIdQuery(Object key) {
-        Map<String, Object> query = [:]
-        query.put(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, key)
-        def idQuery = new Document(query)
-        idQuery
+        new Document(AbstractMongoObectEntityPersister.MONGO_ID_FIELD, key)
     }
 
     @Override
@@ -284,7 +266,7 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
 
     protected boolean isAssignedId(PersistentEntity persistentEntity) {
         Property mapping = persistentEntity.identity.mapping.mappedForm
-        return "assigned".equals(mapping?.generator)
+        return ASSIGNED_IDENTIFIER_MAPPING.equals(mapping?.generator)
     }
 
     private boolean isNotUpdateForAssignedId(PersistentEntity persistentEntity, Object obj, boolean update, boolean assignedId, SessionImplementor<Object> si) {
@@ -315,7 +297,7 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
                         def propertyName = association.name
                         def value = entityAccess.getProperty(propertyName)
                         if (value != null) {
-                            if (association.isBidirectional()) {
+                            if (association.isBidirectional() && !isUpdate) {
                                 def inverseAccess = createEntityAccess(associatedEntity, value)
                                 def inverseSide = association.inverseSide
 
