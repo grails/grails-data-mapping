@@ -208,7 +208,7 @@ class PersistentEntityCodec implements Codec {
                 }
             }
         }
-        if(!schemalessAttributes != null) {
+        if(schemalessAttributes != null) {
             mongoSession.setAttribute(instance, SCHEMALESS_ATTRIBUTES, schemalessAttributes)
         }
         return instance
