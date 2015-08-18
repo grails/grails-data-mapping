@@ -116,7 +116,7 @@ class PersistentEntityCodec implements Codec {
         def instance = persistentEntity.javaClass.newInstance()
         AbstractMongoSession mongoSession = (AbstractMongoSession)datastore.currentSession
         EntityAccess access = createEntityAccess(mongoSession, persistentEntity, instance)
-        Document schemalessAttributes = new Document()
+        Document schemalessAttributes = null
         BsonType bsonType = bsonReader.readBsonType()
         boolean abortReading = false
         while(bsonType != BsonType.END_OF_DOCUMENT) {
@@ -160,6 +160,9 @@ class PersistentEntityCodec implements Codec {
 
                     }
                     else if(!abortReading) {
+                        if(schemalessAttributes == null) {
+                            schemalessAttributes = new Document()
+                        }
                         readSchemaless(bsonReader, schemalessAttributes, name, decoderContext)
                     }
                     else {
@@ -169,6 +172,9 @@ class PersistentEntityCodec implements Codec {
                 }
             }
             else if(!abortReading){
+                if(schemalessAttributes == null) {
+                    schemalessAttributes = new Document()
+                }
                 readSchemaless(bsonReader, schemalessAttributes, name, decoderContext)
             }
             else {
@@ -202,7 +208,7 @@ class PersistentEntityCodec implements Codec {
                 }
             }
         }
-        if(!schemalessAttributes.isEmpty()) {
+        if(!schemalessAttributes != null) {
             mongoSession.setAttribute(instance, SCHEMALESS_ATTRIBUTES, schemalessAttributes)
         }
         return instance
