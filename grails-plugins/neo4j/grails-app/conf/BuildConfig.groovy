@@ -21,9 +21,9 @@ grails.project.dependency.resolution = {
         mavenCentral()
 
         mavenRepo "http://m2.neo4j.org/content/repositories/releases/"
-
+        mavenRepo "http://maven.restlet.com/"
         //mavenRepo 'http://m2.neo4j.org/releases'
-        //mavenRepo "https://repo.grails.org/grails/repo"
+        mavenRepo "https://repo.grails.org/grails/plugins"
     }
 
     dependencies {
@@ -71,10 +71,10 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime(":jquery:1.11.0.1", ":resources:1.2.7", ":tomcat:7.0.50") {
+        runtime(":jquery:1.11.0.1", ":resources:1.2.7") {
             export = false
         }
-        build(":release:3.0.1",  ":rest-client-builder:1.0.3") {
+        build(":release:3.0.1",  ":rest-client-builder:1.0.3",":tomcat:7.0.50") {
             export = false
         }
         test(":spock:0.7", ":geb:0.9.2") {
