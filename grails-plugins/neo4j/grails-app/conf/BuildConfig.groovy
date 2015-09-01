@@ -1,6 +1,7 @@
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
+grails.project.dependency.resolver="maven"
 
 grails.project.dependency.resolver="maven"
 grails.project.dependency.resolution = {
@@ -17,7 +18,7 @@ grails.project.dependency.resolution = {
         mavenLocal()
         grailsPlugins()
         grailsHome()
-        grailsCentral()        
+        grailsCentral()
         mavenCentral()
 
         mavenRepo "http://m2.neo4j.org/content/repositories/releases/"
@@ -48,7 +49,7 @@ grails.project.dependency.resolution = {
                 "org.grails:grails-datastore-gorm:$datastoreVersion",
                 "org.grails:grails-datastore-core:$datastoreVersion",
                 "org.grails:grails-datastore-simple:$datastoreVersion",
-                "org.grails:grails-datastore-web:$datastoreVersion",excludes)        
+                "org.grails:grails-datastore-web:$datastoreVersion",excludes)
 
         compile('org.neo4j:neo4j-community:2.0.3')
 
@@ -65,7 +66,7 @@ grails.project.dependency.resolution = {
         }
         test "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
         test "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
-        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+       // test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
 
         // htmlunit seems to be broken
 /*        test("org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumVersion") {
@@ -83,10 +84,11 @@ grails.project.dependency.resolution = {
         build(":release:3.0.1",  ":rest-client-builder:1.0.3") {
             export = false
         }
-        test(":spock:0.7", ":geb:0.9.2") {
+/*        test(":spock:0.7", ":geb:0.9.2") {
             export = false
             exclude "spock-grails-support"
         }
+*/
     }
 
 }
