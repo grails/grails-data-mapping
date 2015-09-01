@@ -27,15 +27,27 @@ class Neo4jController {
     }
 
     def node = {
-        def node = graphDatabaseService.getNodeById(params.long("id") ?: 0)
-        assert node        
-        [node: node]
+        def tx = graphDatabaseService.beginTx()
+        try{
+            def node = graphDatabaseService.getNodeById(params.long("id") ?: 0)
+            assert node 
+            tx.success()       
+            return [node: node]
+        } finally{
+            tx.close()
+        }
     }
 
     def relationship = {
-        def rel = graphDatabaseService.getRelationshipById(params.long("id"))
-        assert rel
-        [rel:rel]
+        def tx = graphDatabaseService.beginTx()
+        try{
+            def rel = graphDatabaseService.getRelationshipById(params.long("id"))
+            assert rel
+            tx.success()
+            return [rel:rel]
+        } finally {
+            tx.close()
+        }
     }
 
     def statistics = {
