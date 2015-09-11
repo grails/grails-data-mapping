@@ -35,9 +35,11 @@ class MongodbGrailsPlugin extends Plugin {
     def documentation = "http://grails.github.io/grails-data-mapping/mongodb"
 
     @Override
+    @CompileStatic
     Closure doWithSpring() {
         def initializer = new MongoDbDataStoreSpringInitializer(config, grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
         initializer.registerApplicationIfNotPresent = false
+        initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate")  )
         return initializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
     }
 

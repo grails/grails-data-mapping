@@ -99,6 +99,7 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
 
             neo4jMappingContext(Neo4jMappingContextFactoryBean) {
                 grailsApplication = ref('grailsApplication')
+                defaultExternal = secondaryDatastore
             }
 
             neo4jDatastore(Neo4jDatastoreFactoryBean) {
@@ -121,6 +122,7 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
             "org.grails.gorm.neo4j.internal.GORM_ENHANCER_BEAN-neo4j"(Neo4jGormEnhancer, ref("neo4jDatastore"), ref("neo4jTransactionManager")) { bean ->
                 bean.initMethod = 'enhance'
                 bean.lazyInit = false
+                includeExternal = !secondaryDatastore
             }
         }
     }

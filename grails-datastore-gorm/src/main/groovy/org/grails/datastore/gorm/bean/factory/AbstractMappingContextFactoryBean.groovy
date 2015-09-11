@@ -17,14 +17,18 @@ package org.grails.datastore.gorm.bean.factory
 import grails.core.GrailsApplication
 import grails.core.GrailsDomainClass
 import grails.core.support.GrailsApplicationAware
+import groovy.transform.CompileStatic
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
+import org.springframework.validation.Validator
 
 /**
  * An abstract factory bean for constructing MappingContext instances
@@ -32,6 +36,7 @@ import org.springframework.context.ApplicationContextAware
  * @author Graeme Rocher
  * @since 1.0
  */
+@CompileStatic
 abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingContext>, GrailsApplicationAware, ApplicationContextAware {
 
     private static final Log LOG = LogFactory.getLog(AbstractMappingContextFactoryBean)
@@ -52,7 +57,7 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
         }
 
         if (grailsApplication) {
-            for (GrailsDomainClass domainClass in grailsApplication.domainClasses) {
+            for (GrailsDomainClass domainClass in (GrailsDomainClass[])grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE)) {
                 def domainMappingStrategy = domainClass.mappingStrategy
                 PersistentEntity entity
 
@@ -64,7 +69,7 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
                 }
                 if (entity) {
                     final validatorBeanName = "${domainClass.fullName}Validator"
-                    def validator = applicationContext.containsBean(validatorBeanName) ? applicationContext.getBean(validatorBeanName) : null
+                    Validator validator = applicationContext.containsBean(validatorBeanName) ? applicationContext.getBean(validatorBeanName, Validator) : null
 
                     if (validator) {
                         mappingContext.addEntityValidator(entity, validator)
@@ -77,7 +82,7 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
 
     protected void registerCustomTypeMarshallers(MappingContext mappingContext) {
         try {
-            final typeMarshallers = applicationContext.getBeansOfType(org.grails.datastore.mapping.engine.types.CustomTypeMarshaller)
+            final typeMarshallers = applicationContext.getBeansOfType(CustomTypeMarshaller)
             final mappingFactory = mappingContext.mappingFactory
             for (marshaller in typeMarshallers.values()) {
                 mappingFactory.registerCustomType(marshaller)

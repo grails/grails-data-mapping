@@ -55,6 +55,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
     protected Mongo mongo
 
 
+
     MongoDbDataStoreSpringInitializer() {
     }
 
@@ -81,6 +82,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
     MongoDbDataStoreSpringInitializer(Map configuration, Class... persistentClasses) {
         super(configuration, persistentClasses)
     }
+
 
     /**
      * Configures for an existing Mongo instance
@@ -128,6 +130,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
                 if (defaultMapping) {
                     delegate.defaultMapping = new DefaultMappingHolder(defaultMapping)
                 }
+                defaultExternal = secondaryDatastore
             }
 
             if(this.mongoOptions) {
@@ -210,6 +213,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
             "org.grails.gorm.mongodb.internal.GORM_ENHANCER_BEAN-${mongoBeanName}"(MongoGormEnhancer, ref("mongoDatastore"), ref("mongoTransactionManager")) { bean ->
                 bean.initMethod = 'enhance'
                 bean.lazyInit = false
+                includeExternal = !secondaryDatastore
             }
         }
     }
