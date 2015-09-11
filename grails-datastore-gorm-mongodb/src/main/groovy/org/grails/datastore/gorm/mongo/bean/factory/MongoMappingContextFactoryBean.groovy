@@ -15,7 +15,7 @@
 package org.grails.datastore.gorm.mongo.bean.factory
 
 import groovy.transform.Canonical
-
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
@@ -26,6 +26,7 @@ import org.springframework.util.Assert
  *
  * @author Graeme Rocher
  */
+@CompileStatic
 class MongoMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
 
     String defaultDatabaseName

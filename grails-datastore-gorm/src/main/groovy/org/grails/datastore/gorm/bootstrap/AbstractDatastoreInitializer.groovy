@@ -44,6 +44,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     boolean registerApplicationIfNotPresent = true
 
     protected ClassLoader classLoader = Thread.currentThread().contextClassLoader
+    protected boolean secondaryDatastore = false
 
     AbstractDatastoreInitializer() {
     }
@@ -84,6 +85,15 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     AbstractDatastoreInitializer(Map configuration, Class... persistentClasses) {
         this(configuration, persistentClasses.toList())
+    }
+
+    /**
+     * Whether this datastore is secondary to another primary datastore (example the SQL DB)
+     *
+     * @param secondaryDatastore
+     */
+    void setSecondaryDatastore(boolean secondaryDatastore) {
+        this.secondaryDatastore = secondaryDatastore
     }
 
     @Override

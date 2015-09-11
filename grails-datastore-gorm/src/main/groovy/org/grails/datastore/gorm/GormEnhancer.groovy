@@ -63,6 +63,7 @@ class GormEnhancer {
     PlatformTransactionManager transactionManager
     List<FinderMethod> finders
     boolean failOnError
+    boolean includeExternal = true
 
     GormEnhancer(Datastore datastore) {
         this(datastore, null)
@@ -95,6 +96,7 @@ class GormEnhancer {
     @CompileStatic
     void enhance(boolean onlyExtendedMethods = false) {
         for (PersistentEntity e in datastore.mappingContext.persistentEntities) {
+            if(e.external && !includeExternal) continue
             enhance e, onlyExtendedMethods
         }
     }
