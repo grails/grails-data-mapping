@@ -180,7 +180,11 @@ abstract class AbstractHibernateGormEnhancer extends GormEnhancer {
                             if (prop.bidirectional) {
                                 if (prop.manyToMany) {
                                     String name = prop.otherSide.name
-                                    arg[name]?.remove(delegate)
+
+                                    def otherSide = arg[name]
+                                    if(otherSide instanceof Collection) {
+                                        otherSide?.remove(delegate)
+                                    }
                                 }
                                 else {
                                     arg[prop.otherSide.name] = null
