@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.neo4j
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.codehaus.groovy.grails.exceptions.InvalidPropertyException
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -61,6 +62,15 @@ class Neo4jQuery extends Query {
 
     @Override
     protected List executeQuery(PersistentEntity persistentEntity, Junction criteria) {
+
+        for(Criterion crit : criteria.criteria) {
+            if(crit instanceof PropertyNameCriterion) {
+                def propertyName = ((PropertyNameCriterion)crit).property
+                if(!entity.getPropertyByName(propertyName)) {
+                    throw new InvalidPropertyException("No property found for name [${propertyName}] for class [${entity.javaClass}]")
+                }
+            }
+        }
 
         CypherBuilder cypherBuilder = new CypherBuilder(((GraphPersistentEntity)persistentEntity).getLabelsAsString());
         def conditions = buildConditions(criteria, cypherBuilder, "n")
