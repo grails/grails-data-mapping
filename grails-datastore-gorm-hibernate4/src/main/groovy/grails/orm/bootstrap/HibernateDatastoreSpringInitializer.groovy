@@ -363,6 +363,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
             }
             applicationContext.getBean(ClosureEventTriggeringInterceptor).datastores = datastoreMap
             HibernateUtils.enhanceSessionFactories(applicationContext, grailsApplication)
+            applicationContext.publishEvent(new DatastoreInitializedEvent(datastoreMap))
         }
     }
 
