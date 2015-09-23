@@ -15,6 +15,8 @@
  */
 package org.grails.orm.hibernate
 
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
 import org.hibernate.FlushMode
 import org.springframework.orm.hibernate4.HibernateTransactionManager
 import org.springframework.transaction.TransactionDefinition
@@ -24,6 +26,7 @@ import org.springframework.transaction.TransactionDefinition
  *
  * @author Burt Beckwith
  */
+@CompileStatic
 class GrailsHibernateTransactionManager extends HibernateTransactionManager {
 
     @Override
@@ -33,7 +36,12 @@ class GrailsHibernateTransactionManager extends HibernateTransactionManager {
         if (definition.isReadOnly()) {
             // transaction is HibernateTransactionManager.HibernateTransactionObject private class instance
             // always set to manual; the base class doesn't because the OSIVI has already registered a session
-            transaction.sessionHolder?.session?.flushMode = FlushMode.MANUAL
+            setFlushModeManual(transaction)
         }
+    }
+
+    @CompileDynamic
+    protected void setFlushModeManual(transaction) {
+        transaction.sessionHolder?.session?.flushMode = FlushMode.MANUAL
     }
 }
