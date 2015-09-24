@@ -14,19 +14,19 @@ buildscript {
 
 project.ext {
     springVersion = "4.1.6.RELEASE"
-    grailsVersion = "3.0.1"
+    grailsVersion = "3.0.7"
     slf4jVersion = "1.7.5"
     junitVersion = "4.12"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.3'
+    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.4'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectMajorVersion = "4"
     projectMinorVersion = "0"
     projectPatchVersion = "6"
-//    releaseType = "RELEASE"
+    releaseType = "RELEASE"
 //    releaseType = "M4"
 //    releaseType = "RC1"
-    releaseType = "BUILD-SNAPSHOT"
+//    releaseType = "BUILD-SNAPSHOT"
 
     // overall project version
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
