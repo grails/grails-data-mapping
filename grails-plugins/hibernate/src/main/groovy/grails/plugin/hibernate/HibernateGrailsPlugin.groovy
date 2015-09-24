@@ -38,7 +38,7 @@ class HibernateGrailsPlugin extends Plugin {
     def author = 'Grails Core Team'
     def title = 'Hibernate 4 for Grails'
     def description = 'Provides integration between Grails and Hibernate 4 through GORM'
-    def documentation = 'http://grails.org/plugin/hibernate4'
+    def documentation = 'http://grails.github.io/grails-data-mapping/latest/'
 
     def observe = ['domainClass']
     def loadAfter = ['controllers', 'domainClass']
@@ -47,8 +47,8 @@ class HibernateGrailsPlugin extends Plugin {
 
     def license = 'APACHE'
     def organization = [name: 'Grails', url: 'http://grails.org']
-    def issueManagement = [system: 'JIRA', url: 'http://jira.grails.org/browse/GPHIB']
-    def scm = [url: 'https://github.com/grails-plugins/grails-hibernate4-plugin']
+    def issueManagement = [system: 'JIRA', url: 'https://github.com/grails/grails-data-mapping/issues']
+    def scm = [url: 'https://github.com/grails/grails-data-mapping']
 
     Set<String> dataSourceNames
 
