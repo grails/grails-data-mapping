@@ -24,7 +24,7 @@ import org.springframework.transaction.TransactionDefinition
  * delegate tx methods to cypherEngine
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
-class Neo4jTransaction implements Transaction {
+class Neo4jTransaction implements Transaction<CypherEngine> {
 
     protected final Logger log = LoggerFactory.getLogger(getClass())
 
@@ -46,9 +46,8 @@ class Neo4jTransaction implements Transaction {
         active = false
     }
 
-    Object getNativeTransaction() {
-        // TODO: consider returing cypherEngine
-        throw new UnsupportedOperationException();
+    CypherEngine getNativeTransaction() {
+        return cypherEngine;
     }
 
     boolean isActive() {
