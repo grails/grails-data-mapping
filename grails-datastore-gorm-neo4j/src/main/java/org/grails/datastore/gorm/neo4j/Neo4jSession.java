@@ -25,6 +25,10 @@ import java.util.*;
 
 /**
  * Created by stefan on 03.03.14.
+ *
+ * @author Stefan
+ * @author Graeme Rocher
+ *
  */
 public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
@@ -37,9 +41,10 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, CypherEngine cypherEngine) {
         super(datastore, mappingContext, publisher, stateless);
-        log.warn("session created");
+        if(log.isDebugEnabled()) {
+            log.debug("session created");
+        }
         this.cypherEngine = cypherEngine;
-//        cypherEngine.beginTx();
     }
 
 
@@ -47,7 +52,6 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     public void clear() {
         super.clear();
         cypherEngine.commit();
-        //cypherEngine.beginTx();
     }
 
 
@@ -59,7 +63,7 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     @Override
     protected Transaction beginTransactionInternal() {
-        throw new IllegalStateException("thou shall not call this");
+        throw new IllegalStateException("Use beingTransaction(TransactionDefinition) instead");
     }
 
     public Transaction beginTransaction(TransactionDefinition transactionDefinition) {
