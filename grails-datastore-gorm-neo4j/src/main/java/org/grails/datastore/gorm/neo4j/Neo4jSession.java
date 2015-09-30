@@ -50,8 +50,8 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     @Override
     public void clear() {
-        super.clear();
         cypherEngine.commit();
+        super.clear();
     }
 
 
@@ -132,6 +132,7 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     @Override
     public void flush() {
         persistDirtyButUnsavedInstances();
+        cypherEngine.commit();
         super.flush();
     }
 
