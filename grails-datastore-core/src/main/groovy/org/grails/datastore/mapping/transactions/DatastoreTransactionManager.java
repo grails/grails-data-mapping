@@ -181,6 +181,15 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
     }
 
     @Override
+    protected void doSetRollbackOnly(DefaultTransactionStatus status) throws TransactionException {
+        if(!status.isRollbackOnly()) {
+            TransactionObject txObject = (TransactionObject) status.getTransaction();
+            status.setRollbackOnly();
+            txObject.getSessionHolder().setRollbackOnly();
+        }
+    }
+
+    @Override
     protected void doCleanupAfterCompletion(Object transaction) {
         TransactionObject txObject = (TransactionObject) transaction;
 
