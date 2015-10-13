@@ -20,7 +20,7 @@ import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.kernel.GraphDatabaseAPI
-import org.neo4j.kernel.impl.transaction.TxManager
+//import org.neo4j.kernel.impl.transaction.TxManager
 import org.neo4j.server.web.WebServer
 import org.neo4j.test.TestGraphDatabaseFactory
 import org.slf4j.Logger
@@ -46,9 +46,9 @@ class Setup {
 
     static destroy() {
         dataSource.close()
-        TxManager txManager = ((GraphDatabaseAPI)graphDb).getDependencyResolver().resolveDependency(TxManager)
-        log.info "before shutdown, active: $txManager.activeTxCount, committed $txManager.committedTxCount, started: $txManager.startedTxCount, rollback: $txManager.rolledbackTxCount, status: $txManager.status"
-        assert txManager.activeTxCount == 0, "something is wrong with connection handling - we still have $txManager.activeTxCount connections open"
+//        TxManager txManager = graphDb.getDependencyResolver().resolveDependency(TxManager)
+//        log.info "before shutdown, active: $txManager.activeTxCount, committed $txManager.committedTxCount, started: $txManager.startedTxCount, rollback: $txManager.rolledbackTxCount, status: $txManager.status"
+//        assert txManager.activeTxCount == 0, "something is wrong with connection handling - we still have $txManager.activeTxCount connections open"
 
         webServer?.stop()
         graphDb?.shutdown()
