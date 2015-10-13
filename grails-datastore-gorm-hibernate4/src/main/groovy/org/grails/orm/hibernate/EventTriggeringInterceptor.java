@@ -59,7 +59,7 @@ public class EventTriggeringInterceptor extends AbstractEventTriggeringIntercept
     protected transient ConcurrentMap<SoftKey<Class<?>>, ClosureEventListener> eventListeners =
             new ConcurrentHashMap<SoftKey<Class<?>>, ClosureEventListener>();
 
-    protected final GrailsDomainBinder domainBinder = new GrailsDomainBinder();
+    protected final GrailsDomainBinder domainBinder = GrailsHibernateUtil.getDomainBinder();
     
     private TimestampProvider timestampProvider = new DefaultTimestampProvider();
 

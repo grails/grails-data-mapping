@@ -90,7 +90,7 @@ public class GrailsHibernateUtil {
 
     private static HibernateProxyHandler proxyHandler = new HibernateProxyHandler();
 
-    private static GrailsDomainBinder binder = new GrailsDomainBinder();
+    private static GrailsDomainBinder binder;
 
     @SuppressWarnings("rawtypes")
     public static void enableDynamicFilterEnablerIfPresent(SessionFactory sessionFactory, Session session) {
@@ -234,7 +234,7 @@ public class GrailsHibernateUtil {
             }
         }
         else if (useDefaultMapping) {
-            Mapping m = binder.getMapping(targetClass);
+            Mapping m = getDomainBinder().getMapping(targetClass);
             if (m != null) {
                 Map sortMap = m.getSort().getNamesAndDirections();
                 for (Object sort : sortMap.keySet()) {
@@ -243,6 +243,17 @@ public class GrailsHibernateUtil {
                 }
             }
         }
+    }
+
+    public static GrailsDomainBinder getDomainBinder() {
+        if(binder == null) {
+            binder = new GrailsDomainBinder();
+        }
+        return binder;
+    }
+
+    public static void setBinder(GrailsDomainBinder binder) {
+        GrailsHibernateUtil.binder = binder;
     }
 
     /**
@@ -330,7 +341,7 @@ public class GrailsHibernateUtil {
      * @param criteria The criteria
      */
     public static void cacheCriteriaByMapping(Class<?> targetClass, Criteria criteria) {
-        Mapping m = binder.getMapping(targetClass);
+        Mapping m = getDomainBinder().getMapping(targetClass);
         if (m != null && m.getCache() != null && m.getCache().getEnabled()) {
             criteria.setCacheable(true);
         }
@@ -576,7 +587,7 @@ public class GrailsHibernateUtil {
     public static List<String> getDatasourceNames(GrailsDomainClass domainClass) {
         // Mappings won't have been built yet when this is called from
         // HibernatePluginSupport.doWithSpring  so do a temporary evaluation but don't cache it
-        Mapping mapping = isMappedWithHibernate(domainClass) ? binder.evaluateMapping(domainClass, null, false) : null;
+        Mapping mapping = isMappedWithHibernate(domainClass) ? getDomainBinder().evaluateMapping(domainClass, null, false) : null;
         if (mapping == null) {
             mapping = new Mapping();
         }

@@ -16,6 +16,7 @@
 package org.grails.orm.hibernate.cfg;
 
 import grails.core.*;
+import groovy.lang.Closure;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.orm.hibernate.EventListenerIntegrator;
@@ -136,6 +137,22 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         dataSourceName = name;
     }
 
+    public void configureDomainBinder(GrailsDomainBinder binder, GrailsApplication grailsApplication, Set<GrailsDomainClass> domainClasses) {
+        GrailsHibernateUtil.setDomainBinder(binder);
+        Closure defaultMapping = grailsApplication.getConfig().getProperty(GrailsDomainConfiguration.DEFAULT_MAPPING, Closure.class);
+        // do Grails class configuration
+        if(defaultMapping != null) {
+            binder.setDefaultMapping(defaultMapping);
+        }
+        for (GrailsDomainClass domainClass : domainClasses) {
+            if (defaultMapping != null) {
+                binder.evaluateMapping(domainClass, defaultMapping);
+            }
+            else {
+                binder.evaluateMapping(domainClass);
+            }
+        }
+    }
     /**
      * Overrides the default behaviour to including binding of Grails domain classes.
      */
@@ -148,7 +165,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
                 LOG.debug("[GrailsAnnotationConfiguration] ["+domainClasses.size()+"] Grails domain classes to bind to persistence runtime");
 
             // do Grails class configuration
-            DefaultGrailsDomainConfiguration.configureDomainBinder(grailsApplication, domainClasses);
+            configureDomainBinder(binder, grailsApplication, domainClasses);
 
             for (GrailsDomainClass domainClass : domainClasses) {
 

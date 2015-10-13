@@ -117,8 +117,11 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
     }
 
     public static void configureDomainBinder(GrailsApplication grailsApplication, Set<GrailsDomainClass> domainClasses) {
-        Closure defaultMapping = grailsApplication.getConfig().getProperty("grails.gorm.default.mapping", Closure.class);
+        Closure defaultMapping = grailsApplication.getConfig().getProperty(GrailsDomainConfiguration.DEFAULT_MAPPING, Closure.class);
         // do Grails class configuration
+        if(defaultMapping != null) {
+            binder.setDefaultMapping(defaultMapping);
+        }
         for (GrailsDomainClass domainClass : domainClasses) {
             if (defaultMapping != null) {
                 binder.evaluateMapping(domainClass, defaultMapping);

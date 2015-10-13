@@ -24,6 +24,11 @@ import grails.core.GrailsDomainClass;
 public interface GrailsDomainConfiguration {
 
     /**
+     * The name of the configuration setting that holds the default mapping
+     */
+    String DEFAULT_MAPPING = "grails.gorm.default.mapping";
+
+    /**
      * Adds a domain class to the configuration.
      * @param domainClass
      * @return this
