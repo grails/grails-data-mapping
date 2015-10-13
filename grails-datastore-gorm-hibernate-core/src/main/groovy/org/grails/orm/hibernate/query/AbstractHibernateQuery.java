@@ -640,7 +640,10 @@ public abstract class AbstractHibernateQuery extends Query {
     }
 
     protected void applyDefaultSortOrderAndCaching() {
-        if(this.orderBy.isEmpty() && entity != null && projections.isEmpty() && hibernateProjectionList.isEmpty()) {
+        if(this.orderBy.isEmpty() && entity != null) {
+            // don't apply default sorting, if projections present
+            if(hibernateProjectionList != null && !hibernateProjectionList.isEmpty()) return;
+
             Mapping mapping = AbstractGrailsDomainBinder.getMapping(entity.getJavaClass());
             if(mapping != null) {
                 if(queryCache == null && mapping.getCache() != null && mapping.getCache().isEnabled()) {
