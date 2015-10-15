@@ -15,6 +15,7 @@
 package org.grails.datastore.mapping.transactions;
 
 import org.grails.datastore.mapping.core.Session;
+import org.springframework.transaction.support.SmartTransactionObject;
 
 /**
  * A transaction object returned when the transaction is created.
@@ -22,7 +23,7 @@ import org.grails.datastore.mapping.core.Session;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class TransactionObject {
+public class TransactionObject implements SmartTransactionObject {
     private SessionHolder sessionHolder;
     private boolean newSessionHolder;
     private boolean newSession;
@@ -63,5 +64,16 @@ public class TransactionObject {
 
     public boolean isNewSession() {
         return newSession;
+    }
+
+
+    @Override
+    public boolean isRollbackOnly() {
+        return sessionHolder.isRollbackOnly();
+    }
+
+    @Override
+    public void flush() {
+        sessionHolder.getSession().flush();
     }
 }

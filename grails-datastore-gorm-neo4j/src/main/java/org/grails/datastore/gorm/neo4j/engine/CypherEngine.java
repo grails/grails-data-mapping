@@ -1,10 +1,15 @@
 package org.grails.datastore.gorm.neo4j.engine;
 
+import org.springframework.transaction.TransactionDefinition;
+
 import java.util.List;
 import java.util.Map;
 
 /**
  * abstraction to use cypher via embedded and remote the same way
+ *
+ * @author Stefan
+ *
  */
 public interface CypherEngine {
 
@@ -16,10 +21,35 @@ public interface CypherEngine {
      * @param params parameters for the above query
      * @return
      */
-    public CypherResult execute(String cypher, List params);
-    public CypherResult execute(String cypher);
+    CypherResult execute(String cypher, List params);
 
-    public void beginTx();
-    public void commit();
-    public void rollback();
+    /**
+     * Execute a cypher query
+     *
+     * @param cypher The cypher string
+     * @return A cypher result
+     */
+    CypherResult execute(String cypher);
+
+    /**
+     * Start a transaction
+     */
+    void beginTx();
+
+    /**
+     * Strat a transaction for the given definition
+     *
+     * @param transactionDefinition The definition
+     */
+    void beginTx(TransactionDefinition transactionDefinition);
+
+    /**
+     * Commits the transaction
+     */
+    void commit();
+
+    /**
+     * Rollback the transaction
+     */
+    void rollback();
 }

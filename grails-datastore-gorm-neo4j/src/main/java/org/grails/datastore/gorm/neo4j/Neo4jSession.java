@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.transaction.TransactionDefinition;
 
 import javax.persistence.FlushModeType;
 import java.io.Serializable;
@@ -24,6 +25,10 @@ import java.util.*;
 
 /**
  * Created by stefan on 03.03.14.
+ *
+ * @author Stefan
+ * @author Graeme Rocher
+ *
  */
 public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
@@ -36,15 +41,19 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, CypherEngine cypherEngine) {
         super(datastore, mappingContext, publisher, stateless);
+        if(log.isDebugEnabled()) {
+            log.debug("session created");
+        }
         this.cypherEngine = cypherEngine;
-        cypherEngine.beginTx();
     }
 
+
     @Override
-    public void disconnect() {
+    public void clear() {
         cypherEngine.commit();
-        super.disconnect();
+        super.clear();
     }
+
 
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
@@ -54,7 +63,11 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     @Override
     protected Transaction beginTransactionInternal() {
-        return new Neo4jTransaction(cypherEngine);
+        throw new IllegalStateException("Use beingTransaction(TransactionDefinition) instead");
+    }
+
+    public Transaction beginTransaction(TransactionDefinition transactionDefinition) {
+        return new Neo4jTransaction(cypherEngine, transactionDefinition);
     }
 
     @Override
@@ -119,6 +132,7 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     @Override
     public void flush() {
         persistDirtyButUnsavedInstances();
+        cypherEngine.commit();
         super.flush();
     }
 
@@ -129,7 +143,6 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
         if (publisher!=null) {
             publisher.publishEvent(new SessionFlushedEvent(this));
         }
-        cypherEngine.commit();
     }
 
     /**

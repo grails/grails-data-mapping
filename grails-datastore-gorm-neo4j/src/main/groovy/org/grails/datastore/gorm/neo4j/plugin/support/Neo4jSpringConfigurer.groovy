@@ -15,7 +15,7 @@
 package org.grails.datastore.gorm.neo4j.plugin.support
 
 import org.apache.tomcat.jdbc.pool.PoolProperties
-import org.grails.core.support.ClassEditor
+import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
 import org.grails.datastore.gorm.neo4j.engine.JdbcCypherEngine
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
@@ -52,6 +52,7 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
 
             def m = neo4jUrl =~ /$JDBC_NEO4J_PREFIX(\w+)/
 
+            boolean hasGraphDatabaseService = false
             if (m.matches()) {
 
                 def instanceName = m[0][1]
@@ -70,6 +71,7 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                 graphDatabaseService(graphDbBuilderFinal: "newGraphDatabase") { bean ->
                     bean.destroyMethod = 'shutdown'
                 }
+                hasGraphDatabaseService = true
 
                 neo4jProperties[instanceName] = ref('graphDatabaseService')
 
@@ -93,7 +95,7 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                 bean.destroyMethod = 'close'
             }
 
-            cypherEngine(JdbcCypherEngine, neo4jDataSource)
+            cypherEngine(JdbcCypherEngine, neo4jDataSource, hasGraphDatabaseService ? graphDatabaseService : null)
 
             neo4jMappingContext(Neo4jMappingContextFactoryBean) {
                 grailsApplication = ref('grailsApplication')
@@ -102,14 +104,10 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
             neo4jDatastore(Neo4jDatastoreFactoryBean) {
                 cypherEngine = cypherEngine
                 mappingContext = neo4jMappingContext
-
             }
 
-            // reverting the change done for fixing GRAILS-11112
-            // since we supply a GraphDatabaseService instance to dbProperties we do not want
-            // it being converted to a String
-            customEditors(CustomEditorConfigurer) {
-                customEditors = [(Class.name): ClassEditor.name ]
+            neo4jTransactionManager(Neo4jDatastoreTransactionManager) {
+                datastore = ref("neo4jDatastore")
             }
 
         }

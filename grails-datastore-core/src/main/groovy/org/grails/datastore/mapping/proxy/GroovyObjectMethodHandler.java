@@ -29,9 +29,11 @@ import org.codehaus.groovy.runtime.InvokerHelper;
  * delegates getProperty, setProperty &amp; invokeMethod to super class's MetaClass
  *
  * @author Lari Hotari
+ * @author Graeme Rocher
  */
 public class GroovyObjectMethodHandler implements MethodHandler {
     public static final Object INVOKE_IMPLEMENTATION = new Object();
+    public static final String META_CLASS_PROPERTY = "metaClass";
     protected final Class<?> proxyClass;
     protected transient MetaClass metaClass;
 
@@ -57,7 +59,7 @@ public class GroovyObjectMethodHandler implements MethodHandler {
     }
 
     protected Object getPropertyBeforeResolving(Object self, String property) {
-        if("metaClass".equals(property)) {
+        if(META_CLASS_PROPERTY.equals(property)) {
             return getThisMetaClass();
         }
         return INVOKE_IMPLEMENTATION;
@@ -79,7 +81,7 @@ public class GroovyObjectMethodHandler implements MethodHandler {
     }
 
     protected boolean setPropertyBeforeResolving(Object self, String property, Object newValue) {
-        if("metaClass".equals(property)) {
+        if(META_CLASS_PROPERTY.equals(property)) {
             setThisMetaClass((MetaClass)newValue);
             return true;
         }
@@ -153,7 +155,7 @@ public class GroovyObjectMethodHandler implements MethodHandler {
         else if (args.length == 1) {
             if ("getProperty".equals(methodName)) {
                 String name = args[0].toString();
-                if("metaClass".equals(name)) {
+                if(META_CLASS_PROPERTY.equals(name)) {
                     return getThisMetaClass();
                 } else {
                     return getProperty(self, name);
@@ -167,7 +169,7 @@ public class GroovyObjectMethodHandler implements MethodHandler {
             if ("setProperty".equals(methodName)) {
                 String name = args[0].toString();
                 Object value = args[1];
-                if("metaClass".equals(name)) {
+                if(META_CLASS_PROPERTY.equals(name)) {
                     setThisMetaClass((MetaClass)value);
                 } else {
                     setProperty(self, name, value);
