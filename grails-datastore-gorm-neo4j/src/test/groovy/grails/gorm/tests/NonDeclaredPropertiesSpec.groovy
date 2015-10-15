@@ -186,7 +186,7 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
         IteratorUtil.count(result) == 2
 
         and: "reading dynamic rels works"
-        Pet.findByName("Cosima").buddies*.name == ["Lara", "Samira"]
+        Pet.findByName("Cosima").buddies*.name.sort() == ["Lara", "Samira"]
     }
 
 }

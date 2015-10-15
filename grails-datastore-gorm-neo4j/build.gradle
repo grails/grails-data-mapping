@@ -17,7 +17,7 @@ dependencies {
             "org.neo4j:neo4j-kernel:$neo4jVersion",
             "org.neo4j:neo4j-graphviz:$neo4jVersion",
             "org.codehaus.groovy:groovy-all:$groovyVersion",
-            "org.neo4j:neo4j-jdbc:2.0.2",
+            "org.neo4j:neo4j-jdbc:2.1.4",
             'org.apache.tomcat:tomcat-jdbc:8.0.20'
 
     // during development (aka snapshot version), use project dependencies
@@ -30,6 +30,7 @@ dependencies {
 
     testCompile 'org.codehaus.gpars:gpars:0.12',
             [group: "org.neo4j", name: "neo4j-kernel", version: neo4jVersion, classifier: 'tests'],
+            [group: "org.neo4j", name: "neo4j-io", version: neo4jVersion, classifier: 'tests'],
             [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion, classifier: 'tests'],
             [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion],
             "org.neo4j:neo4j-graphviz:$neo4jVersion",
@@ -39,6 +40,13 @@ dependencies {
             'com.sun.jersey:jersey-core:1.9',
             'com.sun.jersey:jersey-client:1.9',
             'p6spy:p6spy:2.0.2'
+
+//    testRuntime("org.neo4j:neo4j-io:$neo4jVersion") {
+//        artifact {
+//            name = 'neo4j-io'
+//            type = 'test-jar'
+//        }
+//    }
     testRuntime "org.grails:grails-web:$grailsVersion", {
         transitive = false
     }
@@ -51,6 +59,8 @@ dependencies {
 }
 
 test {
-    maxParallelForks = 1
+    maxParallelForks = 2
+    forkEvery = 30
+    maxHeapSize = "2048M"
 }
 

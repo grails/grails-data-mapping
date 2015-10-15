@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.neo4j.engine;
 
 import org.grails.datastore.gorm.neo4j.Neo4jUtils;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,6 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
 import javax.transaction.SystemException;
-import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import java.sql.*;
 import java.util.HashMap;
@@ -151,14 +151,10 @@ public class JdbcCypherEngine implements CypherEngine {
                     doRollback.set(Boolean.FALSE);
                 }
                 if (graphDatabaseService != null) {
-                    TransactionManager transactionManager = ((GraphDatabaseAPI) graphDatabaseService).getDependencyResolver().resolveDependency(TransactionManager.class);
-                    try {
-                        Transaction tx = transactionManager.suspend();
-                        if (tx!=null) {
-                            suspendedTransactionsByDepthThreadLocal.get().put(depth, tx);
-                        }
-                    } catch (SystemException e) {
-                        throw new RuntimeException(e);
+
+                    final org.neo4j.graphdb.Transaction tx = graphDatabaseService.beginTx();
+                    if (tx!=null) {
+                        suspendedTransactionsByDepthThreadLocal.get().put(depth, tx);
                     }
                 }
                 Neo4jUtils.logWithCause(log, "beginTx propagation NEW", depth);
@@ -193,17 +189,7 @@ public class JdbcCypherEngine implements CypherEngine {
 
     private void eventuallyResumeTransaction(int depth) {
         if (graphDatabaseService!=null) {
-            Transaction tx = suspendedTransactionsByDepthThreadLocal.get().remove(depth);
-            if (tx!=null) {
-                TransactionManager transactionManager = ((GraphDatabaseAPI)graphDatabaseService).getDependencyResolver().resolveDependency(TransactionManager.class);
-                try {
-                    transactionManager.resume(tx);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-
+            suspendedTransactionsByDepthThreadLocal.get().remove(depth);
         }
     }
 
