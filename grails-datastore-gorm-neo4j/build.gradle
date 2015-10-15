@@ -59,13 +59,8 @@ dependencies {
 }
 
 test {
-    maxParallelForks = 2
     forkEvery = 30
-    if(isTravisBuild) {
-        jvmArgs = ['-server', '-Xmx768M', '-XX:MaxPermSize=256m']
-    }
-    else {
-        maxHeapSize = "2048M"
-    }
+    maxParallelForks = 2
+    maxHeapSize = "512M"
 }
 
