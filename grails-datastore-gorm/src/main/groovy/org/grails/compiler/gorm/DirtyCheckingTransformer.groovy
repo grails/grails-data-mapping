@@ -1,53 +1,27 @@
 package org.grails.compiler.gorm
 
 import grails.artefact.Artefact
+import grails.compiler.ast.AstTransformer
+import grails.compiler.ast.GrailsArtefactClassInjector
+import grails.compiler.ast.GrailsDomainClassInjector
+import grails.persistence.PersistenceMethod
 import grails.util.GrailsClassUtils
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.ast.ClassHelper
-import org.codehaus.groovy.ast.ClassNode
-import org.codehaus.groovy.ast.FieldNode
-import org.codehaus.groovy.ast.GenericsType
-import org.codehaus.groovy.ast.MethodNode
-import org.codehaus.groovy.ast.Parameter
-import org.codehaus.groovy.ast.PropertyNode
-import org.codehaus.groovy.ast.VariableScope
-import org.codehaus.groovy.ast.expr.ArgumentListExpression
-import org.codehaus.groovy.ast.expr.BinaryExpression
-import org.codehaus.groovy.ast.expr.BooleanExpression
-import org.codehaus.groovy.ast.expr.ConstantExpression
-import org.codehaus.groovy.ast.expr.ListExpression
-import org.codehaus.groovy.ast.expr.MapExpression
-import org.codehaus.groovy.ast.expr.MethodCallExpression
-import org.codehaus.groovy.ast.expr.NotExpression
-import org.codehaus.groovy.ast.expr.PropertyExpression
-import org.codehaus.groovy.ast.expr.VariableExpression
-import org.codehaus.groovy.ast.stmt.BlockStatement
-import org.codehaus.groovy.ast.stmt.EmptyStatement
-import org.codehaus.groovy.ast.stmt.ExpressionStatement
-import org.codehaus.groovy.ast.stmt.IfStatement
-import org.codehaus.groovy.ast.stmt.ReturnStatement
-import org.codehaus.groovy.ast.tools.GenericsUtils
+import org.codehaus.groovy.ast.*
+import org.codehaus.groovy.ast.expr.*
+import org.codehaus.groovy.ast.stmt.*
 import org.codehaus.groovy.classgen.GeneratorContext
 import org.codehaus.groovy.control.SourceUnit
-import org.codehaus.groovy.grails.compiler.injection.AstTransformer
-import grails.compiler.ast.GrailsArtefactClassInjector
-import org.grails.compiler.injection.GrailsASTUtils
-import org.grails.core.artefact.DomainClassArtefactHandler
-import org.grails.core.support.GrailsDomainConfigurationUtil
-import org.yaml.snakeyaml.tokens.DirectiveToken
-
-import static org.grails.compiler.injection.GrailsASTUtils.*
-import grails.compiler.ast.GrailsDomainClassInjector
-import org.grails.io.support.GrailsResourceUtils
 import org.codehaus.groovy.syntax.Token
 import org.codehaus.groovy.syntax.Types
+import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.core.support.GrailsDomainConfigurationUtil
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.reflect.NameUtils
+import org.grails.io.support.GrailsResourceUtils
 
 import static java.lang.reflect.Modifier.*
-import org.codehaus.groovy.ast.AnnotationNode
-import grails.persistence.PersistenceMethod
-
+import static org.grails.compiler.injection.GrailsASTUtils.*
 /**
  *
  * Transforms a domain class making it possible for the domain class to take responsibility of tracking changes to itself, thus removing the responsibility from the ORM system which would have to maintain parallel state
