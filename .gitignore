@@ -23,7 +23,7 @@ classes/*
 bin/
 boot-plugins/*/.idea/*
 grails-plugins/mongodb/grails-mongodb-1.0.0.RC5.zip.sha1
-
+spy.log
 *.db
 
 *.sha1

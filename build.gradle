@@ -17,12 +17,12 @@ project.ext {
     grailsVersion = "3.0.1"
     slf4jVersion = "1.7.5"
     junitVersion = "4.12"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.3'
+    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.4'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectMajorVersion = "4"
     projectMinorVersion = "0"
-    projectPatchVersion = "6"
+    projectPatchVersion = "8"
 //    releaseType = "RELEASE"
 //    releaseType = "M4"
 //    releaseType = "RC1"
@@ -32,7 +32,7 @@ project.ext {
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
 
     // driver versions
-    neo4jVersion = '2.0.3'
+    neo4jVersion = '2.2.3'
 
     // plugin versions
     hibernateVersion = "4.3.10"

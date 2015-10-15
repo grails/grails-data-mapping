@@ -58,6 +58,19 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
     }
 
     @Override
+    protected Object doSuspend(Object transaction) throws TransactionException {
+        TransactionObject txObject = (TransactionObject) transaction;
+        TransactionSynchronizationManager.unbindResource(getDatastore());
+        return txObject.getSessionHolder();
+    }
+
+    @Override
+    protected void doResume(Object transaction, Object suspendedResources) throws TransactionException {
+        SessionHolder conHolder = (SessionHolder) suspendedResources;
+        TransactionSynchronizationManager.bindResource(getDatastore(), conHolder);
+    }
+
+    @Override
     protected Object doGetTransaction() throws TransactionException {
         TransactionObject txObject = new TransactionObject();
 
@@ -178,6 +191,13 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
                 sessionHolder.getSession().clear();
             }
         }
+    }
+
+    @Override
+    protected void doSetRollbackOnly(DefaultTransactionStatus status) throws TransactionException {
+        TransactionObject txObject = (TransactionObject) status.getTransaction();
+        status.setRollbackOnly();
+        txObject.getSessionHolder().setRollbackOnly();
     }
 
     @Override

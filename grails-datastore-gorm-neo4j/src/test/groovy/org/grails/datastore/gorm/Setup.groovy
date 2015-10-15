@@ -9,6 +9,7 @@ import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.neo4j.DumpGraphOnSessionFlushListener
 import org.grails.datastore.gorm.neo4j.HashcodeEqualsAwareProxyFactory
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
+import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
 import org.grails.datastore.gorm.neo4j.TestServer
@@ -16,11 +17,8 @@ import org.grails.datastore.gorm.neo4j.engine.JdbcCypherEngine
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.grails.validation.GrailsDomainClassValidator
 import org.neo4j.graphdb.GraphDatabaseService
-import org.neo4j.kernel.GraphDatabaseAPI
-import org.neo4j.kernel.impl.transaction.TxManager
 import org.neo4j.server.web.WebServer
 import org.neo4j.test.TestGraphDatabaseFactory
 import org.slf4j.Logger
@@ -46,9 +44,9 @@ class Setup {
 
     static destroy() {
         dataSource.close()
-        TxManager txManager = ((GraphDatabaseAPI)graphDb).getDependencyResolver().resolveDependency(TxManager)
-        log.info "before shutdown, active: $txManager.activeTxCount, committed $txManager.committedTxCount, started: $txManager.startedTxCount, rollback: $txManager.rolledbackTxCount, status: $txManager.status"
-        assert txManager.activeTxCount == 0, "something is wrong with connection handling - we still have $txManager.activeTxCount connections open"
+//        TxManager txManager = graphDb.getDependencyResolver().resolveDependency(TxManager)
+//        log.info "before shutdown, active: $txManager.activeTxCount, committed $txManager.committedTxCount, started: $txManager.startedTxCount, rollback: $txManager.rolledbackTxCount, status: $txManager.status"
+//        assert txManager.activeTxCount == 0, "something is wrong with connection handling - we still have $txManager.activeTxCount connections open"
 
         webServer?.stop()
         graphDb?.shutdown()
@@ -98,7 +96,7 @@ class Setup {
         datastore = new Neo4jDatastore(
                 mappingContext,
                 ctx,
-                new JdbcCypherEngine(dataSource)
+                new JdbcCypherEngine(dataSource, graphDb)
         )
         datastore.skipIndexSetup = skipIndexSetup
         datastore.mappingContext.proxyFactory = new HashcodeEqualsAwareProxyFactory()
@@ -115,7 +113,7 @@ class Setup {
 
         setupValidators(mappingContext, grailsApplication)
 
-        def enhancer = new Neo4jGormEnhancer(datastore, new DatastoreTransactionManager(datastore: datastore))
+        def enhancer = new Neo4jGormEnhancer(datastore, new Neo4jDatastoreTransactionManager(datastore: datastore))
         enhancer.enhance()
 
         datastore.afterPropertiesSet()

@@ -18,21 +18,22 @@ import org.grails.datastore.gorm.neo4j.engine.CypherEngine
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.grails.datastore.mapping.transactions.Transaction
+import org.springframework.transaction.TransactionDefinition
 
 /**
  * delegate tx methods to cypherEngine
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
-class Neo4jTransaction implements Transaction {
+class Neo4jTransaction implements Transaction<CypherEngine> {
 
     protected final Logger log = LoggerFactory.getLogger(getClass())
 
     CypherEngine cypherEngine
     boolean active = true
 
-    Neo4jTransaction(CypherEngine cypherEngine) {
+    Neo4jTransaction(CypherEngine cypherEngine, TransactionDefinition transactionDefinition) {
         this.cypherEngine = cypherEngine
-        cypherEngine.beginTx()
+        cypherEngine.beginTx(transactionDefinition)
     }
 
     void commit() {
@@ -45,9 +46,8 @@ class Neo4jTransaction implements Transaction {
         active = false
     }
 
-    Object getNativeTransaction() {
-        // TODO: consider returing cypherEngine
-        throw new UnsupportedOperationException();
+    CypherEngine getNativeTransaction() {
+        return cypherEngine;
     }
 
     boolean isActive() {

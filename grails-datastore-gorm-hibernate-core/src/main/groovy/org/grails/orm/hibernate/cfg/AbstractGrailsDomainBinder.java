@@ -79,6 +79,8 @@ public abstract class AbstractGrailsDomainBinder {
 
     protected Log LOG = LogFactory.getLog(getClass());
 
+    protected Closure defaultMapping;
+
     protected final CollectionType CT = new CollectionType(null, this) {
         public Collection create(GrailsDomainClassProperty property, PersistentClass owner, String path, Mappings mappings, String sessionFactoryBeanName) {
             return null;
@@ -92,6 +94,15 @@ public abstract class AbstractGrailsDomainBinder {
     public static Map<String, NamingStrategy> NAMING_STRATEGIES = new HashMap<String, NamingStrategy>();
     static {
        NAMING_STRATEGIES.put(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE, ImprovedNamingStrategy.INSTANCE);
+    }
+
+
+    /**
+     * The default mapping defined by {@link GrailsDomainConfiguration#DEFAULT_MAPPING}
+     * @param defaultMapping The default mapping
+     */
+    public void setDefaultMapping(Closure defaultMapping) {
+        this.defaultMapping = defaultMapping;
     }
 
     /**
@@ -1461,7 +1472,7 @@ public abstract class AbstractGrailsDomainBinder {
      */
     protected void bindSubClass(GrailsDomainClass sub, PersistentClass parent,
             Mappings mappings, String sessionFactoryBeanName) {
-        evaluateMapping(sub);
+        evaluateMapping(sub, defaultMapping);
         Mapping m = getMapping(parent.getMappedClass());
         Subclass subClass;
         boolean tablePerSubclass = m != null && !m.getTablePerHierarchy() && !m.isTablePerConcreteClass();
@@ -2124,8 +2135,7 @@ public abstract class AbstractGrailsDomainBinder {
         component.setComponentClassName(type.getName());
 
         GrailsDomainClass domainClass = property.getReferencedDomainClass() != null ? property.getReferencedDomainClass() : property.getComponent();
-
-        evaluateMapping(domainClass);
+        evaluateMapping(domainClass, defaultMapping);
         GrailsDomainClassProperty[] properties = domainClass.getPersistentProperties();
         Table table = component.getOwner().getTable();
         PersistentClass persistentClass = component.getOwner();

@@ -17,7 +17,7 @@ class LabelStrategySpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
-        [Default, StaticLabel, StaticLabels, DynLabel, MixedLabels, InstanceDependentLabels]
+        [FinalSubClass, ParentClass, ClassInTheMiddle, SubClass, Default, StaticLabel, StaticLabels, DynLabel, MixedLabels, InstanceDependentLabels]
     }
 
     def setupSpec() {
@@ -148,11 +148,50 @@ class LabelStrategySpec extends GormDatastoreSpec {
 
     }
 
+    @Issue('https://jira.grails.org/browse/GPNEO4J-18')
+    void 'test abstract classes do not contribute to labels'() {
+        when:
+        def parentInstance = new ParentClass(name: 'parent name').save(flush: true)
+        def subclassInstance = new SubClass(subName: 'sub name', middleName: 'middle name', name: 'parent name').save(flush: true)
+        def finalSubclassInstance = new FinalSubClass(finalName: 'final name', subName: 'sub name', middleName: 'middle name', name: 'parent name').save(flush: true)
+
+        then:
+        verifyLabelsForId(parentInstance.id, ['ParentClass'])
+        verifyLabelsForId(subclassInstance.id, ['SubClass'])
+        verifyLabelsForId(finalSubclassInstance.id, ['FinalSubClass', 'SubClass'])
+    }
+
     private def verifyLabelsForId(id, labelz) {
         def cypherResult = session.nativeInterface.execute("MATCH (n {__id__:{1}}) return labels(n) as labels", [id])
-        assert IteratorUtil.first(cypherResult)["labels"] == labelz
+        assert IteratorUtil.first(cypherResult)["labels"] as Set == labelz as Set
         true
     }
+}
+
+@DirtyCheck
+@Entity
+class ParentClass {
+    Long id
+    Long version
+    String name
+}
+
+@DirtyCheck
+@Entity
+abstract class ClassInTheMiddle extends ParentClass {
+    String middleName
+}
+
+@DirtyCheck
+@Entity
+class SubClass extends ClassInTheMiddle {
+    String subName
+}
+
+@DirtyCheck
+@Entity
+final class FinalSubClass extends SubClass {
+    String finalName
 }
 
 @DirtyCheck

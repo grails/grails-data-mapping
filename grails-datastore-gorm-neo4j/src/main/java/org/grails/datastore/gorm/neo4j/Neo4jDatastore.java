@@ -94,9 +94,14 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
             }
         }
 
-        for (String cypher: schemaStrings) {
-            cypherEngine.execute(cypher);
+        try {
+            cypherEngine.beginTx();
+            for (String cypher: schemaStrings) {
+                cypherEngine.execute(cypher);
+            }
+        } finally {
+            cypherEngine.commit();
         }
-        cypherEngine.commit();
+        log.debug("done setting up indexes");
     }
 }

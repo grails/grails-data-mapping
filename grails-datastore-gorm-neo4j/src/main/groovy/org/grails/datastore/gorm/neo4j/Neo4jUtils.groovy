@@ -8,6 +8,7 @@ import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Relationship
 import org.neo4j.visualization.graphviz.GraphvizWriter
 import org.neo4j.walk.Walker
+import org.slf4j.Logger
 
 /**
  * Collection of static util methods regarding Neo4j
@@ -101,5 +102,32 @@ abstract class Neo4jUtils {
         } else {
             "cannot find or execute $dotName, consider to install graphviz binaries (apt-get install graphviz)"
         }
+    }
+
+    static final stacktracePatterns = [ /setupIndexing/, /TransactionManager/,  /DatastorePersistenceContextInterceptor/,
+    /Neo4jDatastore.createSession/,
+    /AbstractAttributeStoringSession.disconnect/,
+    /Neo4jSession.clear/
+    ]
+
+    static def logWithCause(Logger log, String msg, int depth) {
+        def stacktraces = Thread.currentThread().stackTrace
+        if (depth<0) {
+            depth=0
+        }
+        def cause = stacktraces.find {
+            StackTraceElement st -> stacktracePatterns.any {
+                st =~ it
+            }
+        }
+
+        if (!cause) {
+            log.warn "cannot find patterns in stacktrace for $msg"
+        } else {
+            log.info "${'x' * depth} $msg caused by ($cause)"
+        }
+
+
+
     }
 }

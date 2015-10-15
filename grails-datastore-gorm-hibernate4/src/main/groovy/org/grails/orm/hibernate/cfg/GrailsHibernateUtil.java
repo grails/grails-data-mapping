@@ -73,7 +73,7 @@ public class GrailsHibernateUtil implements HibernateQueryConstants{
 
     private static HibernateProxyHandler proxyHandler = new HibernateProxyHandler();
 
-    private static GrailsDomainBinder binder = new GrailsDomainBinder();
+    private static GrailsDomainBinder binder;
 
     @SuppressWarnings("rawtypes")
     public static void enableDynamicFilterEnablerIfPresent(SessionFactory sessionFactory, Session session) {
@@ -216,7 +216,7 @@ public class GrailsHibernateUtil implements HibernateQueryConstants{
             }
         }
         else if (useDefaultMapping) {
-            Mapping m = binder.getMapping(targetClass);
+            Mapping m = getDomainBinder().getMapping(targetClass);
             if (m != null) {
                 Map sortMap = m.getSort().getNamesAndDirections();
                 for (Object sort : sortMap.keySet()) {
@@ -225,6 +225,25 @@ public class GrailsHibernateUtil implements HibernateQueryConstants{
                 }
             }
         }
+    }
+
+    /**
+     * @return Obtains the domain binder instance
+     */
+    public static GrailsDomainBinder getDomainBinder() {
+        if(binder == null) {
+            binder = new GrailsDomainBinder();
+        }
+        return binder;
+    }
+
+    /**
+     * Sets the singleton binder instance
+     *
+     * @param binder The binder to set
+     */
+    public static void setDomainBinder(GrailsDomainBinder binder) {
+        GrailsHibernateUtil.binder = binder;
     }
 
     /**
@@ -315,7 +334,7 @@ public class GrailsHibernateUtil implements HibernateQueryConstants{
      * @param criteria The criteria
      */
     public static void cacheCriteriaByMapping(Class<?> targetClass, Criteria criteria) {
-        Mapping m = binder.getMapping(targetClass);
+        Mapping m = getDomainBinder().getMapping(targetClass);
         if (m != null && m.getCache() != null && m.getCache().getEnabled()) {
             criteria.setCacheable(true);
         }
@@ -559,7 +578,7 @@ public class GrailsHibernateUtil implements HibernateQueryConstants{
     public static List<String> getDatasourceNames(GrailsDomainClass domainClass) {
         // Mappings won't have been built yet when this is called from
         // HibernatePluginSupport.doWithSpring  so do a temporary evaluation but don't cache it
-        Mapping mapping = isMappedWithHibernate(domainClass) ? binder.evaluateMapping(domainClass, null, false) : null;
+        Mapping mapping = isMappedWithHibernate(domainClass) ? getDomainBinder().evaluateMapping(domainClass, null, false) : null;
         if (mapping == null) {
             mapping = new Mapping();
         }

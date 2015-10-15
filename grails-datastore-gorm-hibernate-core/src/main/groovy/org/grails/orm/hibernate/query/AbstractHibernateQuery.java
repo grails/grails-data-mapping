@@ -45,6 +45,7 @@ import org.hibernate.*;
 import org.hibernate.criterion.*;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.function.SQLFunction;
+import org.hibernate.impl.CriteriaImpl;
 import org.hibernate.persister.entity.PropertyMapping;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.TypeResolver;
@@ -640,6 +641,9 @@ public abstract class AbstractHibernateQuery extends Query {
 
     protected void applyDefaultSortOrderAndCaching() {
         if(this.orderBy.isEmpty() && entity != null) {
+            // don't apply default sorting, if projections present
+            if(hibernateProjectionList != null && !hibernateProjectionList.isEmpty()) return;
+
             Mapping mapping = AbstractGrailsDomainBinder.getMapping(entity.getJavaClass());
             if(mapping != null) {
                 if(queryCache == null && mapping.getCache() != null && mapping.getCache().isEnabled()) {
@@ -809,6 +813,12 @@ public abstract class AbstractHibernateQuery extends Query {
         public org.hibernate.criterion.ProjectionList getHibernateProjectionList() {
             return projectionList;
         }
+
+        @Override
+        public boolean isEmpty() {
+            return projectionList.getLength() == 0;
+        }
+
 
         @Override
         public ProjectionList add(Projection p) {

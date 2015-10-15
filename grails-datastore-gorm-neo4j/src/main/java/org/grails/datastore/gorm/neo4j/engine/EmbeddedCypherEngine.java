@@ -5,6 +5,7 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionDefinition;
 
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +65,11 @@ public class EmbeddedCypherEngine implements CypherEngine {
         transactionStack.push(graphDatabaseService.beginTx());
 
         log.info("beginTx: " + transactionStack);
+    }
+
+    @Override
+    public void beginTx(TransactionDefinition transactionDefinition) {
+        beginTx();
     }
 
     @Override

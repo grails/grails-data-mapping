@@ -15,7 +15,7 @@
 package org.grails.datastore.mapping.rest.client.http.converters
 
 import grails.rest.render.RenderContext
-import org.codehaus.groovy.grails.web.mime.MimeType
+import grails.web.mime.MimeType
 import org.grails.datastore.mapping.rest.client.config.Endpoint
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpOutputMessage
@@ -37,6 +37,7 @@ class HttpOutputMessageRenderContext implements RenderContext{
     HttpMethod httpMethod
     List<String> includes = null
     List<String> excludes = []
+    boolean getWriterCalled = false
 
     HttpOutputMessageRenderContext(HttpMethod httpMethod, HttpOutputMessage httpOutputMessage, Endpoint endpoint) {
         this.httpOutputMessage = httpOutputMessage
@@ -70,6 +71,7 @@ class HttpOutputMessageRenderContext implements RenderContext{
 
     @Override
     Writer getWriter() {
+        getWriterCalled = true
         return new OutputStreamWriter(httpOutputMessage.getBody(), getCharSetForMediaType(httpOutputMessage.headers.getContentType()))
     }
 
@@ -83,6 +85,10 @@ class HttpOutputMessageRenderContext implements RenderContext{
 
     @Override
     String getControllerName() { null }
+
+    boolean wasWrittenTo() {
+        return getWriterCalled
+    }
 
     @Override
     String getViewName() { null }
