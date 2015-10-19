@@ -86,6 +86,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
         super(persistentClasses.toList())
     }
 
+
     HibernateDatastoreSpringInitializer(Map hibernateProperties, Collection<Class> persistentClasses) {
         super(hibernateProperties, persistentClasses)
     }

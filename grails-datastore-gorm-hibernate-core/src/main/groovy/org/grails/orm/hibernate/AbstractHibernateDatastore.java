@@ -14,13 +14,12 @@
  */
 package org.grails.orm.hibernate;
 
-import grails.config.Config;
-
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.hibernate.SessionFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.env.PropertyResolver;
 
 /**
  * Datastore implementation that uses a Hibernate SessionFactory underneath.
@@ -31,10 +30,10 @@ import org.springframework.context.ApplicationContextAware;
 public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware {
 
     protected SessionFactory sessionFactory;
-    protected Config config;
+    protected PropertyResolver config;
     protected AbstractEventTriggeringInterceptor eventTriggeringInterceptor;
 
-    protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, Config config, ApplicationContext applicationContext) {
+    protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext) {
         super(mappingContext);
         this.sessionFactory = sessionFactory;
         this.config = config;
@@ -44,7 +43,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         }
     }
 
-    public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, Config config) {
+    public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {
         this(mappingContext, sessionFactory, config, null);
     }
 
