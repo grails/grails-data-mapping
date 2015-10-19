@@ -29,9 +29,11 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
+import org.codehaus.groovy.grails.validation.ConstrainedProperty;
 import org.grails.datastore.gorm.mongo.bean.factory.*;
 import org.grails.datastore.gorm.mongo.bean.factory.MongoClientFactoryBean;
 import org.grails.datastore.gorm.mongo.extensions.MongoExtensions;
+import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory;
 import org.grails.datastore.mapping.core.*;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.engine.EntityAccess;
@@ -114,6 +116,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         if (mappingContext != null) {
             mappingContext.addMappingContextListener(this);
         }
+
 
         this.defaultDatabase = mappingContext.getDefaultDatabaseName();
 

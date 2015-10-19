@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2"
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
     }
@@ -119,7 +119,8 @@ subprojects {
    version = "${projectVersion}.${releaseType}"
    group = "org.grails"
 
-   if(project.name.endsWith("spring-boot")) return
+    if(project.name.endsWith("spring-boot")) return
+    if(project.name.contains("grails2-plugins")) return
    afterEvaluate { project ->
         if (isGroovyProject(project)) {
             def hasSnapshotVersion = project.version.endsWith("-SNAPSHOT")
@@ -186,9 +187,9 @@ subprojects {
 
     def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") &&
                                 !project.name.endsWith("tck") &&
-                                !project.name.endsWith("plugin-support") &&
-                                project.name != 'grails-datastore-gorm-hibernate-core'&&
-                                project.name != 'grails-datastore-gorm-rest-client'
+                                !project.name.endsWith("-support") &&
+                                !project.name.endsWith("-core") &&
+            project.name != 'grails-datastore-gorm-rest-client'
 
 
     def isDocumentationProject = project.name.startsWith("grails-documentation")

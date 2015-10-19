@@ -14,10 +14,11 @@
  */
 package org.grails.datastore.gorm
 
-import grails.util.GrailsMetaClassUtils
-import grails.util.GrailsNameUtils
-import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
+import groovy.util.logging.Commons
+import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory
+import org.grails.datastore.mapping.reflect.MetaClassUtils
+import org.grails.datastore.mapping.reflect.NameUtils
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -38,7 +39,6 @@ import org.grails.datastore.gorm.finders.ListOrderByFinder
 import org.grails.datastore.gorm.internal.InstanceMethodInvokingClosure
 import org.grails.datastore.gorm.internal.StaticMethodInvokingClosure
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
-import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Basic
@@ -57,6 +57,7 @@ import org.grails.datastore.mapping.model.types.Association
  *
  * @author Graeme Rocher
  */
+@Commons
 class GormEnhancer {
 
     Datastore datastore
@@ -78,9 +79,14 @@ class GormEnhancer {
     }
 
     protected void registerConstraints(Datastore datastore) {
-        ConstrainedProperty.registerNewConstraint("unique", new UniqueConstraintFactory(datastore))
+        try {
+            Thread.currentThread().contextClassLoader.loadClass("org.grails.datastore.gorm.support.ConstraintRegistrar").newInstance(datastore)
+        } catch (Throwable e) {
+            log.error("Unable to register GORM constraints: $e.message", e)
+        }
     }
 
+    @CompileStatic
     List<FinderMethod> getFinders() {
         if (finders == null) {
             finders = Collections.unmodifiableList(createDynamicFinders())
@@ -135,7 +141,7 @@ class GormEnhancer {
     @CompileStatic
     protected void addStaticMethods(PersistentEntity e, boolean onlyExtendedMethods) {
         def cls = e.javaClass
-        ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
+        ExpandoMetaClass mc = MetaClassUtils.getExpandoMetaClass(cls)
         def staticApiProvider = getStaticApi(cls)
         for (Method m in (onlyExtendedMethods ? staticApiProvider.extendedMethods : staticApiProvider.methods)) {
             def method = m
@@ -159,7 +165,7 @@ class GormEnhancer {
 
     protected void addAssociationMethods(PersistentEntity e) {
         Class cls = e.javaClass
-        ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
+        ExpandoMetaClass mc = MetaClassUtils.getExpandoMetaClass(cls)
         final proxyFactory = datastore.mappingContext.proxyFactory
         for (p in e.associations) {
             def prop = p
@@ -259,7 +265,7 @@ class GormEnhancer {
     @CompileStatic
     protected void addInstanceMethods(PersistentEntity e, boolean onlyExtendedMethods) {
         Class cls = e.javaClass
-        ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
+        ExpandoMetaClass mc = MetaClassUtils.getExpandoMetaClass(cls)
         for (AbstractGormApi apiProvider in getInstanceMethodApiProviders(cls)) {
 
             for (Method method in (onlyExtendedMethods ? apiProvider.extendedMethods : apiProvider.methods)) {
@@ -315,7 +321,7 @@ class GormEnhancer {
 
     protected void registerAssociationIdentifierGetter(ProxyFactory proxyFactory, MetaClass metaClass, ToOne association) {
         final propName = association.name
-        final getterName = GrailsNameUtils.getGetterName(propName)
+        final getterName = NameUtils.getGetterName(propName)
         metaClass."${getterName}Id" = {->
             final associationInstance = delegate.getProperty(propName)
             if (associationInstance != null) {

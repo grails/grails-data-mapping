@@ -1,12 +1,6 @@
-// Datastore Project
 include ("grails-datastore-core",
-//         "grails-datastore-gemfire",
-//        "grails-datastore-jpa",
-/*        "grails-datastore-riak",*/
         "grails-datastore-simple",
         "grails-datastore-web",
-//        "grails-datastore-simpledb",
-//        "grails-datastore-dynamodb",
         'grails-datastore-rest-client',
 /*
         "grails-datastore-jcr",*/
@@ -21,16 +15,18 @@ include ("grails-datastore-core",
 //        'grails-documentation-simpledb',
 //        'grails-documentation-dynamodb',
         'grails-documentation-rest-client',
-		'grails-documentation-cassandra', 
-		
+        'grails-documentation-cassandra',
+
         // Core GORM Implementation projects
         'grails-datastore-gorm',
+        'grails-datastore-gorm-support',
+        'grails-datastore-gorm-grails2-support',
         'grails-datastore-gorm-tck',
         'grails-datastore-gorm-test',
         'grails-datastore-gorm-plugin-support',
         'grails-datastore-test-support',
 
-        // Grails Plugins
+        // Grails 3 Plugins
 /*
         'grails-plugins:redis',
         'grails-plugins:riak',
@@ -40,27 +36,32 @@ include ("grails-datastore-core",
         'grails-plugins/neo4j',
         'grails-plugins/cassandra',
 
+        // Grails 2 Plugins
+        'grails2-plugins/mongodb',
+        'grails2-plugins/neo4j',
+
         // Boot Extensions
         'boot-plugins/gorm-hibernate4-spring-boot',
         'boot-plugins/gorm-mongodb-spring-boot',
 
         // GORM Implementations
         'grails-datastore-gorm-cassandra',
-//        'grails-datastore-gorm-jpa',
         'grails-datastore-gorm-neo4j',
         'grails-datastore-gorm-redis',
         'grails-datastore-gorm-rest-client',
-        
-/*        'grails-datastore-gorm-riak',*/
         'grails-datastore-gorm-mongodb',
-//        'grails-datastore-gorm-gemfire',
-//        'grails-datastore-gorm-simpledb',
-//        'grails-datastore-gorm-dynamodb',
         'grails-datastore-gorm-hibernate-core',
         'grails-datastore-gorm-hibernate',
         'grails-datastore-gorm-hibernate4'
+
+        // Unmaintained / Deprecated Implementations
+/*        'grails-datastore-gorm-riak',*/
+//        'grails-datastore-gorm-simpledb',
+//        'grails-datastore-gorm-dynamodb',
+
 /*
         'grails-datastore-gorm-jcr',
         'grails-datastore-gorm-simpledb'
 */
 )
+// Datastore Project

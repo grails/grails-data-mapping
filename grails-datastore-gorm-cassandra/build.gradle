@@ -9,7 +9,6 @@ dependencies {
 		exclude group:'org.apache.cassandra',module:'cassandra-all'
 	}
 	compile("org.apache.commons:commons-lang3:3.3.2")
-    compile("org.grails:grails-async:$grailsVersion")
     compile("org.grails:grails-core:$grailsVersion") {
         exclude group:'aopalliance',module:'aopalliance'
         exclude group:'commons-logging',module:'commons-logging'

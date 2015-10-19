@@ -14,13 +14,13 @@
  */
 package org.grails.datastore.gorm.plugin.support
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.utils.InstanceProxy
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -56,7 +56,7 @@ abstract class DynamicMethodsConfigurer {
         for (entity in datastore.mappingContext.persistentEntities) {
             def cls = entity.javaClass
             def cpf = ClassPropertyFetcher.forClass(cls)
-            def mappedWith = cpf.getStaticPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
+            def mappedWith = cpf.getStaticPropertyValue(GormProperties.MAPPING_STRATEGY, String)
             if (hasExistingDatastore) {
                 if (mappedWith == typeLower) {
                     enhancer.enhance(entity)

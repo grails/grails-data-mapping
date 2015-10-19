@@ -18,11 +18,10 @@ package org.grails.datastore.gorm.plugin.support
 import grails.core.GrailsDomainClassProperty
 import grails.core.GrailsServiceClass
 import org.grails.validation.GrailsDomainClassValidator
-import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
 import java.lang.reflect.Method
 
-import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
+import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor
@@ -75,7 +74,7 @@ abstract class SpringConfigurer {
                 currentSpringConfig.addAlias('transactionManager', "${typeLower}TransactionManager")
             }
 
-            "${typeLower}PersistenceInterceptor"(DatastorePersistenceContextInterceptor, ref("${typeLower}Datastore"))
+            "${typeLower}PersistenceInterceptor"(AbstractDatastorePersistenceContextInterceptor, ref("${typeLower}Datastore"))
 
             "${typeLower}PersistenceContextInterceptorAggregator"(PersistenceContextInterceptorAggregator)
 

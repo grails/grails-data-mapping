@@ -103,14 +103,20 @@ public class JdbcCypherEngine implements CypherEngine {
         int depth = transactionNestingDepth.get().get();
         if (depth == 0 ) {
             beginTx();
-            log.warn("execute with nesting depth 0, should only happen in rare cases (e.g. after session.disconnect()");
+            if(log.isWarnEnabled()) {
+                log.warn("No transaction present, so creating new. Should only happen in rare cases (e.g. after session.disconnect()");
+            }
         }
     }
 
     public void logCypher(String cypher, Object params) {
-        log.info("running cypher {}", cypher);
+        if(log.isInfoEnabled()) {
+            log.info("running cypher {}", cypher);
+        }
         if (params!=null) {
-            log.info("   with params {}", params);
+            if(log.isInfoEnabled()) {
+                log.info("   with params {}", params);
+            }
         }
     }
 
@@ -206,12 +212,16 @@ public class JdbcCypherEngine implements CypherEngine {
         // action
         try {
             Connection connection = connectionThreadLocal.get();
-            if (doRollback.get()) {
-                connection.rollback();
-            } else {
-                connection.commit();
+            if(connection != null) {
+                // if the connection is null it is probably due to a prior exception
+                if (doRollback.get()) {
+                    connection.rollback();
+                } else {
+                    connection.commit();
+                }
+                connection.close();
             }
-            connection.close();
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {

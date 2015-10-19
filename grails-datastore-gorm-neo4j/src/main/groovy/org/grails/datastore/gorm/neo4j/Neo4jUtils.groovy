@@ -107,27 +107,28 @@ abstract class Neo4jUtils {
     static final stacktracePatterns = [ /setupIndexing/, /TransactionManager/,  /DatastorePersistenceContextInterceptor/,
     /Neo4jDatastore.createSession/,
     /AbstractAttributeStoringSession.disconnect/,
-    /Neo4jSession.clear/
+    /Neo4jSession.clear/,
+    /Neo4jQuery.executeQuery/
     ]
 
     static def logWithCause(Logger log, String msg, int depth) {
-        def stacktraces = Thread.currentThread().stackTrace
-        if (depth<0) {
-            depth=0
-        }
-        def cause = stacktraces.find {
-            StackTraceElement st -> stacktracePatterns.any {
-                st =~ it
+        if(log.isInfoEnabled()) {
+
+            def stacktraces = Thread.currentThread().stackTrace
+            if (depth<0) {
+                depth=0
+            }
+            def cause = stacktraces.find {
+                StackTraceElement st -> stacktracePatterns.any {
+                    st =~ it
+                }
+            }
+
+            if (!cause) {
+                log.warn "cannot find patterns in stacktrace for $msg"
+            } else {
+                log.info "${'x' * depth} $msg caused by ($cause)"
             }
         }
-
-        if (!cause) {
-            log.warn "cannot find patterns in stacktrace for $msg"
-        } else {
-            log.info "${'x' * depth} $msg caused by ($cause)"
-        }
-
-
-
     }
 }

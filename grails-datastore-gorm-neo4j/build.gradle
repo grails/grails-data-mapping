@@ -13,10 +13,14 @@ repositories {
 }
 
 dependencies {
-    compile "org.neo4j:neo4j-community:$neo4jVersion",
-            "org.neo4j:neo4j-kernel:$neo4jVersion",
+    compile "org.neo4j:neo4j-community:$neo4jVersion", {
+        artifact {
+            name = 'neo4j-community' //artifact name different than module name
+            type = 'pom'
+        }
+    }
+    compile "org.neo4j:neo4j-kernel:$neo4jVersion",
             "org.neo4j:neo4j-graphviz:$neo4jVersion",
-            "org.codehaus.groovy:groovy-all:$groovyVersion",
             "org.neo4j:neo4j-jdbc:2.1.4",
             'org.apache.tomcat:tomcat-jdbc:8.0.20'
 
@@ -59,8 +63,16 @@ dependencies {
 }
 
 test {
-    maxParallelForks = 2
-    forkEvery = 30
-    maxHeapSize = "2048M"
+    if(System.getenv('TRAVIS')) {
+        maxParallelForks = 2
+        forkEvery = 15
+        maxHeapSize = "256M"
+    }
+    else {
+        maxParallelForks = 2
+        forkEvery = 15
+        maxHeapSize = "2048M"
+    }
+
 }
 

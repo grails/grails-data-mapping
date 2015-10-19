@@ -1,8 +1,7 @@
 package org.grails.datastore.gorm.timestamp
 
 import grails.spring.BeanBuilder
-
-import org.grails.spring.beans.factory.InstanceFactoryBean
+import org.grails.datastore.gorm.bootstrap.support.InstanceFactoryBean
 
 import spock.lang.Specification
 

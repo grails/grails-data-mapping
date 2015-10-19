@@ -19,10 +19,10 @@ import com.mongodb.MongoClientOptions
 import com.mongodb.MongoOptions
 import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
 import groovy.transform.CompileStatic
-import org.grails.compiler.gorm.GormTransformer
 import org.grails.config.PropertySourcesConfig
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.mapping.mongo.MongoDatastore
+import org.grails.datastore.mapping.reflect.AstUtils
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
@@ -84,7 +84,7 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
             @Override
             protected void scanForPersistentClasses() {
                 super.scanForPersistentClasses()
-                def entityNames = GormTransformer.getKnownEntityNames()
+                def entityNames = AstUtils.getKnownEntityNames()
                 for (entityName in entityNames) {
                     try {
 

@@ -2,7 +2,6 @@
 dependencies {
     compile "org.mongodb:mongodb-driver:3.0.2"
     compile "org.mongodb:mongodb-driver-async:3.0.2"
-    compile("org.grails:grails-async:$grailsVersion")
     compile("org.grails:grails-core:$grailsVersion") {
         exclude group:'aopalliance',module:'aopalliance'
         exclude group:'commons-logging',module:'commons-logging'

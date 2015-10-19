@@ -1,0 +1,125 @@
+import org.gradle.api.internal.component.*
+import org.gradle.api.internal.artifacts.publish.*
+
+apply plugin: 'maven-publish'
+
+ext {
+    grails2Version = '2.5.1'
+    grails2GroovyVersion = '2.4.4'
+}
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+
+            def requested = details.requested
+            if(requested.group == 'org.grails' && !requested.name.startsWith('grails-datastore')) {
+                details.useVersion(grails2Version)
+            }
+        }
+    }
+}
+
+def projectName = project.name.substring(project.name.indexOf('/') + 1)
+def component = new GrailsPluginComponent(
+    project.file("grails-${projectName}-${project.version}.zip"), 
+    project.configurations.runtime.allDependencies,
+    project.tasks.findByName('grails-package-plugin')
+)
+project.getComponents().add(component)
+
+
+publishing {
+    def isBuildSnapshot = version.endsWith( "-SNAPSHOT" )
+    repositories {
+        maven {
+            credentials {
+                def u = System.getenv("ARTIFACTORY_USERNAME") ?: project.hasProperty("artifactoryPublishUsername") ? project.artifactoryPublishUsername : ''
+                def p = System.getenv("ARTIFACTORY_PASSWORD") ?: project.hasProperty("artifactoryPublishPassword") ? project.artifactoryPublishPassword : ''
+                username = u
+                password = p
+            }
+            if(isBuildSnapshot) {
+                url  "https://repo.grails.org/grails/plugins-snapshots-local"
+            }
+            else {
+                url  "https://repo.grails.org/grails/plugins-releases-local"
+            }
+
+        }
+    }    
+    publications {
+        maven(MavenPublication) {
+            
+            artifactId projectName
+            from components.java
+            artifact source:"plugin.xml",
+                     classifier:"plugin",
+                     extension:'xml'
+
+            pom.withXml {
+                def xml = asNode()
+
+                def grailsDep = xml.dependencies.dependency.find { dep -> 
+                    dep.artifactId.text() == 'grails-dependencies' 
+                }
+                if(grailsDep) {
+                    grailsDep.replaceNode {}
+                }
+                xml.children().last() + {
+                    delegate.name projectName
+                    delegate.description "GORM Implemenation for ${projectName}"
+                    delegate.url "http://grails.github.io/grails-data-mapping/latest/${projectName}/"
+
+                    delegate.licenses {
+                        delegate.license {
+                            delegate.name 'The Apache Software License, Version 2.0'
+                            delegate.url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            delegate.distribution 'repo'
+                        }
+                    }
+
+                    delegate.scm {
+                        delegate.url "https://github.com/grails/grails-data-mapping"
+                        delegate.connection 'scm:git@github.com:grails/grails-data-mapping.git'
+                        delegate.developerConnection 'scm:git@github.com:grails/grails-data-mapping.git'
+                    }
+
+
+                    delegate.developers {
+                        delegate.developer {
+                            delegate.id 'graemerocher'
+                            delegate.name 'Graeme Rocher'
+                        }
+                    }
+                }
+            }
+        }    
+    }
+}
+
+class GrailsPluginComponent implements SoftwareComponentInternal {
+
+    private final PublishArtifact artifact
+    private final DependencySet runtimeDependencies;
+
+    GrailsPluginComponent(File file, DependencySet runtimeDependencies, Object...tasks) {
+        artifact = new DefaultPublishArtifact(name, "zip", "zip", null, new Date(), file, tasks)
+        this.runtimeDependencies = runtimeDependencies
+    }
+
+    String getName() { "java" }
+    Set<Usage> getUsages() {
+        Collections.singleton new Usage() {
+            String getName() { "runtime" }            
+            Set<PublishArtifact> getArtifacts() {
+                return Collections.singleton(GrailsPluginComponent.this.artifact);
+            }
+            
+            Set<ModuleDependency> getDependencies() {
+                return GrailsPluginComponent.this.runtimeDependencies.withType(ModuleDependency.class);
+            }        
+
+        }
+    }
+}

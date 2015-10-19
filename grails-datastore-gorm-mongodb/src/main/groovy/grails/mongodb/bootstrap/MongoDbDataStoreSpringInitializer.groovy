@@ -13,27 +13,30 @@
  * limitations under the License.
  */
 package grails.mongodb.bootstrap
+
 import com.mongodb.DBAddress
 import com.mongodb.Mongo
 import com.mongodb.MongoClientOptions
 import com.mongodb.MongoClientURI
-import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
+import org.grails.datastore.gorm.bootstrap.support.InstanceFactoryBean
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.gorm.mongo.bean.factory.*
-import org.grails.spring.beans.factory.InstanceFactoryBean
+import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
+import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.GenericApplicationContext
+
 /**
  * Used to initialize GORM for MongoDB outside of Grails
  *
  * @author Graeme Rocher
  * @since 2.0
  */
-class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
+class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer {
 
     public static final String DEFAULT_DATABASE_NAME = "test"
     public static final String SETTING_DATABASE_NAME = 'grails.mongodb.databaseName'
@@ -83,6 +86,10 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
         super(configuration, persistentClasses)
     }
 
+    @Override
+    protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {
+        DatastorePersistenceContextInterceptor
+    }
 
     /**
      * Configures for an existing Mongo instance
@@ -101,7 +108,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
     @Override
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         return {
-            final config = configurationObject
+            final config = configuration
             String connectionString = config.getProperty(SETTING_CONNECTION_STRING,'') ?: null
             databaseName = config.getProperty(SETTING_DATABASE_NAME, '') ?: DEFAULT_DATABASE_NAME
             Closure defaultMapping = config.getProperty(SETTING_DEFAULT_MAPPING,Closure, this.defaultMapping)
@@ -125,7 +132,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer{
 
             gormMongoMappingContext(MongoMappingContextFactoryBean) {
                 defaultDatabaseName = databaseName
-                grailsApplication = ref(GrailsApplication.APPLICATION_ID)
+                grailsApplication = ref("grailsApplication")
                 if (defaultMapping) {
                     delegate.defaultMapping = new DefaultMappingHolder(defaultMapping)
                 }

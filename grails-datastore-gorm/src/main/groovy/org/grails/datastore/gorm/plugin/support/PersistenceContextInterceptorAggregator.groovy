@@ -16,16 +16,17 @@
 package org.grails.datastore.gorm.plugin.support
 
 import groovy.transform.CompileStatic
-
-import java.util.regex.Pattern
-
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.config.ConstructorArgumentValues
-import org.springframework.beans.factory.support.*
+import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
+import org.springframework.beans.factory.support.GenericBeanDefinition
+import org.springframework.beans.factory.support.ManagedList
 import org.springframework.core.Ordered
+import org.springframework.util.ClassUtils
+
+import java.util.regex.Pattern
 /**
  * BeanDefinitionRegistryPostProcessor that replaces multiple discovered PersistenceContextInterceptor beans with
  * a single aggregating instance. The previous multiple PersistenceContextInterceptor beans will be removed from
@@ -41,7 +42,7 @@ import org.springframework.core.Ordered
 class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryPostProcessor, Ordered {
     Pattern persistenceInterceptorBeanNamePattern = ~/^.*[pP]ersistenceInterceptor$/
     String aggregatorBeanName = 'persistenceInterceptor'
-    Class aggregatorBeanClass = AggregatePersistenceContextInterceptor
+    Class aggregatorBeanClass = ClassUtils.forName("org.grails.datastore.gorm.plugin.support.AggregatePersistenceContextInterceptor", Thread.currentThread().contextClassLoader)
     int order = 500
 
     void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {

@@ -10,7 +10,7 @@ import grails.gorm.tests.*
  */
 @RunWith(Suite)
 @SuiteClasses([
-DetachedCriteriaSpec
+ValidationSpec
 ])
 class SimpleMapTestSuite {
 }

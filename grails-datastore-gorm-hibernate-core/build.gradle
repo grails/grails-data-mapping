@@ -1,5 +1,4 @@
 dependencies {
-    compile("org.grails:grails-async:$grailsVersion")
     compile("org.grails:grails-core:$grailsVersion") {
         exclude group:'aopalliance',module:'aopalliance'
         exclude group:'commons-logging',module:'commons-logging'
@@ -45,6 +44,15 @@ dependencies {
         exclude group: 'org.grails', module:'grails-bootstrap'
         exclude group: 'org.grails', module:'grails-core'
         exclude group: 'org.grails', module:'grails-async'
+        exclude group: 'org.grails', module:'grails-plugin-testing'
+        exclude group: 'org.slf4j', module:'jcl-over-slf4j'
+        exclude group: 'org.slf4j', module:'jul-to-slf4j'
+        exclude group: 'org.slf4j', module:'slf4j-api'
+        exclude group: 'org.slf4j', module:'slf4j-simple'
+    }
+    compile(project(":grails-datastore-gorm-support")) {
+        exclude group: 'org.grails', module:'grails-bootstrap'
+        exclude group: 'org.grails', module:'grails-core'
         exclude group: 'org.grails', module:'grails-plugin-testing'
         exclude group: 'org.slf4j', module:'jcl-over-slf4j'
         exclude group: 'org.slf4j', module:'jul-to-slf4j'

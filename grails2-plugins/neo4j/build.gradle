@@ -1,0 +1,39 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.grails:grails-gradle-plugin:2.2.0.RC1"
+    }
+}
+
+group "org.grails.plugins"
+apply plugin: "grails"
+apply from:'../gradle/publishing.gradle'
+
+grails {
+    grailsVersion = grails2Version
+    groovyVersion = grails2GroovyVersion
+}
+
+
+repositories {
+    maven { url "http://m2.neo4j.org/content/repositories/releases/" }
+}
+
+
+dependencies {
+    compile project(':grails-datastore-core')
+    compile project(':grails-datastore-gorm')
+    compile project(':grails-datastore-gorm-neo4j'), {
+        exclude group:'org.grails',module:'grails-datastore-gorm-support'
+        exclude group:'org.grails',module:'grails-datastore-gorm-plugin-support'
+        exclude group:'org.grails',module:'grails-core'
+        exclude group:'org.grails',module:'grails-bootstrap'
+        exclude group:'org.grails',module:'grails-async'
+    }
+    compile project(':grails-datastore-gorm-grails2-support')
+
+    test "org.spockframework:spock-core:1.0-groovy-2.4"
+    provided 'javax.servlet:javax.servlet-api:3.1.0'
+}

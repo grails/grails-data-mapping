@@ -15,17 +15,24 @@
 
 package org.grails.datastore.gorm.validation.constraints
 
-import grails.util.GrailsNameUtils
-
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.validation.AbstractConstraint
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.EntityPersister
+import org.grails.datastore.mapping.reflect.NameUtils
 import org.springframework.validation.Errors
 
 /**
  * Implementation of the unique constraint for the datastore abstraction.
+ *
+ * Note: Uses the deprecated Grails 2.x APIs to maintain compatibility, change to 3.x APIs in the future
+ *
+ * @author Graeme Rocher
+ *
  */
+@CompileStatic
 class UniqueConstraint extends AbstractConstraint {
 
     Datastore datastore
@@ -38,13 +45,13 @@ class UniqueConstraint extends AbstractConstraint {
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
         withManualFlushMode { Session session ->
 
-            EntityPersister persister = session.getPersister(target)
+            EntityPersister persister = (EntityPersister)session.getPersister(target)
             def id = getIdentifier(target, persister)
             if (constraintParameter instanceof Boolean) {
                 if (constraintParameter) {
                     if (propertyValue != null) {
 
-                        final existing = constraintOwningClass."findBy${GrailsNameUtils.getClassName(constraintPropertyName, '')}"(propertyValue)
+                        final existing = findExistingSimple(propertyValue)
                         if (existing != null) {
                             def existingId = getIdentifier(existing, persister)
                             if (id != existingId) {
@@ -64,14 +71,9 @@ class UniqueConstraint extends AbstractConstraint {
                     group.add(constraintParameter.toString())
                 }
 
-                def notIncludeNull = group.every { target[it] != null }
+                def notIncludeNull = isNotIncludeNulls(group, target)
                 if (notIncludeNull) {
-                    def existing = constraintOwningClass.createCriteria().get {
-                        eq constraintPropertyName, propertyValue
-                        for (prop in group) {
-                            eq prop, target[prop]
-                        }
-                    }
+                    def existing = findExisting(group, propertyValue, target)
                     if (existing) {
                         def existingId = getIdentifier(existing, persister)
                         if (id != existingId) {
@@ -84,6 +86,27 @@ class UniqueConstraint extends AbstractConstraint {
         }
     }
 
+    @CompileDynamic
+    private Object findExistingSimple(Object propertyValue) {
+        constraintOwningClass."findBy${NameUtils.capitalize(constraintPropertyName)}"(propertyValue)
+    }
+
+    @CompileDynamic
+    private boolean isNotIncludeNulls(List group, target) {
+        group.every { target[it] != null }
+    }
+
+    @CompileDynamic
+    private Object findExisting(List group, propertyValue, target) {
+        def existing = constraintOwningClass.createCriteria().get {
+            eq constraintPropertyName, propertyValue
+            for (prop in group) {
+                eq prop, target[prop]
+            }
+        }
+        return existing
+    }
+
     private Serializable getIdentifier(target, EntityPersister persister) {
         if (target == null) {
             return
@@ -92,7 +115,7 @@ class UniqueConstraint extends AbstractConstraint {
         if (persister == null) {
             def entity = datastore.mappingContext.getPersistentEntity(target.class.name)
             if (entity != null) {
-                return target[entity.identity.name]
+                return (Serializable)target[entity.identity.name]
             }
         }
         else {
@@ -100,6 +123,7 @@ class UniqueConstraint extends AbstractConstraint {
         }
     }
 
+    @CompileDynamic
     def withManualFlushMode(Closure callable) {
         constraintOwningClass.withSession { Session session ->
             final flushMode = session.getFlushMode()

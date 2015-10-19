@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
-import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.event.*;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -208,7 +207,7 @@ public class DomainEventListener extends AbstractPersistenceEventListener
 
     public void afterLoad(final PersistentEntity entity, final EntityAccess ea, PostLoadEvent event) {
         activateDirtyChecking(ea);
-        if ( entity.getMapping().getMappedForm().isAutowire() ) {
+        if (entity != null &&  entity.getMapping().getMappedForm().isAutowire() ) {
             autowireBeanProperties(ea.getEntity());
         }
         invokeEvent(EVENT_AFTER_LOAD, entity, ea, event);

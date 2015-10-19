@@ -19,15 +19,16 @@ package grails.neo4j.bootstrap
 import groovy.transform.InheritConstructors
 import org.apache.tomcat.jdbc.pool.DataSource
 import org.apache.tomcat.jdbc.pool.PoolProperties
-import org.grails.config.PropertySourcesConfig
-import org.grails.core.support.ClassEditor
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
 import org.grails.datastore.gorm.neo4j.engine.JdbcCypherEngine
+import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
+import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.springframework.beans.factory.config.CustomEditorConfigurer
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.beans.propertyeditors.ClassEditor
 
 
 /**
@@ -38,6 +39,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
 class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
     static String neo4jDefaultLocation = "data/neo4j"
     public static final String JDBC_NEO4J_PREFIX = "jdbc:neo4j:instance:"
+
+    @Override
+    protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {
+        DatastorePersistenceContextInterceptor
+    }
 
     @Override
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
@@ -56,7 +62,9 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
 
             def m = neo4jUrl =~ /$JDBC_NEO4J_PREFIX(\w+)/
 
-            if (m.matches()) {
+
+            def usingJdbc = m.matches()
+            if (usingJdbc) {
 
                 def instanceName = m[0][1]
 
@@ -69,7 +77,7 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
                 graphDbFactory(factoryClazz)
                 graphDbBuilder(graphDbFactory : factoryMethodName,  neo4jLocation)
 
-                graphDbBuilderFinal(graphDbBuilder: "setConfig", dbProperties ?: [:])
+                graphDbBuilderFinal(graphDbBuilder: "setConfig", new HashMap<>(dbProperties) ?: [:])
                 graphDatabaseService(graphDbBuilderFinal: "newGraphDatabase") { bean ->
                     bean.destroyMethod = 'shutdown'
                 }
@@ -95,7 +103,14 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
                 bean.destroyMethod = 'close'
             }
 
-            cypherEngine(JdbcCypherEngine, neo4jDataSource)
+            // reverting the change done for fixing GRAILS-11112
+            // since we supply a GraphDatabaseService instance to dbProperties we do not want
+            // it being converted to a String
+            customEditors(CustomEditorConfigurer) {
+                customEditors = [(Class.name): ClassEditor.name ]
+            }
+
+            cypherEngine(JdbcCypherEngine,  neo4jDataSource, usingJdbc ? ref("graphDatabaseService") : null)
 
             neo4jMappingContext(Neo4jMappingContextFactoryBean) {
                 grailsApplication = ref('grailsApplication')
@@ -105,21 +120,14 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
             neo4jDatastore(Neo4jDatastoreFactoryBean) {
                 cypherEngine = cypherEngine
                 mappingContext = neo4jMappingContext
-
             }
 
-            // reverting the change done for fixing GRAILS-11112
-            // since we supply a GraphDatabaseService instance to dbProperties we do not want
-            // it being converted to a String
-            customEditors(CustomEditorConfigurer) {
-                customEditors = [(Class.name): ClassEditor.name ]
-            }
+            // TODO: Reinstate property transaction management
+//            callable = getAdditionalBeansConfiguration(beanDefinitionRegistry, "neo4j")
+//            callable.delegate = delegate
+//            callable.call()
 
-            callable = getAdditionalBeansConfiguration(beanDefinitionRegistry, "neo4j")
-            callable.delegate = delegate
-            callable.call()
-
-            "org.grails.gorm.neo4j.internal.GORM_ENHANCER_BEAN-neo4j"(Neo4jGormEnhancer, ref("neo4jDatastore"), ref("neo4jTransactionManager")) { bean ->
+            "org.grails.gorm.neo4j.internal.GORM_ENHANCER_BEAN-neo4j"(Neo4jGormEnhancer, ref("neo4jDatastore")/*, ref("neo4jTransactionManager")*/) { bean ->
                 bean.initMethod = 'enhance'
                 bean.lazyInit = false
                 includeExternal = !secondaryDatastore

@@ -15,8 +15,14 @@
 package org.grails.datastore.mapping.reflect;
 
 import java.beans.Introspector;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.codehaus.groovy.runtime.MetaClassHelper;
+import org.grails.datastore.mapping.model.config.GormProperties;
+import org.springframework.util.CollectionUtils;
 
 /**
  * @author Graeme Rocher
@@ -27,6 +33,38 @@ public class NameUtils {
     private static final String PROPERTY_SET_PREFIX = "set";
     private static final String PROPERTY_GET_PREFIX = "get";
     private static final String PROPERTY_IS_PREFIX = "is";
+
+    private static final Set<String> CONFIGURATIONAL_PROPERTIES;
+    static {
+        Set<String> configurational = new HashSet<String>( Arrays.asList(
+                GormProperties.META_CLASS,
+                GormProperties.CLASS,
+                GormProperties.TRANSIENT,
+                GormProperties.ATTACHED,
+                GormProperties.DIRTY,
+                GormProperties.DIRTY_PROPERTY_NAMES,
+                GormProperties.HAS_MANY,
+                GormProperties.CONSTRAINTS,
+                GormProperties.MAPPING_STRATEGY,
+                GormProperties.MAPPED_BY,
+                GormProperties.BELONGS_TO,
+                GormProperties.ERRORS,
+                "transactionManager",
+                "dataSource",
+                "sessionFactory",
+                "messageSource",
+                "applicationContext",
+                "properties") );
+        CONFIGURATIONAL_PROPERTIES = Collections.unmodifiableSet(configurational);
+    }
+
+    public static boolean isConfigurational(String name) {
+        return CONFIGURATIONAL_PROPERTIES.contains(name);
+    }
+
+    public static boolean isNotConfigurational(String name) {
+        return !isConfigurational(name);
+    }
 
     /**
      * Retrieves the name of a setter for the specified property name

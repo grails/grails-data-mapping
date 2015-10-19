@@ -191,10 +191,10 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     }
 
     public ClassMapping<T> getMapping() {
-        return new AbstractClassMapping<T>(this, context) {
+        return new AbstractClassMapping<Entity>(this, context) {
             @Override
-            public T getMappedForm() {
-                return null;
+            public Entity getMappedForm() {
+                return new Entity();
             }
         };
     }

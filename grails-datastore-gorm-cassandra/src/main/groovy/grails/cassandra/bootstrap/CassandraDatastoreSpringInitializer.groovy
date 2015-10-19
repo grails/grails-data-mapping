@@ -22,6 +22,8 @@ import org.grails.datastore.gorm.cassandra.CassandraGormEnhancer
 import org.grails.datastore.gorm.cassandra.bean.factory.CassandraDatastoreFactoryBean
 import org.grails.datastore.gorm.cassandra.bean.factory.CassandraMappingContextFactoryBean
 import org.grails.datastore.gorm.cassandra.bean.factory.DefaultMappingHolder
+import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
+import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.grails.datastore.mapping.cassandra.CassandraDatastore
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
@@ -32,6 +34,12 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
  */
 @InheritConstructors
 class CassandraDatastoreSpringInitializer extends AbstractDatastoreInitializer {
+
+    @Override
+    protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {
+        DatastorePersistenceContextInterceptor
+    }
+
     @Override
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         {->

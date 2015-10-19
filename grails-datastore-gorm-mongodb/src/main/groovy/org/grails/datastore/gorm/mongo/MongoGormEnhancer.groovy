@@ -14,10 +14,12 @@
  */
 package org.grails.datastore.gorm.mongo
 
+import groovy.transform.CompileDynamic
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
+import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
 /**
@@ -30,6 +32,7 @@ class MongoGormEnhancer extends GormEnhancer {
     MongoGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
         super(datastore, transactionManager)
 
+
         DynamicFinder.registerNewMethodExpression(NearSphere)
         DynamicFinder.registerNewMethodExpression(Near)
         DynamicFinder.registerNewMethodExpression(WithinBox)
@@ -37,6 +40,13 @@ class MongoGormEnhancer extends GormEnhancer {
         DynamicFinder.registerNewMethodExpression(WithinCircle)
         DynamicFinder.registerNewMethodExpression(GeoWithin)
         DynamicFinder.registerNewMethodExpression(GeoIntersects)
+    }
+
+    @Override
+    @CompileDynamic
+    protected void registerConstraints(Datastore datastore) {
+        super.registerConstraints(datastore)
+//        ConstrainedProperty.registerNewConstraint("unique", new UniqueConstraintFactory(datastore));
     }
 
     MongoGormEnhancer(Datastore datastore) {

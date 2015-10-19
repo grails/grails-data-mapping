@@ -14,7 +14,6 @@
  */
 package org.grails.datastore.gorm.cassandra.bean.factory
 
-import grails.core.GrailsDomainClass
 import groovy.transform.Canonical
 
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean

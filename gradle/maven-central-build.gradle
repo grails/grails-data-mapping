@@ -44,7 +44,7 @@ publishing {
                     password = p
                 }
                 if(isGrailsPlugin) {
-                    url  "https://repo.grails.org/grails/plugins3-snapshots-local"
+                    url  "https://repo.grails.org/grails/plugins-snapshots-local"
                 }
                 else {
                     url  "https://repo.grails.org/grails/libs-snapshots-local"

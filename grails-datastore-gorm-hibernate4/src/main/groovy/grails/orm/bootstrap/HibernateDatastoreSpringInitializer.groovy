@@ -22,7 +22,8 @@ import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
 import org.grails.config.NavigableMap
-import org.grails.config.PropertySourcesConfig
+import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
+import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.grails.datastore.mapping.engine.event.DatastoreInitializedEvent
 import org.grails.orm.hibernate.*
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
@@ -91,6 +92,11 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
     HibernateDatastoreSpringInitializer(Map hibernateProperties, Class... persistentClasses) {
         super(hibernateProperties, persistentClasses.toList())
+    }
+
+    @Override
+    protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {
+        DatastorePersistenceContextInterceptor
     }
 
     @CompileStatic
@@ -266,7 +272,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 }
 
 
-                "hibernateDatastore$suffix"(HibernateDatastore, ref('grailsDomainClassMappingContext'), ref(sessionFactoryName), configurationObject)
+                "hibernateDatastore$suffix"(HibernateDatastore, ref('grailsDomainClassMappingContext'), ref(sessionFactoryName), configuration)
 
                 if (!beanDefinitionRegistry.containsBeanDefinition("transactionManager")) {
                     "transactionManager$suffix"(GrailsHibernateTransactionManager) { bean ->

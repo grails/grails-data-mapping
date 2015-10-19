@@ -22,6 +22,12 @@ package org.grails.datastore.mapping.model.config;
  */
 public interface GormProperties {
     String IDENTITY = "id";
+    String ERRORS = "errors";
+    String ATTACHED = "attached";
+    String CLASS = "class";
+    String META_CLASS = "metaClass";
+    String DIRTY = "dirty";
+    String DIRTY_PROPERTY_NAMES = "dirtyPropertyNames";
     String VERSION = "version";
     String TRANSIENT = "transients";
     String MAPPING_STRATEGY = "mapWith";

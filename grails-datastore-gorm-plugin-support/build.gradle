@@ -1,6 +1,7 @@
 dependencies {
 
     compile project(":grails-datastore-gorm")
+    compile project(":grails-datastore-gorm-support")
     compile project(":grails-datastore-web")
     compile("org.grails:grails-spring:$grailsVersion")
     compile("org.grails:grails-core:$grailsVersion") {

@@ -9,8 +9,9 @@ buildscript {
 }
 
 plugins {
-    id "io.spring.dependency-management" version "0.4.0.RELEASE"
+    id "io.spring.dependency-management" version "0.5.2.RELEASE"
 }
+
 
 ext {
     isGrailsPlugin = true
@@ -53,7 +54,6 @@ dependencies {
         exclude group:'org.grails', module:'grails-bootstrap'
         exclude group:'org.codehaus.groovy', module:'groovy-all'
         exclude group:'org.grails', module:'grails-core'
-        exclude group:'org.grails', module:'grails-async'
         exclude group:'javax.transaction', module:'jta'
     }
 }

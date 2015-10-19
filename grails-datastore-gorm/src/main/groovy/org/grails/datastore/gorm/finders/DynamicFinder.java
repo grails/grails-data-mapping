@@ -15,7 +15,6 @@
 package org.grails.datastore.gorm.finders;
 
 import grails.gorm.DetachedCriteria;
-import grails.util.GrailsClassUtils;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 
@@ -48,6 +47,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.Basic;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
+import org.grails.datastore.mapping.reflect.ClassUtils;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.StringUtils;
@@ -389,10 +389,10 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         }
 
         if(argMap.containsKey(ARGUMENT_CACHE)) {
-            q.cache(GrailsClassUtils.getBooleanFromMap(ARGUMENT_CACHE, argMap));
+            q.cache(ClassUtils.getBooleanFromMap(ARGUMENT_CACHE, argMap));
         }
         if(argMap.containsKey(ARGUMENT_LOCK)) {
-            q.lock(GrailsClassUtils.getBooleanFromMap(ARGUMENT_LOCK, argMap));
+            q.lock(ClassUtils.getBooleanFromMap(ARGUMENT_LOCK, argMap));
         }
 
         final int max = maxParam == null ? -1 : maxParam;
@@ -404,7 +404,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             q.offset(offset);
         }
         Object sortObject = argMap.get(ARGUMENT_SORT);
-        boolean ignoreCase = !argMap.containsKey(ARGUMENT_IGNORE_CASE) || GrailsClassUtils.getBooleanFromMap(ARGUMENT_IGNORE_CASE, argMap);
+        boolean ignoreCase = !argMap.containsKey(ARGUMENT_IGNORE_CASE) || ClassUtils.getBooleanFromMap(ARGUMENT_IGNORE_CASE, argMap);
 
         if (sortObject != null) {
             if(sortObject instanceof CharSequence) {

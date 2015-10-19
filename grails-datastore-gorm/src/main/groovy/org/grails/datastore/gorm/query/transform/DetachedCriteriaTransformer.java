@@ -14,11 +14,7 @@
  */
 package org.grails.datastore.gorm.query.transform;
 
-import grails.core.GrailsDomainClassProperty;
 import grails.gorm.DetachedCriteria;
-import grails.persistence.Entity;
-import grails.util.GrailsClassUtils;
-import grails.util.GrailsNameUtils;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -69,13 +65,14 @@ import org.codehaus.groovy.ast.stmt.*;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.messages.LocatedMessage;
 import org.codehaus.groovy.transform.trait.Traits;
-import org.grails.compiler.injection.GrailsASTUtils;
 import org.codehaus.groovy.syntax.Token;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
+import org.grails.datastore.mapping.reflect.AstUtils;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.NameUtils;
-import org.grails.io.support.GrailsResourceUtils;
+import org.grails.datastore.mapping.reflect.ReflectionUtils;
 
 /**
  * ClassCodeVisitorSupport that transforms where methods into detached criteria queries
@@ -250,7 +247,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     protected ClassNode getParameterizedDetachedCriteriaClassNode(ClassNode classNode) {
         ClassNode detachedCriteriaClassNode = DETACHED_CRITERIA_CLASS_NODE.getPlainNodeReference();
         if (classNode != null) {
-            detachedCriteriaClassNode.setGenericsTypes(new GenericsType[]{new GenericsType(GrailsASTUtils.nonGeneric(classNode))});
+            detachedCriteriaClassNode.setGenericsTypes(new GenericsType[]{new GenericsType(AstUtils.nonGeneric(classNode))});
         }
         return detachedCriteriaClassNode;
     }
@@ -516,8 +513,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         Map<String, ClassNode> cachedProperties = cachedClassProperties.get(className);
         if (cachedProperties == null) {
             cachedProperties = new HashMap<String, ClassNode>();
-            cachedProperties.put(GrailsDomainClassProperty.IDENTITY, new ClassNode(Long.class));
-            cachedProperties.put(GrailsDomainClassProperty.VERSION, new ClassNode(Long.class));
+            cachedProperties.put(GormProperties.IDENTITY, new ClassNode(Long.class));
+            cachedProperties.put(GormProperties.VERSION, new ClassNode(Long.class));
             cachedClassProperties.put(className, cachedProperties);
             ClassNode currentNode = classNode;
             while (currentNode != null && !currentNode.equals(ClassHelper.OBJECT_TYPE)) {
@@ -534,7 +531,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             String methodName = method.getName();
             if (!method.isAbstract() && isGetter(methodName, method)) {
                 String propertyName = NameUtils.getPropertyNameForGetterOrSetter(methodName);
-                if (GrailsDomainClassProperty.HAS_MANY.equals(propertyName) || GrailsDomainClassProperty.BELONGS_TO.equals(propertyName) || GrailsDomainClassProperty.HAS_ONE.equals(propertyName)) {
+                if (GormProperties.HAS_MANY.equals(propertyName) || GormProperties.BELONGS_TO.equals(propertyName) || GormProperties.HAS_ONE.equals(propertyName)) {
                     FieldNode field = classNode.getField(propertyName);
                     if (field != null) {
                         populatePropertiesForInitialExpression(cachedProperties, field.getInitialExpression());
@@ -548,7 +545,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         for (PropertyNode property : properties) {
 
             String propertyName = property.getName();
-            if (GrailsDomainClassProperty.HAS_MANY.equals(propertyName) || GrailsDomainClassProperty.BELONGS_TO.equals(propertyName) || GrailsDomainClassProperty.HAS_ONE.equals(propertyName)) {
+            if (GormProperties.HAS_MANY.equals(propertyName) || GormProperties.BELONGS_TO.equals(propertyName) || GormProperties.HAS_ONE.equals(propertyName)) {
                 Expression initialExpression = property.getInitialExpression();
                 populatePropertiesForInitialExpression(cachedProperties, initialExpression);
             } else {
@@ -558,9 +555,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
         if (classNode.isResolved()) {
             ClassPropertyFetcher propertyFetcher = ClassPropertyFetcher.forClass(classNode.getTypeClass());
-            cachePropertiesForAssociationMetadata(cachedProperties, propertyFetcher, GrailsDomainClassProperty.HAS_MANY);
-            cachePropertiesForAssociationMetadata(cachedProperties, propertyFetcher, GrailsDomainClassProperty.BELONGS_TO);
-            cachePropertiesForAssociationMetadata(cachedProperties, propertyFetcher, GrailsDomainClassProperty.HAS_ONE);
+            cachePropertiesForAssociationMetadata(cachedProperties, propertyFetcher, GormProperties.HAS_MANY);
+            cachePropertiesForAssociationMetadata(cachedProperties, propertyFetcher, GormProperties.BELONGS_TO);
+            cachePropertiesForAssociationMetadata(cachedProperties, propertyFetcher, GormProperties.HAS_ONE);
         }
 
     }
@@ -832,7 +829,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         if (property != null) {
             type = property.getType();
         } else {
-            MethodNode methodNode = currentClassNode.getMethod(GrailsNameUtils.getGetterName(prop), new Parameter[0]);
+            MethodNode methodNode = currentClassNode.getMethod(NameUtils.getGetterName(prop), new Parameter[0]);
             if (methodNode != null) {
                 type = methodNode.getReturnType();
             } else {
@@ -1330,7 +1327,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         String filePath = classNode.getModule() != null ? classNode.getModule().getDescription() : null;
         if (filePath != null) {
             try {
-                if (GrailsResourceUtils.isDomainClass(new File(filePath).toURI().toURL())) {
+                if (AstUtils.isDomainClass(new File(filePath).toURI().toURL())) {
                     return true;
                 }
             } catch (MalformedURLException e) {
@@ -1341,7 +1338,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         if (annotations != null && !annotations.isEmpty()) {
             for (AnnotationNode annotation : annotations) {
                 String className = annotation.getClassNode().getName();
-                if (Entity.class.getName().equals(className)) {
+                if ("grails.persistence.Entity".equals(className)) {
                     return true;
                 }
                 if (javax.persistence.Entity.class.getName().equals(className)) {
@@ -1358,7 +1355,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     private boolean isGetter(String methodName, MethodNode declaredMethod) {
-        return declaredMethod.getParameters().length == 0 && GrailsClassUtils.isGetter(methodName, EMPTY_JAVA_CLASS_ARRAY);
+        return declaredMethod.getParameters().length == 0 && ReflectionUtils.isGetter(methodName, EMPTY_JAVA_CLASS_ARRAY);
     }
 
     private class ClosureAndArguments {

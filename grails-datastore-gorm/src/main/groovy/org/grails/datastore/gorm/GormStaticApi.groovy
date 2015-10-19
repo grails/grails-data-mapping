@@ -17,10 +17,10 @@ package org.grails.datastore.gorm
 import grails.gorm.CriteriaBuilder
 import grails.gorm.DetachedCriteria
 import grails.gorm.PagedResultList
+import grails.gorm.transactions.GrailsTransactionTemplate
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 
-import org.codehaus.groovy.grails.orm.support.GrailsTransactionTemplate
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
@@ -30,6 +30,7 @@ import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.core.StatelessDatastore
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
@@ -840,7 +841,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Creates and binds a new session for the scope of the given closure
      */
     def withStatelessSession(Closure callable) {
-        if(datastore instanceof org.grails.datastore.mapping.core.StatelessDatastore) {
+        if(datastore instanceof StatelessDatastore) {
             def session = datastore.connectStateless()
             try {
                 DatastoreUtils.bindNewSession session

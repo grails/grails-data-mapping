@@ -18,6 +18,7 @@ package org.grails.datastore.gorm.mongo.bean.factory
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
+import org.grails.datastore.mapping.config.utils.PropertyResolverMap
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
@@ -26,6 +27,7 @@ import org.grails.datastore.mapping.mongo.MongoDatastore
 
 import com.mongodb.Mongo
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.core.env.PropertyResolver
 
 /**
  * Factory bean for constructing a {@link MongoDatastore} instance.
@@ -37,7 +39,7 @@ class MongoDatastoreFactoryBean implements FactoryBean<MongoDatastore>, Applicat
 
     Mongo mongo
     MongoMappingContext mappingContext
-    Map<String,String> config = [:]
+    PropertyResolver config
     ApplicationContext applicationContext
 
     MongoDatastore getObject() {
@@ -46,10 +48,10 @@ class MongoDatastoreFactoryBean implements FactoryBean<MongoDatastore>, Applicat
 
         def configurableApplicationContext = (ConfigurableApplicationContext) applicationContext
         if (mongo) {
-            datastore = new MongoDatastore(mappingContext, mongo, config, configurableApplicationContext)
+            datastore = new MongoDatastore(mappingContext, mongo, new PropertyResolverMap(config), configurableApplicationContext)
         }
         else {
-            datastore = new MongoDatastore(mappingContext, config, configurableApplicationContext)
+            datastore = new MongoDatastore(mappingContext, new PropertyResolverMap(config), configurableApplicationContext)
         }
 
 

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Provides methods to help with reflective operations
@@ -193,4 +194,40 @@ public class ReflectionUtils {
     private static boolean isTypeInstanceOfPropertyType(Class<?> type, Class<?> propertyType) {
         return propertyType.isAssignableFrom(type) && !propertyType.equals(Object.class);
     }
+
+    /**
+     * Returns true if the name of the method specified and the number of arguments make it a javabean property
+     *
+     * @param name True if its a Javabean property
+     * @param args The arguments
+     * @return true if it is a javabean property method
+     */
+    public static boolean isGetter(String name, Class<?>[] args) {
+        if (!StringUtils.hasText(name) || args == null)return false;
+        if (args.length != 0)return false;
+
+        if (name.startsWith("get")) {
+            name = name.substring(3);
+            if (name.length() > 0 && Character.isUpperCase(name.charAt(0))) return true;
+        }
+        else if (name.startsWith("is")) {
+            name = name.substring(2);
+            if (name.length() > 0 && Character.isUpperCase(name.charAt(0))) return true;
+        }
+        return false;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static boolean isSetter(String name, Class[] args) {
+        if (!StringUtils.hasText(name) || args == null)return false;
+
+        if (name.startsWith("set")) {
+            if (args.length != 1) return false;
+            name = name.substring(3);
+            if (name.length() > 0 && Character.isUpperCase(name.charAt(0))) return true;
+        }
+
+        return false;
+    }
+
 }

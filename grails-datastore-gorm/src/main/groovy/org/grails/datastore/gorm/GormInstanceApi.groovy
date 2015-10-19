@@ -14,7 +14,6 @@
  */
 package org.grails.datastore.gorm
 
-import grails.validation.ValidationException
 import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -24,6 +23,8 @@ import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.proxy.EntityProxy
+import org.grails.datastore.mapping.validation.ValidationException
+import org.springframework.util.ClassUtils
 
 /**
  * Instance methods of the GORM API.
@@ -34,11 +35,18 @@ import org.grails.datastore.mapping.proxy.EntityProxy
 @CompileStatic
 class GormInstanceApi<D> extends AbstractGormApi<D> {
 
+
+
     Class<? extends Exception> validationException = ValidationException
     boolean failOnError = false
 
     GormInstanceApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
+
+        def cl = Thread.currentThread().contextClassLoader
+        if(ClassUtils.isPresent("grails.validation.ValidationException", cl)) {
+            validationException = (Class<? extends Exception>) ClassUtils.forName("grails.validation.ValidationException", cl)
+        }
     }
 
     /**

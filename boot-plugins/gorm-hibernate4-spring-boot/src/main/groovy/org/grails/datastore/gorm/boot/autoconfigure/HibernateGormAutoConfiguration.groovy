@@ -16,16 +16,13 @@ package org.grails.datastore.gorm.boot.autoconfigure
 
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import groovy.transform.CompileStatic
-import org.grails.compiler.gorm.GormTransformer
 import org.grails.config.PropertySourcesConfig
-import org.grails.orm.hibernate.HibernateGormEnhancer
-import org.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
 import org.grails.datastore.gorm.GormEnhancer
+import org.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
 import org.hibernate.SessionFactory
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
@@ -42,7 +39,6 @@ import org.springframework.boot.bind.RelaxedPropertyResolver
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.EnvironmentAware
-import org.springframework.context.MessageSource
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
@@ -53,7 +49,6 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.core.type.AnnotationMetadata
 
 import javax.sql.DataSource
-
 /**
  * Auto configuration for GORM for Hibernate
  *

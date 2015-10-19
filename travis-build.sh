@@ -27,7 +27,7 @@ case "$GORM_IMPL"  in
         ;;
     *)
         ./gradlew testClasses || EXIT_STATUS=$?
-        ./gradlew grails-datastore-gorm-test:test || EXIT_STATUS=$?
+        ./gradlew grails-datastore-gorm:test grails-datastore-gorm-test:test || EXIT_STATUS=$?
         ;;
 esac
 
