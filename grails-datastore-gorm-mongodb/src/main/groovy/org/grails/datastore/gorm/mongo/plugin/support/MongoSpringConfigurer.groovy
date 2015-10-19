@@ -30,6 +30,7 @@ import com.mongodb.DBAddress
  * @author Graeme Rocher
  * @since 1.0
  */
+@Deprecated
 class MongoSpringConfigurer extends SpringConfigurer {
     @Override
     String getDatastoreType() {

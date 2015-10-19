@@ -5,6 +5,7 @@ import grails.core.DefaultGrailsApplication
 import grails.core.GrailsApplication
 import grails.plugins.DefaultGrailsPluginManager
 import org.grails.core.artefact.DomainClassArtefactHandler
+import spock.lang.Ignore
 import spock.lang.Specification
 import grails.spring.BeanBuilder
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
@@ -12,6 +13,7 @@ import grails.gorm.tests.Person
 
 /**
  */
+@Ignore // ignored because deprecated
 class MongoSpringConfigurerSpec extends Specification{
 
     void "Test configure mongo via Spring for connection string"() {
