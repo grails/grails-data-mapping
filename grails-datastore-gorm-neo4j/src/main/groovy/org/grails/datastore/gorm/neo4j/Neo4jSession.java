@@ -1,6 +1,6 @@
 package org.grails.datastore.gorm.neo4j;
 
-import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
+import org.grails.datastore.gorm.neo4j.engine.*;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.impl.PendingInsert;

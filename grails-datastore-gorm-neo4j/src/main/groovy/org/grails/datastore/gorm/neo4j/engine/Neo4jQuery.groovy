@@ -12,17 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.neo4j
+package org.grails.datastore.gorm.neo4j.engine
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.grails.datastore.gorm.neo4j.CypherBuilder
+import org.grails.datastore.gorm.neo4j.GraphPersistentEntity
+import org.grails.datastore.gorm.neo4j.Neo4jUtils
+import org.grails.datastore.gorm.neo4j.RelationshipUtils
 import org.grails.datastore.gorm.neo4j.engine.CypherEngine
+import org.grails.datastore.gorm.neo4j.engine.Neo4jEntityPersister
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.query.AssociationQuery
 import org.grails.datastore.mapping.query.Query
-import static org.grails.datastore.mapping.query.Query.*
 
 /**
  * perform criteria queries on a Neo4j backend

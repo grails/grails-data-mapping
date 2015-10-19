@@ -13,18 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.neo4j;
+package org.grails.datastore.gorm.neo4j.mapping.reflect
+
+import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.neo4j.parsers.PlingStemmer
+import org.grails.datastore.mapping.reflect.NameUtils
+
 
 /**
- * An interface for generating unique identifiers for instances
+ * Utilities for Neo4j naming conventions
  *
- * @author Stefan
+ * @author Graeme Rocher
+ * @since 5.0
  */
-public interface IdGenerator {
+@CompileStatic
+class Neo4jNameUtils extends NameUtils {
 
-    /**
-     * @return Generate and return the next identifier
-     */
-    long nextId();
+    static boolean isPlural( String word ) {
+        PlingStemmer.isPlural(word)
+    }
 
+    static boolean isSingular( String word ) {
+        PlingStemmer.isSingular( word )
+    }
 }

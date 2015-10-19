@@ -6,7 +6,7 @@ import org.apache.tomcat.jdbc.pool.DataSource
 import org.apache.tomcat.jdbc.pool.PoolProperties
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
-import org.grails.datastore.gorm.neo4j.DumpGraphOnSessionFlushListener
+import org.grails.datastore.gorm.neo4j.internal.tools.DumpGraphOnSessionFlushListener
 import org.grails.datastore.gorm.neo4j.HashcodeEqualsAwareProxyFactory
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager

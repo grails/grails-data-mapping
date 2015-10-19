@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-import org.grails.datastore.gorm.neo4j.Neo4jEntityPersister
+import org.grails.datastore.gorm.neo4j.engine.Neo4jEntityPersister
 import spock.lang.Specification
 
 /**

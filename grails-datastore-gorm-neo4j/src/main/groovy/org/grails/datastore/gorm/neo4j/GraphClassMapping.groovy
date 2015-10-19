@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.neo4j
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.neo4j.mapping.config.Neo4jEntity
 import org.grails.datastore.mapping.model.AbstractClassMapping
 import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.model.MappingContext
@@ -17,7 +18,7 @@ class GraphClassMapping extends AbstractClassMapping<Entity> {
     }
 
     @Override
-    Entity getMappedForm() {
+    Neo4jEntity getMappedForm() {
         ((GraphPersistentEntity)entity).mappedForm
     }
 }

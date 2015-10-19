@@ -20,7 +20,7 @@ case "$GORM_IMPL"  in
         ./gradlew grails-datastore-gorm-cassandra:test || EXIT_STATUS=$?
         ;;
     neo4j)
-        ./gradlew grails-datastore-gorm-neo4j:test || EXIT_STATUS=$?
+        ./gradlew grails-datastore-gorm-neo4j:test -no-daemon -i || EXIT_STATUS=$?
         ;;
     restclient)
         ./gradlew grails-datastore-gorm-rest-client:test || EXIT_STATUS=$?

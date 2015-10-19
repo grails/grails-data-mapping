@@ -1,5 +1,7 @@
-package org.grails.datastore.gorm.neo4j;
+package org.grails.datastore.gorm.neo4j.internal.tools;
 
+import org.grails.datastore.gorm.neo4j.Neo4jUtils;
+import org.grails.datastore.gorm.neo4j.SessionFlushedEvent;
 import org.neo4j.cypher.export.DatabaseSubGraph;
 import org.neo4j.cypher.export.SubGraphExporter;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -31,8 +33,10 @@ public class DumpGraphOnSessionFlushListener implements ApplicationListener<Sess
     }
 
     public void dump() {
-        Transaction tx = graphDatabaseService.beginTx(); // TODO: refactor to try-with-resources
-        try {    // TODO: disabled due to tx issue: getallnodes sees deleted stuff in weird cases
+        // TODO: refactor to try-with-resources
+        Transaction tx = graphDatabaseService.beginTx();
+        try {
+            // TODO: disabled due to tx issue: getallnodes sees deleted stuff in weird cases
             StringWriter writer = new StringWriter();
             PrintWriter printWriter = new PrintWriter(writer);
             new SubGraphExporter(new DatabaseSubGraph(graphDatabaseService)).export(printWriter);

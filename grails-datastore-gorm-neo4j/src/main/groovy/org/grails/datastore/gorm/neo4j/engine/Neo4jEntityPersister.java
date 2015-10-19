@@ -1,9 +1,8 @@
-package org.grails.datastore.gorm.neo4j;
+package org.grails.datastore.gorm.neo4j.engine;
 
 import groovy.lang.GroovyObject;
-import org.grails.datastore.gorm.neo4j.engine.CypherEngine;
-import org.grails.datastore.gorm.neo4j.engine.CypherResult;
-import org.grails.datastore.gorm.neo4j.parsers.PlingStemmer;
+import org.grails.datastore.gorm.neo4j.*;
+import org.grails.datastore.gorm.neo4j.mapping.reflect.Neo4jNameUtils;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingList;
@@ -269,12 +268,8 @@ public class Neo4jEntityPersister extends EntityPersister {
     }
 
     private boolean isSingular(String key) {
-        return PlingStemmer.isSingular(key);
+        return Neo4jNameUtils.isSingular(key);
     }
-
-    /*private Class<Object> findJavaClassForLabels(Object labels) {
-        return null;
-    }*/
 
     @Override
     protected Serializable persistEntity(PersistentEntity pe, Object obj) {
