@@ -11,6 +11,35 @@ import spock.lang.Issue
  */
 class DirtyCheckTransformationSpec extends Specification {
 
+    void "Test dirty check with abstract inheritance"() {
+        when:"A Dirty checkable class with generic types is parsed"
+        def gcl = new GroovyClassLoader()
+        Class cls = gcl.parseClass('''
+package org.grails.datastore.gorm.dirty.checking
+
+import grails.gorm.dirty.checking.DirtyCheck
+
+
+
+@DirtyCheck
+class ChildAuthor extends Author {
+    int age
+}
+
+@DirtyCheck
+abstract class Author {
+    String name
+}
+''')
+
+        def child = cls.newInstance()
+        child.trackChanges()
+        child.name = "Stephen King"
+        then:"The generic types are retained"
+        child.hasChanged()
+        child.name == "Stephen King"
+    }
+
 
     void "Test dirty check with generic types"() {
         when:"A Dirty checkable class with generic types is parsed"

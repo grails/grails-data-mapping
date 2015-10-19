@@ -11,6 +11,7 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.syntax.Token
 import org.codehaus.groovy.syntax.Types
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.reflect.NameUtils
 import org.grails.datastore.mapping.reflect.ReflectionUtils
@@ -49,11 +50,15 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
         def superClass = classNode.getSuperClass()
         final shouldWeave = superClass.equals(OBJECT_CLASS_NODE)
 
+        def dirtyCheckableTrait = ClassHelper.make(DirtyCheckable).getPlainNodeReference()
 
+        if(!shouldWeave) {
+            shouldWeave = !classNode.implementsInterface(dirtyCheckableTrait)
+        }
 
         if(shouldWeave ) {
-            classNode.addInterface(ClassHelper.make(DirtyCheckable).getPlainNodeReference())
 
+            classNode.addInterface(dirtyCheckableTrait)
             if(compilationUnit != null) {
                 org.codehaus.groovy.transform.trait.TraitComposer.doExtendTraits(classNode, source, compilationUnit);
             }
@@ -85,6 +90,11 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
             final propertyName = pn.name
             if (!pn.isStatic() && pn.isPublic() && !NameUtils.isConfigurational(propertyName)) {
                 if(isTransient(pn.modifiers) || isFinal(pn.modifiers)) continue
+
+                // don't dirty check id or version
+                if(propertyName == GormProperties.IDENTITY || propertyName == GormProperties.VERSION) {
+                    continue
+                }
 
                 final getterAndSetter = gettersAndSetters[propertyName]
 
