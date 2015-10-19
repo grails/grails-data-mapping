@@ -5,7 +5,10 @@ import org.grails.datastore.mapping.model.types.Association;
 import java.util.*;
 
 /**
- * Created by stefan on 19.03.14.
+ * A build for Cypher queries
+ *
+ * @since 3.0
+ * @author Stefan
  */
 public class CypherBuilder {
 

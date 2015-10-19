@@ -67,6 +67,9 @@ public abstract class Association<T> extends AbstractPersistentProperty {
         return associatedEntity != null && referencedPropertyName != null;
     }
 
+    /**
+     * @return The inverside side or null if the association is not bidirectional
+     */
     public Association getInverseSide() {
         final PersistentProperty associatedProperty = associatedEntity.getPropertyByName(referencedPropertyName);
         if (associatedProperty == null) return null;
@@ -145,10 +148,16 @@ public abstract class Association<T> extends AbstractPersistentProperty {
         return getOwner().getName() + "->" + getName();
     }
 
+    /**
+     * @return Whether the association is a List
+     */
     public boolean isList() {
         return List.class.isAssignableFrom(getType());
     }
 
+    /**
+     * @return Whether the association is circular
+     */
     public boolean isCircular() {
         PersistentEntity associatedEntity1 = getAssociatedEntity();
         if(associatedEntity1 == null) {

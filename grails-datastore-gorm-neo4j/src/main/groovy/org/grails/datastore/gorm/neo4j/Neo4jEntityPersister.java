@@ -6,6 +6,8 @@ import org.grails.datastore.gorm.neo4j.engine.CypherResult;
 import org.grails.datastore.gorm.neo4j.parsers.PlingStemmer;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckingList;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSet;
 import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
@@ -255,10 +257,13 @@ public class Neo4jEntityPersister extends EntityPersister {
         if (delegate==null) {
             delegate = createCollection(association);
         }
-        if (!(delegate instanceof DirtyCheckableAwareCollection)) {
+
+        final Object entity = entityAccess.getEntity();
+        if(entity instanceof DirtyCheckable) {
+            DirtyCheckable dirtyCheckable = (DirtyCheckable) entity;
             delegate = association.isList() ?
-                    new DirtyCheckableAwareList(entityAccess, association, (List)delegate, getSession()) :
-                    new DirtyCheckableAwareSet(entityAccess, association, (Set) delegate, getSession());
+                    new DirtyCheckingList((List)delegate, dirtyCheckable, association.getName()) :
+                    new DirtyCheckingSet((Set)delegate, dirtyCheckable, association.getName());
         }
         return delegate;
     }
