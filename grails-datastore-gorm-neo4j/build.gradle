@@ -63,16 +63,8 @@ dependencies {
 }
 
 test {
-    if(System.getenv('TRAVIS')) {
-        maxParallelForks = 1
-        forkEvery = 10
-        maxHeapSize = "756M"
-    }
-    else {
-        maxParallelForks = 2
-        forkEvery = 15
-        maxHeapSize = "2048M"
-    }
-
+    maxParallelForks = 2
+    forkEvery = 10
+    maxHeapSize = "756M"
 }
 
