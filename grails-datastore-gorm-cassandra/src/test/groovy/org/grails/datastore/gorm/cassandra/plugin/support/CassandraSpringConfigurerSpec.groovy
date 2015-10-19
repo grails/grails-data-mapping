@@ -11,7 +11,7 @@ import org.grails.datastore.gorm.Setup
 import org.grails.datastore.mapping.cassandra.CassandraDatastore
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
 import org.springframework.data.cassandra.core.CassandraTemplate
-
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import com.datastax.driver.core.KeyspaceMetadata
@@ -19,7 +19,9 @@ import com.datastax.driver.core.KeyspaceMetadata
 
 
 /**
+ * CassandraSpringConfigurer is deprecated, so ignored
  */
+@Ignore
 class CassandraSpringConfigurerSpec extends Specification{
 
     void "Test configure Cassandra via Spring for config"() {

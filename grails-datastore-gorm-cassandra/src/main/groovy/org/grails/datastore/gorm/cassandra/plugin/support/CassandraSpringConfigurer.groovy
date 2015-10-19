@@ -24,7 +24,10 @@ import org.grails.datastore.mapping.cassandra.CassandraDatastore
 /**
  * Cassandra specific configuration logic for Spring
  *
+ * @deprecated Use {@link grails.cassandra.bootstrap.CassandraDatastoreSpringInitializer} instead
  */
+
+@Deprecated
 class CassandraSpringConfigurer extends SpringConfigurer {
 	@Override
 	String getDatastoreType() {
