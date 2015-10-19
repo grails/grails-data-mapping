@@ -15,7 +15,6 @@
  */
 package org.grails.orm.hibernate;
 
-import grails.config.Config;
 import grails.core.GrailsDomainClass;
 import groovy.lang.GroovySystem;
 

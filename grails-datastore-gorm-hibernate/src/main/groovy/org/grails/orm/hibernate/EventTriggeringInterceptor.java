@@ -15,7 +15,6 @@
  */
 package org.grails.orm.hibernate;
 
-import grails.config.Config;
 import grails.core.GrailsDomainClass;
 import groovy.lang.GroovySystem;
 
@@ -45,6 +44,7 @@ import org.hibernate.event.PreLoadEvent;
 import org.hibernate.event.PreUpdateEvent;
 import org.hibernate.event.SaveOrUpdateEvent;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.core.env.PropertyResolver;
 
 /**
  * <p>Invokes closure events on domain entities such as beforeInsert, beforeUpdate and beforeDelete.
@@ -63,7 +63,7 @@ public class EventTriggeringInterceptor extends AbstractEventTriggeringIntercept
     
     private TimestampProvider timestampProvider = new DefaultTimestampProvider();
 
-    public EventTriggeringInterceptor(HibernateDatastore datastore, Config co) {
+    public EventTriggeringInterceptor(HibernateDatastore datastore, PropertyResolver co) {
         super(datastore);
 
         Object failOnErrorConfig = co.getProperty("grails.gorm.failOnError", Object.class);
