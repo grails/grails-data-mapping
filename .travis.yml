@@ -1,4 +1,7 @@
 sudo: false
+cache:
+  directories:
+  - $HOME/.gradle
 language: groovy
 services:
 - redis
