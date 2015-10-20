@@ -14,34 +14,33 @@
  */
 package org.grails.datastore.mapping.core;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import groovy.lang.GroovySystem;
+import groovy.lang.MetaClassRegistry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.groovy.runtime.InvokerHelper;
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
-import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.config.Property;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.proxy.ProxyFactory;
+import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.PropertyMapping;
+import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.FastClassData;
-import org.grails.datastore.mapping.reflect.FastEntityAccess;
+import org.grails.datastore.mapping.transactions.SessionHolder;
+import org.grails.datastore.mapping.validation.ValidatingEventListener;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.ConverterRegistry;
-import org.grails.datastore.mapping.config.Property;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.PropertyMapping;
-import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar;
-import org.grails.datastore.mapping.transactions.SessionHolder;
-import org.grails.datastore.mapping.validation.ValidatingEventListener;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
+
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Abstract Datastore implementation that deals with binding the Session to thread locale upon creation.
@@ -51,7 +50,7 @@ import org.springframework.validation.Errors;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractDatastore implements Datastore, StatelessDatastore, DisposableBean {
-
+    protected static final Log LOG = LogFactory.getLog(AbstractDatastore.class);
 
     private ApplicationContext applicationContext;
 
@@ -85,8 +84,16 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         ERRORS_MAP.remove();
         VALIDATE_MAP.remove();
 
+        final MetaClassRegistry registry = GroovySystem.getMetaClassRegistry();
         for (PersistentEntity persistentEntity : getMappingContext().getPersistentEntities()) {
-            GroovySystem.getMetaClassRegistry().removeMetaClass(persistentEntity.getJavaClass());
+            final Class cls = persistentEntity.getJavaClass();
+            try {
+                registry.removeMetaClass(cls);
+                InvokerHelper.invokeStaticMethod(cls, "resetInternalApi", null);
+                InvokerHelper.invokeStaticMethod(cls, "resetInternalValidationApi", null);
+            } catch (Exception e) {
+                LOG.warn("There was an error shutting down GORM for entity ["+cls.getName()+"]: " + e.getMessage(), e);
+            }
         }
         ClassPropertyFetcher.clearCache();
     }

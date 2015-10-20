@@ -95,7 +95,9 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
                         sb = new StringBuilder();
                         sb.append("CREATE INDEX ON :").append(label).append("(").append(persistentProperty.getName()).append(")");
                         schemaStrings.add(sb.toString());
-                        log.debug("setting up indexing for " + label + " property " + persistentProperty.getName());
+                        if(log.isDebugEnabled()) {
+                            log.debug("setting up indexing for " + label + " property " + persistentProperty.getName());
+                        }
                     }
                 }
             }
@@ -109,6 +111,8 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
         } finally {
             cypherEngine.commit();
         }
-        log.debug("done setting up indexes");
+        if(log.isDebugEnabled()) {
+            log.debug("done setting up indexes");
+        }
     }
 }

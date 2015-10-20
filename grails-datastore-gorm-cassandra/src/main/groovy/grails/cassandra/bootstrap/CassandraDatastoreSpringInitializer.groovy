@@ -72,6 +72,7 @@ class CassandraDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
             "org.grails.gorm.cassandra.internal.GORM_ENHANCER_BEAN-cassandra"(CassandraGormEnhancer, ref("cassandraDatastore"), ref("cassandraTransactionManager")) { bean ->
                 bean.initMethod = 'enhance'
+                bean.destroyMethod = 'close'
                 bean.lazyInit = false
             }
         }
