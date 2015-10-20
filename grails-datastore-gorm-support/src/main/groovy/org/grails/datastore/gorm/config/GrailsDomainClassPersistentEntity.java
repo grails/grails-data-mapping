@@ -332,7 +332,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private PersistentProperty createEmbedded(
             GrailsDomainClassMappingContext mappingContext,
             GrailsDomainClassProperty grailsDomainClassProperty) {
-        Embedded persistentProperty = new Embedded(this, mappingContext, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getClass()) {
+        Embedded persistentProperty = new Embedded(this, mappingContext, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
             public PropertyMapping getMapping() {
                 return null;
             }
