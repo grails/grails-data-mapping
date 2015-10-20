@@ -125,7 +125,7 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
     public Identity<Column> createIdentity(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
         final Table table = (Table) owner.getMapping().getMappedForm();
         if (table.hasCompositePrimaryKeys()) {
-            return new Identity<Column>(owner, context, table.getPrimaryKeyNames()[0], Map.class) {
+            return new Identity<Column>(owner, context, table.getPrimaryKeyNames()[0], pd.getPropertyType()) {
                 PropertyMapping<Column> propertyMapping = createPropertyMapping(this, owner);
 
                 public PropertyMapping<Column> getMapping() {

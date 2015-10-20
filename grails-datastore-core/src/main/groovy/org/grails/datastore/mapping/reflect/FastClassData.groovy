@@ -45,7 +45,11 @@ class FastClassData {
         if(!entity.isInitialized()) {
             entity.initialize()
         }
-        this.fastClass = FastClass.create(entity.javaClass)
+        FastClass.Generator gen = new FastClass.Generator();
+        gen.setType(entity.javaClass);
+        gen.setClassLoader(entity.javaClass.classLoader);
+        gen.useCache = false
+        this.fastClass = gen.create();
         if(entity.identity != null) {
             def identifierName = getIdentifierName(entity.mapping)
             this.idReader = fastClass.getMethod(NameUtils.getGetterName(identifierName), ZERO_CLASS_ARRAY)
