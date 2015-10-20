@@ -65,6 +65,10 @@ dependencies {
 test {
     maxParallelForks = 2
     forkEvery = 10
-    maxHeapSize = "756M"
+    jvmArgs = ['-server', '-Xmx768M', '-XX:MaxPermSize=256m']
+    afterSuite {
+        System.out.print('.')
+        System.out.flush()
+    }
 }
 
