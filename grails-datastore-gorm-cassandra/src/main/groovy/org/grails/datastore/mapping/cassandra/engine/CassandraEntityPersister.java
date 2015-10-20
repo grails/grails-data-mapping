@@ -195,9 +195,14 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 	@Override
 	protected EntityAccess retrieveEntry(PersistentEntity persistentEntity, String family, Serializable nativeKey) {
 		Map idMap = createIdMap(nativeKey, false);
-		Object entity = cassandraTemplate.selectOneById(persistentEntity.getJavaClass(), idMap);
-		return entity == null ? null : new CassandraEntityAccess(persistentEntity, entity);
-	}
+        try {
+            Object entity = cassandraTemplate.selectOneById(persistentEntity.getJavaClass(), idMap);
+            return entity == null ? null : new CassandraEntityAccess(persistentEntity, entity);
+        } catch (com.datastax.driver.core.exceptions.InvalidQueryException e) {
+            // this will happen if the identifier is invalid, return null in this case
+            return null;
+        }
+    }
 
 	@Override
 	protected Object storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object storeId, EntityAccess entry) {
@@ -599,7 +604,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 						try {
 							nativeValue = conversionService.convert(item, itemTypeDescriptor, targetTypeDescriptor);
 						} catch (Exception e) {
-							throw new IllegalArgumentException(String.format("Failed to convert property [%s] on entity class [%s]: [%s]", cassandraPersistentProperty.getName(), cassandraPersistentProperty.getOwner().getName(), e.getMessage()), e);
+							return nativeValue;
 						}
 					}
 				}
