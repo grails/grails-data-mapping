@@ -126,3 +126,10 @@ test {
         forkEvery = 30
     }
 }
+
+
+compileTestGroovy {
+    configure(groovyOptions.forkOptions) {
+        jvmArgs = [ '-Xms512m', '-Xmx768']
+    }
+}
