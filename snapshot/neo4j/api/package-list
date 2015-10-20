@@ -1,9 +1,10 @@
 grails.neo4j.bootstrap
 org.grails.datastore.gorm.neo4j
 org.grails.datastore.gorm.neo4j.bean.factory
-org.grails.datastore.gorm.neo4j.datatypes
+org.grails.datastore.gorm.neo4j.collection
 org.grails.datastore.gorm.neo4j.engine
-org.grails.datastore.gorm.neo4j.javatools.administrative
+org.grails.datastore.gorm.neo4j.internal.tools
 org.grails.datastore.gorm.neo4j.mapping.config
+org.grails.datastore.gorm.neo4j.mapping.reflect
 org.grails.datastore.gorm.neo4j.parsers
 org.grails.datastore.gorm.neo4j.plugin.support

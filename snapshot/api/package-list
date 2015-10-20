@@ -1,15 +1,15 @@
 grails.datastore.test
 grails.gorm
 grails.gorm.dirty.checking
+grails.gorm.transactions
 grails.orm
 grails.orm.bootstrap
 grails.plugin.hibernate4
 org.grails.compiler.gorm
 org.grails.datastore.gorm
 org.grails.datastore.gorm.async
-org.grails.datastore.gorm.bean.factory
 org.grails.datastore.gorm.bootstrap
-org.grails.datastore.gorm.config
+org.grails.datastore.gorm.bootstrap.support
 org.grails.datastore.gorm.events
 org.grails.datastore.gorm.finders
 org.grails.datastore.gorm.internal
