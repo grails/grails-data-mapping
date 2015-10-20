@@ -15,14 +15,18 @@
 package org.grails.datastore.mapping.cassandra;
 
 import java.io.Serializable;
+import java.util.Map;
 
+import org.grails.datastore.mapping.cassandra.config.Table;
 import org.grails.datastore.mapping.cassandra.engine.CassandraEntityPersister;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.engine.NonPersistentTypeException;
 import org.grails.datastore.mapping.engine.Persister;
+import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.transactions.SessionOnlyTransaction;
 import org.grails.datastore.mapping.transactions.Transaction;
 import org.slf4j.Logger;
@@ -98,5 +102,17 @@ public class CassandraSession extends AbstractSession<Session> {
     
     public void deleteAll(Class type) {
         cassandraTemplate.truncate(cassandraTemplate.getTableName(type));
+    }
+
+    @Override
+    protected Serializable convertIdentityIfNecessasry(PersistentProperty identity, Serializable key) {
+        final ClassMapping classMapping = identity.getOwner().getMapping();
+        final Table table = (Table) classMapping.getMappedForm();
+        if(table.hasCompositePrimaryKeys() && (key instanceof Map)) {
+            return key;
+        }
+        else {
+            return super.convertIdentityIfNecessasry(identity, key);
+        }
     }
 }

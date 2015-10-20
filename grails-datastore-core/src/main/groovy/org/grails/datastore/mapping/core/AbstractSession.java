@@ -30,6 +30,7 @@ import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport;
 import org.grails.datastore.mapping.engine.*;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.transactions.Transaction;
@@ -624,19 +625,12 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
                     "]. The class [" + type.getName() + "] is not a known persistent type.");
         }
 
-        final PersistentEntity entity = getMappingContext().getPersistentEntity(type.getName());
+        final PersistentEntity entity = ((EntityPersister)persister).getPersistentEntity();
         if (entity != null) {
-					ConversionService conversionService = getMappingContext().getConversionService();
-					if(conversionService.canConvert(key.getClass(),entity.getIdentity().getType())) {
-						try {
-							key = (Serializable)conversionService.convert(key, entity.getIdentity().getType());
-						} catch (ConversionFailedException conversionFailedException){
-							return null;
-						}
-					} else {
-						//Key can not be converted to needed type we need to get out just as if the key passed in was null
-						return null;
-					}
+            final PersistentProperty identity = entity.getIdentity();
+            if(!identity.getType().isAssignableFrom(key.getClass())) {
+                key = convertIdentityIfNecessasry(identity, key);
+            }
         }
 
         Object o = getInstanceCache(type).get(key);
@@ -647,6 +641,18 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             }
         }
         return o;
+    }
+
+    protected Serializable convertIdentityIfNecessasry(PersistentProperty identity, Serializable key) {
+        ConversionService conversionService = getMappingContext().getConversionService();
+        if(conversionService.canConvert(key.getClass(), identity.getType())) {
+            try {
+                key = (Serializable)conversionService.convert(key, identity.getType());
+            } catch (ConversionFailedException conversionFailedException){
+                // ignore
+            }
+        }
+        return key;
     }
 
     public Object proxy(Class type, Serializable key) {

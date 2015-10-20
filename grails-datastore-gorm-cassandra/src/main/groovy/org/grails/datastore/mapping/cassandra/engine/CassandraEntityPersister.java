@@ -630,6 +630,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 		throw new MissingPropertyException(String.format("No such primary key property: %s for entity class: %s", name, entity));
 	}
 
+
 	protected class CassandraEntityAccess extends NativeEntryModifyingEntityAccess {
 
 		public CassandraEntityAccess(PersistentEntity persistentEntity, Object entity) {

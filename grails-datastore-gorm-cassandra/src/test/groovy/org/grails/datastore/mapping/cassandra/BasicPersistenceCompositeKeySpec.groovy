@@ -25,7 +25,7 @@ class BasicPersistenceCompositeKeySpec extends GormDatastoreSpec {
             session.persist(artist1)
             session.flush()    
             session.clear()
-            Artist artist2 = session.retrieve(Artist, [firstLetter:"E"])  
+            Artist artist2 = session.retrieve(Artist, [firstLetter:"E"])
 			
         then:    
             artist2 != null

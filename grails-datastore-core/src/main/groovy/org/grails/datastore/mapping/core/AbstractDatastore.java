@@ -251,14 +251,4 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         return false;
     }
 
-    /**
-     * Creates an {@link EntityAccess} instance for the given entity and instance of said entity
-     *
-     * @param entity The entity
-     * @param instance The instance
-     * @return The {@link FastEntityAccess}
-     */
-    public EntityAccess createEntityAccess(PersistentEntity entity, Object instance) {
-        return getMappingContext().createEntityAccess(entity, instance);
-    }
 }
