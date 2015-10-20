@@ -281,7 +281,7 @@ subprojects {
             if (isTravisBuild) {
                 maxParallelForks = 2
                 jvmArgs = ['-server', '-Xmx768M', '-XX:MaxPermSize=256m']
-                forkEvery = 25
+                forkEvery = 20
                 afterSuite {
                     System.out.print('.')
                     System.out.flush()
