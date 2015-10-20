@@ -20,9 +20,9 @@ project.ext {
     groovyVersion = System.getProperty('groovyVersion') ?: '2.4.4'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
-    projectMajorVersion = "4"
+    projectMajorVersion = "5"
     projectMinorVersion = "0"
-    projectPatchVersion = "8"
+    projectPatchVersion = "0"
 //    releaseType = "RELEASE"
 //    releaseType = "M4"
 //    releaseType = "RC1"
@@ -36,10 +36,12 @@ project.ext {
 
     // plugin versions
     hibernateVersion = "4.3.10"
-    hibernatePluginVersion = releaseType == 'RELEASE' ? "${hibernateVersion}.${projectPatchVersion}" : "${hibernateVersion}.${projectPatchVersion}.$releaseType"
-    mongodbPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
-    neo4jPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
-    cassandraPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
+
+    def defaultPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
+    hibernatePluginVersion = defaultPluginVersion
+    mongodbPluginVersion = defaultPluginVersion
+    neo4jPluginVersion = defaultPluginVersion
+    cassandraPluginVersion = defaultPluginVersion
 
 
     isCiBuild = project.hasProperty("isCiBuild")
