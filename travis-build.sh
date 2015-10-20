@@ -28,8 +28,6 @@ case "$GORM_IMPL"  in
         ./gradlew grails-datastore-gorm-rest-client:test -no-daemon  || EXIT_STATUS=$?
         ;;
     *)
-        ./gradlew testClasses || EXIT_STATUS=$?
-
         # Run Grails 2 plugin smoke test
         ./gradlew grails2-plugins/mongodb:test
         ./gradlew grails-datastore-gorm:test grails-datastore-gorm-test:test || EXIT_STATUS=$?
