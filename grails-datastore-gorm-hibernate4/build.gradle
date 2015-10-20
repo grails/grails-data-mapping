@@ -130,6 +130,6 @@ test {
 
 compileTestGroovy {
     configure(groovyOptions.forkOptions) {
-        jvmArgs = [ '-Xms512m', '-Xmx768']
+        jvmArgs = [ '-Xmx768m']
     }
 }
