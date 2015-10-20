@@ -15,26 +15,23 @@
 package org.grails.datastore.gorm.neo4j.engine
 
 import groovy.transform.CompileStatic
-import groovy.util.logging.Slf4j
+import groovy.util.logging.Commons
 import org.grails.datastore.gorm.neo4j.CypherBuilder
 import org.grails.datastore.gorm.neo4j.GraphPersistentEntity
 import org.grails.datastore.gorm.neo4j.Neo4jUtils
 import org.grails.datastore.gorm.neo4j.RelationshipUtils
-import org.grails.datastore.gorm.neo4j.engine.CypherEngine
-import org.grails.datastore.gorm.neo4j.engine.Neo4jEntityPersister
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.query.AssociationQuery
 import org.grails.datastore.mapping.query.Query
-
 /**
  * perform criteria queries on a Neo4j backend
  *
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
 @CompileStatic
-@Slf4j
+@Commons
 class Neo4jQuery extends Query {
 
     final Neo4jEntityPersister neo4jEntityPersister
@@ -45,22 +42,22 @@ class Neo4jQuery extends Query {
     }
 
     private String applyOrderAndLimits(CypherBuilder cypherBuilder) {
-        def cypher = ""
+        StringBuilder cypher = new StringBuilder("")
         if (!orderBy.empty) {
-            cypher += " ORDER BY "
-            cypher += orderBy.collect { Query.Order order -> "n.${order.property} $order.direction" }.join(", ")
+            cypher << " ORDER BY "
+            cypher << orderBy.collect { Query.Order order -> "n.${order.property} $order.direction" }.join(", ")
         }
 
         if (offset != 0) {
             int skipParam = cypherBuilder.addParam(offset)
-            cypher += " SKIP {$skipParam}"
+            cypher << " SKIP {$skipParam}"
         }
 
         if (max != -1) {
             int limtiParam = cypherBuilder.addParam(max)
-            cypher += " LIMIT {$limtiParam}"
+            cypher << " LIMIT {$limtiParam}"
         }
-        cypher
+        cypher.toString()
     }
 
     @Override
@@ -76,7 +73,8 @@ class Neo4jQuery extends Query {
 
         def executionResult = cypherEngine.execute(cypherBuilder.build(), cypherBuilder.getParams())
         if (projections.projectionList.empty) {
-            return executionResult.collect { Map<String,Object> map ->   // TODO: potential performance problem here: for each instance we unmarshall seperately, better: use one combined statement to get 'em all
+            // TODO: potential performance problem here: for each instance we unmarshall seperately, better: use one combined statement to get 'em all
+            return executionResult.collect { Map<String,Object> map ->
 
                 Long id = map.id as Long
                 Collection<String> labels = map.labels as Collection<String>

@@ -23,11 +23,9 @@ import java.util.Map;
 import grails.core.GrailsDomainClass;
 import grails.core.GrailsDomainClassProperty;
 import org.grails.datastore.gorm.validation.ValidatorProvider;
-import org.grails.datastore.mapping.model.ClassMapping;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.PropertyMapping;
+import org.grails.datastore.mapping.config.Entity;
+import org.grails.datastore.mapping.config.Property;
+import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.Embedded;
 import org.grails.datastore.mapping.model.types.ManyToMany;
@@ -53,11 +51,43 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private List<PersistentProperty> properties = new ArrayList<PersistentProperty>();
     private List<Association> associations = new ArrayList<Association>();
     private boolean initialized;
+    private final ClassMapping<Entity> classMapping;
 
-    public GrailsDomainClassPersistentEntity(GrailsDomainClass domainClass,
+    public GrailsDomainClassPersistentEntity(final GrailsDomainClass domainClass,
             GrailsDomainClassMappingContext mappingContext) {
         this.domainClass = domainClass;
         this.mappingContext = mappingContext;
+        this.classMapping = new ClassMapping<Entity>() {
+            @Override
+            public PersistentEntity getEntity() {
+                return GrailsDomainClassPersistentEntity.this;
+            }
+
+            @Override
+            public Entity getMappedForm() {
+                return new Entity();
+            }
+
+            @Override
+            public IdentityMapping getIdentifier() {
+                return new IdentityMapping() {
+                    @Override
+                    public String[] getIdentifierName() {
+                        return new String[] { identifier.getName() };
+                    }
+
+                    @Override
+                    public ClassMapping getClassMapping() {
+                        return classMapping;
+                    }
+
+                    @Override
+                    public Property getMappedForm() {
+                        return identifier.getMapping().getMappedForm();
+                    }
+                };
+            }
+        };
     }
 
     @Override
@@ -175,7 +205,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     }
 
     public ClassMapping getMapping() {
-        return null;
+        return classMapping;
     }
 
     public Object newInstance() {

@@ -51,7 +51,6 @@ class FastClassData {
             this.idReader = fastClass.getMethod(NameUtils.getGetterName(identifierName), ZERO_CLASS_ARRAY)
             fastGetters[identifierName] = idReader
             fastSetters[identifierName] = fastClass.getMethod(NameUtils.getSetterName(identifierName), [entity.identity.type] as Class[])
-
         }
         else {
             idReader = null
