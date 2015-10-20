@@ -37,7 +37,7 @@ public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long
     private EntityAccess target;
     private String relType;
 
-    RelationshipPendingInsert(EntityAccess source, String relType, EntityAccess target, CypherEngine cypherEngine) {
+    public RelationshipPendingInsert(EntityAccess source, String relType, EntityAccess target, CypherEngine cypherEngine) {
         super(source.getPersistentEntity(), -1l, source.getEntity(), source);
         this.relType = relType;
         this.target = target;

@@ -37,7 +37,7 @@ public class RelationshipPendingDelete extends PendingInsertAdapter<Object, Long
     private CypherEngine cypherEngine;
     private EntityAccess target;
 
-    RelationshipPendingDelete(EntityAccess source, String relType, EntityAccess target, CypherEngine cypherEngine) {
+    public RelationshipPendingDelete(EntityAccess source, String relType, EntityAccess target, CypherEngine cypherEngine) {
         super(source.getPersistentEntity(), -1l, source.getEntity(), source);
         this.target = target;
         this.cypherEngine = cypherEngine;

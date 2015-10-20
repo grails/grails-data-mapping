@@ -2,9 +2,13 @@ package org.grails.datastore.gorm.neo4j.engine;
 
 import groovy.lang.GroovyObject;
 import org.grails.datastore.gorm.neo4j.*;
+import org.grails.datastore.gorm.neo4j.collection.Neo4jList;
+import org.grails.datastore.gorm.neo4j.collection.Neo4jSet;
 import org.grails.datastore.gorm.neo4j.mapping.reflect.Neo4jNameUtils;
+import org.grails.datastore.mapping.collection.PersistentCollection;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingList;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSet;
 import org.grails.datastore.mapping.engine.BeanEntityAccess;
@@ -257,12 +261,20 @@ public class Neo4jEntityPersister extends EntityPersister {
             delegate = createCollection(association);
         }
 
-        final Object entity = entityAccess.getEntity();
-        if(entity instanceof DirtyCheckable) {
-            DirtyCheckable dirtyCheckable = (DirtyCheckable) entity;
-            delegate = association.isList() ?
-                    new DirtyCheckingList((List)delegate, dirtyCheckable, association.getName()) :
-                    new DirtyCheckingSet((Set)delegate, dirtyCheckable, association.getName());
+        if( !(delegate instanceof DirtyCheckableCollection)) {
+
+            final Object entity = entityAccess.getEntity();
+            if(entity instanceof DirtyCheckable) {
+                final Neo4jSession session = getSession();
+                for( Object o : delegate ) {
+                    String relType = RelationshipUtils.relationshipTypeUsedFor(association)                                                                                                       ;
+                    session.addPendingInsert(new RelationshipPendingInsert(entityAccess, relType, new BeanEntityAccess(association.getAssociatedEntity(), o), session.getNativeInterface()));
+                }
+
+                delegate = association.isList() ?
+                        new Neo4jList(entityAccess, association, (List)delegate, session) :
+                        new Neo4jSet(entityAccess, association, (Set)delegate, session);
+            }
         }
         return delegate;
     }
@@ -343,7 +355,13 @@ public class Neo4jEntityPersister extends EntityPersister {
 
                     if (propertyValue!= null) {
 
-                        if (association.isBidirectional()) {  // Populate other side of bidi
+                        if(propertyValue instanceof PersistentCollection) {
+                            PersistentCollection pc = (PersistentCollection) propertyValue;
+                            if(!pc.isInitialized()) continue;
+                        }
+
+                        if (association.isBidirectional()) {
+                            // Populate other side of bidi
                             for (Object associatedObject: (Iterable)propertyValue) {
                                 EntityAccess assocEntityAccess = createEntityAccess(association.getAssociatedEntity(), associatedObject);
                                 assocEntityAccess.setProperty(association.getReferencedPropertyName(), obj);
