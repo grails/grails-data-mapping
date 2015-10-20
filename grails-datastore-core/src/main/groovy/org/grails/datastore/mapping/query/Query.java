@@ -26,7 +26,7 @@ import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.engine.BeanEntityAccess;
+import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -607,10 +607,12 @@ public abstract class Query implements Cloneable{
             return ep.getObjectIdentifier(value);
         }
 
-        return (Serializable)new BeanEntityAccess(session
+        SessionImplementor si = (SessionImplementor)session;
+        final PersistentEntity entity = session
                 .getMappingContext()
-                .getPersistentEntity(value.getClass().getName()), value)
-                .getIdentifier();
+                .getPersistentEntity(value.getClass().getName());
+        return (Serializable)si.createEntityAccess(entity, value)
+                                .getIdentifier();
     }
 
     private Junction disjunction(Junction currentJunction) {

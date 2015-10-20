@@ -24,7 +24,6 @@ import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.impl.*;
-import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.engine.Persister;
@@ -292,7 +291,7 @@ public class MongoSession extends AbstractMongoSession {
                 @Override
                 public void run() {
                     for (Object o : toDelete.get(persistentEntity)) {
-                        if( !persister.cancelDelete(persistentEntity, new BeanEntityAccess(persistentEntity, o)) ) {
+                        if( !persister.cancelDelete(persistentEntity, createEntityAccess(persistentEntity, o)) ) {
                             clear(o);
                         }
                     }

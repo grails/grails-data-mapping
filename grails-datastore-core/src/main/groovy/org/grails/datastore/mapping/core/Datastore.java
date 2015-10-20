@@ -14,6 +14,9 @@
  */
 package org.grails.datastore.mapping.core;
 
+import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.reflect.FastEntityAccess;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -106,4 +109,5 @@ public interface Datastore {
      * @return True if it does
      */
     boolean isSchemaless();
+
 }

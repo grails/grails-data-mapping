@@ -21,6 +21,7 @@ import java.util.Map;
 import org.grails.datastore.mapping.core.impl.PendingDelete;
 import org.grails.datastore.mapping.core.impl.PendingInsert;
 import org.grails.datastore.mapping.core.impl.PendingUpdate;
+import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
 /**
@@ -155,4 +156,6 @@ public interface SessionImplementor<T> {
      * @param obj The object to register
      */
     void registerPending(T obj);
+
+    EntityAccess createEntityAccess(PersistentEntity entity, Object instance);
 }

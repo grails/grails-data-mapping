@@ -9,9 +9,6 @@ import org.grails.datastore.mapping.collection.PersistentCollection;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection;
-import org.grails.datastore.mapping.dirty.checking.DirtyCheckingList;
-import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSet;
-import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -145,8 +142,7 @@ public class Neo4jEntityPersister extends EntityPersister {
     private Object unmarshall(PersistentEntity persistentEntity, Long id, Map<String, Object> data) {
 
         log.debug( "unmarshalling entity {}, props {}, {}", id, data);
-        BeanEntityAccess entityAccess = new BeanEntityAccess(persistentEntity, persistentEntity.newInstance());
-        entityAccess.setConversionService(persistentEntity.getMappingContext().getConversionService());
+        EntityAccess entityAccess = getSession().createEntityAccess(persistentEntity, persistentEntity.newInstance());
         entityAccess.setIdentifier(id);
         data.remove("__id__");
 
@@ -268,7 +264,9 @@ public class Neo4jEntityPersister extends EntityPersister {
                 final Neo4jSession session = getSession();
                 for( Object o : delegate ) {
                     String relType = RelationshipUtils.relationshipTypeUsedFor(association)                                                                                                       ;
-                    session.addPendingInsert(new RelationshipPendingInsert(entityAccess, relType, new BeanEntityAccess(association.getAssociatedEntity(), o), session.getNativeInterface()));
+                    final EntityAccess associationAccess = getSession().createEntityAccess(association.getAssociatedEntity(), o);
+                    final RelationshipPendingInsert insert = new RelationshipPendingInsert(entityAccess, relType, associationAccess, session.getNativeInterface());
+                    session.addPendingInsert(insert);
                 }
 
                 delegate = association.isList() ?
@@ -408,7 +406,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                                 getSession().addPendingInsert(new RelationshipPendingDelete(entityAccess, relType, null , getCypherEngine()));
                             }
                             getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, relType,
-                                    new BeanEntityAccess(to.getAssociatedEntity(), propertyValue),
+                                    getSession().createEntityAccess(to.getAssociatedEntity(), propertyValue),
                                     getCypherEngine()));
                         }
 
@@ -532,7 +530,7 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected EntityAccess createEntityAccess(PersistentEntity pe, Object obj) {
-        return new BeanEntityAccess(pe, obj);
+        return getSession().createEntityAccess(pe, obj);
     }
 
     public CypherEngine getCypherEngine() {

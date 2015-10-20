@@ -152,13 +152,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
         }
     }
 
-    @Override
-    protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj) {
-        BeanEntityAccess entityAccess = new BeanEntityAccess(persistentEntity, obj);
-        entityAccess.setConversionService(getMappingContext().getConversionService());
-        return entityAccess;
-    }
-
     protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, final T nativeEntry) {
         final NativeEntryModifyingEntityAccess ea = new NativeEntryModifyingEntityAccess(persistentEntity, obj);
         ea.setConversionService(getMappingContext().getConversionService());

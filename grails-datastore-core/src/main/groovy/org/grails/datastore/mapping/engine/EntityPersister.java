@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.event.PostDeleteEvent;
 import org.grails.datastore.mapping.engine.event.PostInsertEvent;
 import org.grails.datastore.mapping.engine.event.PostLoadEvent;
@@ -103,7 +104,7 @@ public abstract class EntityPersister implements Persister {
         if (pf.isProxy(obj)) {
             return pf.getIdentifier(obj);
         }
-        return (Serializable) new BeanEntityAccess(getPersistentEntity(), obj).getIdentifier();
+        return (Serializable) createEntityAccess(getPersistentEntity(), obj).getIdentifier();
     }
 
     @Override
@@ -138,7 +139,7 @@ public abstract class EntityPersister implements Persister {
      * @param obj The object
      */
     public void setObjectIdentifier(Object obj, Serializable id) {
-        new BeanEntityAccess(getPersistentEntity(), obj).setIdentifier(id);
+        createEntityAccess(getPersistentEntity(), obj).setIdentifier(id);
     }
 
     /**
@@ -252,13 +253,14 @@ public abstract class EntityPersister implements Persister {
     protected abstract void deleteEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objects);
 
     protected EntityAccess createEntityAccess(PersistentEntity pe, Object obj) {
-        return new BeanEntityAccess(persistentEntity, obj);
+        final SessionImplementor si = (SessionImplementor)getSession();
+        return si.createEntityAccess(pe, obj);
     }
 
     protected Object newEntityInstance(PersistentEntity persistentEntity) {
         Object o = persistentEntity.newInstance();
         publisher.publishEvent(new PreLoadEvent(session.getDatastore(), getPersistentEntity(),
-                new BeanEntityAccess(persistentEntity, o)));
+                createEntityAccess(persistentEntity, o)));
         return o;
     }
 

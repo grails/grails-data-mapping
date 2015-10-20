@@ -28,7 +28,6 @@ import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.mongo.geo.GeoJSONType;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
-import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
@@ -770,7 +769,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             if (entity.getMappingContext().isPersistentEntity(value)) {
                 PersistentEntity pe = entity.getMappingContext().getPersistentEntity(
                         value.getClass().getName());
-                values.add(new BeanEntityAccess(pe, value).getIdentifier());
+                values.add(entity.getMappingContext().createEntityAccess(pe, value).getIdentifier());
             } else {
                 value = MongoEntityPersister.getSimpleNativePropertyValue(value, entity.getMappingContext());
                 values.add(value);

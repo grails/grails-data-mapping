@@ -974,7 +974,7 @@ class PersistentEntityCodec implements Codec {
                         // update existing collection
                         Collection identifiers = (Collection)mongoSession.getAttribute(parentAccess.entity, "${property}.ids")
                         if(identifiers == null) {
-                            def fastClassData = datastore.getFastClassData(associatedEntity)
+                            def fastClassData = datastore.mappingContext.getFastClassData(associatedEntity)
                             identifiers = ((Collection)value).collect() {
                                 fastClassData.getIdentifier(it)
                             }

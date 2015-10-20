@@ -12,9 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.mapping.mongo.engine
+package org.grails.datastore.mapping.reflect
 
-import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.engine.internal.MappingUtils
 import org.grails.datastore.mapping.model.ClassMapping
@@ -49,9 +48,9 @@ class FastClassData {
         this.fastClass = FastClass.create(entity.javaClass)
         if(entity.identity != null) {
             def identifierName = getIdentifierName(entity.mapping)
-            this.idReader = fastClass.getMethod(GrailsNameUtils.getGetterName(identifierName), ZERO_CLASS_ARRAY)
+            this.idReader = fastClass.getMethod(NameUtils.getGetterName(identifierName), ZERO_CLASS_ARRAY)
             fastGetters[identifierName] = idReader
-            fastSetters[identifierName] = fastClass.getMethod(GrailsNameUtils.getSetterName(identifierName), [entity.identity.type] as Class[])
+            fastSetters[identifierName] = fastClass.getMethod(NameUtils.getSetterName(identifierName), [entity.identity.type] as Class[])
 
         }
         else {

@@ -67,17 +67,6 @@ public abstract class AbstractMongoSession extends AbstractSession<MongoClient> 
         flush(this.getWriteConcern());
     }
 
-    public EntityAccess createEntityAccess(PersistentEntity entity, Object instance) {
-        Object access = getAttribute(instance, MongoCodecSession.ENTITY_ACCESS);
-        if (access != null) {
-            return (EntityAccess) access;
-        } else {
-            EntityAccess ea = getDatastore().createEntityAccess(entity, instance);
-            setAttribute(instance, MongoCodecSession.ENTITY_ACCESS, ea);
-            return ea;
-        }
-    }
-
     public abstract void flush(WriteConcern writeConcern);
 
     /**

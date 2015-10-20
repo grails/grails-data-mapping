@@ -22,11 +22,9 @@ import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingDelete
 import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingInsert
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSet
-import org.grails.datastore.mapping.engine.BeanEntityAccess
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToMany
-import org.grails.datastore.mapping.proxy.ProxyFactory
 
 
 /**
@@ -109,7 +107,7 @@ class Neo4jSet extends DirtyCheckingSet {
         }
         if (!reversed) {
             session.addPendingInsert(new RelationshipPendingDelete(owner, relType,
-                    new BeanEntityAccess(association.getAssociatedEntity(), o),
+                    session.createEntityAccess(association.getAssociatedEntity(), o),
                     session.getNativeInterface()));
         }
     }
@@ -120,7 +118,7 @@ class Neo4jSet extends DirtyCheckingSet {
             if ( !proxyFactory.isInitialized(t) ) return
             if ( !association.associatedEntity.isInstance(t) ) return
         }
-        EntityAccess target = new BeanEntityAccess(association.getAssociatedEntity(), t)
+        EntityAccess target = session.createEntityAccess(association.getAssociatedEntity(), t)
         if (association.isBidirectional()) {
             if (association instanceof ManyToMany) {
                 Collection coll = (Collection) target.getProperty(association.getReferencedPropertyName());

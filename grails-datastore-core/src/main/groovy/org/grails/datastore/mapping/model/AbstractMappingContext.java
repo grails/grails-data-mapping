@@ -20,10 +20,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.lifecycle.Initializable;
 import org.grails.datastore.mapping.model.types.conversion.DefaultConversionService;
 import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
+import org.grails.datastore.mapping.reflect.FastClassData;
+import org.grails.datastore.mapping.reflect.FastEntityAccess;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
@@ -53,6 +56,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     protected ProxyFactory proxyFactory;
     private boolean canInitializeEntities = true;
     private boolean initialized;
+    protected Map<String, FastClassData> fastClassData = new ConcurrentHashMap<String, FastClassData>();
 
     public ConversionService getConversionService() {
         return conversionService;
@@ -232,6 +236,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         persistentEntities.remove(entity);
         persistentEntities.add(entity);
         persistentEntitiesByName.put(entity.getName(), entity);
+        fastClassData.put(entity.getName(), new FastClassData(entity));
     }
 
     public void initialize() {
@@ -320,5 +325,36 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         }
 
         return persistentEntitiesByName.get(name);
+    }
+
+    /**
+     * Obtains a {@link FastClassData} instance for the given entity
+     *
+     * @param entity The entity
+     * @return The class data
+     */
+    @Override
+    public FastClassData getFastClassData(PersistentEntity entity) {
+        final String entityN = entity.getName();
+        FastClassData data = fastClassData.get(entityN);
+        if (data == null) {
+            data = new FastClassData(entity);
+            fastClassData.put(entityN, data);
+        }
+        return data;
+    }
+
+    @Override
+    public EntityAccess createEntityAccess(PersistentEntity entity, Object instance) {
+        final ProxyFactory proxyFactory = getProxyFactory();
+        instance = proxyFactory.unwrap(instance);
+        if (entity.getJavaClass() != instance.getClass()) {
+            // try subclass
+            final PersistentEntity subEntity = getPersistentEntity(instance.getClass().getName());
+            if (subEntity != null) {
+                entity = subEntity;
+            }
+        }
+        return new FastEntityAccess(instance, getFastClassData(entity), getConversionService());
     }
 }

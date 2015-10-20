@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
@@ -56,7 +55,7 @@ public class ManualProjections {
         final List sorted = order.applyOrder(new ArrayList(results), Query.Order.asc(property));
         final Object o = sorted.get(0);
         if (entity.isInstance(o)) {
-            return new BeanEntityAccess(entity, o).getProperty(property);
+            return entity.getMappingContext().createEntityAccess(entity, o).getProperty(property);
         }
         return o;
     }
@@ -94,7 +93,7 @@ public class ManualProjections {
         final List sorted = order.applyOrder(new ArrayList(results), Query.Order.asc(property));
         final Object o = sorted.get(results.size()-1);
         if (entity.isInstance(o)) {
-            return new BeanEntityAccess(entity, o).getProperty(property);
+            return entity.getMappingContext().createEntityAccess(entity, o).getProperty(property);
         }
         return o;
     }
@@ -113,7 +112,7 @@ public class ManualProjections {
         }
 
         for (Object o : results) {
-            EntityAccess ea = new BeanEntityAccess(entity, o);
+            EntityAccess ea = entity.getMappingContext().createEntityAccess(entity, o);
             if (entity.isInstance(o)) {
                 projectedResults.add(ea.getProperty(property));
             }

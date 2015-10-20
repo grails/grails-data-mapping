@@ -32,7 +32,6 @@ import org.bson.types.ObjectId;
 import org.grails.datastore.mapping.core.IdentityGenerationException;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.core.impl.PendingDeleteAdapter;
-import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.model.MappingContext;

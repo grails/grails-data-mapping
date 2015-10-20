@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.grails.datastore.mapping.engine.EntityAccess;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -28,7 +29,6 @@ import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.DatastoreUtils;
 import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.PropertyValueIndexer;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -249,7 +249,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
         }
 
         private void updatedPersistedObjectIndices(Session session, PersistentEntity entity, Object persistedObject, List<PersistentProperty> indexed) {
-            BeanEntityAccess ea = new BeanEntityAccess(entity, persistedObject);
+            EntityAccess ea = ((RedisSession)session).createEntityAccess(entity, persistedObject);
             Object identifier = ea.getIdentifier();
             for (PersistentProperty persistentProperty : indexed) {
                 Object value = ea.getProperty(persistentProperty.getName());

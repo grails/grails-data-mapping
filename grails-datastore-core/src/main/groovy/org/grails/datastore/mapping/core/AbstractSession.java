@@ -27,10 +27,7 @@ import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.core.impl.*;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport;
-import org.grails.datastore.mapping.engine.EntityPersister;
-import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
-import org.grails.datastore.mapping.engine.NonPersistentTypeException;
-import org.grails.datastore.mapping.engine.Persister;
+import org.grails.datastore.mapping.engine.*;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
@@ -60,6 +57,8 @@ import com.googlecode.concurrentlinkedhashmap.EvictionListener;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractSession<N> extends AbstractAttributeStoringSession implements SessionImplementor {
+
+    public static final String ENTITY_ACCESS = "org.grails.gorm.ENTITY_ACCESS";
 
     private static final EvictionListener<PersistentEntity, Collection<PendingInsert>> EXCEPTION_THROWING_INSERT_LISTENER =
             new EvictionListener<PersistentEntity, Collection<PendingInsert>>() {
@@ -116,6 +115,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     protected ApplicationEventPublisher publisher;
 
     protected boolean stateless = false;
+
 
     public AbstractSession(Datastore datastore, MappingContext mappingContext,
                ApplicationEventPublisher publisher) {
@@ -873,6 +873,23 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             caches.put(c, cache);
         }
         return cache;
+    }
+
+    @Override
+    public EntityAccess createEntityAccess(PersistentEntity entity, Object instance) {
+        if(isStateless()) {
+            return getMappingContext().createEntityAccess(entity, instance);
+        }
+        else {
+            Object access = getAttribute(instance, ENTITY_ACCESS);
+            if (access != null) {
+                return (EntityAccess) access;
+            } else {
+                EntityAccess ea = getMappingContext().createEntityAccess(entity, instance);
+                setAttribute(instance, ENTITY_ACCESS, ea);
+                return ea;
+            }
+        }
     }
 
     private static class CollectionKey {

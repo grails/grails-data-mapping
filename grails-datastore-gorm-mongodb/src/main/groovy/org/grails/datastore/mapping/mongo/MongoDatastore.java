@@ -29,23 +29,17 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
-import org.codehaus.groovy.grails.validation.ConstrainedProperty;
-import org.grails.datastore.gorm.mongo.bean.factory.*;
 import org.grails.datastore.gorm.mongo.bean.factory.MongoClientFactoryBean;
 import org.grails.datastore.gorm.mongo.extensions.MongoExtensions;
-import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory;
 import org.grails.datastore.mapping.core.*;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
-import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext;
-import org.grails.datastore.mapping.mongo.engine.FastClassData;
-import org.grails.datastore.mapping.mongo.engine.FastEntityAccess;
+import org.grails.datastore.mapping.reflect.FastClassData;
 import org.grails.datastore.mapping.mongo.engine.codecs.AdditionalCodecs;
 import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec;
-import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +69,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     protected final String defaultDatabase;
     protected Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
     protected Map<PersistentEntity, String> mongoDatabases = new ConcurrentHashMap<PersistentEntity, String>();
-    protected Map<String, FastClassData> fastClassData = new ConcurrentHashMap<String, FastClassData>();
     protected boolean stateless = false;
     protected boolean codecEngine = false;
     protected CodecRegistry codecRegistry;
@@ -283,16 +276,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         return collectionName;
     }
 
-    public FastClassData getFastClassData(PersistentEntity entity) {
-        final String entityN = entity.getName();
-        FastClassData data = fastClassData.get(entityN);
-        if (data == null) {
-            data = new FastClassData(entity);
-            fastClassData.put(entityN, data);
-        }
-        return data;
-    }
-
     @Override
     protected Session createSession(Map<String, String> connDetails) {
         if (stateless) {
@@ -379,7 +362,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             databaseName = collectionMapping.getDatabase();
         }
 
-        fastClassData.put(entity.getName(), new FastClassData(entity));
         mongoCollections.put(entity, collectionName);
         mongoDatabases.put(entity,databaseName);
 
@@ -478,20 +460,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         return true;
     }
 
-
-    public EntityAccess createEntityAccess(PersistentEntity entity, Object instance) {
-        final MappingContext context = getMappingContext();
-        final ProxyFactory proxyFactory = context.getProxyFactory();
-        instance = proxyFactory.unwrap(instance);
-        if (entity.getJavaClass() != instance.getClass()) {
-            // try subclass
-            final PersistentEntity subEntity = context.getPersistentEntity(instance.getClass().getName());
-            if (subEntity != null) {
-                entity = subEntity;
-            }
-        }
-        return new FastEntityAccess(instance, getFastClassData(entity), context.getConversionService());
-    }
 
     public String getDatabaseName(PersistentEntity entity) {
         final String databaseName = mongoDatabases.get(entity);

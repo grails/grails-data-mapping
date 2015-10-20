@@ -23,6 +23,7 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Simple;
+import org.grails.datastore.mapping.reflect.FastClassData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -78,6 +79,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
         Set<String> schemaStrings = new HashSet<String>(); // using set to avoid duplicate index creation
 
         for (PersistentEntity persistentEntity:  mappingContext.getPersistentEntities()) {
+
             for (String label: ((GraphPersistentEntity)persistentEntity).getLabels()) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("CREATE INDEX ON :").append(label).append("(__id__)");

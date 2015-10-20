@@ -16,8 +16,14 @@ package org.grails.datastore.mapping.core;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
+import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.proxy.ProxyFactory;
+import org.grails.datastore.mapping.reflect.FastClassData;
+import org.grails.datastore.mapping.reflect.FastEntityAccess;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -42,6 +48,7 @@ import org.springframework.validation.Errors;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractDatastore implements Datastore, StatelessDatastore, DisposableBean {
+
 
     private ApplicationContext applicationContext;
 
@@ -117,6 +124,16 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         return session;
     }
 
+
+    /**
+     * Obtains a {@link FastClassData} instance for the given entity
+     *
+     * @param entity The entity
+     * @return The class data
+     */
+    public FastClassData getFastClassData(PersistentEntity entity) {
+        return getMappingContext().getFastClassData(entity);
+    }
 
     /**
      * Creates the native session
@@ -232,5 +249,16 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
 
     public boolean isSchemaless() {
         return false;
+    }
+
+    /**
+     * Creates an {@link EntityAccess} instance for the given entity and instance of said entity
+     *
+     * @param entity The entity
+     * @param instance The instance
+     * @return The {@link FastEntityAccess}
+     */
+    public EntityAccess createEntityAccess(PersistentEntity entity, Object instance) {
+        return getMappingContext().createEntityAccess(entity, instance);
     }
 }
