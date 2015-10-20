@@ -4,6 +4,8 @@ import org.neo4j.kernel.GraphDatabaseAPI
 import org.neo4j.kernel.configuration.Config
 import org.neo4j.server.WrappingNeoServer
 import org.neo4j.server.configuration.Configurator
+import org.neo4j.server.modules.DBMSModule
+
 //import org.neo4j.server.modules.DiscoveryModule
 import org.neo4j.server.modules.RESTApiModule
 import org.neo4j.server.modules.ServerModule
@@ -21,16 +23,16 @@ class TestWrappingNeoServer extends WrappingNeoServer {
     @Override
     protected Iterable<ServerModule> createServerModules() {
         [
-//                new DiscoveryModule(webServer, logging),
+                new DBMSModule(webServer),
                 new RESTApiModule(
                         webServer,
                         database,
-                        configurator.configuration(),
+                        config,
                         logging
                 ),
                 new ThirdPartyJAXRSModule(
                         webServer,
-                        configurator,
+                        config,
                         logging,
                         this
                 )
