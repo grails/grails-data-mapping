@@ -274,6 +274,12 @@ subprojects {
             }
         }
 
+        compileTestGroovy {
+            configure(groovyOptions.forkOptions) {
+                jvmArgs = [ '-Xmx768m']
+            }
+        }
+
         test {
             testLogging {
                 exceptionFormat ='full'
