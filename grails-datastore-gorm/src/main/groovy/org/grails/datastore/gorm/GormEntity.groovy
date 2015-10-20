@@ -16,6 +16,7 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.DetachedCriteria
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -32,6 +33,7 @@ import org.springframework.validation.Errors
  * @authro Graeme Rocher
  * @since 4.0
  */
+@CompileStatic
 trait GormEntity<D> implements GormValidateable {
     
     private static GormInstanceApi internalInstanceApi
@@ -42,6 +44,14 @@ trait GormEntity<D> implements GormValidateable {
      */
     static void initInternalApi(GormInstanceApi api) {
         internalInstanceApi = api
+    }
+
+    /**
+     * Resets internal state. This is an internal method and should not be used
+     */
+    static void resetInternalApi() {
+        internalInstanceApi = null
+        internalStaticApi = null
     }
 
     /**

@@ -17,6 +17,11 @@ package org.grails.datastore.mapping.graph;
 import org.grails.datastore.mapping.core.Datastore;
 
 /**
+ * Marker interface for a Datastore that is a Graph
+ *
  * @author Guillaume Laforge
+ * @author Graeme Rocher
+ *
+ * @since 1.0
  */
 public interface GraphDatastore extends Datastore {}

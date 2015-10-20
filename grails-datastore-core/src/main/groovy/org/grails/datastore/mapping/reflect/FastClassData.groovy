@@ -48,7 +48,6 @@ class FastClassData {
         FastClass.Generator gen = new FastClass.Generator();
         gen.setType(entity.javaClass);
         gen.setClassLoader(entity.javaClass.classLoader);
-        gen.useCache = false
         this.fastClass = gen.create();
         if(entity.identity != null) {
             def identifierName = getIdentifierName(entity.mapping)

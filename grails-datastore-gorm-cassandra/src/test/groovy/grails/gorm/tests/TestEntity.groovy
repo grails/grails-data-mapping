@@ -1,11 +1,12 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
+import groovy.transform.EqualsAndHashCode
 
 /**
  * @author graemerocher
  */
-@groovy.transform.EqualsAndHashCode(includes=["id"])
+@EqualsAndHashCode(includes=["id"])
 @Entity
 class TestEntity implements Serializable {
     UUID id

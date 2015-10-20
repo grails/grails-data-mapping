@@ -19,6 +19,7 @@ import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.StatelessDatastore;
+import org.grails.datastore.mapping.graph.GraphDatastore;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
@@ -36,9 +37,13 @@ import java.util.Set;
 
 /**
  * Datastore implementation for Neo4j backend
+ *
  * @author Stefan Armbruster (stefan@armbruster-it.de)
+ * @author Graeme Rocher
+ *
+ * @since 1.0
  */
-public class Neo4jDatastore extends AbstractDatastore implements InitializingBean, DisposableBean, StatelessDatastore {
+public class Neo4jDatastore extends AbstractDatastore implements InitializingBean, DisposableBean, StatelessDatastore, GraphDatastore {
 
     private static Logger log = LoggerFactory.getLogger(Neo4jDatastore.class);
 

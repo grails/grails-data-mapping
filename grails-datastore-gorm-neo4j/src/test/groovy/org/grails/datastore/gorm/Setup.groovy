@@ -29,6 +29,7 @@ import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
 import java.lang.management.ManagementFactory
+import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
 
 class Setup {
@@ -48,13 +49,38 @@ class Setup {
 //        log.info "before shutdown, active: $txManager.activeTxCount, committed $txManager.committedTxCount, started: $txManager.startedTxCount, rollback: $txManager.rolledbackTxCount, status: $txManager.status"
 //        assert txManager.activeTxCount == 0, "something is wrong with connection handling - we still have $txManager.activeTxCount connections open"
 
+        def enhancer = new Neo4jGormEnhancer(datastore, new Neo4jDatastoreTransactionManager(datastore: datastore))
+        enhancer.close()
         webServer?.stop()
+
+        graphDb.@neoDataSource.kernel.stop()
+
+
         graphDb?.shutdown()
+        datastore.destroy()
+        graphDb = null
+        webServer = null
+        dataSource = null
+        datastore = null
+
+        // force clearing of thread locals, Neo4j connection pool leaks :(
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        for(t in threadSet) {
+            try {
+                def f = Thread.getDeclaredField("threadLocals")
+                f.accessible = true
+                f.set(t, null)
+            } catch (Throwable e) {
+                println "ERROR: Cannot clear thread local $e.message"
+            }
+        }
+
         log.info "after shutdown"
     }
 
     static Session setup(classes) {
 
+        assert datastore == null
         def ctx = new GenericApplicationContext()
         ctx.refresh()
 

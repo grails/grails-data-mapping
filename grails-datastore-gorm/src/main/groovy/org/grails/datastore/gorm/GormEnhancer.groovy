@@ -16,7 +16,6 @@ package org.grails.datastore.gorm
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
-import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory
 import org.grails.datastore.mapping.reflect.MetaClassUtils
 import org.grails.datastore.mapping.reflect.NameUtils
 
@@ -58,7 +57,7 @@ import org.grails.datastore.mapping.model.types.Association
  * @author Graeme Rocher
  */
 @Commons
-class GormEnhancer {
+class GormEnhancer implements Closeable {
 
     Datastore datastore
     PlatformTransactionManager transactionManager
@@ -75,6 +74,31 @@ class GormEnhancer {
         this.transactionManager = transactionManager
         if(datastore != null) {
             registerConstraints(datastore)
+        }
+    }
+
+    @Override
+    @CompileStatic
+    void close() throws IOException {
+        removeConstraints()
+        def registry = GroovySystem.metaClassRegistry
+        for(entity in datastore.mappingContext.persistentEntities) {
+            def cls = entity.javaClass
+            try {
+                registry.removeMetaClass(cls)
+                InvokerHelper.invokeStaticMethod(cls, "resetInternalApi", null)
+                InvokerHelper.invokeStaticMethod(cls, "resetInternalValidationApi", null)
+            } catch (Exception ex) {
+                log.warn("There was an error shutting down GORM for entity [$cls.name]: ${ex.message}", ex)
+            }
+        }
+    }
+
+    protected void removeConstraints() {
+        try {
+            Thread.currentThread().contextClassLoader.loadClass("org.codehaus.groovy.grails.validation.ConstrainedProperty").removeConstraint('unique')
+        } catch (Throwable e) {
+            log.warn("Error removing applied constraints on shutdown. ${e.message}", e)
         }
     }
 

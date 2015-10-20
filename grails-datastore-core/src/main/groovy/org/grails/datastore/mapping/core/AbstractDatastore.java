@@ -14,14 +14,17 @@
  */
 package org.grails.datastore.mapping.core;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import groovy.lang.GroovySystem;
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.FastClassData;
 import org.grails.datastore.mapping.reflect.FastEntityAccess;
 import org.springframework.beans.factory.DisposableBean;
@@ -81,6 +84,11 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     public void destroy() throws Exception {
         ERRORS_MAP.remove();
         VALIDATE_MAP.remove();
+
+        for (PersistentEntity persistentEntity : getMappingContext().getPersistentEntities()) {
+            GroovySystem.getMetaClassRegistry().removeMetaClass(persistentEntity.getJavaClass());
+        }
+        ClassPropertyFetcher.clearCache();
     }
 
     public void setApplicationContext(ApplicationContext ctx) {

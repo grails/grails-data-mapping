@@ -15,6 +15,7 @@
  */
 package org.grails.datastore.gorm
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.validation.ValidationErrors
 import org.springframework.validation.Errors
 
@@ -26,8 +27,9 @@ import org.springframework.validation.Errors
  * @author Graeme Rocher
  * @since 4.0
  */
+@CompileStatic
 trait GormValidateable {
-    private static GormValidationApi internalValidationApi
+    protected static GormValidationApi internalValidationApi
 
     /**
      * The validation errors object
@@ -40,6 +42,14 @@ trait GormValidateable {
     static void initInternalValidationApi(GormValidationApi gvi) {
         internalValidationApi = gvi
     }
+
+    /**
+     * Resets internal state. This is an internal method and should not be used
+     */
+    static void resetInternalValidationApi() {
+        internalValidationApi = null
+    }
+
 
     /**
      * Used to obtain the {@link GormValidationApi} instance. This method is used internally by the framework and SHOULD NOT be called by the developer
