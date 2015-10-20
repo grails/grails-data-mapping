@@ -57,15 +57,7 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.PropertyMapping;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.Basic;
-import org.grails.datastore.mapping.model.types.Custom;
-import org.grails.datastore.mapping.model.types.Embedded;
-import org.grails.datastore.mapping.model.types.EmbeddedCollection;
-import org.grails.datastore.mapping.model.types.ManyToMany;
-import org.grails.datastore.mapping.model.types.OneToMany;
-import org.grails.datastore.mapping.model.types.Simple;
-import org.grails.datastore.mapping.model.types.ToOne;
+import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.context.ApplicationEventPublisher;
@@ -382,9 +374,14 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
     protected void cacheNativeEntry(PersistentEntity persistentEntity,
                                          Serializable nativeKey, T nativeEntry) {
         SessionImplementor<Object> si = (SessionImplementor<Object>) session;
-        Serializable key = (Serializable) getMappingContext().getConversionService().convert(
-                nativeKey, persistentEntity.getIdentity().getType());
+        Serializable key = convertIdIfNecessary(persistentEntity, nativeKey) ;
         si.cacheEntry(persistentEntity, key, nativeEntry);
+    }
+
+    protected Serializable convertIdIfNecessary(PersistentEntity entity, Serializable nativeKey) {
+        PersistentProperty identity = entity.getIdentity();
+        return (Serializable) getMappingContext().getConversionService().convert(
+                nativeKey, identity.getType());
     }
 
     protected void cacheEmbeddedEntry(PersistentEntity persistentEntity,
@@ -488,8 +485,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
                     else if (tmp != null && !prop.getType().isInstance(tmp)) {
                         PersistentEntity associatedEntity = association.getAssociatedEntity();
                         if(associatedEntity != null) {
-                            final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(
-                                    tmp, associatedEntity.getIdentity().getType());
+                            final Serializable associationKey = convertIdIfNecessary(associatedEntity, tmp);
                             if (associationKey != null) {
 
                                 PropertyMapping<Property> associationPropertyMapping = prop.getMapping();
@@ -543,8 +539,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
                 else {
                     boolean isLazy = isLazyAssociation(associationPropertyMapping);
                     AssociationIndexer indexer = getAssociationIndexer(nativeEntry, association);
-                    nativeKey = (Serializable) getMappingContext().getConversionService().convert(
-                            nativeKey, getPersistentEntity().getIdentity().getType());
+                    nativeKey = convertIdIfNecessary(getPersistentEntity(), nativeKey );
                     if (isLazy) {
                         if (List.class.isAssignableFrom(association.getType())) {
                             ea.setPropertyNoConversion(association.getName(),
@@ -573,8 +568,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
                 PropertyMapping<Property> associationPropertyMapping = manyToMany.getMapping();
 
                 boolean isLazy = isLazyAssociation(associationPropertyMapping);
-                nativeKey = (Serializable) getMappingContext().getConversionService().convert(
-                        nativeKey, getPersistentEntity().getIdentity().getType());
+                nativeKey = convertIdIfNecessary(getPersistentEntity(), nativeKey);
                 PersistentEntity associatedEntity = manyToMany.getAssociatedEntity();
                 if(associatedEntity != null) {
 

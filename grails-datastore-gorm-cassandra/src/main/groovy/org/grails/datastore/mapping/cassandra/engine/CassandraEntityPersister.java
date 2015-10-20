@@ -631,7 +631,19 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 	}
 
 
-	protected class CassandraEntityAccess extends NativeEntryModifyingEntityAccess {
+    @Override
+    protected Serializable convertIdIfNecessary(PersistentEntity entity, Serializable key) {
+        final ClassMapping classMapping = entity.getMapping();
+        final Table table = (Table) classMapping.getMappedForm();
+        if(table.hasCompositePrimaryKeys() && (key instanceof Map)) {
+            return key;
+        }
+        else {
+            return super.convertIdIfNecessary(entity, key);
+        }
+    }
+
+    protected class CassandraEntityAccess extends NativeEntryModifyingEntityAccess {
 
 		public CassandraEntityAccess(PersistentEntity persistentEntity, Object entity) {
 			super(persistentEntity, entity);
