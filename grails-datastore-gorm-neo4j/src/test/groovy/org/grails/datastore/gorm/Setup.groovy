@@ -2,8 +2,10 @@ package org.grails.datastore.gorm
 
 import grails.core.DefaultGrailsApplication
 import grails.core.GrailsApplication
+import grails.util.Holders
 import org.apache.tomcat.jdbc.pool.DataSource
 import org.apache.tomcat.jdbc.pool.PoolProperties
+import org.grails.core.lifecycle.ShutdownOperations
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.neo4j.internal.tools.DumpGraphOnSessionFlushListener
@@ -75,6 +77,8 @@ class Setup {
             }
         }
 
+        ShutdownOperations.runOperations()
+        Holders.clear()
         log.info "after shutdown"
     }
 
