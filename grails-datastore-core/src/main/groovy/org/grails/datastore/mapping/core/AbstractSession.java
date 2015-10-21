@@ -42,6 +42,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.transaction.NoTransactionException;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.Assert;
 
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap.Builder;
@@ -849,6 +851,11 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public final Transaction beginTransaction() {
+        return beginTransaction(new DefaultTransactionDefinition());
+    }
+
+    @Override
+    public Transaction beginTransaction(TransactionDefinition definition) {
         transaction = beginTransactionInternal();
         return transaction;
     }

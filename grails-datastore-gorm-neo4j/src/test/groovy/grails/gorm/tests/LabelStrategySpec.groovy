@@ -162,7 +162,7 @@ class LabelStrategySpec extends GormDatastoreSpec {
     }
 
     private def verifyLabelsForId(id, labelz) {
-        def cypherResult = session.nativeInterface.execute("MATCH (n {__id__:{1}}) return labels(n) as labels", [id])
+        def cypherResult = session.nativeInterface.execute("MATCH (n {__id__:{1}}) return labels(n) as labels", ["1":id])
         assert IteratorUtil.first(cypherResult)["labels"] as Set == labelz as Set
         true
     }

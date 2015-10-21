@@ -31,6 +31,7 @@ import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.grails.datastore.gorm.mongo.bean.factory.MongoClientFactoryBean;
 import org.grails.datastore.gorm.mongo.extensions.MongoExtensions;
+import org.grails.datastore.mapping.config.utils.PropertyResolverMap;
 import org.grails.datastore.mapping.core.*;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.model.*;
@@ -46,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
+import org.springframework.core.env.PropertyResolver;
 
 /**
  * A Datastore implementation for the Mongo document store.
@@ -73,28 +75,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     protected boolean codecEngine = false;
     protected CodecRegistry codecRegistry;
 
-    /**
-     * Constructs a MongoDatastore using the default database name of "test" and defaults for the host and port.
-     * Typically used during testing.
-     */
-    public MongoDatastore() {
-        this(new MongoMappingContext("test"), Collections.<String, String>emptyMap(), null);
-    }
 
-    /**
-     * Constructs a MongoDatastore using the given MappingContext and connection details map.
-     *
-     * @param mappingContext    The MongoMappingContext
-     * @param connectionDetails The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings
-     */
-    public MongoDatastore(MongoMappingContext mappingContext,
-                          Map<String, String> connectionDetails, MongoClientOptions mongoOptions, ConfigurableApplicationContext ctx) {
-
-        this(mappingContext, connectionDetails, ctx);
-        if (mongoOptions != null) {
-            this.mongoOptions = mongoOptions;
-        }
-    }
 
     /**
      * Constructs a MongoDatastore using the given MappingContext and connection details map.
@@ -150,6 +131,51 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         );
     }
 
+    /**
+     * Constructs a MongoDatastore using the given MappingContext and connection details map.
+     *
+     * @param mappingContext    The MongoMappingContext
+     * @param configuration The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings
+     */
+    public MongoDatastore(MongoMappingContext mappingContext,
+                          PropertyResolver configuration, ConfigurableApplicationContext ctx) {
+        this(mappingContext, (Map<String, String>) new PropertyResolverMap(configuration), ctx);
+    }
+
+    /**
+     * Constructs a MongoDatastore using the given MappingContext and connection details map.
+     *
+     * @param mappingContext    The MongoMappingContext
+     */
+    public MongoDatastore(MongoMappingContext mappingContext, ConfigurableApplicationContext ctx) {
+        this(mappingContext, (Map<String, String>) new PropertyResolverMap(ctx.getEnvironment()), ctx);
+    }
+
+    /**
+     * Constructs a MongoDatastore using the default database name of "test" and defaults for the host and port.
+     * Typically used during testing.
+     */
+    public MongoDatastore() {
+        this(new MongoMappingContext("test"), Collections.<String, String>emptyMap(), null);
+    }
+
+    /**
+     * Constructs a MongoDatastore using the given MappingContext and connection details map.
+     *
+     * @param mappingContext    The MongoMappingContext
+     * @param connectionDetails The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings
+     */
+    public MongoDatastore(MongoMappingContext mappingContext,
+                          Map<String, String> connectionDetails, MongoClientOptions mongoOptions, ConfigurableApplicationContext ctx) {
+
+        this(mappingContext, connectionDetails, ctx);
+        if (mongoOptions != null) {
+            this.mongoOptions = mongoOptions;
+        }
+    }
+
+
+
     public MongoDatastore(MongoMappingContext mappingContext) {
         this(mappingContext, Collections.<String, String>emptyMap(), null);
     }
@@ -159,13 +185,11 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      *
      * @param mappingContext The MappingContext
      * @param mongo          The existing Mongo instance
-     * @deprecated The {@link Mongo} class is deprecated
      */
-    @Deprecated
-    public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
+    public MongoDatastore(MongoMappingContext mappingContext, MongoClient mongo,
                           ConfigurableApplicationContext ctx) {
         this(mappingContext, Collections.<String, String>emptyMap(), ctx);
-        this.mongo = (MongoClient) mongo;
+        this.mongo = mongo;
     }
 
     /**
@@ -174,13 +198,11 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      *
      * @param mappingContext The MappingContext
      * @param mongo          The existing Mongo instance
-     * @deprecated The {@link Mongo} class is deprecated
      */
-    @Deprecated
-    public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
+    public MongoDatastore(MongoMappingContext mappingContext, MongoClient mongo,
                           Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         this(mappingContext, connectionDetails, ctx);
-        this.mongo = (MongoClient) mongo;
+        this.mongo = mongo;
     }
 
     /**
@@ -188,11 +210,13 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      *
      * @param mappingContext The MappingContext
      * @param mongo          The existing Mongo instance
+     * @deprecated The {@link Mongo} class is deprecated
      */
-    public MongoDatastore(MongoMappingContext mappingContext, MongoClient mongo,
+    @Deprecated
+    public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
                           ConfigurableApplicationContext ctx) {
         this(mappingContext, Collections.<String, String>emptyMap(), ctx);
-        this.mongo = mongo;
+        this.mongo = (MongoClient) mongo;
     }
 
     /**
@@ -201,11 +225,13 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      *
      * @param mappingContext The MappingContext
      * @param mongo          The existing Mongo instance
+     * @deprecated The {@link Mongo} class is deprecated
      */
-    public MongoDatastore(MongoMappingContext mappingContext, MongoClient mongo,
+    @Deprecated
+    public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
                           Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
         this(mappingContext, connectionDetails, ctx);
-        this.mongo = mongo;
+        this.mongo = (MongoClient) mongo;
     }
 
     @Autowired(required = false)

@@ -15,69 +15,57 @@
  */
 package org.grails.datastore.gorm.neo4j.engine;
 
+import org.grails.datastore.gorm.neo4j.CypherBuilder;
 import org.grails.datastore.gorm.neo4j.GraphPersistentEntity;
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter;
 import org.grails.datastore.mapping.engine.EntityAccess;
+import org.neo4j.graphdb.GraphDatabaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a pending relationship insert
  *
  * @author Stefan
+ * @author Graeme Rocher
+ *
  */
 public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long> {
 
     private static Logger log = LoggerFactory.getLogger(RelationshipPendingInsert.class);
 
-    private CypherEngine cypherEngine;
-    private EntityAccess target;
-    private String relType;
+    private final EntityAccess target;
+    private final String relType;
+    private final GraphDatabaseService graphDatabaseService;
 
-    public RelationshipPendingInsert(EntityAccess source, String relType, EntityAccess target, CypherEngine cypherEngine) {
+    public RelationshipPendingInsert(EntityAccess source, String relType, EntityAccess target, GraphDatabaseService graphDatabaseService) {
         super(source.getPersistentEntity(), -1l, source.getEntity(), source);
         this.relType = relType;
         this.target = target;
-        this.cypherEngine = cypherEngine;
-
-//        validateNonExistingRelationship("constructor");
+        this.graphDatabaseService = graphDatabaseService;
 
     }
-
-/*
-    private void validateNonExistingRelationship(String phase) {
-        List params = new ArrayList();
-        params.add(getEntityAccess().getIdentifier());
-        params.add(target.getIdentifier());
-
-        String labelFrom = ((GraphPersistentEntity)getEntity()).getLabel();
-        String labelTo = ((GraphPersistentEntity)target.getPersistentEntity()).getLabel();
-        String cypher = String.format("MATCH (from:%s {__id__:{1}})-[r:%s]->(to:%s {__id__:{2}}) RETURN r", labelFrom, relType, labelTo);
-        CypherResult r = cypherEngine.execute(cypher, params);
-        int count = IteratorUtil.count(r);
-        if (count >0) {
-            log.error("oops, relationship already exists during " + phase);
-            //throw new IllegalStateException("oops, relationship already exists");
-        }
-    }
-*/
 
     @Override
     public void run() {
 
-//        validateNonExistingRelationship("execution");
-
-        List params = new ArrayList();
-        params.add(getEntityAccess().getIdentifier());
-        params.add(target.getIdentifier());
+        Map<String,Object> params =  new LinkedHashMap<String, Object>(2);
+        params.put(CypherBuilder.START, getEntityAccess().getIdentifier());
+        params.put(CypherBuilder.END, target.getIdentifier());
 
         String labelsFrom = ((GraphPersistentEntity)getEntity()).getLabelsAsString();
         String labelsTo = ((GraphPersistentEntity)target.getPersistentEntity()).getLabelsAsString();
-        String cypher = String.format("MATCH (from%s {__id__:{1}}), (to%s {__id__:{2}}) MERGE (from)-[:%s]->(to)", labelsFrom, labelsTo, relType);
-        cypherEngine.execute(cypher, params);
+        String cypher = String.format("MATCH (from%s {__id__:{start}}), (to%s {__id__:{end}}) MERGE (from)-[:%s]->(to)", labelsFrom, labelsTo, relType);
+
+        if(log.isDebugEnabled()) {
+            log.debug("Executing Relationship Merge cypher [{}] for parameters [{}]", cypher, params);
+        }
+        graphDatabaseService.execute(cypher, params);
     }
 
 }

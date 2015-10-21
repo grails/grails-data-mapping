@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.transactions.Transaction;
+import org.springframework.transaction.TransactionDefinition;
 
 /**
  * The Session represents the active interaction with a datastore.
@@ -93,6 +94,12 @@ public interface Session {
      * @return The transaction
      */
     Transaction beginTransaction();
+
+    /**
+     * Starts a transaction
+     * @return The transaction
+     */
+    Transaction beginTransaction(TransactionDefinition definition);
 
    /**
      * Obtains the MappingContext instance

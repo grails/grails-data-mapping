@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.neo4j.engine;
 
 import groovy.lang.GroovyObject;
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.neo4j.*;
 import org.grails.datastore.gorm.neo4j.collection.Neo4jList;
 import org.grails.datastore.gorm.neo4j.collection.Neo4jSet;
@@ -14,8 +15,12 @@ import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.query.Query;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Result;
 import org.neo4j.helpers.collection.IteratorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +84,7 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity,
                                         Long id, Collection<String> labels,
-                                        Map<String, Object> data) {
+                                        Node data) {
 
         PersistentEntity persistentEntity = mostSpecificPersistentEntity(defaultPersistentEntity, labels);
 
@@ -139,28 +144,41 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
     }
 
-    private Object unmarshall(PersistentEntity persistentEntity, Long id, Map<String, Object> data) {
+    private Object unmarshall(PersistentEntity persistentEntity, Long id, Node data) {
 
-        log.debug( "unmarshalling entity {}, props {}, {}", id, data);
+        if(log.isDebugEnabled()) {
+            log.debug( "unmarshalling entity {}, props {}, {}", id, data);
+        }
         EntityAccess entityAccess = getSession().createEntityAccess(persistentEntity, persistentEntity.newInstance());
         entityAccess.setIdentifier(id);
-        data.remove("__id__");
 
         Map<TypeDirectionPair, Map<String, Collection>> relationshipsMap = new HashMap<TypeDirectionPair, Map<String, Collection>>();
-        CypherResult relationships = getSession().getNativeInterface().execute(String.format("MATCH (m%s {__id__:{1}})-[r]-(o) RETURN type(r) as relType, startNode(r)=m as out, {ids: collect(o.__id__), labels: collect(labels(o))} as values", ((GraphPersistentEntity)persistentEntity).getLabelsAsString()), Collections.singletonList(id));
-        for (Map<String, Object> row : relationships) {
+        final String cypher = String.format("MATCH (m%s {__id__:{id}})-[r]-(o) RETURN type(r) as relType, startNode(r)=m as out, {ids: collect(o.__id__), labels: collect(labels(o))} as values", ((GraphPersistentEntity) persistentEntity).getLabelsAsString());
+        final GraphDatabaseService graphDatabaseService = getSession().getNativeInterface();
+        final Result relationships = graphDatabaseService.execute(cypher, Collections.<String, Object>singletonMap(GormProperties.IDENTITY, id));
+        while(relationships.hasNext()) {
+            final Map<String, Object> row = relationships.next();
             String relType = (String) row.get("relType");
             Boolean outGoing = (Boolean) row.get("out");
             Map<String, Collection> values = (Map<String, Collection>) row.get("values");
             TypeDirectionPair key = new TypeDirectionPair(relType, outGoing);
             relationshipsMap.put(key, values);
+
         }
+
+        final List<String> nodeProperties = DefaultGroovyMethods.toList(data.getPropertyKeys());
 
         for (PersistentProperty property: entityAccess.getPersistentEntity().getPersistentProperties()) {
 
             String propertyName = property.getName();
-            if (property instanceof Simple) {  // implicitly sets version property as well
-                entityAccess.setProperty(propertyName, data.remove(propertyName));
+            if (property instanceof Simple) {
+                // implicitly sets version property as well
+                if(data.hasProperty(propertyName)) {
+
+                    entityAccess.setProperty(propertyName, data.getProperty(propertyName));
+
+                    nodeProperties.remove(propertyName);
+                }
             } else if (property instanceof Association) {
 
                 Association association = (Association) property;
@@ -233,14 +251,18 @@ public class Neo4jEntityPersister extends EntityPersister {
 
                     // for single instances and singular property name do not use an array
                     Object value = (values.size()==1) && isSingular(entry.getKey().getType()) ? IteratorUtil.single(values): values;
-                    data.put(entry.getKey().getType(), value);
+                    data.setProperty(entry.getKey().getType(), value);
                 }
             }
         }
 
-        if (!data.isEmpty()) {
+        if (!nodeProperties.isEmpty()) {
             GroovyObject go = (GroovyObject)(entityAccess.getEntity());
-            go.setProperty(Neo4jGormEnhancer.UNDECLARED_PROPERTIES, data);
+            Map<String,Object> undeclared = new LinkedHashMap<String, Object>();
+            for (String nodeProperty : nodeProperties) {
+                undeclared.put(nodeProperty,data.getProperty(nodeProperty));
+            }
+            go.setProperty(Neo4jGormEnhancer.UNDECLARED_PROPERTIES, undeclared);
         }
 
 
@@ -319,7 +341,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             if (cancelUpdate(pe, entityAccess)) {
                 return null;
             }
-            getSession().addPendingUpdate(new NodePendingUpdate(entityAccess, getCypherEngine(), getMappingContext()));
+            getSession().addPendingUpdate(new NodePendingUpdate(entityAccess, getSession().getNativeInterface(), getMappingContext()));
             persistAssociationsOfEntity(pe, entityAccess, true, persistingColl);
             firePostUpdateEvent(pe, entityAccess);
 
@@ -327,7 +349,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             if (cancelInsert(pe, entityAccess)) {
                 return null;
             }
-            getSession().addPendingInsert(new NodePendingInsert(getSession().getDatastore().nextIdForType(pe), entityAccess, getCypherEngine(), getMappingContext()));
+            getSession().addPendingInsert(new NodePendingInsert(getSession().getDatastore().nextIdForType(pe), entityAccess, getSession().getNativeInterface(), getMappingContext()));
             persistAssociationsOfEntity(pe, entityAccess, false, persistingColl);
             firePostInsertEvent(pe, entityAccess);
         }
@@ -403,11 +425,11 @@ public class Neo4jEntityPersister extends EntityPersister {
 
                         if (!reversed) {
                             if (isUpdate) {
-                                getSession().addPendingInsert(new RelationshipPendingDelete(entityAccess, relType, null , getCypherEngine()));
+                                getSession().addPendingInsert(new RelationshipPendingDelete(entityAccess, relType, null , getSession().getNativeInterface()));
                             }
                             getSession().addPendingInsert(new RelationshipPendingInsert(entityAccess, relType,
                                     getSession().createEntityAccess(to.getAssociatedEntity(), propertyValue),
-                                    getCypherEngine()));
+                                    getSession().getNativeInterface()));
                         }
 
                     }
@@ -443,10 +465,10 @@ public class Neo4jEntityPersister extends EntityPersister {
             }
         }
 
-        getCypherEngine().execute(
-                String.format("MATCH (n%s) WHERE n.__id__={1} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
+        getSession().getNativeInterface().execute(
+                String.format("MATCH (n%s) WHERE n.__id__={id} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
                         ((GraphPersistentEntity)pe).getLabelsAsString()),
-                Collections.singletonList(entityAccess.getIdentifier()));
+                Collections.singletonMap(GormProperties.IDENTITY, entityAccess.getIdentifier()));
 
         firePostDeleteEvent(pe, entityAccess);
     }
@@ -498,9 +520,12 @@ public class Neo4jEntityPersister extends EntityPersister {
             }
         }
 
-        getCypherEngine().execute(
-                String.format("MATCH (n%s) WHERE n.__id__ in {1} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
-                        ((GraphPersistentEntity)pe).getLabelsAsString()), Collections.singletonList(ids));
+        final String cypher = String.format("MATCH (n%s) WHERE n.__id__ in {id} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
+                ((GraphPersistentEntity) pe).getLabelsAsString());
+        final Map<String, Object> params = Collections.<String, Object>singletonMap(GormProperties.IDENTITY, ids);
+        getSession()
+                .getNativeInterface()
+                .execute( cypher, params );
 
         for (EntityAccess entityAccess: entityAccesses) {
             getSession().clear(entityAccess.getEntity());
@@ -533,7 +558,4 @@ public class Neo4jEntityPersister extends EntityPersister {
         return getSession().createEntityAccess(pe, obj);
     }
 
-    public CypherEngine getCypherEngine() {
-        return (CypherEngine) session.getNativeInterface();
-    }
 }

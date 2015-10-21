@@ -15,6 +15,9 @@ public class CypherBuilder {
     public final static String TYPE = "type";
     public final static String END = "end";
     public final static String START = "start";
+    public static final String IDENTIFIER = "__id__";
+    public static final String PROPS = "props";
+    public static final String RELATED = "related";
 
 
     private String forLabels;
@@ -22,7 +25,7 @@ public class CypherBuilder {
     private String conditions;
     private String orderAndLimits;
     private List<String> returnColumns = new ArrayList<String>();
-    private List<Object> params = new ArrayList<Object>();
+    private Map<String, Object> params = new LinkedHashMap<String, Object>();
 
     public CypherBuilder(String forLabels) {
         this.forLabels = forLabels;
@@ -45,7 +48,7 @@ public class CypherBuilder {
     }
 
     public int addParam(Object value) {
-        params.add(value);
+        params.put(String.valueOf(params.size() + 1), value);
         return params.size();
     }
 
@@ -55,14 +58,14 @@ public class CypherBuilder {
      * @param value
      */
     public void replaceParamAt(int position, Object value) {
-        params.set(position-1, value);
+        params.put(String.valueOf(position - 1), value);
     }
 
 //    public int getNextParamNumber() {
 //        return params.size();
 //    }
 
-    public List<Object> getParams() {
+    public Map<String, Object> getParams() {
         return params;
     }
 

@@ -11,48 +11,52 @@ import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.grails.datastore.mapping.transactions.Transaction;
 import org.neo4j.cypher.javacompat.ExecutionEngine;
+import org.neo4j.graphdb.GraphDatabaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.FlushModeType;
 import java.io.Serializable;
 import java.util.*;
 
 /**
+ *
+ * Represents a session for interacting with Neo4j
+ *
  * Created by stefan on 03.03.14.
  *
  * @author Stefan
  * @author Graeme Rocher
  *
+ * @since 1.0
+ *
  */
-public class Neo4jSession extends AbstractSession<ExecutionEngine> {
+public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
     private static Logger log = LoggerFactory.getLogger(Neo4jSession.class);
 
-    private CypherEngine cypherEngine;
 
     /** map node id -> hashmap of relationship types showing startNode id and endNode id */
     private Collection<Object> persistingInstances = new HashSet<Object>();
+    protected final GraphDatabaseService graphDatabaseService;
 
-    public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, CypherEngine cypherEngine) {
+    protected Neo4jTransaction activeTransaction;
+
+    public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, GraphDatabaseService graphDatabaseService) {
         super(datastore, mappingContext, publisher, stateless);
         if(log.isDebugEnabled()) {
             log.debug("session created");
         }
-        this.cypherEngine = cypherEngine;
+        this.graphDatabaseService = graphDatabaseService;
     }
 
-
-    @Override
-    public void clear() {
-        cypherEngine.commit();
-        super.clear();
-    }
 
 
     @Override
@@ -67,7 +71,30 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     }
 
     public Transaction beginTransaction(TransactionDefinition transactionDefinition) {
-        return new Neo4jTransaction(cypherEngine, transactionDefinition);
+        if (activeTransaction != null) {
+            return activeTransaction;
+        }
+        else {
+
+            // if there is a current transaction, return that, since Neo4j doesn't really supported transaction nesting
+            if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
+                activeTransaction = (Neo4jTransaction) sessionHolder.getTransaction();
+            } else {
+
+                activeTransaction = new Neo4jTransaction(graphDatabaseService, transactionDefinition);
+            }
+            return activeTransaction;
+        }
+    }
+
+    @Override
+    public void disconnect() {
+        super.disconnect();
+        if(activeTransaction != null) {
+            activeTransaction.getTransaction().close();
+            activeTransaction = null;
+        }
     }
 
     @Override
@@ -76,8 +103,8 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
     }
 
     @Override
-    public CypherEngine getNativeInterface() {
-        return cypherEngine;
+    public GraphDatabaseService getNativeInterface() {
+        return graphDatabaseService;
     }
 
     @Override
@@ -121,18 +148,9 @@ public class Neo4jSession extends AbstractSession<ExecutionEngine> {
         }
     }
 
-/*    void setPersistentRelationships(Long id, Map<String, Collection<Collection<Long>>> relationships) {
-        persistentRelationships.put(id, relationships)
-    }
-
-    Map<String, Collection<Collection<Long>>> getPersistentRelationships(Long id) {
-        persistentRelationships.get(id)
-    }*/
-
     @Override
     public void flush() {
         persistDirtyButUnsavedInstances();
-        cypherEngine.commit();
         super.flush();
     }
 

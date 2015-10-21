@@ -24,13 +24,15 @@ import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.Simple;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Result;
 import org.neo4j.helpers.collection.IteratorUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents a pending node update
@@ -40,12 +42,13 @@ import java.util.Map;
  */
 class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
 
-    private CypherEngine cypherEngine;
-    private MappingContext mappingContext;
+    private static Logger log = LoggerFactory.getLogger(NodePendingUpdate.class);
+    private final MappingContext mappingContext;
+    private final GraphDatabaseService graphDatabaseService;
 
-    public NodePendingUpdate(EntityAccess ea, CypherEngine cypherEngine, MappingContext mappingContext) {
+    public NodePendingUpdate(EntityAccess ea, GraphDatabaseService graphDatabaseService, MappingContext mappingContext) {
         super(ea.getPersistentEntity(), (Long) ea.getIdentifier(), ea.getEntity(), ea);
-        this.cypherEngine = cypherEngine;
+        this.graphDatabaseService = graphDatabaseService;
         this.mappingContext = mappingContext;
     }
 
@@ -56,6 +59,9 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
         simpleProps.put("__id__", id);
 
         PersistentEntity persistentEntity = getEntityAccess().getPersistentEntity();
+
+        // TODO: Restore correct dirty check handling here!!
+
 //        DirtyCheckable dirtyCheckable = null;
 //        if (getNativeEntry() instanceof DirtyCheckable) {
 //            dirtyCheckable = (DirtyCheckable)getNativeEntry();
@@ -78,29 +84,34 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
 
         String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance(getEntityAccess().getEntity());
 
-        List params = new ArrayList(2);
-        params.add(id);
+        Map<String,Object> params =  new LinkedHashMap<String, Object>(2);
+        params.put(GormProperties.IDENTITY, id);
 
         //TODO: set n={props} might remove dynamic properties
         StringBuilder cypherStringBuilder = new StringBuilder();
-        cypherStringBuilder.append("MATCH (n%s) WHERE n.__id__={").append(params.size()).append("}");
+        cypherStringBuilder.append("MATCH (n%s) WHERE n.__id__={id}");
         if (persistentEntity.hasProperty("version", Long.class) && persistentEntity.isVersioned()) {
             Long version = (Long) getEntityAccess().getProperty("version");
             if (version == null) {
                 version = 0l;
             }
-            params.add(version);
-            cypherStringBuilder.append(" AND n.version={").append(params.size()).append("}");
+            params.put(GormProperties.VERSION, version);
+            cypherStringBuilder.append(" AND n.version={version}");
             long newVersion = version + 1;
             simpleProps.put("version", newVersion);
             getEntityAccess().setProperty("version", newVersion);
         }
-        params.add(simpleProps);
-        cypherStringBuilder.append(" SET n={").append(params.size()).append("} RETURN id(n) as id");
+        params.put("props", simpleProps);
+        cypherStringBuilder.append(" SET n={props} RETURN id(n) as id");
         String cypher = String.format(cypherStringBuilder.toString(), labels);
 
 
-        Map<String, Object> result = IteratorUtil.singleOrNull(cypherEngine.execute(cypher, params));
+        if( log.isDebugEnabled() ) {
+            log.debug("Executing Update Cypher [{}] for parameters [{}]", cypher, params);
+        }
+
+        final Result executionResult = graphDatabaseService.execute(cypher, params);
+        Map<String, Object> result = IteratorUtil.singleOrNull(executionResult);
         if (result == null) {
             throw new OptimisticLockingException(persistentEntity, id);
         }

@@ -15,6 +15,7 @@
  */
 package org.grails.datastore.gorm.neo4j.engine;
 
+import org.grails.datastore.gorm.neo4j.CypherBuilder;
 import org.grails.datastore.gorm.neo4j.GraphPersistentEntity;
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer;
 import org.grails.datastore.gorm.neo4j.Neo4jUtils;
@@ -22,7 +23,11 @@ import org.grails.datastore.mapping.core.impl.PendingInsertAdapter;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.Simple;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -30,15 +35,17 @@ import java.util.*;
  * Represents a pending node insert
  *
  * @author Stefan
+ * @author Graeme Rocher
  */
 public class NodePendingInsert extends PendingInsertAdapter<Object, Long> {
 
-    private CypherEngine cypherEngine;
-    private MappingContext mappingContext;
+    private static Logger log = LoggerFactory.getLogger(NodePendingUpdate.class);
+    private final GraphDatabaseService graphDatabaseService;
+    private final MappingContext mappingContext;
 
-    public NodePendingInsert(Long nativeKey, EntityAccess ea, CypherEngine cypherEngine, MappingContext mappingContext) {
+    public NodePendingInsert(Long nativeKey, EntityAccess ea, GraphDatabaseService graphDatabaseService, MappingContext mappingContext) {
         super(ea.getPersistentEntity(), nativeKey, ea.getEntity(), ea);
-        this.cypherEngine = cypherEngine;
+        this.graphDatabaseService = graphDatabaseService;
         this.mappingContext = mappingContext;
         ea.setIdentifier(nativeKey);
     }
@@ -46,7 +53,7 @@ public class NodePendingInsert extends PendingInsertAdapter<Object, Long> {
     @Override
     public void run() {
         Map<String, Object> simpleProps = new HashMap<String, Object>();
-        simpleProps.put("__id__", nativeKey);
+        simpleProps.put(CypherBuilder.IDENTIFIER, nativeKey);
         for (PersistentProperty pp : getEntityAccess().getPersistentEntity().getPersistentProperties()) {
             if (pp instanceof Simple) {
                 String name = pp.getName();
@@ -60,18 +67,26 @@ public class NodePendingInsert extends PendingInsertAdapter<Object, Long> {
         Map<String, List<Object>> dynamicRelProps = Neo4jGormEnhancer.amendMapWithUndeclaredProperties(simpleProps, getNativeEntry(), mappingContext);
 
         String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance(getEntityAccess().getEntity());
-        String cypher = String.format("CREATE (n%s {1})", labels);
+        String cypher = String.format("CREATE (n%s {props})", labels);
 
-        cypherEngine.execute(cypher, Collections.singletonList(simpleProps));
+        final Map<String, Object> createParams = Collections.<String, Object>singletonMap(CypherBuilder.PROPS, simpleProps);
+        if(log.isDebugEnabled()) {
+            log.debug("Executing Create Cypher [{}] for parameters [{}]", cypher, createParams);
+        }
+        graphDatabaseService.execute(cypher, createParams);
 
         for (Map.Entry<String, List<Object>> e: dynamicRelProps.entrySet()) {
             for (Object o: e.getValue()) {
                 GraphPersistentEntity gpe = (GraphPersistentEntity)mappingContext.getPersistentEntity(o.getClass().getName());
-                cypher = String.format("MATCH (a%s {__id__:{1}}), (b%s {__id__:{2}}) MERGE (a)-[:%s]->(b)", labels, gpe.getLabelsWithInheritance(o), e.getKey() );
-                List params = new ArrayList();
-                params.add(nativeKey);
-                params.add(gpe.getMappingContext().createEntityAccess(gpe, o).getIdentifier());
-                cypherEngine.execute(cypher, params);
+                cypher = String.format("MATCH (a%s {__id__:{id}}), (b%s {__id__:{related}}) MERGE (a)-[:%s]->(b)", labels, gpe.getLabelsWithInheritance(o), e.getKey() );
+                Map<String,Object> params =  new LinkedHashMap<String, Object>(2);
+                params.put(GormProperties.IDENTITY, nativeKey);
+                params.put(CypherBuilder.RELATED, gpe.getMappingContext().createEntityAccess(gpe, o).getIdentifier());
+
+                if(log.isDebugEnabled()) {
+                    log.debug("Executing Merge Cypher [{}] for parameters [{}]", cypher, params);
+                }
+                graphDatabaseService.execute(cypher, params);
             }
         }
     }

@@ -7,15 +7,44 @@ import org.grails.datastore.mapping.transactions.TransactionObject;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.FlushModeType;
 
 /**
  * @author Stefan Armbruster
+ * @author Graeme Rocher
  */
 
 public class Neo4jDatastoreTransactionManager extends DatastoreTransactionManager {
+
+
+    /**
+     * Override doSetRollbackOnly to call {@link org.neo4j.graphdb.Transaction#terminate()}
+     * @param status The transaction status
+     * @throws TransactionException
+     */
+    @Override
+    protected void doSetRollbackOnly(DefaultTransactionStatus status) throws TransactionException {
+        super.doSetRollbackOnly(status);
+        TransactionObject txObject = (TransactionObject) status.getTransaction();
+        Neo4jTransaction neo4jTransaction = (Neo4jTransaction) txObject.getTransaction();
+        neo4jTransaction.getTransaction().terminate();
+    }
+
+    /**
+     * Call {@link org.neo4j.graphdb.Transaction#close()} after completion
+     *
+     * @param transaction The transaction object
+     */
+    @Override
+    protected void doCleanupAfterCompletion(Object transaction) {
+        super.doCleanupAfterCompletion(transaction);
+        TransactionObject txObject = (TransactionObject) transaction;
+        Neo4jTransaction neo4jTransaction = (Neo4jTransaction) txObject.getTransaction();
+        neo4jTransaction.getTransaction().close();
+    }
 
     /**
      * same as superclass but passing through {@link org.springframework.transaction.TransactionDefinition}

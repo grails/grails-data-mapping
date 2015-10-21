@@ -18,6 +18,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
 import org.grails.datastore.gorm.neo4j.CypherBuilder
 import org.grails.datastore.gorm.neo4j.GraphPersistentEntity
+import org.grails.datastore.gorm.neo4j.Neo4jSession
 import org.grails.datastore.gorm.neo4j.Neo4jUtils
 import org.grails.datastore.gorm.neo4j.RelationshipUtils
 import org.grails.datastore.mapping.core.Session
@@ -25,6 +26,9 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.query.AssociationQuery
 import org.grails.datastore.mapping.query.Query
+import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.graphdb.Node
+
 /**
  * perform criteria queries on a Neo4j backend
  *
@@ -71,20 +75,25 @@ class Neo4jQuery extends Query {
             cypherBuilder.addReturnColumn(buildProjection(projection, cypherBuilder))
         }
 
-        def executionResult = cypherEngine.execute(cypherBuilder.build(), cypherBuilder.getParams())
+
+        def cypher = cypherBuilder.build()
+        def params = cypherBuilder.getParams()
+
+        log.debug("Executing Cypher Query [$cypher] for params [$params]")
+
+        def executionResult = graphDatabaseService.execute(cypher, params)
         if (projections.projectionList.empty) {
             // TODO: potential performance problem here: for each instance we unmarshall seperately, better: use one combined statement to get 'em all
             return executionResult.collect { Map<String,Object> map ->
 
                 Long id = map.id as Long
                 Collection<String> labels = map.labels as Collection<String>
-                Map<String,Object> data = map.data as Map<String, Object>
+                Node data = (Node) map.data
                 neo4jEntityPersister.unmarshallOrFromCache(persistentEntity, id, labels, data)
             }
         } else {
-
             executionResult.collect { Map<String, Object> row ->
-                executionResult.columns.collect {
+                executionResult.columns().collect {
                     row[it]
                 }
             }.flatten() as List
@@ -330,8 +339,13 @@ class Neo4jQuery extends Query {
         sb.toString()
     }
 
-    CypherEngine getCypherEngine() {
-        session.nativeInterface as CypherEngine
+    @Override
+    Neo4jSession getSession() {
+        return (Neo4jSession)super.getSession()
+    }
+
+    GraphDatabaseService getGraphDatabaseService() {
+        return (GraphDatabaseService)getSession().getNativeInterface()
     }
 }
 

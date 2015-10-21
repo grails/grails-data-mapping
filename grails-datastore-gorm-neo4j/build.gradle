@@ -24,6 +24,9 @@ dependencies {
             "org.neo4j:neo4j-jdbc:2.1.4",
             'org.apache.tomcat:tomcat-jdbc:8.0.20'
 
+    // Only needed of high availability is used
+    optional "org.neo4j:neo4j-ha:$neo4jVersion"
+
     // during development (aka snapshot version), use project dependencies
     // during release, use 'regular' dependencies
     compile project(":grails-datastore-gorm"),

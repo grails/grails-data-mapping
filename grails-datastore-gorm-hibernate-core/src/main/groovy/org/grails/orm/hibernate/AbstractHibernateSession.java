@@ -29,6 +29,7 @@ import org.grails.datastore.mapping.transactions.Transaction;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.transaction.TransactionDefinition;
 
 /**
  * Session implementation that wraps a Hibernate {@link Session}.
@@ -62,6 +63,11 @@ public abstract class AbstractHibernateSession extends AbstractAttributeStoringS
     }
 
     public Transaction beginTransaction() {
+        throw new UnsupportedOperationException("Use HibernatePlatformTransactionManager instead");
+    }
+
+    @Override
+    public Transaction beginTransaction(TransactionDefinition definition) {
         throw new UnsupportedOperationException("Use HibernatePlatformTransactionManager instead");
     }
 

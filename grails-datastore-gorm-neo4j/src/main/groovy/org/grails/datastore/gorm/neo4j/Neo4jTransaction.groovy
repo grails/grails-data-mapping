@@ -14,40 +14,48 @@
  */
 package org.grails.datastore.gorm.neo4j
 
-import org.grails.datastore.gorm.neo4j.engine.CypherEngine
+import groovy.transform.CompileStatic
+import org.neo4j.graphdb.GraphDatabaseService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.grails.datastore.mapping.transactions.Transaction
 import org.springframework.transaction.TransactionDefinition
 
 /**
- * delegate tx methods to cypherEngine
+ * Represents a Neo4j transaction
+ *
  * @author Stefan Armbruster <stefan@armbruster-it.de>
+ * @author Graeme Rocher
  */
-class Neo4jTransaction implements Transaction<CypherEngine> {
+@CompileStatic
+class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction> {
 
     protected final Logger log = LoggerFactory.getLogger(getClass())
 
-    CypherEngine cypherEngine
     boolean active = true
 
-    Neo4jTransaction(CypherEngine cypherEngine, TransactionDefinition transactionDefinition) {
-        this.cypherEngine = cypherEngine
-        cypherEngine.beginTx(transactionDefinition)
+    GraphDatabaseService databaseService
+    org.neo4j.graphdb.Transaction transaction
+    TransactionDefinition transactionDefinition
+
+    Neo4jTransaction(GraphDatabaseService databaseService, TransactionDefinition transactionDefinition) {
+        transaction = databaseService.beginTx()
+        this.databaseService = databaseService;
+        this.transactionDefinition = transactionDefinition
     }
 
     void commit() {
-        cypherEngine.commit()
+        transaction.success()
         active = false
     }
 
     void rollback() {
-        cypherEngine.rollback()
+        transaction.failure()
         active = false
     }
 
-    CypherEngine getNativeTransaction() {
-        return cypherEngine;
+    org.neo4j.graphdb.Transaction getNativeTransaction() {
+        return transaction;
     }
 
     boolean isActive() {
