@@ -84,7 +84,7 @@ class FastClassData {
     }
 
     Class getPropertyType(String name) {
-        fastGetters[name]?.returnType
+        fastGetters.get(name)?.returnType
     }
 
     protected String getIdentifierName(ClassMapping cm) {

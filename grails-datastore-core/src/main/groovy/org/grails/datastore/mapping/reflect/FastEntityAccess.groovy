@@ -50,17 +50,17 @@ class FastEntityAccess implements EntityAccess {
     @Override
     void setProperty(String property, Object newValue) {
         def converted = conversionService.convert(newValue, fastGetters[property].returnType)
-        fastSetters[property].invoke(entity, converted)
+        fastSetters.get(property).invoke(entity, converted)
     }
 
     @Override
     Object getPropertyValue(String name) {
-        return fastGetters[name].invoke(entity)
+        return fastGetters.get(name).invoke(entity)
     }
 
     @Override
     Object getProperty(String property) {
-        return fastGetters[property].invoke(entity)
+        return fastGetters.get(property).invoke(entity)
     }
 
     @Override
@@ -77,14 +77,14 @@ class FastEntityAccess implements EntityAccess {
     void setIdentifier(Object id) {
         if(identifierName != null) {
             def idType = fastClassData.idReader?.returnType
-            fastSetters[identifierName].invoke(entity, conversionService.convert(id, idType))
+            fastSetters.get(identifierName).invoke(entity, conversionService.convert(id, idType))
         }
     }
 
     @Override
     void setIdentifierNoConversion(Object id) {
         if(identifierName != null) {
-            fastSetters[identifierName].invoke(entity, id)
+            fastSetters.get(identifierName).invoke(entity, id)
         }
     }
 
@@ -95,6 +95,6 @@ class FastEntityAccess implements EntityAccess {
 
     @Override
     void setPropertyNoConversion(String name, Object value) {
-        fastSetters[name].invoke(entity, value)
+        fastSetters.get(name).invoke(entity, value)
     }
 }
