@@ -15,6 +15,7 @@
  */
 package org.grails.datastore.gorm.neo4j
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.springframework.transaction.PlatformTransactionManager
@@ -24,6 +25,7 @@ import org.springframework.transaction.PlatformTransactionManager
  *
  * @author Graeme Rocher
  */
+@CompileStatic
 class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
 
     Neo4jGormStaticApi(Class<D> persistentClass, Neo4jDatastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
@@ -31,15 +33,20 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     def cypherStatic(String queryString, Map params) {
-        ((Neo4jDatastore)datastore).cypherEngine.execute(queryString, params)
+        ((Neo4jDatastore)datastore).graphDatabaseService.execute(queryString, params)
     }
 
     def cypherStatic(String queryString, List params) {
-        ((Neo4jDatastore)datastore).cypherEngine.execute(queryString, params)
+        Map paramsMap = new LinkedHashMap()
+        int i = 0
+        for(p in params) {
+            paramsMap.put(String.valueOf(++i), p)
+        }
+        ((Neo4jDatastore)datastore).graphDatabaseService.execute(queryString, paramsMap)
     }
 
     def cypherStatic(String queryString) {
-        ((Neo4jDatastore)datastore).cypherEngine.execute(queryString)
+        ((Neo4jDatastore)datastore).graphDatabaseService.execute(queryString)
     }
 
 }

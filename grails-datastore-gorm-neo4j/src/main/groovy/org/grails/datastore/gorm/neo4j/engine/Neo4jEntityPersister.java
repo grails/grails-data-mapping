@@ -195,7 +195,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                     if (targetIds!=null) {
                         Long targetId = IteratorUtil.single(targetIds);
 //                        if (targetId!=null) {
-                            entityAccess.setProperty(propertyName,
+                            entityAccess.setPropertyNoConversion(propertyName,
                                     getMappingContext().getProxyFactory().createProxy(
                                             session,
                                             toOne.getAssociatedEntity().getJavaClass(),
@@ -306,9 +306,7 @@ public class Neo4jEntityPersister extends EntityPersister {
     @Override
     protected Serializable persistEntity(PersistentEntity pe, Object obj) {
         if (obj == null) {
-            log.error("obj is null");
             throw new IllegalStateException("obj is null");
-//            return null;
         }
         return persistEntity(pe, obj, new HashSet());
     }

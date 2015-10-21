@@ -18,6 +18,7 @@ package org.grails.datastore.gorm.neo4j
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.model.config.GormProperties
 
 
 /**
@@ -119,7 +120,7 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      */
     def cypher(instance, String queryString, Map params ) {
         params['this'] = instance.id
-        ((Neo4jDatastore)datastore).cypherEngine.execute(queryString, params)
+        ((Neo4jDatastore)datastore).graphDatabaseService.execute(queryString, params)
     }
 
     /**
@@ -129,8 +130,13 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @return
      */
     def cypher(instance, String queryString, List params ) {
-        params.add(0, instance.id)
-        ((Neo4jDatastore)datastore).cypherEngine.execute(queryString, params)
+        Map paramsMap = new LinkedHashMap()
+        paramsMap.put("this", instance.id)
+        int i = 0
+        for(p in params) {
+            paramsMap.put(String.valueOf(++i), p)
+        }
+        ((Neo4jDatastore)datastore).graphDatabaseService.execute(queryString, paramsMap)
     }
 
     /**
@@ -139,7 +145,7 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @return
      */
     def cypher(instance, String queryString) {
-        ((Neo4jDatastore)datastore).cypherEngine.execute(queryString, Collections.singletonList(instance.id))
+        ((Neo4jDatastore)datastore).graphDatabaseService.execute(queryString, Collections.singletonMap("this", instance.id))
     }
 
 }
