@@ -19,13 +19,14 @@ dependencies {
             type = 'pom'
         }
     }
-    compile "org.neo4j:neo4j-kernel:$neo4jVersion",
-            "org.neo4j:neo4j-graphviz:$neo4jVersion",
-            "org.neo4j:neo4j-jdbc:2.1.4",
-            'org.apache.tomcat:tomcat-jdbc:8.0.20'
+    compile "org.neo4j:neo4j-kernel:$neo4jVersion"
+
+
+    // Only used for testing
+    compile "org.neo4j:neo4j-graphviz:$neo4jVersion", optional
 
     // Only needed of high availability is used
-    optional "org.neo4j:neo4j-ha:$neo4jVersion"
+    compile "org.neo4j:neo4j-ha:$neo4jVersion", optional
 
     // during development (aka snapshot version), use project dependencies
     // during release, use 'regular' dependencies
