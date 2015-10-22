@@ -11,6 +11,8 @@ import org.grails.datastore.mapping.model.MappingContext
 /**
  * TODO: consider using @Memoized on most methods here after move to Groovy >= 2.2
  * @author Stefan Armbruster
+ * @author Graeme Rocher
+ *
  */
 @CompileStatic
 public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
