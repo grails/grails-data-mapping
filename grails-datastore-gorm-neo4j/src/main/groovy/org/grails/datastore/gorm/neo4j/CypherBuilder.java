@@ -5,7 +5,7 @@ import org.grails.datastore.mapping.model.types.Association;
 import java.util.*;
 
 /**
- * A build for Cypher queries
+ * A builder for Cypher queries
  *
  * @since 3.0
  * @author Stefan
@@ -20,6 +20,13 @@ public class CypherBuilder {
     public static final String IDENTIFIER = "__id__";
     public static final String PROPS = "props";
     public static final String RELATED = "related";
+    public static final String WHERE = " WHERE ";
+    public static final String RETURN = " RETURN ";
+    public static final String COMMAND_SEPARATOR = ", ";
+    public static final String DEFAULT_RETURN_TYPES = " RETURN n.__id__ as id, labels(n) as labels, n as data \n";
+    public static final String NEW_LINE = " \n";
+    public static final String START_MATCH = "MATCH (n";
+    public static final String SPACE = " ";
 
 
     private String forLabels;
@@ -63,10 +70,6 @@ public class CypherBuilder {
         params.put(String.valueOf(position), value);
     }
 
-//    public int getNextParamNumber() {
-//        return params.size();
-//    }
-
     public Map<String, Object> getParams() {
         return params;
     }
@@ -77,32 +80,32 @@ public class CypherBuilder {
 
     public String build() {
         StringBuilder cypher = new StringBuilder();
-        cypher.append("MATCH (n").append(forLabels).append(")");
+        cypher.append(START_MATCH).append(forLabels).append(")");
 
         for (String m : matches) {
-            cypher.append(", ").append(m);
+            cypher.append(COMMAND_SEPARATOR).append(m);
         }
 
         if ((conditions!=null) && (!conditions.isEmpty())) {
-            cypher.append(" WHERE ").append(conditions);
+            cypher.append(WHERE).append(conditions);
         }
 
         if (returnColumns.isEmpty()) {
-            cypher.append(" RETURN n.__id__ as id, labels(n) as labels, n as data \n");
+            cypher.append(DEFAULT_RETURN_TYPES);
             if (orderAndLimits!=null) {
-                cypher.append(orderAndLimits).append(" \n");
+                cypher.append(orderAndLimits).append(NEW_LINE);
             }
         } else {
-            cypher.append(" RETURN ");
+            cypher.append(RETURN);
             Iterator<String> iter = returnColumns.iterator();   // same as Collection.join(String separator)
             if (iter.hasNext()) {
                 cypher.append(iter.next());
                 while (iter.hasNext()) {
-                    cypher.append(", ").append(iter.next());
+                    cypher.append(COMMAND_SEPARATOR).append(iter.next());
                 }
             }
             if (orderAndLimits!=null) {
-                cypher.append(" ");
+                cypher.append(SPACE);
                 cypher.append(orderAndLimits);
             }
         }

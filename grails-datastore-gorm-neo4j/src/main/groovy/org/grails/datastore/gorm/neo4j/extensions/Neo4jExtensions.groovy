@@ -87,15 +87,14 @@ class Neo4jExtensions {
         return self;
     }
 
-    // internal helper method
-    protected static <T> T callClosureForMapEntry(Closure<T> closure, Map.Entry entry) {
-        if (closure.getMaximumNumberOfParameters() == 2) {
-            return closure.call(entry.key, entry.value);
-        }
-        return closure.call(entry)
-    }
-
-
+    /**
+     * Executes a cypher query with positional parameters
+     *
+     * @param databaseService The GraphDatabaseService
+     * @param cypher The cypher query
+     * @param positionalParameters The position parameters
+     * @return The query result
+     */
     static Result execute(GraphDatabaseService databaseService, String cypher, List<Object> positionalParameters) {
         Map<String,Object> params = new LinkedHashMap<>()
         int i = 0;
@@ -103,5 +102,14 @@ class Neo4jExtensions {
             params.put(String.valueOf(++i), p)
         }
         databaseService.execute(cypher, params)
+    }
+
+
+    // internal helper method
+    protected static <T> T callClosureForMapEntry(Closure<T> closure, Map.Entry entry) {
+        if (closure.getMaximumNumberOfParameters() == 2) {
+            return closure.call(entry.key, entry.value);
+        }
+        return closure.call(entry)
     }
 }

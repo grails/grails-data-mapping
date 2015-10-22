@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.model.MappingContext
 import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.graphdb.Label
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Relationship
 import org.neo4j.visualization.graphviz.GraphvizWriter
@@ -22,13 +23,16 @@ abstract class Neo4jUtils {
      * @param node
      * @param logger
      */
-    static void dumpNode(Node node, logger = null) {
-        log.warn "Node $node.id: $node"
+    static void logNode(Node node, Logger logger = log) {
+        logger.warn "Node $node.id: $node"
         node.propertyKeys.each { String it ->
-            log.warn "Node $node.id property $it -> ${node.getProperty(it,null)}"
+            logger.warn "Node $node.id property $it -> ${node.getProperty(it,null)}"
+        }
+        for(Label label in node.labels) {
+            logger.warn "Node $node.id label [${label.name()}]"
         }
         node.relationships.each { Relationship it ->
-            log.warn "Node $node.id relationship $it.startNode -> $it.endNode : ${it.type.name()}"
+            logger.warn "Node $node.id relationship $it.startNode -> $it.endNode : ${it.type.name()}"
         }
     }
 
@@ -104,31 +108,4 @@ abstract class Neo4jUtils {
         }
     }
 
-    static final stacktracePatterns = [ /setupIndexing/, /TransactionManager/,  /DatastorePersistenceContextInterceptor/,
-    /Neo4jDatastore.createSession/,
-    /AbstractAttributeStoringSession.disconnect/,
-    /Neo4jSession.clear/,
-    /Neo4jQuery.executeQuery/
-    ]
-
-    static def logWithCause(Logger log, String msg, int depth) {
-        if(log.isInfoEnabled()) {
-
-            def stacktraces = Thread.currentThread().stackTrace
-            if (depth<0) {
-                depth=0
-            }
-            def cause = stacktraces.find {
-                StackTraceElement st -> stacktracePatterns.any {
-                    st =~ it
-                }
-            }
-
-            if (!cause) {
-                log.warn "cannot find patterns in stacktrace for $msg"
-            } else {
-                log.info "${'x' * depth} $msg caused by ($cause)"
-            }
-        }
-    }
 }
