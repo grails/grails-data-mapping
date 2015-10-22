@@ -23,10 +23,13 @@ import org.grails.datastore.gorm.neo4j.Neo4jUtils
 import org.grails.datastore.gorm.neo4j.RelationshipUtils
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.AssociationQuery
 import org.grails.datastore.mapping.query.Query
 import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.graphdb.Label
 import org.neo4j.graphdb.Node
 
 /**
@@ -71,7 +74,9 @@ class Neo4jQuery extends Query {
         def conditions = buildConditions(criteria, cypherBuilder, "n")
         cypherBuilder.setConditions(conditions)
         cypherBuilder.setOrderAndLimits(applyOrderAndLimits(cypherBuilder))
-        for (projection in projections.projectionList) {
+
+        def projectionList = projections.projectionList
+        for (projection in projectionList) {
             cypherBuilder.addReturnColumn(buildProjection(projection, cypherBuilder))
         }
 
@@ -82,7 +87,7 @@ class Neo4jQuery extends Query {
         log.debug("Executing Cypher Query [$cypher] for params [$params]")
 
         def executionResult = graphDatabaseService.execute(cypher, params)
-        if (projections.projectionList.empty) {
+        if (projectionList.empty) {
             // TODO: potential performance problem here: for each instance we unmarshall seperately, better: use one combined statement to get 'em all
             return executionResult.collect { Map<String,Object> map ->
 
@@ -92,11 +97,39 @@ class Neo4jQuery extends Query {
                 neo4jEntityPersister.unmarshallOrFromCache(persistentEntity, id, labels, data)
             }
         } else {
-            executionResult.collect { Map<String, Object> row ->
-                executionResult.columns().collect {
-                    row[it]
+            for(projection in projectionList) {
+                // TODO: projections are not handled correctly!
+            }
+            def columnNames = executionResult.columns()
+            def projectedResults = executionResult.collect { Map<String, Object> row ->
+
+                columnNames.collect { String columnName ->
+                    def value = row.get(columnName)
+                    if(value instanceof Node) {
+                        // if a Node has been project then this is an association
+                        def propName = columnName.substring(0, columnName.lastIndexOf('_'))
+                        def prop = persistentEntity.getPropertyByName(propName)
+                        if(prop instanceof ToOne) {
+                            Association association = (Association)prop
+                            Node childNode = (Node)value
+
+                            def persister = getSession().getEntityPersister(association.type)
+                            return persister.unmarshallOrFromCache(
+                                                association.associatedEntity,
+                                                (Long)childNode.getProperty(CypherBuilder.IDENTIFIER),
+                                                childNode.labels.collect() { Label label -> label.name() },
+                                                childNode)
+                        }
+                    }
+                    return value
                 }
-            }.flatten() as List
+            } as List
+            if(projectionList.size() == 1 || projectedResults.size() == 1) {
+                return projectedResults.flatten()
+            }
+            else {
+                return projectedResults
+            }
         }
     }
 
@@ -117,11 +150,19 @@ class Neo4jQuery extends Query {
                 def propertyName = ((Query.PropertyProjection) projection).propertyName
                 return "max(n.${propertyName})"
                 break
+            case Query.SumProjection:
+                def propertyName = ((Query.PropertyProjection) projection).propertyName
+                return "sum(n.${propertyName})"
+                break
+            case Query.AvgProjection:
+                def propertyName = ((Query.PropertyProjection) projection).propertyName
+                return "avg(n.${propertyName})"
+            break
             case Query.PropertyProjection:
                 def propertyName = ((Query.PropertyProjection) projection).propertyName
                 def association = entity.getPropertyByName(propertyName)
                 if (association instanceof Association) {
-                    def targetNodeName = "m_${cypherBuilder.getNextMatchNumber()}"
+                    def targetNodeName = "${association.name}_${cypherBuilder.getNextMatchNumber()}"
                     cypherBuilder.addMatch("(n)${matchForAssociation(association)}(${targetNodeName})")
                     return targetNodeName
                 } else {

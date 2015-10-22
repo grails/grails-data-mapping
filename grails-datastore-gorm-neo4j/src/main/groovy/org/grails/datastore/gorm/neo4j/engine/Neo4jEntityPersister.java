@@ -154,8 +154,15 @@ public class Neo4jEntityPersister extends EntityPersister {
 
         Map<TypeDirectionPair, Map<String, Collection>> relationshipsMap = new HashMap<TypeDirectionPair, Map<String, Collection>>();
         final String cypher = String.format("MATCH (m%s {__id__:{id}})-[r]-(o) RETURN type(r) as relType, startNode(r)=m as out, {ids: collect(o.__id__), labels: collect(labels(o))} as values", ((GraphPersistentEntity) persistentEntity).getLabelsAsString());
+        final Map<String, Object> isMap = Collections.<String, Object>singletonMap(GormProperties.IDENTITY, id);
+
         final GraphDatabaseService graphDatabaseService = getSession().getNativeInterface();
-        final Result relationships = graphDatabaseService.execute(cypher, Collections.<String, Object>singletonMap(GormProperties.IDENTITY, id));
+
+        if(log.isDebugEnabled()) {
+            log.debug("Execute Relationship Query Cypher [{}] for parameters [{}]", cypher, isMap);
+        }
+
+        final Result relationships = graphDatabaseService.execute(cypher, isMap);
         while(relationships.hasNext()) {
             final Map<String, Object> row = relationships.next();
             String relType = (String) row.get("relType");
@@ -163,7 +170,6 @@ public class Neo4jEntityPersister extends EntityPersister {
             Map<String, Collection> values = (Map<String, Collection>) row.get("values");
             TypeDirectionPair key = new TypeDirectionPair(relType, outGoing);
             relationshipsMap.put(key, values);
-
         }
 
         final List<String> nodeProperties = DefaultGroovyMethods.toList(data.getPropertyKeys());
@@ -230,6 +236,9 @@ public class Neo4jEntityPersister extends EntityPersister {
             }
         }
 
+        Map<String,Object> undeclared = new LinkedHashMap<String, Object>();
+
+        // if the relationship map is not empty as this point there are dynamic relationships that need to be loaded as undeclared
         if (!relationshipsMap.isEmpty()) {
             for (Map.Entry<TypeDirectionPair, Map<String,Collection>> entry: relationshipsMap.entrySet()) {
 
@@ -251,20 +260,23 @@ public class Neo4jEntityPersister extends EntityPersister {
 
                     // for single instances and singular property name do not use an array
                     Object value = (values.size()==1) && isSingular(entry.getKey().getType()) ? IteratorUtil.single(values): values;
-                    data.setProperty(entry.getKey().getType(), value);
+                    undeclared.put(entry.getKey().getType(), value);
                 }
             }
         }
 
         if (!nodeProperties.isEmpty()) {
-            GroovyObject go = (GroovyObject)(entityAccess.getEntity());
-            Map<String,Object> undeclared = new LinkedHashMap<String, Object>();
             for (String nodeProperty : nodeProperties) {
-                undeclared.put(nodeProperty,data.getProperty(nodeProperty));
+                if(!nodeProperty.equals(CypherBuilder.IDENTIFIER)) {
+                    undeclared.put(nodeProperty,data.getProperty(nodeProperty));
+                }
             }
-            go.setProperty(Neo4jGormEnhancer.UNDECLARED_PROPERTIES, undeclared);
         }
 
+        if(!undeclared.isEmpty()) {
+            GroovyObject go = (GroovyObject)(entityAccess.getEntity());
+            go.setProperty(Neo4jGormEnhancer.UNDECLARED_PROPERTIES, undeclared);
+        }
 
         firePostLoadEvent(entityAccess.getPersistentEntity(), entityAccess);
         return entityAccess.getEntity();
@@ -523,7 +535,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         final Map<String, Object> params = Collections.<String, Object>singletonMap(GormProperties.IDENTITY, ids);
         getSession()
                 .getNativeInterface()
-                .execute( cypher, params );
+                .execute(cypher, params);
 
         for (EntityAccess entityAccess: entityAccesses) {
             getSession().clear(entityAccess.getEntity());

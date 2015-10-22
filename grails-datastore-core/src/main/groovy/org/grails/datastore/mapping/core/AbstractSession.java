@@ -87,7 +87,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     protected Map<Class, Persister> persisters = new ConcurrentHashMap<Class,Persister>();
     private MappingContext mappingContext;
     protected ConcurrentLinkedQueue lockedObjects = new ConcurrentLinkedQueue();
-    private Transaction transaction;
+    protected Transaction transaction;
     private Datastore datastore;
     private FlushModeType flushMode = FlushModeType.AUTO;
     protected Map<Class, Map<Serializable, Object>> firstLevelCache = new ConcurrentHashMap<Class, Map<Serializable, Object>>();

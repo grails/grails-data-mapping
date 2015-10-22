@@ -7,7 +7,7 @@ import grails.gorm.tests.*
 
 @RunWith(Suite)
 @SuiteClasses([
-DomainEventsSpec
+OptimisticLockingSpec
 ])
 class Neo4jSuite {
 }

@@ -307,8 +307,8 @@ class MiscSpec extends GormDatastoreSpec {
             def pet = new Pet(birthDate: date, name:'Cosima').save(flush: true)
 
         when: "write birthDate as a String"
-            session.nativeInterface.execute("MATCH (p:Pet {name:{}}) SET p.birthDate={}",
-                ['Cosima', date.time.toString()])
+            session.nativeInterface.execute("MATCH (p:Pet {name:{1}}) SET p.birthDate={2}",
+                ['1':'Cosima', '2':date.time.toString()])
             pet = Pet.get(pet.id)
         then: "the string stored date gets parsed correctly"
             pet.birthDate == date

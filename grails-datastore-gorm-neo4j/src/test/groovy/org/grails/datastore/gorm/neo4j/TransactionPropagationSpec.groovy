@@ -43,7 +43,7 @@ class TransactionPropagationSpec extends GormDatastoreSpec {
 
     }
 
-    @Ignore // Currently broken
+    @Ignore // Neo4j
     void "Test nested REQUIRES_NEW transaction"() {
         when:"An entity is persisted in a nested transaction"
         Person.withTransaction {

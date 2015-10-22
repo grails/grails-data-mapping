@@ -9,6 +9,8 @@ import java.util.*;
  *
  * @since 3.0
  * @author Stefan
+ * @author Graeme Rocher
+ *
  */
 public class CypherBuilder {
 
@@ -58,7 +60,7 @@ public class CypherBuilder {
      * @param value
      */
     public void replaceParamAt(int position, Object value) {
-        params.put(String.valueOf(position - 1), value);
+        params.put(String.valueOf(position), value);
     }
 
 //    public int getNextParamNumber() {

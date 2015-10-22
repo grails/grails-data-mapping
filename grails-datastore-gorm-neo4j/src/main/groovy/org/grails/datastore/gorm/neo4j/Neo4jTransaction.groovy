@@ -20,6 +20,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.grails.datastore.mapping.transactions.Transaction
 import org.springframework.transaction.TransactionDefinition
+import org.springframework.transaction.support.DefaultTransactionDefinition
 
 /**
  * Represents a Neo4j transaction
@@ -38,7 +39,7 @@ class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction> {
     org.neo4j.graphdb.Transaction transaction
     TransactionDefinition transactionDefinition
 
-    Neo4jTransaction(GraphDatabaseService databaseService, TransactionDefinition transactionDefinition) {
+    Neo4jTransaction(GraphDatabaseService databaseService, TransactionDefinition transactionDefinition = new DefaultTransactionDefinition()) {
         transaction = databaseService.beginTx()
         this.databaseService = databaseService;
         this.transactionDefinition = transactionDefinition

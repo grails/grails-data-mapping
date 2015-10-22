@@ -47,7 +47,6 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
     private Collection<Object> persistingInstances = new HashSet<Object>();
     protected final GraphDatabaseService graphDatabaseService;
 
-    protected Neo4jTransaction activeTransaction;
 
     public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, GraphDatabaseService graphDatabaseService) {
         super(datastore, mappingContext, publisher, stateless);
@@ -58,6 +57,15 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
     }
 
 
+    /**
+     * Gets a Neo4jEntityPersister for the given object
+     *
+     * @param o The object
+     * @return A Neo4jEntityPersister
+     */
+    public Neo4jEntityPersister getEntityPersister(Object o) {
+        return (Neo4jEntityPersister)getPersister(o);
+    }
 
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
@@ -71,29 +79,29 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
     }
 
     public Transaction beginTransaction(TransactionDefinition transactionDefinition) {
-        if (activeTransaction != null) {
-            return activeTransaction;
+        if (transaction != null) {
+            return transaction;
         }
         else {
-
             // if there is a current transaction, return that, since Neo4j doesn't really supported transaction nesting
             if (TransactionSynchronizationManager.isSynchronizationActive()) {
                 SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
-                activeTransaction = (Neo4jTransaction) sessionHolder.getTransaction();
+                transaction = sessionHolder.getTransaction();
             } else {
 
-                activeTransaction = new Neo4jTransaction(graphDatabaseService, transactionDefinition);
+                transaction = new Neo4jTransaction(graphDatabaseService, transactionDefinition);
             }
-            return activeTransaction;
+            return transaction;
         }
     }
 
     @Override
     public void disconnect() {
         super.disconnect();
-        if(activeTransaction != null) {
-            activeTransaction.getTransaction().close();
-            activeTransaction = null;
+        if(transaction != null) {
+            Neo4jTransaction transaction = (Neo4jTransaction) getTransaction();
+            transaction.getTransaction().close();
+            this.transaction = null;
         }
     }
 
