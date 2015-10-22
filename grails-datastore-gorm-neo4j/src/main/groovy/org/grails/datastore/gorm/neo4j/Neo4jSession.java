@@ -44,7 +44,6 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
 
     /** map node id -> hashmap of relationship types showing startNode id and endNode id */
-    private Collection<Object> persistingInstances = new HashSet<Object>();
     protected final GraphDatabaseService graphDatabaseService;
 
 
@@ -164,7 +163,6 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
     @Override
     protected void postFlush(boolean hasUpdates) {
-        persistingInstances.clear();
         super.postFlush(hasUpdates);
         if (publisher!=null) {
             publisher.publishEvent(new SessionFlushedEvent(this));
@@ -200,13 +198,6 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         }
     }
 
-    public void addPersistingInstance(Object obj) {
-        persistingInstances.add(obj);
-    }
-
-    public boolean containsPersistingInstance(Object obj) {
-        return persistingInstances.contains(obj);
-    }
 
 }
 

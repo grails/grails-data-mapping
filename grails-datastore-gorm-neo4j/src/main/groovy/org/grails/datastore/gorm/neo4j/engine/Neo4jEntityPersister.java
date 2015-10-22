@@ -8,6 +8,7 @@ import org.grails.datastore.gorm.neo4j.collection.Neo4jSet;
 import org.grails.datastore.gorm.neo4j.mapping.reflect.Neo4jNameUtils;
 import org.grails.datastore.mapping.collection.PersistentCollection;
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection;
 import org.grails.datastore.mapping.engine.EntityAccess;
@@ -333,7 +334,8 @@ public class Neo4jEntityPersister extends EntityPersister {
 
         boolean isDirty = obj instanceof DirtyCheckable ? ((DirtyCheckable)obj).hasChanged() : true;
 
-        if (getSession().containsPersistingInstance(obj) && (!isDirty)) {
+        final Neo4jSession session = getSession();
+        if (session.isPendingAlready(obj) && (!isDirty)) {
             return null;
         }
 
@@ -343,7 +345,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
 
 
-        getSession().addPersistingInstance(obj);
+        session.registerPending(obj);
 
         // cancel operation if vetoed
         boolean isUpdate = entityAccess.getIdentifier() != null;
@@ -351,7 +353,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             if (cancelUpdate(pe, entityAccess)) {
                 return null;
             }
-            getSession().addPendingUpdate(new NodePendingUpdate(entityAccess, getSession().getNativeInterface(), getMappingContext()));
+            session.addPendingUpdate(new NodePendingUpdate(entityAccess, session.getNativeInterface(), getMappingContext()));
             persistAssociationsOfEntity(pe, entityAccess, true, persistingColl);
             firePostUpdateEvent(pe, entityAccess);
 
@@ -359,7 +361,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             if (cancelInsert(pe, entityAccess)) {
                 return null;
             }
-            getSession().addPendingInsert(new NodePendingInsert(getSession().getDatastore().nextIdForType(pe), entityAccess, getSession().getNativeInterface(), getMappingContext()));
+            session.addPendingInsert(new NodePendingInsert(session.getDatastore().nextIdForType(pe), entityAccess, session.getNativeInterface(), getMappingContext()));
             persistAssociationsOfEntity(pe, entityAccess, false, persistingColl);
             firePostInsertEvent(pe, entityAccess);
         }
