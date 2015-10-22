@@ -314,11 +314,11 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             flushPendingInserts(pendingInserts);
             flushPendingUpdates(pendingUpdates);
 
+
             final Collection<Collection<PendingDelete>> deletes = pendingDeletes.values();
             for (Collection<PendingDelete> delete : deletes) {
-                executePendings(delete);
+                flushPendingOperations(delete);
             }
-
 
             handleDirtyCollections();
             firstLevelCollectionCache.clear();

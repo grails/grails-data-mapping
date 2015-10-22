@@ -8,7 +8,7 @@ import org.grails.datastore.gorm.neo4j.collection.Neo4jSet;
 import org.grails.datastore.gorm.neo4j.mapping.reflect.Neo4jNameUtils;
 import org.grails.datastore.mapping.collection.PersistentCollection;
 import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.core.SessionImplementor;
+import org.grails.datastore.mapping.core.impl.PendingDeleteAdapter;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection;
 import org.grails.datastore.mapping.engine.EntityAccess;
@@ -37,6 +37,9 @@ import static org.grails.datastore.mapping.query.Query.*;
  * @author Stefan Armbruster (stefan@armbruster-it.de)
  */
 public class Neo4jEntityPersister extends EntityPersister {
+
+    public static final String DELETE_ONE_CYPHER = "MATCH (n%s) WHERE n.__id__={id} OPTIONAL MATCH (n)-[r]-() DELETE r,n";
+    public static final String DELETE_MANY_CYPHER = "MATCH (n%s) WHERE n.__id__ in {id} OPTIONAL MATCH (n)-[r]-() DELETE r,n";
 
     private static Logger log = LoggerFactory.getLogger(Neo4jEntityPersister.class);
 
@@ -457,33 +460,63 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected void deleteEntity(PersistentEntity pe, Object obj) {
-        EntityAccess entityAccess = createEntityAccess(pe, obj);
-        if (cancelDelete(pe, entityAccess)) {
-            return;
-        }
+        final EntityAccess entityAccess = createEntityAccess(pe, obj);
 
-        getSession().clear(obj);
+
+        final Neo4jSession session = getSession();
+        session.clear(obj);
+        final PendingDeleteAdapter pendingDelete = createPendingDeleteOne(session, pe, entityAccess, obj);
+        session.addPendingDelete(pendingDelete);
+
         for (Association association: pe.getAssociations()) {
             if (association.isOwningSide() && association.doesCascade(CascadeType.REMOVE)) {
-                log.debug("cascading delete for property " + association.getName());
+                if(log.isDebugEnabled()) {
+                    log.debug("Cascading delete for property {}->{}", association.getType().getName(),  association.getName());
+                }
 
                 GraphPersistentEntity otherPersistentEntity = (GraphPersistentEntity) association.getAssociatedEntity();
                 Object otherSideValue = entityAccess.getProperty(association.getName());
-                if (association instanceof ToOne) {
-                    deleteEntity(otherPersistentEntity, otherSideValue);
+                if ((association instanceof ToOne) && otherSideValue != null) {
+                    // Add cascade operation on parent delete. If parent delete is vetoed, so are child deletes
+                    pendingDelete.addCascadeOperation(
+                        createPendingDeleteOne(session, otherPersistentEntity, createEntityAccess(otherPersistentEntity, otherSideValue), otherSideValue)
+                    );
                 } else {
+                    // TODO: Optimize cascade to associations once lazy loading is properly implemented
                     deleteEntities(otherPersistentEntity, (Iterable) otherSideValue);
                 }
             }
         }
 
-        getSession().getNativeInterface().execute(
-                String.format("MATCH (n%s) WHERE n.__id__={id} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
-                        ((GraphPersistentEntity)pe).getLabelsAsString()),
-                Collections.singletonMap(GormProperties.IDENTITY, entityAccess.getIdentifier()));
 
-        firePostDeleteEvent(pe, entityAccess);
     }
+
+    @SuppressWarnings("unchecked")
+    private PendingDeleteAdapter createPendingDeleteOne(final Neo4jSession session, final PersistentEntity pe, final EntityAccess entityAccess, final Object obj) {
+        return new PendingDeleteAdapter(pe, entityAccess.getIdentifier(), obj) {
+            @Override
+            public void run() {
+                final PersistentEntity e = getEntity();
+                if (cancelDelete(e, entityAccess)) {
+                    return;
+                }
+                final String cypher = String.format(DELETE_ONE_CYPHER,
+                        ((GraphPersistentEntity) e).getLabelsAsString());
+                final Map<String, Object> idMap = Collections.singletonMap(GormProperties.IDENTITY, entityAccess.getIdentifier());
+
+                if (log.isDebugEnabled()) {
+                    log.debug("Executing Delete One Cypher [{}] for parameters {}", cypher, idMap);
+                }
+
+                final GraphDatabaseService graphDatabaseService = session.getNativeInterface();
+                graphDatabaseService.execute(cypher, idMap);
+
+                firePostDeleteEvent(e, entityAccess);
+            }
+        };
+    }
+
+
 
     @Override
     protected void deleteEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objects) {
@@ -532,11 +565,17 @@ public class Neo4jEntityPersister extends EntityPersister {
             }
         }
 
-        final String cypher = String.format("MATCH (n%s) WHERE n.__id__ in {id} OPTIONAL MATCH (n)-[r]-() DELETE r,n",
+        final String cypher = String.format(DELETE_MANY_CYPHER,
                 ((GraphPersistentEntity) pe).getLabelsAsString());
         final Map<String, Object> params = Collections.<String, Object>singletonMap(GormProperties.IDENTITY, ids);
-        getSession()
-                .getNativeInterface()
+
+        if (log.isDebugEnabled()) {
+            log.debug("Executing Delete Many Cypher [{}] for parameters {}", cypher, params);
+        }
+
+        final GraphDatabaseService graphDatabaseService = getSession()
+                                                            .getNativeInterface();
+        graphDatabaseService
                 .execute(cypher, params);
 
         for (EntityAccess entityAccess: entityAccesses) {
@@ -546,13 +585,7 @@ public class Neo4jEntityPersister extends EntityPersister {
     }
 
     private boolean propertyNotEmpty(Object property) {
-        if (property==null) {
-            return false;
-        }
-        if ((property instanceof Collection) && ( ((Collection) property).isEmpty() )) {
-            return false;
-        }
-        return true;
+        return property != null && !((property instanceof Collection) && (((Collection) property).isEmpty()));
     }
 
     @Override
@@ -564,10 +597,4 @@ public class Neo4jEntityPersister extends EntityPersister {
     public Serializable refresh(Object o) {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    protected EntityAccess createEntityAccess(PersistentEntity pe, Object obj) {
-        return getSession().createEntityAccess(pe, obj);
-    }
-
 }

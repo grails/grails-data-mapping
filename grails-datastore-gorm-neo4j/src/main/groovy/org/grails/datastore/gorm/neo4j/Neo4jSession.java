@@ -11,6 +11,7 @@ import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.grails.datastore.mapping.transactions.Transaction;
 import org.neo4j.cypher.javacompat.ExecutionEngine;
@@ -199,6 +200,17 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
     }
 
 
+    // TODO: Optimize batch deletes!
+    @Override
+    public long deleteAll(QueryableCriteria criteria) {
+        return super.deleteAll(criteria);
+    }
+
+    // TODO: Optimize batch updates!
+    @Override
+    public long updateAll(QueryableCriteria criteria, Map<String, Object> properties) {
+        return super.updateAll(criteria, properties);
+    }
 }
 
 
