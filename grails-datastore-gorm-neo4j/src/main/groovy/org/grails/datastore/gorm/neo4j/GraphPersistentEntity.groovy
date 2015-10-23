@@ -29,6 +29,7 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
     public GraphPersistentEntity(Class javaClass, MappingContext context) {
         super(javaClass, context);
         this.mappedForm = (Neo4jEntity) context.getMappingFactory().createMappedForm(this);
+        establishLabels()
     }
 
     @Override
@@ -36,18 +37,6 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
         new GraphClassMapping(this, context);
     }
 
-    @Override
-    void initialize() {
-        super.initialize()
-        labelObjects = establishLabelObjects()
-        hasDynamicLabels = labelObjects.any() { it instanceof Closure }
-        for(obj in labelObjects) {
-            String label = getLabelFor(obj)
-            if(label != null) {
-                staticLabels.add(label)
-            }
-        }
-    }
     /**
      * recursively join all discriminators up the class hierarchy
      * @return
@@ -57,7 +46,6 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
         appendRecursive(sb, domainInstance);
         return sb.toString();
     }
-
     /**
      * @return Returns only the statically defined labels
      */
@@ -104,6 +92,17 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
         }
         else {
             return getLabelsAsString()
+        }
+    }
+
+    protected void establishLabels() {
+        labelObjects = establishLabelObjects()
+        hasDynamicLabels = labelObjects.any() { it instanceof Closure }
+        for (obj in labelObjects) {
+            String label = getLabelFor(obj)
+            if (label != null) {
+                staticLabels.add(label)
+            }
         }
     }
 
