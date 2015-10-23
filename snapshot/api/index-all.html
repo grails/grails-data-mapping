@@ -273,6 +273,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Base class for query events.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/event/AbstractQueryEvent.html#AbstractQueryEvent(org.grails.datastore.mapping.query.Query)" title="Constructor in AbstractQueryEvent">AbstractQueryEvent(Query)</a></span> - Constructor in <a href="org/grails/datastore/mapping/query/event/AbstractQueryEvent.html">AbstractQueryEvent</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html" title="Class in org.grails.datastore.gorm.query">AbstractResultList</a></span> - Class in <a href="./org/grails/datastore/gorm/query/package-summary.html">org.grails.datastore.gorm.query</a>
+</dt><dd><div class="block">An abstract result list for initializing objects lazily from a cursor</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#AbstractResultList(int, Iterator<Object>)" title="Constructor in AbstractResultList">AbstractResultList(int, Iterator&lt;Object&gt;)</a></span> - Constructor in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractSession.html" title="Class in org.grails.datastore.mapping.core">AbstractSession</a></span> - Class in <a href="./org/grails/datastore/mapping/core/package-summary.html">org.grails.datastore.mapping.core</a>
 </dt><dd><div class="block">Abstract implementation of the <a href='../../../../../org/grails/datastore/mapping/core/Session.html' title='Session'>Session</a> interface that uses
  a list of <a href='../../../../../org/grails/datastore/mapping/engine/Persister.html' title='Persister'>Persister</a> instances
@@ -1435,6 +1439,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/GrailsHibernateTemplate.html#convertJdbcAccessException(org.hibernate.JDBCException, org.springframework.jdbc.support.SQLExceptionTranslator)" title="Method in GrailsHibernateTemplate">convertJdbcAccessException(JDBCException, SQLExceptionTranslator)</a></span> - Method in <a href="org/grails/orm/hibernate/GrailsHibernateTemplate.html">GrailsHibernateTemplate</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#convertObject()" title="Method in AbstractResultList">convertObject()</a></span> - Method in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateCriterionAdapter.CriterionAdaptor.html#convertStringValue(java.lang.Object)" title="Method in AbstractHibernateCriterionAdapter.CriterionAdaptor">convertStringValue(Object)</a></span> - Method in <a href="org/grails/orm/hibernate/query/AbstractHibernateCriterionAdapter.CriterionAdaptor.html">AbstractHibernateCriterionAdapter.CriterionAdaptor</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html#convertToHibernateCriteria(QueryableCriteria<?>)" title="Method in AbstractHibernateCriteriaBuilder">convertToHibernateCriteria(QueryableCriteria&lt;?&gt;)</a></span> - Method in <a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html">AbstractHibernateCriteriaBuilder</a>
@@ -1802,6 +1808,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/timestamp/DefaultTimestampProvider.html#currentTimeMillis()" title="Method in DefaultTimestampProvider">currentTimeMillis()</a></span> - Method in <a href="org/grails/datastore/gorm/timestamp/DefaultTimestampProvider.html">DefaultTimestampProvider</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/TransactionUtils.html#currentTransaction(org.grails.datastore.mapping.core.Datastore)" title="Method in TransactionUtils">currentTransaction(Datastore)</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/TransactionUtils.html">TransactionUtils</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#cursor" title="Field in AbstractResultList">cursor</a></span> - Field in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Custom.html" title="Class in org.grails.datastore.mapping.model.types">Custom</a></span> - Class in <a href="./org/grails/datastore/mapping/model/types/package-summary.html">org.grails.datastore.mapping.model.types</a>
 </dt><dd><div class="block">Represents a custom type ie. a type whose database read/write semantics are specified by the user.</div></dd>
@@ -2774,6 +2782,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateGormStaticApi.html#get(java.io.Serializable)" title="Method in AbstractHibernateGormStaticApi">get(Serializable)</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateGormStaticApi.html">AbstractHibernateGormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#get(int)" title="Method in AbstractResultList">get(int)</a></span> - Method in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/api/BuildableCriteria.html#get(groovy.lang.Closure)" title="Method in BuildableCriteria">get(Closure)</a></span> - Method in <a href="org/grails/datastore/mapping/query/api/BuildableCriteria.html">BuildableCriteria</a>
 </dt><dd> <div class="block">Defines an executes a get query ( a single result) in a single call. </div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html#GET_CALL" title="Field in AbstractHibernateCriteriaBuilder">GET_CALL</a></span> - Field in <a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html">AbstractHibernateCriteriaBuilder</a>
@@ -3038,6 +3048,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/orm/hibernate/SessionFactoryProxy.html#getCurrentTenantIdentifierResolver()" title="Method in SessionFactoryProxy">getCurrentTenantIdentifierResolver()</a></span> - Method in <a href="org/grails/orm/hibernate/SessionFactoryProxy.html">SessionFactoryProxy</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/EntityPersister.html#getCurrentVersion(org.grails.datastore.mapping.engine.EntityAccess)" title="Method in EntityPersister">getCurrentVersion(EntityAccess)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/EntityPersister.html">EntityPersister</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#getCursor()" title="Method in AbstractResultList">getCursor()</a></span> - Method in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/SessionFactoryProxy.html#getCustomEntityDirtinessStrategy()" title="Method in SessionFactoryProxy">getCustomEntityDirtinessStrategy()</a></span> - Method in <a href="org/grails/orm/hibernate/SessionFactoryProxy.html">SessionFactoryProxy</a>
 </dt><dd> <div class="block"></div></dd>
@@ -4881,7 +4893,13 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateCriterionAdapter.html#initialized" title="Field in AbstractHibernateCriterionAdapter">initialized</a></span> - Field in <a href="org/grails/orm/hibernate/query/AbstractHibernateCriterionAdapter.html">AbstractHibernateCriterionAdapter</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#initialized" title="Field in AbstractResultList">initialized</a></span> - Field in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValueMappingContext.html#initializeDefaultMappingFactory(java.lang.String)" title="Method in KeyValueMappingContext">initializeDefaultMappingFactory(String)</a></span> - Method in <a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValueMappingContext.html">KeyValueMappingContext</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#initializedObjects" title="Field in AbstractResultList">initializedObjects</a></span> - Field in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#initializeFully()" title="Method in AbstractResultList">initializeFully()</a></span> - Method in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/AbstractGormApi.html#initializeMethods(def)" title="Method in AbstractGormApi">initializeMethods(def)</a></span> - Method in <a href="org/grails/datastore/gorm/AbstractGormApi.html">AbstractGormApi</a>
 </dt><dd> <div class="block"></div></dd>
@@ -5154,6 +5172,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateQuery.HibernateProjectionList.html#isEmpty()" title="Method in AbstractHibernateQuery.HibernateProjectionList">isEmpty()</a></span> - Method in <a href="org/grails/orm/hibernate/query/AbstractHibernateQuery.HibernateProjectionList.html">AbstractHibernateQuery.HibernateProjectionList</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#isEmpty()" title="Method in AbstractPersistentCollection">isEmpty()</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#isEmpty()" title="Method in AbstractResultList">isEmpty()</a></span> - Method in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/api/Criteria.html#isEmpty(java.lang.String)" title="Method in Criteria">isEmpty(String)</a></span> - Method in <a href="org/grails/datastore/mapping/query/api/Criteria.html">Criteria</a>
 </dt><dd> <div class="block">Creates a criterion that asserts the given property is empty (such as a blank string)</div></dd>
@@ -5504,6 +5524,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#iterator()" title="Method in AbstractPersistentCollection">iterator()</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#iterator()" title="Method in AbstractResultList">iterator()</a></span> - Method in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
+</dt><dd> <div class="block">Override to transform elements if necessary during iteration.</div></dd>
 <dt><span class="strong"><a href="grails/gorm/DetachedCriteria.html#iterator()" title="Method in DetachedCriteria">iterator()</a></span> - Method in <a href="grails/gorm/DetachedCriteria.html">DetachedCriteria</a>
 </dt><dd> <div class="block"></div></dd>
 </dl>
@@ -5712,6 +5734,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/NamedCriteriaProxy.html#listDistinct(java.lang.Object, groovy.lang.Closure)" title="Method in NamedCriteriaProxy">listDistinct(Object, Closure)</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/NamedCriteriaProxy.html">NamedCriteriaProxy</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/NamedCriteriaProxy.html#listInternal(java.lang.Object, groovy.lang.Closure, java.lang.Boolean)" title="Method in NamedCriteriaProxy">listInternal(Object, Closure, Boolean)</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/NamedCriteriaProxy.html">NamedCriteriaProxy</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#listIterator(int)" title="Method in AbstractResultList">listIterator(int)</a></span> - Method in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/PersistentList.html#listIterator(int)" title="Method in PersistentList">listIterator(int)</a></span> - Method in <a href="org/grails/datastore/mapping/collection/PersistentList.html">PersistentList</a>
 </dt><dd> <div class="block"></div></dd>
@@ -6188,6 +6212,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Constructs a new instance</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/UniqueConstraintFactory.html#newInstance()" title="Method in UniqueConstraintFactory">newInstance()</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/UniqueConstraintFactory.html">UniqueConstraintFactory</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#nextDecoded()" title="Method in AbstractResultList">nextDecoded()</a></span> - Method in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/proxy/GroovyAwareJavassistProxyFactory.html#NO_CLASSES" title="Field in GroovyAwareJavassistProxyFactory">NO_CLASSES</a></span> - Field in <a href="org/grails/orm/hibernate/proxy/GroovyAwareJavassistProxyFactory.html">GroovyAwareJavassistProxyFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#nonGeneric(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode)" title="Method in AstUtils">nonGeneric(ClassNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
@@ -6246,6 +6272,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#OBJECT_CLASS_NODE" title="Field in AstUtils">OBJECT_CLASS_NODE</a></span> - Field in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateQuery.html#offset(int)" title="Method in AbstractHibernateQuery">offset(int)</a></span> - Method in <a href="org/grails/orm/hibernate/query/AbstractHibernateQuery.html">AbstractHibernateQuery</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#offset" title="Field in AbstractResultList">offset</a></span> - Field in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/DetachedCriteria.html#offset(int)" title="Method in DetachedCriteria">offset(int)</a></span> - Method in <a href="grails/gorm/DetachedCriteria.html">DetachedCriteria</a>
 </dt><dd> <div class="block">Sets the default offset to use and returns a new criteria instance. </div></dd>
@@ -7507,6 +7535,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractAttributeStoringSession.html#sessionPropertyMap" title="Field in AbstractAttributeStoringSession">sessionPropertyMap</a></span> - Field in <a href="org/grails/datastore/mapping/core/AbstractAttributeStoringSession.html">AbstractAttributeStoringSession</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#set(int, java.lang.Object)" title="Method in AbstractResultList">set(int, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingList.html#set(int, java.lang.Object)" title="Method in DirtyCheckingList">set(int, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingList.html">DirtyCheckingList</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/PagedResultList.html#set(int, java.lang.Object)" title="Method in PagedResultList">set(int, Object)</a></span> - Method in <a href="grails/gorm/PagedResultList.html">PagedResultList</a>
@@ -8113,6 +8143,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.html#singleResult()" title="Method in Query">singleResult()</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.html">Query</a>
 </dt><dd> <div class="block">Executes the query returning a single result or null</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#size()" title="Method in AbstractPersistentCollection">size()</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#size()" title="Method in AbstractResultList">size()</a></span> - Method in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateQuery.html#SIZE_CONSTRAINT_PREFIX" title="Field in AbstractHibernateQuery">SIZE_CONSTRAINT_PREFIX</a></span> - Field in <a href="org/grails/orm/hibernate/query/AbstractHibernateQuery.html">AbstractHibernateQuery</a>
 </dt><dd> <div class="block"></div></dd>
