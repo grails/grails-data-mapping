@@ -23,14 +23,17 @@ public class CypherBuilder {
     public static final String WHERE = " WHERE ";
     public static final String RETURN = " RETURN ";
     public static final String COMMAND_SEPARATOR = ", ";
-    public static final String DEFAULT_RETURN_TYPES = " RETURN n.__id__ as id, labels(n) as labels, n as data \n";
+    public static final String DEFAULT_RETURN_TYPES = "n.__id__ as id, labels(n) as labels, n as data \n";
+    public static final String DEFAULT_RETURN_STATEMENT = RETURN + "n.__id__ as id, labels(n) as labels, n as data \n";
     public static final String NEW_LINE = " \n";
     public static final String START_MATCH = "MATCH (n";
     public static final String SPACE = " ";
+    public static final String OPTIONAL_MATCH = "OPTIONAL MATCH";
 
 
     private String forLabels;
     private Set<String> matches = new HashSet<String>();
+    private Set<String> optionalMatches = new HashSet<String>();
     private String conditions;
     private String orderAndLimits;
     private List<String> returnColumns = new ArrayList<String>();
@@ -42,6 +45,17 @@ public class CypherBuilder {
 
     public void addMatch(String match) {
         matches.add(match);
+    }
+
+    /**
+     * Optional matches are added to do joins for relationships
+     *
+     * @see <a href="http://neo4j.com/docs/stable/query-optional-match.html">http://neo4j.com/docs/stable/query-optional-match.html</a>
+     *
+     * @param match The optional match
+     */
+    public void addOptionalMatch(String match) {
+        optionalMatches.add(match);
     }
 
     public int getNextMatchNumber() {
@@ -86,12 +100,23 @@ public class CypherBuilder {
             cypher.append(COMMAND_SEPARATOR).append(m);
         }
 
+
         if ((conditions!=null) && (!conditions.isEmpty())) {
             cypher.append(WHERE).append(conditions);
         }
 
+        if(!optionalMatches.isEmpty()) {
+            for (String m : optionalMatches) {
+                cypher.append(NEW_LINE)
+                      .append(OPTIONAL_MATCH)
+                      .append(m);
+
+            }
+        }
+
+
         if (returnColumns.isEmpty()) {
-            cypher.append(DEFAULT_RETURN_TYPES);
+            cypher.append(DEFAULT_RETURN_STATEMENT);
             if (orderAndLimits!=null) {
                 cypher.append(orderAndLimits).append(NEW_LINE);
             }

@@ -26,6 +26,8 @@ import org.grails.datastore.gorm.neo4j.RelationshipUtils
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.ManyToMany
+import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.AssociationQuery
 import org.grails.datastore.mapping.query.Query
@@ -283,8 +285,34 @@ class Neo4jQuery extends Query {
         cypherBuilder.setOrderAndLimits(applyOrderAndLimits(cypherBuilder))
 
         def projectionList = projections.projectionList
-        for (projection in projectionList) {
-            cypherBuilder.addReturnColumn(buildProjection(projection, cypherBuilder))
+
+        if(projectionList.isEmpty()) {
+             if(persistentEntity.associations.size() > 0) {
+                 int i = 0;
+                 List<String> rs = []
+                 List<String> os = []
+                 cypherBuilder.addReturnColumn(CypherBuilder.DEFAULT_RETURN_TYPES)
+
+                 for(Association a in persistentEntity.associations) {
+                     if( (a instanceof ToOne) || (a instanceof OneToMany) || (a instanceof ManyToMany)) {
+                         String r = "r${i++}";
+                         String o = "o${i}";
+
+                         rs.add(r)
+                         os.add(o)
+                         def associationMatch = matchForAssociation(a)
+                         // if there are associations, add a join to get them
+                         def associationName = a.name
+                         cypherBuilder.addOptionalMatch("(n)${associationMatch}(${associationName}Node)")
+                         cypherBuilder.addReturnColumn("{ids: collect(${associationName}Node.__id__)} as ${associationName}Values")
+                     }
+                 }
+             }
+        }
+        else {
+            for (projection in projectionList) {
+                cypherBuilder.addReturnColumn(buildProjection(projection, cypherBuilder))
+            }
         }
 
 
@@ -298,10 +326,7 @@ class Neo4jQuery extends Query {
             // TODO: potential performance problem here: for each instance we unmarshall seperately, better: use one combined statement to get 'em all
             return executionResult.collect { Map<String,Object> map ->
 
-                Long id = map.id as Long
-                Collection<String> labels = map.labels as Collection<String>
-                Node data = (Node) map.data
-                neo4jEntityPersister.unmarshallOrFromCache(persistentEntity, id, labels, data)
+                return neo4jEntityPersister.unmarshallOrFromCache(persistentEntity, map)
             }
         } else {
             def columnNames = executionResult.columns()

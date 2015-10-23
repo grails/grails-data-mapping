@@ -11,7 +11,7 @@ import org.grails.datastore.mapping.model.PersistentEntity
  * @author Stefan Armbruster
  */
 @CompileStatic
-class GraphClassMapping extends AbstractClassMapping<Entity> {
+class GraphClassMapping extends AbstractClassMapping<Neo4jEntity> {
 
     GraphClassMapping(PersistentEntity entity, MappingContext context) {
         super(entity, context)

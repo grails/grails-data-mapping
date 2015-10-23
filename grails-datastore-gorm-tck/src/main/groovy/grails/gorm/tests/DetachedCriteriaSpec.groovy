@@ -253,14 +253,15 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
 
         when:"A detached criteria instance is created matching the last name"
             def criteria = new DetachedCriteria(Person)
-            criteria.build {
+            criteria = criteria.build {
                 eq 'lastName', 'Simpson'
             }
 
             def results = criteria.list(max: 2)
         then:"The list method returns the right results"
             results.size() == 2
-            results.every { it.lastName == 'Simpson'}
+            results[0].lastName == 'Simpson'
+            results[1].lastName == 'Simpson'
     }
 
     protected void createPeople() {

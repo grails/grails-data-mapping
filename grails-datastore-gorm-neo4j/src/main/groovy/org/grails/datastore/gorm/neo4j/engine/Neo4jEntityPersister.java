@@ -40,6 +40,7 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     public static final String DELETE_ONE_CYPHER = "MATCH (n%s) WHERE n.__id__={id} OPTIONAL MATCH (n)-[r]-() DELETE r,n";
     public static final String DELETE_MANY_CYPHER = "MATCH (n%s) WHERE n.__id__ in {id} OPTIONAL MATCH (n)-[r]-() DELETE r,n";
+    public static final String DYNAMIC_ASSOCIATIONS_QUERY = "MATCH (m%s {__id__:{id}})-[r]-(o) RETURN type(r) as relType, startNode(r)=m as out, {ids: collect(o.__id__), labels: collect(labels(o))} as values";
 
     private static Logger log = LoggerFactory.getLogger(Neo4jEntityPersister.class);
 
@@ -101,6 +102,21 @@ public class Neo4jEntityPersister extends EntityPersister {
         return instance;
     }
 
+    public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Map<String, Object> resultData) {
+
+        Collection<String> labels = (Collection<String>)resultData.get("labels");
+        PersistentEntity persistentEntity = mostSpecificPersistentEntity(defaultPersistentEntity, labels);
+        final long id = ((Number) resultData.get(GormProperties.IDENTITY)).longValue();
+        Object instance = getSession().getCachedInstance(persistentEntity.getJavaClass(), id);
+        Node data = (Node)resultData.get("data");
+
+        if (instance == null) {
+            instance = unmarshall(persistentEntity, id, data, resultData);
+            getSession().cacheInstance(persistentEntity.getJavaClass(), id, instance);
+        }
+        return instance;
+    }
+
     private PersistentEntity mostSpecificPersistentEntity(PersistentEntity pe, Collection<String> labels) {
         if (labels.size() == 1) {
             return pe;
@@ -148,81 +164,96 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
     }
 
-    private Object unmarshall(PersistentEntity persistentEntity, Long id, Node data) {
+    private Object unmarshall(PersistentEntity persistentEntity, Long id, Node node) {
+        return unmarshall(persistentEntity, id, node, Collections.<String, Object>emptyMap());
+    }
+
+    private Object unmarshall(PersistentEntity persistentEntity, Long id, Node node, Map<String, Object> resultData) {
 
         if(log.isDebugEnabled()) {
-            log.debug( "unmarshalling entity {}, props {}, {}", id, data);
+            log.debug( "unmarshalling entity {}, props {}, {}", id, node);
         }
-        EntityAccess entityAccess = getSession().createEntityAccess(persistentEntity, persistentEntity.newInstance());
+        final Neo4jSession session = getSession();
+        GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) persistentEntity;
+        EntityAccess entityAccess = session.createEntityAccess(persistentEntity, persistentEntity.newInstance());
         entityAccess.setIdentifier(id);
 
         Map<TypeDirectionPair, Map<String, Collection>> relationshipsMap = new HashMap<TypeDirectionPair, Map<String, Collection>>();
-        final String cypher = String.format("MATCH (m%s {__id__:{id}})-[r]-(o) RETURN type(r) as relType, startNode(r)=m as out, {ids: collect(o.__id__), labels: collect(labels(o))} as values", ((GraphPersistentEntity) persistentEntity).getLabelsAsString());
-        final Map<String, Object> isMap = Collections.<String, Object>singletonMap(GormProperties.IDENTITY, id);
+        final boolean hasDynamicAssociations = graphPersistentEntity.hasDynamicAssociations();
+        if(hasDynamicAssociations) {
 
-        final GraphDatabaseService graphDatabaseService = getSession().getNativeInterface();
+            final String cypher = String.format(DYNAMIC_ASSOCIATIONS_QUERY, ((GraphPersistentEntity) persistentEntity).getLabelsAsString());
+            final Map<String, Object> isMap = Collections.<String, Object>singletonMap(GormProperties.IDENTITY, id);
 
-        if(log.isDebugEnabled()) {
-            log.debug("Execute Relationship Query Cypher [{}] for parameters [{}]", cypher, isMap);
+            final GraphDatabaseService graphDatabaseService = getSession().getNativeInterface();
+
+            if(log.isDebugEnabled()) {
+                log.debug("Execute Relationship Query Cypher [{}] for parameters [{}]", cypher, isMap);
+            }
+
+            final Result relationships = graphDatabaseService.execute(cypher, isMap);
+            while(relationships.hasNext()) {
+                final Map<String, Object> row = relationships.next();
+                String relType = (String) row.get("relType");
+                Boolean outGoing = (Boolean) row.get("out");
+                Map<String, Collection> values = (Map<String, Collection>) row.get("values");
+                TypeDirectionPair key = new TypeDirectionPair(relType, outGoing);
+                relationshipsMap.put(key, values);
+            }
         }
 
-        final Result relationships = graphDatabaseService.execute(cypher, isMap);
-        while(relationships.hasNext()) {
-            final Map<String, Object> row = relationships.next();
-            String relType = (String) row.get("relType");
-            Boolean outGoing = (Boolean) row.get("out");
-            Map<String, Collection> values = (Map<String, Collection>) row.get("values");
-            TypeDirectionPair key = new TypeDirectionPair(relType, outGoing);
-            relationshipsMap.put(key, values);
-        }
 
-        final List<String> nodeProperties = DefaultGroovyMethods.toList(data.getPropertyKeys());
+        final List<String> nodeProperties = DefaultGroovyMethods.toList(node.getPropertyKeys());
 
         for (PersistentProperty property: entityAccess.getPersistentEntity().getPersistentProperties()) {
 
             String propertyName = property.getName();
             if (property instanceof Simple) {
                 // implicitly sets version property as well
-                if(data.hasProperty(propertyName)) {
+                if(node.hasProperty(propertyName)) {
 
-                    entityAccess.setProperty(propertyName, data.getProperty(propertyName));
+                    entityAccess.setProperty(propertyName, node.getProperty(propertyName));
 
                     nodeProperties.remove(propertyName);
                 }
             } else if (property instanceof Association) {
 
                 Association association = (Association) property;
-                TypeDirectionPair typeDirectionPair = new TypeDirectionPair(
-                        RelationshipUtils.relationshipTypeUsedFor(association),
-                        !RelationshipUtils.useReversedMappingFor(association)
-                );
 
-                Map<String, Collection> idsAndLabels = relationshipsMap.remove(typeDirectionPair);
-                Collection<Long> targetIds = idsAndLabels == null ? null : idsAndLabels.get("ids");
-
+                if(hasDynamicAssociations) {
+                    TypeDirectionPair typeDirectionPair = new TypeDirectionPair(
+                            RelationshipUtils.relationshipTypeUsedFor(association),
+                            !RelationshipUtils.useReversedMappingFor(association)
+                    );
+                    relationshipsMap.remove(typeDirectionPair);
+                }
+                final String associationName = association.getName();
+                final Object associationValues = resultData.get(associationName + "Values");
+                List<Long> targetIds = null;
+                if(associationValues instanceof Map) {
+                    targetIds = (List<Long>) ((Map) associationValues).get("ids");
+                }
                 if (association instanceof ToOne) {
                     ToOne toOne = (ToOne) association;
-                    if (targetIds!=null) {
+                    if (targetIds!=null && !targetIds.isEmpty()) {
                         Long targetId = IteratorUtil.single(targetIds);
-//                        if (targetId!=null) {
-                            entityAccess.setPropertyNoConversion(propertyName,
-                                    getMappingContext().getProxyFactory().createProxy(
-                                            session,
-                                            toOne.getAssociatedEntity().getJavaClass(),
-                                            targetId
-                                    )
-                            );
-//                        }
+                        entityAccess.setPropertyNoConversion(propertyName,
+                                getMappingContext().getProxyFactory().createProxy(
+                                        this.session,
+                                        toOne.getAssociatedEntity().getJavaClass(),
+                                        targetId
+                                )
+                        );
                     }
                 } else if ((association instanceof OneToMany) || (association instanceof ManyToMany)) {
                     Collection values = (Collection) entityAccess.getProperty(propertyName);
                     values = createDirtyCheckableAwareCollection(entityAccess, association, values);
                     entityAccess.setProperty(propertyName, values);
 
-                    if (targetIds!=null) {
+                    if (targetIds!=null && !targetIds.isEmpty()) {
                         for (Long targetId : targetIds) {
                             values.add(getMappingContext().getProxyFactory().createProxy(
-                                            session,
+                                            this.session,
                                             association.getAssociatedEntity().getJavaClass(),
                                             targetId
                                     )
@@ -231,7 +262,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                         }
                     }
                 } else {
-                    throw new IllegalArgumentException("association " + association.getName() + " is of type " + association.getClass().getSuperclass().getName());
+                    throw new IllegalArgumentException("association " + associationName + " is of type " + association.getClass().getSuperclass().getName());
                 }
 
             } else {
@@ -255,7 +286,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                         Long targetId = idIter.next();
                         Collection<String> labels = labelIter.next();
                         Object proxy = getMappingContext().getProxyFactory().createProxy(
-                                session,
+                                this.session,
                                 ((Neo4jMappingContext) getMappingContext()).findPersistentEntityForLabels(labels).getJavaClass(),
                                 targetId
                         );
@@ -272,7 +303,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         if (!nodeProperties.isEmpty()) {
             for (String nodeProperty : nodeProperties) {
                 if(!nodeProperty.equals(CypherBuilder.IDENTIFIER)) {
-                    undeclared.put(nodeProperty,data.getProperty(nodeProperty));
+                    undeclared.put(nodeProperty, node.getProperty(nodeProperty));
                 }
             }
         }

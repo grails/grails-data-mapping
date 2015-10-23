@@ -18,22 +18,24 @@ import org.grails.datastore.mapping.model.MappingContext
  *
  */
 @CompileStatic
-public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
+public class GraphPersistentEntity extends AbstractPersistentEntity<Neo4jEntity> {
 
     public static final String LABEL_SEPARATOR = ':'
     protected Neo4jEntity mappedForm;
     protected Collection<String> staticLabels = []
     protected Collection<Object> labelObjects
     protected boolean hasDynamicLabels = false
+    protected boolean hasDynamicAssociations = false
 
     public GraphPersistentEntity(Class javaClass, MappingContext context) {
         super(javaClass, context);
         this.mappedForm = (Neo4jEntity) context.getMappingFactory().createMappedForm(this);
+        this.hasDynamicAssociations = mappedForm.isDynamicAssociations()
         establishLabels()
     }
 
     @Override
-    public ClassMapping getMapping() {
+    public ClassMapping<Neo4jEntity> getMapping() {
         new GraphClassMapping(this, context);
     }
 
@@ -148,5 +150,9 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
         if (getParentEntity()!=null) {
             ((GraphPersistentEntity)getParentEntity()).appendRecursive(sb, domainInstance);
         }
+    }
+
+    boolean hasDynamicAssociations() {
+        return this.hasDynamicAssociations
     }
 }

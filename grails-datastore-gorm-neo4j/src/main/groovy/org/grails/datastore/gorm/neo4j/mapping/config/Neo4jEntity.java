@@ -25,12 +25,38 @@ import org.grails.datastore.mapping.config.Entity;
 public class Neo4jEntity extends Entity {
 
     private Object labels;
+    private boolean dynamicAssociations;
 
+    /**
+     * @return The label definitions for the entity
+     */
     public Object getLabels() {
         return labels;
     }
 
+    /**
+     * Sets the label definition
+     */
     public void setLabels(Object labels) {
         this.labels = labels;
+    }
+
+    /**
+     * Whether this entity supports dynamic associations. The default is false. Setting this to true will allow Grails to load dynamic relationships, however
+     * at the cost of N+1. For each loaded entity Grails has to execute a separate query to establish the associations. This is contrary to non-dynamic associations
+     * which can be loaded using an OPTIONAL MATCH
+     *
+     * @return True if the entity supports dynamic associations
+     */
+    public boolean isDynamicAssociations() {
+        return dynamicAssociations;
+    }
+
+    /**
+     *
+     * @see {@link #isDynamicAssociations()}
+     */
+    public void setDynamicAssociations(boolean dynamicAssociations) {
+        this.dynamicAssociations = dynamicAssociations;
     }
 }
