@@ -15,17 +15,18 @@
  */
 package org.grails.datastore.gorm.neo4j.engine;
 
-import org.grails.datastore.gorm.neo4j.CypherBuilder;
-import org.grails.datastore.gorm.neo4j.GraphPersistentEntity;
-import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer;
-import org.grails.datastore.gorm.neo4j.Neo4jUtils;
+import org.grails.datastore.gorm.neo4j.*;
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter;
 import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.config.GormProperties;
+import org.grails.datastore.mapping.model.types.Custom;
 import org.grails.datastore.mapping.model.types.Simple;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,19 +55,28 @@ public class NodePendingInsert extends PendingInsertAdapter<Object, Long> {
     public void run() {
         Map<String, Object> simpleProps = new HashMap<String, Object>();
         simpleProps.put(CypherBuilder.IDENTIFIER, nativeKey);
-        for (PersistentProperty pp : getEntityAccess().getPersistentEntity().getPersistentProperties()) {
+        final EntityAccess access = getEntityAccess();
+        final PersistentEntity entity = access.getPersistentEntity();
+        final Neo4jMappingContext mappingContext = (Neo4jMappingContext) this.mappingContext;
+        for (PersistentProperty pp : entity.getPersistentProperties()) {
             if (pp instanceof Simple) {
                 String name = pp.getName();
-                Object value = getEntityAccess().getProperty(name);
+                Object value = access.getProperty(name);
                 if (value != null) {
-                    simpleProps.put(name, Neo4jUtils.mapToAllowedNeo4jType(value, mappingContext));
+                    simpleProps.put(name, mappingContext.convertToNative(value));
                 }
+            }
+            else if(pp instanceof Custom) {
+                Custom<Map<String,Object>> custom = (Custom<Map<String,Object>>)pp;
+                final CustomTypeMarshaller<Object, Map<String, Object>, Map<String, Object>> customTypeMarshaller = custom.getCustomTypeMarshaller();
+                Object value = access.getProperty(pp.getName());
+                customTypeMarshaller.write(custom, value, simpleProps);
             }
         }
 
         Map<String, List<Object>> dynamicRelProps = Neo4jGormEnhancer.amendMapWithUndeclaredProperties(simpleProps, getNativeEntry(), mappingContext);
 
-        String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance(getEntityAccess().getEntity());
+        String labels = ((GraphPersistentEntity) entity).getLabelsWithInheritance(access.getEntity());
         String cypher = String.format("CREATE (n%s {props})", labels);
 
         final Map<String, Object> createParams = Collections.<String, Object>singletonMap(CypherBuilder.PROPS, simpleProps);
@@ -77,8 +87,9 @@ public class NodePendingInsert extends PendingInsertAdapter<Object, Long> {
 
         for (Map.Entry<String, List<Object>> e: dynamicRelProps.entrySet()) {
             for (Object o: e.getValue()) {
-                GraphPersistentEntity gpe = (GraphPersistentEntity)mappingContext.getPersistentEntity(o.getClass().getName());
-                cypher = String.format("MATCH (a%s {__id__:{id}}), (b%s {__id__:{related}}) MERGE (a)-[:%s]->(b)", labels, gpe.getLabelsWithInheritance(o), e.getKey() );
+                GraphPersistentEntity gpe = (GraphPersistentEntity) mappingContext.getPersistentEntity(o.getClass().getName());
+                final String labelsWithInheritance = gpe.getLabelsWithInheritance(o);
+                cypher = String.format("MATCH (a%s {__id__:{id}}), (b%s {__id__:{related}}) MERGE (a)-[:%s]->(b)", labels, labelsWithInheritance, e.getKey() );
                 Map<String,Object> params =  new LinkedHashMap<String, Object>(2);
                 params.put(GormProperties.IDENTITY, nativeKey);
                 params.put(CypherBuilder.RELATED, gpe.getMappingContext().createEntityAccess(gpe, o).getIdentifier());

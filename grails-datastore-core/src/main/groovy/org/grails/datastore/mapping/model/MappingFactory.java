@@ -24,16 +24,9 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.config.Property;
@@ -120,10 +113,15 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             "org.bson.types.ObjectId")));
     }
 
-    private static Map<Class, CustomTypeMarshaller> typeConverterMap = new ConcurrentHashMap<Class, CustomTypeMarshaller>();
+    private static Map<Class, Collection<CustomTypeMarshaller>> typeConverterMap = new ConcurrentHashMap<Class, Collection<CustomTypeMarshaller>>();
 
     public static void registerCustomType(CustomTypeMarshaller marshallerCustom) {
-        typeConverterMap.put(marshallerCustom.getTargetType(), marshallerCustom);
+        Collection<CustomTypeMarshaller> marshallers = typeConverterMap.get(marshallerCustom.getTargetType());
+        if(marshallers == null) {
+            marshallers = new ConcurrentLinkedQueue<CustomTypeMarshaller>();
+            typeConverterMap.put(marshallerCustom.getTargetType(), marshallers);
+        }
+        marshallers.add(marshallerCustom);
     }
 
     public boolean isSimpleType(Class propType) {
@@ -187,13 +185,14 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
      * @return A custom property type
      */
     public Custom<T> createCustom(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
-        CustomTypeMarshaller customTypeMarshaller = typeConverterMap.get(pd.getPropertyType());
-        if (customTypeMarshaller == null && pd.getPropertyType().isEnum()) {
+        final Class<?> propertyType = pd.getPropertyType();
+        CustomTypeMarshaller customTypeMarshaller = findCustomType(context, propertyType);
+        if (customTypeMarshaller == null && propertyType.isEnum()) {
             // If there is no custom type marshaller for current enum, lookup marshaller for enum itself.
-            customTypeMarshaller = typeConverterMap.get(Enum.class);
+            customTypeMarshaller = findCustomType(context, Enum.class);
         }
         if (customTypeMarshaller == null) {
-            throw new IllegalStateException("Cannot create a custom type without a type converter for type " + pd.getPropertyType());
+            throw new IllegalStateException("Cannot create a custom type without a type converter for type " + propertyType);
         }
         return new Custom<T>(owner, context, pd, customTypeMarshaller) {
             PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
@@ -201,6 +200,18 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
                 return propertyMapping;
             }
         };
+    }
+
+    protected static CustomTypeMarshaller findCustomType(MappingContext context, Class<?> propertyType) {
+        final Collection<CustomTypeMarshaller> allMarshallers = typeConverterMap.get(propertyType);
+        if(allMarshallers != null) {
+            for (CustomTypeMarshaller marshaller : allMarshallers) {
+                if(marshaller.supports(context)) {
+                    return marshaller;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -356,16 +367,16 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             }
         };
 
-        CustomTypeMarshaller customTypeMarshaller = typeConverterMap.get(property.getPropertyType());
+        CustomTypeMarshaller customTypeMarshaller = findCustomType(context, property.getPropertyType());
 
         // This is to allow using custom marshaller for list of enum.
         // If no custom type marshaller for current enum.
         if(collectionType != null && collectionType.isEnum()) {
             // First look custom marshaller for related type of collection.
-            customTypeMarshaller = typeConverterMap.get(collectionType);
+            customTypeMarshaller = findCustomType(context, collectionType);
             if(customTypeMarshaller == null) {
                 // If null, look for enum class itself.
-                customTypeMarshaller = typeConverterMap.get(Enum.class);
+                customTypeMarshaller = findCustomType(context, Enum.class);
             }
         }
 

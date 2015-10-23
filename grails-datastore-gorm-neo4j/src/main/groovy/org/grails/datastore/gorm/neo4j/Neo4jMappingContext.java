@@ -20,10 +20,10 @@ import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy;
+import org.springframework.core.convert.ConversionService;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * A {@link org.grails.datastore.mapping.model.MappingContext} implementation for Neo4j
@@ -34,6 +34,37 @@ import java.util.Map;
  * @since 1.0
  */
 public class Neo4jMappingContext extends AbstractMappingContext  {
+
+    private static final Class<Long> LONG_TYPE = long.class;
+    private static final Class<Double> DOUBLE_TYPE = double.class;
+    private static final Class<String> STRING_TYPE = String.class;
+    public static final Set<Class> BASIC_TYPES = Collections.unmodifiableSet( new HashSet<Class>( Arrays.asList(
+            STRING_TYPE,
+            Long.class,
+            Float.class,
+            Integer.class,
+            Double.class,
+            Short.class,
+            Boolean.class,
+            Byte.class,
+            // primitives
+            byte.class,
+            int.class,
+            LONG_TYPE,
+            float.class,
+            DOUBLE_TYPE,
+            short.class,
+            boolean.class,
+            // primitive arrays
+            byte[].class,
+            int[].class,
+            long[].class,
+            float[].class,
+            double[].class,
+            short[].class,
+            boolean[].class,
+            String[].class
+    ) ) );
 
     MappingFactory mappingFactory = new GraphGormMappingFactory();
     MappingConfigurationStrategy mappingSyntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
@@ -63,6 +94,13 @@ public class Neo4jMappingContext extends AbstractMappingContext  {
     }
 
 
+    /**
+     * Finds an entity for the statically mapped set of labels
+     *
+     * @param labels The labels
+     * @return The entity
+     * @throws NonPersistentTypeException if no entity is found
+     */
     public GraphPersistentEntity findPersistentEntityForLabels(Collection<String> labels) {
         final GraphPersistentEntity entity = entitiesByLabel.get(labels);
         if(entity != null) {
@@ -71,4 +109,45 @@ public class Neo4jMappingContext extends AbstractMappingContext  {
         throw new NonPersistentTypeException(labels.toString());
     }
 
+
+    /**
+     * Obtain the native type to use for the given value
+     *
+     * @param value The value
+     * @return The value converted to a native Neo4j type
+     */
+    public Object convertToNative(Object value) {
+        if(value != null) {
+            final Class<?> type = value.getClass();
+            if(BASIC_TYPES.contains(type)) {
+                return value;
+            }
+            else if(value instanceof Collection) {
+                return value;
+            }
+            else if(value instanceof BigDecimal) {
+                return ((BigDecimal)value).doubleValue();
+            }
+            else {
+                final ConversionService conversionService = getConversionService();
+                if(byte[].class.isInstance(value)){
+                    return conversionService.convert(value, String.class);
+                }
+                else {
+                    if (conversionService.canConvert(type, LONG_TYPE)) {
+                        return conversionService.convert(value, LONG_TYPE);
+                    } else if (conversionService.canConvert(type, DOUBLE_TYPE)) {
+                        return conversionService.convert(value, DOUBLE_TYPE);
+                    } else if (conversionService.canConvert(type, STRING_TYPE)) {
+                        return conversionService.convert(value, STRING_TYPE);
+                    } else {
+                        return value.toString();
+                    }
+                }
+            }
+        }
+        else {
+            return value;
+        }
+    }
 }

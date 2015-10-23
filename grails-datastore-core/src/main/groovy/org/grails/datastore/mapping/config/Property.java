@@ -23,7 +23,7 @@ import javax.persistence.FetchType;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class Property implements Cloneable{
+public class Property implements Cloneable {
 
     private boolean index = false;
     private boolean nullable = false;
@@ -51,7 +51,7 @@ public class Property implements Cloneable{
         this.targetName = targetName;
     }
 
-    /*
+    /**
      * @return The name of the property this property mapping relates to
      */
     public String getName() {
@@ -77,6 +77,9 @@ public class Property implements Cloneable{
         this.index = index;
     }
 
+    /**
+     * @return The strategy to use to fetch the property (lazy or eager)
+     */
     public FetchType getFetchStrategy() {
         return fetchStrategy;
     }
@@ -85,6 +88,9 @@ public class Property implements Cloneable{
         this.fetchStrategy = fetchStrategy;
     }
 
+    /**
+     * @return Whether the property is nullable
+     */
     public boolean isNullable() {
         return nullable;
     }
@@ -109,10 +115,16 @@ public class Property implements Cloneable{
         return generator;
     }
 
+    /**
+     * @return The type of the enum, either ordinal or string
+     */
     public String getEnumType() {
         return enumType.toString();
     }
 
+    /**
+     * @return The type of the enum, either ordinal or string
+     */
     public EnumType getEnumTypeObject() {
         return enumType;
     }

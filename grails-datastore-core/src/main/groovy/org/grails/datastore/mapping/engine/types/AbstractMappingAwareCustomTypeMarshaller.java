@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.engine.types;
 
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -35,7 +36,12 @@ public abstract class AbstractMappingAwareCustomTypeMarshaller<T, N, Q> implemen
         this.targetType = targetType;
     }
 
+    @Override
     public boolean supports(Datastore datastore) {
+        return true;
+    }
+
+    public boolean supports(MappingContext context) {
         return true;
     }
 

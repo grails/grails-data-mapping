@@ -22,8 +22,10 @@ import org.bson.BasicBSONObject
 import org.bson.Document
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
+import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.mongo.MongoDatastore
+import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 import org.grails.datastore.mapping.query.Query
 
 /**
@@ -40,6 +42,11 @@ abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTy
 
     GeoJSONType(Class<T> targetType) {
         super(targetType)
+    }
+
+    @Override
+    boolean supports(MappingContext context) {
+        return context instanceof MongoMappingContext;
     }
 
     @Override

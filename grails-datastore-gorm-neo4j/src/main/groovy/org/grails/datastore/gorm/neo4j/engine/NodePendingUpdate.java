@@ -15,16 +15,16 @@
  */
 package org.grails.datastore.gorm.neo4j.engine;
 
-import org.grails.datastore.gorm.neo4j.GraphPersistentEntity;
-import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer;
-import org.grails.datastore.gorm.neo4j.Neo4jUtils;
+import org.grails.datastore.gorm.neo4j.*;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.impl.PendingUpdateAdapter;
 import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.config.GormProperties;
+import org.grails.datastore.mapping.model.types.Custom;
 import org.grails.datastore.mapping.model.types.Simple;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
@@ -55,10 +55,11 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
     @Override
     public void run() {
         Map<String, Object> simpleProps = new HashMap<String, Object>();
-        Object id = getEntityAccess().getIdentifier();
-        simpleProps.put("__id__", id);
+        final EntityAccess access = getEntityAccess();
+        Object id = access.getIdentifier();
+        simpleProps.put(CypherBuilder.IDENTIFIER, id);
 
-        PersistentEntity persistentEntity = getEntityAccess().getPersistentEntity();
+        PersistentEntity persistentEntity = access.getPersistentEntity();
 
         // TODO: Restore correct dirty check handling here!!
 
@@ -66,6 +67,7 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
 //        if (getNativeEntry() instanceof DirtyCheckable) {
 //            dirtyCheckable = (DirtyCheckable)getNativeEntry();
 //        }
+        final Neo4jMappingContext mappingContext = (Neo4jMappingContext) this.mappingContext;
         for (PersistentProperty pp : persistentEntity.getPersistentProperties()) {
             if (pp instanceof Simple) {
 //                boolean needsUpdate = dirtyCheckable==null ? true : dirtyCheckable.hasChanged(pp.getName());
@@ -73,16 +75,22 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
 
                 if (needsUpdate) {
                     String name = pp.getName();
-                    Object value = getEntityAccess().getProperty(name);
+                    Object value = access.getProperty(name);
                     if (value != null) { // TODO: remove property when value is null
-                        simpleProps.put(name,  Neo4jUtils.mapToAllowedNeo4jType(value, mappingContext));
+                        simpleProps.put(name,  mappingContext.convertToNative(value));
                     }
                 }
+            }
+            else if(pp instanceof Custom) {
+                Custom<Map<String,Object>> custom = (Custom<Map<String,Object>>)pp;
+                final CustomTypeMarshaller<Object, Map<String, Object>, Map<String, Object>> customTypeMarshaller = custom.getCustomTypeMarshaller();
+                Object value = access.getProperty(pp.getName());
+                customTypeMarshaller.write(custom, value, simpleProps);
             }
         }
         Neo4jGormEnhancer.amendMapWithUndeclaredProperties(simpleProps, getNativeEntry(), mappingContext);
 
-        String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance(getEntityAccess().getEntity());
+        String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance(access.getEntity());
 
         Map<String,Object> params =  new LinkedHashMap<String, Object>(2);
         params.put(GormProperties.IDENTITY, id);
@@ -90,18 +98,18 @@ class NodePendingUpdate extends PendingUpdateAdapter<Object, Long> {
         //TODO: set n={props} might remove dynamic properties
         StringBuilder cypherStringBuilder = new StringBuilder();
         cypherStringBuilder.append("MATCH (n%s) WHERE n.__id__={id}");
-        if (persistentEntity.hasProperty("version", Long.class) && persistentEntity.isVersioned()) {
-            Long version = (Long) getEntityAccess().getProperty("version");
+        if (persistentEntity.hasProperty(GormProperties.VERSION, Long.class) && persistentEntity.isVersioned()) {
+            Long version = (Long) access.getProperty(GormProperties.VERSION);
             if (version == null) {
                 version = 0l;
             }
             params.put(GormProperties.VERSION, version);
             cypherStringBuilder.append(" AND n.version={version}");
             long newVersion = version + 1;
-            simpleProps.put("version", newVersion);
-            getEntityAccess().setProperty("version", newVersion);
+            simpleProps.put(GormProperties.VERSION, newVersion);
+            access.setProperty(GormProperties.VERSION, newVersion);
         }
-        params.put("props", simpleProps);
+        params.put(CypherBuilder.PROPS, simpleProps);
         cypherStringBuilder.append(" SET n={props} RETURN id(n) as id");
         String cypher = String.format(cypherStringBuilder.toString(), labels);
 

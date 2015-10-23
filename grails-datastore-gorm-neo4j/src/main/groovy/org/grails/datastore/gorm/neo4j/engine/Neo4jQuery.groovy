@@ -19,6 +19,7 @@ import groovy.transform.EqualsAndHashCode
 import groovy.util.logging.Commons
 import org.grails.datastore.gorm.neo4j.CypherBuilder
 import org.grails.datastore.gorm.neo4j.GraphPersistentEntity
+import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
 import org.grails.datastore.gorm.neo4j.Neo4jSession
 import org.grails.datastore.gorm.neo4j.Neo4jUtils
 import org.grails.datastore.gorm.neo4j.RelationshipUtils
@@ -170,7 +171,8 @@ class Neo4jQuery extends Query {
                 @Override
                 @CompileStatic
                 CypherExpression handle(PersistentEntity entity, Query.Equals criterion, CypherBuilder builder, String prefix) {
-                    int paramNumber = builder.addParam(Neo4jUtils.mapToAllowedNeo4jType(criterion.value, entity.mappingContext))
+                    Neo4jMappingContext mappingContext = (Neo4jMappingContext)entity.mappingContext
+                    int paramNumber = builder.addParam( mappingContext.convertToNative(criterion.value) )
                     def association = entity.getPropertyByName(criterion.property)
                     String lhs
                     if (association instanceof Association) {
@@ -188,7 +190,7 @@ class Neo4jQuery extends Query {
                 @Override
                 @CompileStatic
                 CypherExpression handle(PersistentEntity entity, Query.IdEquals criterion, CypherBuilder builder, String prefix) {
-                    int paramNumber = builder.addParam(Neo4jUtils.mapToAllowedNeo4jType(criterion.value, entity.mappingContext))
+                    int paramNumber = addBuildParameterForCriterion(builder, entity, criterion)
                     return new CypherExpression("${prefix}.${CypherBuilder.IDENTIFIER}", "{$paramNumber}", CriterionHandler.OPERATOR_EQUALS)
                 }
             },
@@ -196,7 +198,7 @@ class Neo4jQuery extends Query {
                 @Override
                 @CompileStatic
                 CypherExpression handle(PersistentEntity entity, Query.Like criterion, CypherBuilder builder, String prefix) {
-                    int paramNumber = builder.addParam(Neo4jUtils.mapToAllowedNeo4jType(criterion.value, entity.mappingContext))
+                    int paramNumber = addBuildParameterForCriterion(builder, entity, criterion)
                     builder.replaceParamAt(paramNumber, criterion.value.toString().replaceAll("%", ".*"))
                     return new CypherExpression("${prefix}.$criterion.property", "{$paramNumber}", CriterionHandler.OPERATOR_LIKE)
                 }
@@ -205,7 +207,7 @@ class Neo4jQuery extends Query {
                 @Override
                 @CompileStatic
                 CypherExpression handle(PersistentEntity entity, Query.In criterion, CypherBuilder builder, String prefix) {
-                    int paramNumber = builder.addParam(Neo4jUtils.mapToAllowedNeo4jType(criterion.value, entity.mappingContext))
+                    int paramNumber = addBuildParameterForCriterion(builder, entity, criterion)
                     String lhs = criterion.property == "id" ? "${prefix}.__id__" : "${prefix}.$criterion.property"
                     builder.replaceParamAt(paramNumber, convertEnumsInList(((Query.In) criterion).values))
                     return new CypherExpression(lhs, "{$paramNumber}", CriterionHandler.OPERATOR_IN)
@@ -236,9 +238,10 @@ class Neo4jQuery extends Query {
                 @Override
                 @CompileStatic
                 CypherExpression handle(PersistentEntity entity, Query.Between criterion, CypherBuilder builder, String prefix) {
-                    int paramNumber = builder.addParam(Neo4jUtils.mapToAllowedNeo4jType(criterion.value, entity.mappingContext))
-                    int paramNumberFrom = builder.addParam(Neo4jUtils.mapToAllowedNeo4jType(criterion.from, entity.mappingContext))
-                    int parmaNumberTo = builder.addParam(Neo4jUtils.mapToAllowedNeo4jType(criterion.to, entity.mappingContext))
+                    int paramNumber = addBuildParameterForCriterion(builder, entity, criterion)
+                    Neo4jMappingContext mappingContext = (Neo4jMappingContext)entity.mappingContext
+                    int paramNumberFrom = builder.addParam( mappingContext.convertToNative(criterion.from) )
+                    int parmaNumberTo = builder.addParam( mappingContext.convertToNative(criterion.to) )
                     new CypherExpression( "{$paramNumberFrom}<=${prefix}.$criterion.property and ${prefix}.$criterion.property<={$parmaNumberTo}")
                 }
             },
@@ -376,6 +379,11 @@ class Neo4jQuery extends Query {
         sb.toString()
     }
 
+    private static int addBuildParameterForCriterion(CypherBuilder builder, PersistentEntity entity, Query.PropertyCriterion criterion) {
+        Neo4jMappingContext mappingContext = (Neo4jMappingContext)entity.mappingContext
+        return builder.addParam( mappingContext.convertToNative(criterion.value) )
+    }
+
     @Override
     Neo4jSession getSession() {
         return (Neo4jSession)super.getSession()
@@ -455,7 +463,7 @@ class Neo4jQuery extends Query {
 
         @Override
         CypherExpression handle(PersistentEntity entity, T criterion, CypherBuilder builder, String prefix) {
-            int paramNumber = builder.addParam(Neo4jUtils.mapToAllowedNeo4jType(criterion.value, entity.mappingContext))
+            int paramNumber = addBuildParameterForCriterion(builder, entity, criterion)
             String lhs = "${prefix}.${criterion.property}"
             return new CypherExpression(lhs, "{$paramNumber}", operator)
         }
@@ -514,7 +522,7 @@ class Neo4jQuery extends Query {
 
         @Override
         CypherExpression handle(PersistentEntity entity, T criterion, CypherBuilder builder, String prefix) {
-            int paramNumber = builder.addParam(Neo4jUtils.mapToAllowedNeo4jType(criterion.value, entity.mappingContext))
+            int paramNumber = addBuildParameterForCriterion(builder, entity, criterion)
             Association association = entity.getPropertyByName(criterion.property) as Association
             builder.addMatch("(${prefix})${matchForAssociation(association)}() WITH ${prefix},count(*) as count")
             return new CypherExpression(CriterionHandler.COUNT, "{$paramNumber}", operator)

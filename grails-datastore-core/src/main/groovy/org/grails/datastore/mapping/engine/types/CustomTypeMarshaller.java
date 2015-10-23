@@ -15,6 +15,7 @@
 package org.grails.datastore.mapping.engine.types;
 
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.query.Query;
 
@@ -34,9 +35,15 @@ public interface CustomTypeMarshaller<T, N, Q> {
     /**
      * Whether the marshaller supports the given datastore type
      *
-     * @param datastore The datastore type
+     * @param context The context type
      * @return True if it is supported
      */
+    boolean supports(MappingContext context);
+
+    /**
+     * @deprecated Use {@link #supports(MappingContext)} instead
+     */
+    @Deprecated
     boolean supports(Datastore datastore);
 
     /**

@@ -47,7 +47,7 @@ public abstract class Custom<T> extends AbstractPersistentProperty {
      * @return The type converter for this custom type
      */
     @SuppressWarnings("rawtypes")
-    public CustomTypeMarshaller getCustomTypeMarshaller() {
-        return customTypeMarshaller;
+    public CustomTypeMarshaller<Object,T,T> getCustomTypeMarshaller() {
+        return (CustomTypeMarshaller<Object, T, T>) customTypeMarshaller;
     }
 }

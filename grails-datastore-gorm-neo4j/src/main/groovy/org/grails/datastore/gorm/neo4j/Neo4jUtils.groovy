@@ -36,60 +36,6 @@ abstract class Neo4jUtils {
         }
     }
 
-    static def mapToAllowedNeo4jType(Object value, MappingContext mappingContext) {
-        switch (value.class) {
-            case String:
-            case Long:
-            case Float:
-            case Integer:
-            case Double:
-            case Short:
-            case Byte:
-            case Boolean:
-            case byte:
-            case short:
-            case int:
-            case long:
-            case float:
-            case double:
-            case boolean:
-//            case byte[]:
-            case int[]:
-            case short[]:
-            case long[]:
-            case float[]:
-            case double[]:
-            case boolean[]:
-            case String[]:
-                //pass
-                break
-            case Collection:
-                break
-            case BigDecimal:
-                value = ((BigDecimal)value).doubleValue()
-                break
-
-            case byte[]:
-                value = mappingContext.conversionService.convert(value, String)
-                break
-
-            default:
-                log.info "non special type ${value.class}"
-
-                def conversionService = mappingContext.conversionService
-                if (conversionService.canConvert(value.class, long)) {
-                    value = conversionService.convert(value, long)
-                } else if (conversionService.canConvert(value.class, double)) {
-                    value = conversionService.convert(value, double)
-                } else if (conversionService.canConvert(value.class, String)) {
-                    value = conversionService.convert(value, String)
-                } else {
-                    value = value.toString()
-                    //throw new IllegalArgumentException("cannot convert ${value.class} to long or String")
-                }
-        }
-        value
-    }
 
     static def dumpGraphToSvg(GraphDatabaseService graphDatabaseService) {
         File dotFile = File.createTempFile("temp", ".dot")

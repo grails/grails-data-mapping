@@ -18,9 +18,11 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.bson.Document
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.mongo.MongoDatastore
+import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 
 import java.lang.reflect.Array
 
@@ -69,6 +71,12 @@ import com.mongodb.BasicDBObject
  */
 @CompileStatic
 class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, Document, Document> {
+
+    @Override
+    boolean supports(MappingContext context) {
+        return context instanceof MongoMappingContext;
+    }
+
     @Override
     boolean supports(Datastore datastore) {
         return datastore instanceof MongoDatastore;

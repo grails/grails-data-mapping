@@ -19,7 +19,10 @@ import org.grails.datastore.mapping.config.AbstractGormMappingFactory
 import org.grails.datastore.mapping.config.Property
 
 /**
+ * A {@link org.grails.datastore.mapping.model.MappingFactory} for Neo4j
+ *
  * @author Stefan Armbruster <stefan@armbruster-it.de>
+ * @author Graeme Rocher
  */
 class GraphGormMappingFactory extends AbstractGormMappingFactory {
 
@@ -32,33 +35,6 @@ class GraphGormMappingFactory extends AbstractGormMappingFactory {
     protected Class getEntityMappedFormType() {
         Neo4jEntity
     }
-
-/*
-    // copied from AnnotationKeyValueMappingFactory
-    @Override
-    public Property createMappedForm(PersistentProperty mpp) {
-
-        final Class javaClass = mpp.getOwner().getJavaClass();
-        final ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(javaClass);
-
-        final PropertyDescriptor pd = cpf.getPropertyDescriptor(mpp.getName());
-        final Property property = super.createMappedForm(mpp);
-        Index index = AnnotationUtils.getAnnotation(pd.getReadMethod(), Index.class);
-
-        if (index == null) {
-            final Field field = ReflectionUtils.findField(javaClass, mpp.getName());
-            if (field != null) {
-                ReflectionUtils.makeAccessible(field);
-                index = field.getAnnotation(Index.class);
-            }
-        }
-        if (index != null) {
-            property.setIndex(true);
-        }
-
-        return property;
-    }
-*/
 
 }
 

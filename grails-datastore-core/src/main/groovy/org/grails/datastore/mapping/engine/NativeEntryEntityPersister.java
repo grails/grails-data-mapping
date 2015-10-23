@@ -414,7 +414,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
                 Basic basic = (Basic) prop;
                 CustomTypeMarshaller customTypeMarshaller = basic.getCustomTypeMarshaller();
                 if(customTypeMarshaller != null) {
-                    if (!customTypeMarshaller.supports(getSession().getDatastore())) {
+                    if (!customTypeMarshaller.supports(getMappingContext())) {
                         return;
                     }
 
@@ -743,7 +743,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
 
     private void handleCustom(PersistentProperty prop, EntityAccess ea, T nativeEntry) {
         CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();
-        if (!customTypeMarshaller.supports(getSession().getDatastore())) {
+        if (!customTypeMarshaller.supports(getMappingContext())) {
             return;
         }
 
@@ -898,7 +898,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
             else if((prop instanceof Basic)) {
                 Basic basic = (Basic) prop;
                 CustomTypeMarshaller customTypeMarshaller = basic.getCustomTypeMarshaller();
-                if (customTypeMarshaller != null && customTypeMarshaller.supports(getSession().getDatastore())) {
+                if (customTypeMarshaller != null && customTypeMarshaller.supports(getMappingContext())) {
                     Object propValue = entityAccess.getProperty(prop.getName());
                     Object customValue = customTypeMarshaller.write(prop, propValue, e);
                     handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, customValue);
@@ -916,7 +916,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
             }
             else if ((prop instanceof Custom)) {
                 CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();
-                if (customTypeMarshaller.supports(getSession().getDatastore())) {
+                if (customTypeMarshaller.supports(getMappingContext())) {
                     Object propValue = entityAccess.getProperty(prop.getName());
                     if(propValue == null && !isUpdate) {
                         continue;
@@ -1246,7 +1246,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
                 }
                 else if (persistentProperty instanceof Custom) {
                     CustomTypeMarshaller customTypeMarshaller = ((Custom) persistentProperty).getCustomTypeMarshaller();
-                    if (customTypeMarshaller.supports(getSession().getDatastore())) {
+                    if (customTypeMarshaller.supports(getMappingContext())) {
                         customTypeMarshaller.write(persistentProperty, embeddedEntityAccess.getProperty(persistentProperty.getName()), embeddedEntry);
                     }
                 }
