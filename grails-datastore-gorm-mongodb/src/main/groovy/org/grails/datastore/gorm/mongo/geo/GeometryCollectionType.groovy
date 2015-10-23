@@ -19,8 +19,10 @@ import com.mongodb.DBObject
 import grails.mongodb.geo.GeometryCollection
 import groovy.transform.CompileStatic
 import org.bson.Document
+import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.mongo.MongoDatastore
 
 /**
  * Custom type implementation for persisting GeometryCollection instances
@@ -35,6 +37,11 @@ class GeometryCollectionType extends AbstractMappingAwareCustomTypeMarshaller<Ge
 
     GeometryCollectionType() {
         super(GeometryCollection)
+    }
+
+    @Override
+    boolean supports(Datastore datastore) {
+        return datastore instanceof MongoDatastore;
     }
 
     @Override

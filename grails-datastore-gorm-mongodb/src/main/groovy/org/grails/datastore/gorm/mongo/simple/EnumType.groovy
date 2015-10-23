@@ -17,8 +17,10 @@ package org.grails.datastore.gorm.mongo.simple
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.bson.Document
+import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
 import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.mongo.MongoDatastore
 
 import java.lang.reflect.Array
 
@@ -67,6 +69,10 @@ import com.mongodb.BasicDBObject
  */
 @CompileStatic
 class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, Document, Document> {
+    @Override
+    boolean supports(Datastore datastore) {
+        return datastore instanceof MongoDatastore;
+    }
 
     /**
      * Get type of collection by looking at <code>hasMany</code> static field in
