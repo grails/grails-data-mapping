@@ -323,11 +323,7 @@ class Neo4jQuery extends Query {
 
         def executionResult = graphDatabaseService.execute(cypher, params)
         if (projectionList.empty) {
-            // TODO: potential performance problem here: for each instance we unmarshall seperately, better: use one combined statement to get 'em all
-            return executionResult.collect { Map<String,Object> map ->
-
-                return neo4jEntityPersister.unmarshallOrFromCache(persistentEntity, map)
-            }
+            return new Neo4jResultList(offset, executionResult, neo4jEntityPersister)
         } else {
             def columnNames = executionResult.columns()
             def projectedResults = executionResult.collect { Map<String, Object> row ->
@@ -343,7 +339,6 @@ class Neo4jQuery extends Query {
                             Node childNode = (Node)value
 
                             def persister = getSession().getEntityPersister(association.type)
-                            // TODO: potential performance problem here: for each instance we unmarshall seperately, better: use one combined statement to get 'em all
                             return persister.unmarshallOrFromCache(
                                                 association.associatedEntity,
                                                 (Long)childNode.getProperty(CypherBuilder.IDENTIFIER),

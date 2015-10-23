@@ -26,6 +26,7 @@ import org.bson.Document;
 import org.bson.codecs.EncoderContext;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.mongo.geo.GeoJSONType;
+import org.grails.datastore.gorm.query.AbstractResultList;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.EntityAccess;
@@ -1774,23 +1775,23 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
 
     @SuppressWarnings("serial")
-    public static class MongoResultList extends AbstractList implements Closeable {
+    public static class MongoResultList extends AbstractResultList {
 
         private EntityPersister mongoEntityPersister;
         private MongoCursor cursor;
-        private int offset = 0;
-        private int internalIndex;
-        private List initializedObjects = new ArrayList();
-        private Integer size;
-        private boolean initialized = false;
         private boolean isCodecPersister;
 
         @SuppressWarnings("unchecked")
         public MongoResultList(MongoCursor cursor, int offset, EntityPersister mongoEntityPersister) {
+            super(offset, cursor);
             this.cursor = cursor;
             this.mongoEntityPersister = mongoEntityPersister;
             this.isCodecPersister = mongoEntityPersister instanceof MongoCodecEntityPersister;
-            this.offset = offset;
+        }
+
+        @Override
+        public void close() throws IOException {
+            cursor.close();
         }
 
         @Override
@@ -1807,33 +1808,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         }
 
         @Override
-        public boolean isEmpty() {
-            if (initialized) return initializedObjects.isEmpty();
-            else {
-                return initializedObjects.isEmpty() && !cursor.hasNext();
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public Object get(int index) {
-            if (initializedObjects.size() > index) {
-                return initializedObjects.get(index);
-            } else if (!initialized) {
-                while (cursor.hasNext()) {
-                    if (internalIndex > index)
-                        throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
-                    Object o = isCodecPersister ? nextDecoded() : convertDBObject(nextDecoded());
-                    initializedObjects.add(internalIndex, o);
-                    if (index == internalIndex++) {
-                        return o;
-                    }
-                }
-                initialized = true;
-            }
-            throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
-        }
-
         protected Object nextDecoded() {
             final Object o = cursor.next();
             if(isCodecPersister) {
@@ -1850,97 +1824,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         }
 
         @Override
-        public Object set(int index, Object o) {
-            if (index > (size() - 1)) {
-                throw new ArrayIndexOutOfBoundsException("Cannot set element at index " + index + " for cursor size " + size());
-            } else {
-                // initialize
-                get(index);
-                return initializedObjects.set(index, o);
-            }
-        }
-
-        @Override
-        public ListIterator listIterator() {
-            return listIterator(0);
-        }
-
-        @Override
-        public ListIterator listIterator(int index) {
-            initializeFully();
-            return initializedObjects.listIterator(index);
-        }
-
-        private void initializeFully() {
-            if (initialized) return;
-
-            while (cursor.hasNext()) {
-                Object dbo = nextDecoded();
-                Object current = isCodecPersister ? dbo : convertDBObject(dbo) ;
-                initializedObjects.add(current);
-            }
-            initialized = true;
-        }
-
-        /**
-         * Override to transform elements if necessary during iteration.
-         *
-         * @return an iterator over the elements in this list in proper sequence
-         */
-        @Override
-        public Iterator iterator() {
-            if (initialized || !cursor.hasNext()) {
-                if(!initialized) {
-                    initializeFully();
-                }
-                return initializedObjects.iterator();
-            }
-
-
-            return new Iterator() {
-                Object current;
-                int index = initializedObjects.size();
-
-                public boolean hasNext() {
-
-                    boolean hasMore = cursor.hasNext();
-                    if (!hasMore) {
-                        initialized = true;
-                    }
-                    return hasMore;
-                }
-
-                @SuppressWarnings("unchecked")
-                public Object next() {
-                    Object dbo = nextDecoded();
-                    current = isCodecPersister ? dbo : convertDBObject(dbo);
-                    if (index < initializedObjects.size()){
-
-                        initializedObjects.set(index++, current);
-                    }
-                    else {
-                        index++;
-                        initializedObjects.add(current);
-                    }
-                    return current;
-                }
-
-                public void remove() {
-                    initializedObjects.remove(current);
-                }
-            };
-        }
-
-        @Override
-        public int size() {
-            if (initialized) {
-                return initializedObjects.size();
-            }
-            else if (this.size == null) {
-                initializeFully();
-                this.size = initializedObjects.size();
-            }
-            return size;
+        protected Object convertObject() {
+            return isCodecPersister ? nextDecoded() : convertDBObject(nextDecoded());
         }
 
         protected Object convertDBObject(Object object) {
@@ -1962,11 +1847,9 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             }
         }
 
-        @Override
-        public void close() throws IOException {
-            cursor.close();
-        }
     }
+
+
 
     private static class ProjectedProperty {
         Projection projection;
