@@ -9,15 +9,22 @@ import org.grails.datastore.mapping.model.MappingContext
 
 
 /**
- * TODO: consider using @Memoized on most methods here after move to Groovy >= 2.2
+ * Represents an entity mapped to the Neo4j graph, adding support for dynamic labelling
+ *
  * @author Stefan Armbruster
  * @author Graeme Rocher
+ *
+ * @since 1.0
  *
  */
 @CompileStatic
 public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
 
+    public static final String LABEL_SEPARATOR = ':'
     protected Neo4jEntity mappedForm;
+    protected Collection<String> staticLabels = []
+    protected Collection<Object> labelObjects
+    protected boolean hasDynamicLabels = false
 
     public GraphPersistentEntity(Class javaClass, MappingContext context) {
         super(javaClass, context);
@@ -29,6 +36,18 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
         new GraphClassMapping(this, context);
     }
 
+    @Override
+    void initialize() {
+        super.initialize()
+        labelObjects = establishLabelObjects()
+        hasDynamicLabels = labelObjects.any() { it instanceof Closure }
+        for(obj in labelObjects) {
+            String label = getLabelFor(obj)
+            if(label != null) {
+                staticLabels.add(label)
+            }
+        }
+    }
     /**
      * recursively join all discriminators up the class hierarchy
      * @return
@@ -39,34 +58,73 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
         return sb.toString();
     }
 
-    private void appendRecursive(StringBuilder sb, domainInstance){
-        sb.append(getLabelsAsString(domainInstance));
-        if (getParentEntity()!=null) {
-            ((GraphPersistentEntity)getParentEntity()).appendRecursive(sb, domainInstance);
+    /**
+     * @return Returns only the statically defined labels
+     */
+    public Collection<String> getLabels() {
+        return this.staticLabels
+    }
+
+    /**
+     * Get labels specific to the given instance
+     *
+     * @param domainInstance The domain instance
+     * @return the abels
+     */
+    public Collection<String> getLabels(Object domainInstance) {
+        if(hasDynamicLabels) {
+            Collection<String> labels = []
+            for(obj in labelObjects) {
+                String label = getLabelFor(obj, domainInstance)
+                if(label) {
+                    labels.add(label)
+                }
+            }
+            return labels
+        }
+        else {
+            return staticLabels
         }
     }
 
-    public Collection<String> getLabels(domainInstance=null) {
+    /**
+     * @return Return only the statically defined labels as a string usable by cypher, concatenated by ":"
+     */
+    public String getLabelsAsString() {
+        return ":${staticLabels.join(LABEL_SEPARATOR)}"
+    }
+
+    /**
+     * return all labels as string usable for cypher, concatenated by ":"
+     * @return
+     */
+    public String getLabelsAsString(Object domainInstance) {
+        if(hasDynamicLabels) {
+            return ":${getLabels(domainInstance).join(LABEL_SEPARATOR)}"
+        }
+        else {
+            return getLabelsAsString()
+        }
+    }
+
+    protected Collection<Object> establishLabelObjects() {
         Object labels = mappedForm.getLabels();
 
         List objs = labels instanceof Object[] ? labels as List : [labels]
 
         // if labels consists solely of instance-dependent labels, add default label based on class name
-        if ( objs.every { (it instanceof Closure) && (it.maximumNumberOfParameters==2) }) {
+        if (objs.every { (it instanceof Closure) && (it.maximumNumberOfParameters == 2) }) {
             objs << null // adding -> label defaults to discriminator
         }
-
-        objs.collect { getLabelFor(it, domainInstance) }.findAll { it }  // remove nulls
+        return objs
     }
 
-    private Object getLabelFor(Object obj, domainInstance) {
+    private String getLabelFor(Object obj, domainInstance = null) {
         switch (obj) {
             case null:
-                discriminator
-                break
-            case String:
-                obj
-                break
+                return discriminator
+            case CharSequence:
+                return ((CharSequence)obj).toString()
             case Closure:
                 Closure closure = (Closure)obj
                 Object result = null
@@ -80,22 +138,16 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Entity> {
                     default:
                         throw new IllegalArgumentException("closure specified in labels is unsupported, it expects $closure.maximumNumberOfParameters parameters.")
                 }
-                return result instanceof GString ? result.toString() : result
-                break
+                return result?.toString()
             default:
-                throw new IllegalArgumentException("dunno know how to handle " + obj?.getClass().getName() + " " + obj + " for labels mapping");
+                return obj.toString()
         }
     }
 
-    /**
-     * return all labels as string usable for cypher, concatenated by ":"
-     * @return
-     */
-    public String getLabelsAsString(domainInstance = null) {
-        StringBuilder sb = new StringBuilder();
-        for (String label: getLabels(domainInstance)) {
-            sb.append(':').append(label);
+    private void appendRecursive(StringBuilder sb, domainInstance){
+        sb.append(getLabelsAsString(domainInstance));
+        if (getParentEntity()!=null) {
+            ((GraphPersistentEntity)getParentEntity()).appendRecursive(sb, domainInstance);
         }
-        return sb.toString();
     }
 }
