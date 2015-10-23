@@ -223,7 +223,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param callable The callable
      * @return  The projection list
      */
-    Criteria projections(Closure callable) {
+    Criteria projections(@DelegatesTo(ProjectionList) Closure callable) {
         callable.delegate = projectionList
         callable.call()
         return this
@@ -234,7 +234,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param callable Callable closure
      * @return This criterion
      */
-    Criteria and(Closure callable) {
+    Criteria and(@DelegatesTo(DetachedCriteria) Closure callable) {
         junctions << new Query.Conjunction()
         handleJunction(callable)
         return this
@@ -245,7 +245,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param callable Callable closure
      * @return This criterion
      */
-    Criteria or(Closure callable) {
+    Criteria or(@DelegatesTo(DetachedCriteria) Closure callable) {
         junctions << new Query.Disjunction()
         handleJunction(callable)
         return this
@@ -256,7 +256,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param callable Callable closure
      * @return This criterion
      */
-    Criteria not(Closure callable) {
+    Criteria not(@DelegatesTo(DetachedCriteria) Closure callable) {
         junctions << new Query.Negation()
         handleJunction(callable)
         return this
@@ -283,12 +283,12 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     @Override
-    Criteria "in"(String propertyName, Closure<?> subquery) {
+    Criteria "in"(String propertyName, @DelegatesTo(DetachedCriteria) Closure<?> subquery) {
         inList propertyName, buildQueryableCriteria(subquery)
     }
 
     @Override
-    Criteria inList(String propertyName, Closure<?> subquery) {
+    Criteria inList(String propertyName, @DelegatesTo(DetachedCriteria) Closure<?> subquery) {
         inList propertyName, buildQueryableCriteria(subquery)
     }
 
@@ -306,7 +306,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     @Override
-    Criteria notIn(String propertyName, Closure<?> subquery) {
+    Criteria notIn(String propertyName, @DelegatesTo(DetachedCriteria) Closure<?> subquery) {
         notIn propertyName, buildQueryableCriteria(subquery)
     }
 
@@ -621,23 +621,23 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return this
     }
 
-    Criteria eqAll(String propertyName, Closure<?> propertyValue) {
+    Criteria eqAll(String propertyName, @DelegatesTo(DetachedCriteria) Closure<?> propertyValue) {
         eqAll(propertyName, buildQueryableCriteria(propertyValue))
     }
 
-    Criteria gtAll(String propertyName, Closure<?> propertyValue) {
+    Criteria gtAll(String propertyName, @DelegatesTo(DetachedCriteria) Closure<?> propertyValue) {
         gtAll(propertyName, buildQueryableCriteria(propertyValue))
     }
 
-    Criteria ltAll(String propertyName, Closure<?> propertyValue) {
+    Criteria ltAll(String propertyName, @DelegatesTo(DetachedCriteria) Closure<?> propertyValue) {
         ltAll(propertyName, buildQueryableCriteria(propertyValue))
     }
 
-    Criteria geAll(String propertyName, Closure<?> propertyValue) {
+    Criteria geAll(String propertyName, @DelegatesTo(DetachedCriteria) Closure<?> propertyValue) {
         geAll(propertyName, buildQueryableCriteria(propertyValue))
     }
 
-    Criteria leAll(String propertyName, Closure<?> propertyValue) {
+    Criteria leAll(String propertyName, @DelegatesTo(DetachedCriteria) Closure<?> propertyValue) {
         leAll(propertyName, buildQueryableCriteria(propertyValue))
     }
 
@@ -660,7 +660,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     @Override
-    Criteria gtSome(String propertyName, Closure<?> propertyValue) {
+    Criteria gtSome(String propertyName, @DelegatesTo(DetachedCriteria) Closure<?> propertyValue) {
         gtSome propertyName, buildQueryableCriteria(propertyValue)
     }
 
@@ -671,7 +671,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     @Override
-    Criteria geSome(String propertyName, Closure<?> propertyValue) {
+    Criteria geSome(String propertyName, @DelegatesTo(DetachedCriteria) Closure<?> propertyValue) {
         geSome propertyName, buildQueryableCriteria(propertyValue)
     }
 
@@ -682,7 +682,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     @Override
-    Criteria ltSome(String propertyName, Closure<?> propertyValue) {
+    Criteria ltSome(String propertyName, @DelegatesTo(DetachedCriteria) Closure<?> propertyValue) {
         ltSome propertyName, buildQueryableCriteria(propertyValue)
     }
 
@@ -693,7 +693,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     @Override
-    Criteria leSome(String propertyName, Closure<?> propertyValue) {
+    Criteria leSome(String propertyName, @DelegatesTo(DetachedCriteria) Closure<?> propertyValue) {
         leSome propertyName, buildQueryableCriteria(propertyValue)
     }
 
@@ -785,7 +785,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param additionalQuery The additional query
      * @return A new query
      */
-    DetachedCriteria<T> where(Closure additionalQuery) {
+    DetachedCriteria<T> where(@DelegatesTo(DetachedCriteria) Closure additionalQuery) {
         DetachedCriteria<T> newQuery = clone()
         return newQuery.build(additionalQuery)
     }
@@ -796,7 +796,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param additionalQuery The additional query
      * @return A new query
      */
-    DetachedCriteria<T> whereLazy(Closure additionalQuery) {
+    DetachedCriteria<T> whereLazy(@DelegatesTo(DetachedCriteria) Closure additionalQuery) {
         DetachedCriteria<T> newQuery = clone()
         return newQuery.build(additionalQuery)
     }
@@ -804,14 +804,14 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     /**
      * Synonym for #get
      */
-    T find(Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
+    T find(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         get(args, additionalCriteria)
     }
 
     /**
      * Synonym for #get
      */
-    T find(Closure additionalCriteria) {
+    T find(@DelegatesTo(DetachedCriteria) Closure additionalCriteria) {
         get(Collections.emptyMap(), additionalCriteria)
     }
 
@@ -820,7 +820,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      *
      * @return A single entity
      */
-    T get(Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
+    T get(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         (T)withPopulatedQuery(args, additionalCriteria) { Query query ->
             query.singleResult()
         }
@@ -831,7 +831,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      *
      * @return A single entity
      */
-    T get(Closure additionalCriteria) {
+    T get(@DelegatesTo(DetachedCriteria) Closure additionalCriteria) {
         get(Collections.emptyMap(), additionalCriteria)
     }
 
@@ -840,7 +840,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      *
      * @return A list of matching instances
      */
-    List<T> list(Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
+    List<T> list(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         (List)withPopulatedQuery(args, additionalCriteria) { Query query ->
             if (args?.max) {
                 return new PagedResultList(query)
@@ -854,7 +854,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      *
      * @return A list of matching instances
      */
-    List<T> list(Closure additionalCriteria) {
+    List<T> list(@DelegatesTo(DetachedCriteria) Closure additionalCriteria) {
         list(Collections.emptyMap(), additionalCriteria)
     }
 
@@ -864,7 +864,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param args The arguments
      * @return The count
      */
-    Number count(Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
+    Number count(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         (Number)withPopulatedQuery(args, additionalCriteria) { Query query ->
             query.projections().count()
             query.singleResult()
@@ -877,7 +877,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param args The arguments
      * @return The count
      */
-    Number count(Closure additionalCriteria) {
+    Number count(@DelegatesTo(DetachedCriteria) Closure additionalCriteria) {
         (Number)withPopulatedQuery(Collections.emptyMap(), additionalCriteria) { Query query ->
             query.projections().count()
             query.singleResult()
@@ -898,7 +898,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @return The count
      */
 
-    boolean asBoolean(Closure additionalCriteria = null) {
+    boolean asBoolean(@DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         (Boolean)withPopulatedQuery(Collections.emptyMap(), additionalCriteria) { Query query ->
             query.projections().count()
             ((Number)query.singleResult()) > 0
@@ -936,7 +936,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @return This criteria instance
      */
 
-    DetachedCriteria<T> build(Closure callable) {
+    DetachedCriteria<T> build(@DelegatesTo(DetachedCriteria) Closure callable) {
         DetachedCriteria newCriteria = this.clone()
         newCriteria.with callable
         return newCriteria
@@ -949,7 +949,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @return This criteria instance
      */
 
-    DetachedCriteria<T> buildLazy(Closure callable) {
+    DetachedCriteria<T> buildLazy(@DelegatesTo(DetachedCriteria) Closure callable) {
         DetachedCriteria newCriteria = this.clone()
         newCriteria.lazyQuery = callable
         return newCriteria
