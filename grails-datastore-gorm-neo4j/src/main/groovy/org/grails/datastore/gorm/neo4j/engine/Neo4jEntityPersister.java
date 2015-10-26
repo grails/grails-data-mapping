@@ -3,8 +3,7 @@ package org.grails.datastore.gorm.neo4j.engine;
 import groovy.lang.GroovyObject;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.neo4j.*;
-import org.grails.datastore.gorm.neo4j.collection.Neo4jList;
-import org.grails.datastore.gorm.neo4j.collection.Neo4jSet;
+import org.grails.datastore.gorm.neo4j.collection.*;
 import org.grails.datastore.gorm.neo4j.mapping.reflect.Neo4jNameUtils;
 import org.grails.datastore.mapping.collection.PersistentCollection;
 import org.grails.datastore.mapping.collection.PersistentList;
@@ -249,13 +248,13 @@ public class Neo4jEntityPersister extends EntityPersister {
                     Collection values;
                     final Class type = association.getType();
                     if(List.class.isAssignableFrom(type)) {
-                        values = new PersistentList(targetIds, association.getAssociatedEntity().getJavaClass(), session);
+                        values = new Neo4jPersistentList(targetIds, session, entityAccess, association);
                     }
                     else if(SortedSet.class.isAssignableFrom(type)) {
-                        values = new PersistentSortedSet(targetIds, association.getAssociatedEntity().getJavaClass(), session);
+                        values = new Neo4jPersistentSortedSet(targetIds, session, entityAccess, association);
                     }
                     else {
-                        values = new PersistentSet(targetIds, association.getAssociatedEntity().getJavaClass(), session);
+                        values = new Neo4jPersistentSet(targetIds, session, entityAccess, association);
                     }
                     entityAccess.setPropertyNoConversion(propertyName, values);
                 } else {

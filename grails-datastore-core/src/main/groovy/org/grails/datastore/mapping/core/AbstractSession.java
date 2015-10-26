@@ -159,8 +159,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     public void addPendingInsert(PendingInsert insert) {
         final Object o = insert.getObject();
         if(o != null) {
-            final int hashCode = o.hashCode();
-            objectsPendingOperations.add(hashCode);
+            registerPending(o);
         }
         Collection<PendingInsert> inserts = pendingInserts.get(insert.getEntity());
         if (inserts == null) {
@@ -179,15 +178,17 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     @Override
     public void registerPending(Object obj) {
         if(obj != null) {
-            objectsPendingOperations.add(System.identityHashCode(obj));
+            final int identityHashCode = System.identityHashCode(obj);
+            if(!objectsPendingOperations.contains(identityHashCode)) {
+                objectsPendingOperations.add(identityHashCode);
+            }
         }
     }
 
     public void addPendingUpdate(PendingUpdate update) {
         final Object o = update.getObject();
         if(o != null) {
-            final int hashCode = o.hashCode();
-            objectsPendingOperations.add(hashCode);
+            registerPending(o);
         }
 
         Collection<PendingUpdate> inserts = pendingUpdates.get(update.getEntity());
@@ -202,8 +203,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     public void addPendingDelete(PendingDelete delete) {
         final Object o = delete.getObject();
         if(o != null) {
-            final int hashCode = o.hashCode();
-            objectsPendingOperations.add(hashCode);
+            registerPending(o);
         }
 
         Collection<PendingDelete> deletes = pendingDeletes.get(delete.getEntity());

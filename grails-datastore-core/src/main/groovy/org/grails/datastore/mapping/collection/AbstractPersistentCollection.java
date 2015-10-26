@@ -32,17 +32,17 @@ import java.util.List;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractPersistentCollection implements PersistentCollection, Serializable {
-    private transient Session session;
-    private transient AssociationIndexer indexer;
-    private transient Class childType;
+    protected transient Session session;
+    protected transient AssociationIndexer indexer;
+    protected transient Class childType;
 
-    private boolean initialized;
-    private Serializable associationKey;
-    private Collection keys;
-    private boolean dirty = false;
+    protected boolean initialized;
+    protected Serializable associationKey;
+    protected Collection keys;
+    protected boolean dirty = false;
 
     protected final Collection collection;
-    private int originalSize;
+    protected int originalSize;
 
     protected AbstractPersistentCollection(Class childType, Session session, Collection collection) {
         this.childType = childType;

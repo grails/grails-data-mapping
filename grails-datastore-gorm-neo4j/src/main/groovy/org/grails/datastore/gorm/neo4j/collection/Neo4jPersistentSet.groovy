@@ -20,48 +20,54 @@ import org.grails.datastore.gorm.neo4j.Neo4jSession
 import org.grails.datastore.gorm.neo4j.RelationshipUtils
 import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingDelete
 import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingInsert
+import org.grails.datastore.mapping.collection.PersistentSet
+import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
-import org.grails.datastore.mapping.dirty.checking.DirtyCheckingList
+import org.grails.datastore.mapping.engine.AssociationIndexer
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToMany
 
 
+
 /**
- *
- * A {@link org.grails.datastore.mapping.dirty.checking.DirtyCheckingList} for Neo4j
+ * Neo4j version of the {@link PersistentSet} class
  *
  * @author Graeme Rocher
  * @since 5.0
  */
-
 @CompileStatic
-class Neo4jList extends DirtyCheckingList {
-    private final boolean reversed
-    final transient Association association
-    final transient Neo4jSession session
-    private final String relType
-    private final EntityAccess owner
+class Neo4jPersistentSet extends PersistentSet {
+    protected final boolean reversed
+    protected final String relType
+    protected final EntityAccess parentAccess
+    protected final Association association
 
-    Neo4jList(EntityAccess parentAccess, Association association, List delegate, Neo4jSession session) {
-        super(delegate, (DirtyCheckable)parentAccess.getEntity(), association.getName())
+    Neo4jPersistentSet(Session session, Set collection, EntityAccess parentAccess, Association association) {
+        super(association.associatedEntity.javaClass, session, collection)
+        this.parentAccess = parentAccess
         this.association = association
-        this.session = session
-        this.owner = parentAccess
         reversed = RelationshipUtils.useReversedMappingFor(association)
         relType = RelationshipUtils.relationshipTypeUsedFor(association)
     }
 
+    Neo4jPersistentSet(Collection keys, Session session, EntityAccess parentAccess, Association association) {
+        super(keys, association.associatedEntity.javaClass, session)
+        this.parentAccess = parentAccess
+        this.association = association
+        reversed = RelationshipUtils.useReversedMappingFor(association)
+        relType = RelationshipUtils.relationshipTypeUsedFor(association)
 
-    @Override
-    boolean add(Object o) {
-
-        def added = super.add(o)
-        if(added) {
-            adaptGraphUponAdd(o)
-        }
-        return added
     }
+
+    Neo4jPersistentSet(Serializable associationKey, Session session, AssociationIndexer indexer, EntityAccess parentAccess, Association association) {
+        super(associationKey, session, indexer)
+        this.parentAccess = parentAccess
+        this.association = association
+        reversed = RelationshipUtils.useReversedMappingFor(association)
+        relType = RelationshipUtils.relationshipTypeUsedFor(association)
+    }
+
 
     @Override
     boolean addAll(Collection c) {
@@ -104,30 +110,33 @@ class Neo4jList extends DirtyCheckingList {
         return super.containsAll(c)
     }
 
+
     protected void adaptGraphUponRemove(Object o) {
+        Neo4jSession session = (Neo4jSession)this.session
         if (session.getMappingContext().getProxyFactory().isProxy(o)) {
             return;
         }
         if (!reversed) {
-            session.addPendingInsert(new RelationshipPendingDelete(owner, relType,
+            session.addPendingInsert(new RelationshipPendingDelete(parentAccess, relType,
                     session.createEntityAccess(association.getAssociatedEntity(), o),
                     session.getNativeInterface()));
         }
     }
 
     protected void adaptGraphUponAdd(Object t) {
+        Neo4jSession session = (Neo4jSession)this.session
         def proxyFactory = session.getMappingContext().getProxyFactory()
         if (proxyFactory.isProxy(t)) {
             if ( !proxyFactory.isInitialized(t) ) return
-            if ( !association.associatedEntity.isInstance(t) ) return
+            if ( !childType.isInstance(t) ) return
         }
         EntityAccess target = session.createEntityAccess(association.getAssociatedEntity(), t)
         if (association.isBidirectional()) {
             if (association instanceof ManyToMany) {
                 Collection coll = (Collection) target.getProperty(association.getReferencedPropertyName());
-                coll.add(parent);
+                coll.add(parentAccess.entity);
             } else {
-                target.setProperty(association.getReferencedPropertyName(), parent);
+                target.setProperty(association.getReferencedPropertyName(), parentAccess.entity);
             }
         }
 
@@ -136,7 +145,13 @@ class Neo4jList extends DirtyCheckingList {
         }
 
         if (!reversed) { // prevent duplicated rels
-            session.addPendingInsert(new RelationshipPendingInsert(owner, relType, target, session.getNativeInterface()));
+            session.addPostFlushOperation(new RelationshipPendingInsert(parentAccess, relType, target, session.getNativeInterface()));
         }
+    }
+
+    @Override
+    void markDirty() {
+        ((DirtyCheckable)parentAccess.entity).markDirty(association.getName())
+        super.markDirty()
     }
 }
