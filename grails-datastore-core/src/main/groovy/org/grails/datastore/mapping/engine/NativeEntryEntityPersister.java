@@ -948,7 +948,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
                                 else {
                                     Class associationType = associatedEntity.getJavaClass();
                                     persistentCollection = getPersistentCollection(associatedObjects, associationType);
-                                    entityAccess.setProperty(oneToMany.getName(), persistentCollection);
+                                    entityAccess.setPropertyNoConversion(oneToMany.getName(), persistentCollection);
                                     persistentCollection.markDirty();
                                     newCollection = true;
                                 }

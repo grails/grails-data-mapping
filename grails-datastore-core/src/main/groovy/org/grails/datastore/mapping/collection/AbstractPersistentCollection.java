@@ -37,7 +37,7 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
     protected transient Class childType;
 
     private boolean initialized;
-    protected Boolean initializing;
+    protected Object initializing;
     protected Serializable associationKey;
     protected Collection keys;
     protected boolean dirty = false;
@@ -49,6 +49,9 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
         this.childType = childType;
         this.collection = collection;
         this.session = session;
+        this.initializing = Boolean.FALSE;
+        this.initialized = true;
+        markDirty();
     }
 
     protected AbstractPersistentCollection(final Association association, Serializable associationKey, final Session session, Collection collection) {
@@ -169,6 +172,11 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
 
     public boolean add(Object o) {
         initialize();
+        System.out.println("isInitialized() = " + isInitialized());
+        System.out.println("currentlyInitializing() = " + currentlyInitializing());
+        System.out.println("initializing = " + initializing);
+        System.out.println("o = " + o);
+
         boolean added = collection.add(o);
         if (added) {
             markDirty();
@@ -257,13 +265,17 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
         return initialized;
     }
 
+    private void setInitializing(Boolean initializing) {
+        this.initializing = initializing;
+    }
+
     public void initialize() {
         if(initializing != null) return;
 
-        initializing = true;
+        setInitializing(Boolean.TRUE);
 
         try {
-            if (initialized) {
+            if (isInitialized()) {
                 return;
             }
 
@@ -275,6 +287,7 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
 
             if (associationKey == null) {
                 if (keys != null) {
+
                     addAll(session.retrieveAll(childType, keys));
                 }
             }
@@ -291,7 +304,7 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
             }
             this.originalSize = size();
         } finally {
-            initializing = false;
+            setInitializing(Boolean.FALSE);
         }
     }
 
@@ -304,12 +317,12 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
     }
 
     public void markDirty() {
-        if(currentlyInitializing()) {
+        if(!currentlyInitializing()) {
             dirty = true;
         }
     }
 
     protected boolean currentlyInitializing() {
-        return initializing != null && initializing;
+        return initializing != null && initializing.equals(Boolean.TRUE);
     }
 }

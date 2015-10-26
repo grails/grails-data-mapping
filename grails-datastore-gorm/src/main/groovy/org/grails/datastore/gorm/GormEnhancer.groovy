@@ -265,12 +265,16 @@ class GormEnhancer implements Closeable {
         }
     }
 
+    @CompileStatic
     protected void addObjectToCollection(Association prop, targetObject, obj) {
-        targetObject[prop.name].add(obj)
+        def coll = (Collection)targetObject[prop.name]
+        coll.add(obj)
         if (targetObject instanceof DirtyCheckable) {
             targetObject.markDirty(prop.name)
         }
     }
+
+
 
     protected void addNamedQueryMethods(PersistentEntity e) {
         def cpf = ClassPropertyFetcher.forClass(e.javaClass)
