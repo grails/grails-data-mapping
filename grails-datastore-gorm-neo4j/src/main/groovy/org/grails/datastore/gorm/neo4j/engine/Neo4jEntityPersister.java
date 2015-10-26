@@ -7,6 +7,9 @@ import org.grails.datastore.gorm.neo4j.collection.Neo4jList;
 import org.grails.datastore.gorm.neo4j.collection.Neo4jSet;
 import org.grails.datastore.gorm.neo4j.mapping.reflect.Neo4jNameUtils;
 import org.grails.datastore.mapping.collection.PersistentCollection;
+import org.grails.datastore.mapping.collection.PersistentList;
+import org.grails.datastore.mapping.collection.PersistentSet;
+import org.grails.datastore.mapping.collection.PersistentSortedSet;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.impl.PendingDeleteAdapter;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
@@ -56,7 +59,7 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected List<Object> retrieveAllEntities(PersistentEntity pe, Serializable[] keys) {
-        throw new UnsupportedOperationException();
+        return retrieveAllEntities(pe, Arrays.asList(keys));
     }
 
     @Override
@@ -69,13 +72,9 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected List<Serializable> persistEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objs) {
-        return persistEntities(pe, objs, new HashSet());
-    }
-
-    protected List<Serializable> persistEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objs, Collection persistingColl) {
         List<Serializable> result = new ArrayList<Serializable>();
         for (Object obj: objs) {
-            result.add(persistEntity(pe, obj, persistingColl));
+            result.add(persistEntity(pe, obj));
         }
         return result;
     }
@@ -176,7 +175,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         final Neo4jSession session = getSession();
         GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) persistentEntity;
         EntityAccess entityAccess = session.createEntityAccess(persistentEntity, persistentEntity.newInstance());
-        entityAccess.setIdentifier(id);
+        entityAccess.setIdentifierNoConversion(id);
 
         Map<TypeDirectionPair, Map<String, Collection>> relationshipsMap = new HashMap<TypeDirectionPair, Map<String, Collection>>();
         final boolean hasDynamicAssociations = graphPersistentEntity.hasDynamicAssociations();
@@ -229,7 +228,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                 }
                 final String associationName = association.getName();
                 final Object associationValues = resultData.get(associationName + "Values");
-                List<Long> targetIds = null;
+                List<Long> targetIds = Collections.emptyList();
                 if(associationValues instanceof Map) {
                     targetIds = (List<Long>) ((Map) associationValues).get("ids");
                 }
@@ -246,21 +245,19 @@ public class Neo4jEntityPersister extends EntityPersister {
                         );
                     }
                 } else if ((association instanceof OneToMany) || (association instanceof ManyToMany)) {
-                    Collection values = (Collection) entityAccess.getProperty(propertyName);
-                    values = createDirtyCheckableAwareCollection(entityAccess, association, values);
-                    entityAccess.setProperty(propertyName, values);
 
-                    if (targetIds!=null && !targetIds.isEmpty()) {
-                        for (Long targetId : targetIds) {
-                            values.add(getMappingContext().getProxyFactory().createProxy(
-                                            this.session,
-                                            association.getAssociatedEntity().getJavaClass(),
-                                            targetId
-                                    )
-                            );
-
-                        }
+                    Collection values;
+                    final Class type = association.getType();
+                    if(List.class.isAssignableFrom(type)) {
+                        values = new PersistentList(targetIds, association.getAssociatedEntity().getJavaClass(), session);
                     }
+                    else if(SortedSet.class.isAssignableFrom(type)) {
+                        values = new PersistentSortedSet(targetIds, association.getAssociatedEntity().getJavaClass(), session);
+                    }
+                    else {
+                        values = new PersistentSet(targetIds, association.getAssociatedEntity().getJavaClass(), session);
+                    }
+                    entityAccess.setPropertyNoConversion(propertyName, values);
                 } else {
                     throw new IllegalArgumentException("association " + associationName + " is of type " + association.getClass().getSuperclass().getName());
                 }
@@ -343,6 +340,18 @@ public class Neo4jEntityPersister extends EntityPersister {
                         new Neo4jSet(entityAccess, association, (Set)delegate, session);
             }
         }
+        else {
+            final DirtyCheckableCollection dirtyCheckableCollection = (DirtyCheckableCollection) delegate;
+            final Neo4jSession session = getSession();
+            if(dirtyCheckableCollection.hasChanged()) {
+                for (Object o : ((Iterable)dirtyCheckableCollection)) {
+                    String relType = RelationshipUtils.relationshipTypeUsedFor(association)                                                                                                       ;
+                    final EntityAccess associationAccess = getSession().createEntityAccess(association.getAssociatedEntity(), o);
+                    final RelationshipPendingInsert insert = new RelationshipPendingInsert(entityAccess, relType, associationAccess, session.getNativeInterface());
+                    session.addPendingInsert(insert);
+                }
+            }
+        }
         return delegate;
     }
 
@@ -355,22 +364,13 @@ public class Neo4jEntityPersister extends EntityPersister {
         if (obj == null) {
             throw new IllegalStateException("obj is null");
         }
-        return persistEntity(pe, obj, new HashSet());
-    }
-
-    protected Serializable persistEntity(PersistentEntity pe, Object obj, Collection persistingColl ) {
-
-        if (persistingColl.contains(obj)) {
-            return null;
-        } else {
-            persistingColl.add(obj);
-        }
 
         boolean isDirty = obj instanceof DirtyCheckable ? ((DirtyCheckable)obj).hasChanged() : true;
 
         final Neo4jSession session = getSession();
-        if (session.isPendingAlready(obj) && (!isDirty)) {
-            return null;
+        if (session.isPendingAlready(obj) || (!isDirty)) {
+            EntityAccess entityAccess = createEntityAccess(pe, obj);
+            return (Serializable) entityAccess.getIdentifier();
         }
 
         EntityAccess entityAccess = createEntityAccess(pe, obj);
@@ -388,7 +388,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                 return null;
             }
             session.addPendingUpdate(new NodePendingUpdate(entityAccess, session.getNativeInterface(), getMappingContext()));
-            persistAssociationsOfEntity(pe, entityAccess, true, persistingColl);
+            persistAssociationsOfEntity(pe, entityAccess, true);
             firePostUpdateEvent(pe, entityAccess);
 
         } else {
@@ -396,14 +396,14 @@ public class Neo4jEntityPersister extends EntityPersister {
                 return null;
             }
             session.addPendingInsert(new NodePendingInsert(session.getDatastore().nextIdForType(pe), entityAccess, session.getNativeInterface(), getMappingContext()));
-            persistAssociationsOfEntity(pe, entityAccess, false, persistingColl);
+            persistAssociationsOfEntity(pe, entityAccess, false);
             firePostInsertEvent(pe, entityAccess);
         }
 
         return (Serializable) entityAccess.getIdentifier();
     }
 
-    private void persistAssociationsOfEntity(PersistentEntity pe, EntityAccess entityAccess, boolean isUpdate, Collection persistingColl) {
+    private void persistAssociationsOfEntity(PersistentEntity pe, EntityAccess entityAccess, boolean isUpdate) {
 
         Object obj = entityAccess.getEntity();
         DirtyCheckable dirtyCheckable = null;
@@ -435,7 +435,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                         }
 
                         Collection targets = (Collection) propertyValue;
-                        persistEntities(association.getAssociatedEntity(), targets, persistingColl);
+                        persistEntities(association.getAssociatedEntity(), targets);
 
                         boolean reversed = RelationshipUtils.useReversedMappingFor(association);
 
@@ -464,7 +464,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                             }
                         }
 
-                        persistEntity(to.getAssociatedEntity(), propertyValue, persistingColl);
+                        persistEntity(to.getAssociatedEntity(), propertyValue);
 
                         boolean reversed = RelationshipUtils.useReversedMappingFor(to);
                         String relType = RelationshipUtils.relationshipTypeUsedFor(to);

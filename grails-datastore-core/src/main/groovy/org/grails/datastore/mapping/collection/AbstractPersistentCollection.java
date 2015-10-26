@@ -86,6 +86,23 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
         };
     }
 
+    protected AbstractPersistentCollection(Collection keys, Class childType,
+                                           Session session, Collection collection) {
+        this.session = session;
+        this.keys = keys;
+        this.childType = childType;
+        this.collection = collection;
+    }
+
+    protected AbstractPersistentCollection(Serializable associationKey, Session session,
+                                           AssociationIndexer indexer, Collection collection) {
+        this.session = session;
+        this.associationKey = associationKey;
+        this.indexer = indexer;
+        this.collection = collection;
+    }
+
+
     @Override
     public boolean hasChanged() {
         return isDirty();
@@ -111,21 +128,6 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
         return isInitialized() && (size() != originalSize);
     }
 
-    protected AbstractPersistentCollection(Collection keys, Class childType,
-            Session session, Collection collection) {
-        this.session = session;
-        this.keys = keys;
-        this.childType = childType;
-        this.collection = collection;
-    }
-
-    protected AbstractPersistentCollection(Serializable associationKey, Session session,
-            AssociationIndexer indexer, Collection collection) {
-        this.session = session;
-        this.associationKey = associationKey;
-        this.indexer = indexer;
-        this.collection = collection;
-    }
 
     /* Collection methods */
 

@@ -52,8 +52,7 @@ class MiscSpec extends GormDatastoreSpec {
             def role = Role.findByRole('role1')
 
         then:
-            user.roles.every { session.getMappingContext().getProxyFactory().isProxy(it)}
-            role in user.roles*.target
+            !user.roles.isInitialized()
     }
 
     def "test unique constraint"() {

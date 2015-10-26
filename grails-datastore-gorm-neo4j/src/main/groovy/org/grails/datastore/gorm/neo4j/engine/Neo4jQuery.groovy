@@ -39,6 +39,7 @@ import org.neo4j.graphdb.Node
  * perform criteria queries on a Neo4j backend
  *
  * @author Stefan Armbruster <stefan@armbruster-it.de>
+ * @author Graeme Rocher
  */
 @CompileStatic
 @Commons
@@ -56,12 +57,12 @@ class Neo4jQuery extends Query {
     }
 
     private static Map<Class<? extends Query.Criterion>, String> COMPARISON_OPERATORS = [
-            (Query.GreaterThanEqualsProperty): ">=".intern(),
-            (Query.EqualsProperty): "=".intern(),
-            (Query.NotEqualsProperty): "<>".intern(),
-            (Query.LessThanEqualsProperty): "<=".intern(),
-            (Query.LessThanProperty): "<".intern(),
-            (Query.GreaterThanProperty): ">".intern()
+            (Query.GreaterThanEqualsProperty): CriterionHandler.OPERATOR_GREATER_THAN_EQUALS,
+            (Query.EqualsProperty): CriterionHandler.OPERATOR_EQUALS,
+            (Query.NotEqualsProperty): CriterionHandler.OPERATOR_NOT_EQUALS,
+            (Query.LessThanEqualsProperty): CriterionHandler.OPERATOR_LESS_THAN_EQUALS,
+            (Query.LessThanProperty): CriterionHandler.OPERATOR_LESS_THAN,
+            (Query.GreaterThanProperty): CriterionHandler.OPERATOR_GREATER_THAN
     ]
 
     protected static Map<Class<? extends Query.Projection>, ProjectionHandler> PROJECT_HANDLERS = [
