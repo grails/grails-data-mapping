@@ -435,7 +435,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         // do nothing
     }
 
-    private void executePendings(Collection<? extends Runnable> pendings) {
+    protected void executePendings(Collection<? extends Runnable> pendings) {
         try {
             for (Runnable pending : pendings) {
                 pending.run();
@@ -445,7 +445,6 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             exceptionOccurred = true;
             throw e;
         }
-        pendings.clear();
     }
 
     public void clear() {
@@ -463,6 +462,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         pendingInserts.clear();
         pendingUpdates.clear();
         pendingDeletes.clear();
+        postFlushOperations.clear();
     }
 
     private void clearMaps(Map<Class, Map<Serializable, Object>> mapOfMaps) {

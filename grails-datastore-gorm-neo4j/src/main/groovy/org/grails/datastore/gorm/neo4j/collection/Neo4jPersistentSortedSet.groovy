@@ -83,6 +83,16 @@ class Neo4jPersistentSortedSet extends PersistentSortedSet {
     }
 
     @Override
+    boolean add(Object o) {
+        def added = super.add(o)
+        if(added) {
+            adaptGraphUponAdd(o)
+        }
+
+        return added
+    }
+
+    @Override
     boolean removeAll(Collection c) {
         for(o in c) {
             adaptGraphUponRemove(o)
@@ -116,8 +126,8 @@ class Neo4jPersistentSortedSet extends PersistentSortedSet {
         if (session.getMappingContext().getProxyFactory().isProxy(o)) {
             return;
         }
-        if (!reversed) {
-            session.addPendingInsert(new RelationshipPendingDelete(parentAccess, relType,
+        if (!reversed && !currentlyInitializing()) {
+            session.addPostFlushOperation(new RelationshipPendingDelete(parentAccess, relType,
                     session.createEntityAccess(association.getAssociatedEntity(), o),
                     session.getNativeInterface()));
         }
@@ -131,7 +141,8 @@ class Neo4jPersistentSortedSet extends PersistentSortedSet {
             if ( !childType.isInstance(t) ) return
         }
         EntityAccess target = session.createEntityAccess(association.getAssociatedEntity(), t)
-        if (association.isBidirectional()) {
+        def isNotInitializing = !currentlyInitializing()
+        if (association.isBidirectional() && isNotInitializing) {
             if (association instanceof ManyToMany) {
                 Collection coll = (Collection) target.getProperty(association.getReferencedPropertyName());
                 coll.add(parentAccess.entity);
@@ -144,14 +155,16 @@ class Neo4jPersistentSortedSet extends PersistentSortedSet {
             session.persist(t);
         }
 
-        if (!reversed) { // prevent duplicated rels
-            session.addPendingInsert(new RelationshipPendingInsert(parentAccess, relType, target, session.getNativeInterface()));
+        if (!reversed&& isNotInitializing) { // prevent duplicated rels
+            session.addPostFlushOperation(new RelationshipPendingInsert(parentAccess, relType, target, session.getNativeInterface()));
         }
     }
 
     @Override
     void markDirty() {
-        ((DirtyCheckable)parentAccess.entity).markDirty(association.getName())
-        super.markDirty()
+        if (!currentlyInitializing()) {
+            ((DirtyCheckable) parentAccess.entity).markDirty(association.getName())
+            super.markDirty()
+        }
     }
 }

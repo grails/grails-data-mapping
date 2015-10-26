@@ -51,35 +51,5 @@ class Neo4jGormEnhancer extends GormEnhancer {
         return api
     }
 
-    public static Map<String, List<Object>> amendMapWithUndeclaredProperties(Map<String, Object> simpleProps, Object pojo, MappingContext mappingContext) {
-        GroovyObject obj = (GroovyObject) pojo;
-        Map<String, List<Object>> dynRelProps = [:].withDefault { [] }
-        Map<String,Object> map = (Map) obj.getProperty(UNDECLARED_PROPERTIES);
-        if (map!=null) {
-            for (Map.Entry<String,Object> entry : map.entrySet()) {
-                def value = entry.getValue()
-                def key = entry.getKey()
-
-                if  (mappingContext.isPersistentEntity(value)) {
-                    dynRelProps[key] << value
-                } else if (isCollectionWithPersistentEntities(value, mappingContext)) {
-                    dynRelProps[key].addAll((Collection)value)
-                } else {
-                    simpleProps.put(key, ((Neo4jMappingContext)mappingContext).convertToNative(entry.value))
-                }
-            }
-        }
-        return dynRelProps
-    }
-
-    static boolean isCollectionWithPersistentEntities(Object o, MappingContext mappingContext) {
-        if (!(o instanceof Collection)) {
-            return false;
-        }
-        else {
-            Collection c = (Collection)o
-            return (!c.empty) && (c.any() { mappingContext.isPersistentEntity(it) })
-        }
-    }
 }
 

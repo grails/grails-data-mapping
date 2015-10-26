@@ -36,7 +36,8 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
     protected transient AssociationIndexer indexer;
     protected transient Class childType;
 
-    protected boolean initialized;
+    private boolean initialized;
+    protected Boolean initializing;
     protected Serializable associationKey;
     protected Collection keys;
     protected boolean dirty = false;
@@ -257,33 +258,41 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
     }
 
     public void initialize() {
-        if (initialized) {
-            return;
-        }
+        if(initializing != null) return;
 
-        if (session == null) {
-            throw new IllegalStateException("PersistentCollection of type " + this.getClass().getName() + " should have been initialized before serialization.");
-        }
+        initializing = true;
 
-        initialized = true;
-
-        if (associationKey == null) {
-            if (keys != null) {
-                addAll(session.retrieveAll(childType, keys));
+        try {
+            if (initialized) {
+                return;
             }
-        }
-        else {
-            List results = indexer.query(associationKey);
-            PersistentEntity entity = indexer.getIndexedEntity();
 
-            // This should really only happen for unit testing since entities are
-            // mocked selectively and may not always be registered in the indexer. In this
-            // case, there can't be any results to be added to the collection.
-            if( entity != null ) {
-                addAll(session.retrieveAll(entity.getJavaClass(), results));
+            if (session == null) {
+                throw new IllegalStateException("PersistentCollection of type " + this.getClass().getName() + " should have been initialized before serialization.");
             }
+
+            initialized = true;
+
+            if (associationKey == null) {
+                if (keys != null) {
+                    addAll(session.retrieveAll(childType, keys));
+                }
+            }
+            else {
+                List results = indexer.query(associationKey);
+                PersistentEntity entity = indexer.getIndexedEntity();
+
+                // This should really only happen for unit testing since entities are
+                // mocked selectively and may not always be registered in the indexer. In this
+                // case, there can't be any results to be added to the collection.
+                if( entity != null ) {
+                    addAll(session.retrieveAll(entity.getJavaClass(), results));
+                }
+            }
+            this.originalSize = size();
+        } finally {
+            initializing = false;
         }
-        this.originalSize = size();
     }
 
     public boolean isDirty() {
@@ -295,6 +304,12 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
     }
 
     public void markDirty() {
-        dirty = true;
+        if(currentlyInitializing()) {
+            dirty = true;
+        }
+    }
+
+    protected boolean currentlyInitializing() {
+        return initializing != null && initializing;
     }
 }

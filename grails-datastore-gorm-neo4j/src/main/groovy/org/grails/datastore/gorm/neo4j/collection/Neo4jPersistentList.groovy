@@ -73,8 +73,8 @@ class Neo4jPersistentList extends PersistentList {
     @Override
     boolean addAll(Collection c) {
         def added = super.addAll(c)
-        if(added) {
-            for( o in c ) {
+        if (added) {
+            for (o in c) {
                 adaptGraphUponAdd(o)
             }
         }
@@ -83,8 +83,18 @@ class Neo4jPersistentList extends PersistentList {
     }
 
     @Override
+    boolean add(Object o) {
+        def added = super.add(o)
+        if(added) {
+            adaptGraphUponAdd(o)
+        }
+
+        return added
+    }
+
+    @Override
     boolean removeAll(Collection c) {
-        for(o in c) {
+        for (o in c) {
             adaptGraphUponRemove(o)
         }
         return super.removeAll(c)
@@ -112,26 +122,28 @@ class Neo4jPersistentList extends PersistentList {
     }
 
     protected void adaptGraphUponRemove(Object o) {
-        Neo4jSession session = (Neo4jSession)this.session
+        Neo4jSession session = (Neo4jSession) this.session
         if (session.getMappingContext().getProxyFactory().isProxy(o)) {
             return;
         }
-        if (!reversed) {
-            session.addPendingInsert(new RelationshipPendingDelete(parentAccess, relType,
+        if (!reversed && !currentlyInitializing()) {
+            session.addPostFlushOperation(new RelationshipPendingDelete(parentAccess, relType,
                     session.createEntityAccess(association.getAssociatedEntity(), o),
                     session.getNativeInterface()));
         }
     }
 
     protected void adaptGraphUponAdd(Object t) {
-        Neo4jSession session = (Neo4jSession)this.session
+        Neo4jSession session = (Neo4jSession) this.session
         def proxyFactory = session.getMappingContext().getProxyFactory()
         if (proxyFactory.isProxy(t)) {
-            if ( !proxyFactory.isInitialized(t) ) return
-            if ( !childType.isInstance(t) ) return
+            if (!proxyFactory.isInitialized(t)) return
+            if (!childType.isInstance(t)) return
         }
         EntityAccess target = session.createEntityAccess(association.getAssociatedEntity(), t)
-        if (association.isBidirectional()) {
+
+        def isNotInitializing = !currentlyInitializing()
+        if (association.isBidirectional() && isNotInitializing) {
             if (association instanceof ManyToMany) {
                 Collection coll = (Collection) target.getProperty(association.getReferencedPropertyName());
                 coll.add(parentAccess.entity);
@@ -144,14 +156,16 @@ class Neo4jPersistentList extends PersistentList {
             session.persist(t);
         }
 
-        if (!reversed) { // prevent duplicated rels
-            session.addPendingInsert(new RelationshipPendingInsert(parentAccess, relType, target, session.getNativeInterface()));
+        if (!reversed && isNotInitializing) { // prevent duplicated rels
+            session.addPostFlushOperation(new RelationshipPendingInsert(parentAccess, relType, target, session.getNativeInterface()));
         }
     }
 
     @Override
     void markDirty() {
-        ((DirtyCheckable)parentAccess.entity).markDirty(association.getName())
-        super.markDirty()
+        if (!currentlyInitializing()) {
+            ((DirtyCheckable) parentAccess.entity).markDirty(association.getName())
+            super.markDirty()
+        }
     }
 }

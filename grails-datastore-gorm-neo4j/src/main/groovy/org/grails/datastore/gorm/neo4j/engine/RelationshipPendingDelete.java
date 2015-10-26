@@ -18,6 +18,7 @@ package org.grails.datastore.gorm.neo4j.engine;
 import org.grails.datastore.gorm.neo4j.CypherBuilder;
 import org.grails.datastore.gorm.neo4j.GraphPersistentEntity;
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter;
+import org.grails.datastore.mapping.core.impl.PendingOperationAdapter;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.slf4j.Logger;
@@ -32,8 +33,10 @@ import java.util.Map;
  * @author Stefan
  * @author Graeme Rocher
  */
-public class RelationshipPendingDelete extends PendingInsertAdapter<Object, Long> {
+public class RelationshipPendingDelete extends PendingOperationAdapter<Object, Long> {
 
+    public static final String CYPHER_DELETE_WITH_TARGET = "MATCH (from%s {__id__: {start}})-[r:%s]->(to%s {__id__: {end}}) DELETE r";
+    public static final String CYPHER_DELETE_RELATIONSHIP = "MATCH (from%s {__id__: {start}})-[r:%s]->() DELETE r";
     private static Logger log = LoggerFactory.getLogger(RelationshipPendingDelete.class);
 
     private final String relType;
@@ -41,7 +44,7 @@ public class RelationshipPendingDelete extends PendingInsertAdapter<Object, Long
     private final GraphDatabaseService graphDatabaseService;
 
     public RelationshipPendingDelete(EntityAccess source, String relType, EntityAccess target, GraphDatabaseService graphDatabaseService) {
-        super(source.getPersistentEntity(), -1l, source.getEntity(), source);
+        super(source.getPersistentEntity(), (Long) source.getIdentifier(), source.getEntity());
         this.target = target;
         this.graphDatabaseService = graphDatabaseService;
         this.relType = relType;
@@ -49,24 +52,23 @@ public class RelationshipPendingDelete extends PendingInsertAdapter<Object, Long
 
     @Override
     public void run() {
-        String labelsFrom = ((GraphPersistentEntity)getEntity()).getLabelsAsString();
+        String labelsFrom = ((GraphPersistentEntity) getEntity()).getLabelsAsString();
         String labelsTo;
         String cypher;
 
-        Map<String,Object> params =  new LinkedHashMap<String, Object>(2);
-        params.put(CypherBuilder.START, getEntityAccess().getIdentifier());
-        if (target!=null) {
+        Map<String, Object> params = new LinkedHashMap<String, Object>(2);
+        params.put(CypherBuilder.START, getNativeKey());
+        if (target != null) {
             params.put(CypherBuilder.END, target.getIdentifier());
-            labelsTo = ((GraphPersistentEntity)target.getPersistentEntity()).getLabelsAsString();
-            cypher = String.format("MATCH (from%s {__id__: {start}})-[r:%s]->(to%s {__id__: {end}}) DELETE r", labelsFrom, relType, labelsTo);
+            labelsTo = ((GraphPersistentEntity) target.getPersistentEntity()).getLabelsAsString();
+            cypher = String.format(CYPHER_DELETE_WITH_TARGET, labelsFrom, relType, labelsTo);
         } else {
-            cypher = String.format("MATCH (from%s {__id__: {start}})-[r:%s]->() DELETE r", labelsFrom, relType);
+            cypher = String.format(CYPHER_DELETE_RELATIONSHIP, labelsFrom, relType);
 
         }
-        if(log.isDebugEnabled()) {
-            log.debug("Executing Delete cypher [{}] for parameters [{}]", cypher, params);
+        if (log.isDebugEnabled()) {
+            log.debug("DELETE Cypher [{}] for parameters [{}]", cypher, params);
         }
         graphDatabaseService.execute(cypher, params);
     }
-
 }

@@ -63,7 +63,7 @@ public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long
         String cypher = String.format("MATCH (from%s {__id__:{start}}), (to%s {__id__:{end}}) MERGE (from)-[:%s]->(to)", labelsFrom, labelsTo, relType);
 
         if(log.isDebugEnabled()) {
-            log.debug("Executing Relationship Merge cypher [{}] for parameters [{}]", cypher, params);
+            log.debug("MERGE Cypher [{}] for parameters [{}]", cypher, params);
         }
         graphDatabaseService.execute(cypher, params);
     }

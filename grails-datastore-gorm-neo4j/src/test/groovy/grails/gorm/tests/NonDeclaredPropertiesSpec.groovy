@@ -62,7 +62,7 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
             pet.born == date.time
 
         and: "we have no additional properties"
-            pet."${Neo4jGormEnhancer.UNDECLARED_PROPERTIES}".size() == 2
+            session.getAttribute(pet, Neo4jGormEnhancer.UNDECLARED_PROPERTIES).size() == 2
     }
 
     def "test handling of non-declared properties"() {

@@ -29,6 +29,8 @@ public class CypherBuilder {
     public static final String START_MATCH = "MATCH (n";
     public static final String SPACE = " ";
     public static final String OPTIONAL_MATCH = "OPTIONAL MATCH";
+    public static final String CYPHER_CREATE = "CREATE ";
+    public static final String CYPHER_MATCH_ID = "MATCH (n%s) WHERE n.__id__={id}";
 
 
     private String forLabels;

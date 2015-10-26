@@ -320,7 +320,7 @@ class Neo4jQuery extends Query {
         def cypher = cypherBuilder.build()
         def params = cypherBuilder.getParams()
 
-        log.debug("Executing Cypher Query [$cypher] for params [$params]")
+        log.debug("QUERY Cypher [$cypher] for params [$params]")
 
         def executionResult = graphDatabaseService.execute(cypher, params)
         if (projectionList.empty) {

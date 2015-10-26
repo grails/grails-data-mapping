@@ -41,14 +41,14 @@ public class DumpGraphOnSessionFlushListener implements ApplicationListener<Sess
                 StringWriter writer = new StringWriter();
                 PrintWriter printWriter = new PrintWriter(writer);
                 new SubGraphExporter(new DatabaseSubGraph(graphDatabaseService)).export(printWriter);
-                log.info(writer.toString());
-                log.info("svg: " + Neo4jUtils.dumpGraphToSvg(graphDatabaseService));
+                log.trace(writer.toString());
+                log.trace("svg: " + Neo4jUtils.dumpGraphToSvg(graphDatabaseService));
                 tx.success();
             } finally {
                 tx.close();
             }
         } catch (Throwable e) {
-            log.warn("Failed to dump graph:" + e.getMessage(), e);
+            log.trace("Failed to dump graph:" + e.getMessage(), e);
         }
     }
 }

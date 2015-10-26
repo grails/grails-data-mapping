@@ -15,10 +15,12 @@
  */
 package org.grails.datastore.gorm.neo4j
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormInstanceApi
+import org.grails.datastore.mapping.core.AbstractDatastore
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
-import org.grails.datastore.mapping.model.config.GormProperties
 
 
 /**
@@ -39,12 +41,13 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param name The property name
      * @return The property value
      */
+    @CompileStatic
     def propertyMissing(D instance, String name) {
-
         def unwrappedInstance = unwrappedInstance(instance)
+        def session = datastore.currentSession
+        def undeclared = getOrInitializeUndeclared(session, unwrappedInstance)
 
-        MetaProperty mp = unwrappedInstance.hasProperty(Neo4jGormEnhancer.UNDECLARED_PROPERTIES);
-        mp ? mp.getProperty(unwrappedInstance)[name] : null
+        return undeclared.get(name)
     }
 
     /**
@@ -52,9 +55,10 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param instance
      * @return the unwrapped instance
      */
+    @CompileStatic
     private D unwrappedInstance(D instance) {
         def proxyFactory = datastore.mappingContext.proxyFactory
-        proxyFactory.unwrap(instance)
+        return (D)proxyFactory.unwrap(instance)
     }
 
     /**
@@ -63,31 +67,35 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param name The property name
      * @param val The value
      */
+    @CompileStatic
     def propertyMissing(D instance, String name, val) {
-
         def unwrappedInstance = unwrappedInstance(instance)
-
+        def session = AbstractDatastore.retrieveSession(Neo4jDatastore)
         if (name == Neo4jGormEnhancer.UNDECLARED_PROPERTIES) {
-            unwrappedInstance.metaClass."${Neo4jGormEnhancer.UNDECLARED_PROPERTIES}" = val
+            return getOrInitializeUndeclared(session, unwrappedInstance)
         } else {
-            MetaProperty mp = unwrappedInstance.hasProperty(Neo4jGormEnhancer.UNDECLARED_PROPERTIES);
-            Map undeclaredProps
-            if (mp) {
-                undeclaredProps = mp.getProperty(unwrappedInstance)
-            } else {
-                undeclaredProps = [:]
-                unwrappedInstance.metaClass."${Neo4jGormEnhancer.UNDECLARED_PROPERTIES}" = undeclaredProps
-            }
-            (val == null) ? undeclaredProps.remove(name) : undeclaredProps.put(name, val)
+
+            Map undeclaredProps = getOrInitializeUndeclared(session, unwrappedInstance)
+            undeclaredProps.put(name, val)
             if (datastore.mappingContext.isPersistentEntity(val)) {
-                val.save()
-            } else if (Neo4jGormEnhancer.isCollectionWithPersistentEntities(val, datastore.mappingContext)) {
-                val.each { it.save() }
+                session.persist(val)
+            } else if (Neo4jSession.isCollectionWithPersistentEntities(val, datastore.mappingContext)) {
+                session.persist((Iterable)val)
             }
             if (unwrappedInstance instanceof DirtyCheckable) {
                 ((DirtyCheckable)unwrappedInstance).markDirty(name)
             }
         }
+    }
+
+    @CompileStatic
+    protected Map getOrInitializeUndeclared(Session session, D instance) {
+        Map undeclaredProps = (Map) session.getAttribute(instance, Neo4jGormEnhancer.UNDECLARED_PROPERTIES)
+        if (undeclaredProps == null) {
+            undeclaredProps = [:]
+            session.setAttribute(instance, Neo4jGormEnhancer.UNDECLARED_PROPERTIES, undeclaredProps)
+        }
+        undeclaredProps
     }
 
     /**

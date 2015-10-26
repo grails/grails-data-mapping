@@ -82,6 +82,16 @@ class Neo4jPersistentSet extends PersistentSet {
     }
 
     @Override
+    boolean add(Object o) {
+        def added = super.add(o)
+        if(added) {
+            adaptGraphUponAdd(o)
+        }
+
+        return added
+    }
+
+    @Override
     boolean removeAll(Collection c) {
         for(o in c) {
             adaptGraphUponRemove(o)
@@ -116,8 +126,8 @@ class Neo4jPersistentSet extends PersistentSet {
         if (session.getMappingContext().getProxyFactory().isProxy(o)) {
             return;
         }
-        if (!reversed) {
-            session.addPendingInsert(new RelationshipPendingDelete(parentAccess, relType,
+        if (!reversed && !currentlyInitializing()) {
+            session.addPostFlushOperation(new RelationshipPendingDelete(parentAccess, relType,
                     session.createEntityAccess(association.getAssociatedEntity(), o),
                     session.getNativeInterface()));
         }
@@ -131,7 +141,7 @@ class Neo4jPersistentSet extends PersistentSet {
             if ( !childType.isInstance(t) ) return
         }
         EntityAccess target = session.createEntityAccess(association.getAssociatedEntity(), t)
-        if (association.isBidirectional()) {
+        if (association.isBidirectional() && !currentlyInitializing()) {
             if (association instanceof ManyToMany) {
                 Collection coll = (Collection) target.getProperty(association.getReferencedPropertyName());
                 coll.add(parentAccess.entity);
@@ -144,14 +154,16 @@ class Neo4jPersistentSet extends PersistentSet {
             session.persist(t);
         }
 
-        if (!reversed) { // prevent duplicated rels
+        if (!reversed && !currentlyInitializing()) { // prevent duplicated rels
             session.addPostFlushOperation(new RelationshipPendingInsert(parentAccess, relType, target, session.getNativeInterface()));
         }
     }
 
     @Override
     void markDirty() {
-        ((DirtyCheckable)parentAccess.entity).markDirty(association.getName())
-        super.markDirty()
+        if(!currentlyInitializing()) {
+            ((DirtyCheckable)parentAccess.entity).markDirty(association.getName())
+            super.markDirty()
+        }
     }
 }

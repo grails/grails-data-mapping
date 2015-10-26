@@ -109,7 +109,7 @@ class Neo4jList extends DirtyCheckingList {
             return;
         }
         if (!reversed) {
-            session.addPendingInsert(new RelationshipPendingDelete(owner, relType,
+            session.addPostFlushOperation(new RelationshipPendingDelete(owner, relType,
                     session.createEntityAccess(association.getAssociatedEntity(), o),
                     session.getNativeInterface()));
         }
@@ -136,7 +136,7 @@ class Neo4jList extends DirtyCheckingList {
         }
 
         if (!reversed) { // prevent duplicated rels
-            session.addPendingInsert(new RelationshipPendingInsert(owner, relType, target, session.getNativeInterface()));
+            session.addPostFlushOperation(new RelationshipPendingInsert(owner, relType, target, session.getNativeInterface()));
         }
     }
 }
