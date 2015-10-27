@@ -29,7 +29,7 @@ class MongoResultsListIndexSpec extends GormDatastoreSpec{
             people.get(10)
 
         then:"An exception is thrown"
-            thrown ArrayIndexOutOfBoundsException
+            thrown IndexOutOfBoundsException
     }
 
 

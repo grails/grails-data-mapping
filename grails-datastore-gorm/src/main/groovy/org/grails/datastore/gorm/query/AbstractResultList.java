@@ -159,6 +159,7 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
             }
 
             public void remove() {
+                internalIndex--;
                 initializedObjects.remove(current);
             }
         };
