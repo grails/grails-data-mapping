@@ -36,7 +36,16 @@ public class SessionHolder extends ResourceHolderSupport {
     }
 
     public Transaction<?> getTransaction() {
-        return transaction;
+        if(transaction != null) {
+            return transaction;
+        }
+        else if(!isEmpty()) {
+            final Session session = getSession();
+            if(session.hasTransaction()) {
+                return session.getTransaction();
+            }
+        }
+        return null;
     }
 
     public void setTransaction(Transaction<?> transaction) {

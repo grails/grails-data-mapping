@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.mapping.model.types;
 
+import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
@@ -25,7 +26,7 @@ import java.beans.PropertyDescriptor;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class ManyToMany<T> extends Association<T> {
+public abstract class ManyToMany<T extends Property> extends ToMany<T> {
 
     String inversePropertyName;
 

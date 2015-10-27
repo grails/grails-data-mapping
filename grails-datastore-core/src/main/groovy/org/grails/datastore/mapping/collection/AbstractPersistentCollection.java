@@ -32,9 +32,9 @@ import java.util.List;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractPersistentCollection implements PersistentCollection, Serializable {
-    protected transient Session session;
-    protected transient AssociationIndexer indexer;
-    protected transient Class childType;
+    protected final transient Session session;
+    protected final transient AssociationIndexer indexer;
+    protected final transient Class childType;
 
     private boolean initialized;
     protected Object initializing;
@@ -44,6 +44,7 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
 
     protected final Collection collection;
     protected int originalSize;
+    protected boolean proxyEntities = false;
 
     protected AbstractPersistentCollection(Class childType, Session session, Collection collection) {
         this.childType = childType;
@@ -51,6 +52,7 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
         this.session = session;
         this.initializing = Boolean.FALSE;
         this.initialized = true;
+        this.indexer = null;
         markDirty();
     }
 
@@ -58,6 +60,8 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
         this.collection = collection;
         this.session = session;
         this.associationKey = associationKey;
+        this.proxyEntities = association.getMapping().getMappedForm().isLazy();
+        this.childType = association.getAssociatedEntity().getJavaClass();
         this.indexer = new AssociationIndexer() {
             @Override
             public void preIndex(Object primaryKey, List foreignKeys) {
@@ -96,6 +100,7 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
         this.keys = keys;
         this.childType = childType;
         this.collection = collection;
+        this.indexer = null;
     }
 
     protected AbstractPersistentCollection(Serializable associationKey, Session session,
@@ -104,8 +109,17 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
         this.associationKey = associationKey;
         this.indexer = indexer;
         this.collection = collection;
+        this.childType = indexer.getIndexedEntity().getJavaClass();
     }
 
+    /**
+     * Whether to proxy entities by their keys
+     *
+     * @param proxyEntities True if you wish to proxy entities
+     */
+    public void setProxyEntities(boolean proxyEntities) {
+        this.proxyEntities = proxyEntities;
+    }
 
     @Override
     public boolean hasChanged() {
@@ -172,11 +186,6 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
 
     public boolean add(Object o) {
         initialize();
-        System.out.println("isInitialized() = " + isInitialized());
-        System.out.println("currentlyInitializing() = " + currentlyInitializing());
-        System.out.println("initializing = " + initializing);
-        System.out.println("o = " + o);
-
         boolean added = collection.add(o);
         if (added) {
             markDirty();
@@ -279,16 +288,19 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
                 return;
             }
 
+            final Session session = this.session;
             if (session == null) {
                 throw new IllegalStateException("PersistentCollection of type " + this.getClass().getName() + " should have been initialized before serialization.");
             }
 
             initialized = true;
 
+            final Class childType = this.childType;
             if (associationKey == null) {
+                final Collection keys = this.keys;
                 if (keys != null) {
 
-                    addAll(session.retrieveAll(childType, keys));
+                    loadInverseChildKeys(session, childType, keys);
                 }
             }
             else {
@@ -299,12 +311,28 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
                 // mocked selectively and may not always be registered in the indexer. In this
                 // case, there can't be any results to be added to the collection.
                 if( entity != null ) {
-                    addAll(session.retrieveAll(entity.getJavaClass(), results));
+                    loadInverseChildKeys(session, entity.getJavaClass(), results);
+                }
+                else if(childType != null ){
+                    loadInverseChildKeys(session, childType, results);
                 }
             }
             this.originalSize = size();
         } finally {
             setInitializing(Boolean.FALSE);
+        }
+    }
+
+    protected void loadInverseChildKeys(Session session, Class childType, Collection keys) {
+        if(proxyEntities) {
+            for (Object key : keys) {
+                add(
+                    session.proxy(childType, (Serializable) key)
+                );
+            }
+        }
+        else {
+            addAll(session.retrieveAll(childType, keys));
         }
     }
 

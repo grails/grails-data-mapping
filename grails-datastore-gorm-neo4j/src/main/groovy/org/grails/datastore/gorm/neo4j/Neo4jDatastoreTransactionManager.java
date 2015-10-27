@@ -4,6 +4,8 @@ import org.grails.datastore.mapping.core.DatastoreUtils;
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager;
 import org.grails.datastore.mapping.transactions.Transaction;
 import org.grails.datastore.mapping.transactions.TransactionObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
@@ -19,7 +21,7 @@ import javax.persistence.FlushModeType;
 
 public class Neo4jDatastoreTransactionManager extends DatastoreTransactionManager {
 
-
+    private static final Logger log = LoggerFactory.getLogger(Neo4jDatastoreTransactionManager.class);
     /**
      * Override doSetRollbackOnly to call {@link org.neo4j.graphdb.Transaction#terminate()}
      * @param status The transaction status
@@ -30,7 +32,7 @@ public class Neo4jDatastoreTransactionManager extends DatastoreTransactionManage
         super.doSetRollbackOnly(status);
         TransactionObject txObject = (TransactionObject) status.getTransaction();
         Neo4jTransaction neo4jTransaction = (Neo4jTransaction) txObject.getTransaction();
-        neo4jTransaction.getTransaction().terminate();
+        neo4jTransaction.rollbackOnly();
     }
 
     /**
@@ -43,6 +45,9 @@ public class Neo4jDatastoreTransactionManager extends DatastoreTransactionManage
         super.doCleanupAfterCompletion(transaction);
         TransactionObject txObject = (TransactionObject) transaction;
         Neo4jTransaction neo4jTransaction = (Neo4jTransaction) txObject.getTransaction();
+        if(log.isDebugEnabled()) {
+            log.debug("Transaction closed: Neo4j tx.close()");
+        }
         neo4jTransaction.getTransaction().close();
     }
 

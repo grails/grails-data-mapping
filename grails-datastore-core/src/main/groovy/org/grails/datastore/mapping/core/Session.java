@@ -293,6 +293,11 @@ public interface Session {
     Transaction getTransaction();
 
     /**
+     * @return Whether the current session has an active transaction
+     */
+    boolean hasTransaction();
+
+    /**
      * The Datastore that created this Session
      * @return The Datastore instance
      */

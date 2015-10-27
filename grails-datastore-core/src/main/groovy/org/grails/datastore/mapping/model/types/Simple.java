@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.mapping.model.types;
 
+import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.AbstractPersistentProperty;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -26,7 +27,7 @@ import java.beans.PropertyDescriptor;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class Simple<T> extends AbstractPersistentProperty {
+public abstract class Simple<T extends Property> extends AbstractPersistentProperty<T> {
     public Simple(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
     }

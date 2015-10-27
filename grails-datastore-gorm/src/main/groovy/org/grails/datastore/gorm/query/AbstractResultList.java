@@ -37,6 +37,12 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
         this.cursor = cursor;
     }
 
+    public AbstractResultList(int offset, Integer size, Iterator<Object> cursor) {
+        this.offset = offset;
+        this.size = size;
+        this.cursor = cursor;
+    }
+
     public Iterator<Object> getCursor() {
         return cursor;
     }
@@ -64,24 +70,29 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
     @SuppressWarnings("unchecked")
     @Override
     public Object get(int index) {
-        if (initializedObjects.size() > index) {
+        final List initializedObjects = this.initializedObjects;
+        final int initializedSize = initializedObjects.size();
+        if (initializedSize > index) {
             return initializedObjects.get(index);
         } else if (!initialized) {
             while (cursor.hasNext()) {
-                if (internalIndex > index)
-                    throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
                 Object o = convertObject();
-                initializedObjects.add(internalIndex, o);
-                if (index == internalIndex++) {
+                initializedObjects.add(internalIndex - 1, o);
+                if (index == internalIndex) {
                     return o;
                 }
+                else if(index < initializedSize) {
+                    return initializedObjects.get(index);
+                }
+
             }
             initialized = true;
         }
-        throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
+        return initializedObjects.get(index);
     }
 
     protected Object convertObject() {
+        internalIndex++;
         return nextDecoded();
     }
 

@@ -1,4 +1,5 @@
-/* Copyright 2004-2005 the original author or authors.
+/*
+ * Copyright 2015 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +15,36 @@
  */
 package org.grails.datastore.mapping.model.types;
 
-import java.beans.PropertyDescriptor;
-
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
+import javax.persistence.FetchType;
+import java.beans.PropertyDescriptor;
+
 /**
- * Models an embedded component
+ * Shared super class inherited by both {@link OneToMany} and {@link ManyToMany}
  *
  * @author Graeme Rocher
- * @since 1.0
+ * @since 5.0
  */
-public abstract class Embedded<T extends Property> extends ToOne<T> {
+public abstract class ToMany<T extends Property> extends Association<T> {
 
-    public Embedded(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
+
+    public ToMany(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
     }
 
-    public Embedded(PersistentEntity owner, MappingContext context, String name, @SuppressWarnings("rawtypes") Class type) {
+    public ToMany(PersistentEntity owner, MappingContext context, String name, @SuppressWarnings("rawtypes") Class type) {
         super(owner, context, name, type);
     }
 
-    @Override
-    public boolean isOwningSide() {
-        return true; // embedded instances are always owned
+    /**
+     * @return Whether this association is lazy
+     */
+    public boolean isLazy() {
+        return getFetchStrategy() == FetchType.LAZY && getMapping().getMappedForm().isLazy();
     }
+
 }
+

@@ -34,6 +34,9 @@ import org.grails.datastore.mapping.query.Query
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Label
 import org.neo4j.graphdb.Node
+import org.neo4j.helpers.collection.IteratorUtil
+
+import javax.persistence.FetchType
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -305,7 +308,12 @@ class Neo4jQuery extends Query {
                          // if there are associations, add a join to get them
                          def associationName = a.name
                          cypherBuilder.addOptionalMatch("(n)${associationMatch}(${associationName}Node)")
-                         cypherBuilder.addReturnColumn("{ids: collect(${associationName}Node.__id__)} as ${associationName}Values")
+                         if(fetchStrategy(associationName) == FetchType.LAZY) {
+                             cypherBuilder.addReturnColumn("collect(${associationName}Node.__id__) as ${associationName}Ids")
+                         }
+                         else {
+                             cypherBuilder.addReturnColumn("collect(${associationName}Node) as ${associationName}Nodes")
+                         }
                      }
                  }
              }
@@ -340,11 +348,10 @@ class Neo4jQuery extends Query {
                             Node childNode = (Node)value
 
                             def persister = getSession().getEntityPersister(association.type)
+
+                            def data = Collections.<String,Object>singletonMap( CypherBuilder.NODE_DATA, childNode)
                             return persister.unmarshallOrFromCache(
-                                                association.associatedEntity,
-                                                (Long)childNode.getProperty(CypherBuilder.IDENTIFIER),
-                                                childNode.labels.collect() { Label label -> label.name() },
-                                                childNode)
+                                                association.associatedEntity, data)
                         }
                     }
                     return value

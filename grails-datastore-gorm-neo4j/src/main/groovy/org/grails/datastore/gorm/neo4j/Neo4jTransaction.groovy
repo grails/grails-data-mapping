@@ -15,6 +15,7 @@
 package org.grails.datastore.gorm.neo4j
 
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.neo4j.graphdb.GraphDatabaseService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -29,9 +30,8 @@ import org.springframework.transaction.support.DefaultTransactionDefinition
  * @author Graeme Rocher
  */
 @CompileStatic
-class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction> {
-
-    protected final Logger log = LoggerFactory.getLogger(getClass())
+@Slf4j
+class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction>, Closeable {
 
     boolean active = true
 
@@ -40,19 +40,44 @@ class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction> {
     TransactionDefinition transactionDefinition
 
     Neo4jTransaction(GraphDatabaseService databaseService, TransactionDefinition transactionDefinition = new DefaultTransactionDefinition()) {
+
+        log.debug("Transaction Started: Neo4J beginTx()")
         transaction = databaseService.beginTx()
         this.databaseService = databaseService;
         this.transactionDefinition = transactionDefinition
     }
 
     void commit() {
-        transaction.success()
-        active = false
+        if(isActive()) {
+            log.debug("Transaction Committed: Neo4J success()")
+            transaction.success()
+        }
     }
 
     void rollback() {
-        transaction.failure()
-        active = false
+        if(isActive()) {
+            log.debug("Transaction Rollback: Neo4J failure()")
+            transaction.failure()
+        }
+    }
+
+    void rollbackOnly() {
+        if(active) {
+            log.debug("Transaction Rollback Only: Neo4J failure()")
+            transaction.failure()
+            close()
+            active = false
+        }
+    }
+
+    @Override
+    void close() throws IOException {
+
+        if(active) {
+            log.debug("Transaction closed: Neo4j tx.close()");
+            transaction.close()
+            active = false
+        }
     }
 
     org.neo4j.graphdb.Transaction getNativeTransaction() {

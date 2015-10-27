@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.model.types;
 
 import java.beans.PropertyDescriptor;
 
+import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
@@ -25,7 +26,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  * @author Burt Beckwith
  * @since 1.0
  */
-public abstract class EmbeddedCollection<T> extends Association<T> {
+public abstract class EmbeddedCollection<T extends Property> extends Association<T> {
 
     public EmbeddedCollection(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);

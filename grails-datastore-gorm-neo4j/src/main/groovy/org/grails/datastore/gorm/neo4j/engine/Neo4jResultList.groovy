@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.neo4j.engine
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.query.AbstractResultList
+import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Result
 
 
@@ -36,20 +37,34 @@ class Neo4jResultList extends AbstractResultList {
         this.entityPersister = entityPersister
     }
 
-    @Override
-    Result getCursor() {
-        return (Result)super.getCursor()
+    Neo4jResultList(int offset, Iterator<Object> cursor, Neo4jEntityPersister entityPersister) {
+        super(offset, cursor)
+        this.entityPersister = entityPersister
+    }
+
+    Neo4jResultList(int offset, Integer size, Iterator<Object> cursor, Neo4jEntityPersister entityPersister) {
+        super(offset, size, cursor)
+        this.entityPersister = entityPersister
     }
 
     @Override
     protected Object nextDecoded() {
-        Map<String,Object> map = (Map<String,Object>) cursor.next()
-        return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), map)
+        def next = cursor.next()
+        if(next instanceof Node) {
+            Node node = (Node) next
+            return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node)
+        }
+        else {
+            Map<String,Object> map = (Map<String,Object>) next
+            return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), map)
+        }
     }
 
 
     @Override
     void close() throws IOException {
-        cursor.close()
+        if(cursor instanceof Result) {
+            ((Result)cursor).close()
+        }
     }
 }

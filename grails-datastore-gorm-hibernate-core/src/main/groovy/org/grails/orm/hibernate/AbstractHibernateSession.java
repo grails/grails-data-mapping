@@ -167,6 +167,11 @@ public abstract class AbstractHibernateSession extends AbstractAttributeStoringS
         throw new UnsupportedOperationException("Use HibernatePlatformTransactionManager instead");
     }
 
+    @Override
+    public boolean hasTransaction() {
+        return false;
+    }
+
     public Datastore getDatastore() {
         return datastore;
     }

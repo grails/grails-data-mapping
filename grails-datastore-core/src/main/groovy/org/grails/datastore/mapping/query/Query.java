@@ -583,6 +583,26 @@ public abstract class Query implements Cloneable{
     }
 
     /**
+     * Obtain the fetch strategy for the given property
+     *
+     * @param property The fetch strategy
+     * @return A specific strategy or lazy by default
+     */
+    protected FetchType fetchStrategy(String property) {
+        final FetchType fetchType = fetchStrategies.get(property);
+        if(fetchType != null) {
+            return fetchType;
+        }
+        else {
+            final PersistentProperty prop = entity.getPropertyByName(property);
+            if(prop != null) {
+                return prop.getMapping().getMappedForm().getFetchStrategy();
+            }
+        }
+        return FetchType.LAZY;
+    }
+
+    /**
      * Subclasses should implement this to provide the concrete implementation
      * of querying
      *

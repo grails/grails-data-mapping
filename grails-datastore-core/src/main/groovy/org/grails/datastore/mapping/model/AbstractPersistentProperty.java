@@ -27,7 +27,7 @@ import org.grails.datastore.mapping.reflect.NameUtils;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractPersistentProperty implements PersistentProperty {
+public abstract class AbstractPersistentProperty<T extends Property> implements PersistentProperty<T> {
     protected PersistentEntity owner;
     protected MappingContext context;
     protected String name;

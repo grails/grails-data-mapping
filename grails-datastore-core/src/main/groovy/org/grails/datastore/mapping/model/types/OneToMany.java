@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.model.types;
 
 import java.beans.PropertyDescriptor;
 
+import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
@@ -26,7 +27,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public abstract class OneToMany<T> extends Association<T> {
+public abstract class OneToMany<T extends Property> extends ToMany<T> {
     public OneToMany(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
     }

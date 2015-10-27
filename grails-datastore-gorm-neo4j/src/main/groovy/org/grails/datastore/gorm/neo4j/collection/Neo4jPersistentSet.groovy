@@ -27,7 +27,7 @@ import org.grails.datastore.mapping.engine.AssociationIndexer
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToMany
-
+import org.grails.datastore.mapping.model.types.ToMany
 
 
 /**
@@ -42,11 +42,12 @@ class Neo4jPersistentSet extends PersistentSet {
     protected final Association association
     protected final @Delegate GraphAdapter graphAdapter
 
-    Neo4jPersistentSet(Collection keys, Neo4jSession session, EntityAccess parentAccess, Association association) {
+    Neo4jPersistentSet(Collection keys, Neo4jSession session, EntityAccess parentAccess, ToMany association) {
         super(keys, association.associatedEntity.javaClass, session)
         this.parentAccess = parentAccess
         this.association = association
         this.graphAdapter = new GraphAdapter(session, parentAccess, association)
+        setProxyEntities(association.isLazy())
     }
 
 

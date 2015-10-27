@@ -869,6 +869,11 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         return transaction;
     }
 
+    @Override
+    public boolean hasTransaction() {
+        return transaction != null;
+    }
+
     private Map<Serializable, Object> getInstanceCache(Class c) {
         Map<Serializable, Object> cache = firstLevelCache.get(c);
         if (cache == null) {

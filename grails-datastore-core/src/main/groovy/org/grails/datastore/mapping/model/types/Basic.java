@@ -18,6 +18,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Map;
 
+import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -30,7 +31,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public abstract class Basic extends Association {
+public abstract class Basic<T extends Property> extends Association<T> {
 
     private CustomTypeMarshaller customTypeMarshaller;
     private Class componentType;

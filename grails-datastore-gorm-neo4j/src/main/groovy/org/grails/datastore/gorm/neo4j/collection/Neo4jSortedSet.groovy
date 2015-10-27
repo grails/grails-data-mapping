@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2015 original authors
  *
@@ -16,60 +15,49 @@
  */
 package org.grails.datastore.gorm.neo4j.collection
 
-import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.neo4j.Neo4jSession
-import org.grails.datastore.gorm.neo4j.RelationshipUtils
-import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingDelete
-import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingInsert
-import org.grails.datastore.mapping.collection.PersistentList
-import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
-import org.grails.datastore.mapping.engine.AssociationIndexer
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSortedSet
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.types.Association
-import org.grails.datastore.mapping.model.types.ManyToMany
-import org.grails.datastore.mapping.model.types.ToMany
 
 
 /**
- * Neo4j version of the {@link PersistentList} class
+ * A Neo4j sorted set
  *
  * @author Graeme Rocher
  * @since 5.0
  */
-@CompileStatic
-class Neo4jPersistentList extends PersistentList {
+class Neo4jSortedSet extends DirtyCheckingSortedSet {
+    final transient Association association
+    final transient Neo4jSession session
 
-    protected final EntityAccess parentAccess
-    protected final Association association
-    protected final @Delegate GraphAdapter graphAdapter
+    protected final transient @Delegate GraphAdapter graphAdapter
 
-    Neo4jPersistentList(Collection keys, Neo4jSession session, EntityAccess parentAccess, ToMany association) {
-        super(keys, association.associatedEntity.javaClass, session)
-        this.parentAccess = parentAccess
+    Neo4jSortedSet(EntityAccess parentAccess, Association association, SortedSet delegate, Neo4jSession session) {
+        super(delegate, (DirtyCheckable)parentAccess.getEntity(), association.getName())
         this.association = association
+        this.session = session
         this.graphAdapter = new GraphAdapter(session, parentAccess, association)
-        setProxyEntities(association.isLazy())
-    }
-
-
-    @Override
-    boolean addAll(Collection c) {
-        def added = super.addAll(c)
-        if (added) {
-            for (o in c) {
-                adaptGraphUponAdd(o, currentlyInitializing())
-            }
-        }
-
-        return added
     }
 
     @Override
     boolean add(Object o) {
+
         def added = super.add(o)
         if(added) {
-            adaptGraphUponAdd(o, currentlyInitializing())
+            adaptGraphUponAdd(o)
+        }
+        return added
+    }
+
+    @Override
+    boolean addAll(Collection c) {
+        def added = super.addAll(c)
+        if(added) {
+            for( o in c ) {
+                adaptGraphUponAdd(o)
+            }
         }
 
         return added
@@ -80,7 +68,7 @@ class Neo4jPersistentList extends PersistentList {
         def removed = super.removeAll(c)
         if(removed) {
             for(o in c) {
-                adaptGraphUponRemove(o, currentlyInitializing())
+                adaptGraphUponRemove(o)
             }
         }
         return removed
@@ -90,10 +78,11 @@ class Neo4jPersistentList extends PersistentList {
     boolean remove(Object o) {
         def removed = super.remove(o)
         if(removed) {
-            adaptGraphUponRemove(o, currentlyInitializing())
+            adaptGraphUponRemove(o)
         }
         return removed
     }
+
 
     @Override
     boolean retainAll(Collection c) {
@@ -108,13 +97,5 @@ class Neo4jPersistentList extends PersistentList {
     @Override
     boolean containsAll(Collection c) {
         return super.containsAll(c)
-    }
-
-    @Override
-    void markDirty() {
-        if (!currentlyInitializing()) {
-            ((DirtyCheckable) parentAccess.entity).markDirty(association.getName())
-            super.markDirty()
-        }
     }
 }

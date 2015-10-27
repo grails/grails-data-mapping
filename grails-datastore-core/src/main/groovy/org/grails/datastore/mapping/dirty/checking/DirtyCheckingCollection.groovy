@@ -14,7 +14,6 @@ class DirtyCheckingCollection implements Collection, DirtyCheckableCollection {
     final @Delegate Collection target
     final DirtyCheckable parent
     final String property
-    final boolean hasDirtyCheckables = false
     final int originalSize
 
     DirtyCheckingCollection(Collection target, DirtyCheckable parent, String property) {
@@ -22,7 +21,6 @@ class DirtyCheckingCollection implements Collection, DirtyCheckableCollection {
         this.originalSize = target.size()
         this.parent = parent
         this.property = property
-        this.hasDirtyCheckables = target.any { it instanceof DirtyCheckable }
     }
 
     @Override
@@ -41,7 +39,11 @@ class DirtyCheckingCollection implements Collection, DirtyCheckableCollection {
     }
 
     boolean hasChanged() {
-        parent.hasChanged(property) || (hasDirtyCheckables && target.any { ((DirtyCheckable)it).hasChanged() } )
+        parent.hasChanged(property) || hasChangedElements()
+    }
+
+    protected boolean hasChangedElements() {
+        target.any { (it instanceof DirtyCheckable) && ((DirtyCheckable) it).hasChanged() }
     }
 
     @Override

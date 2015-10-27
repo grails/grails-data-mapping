@@ -24,13 +24,15 @@ public class CypherBuilder {
     public static final String RETURN = " RETURN ";
     public static final String COMMAND_SEPARATOR = ", ";
     public static final String DEFAULT_RETURN_TYPES = "n.__id__ as id, labels(n) as labels, n as data \n";
-    public static final String DEFAULT_RETURN_STATEMENT = RETURN + "n.__id__ as id, labels(n) as labels, n as data \n";
+    public static final String DEFAULT_RETURN_STATEMENT = RETURN + DEFAULT_RETURN_TYPES;
     public static final String NEW_LINE = " \n";
     public static final String START_MATCH = "MATCH (n";
     public static final String SPACE = " ";
     public static final String OPTIONAL_MATCH = "OPTIONAL MATCH";
     public static final String CYPHER_CREATE = "CREATE ";
     public static final String CYPHER_MATCH_ID = "MATCH (n%s) WHERE n.__id__={id}";
+    public static final String NODE_LABELS = "labels";
+    public static final String NODE_DATA = "data";
 
 
     private String forLabels;

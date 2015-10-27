@@ -28,6 +28,7 @@ public class Property implements Cloneable {
     private boolean index = false;
     private boolean nullable = false;
     private FetchType fetchStrategy = FetchType.LAZY;
+    private boolean lazy = false;
     private String targetName;
     private String generator;
     private String propertyName;
@@ -84,8 +85,46 @@ public class Property implements Cloneable {
         return fetchStrategy;
     }
 
+    /**
+     * @return The strategy to use to fetch the property (lazy or eager)
+     */
     public void setFetchStrategy(FetchType fetchStrategy) {
         this.fetchStrategy = fetchStrategy;
+    }
+
+    /**
+     * Makes it easier to configure the fetch strategy
+     *
+     * @param name The name of the fetch strategy
+     */
+    public void setFetch(String name) {
+        if(FetchType.EAGER.name().equalsIgnoreCase(name)) {
+            setFetchStrategy(FetchType.EAGER);
+        }
+        else {
+            setFetchStrategy(FetchType.LAZY);
+        }
+    }
+
+    /**
+     * Whether to use lazy proxies for each association. This has no effect if {@link #getFetchStrategy()} returns FetchType.EAGER, however
+     * if FetchType is LAZY and lazy is set to true then for collection types each element of the collection will be a proxy.
+     *
+     * If lazy is false the collection will be fetched lazily, but fully initialized objects will be loaded for each element.
+     *
+     * @return Whether to use lazy proxies for collection elements
+     */
+    public boolean isLazy() {
+        return lazy;
+    }
+
+    /**
+     * @see {@link #isLazy()}
+     *
+     * @param lazy Set to true if lazy proxies should be used for each element of collection types
+     */
+    public void setLazy(boolean lazy) {
+        this.lazy = lazy;
     }
 
     /**

@@ -22,6 +22,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 
+import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.AbstractPersistentProperty;
 import org.grails.datastore.mapping.model.IllegalMappingException;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -35,7 +36,7 @@ import org.grails.datastore.mapping.model.PersistentProperty;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public abstract class Association<T> extends AbstractPersistentProperty {
+public abstract class Association<T extends Property> extends AbstractPersistentProperty<T> {
 
     public static final List<CascadeType> DEFAULT_OWNER_CASCADE = Arrays.asList(CascadeType.ALL);
 
@@ -45,7 +46,6 @@ public abstract class Association<T> extends AbstractPersistentProperty {
     private String referencedPropertyName;
     private boolean owningSide;
     private List<CascadeType> cascadeOperations = new ArrayList<CascadeType>();
-    private FetchType fetchStrategy = FetchType.EAGER;
 
     public Association(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
@@ -55,12 +55,11 @@ public abstract class Association<T> extends AbstractPersistentProperty {
         super(owner, context, name, type);
     }
 
+    /**
+     * @return The fetch strategy for the association
+     */
     public FetchType getFetchStrategy() {
-        return fetchStrategy;
-    }
-
-    public void setFetchStrategy(FetchType fetchStrategy) {
-        this.fetchStrategy = fetchStrategy;
+        return getMapping().getMappedForm().getFetchStrategy();
     }
 
     public boolean isBidirectional() {
