@@ -34,6 +34,8 @@ import org.grails.datastore.mapping.model.types.OneToMany;
 import org.grails.datastore.mapping.model.types.OneToOne;
 import org.springframework.validation.Validator;
 
+import javax.persistence.FetchType;
+
 /**
  * Bridges the {@link GrailsDomainClass} interface into the {@link PersistentEntity} interface
  *
@@ -259,7 +261,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private PersistentProperty createManyToOne(
             GrailsDomainClassMappingContext ctx,
             GrailsDomainClassProperty grailsDomainClassProperty) {
-        final PropertyMapping<Property> mapping = createDefaultMapping();
+        final PropertyMapping<Property> mapping = createDefaultMapping(grailsDomainClassProperty);
         final ManyToOne oneToOne = new ManyToOne(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
             public PropertyMapping getMapping() {
                 return mapping;
@@ -272,7 +274,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private PersistentProperty createManyToMany(
             GrailsDomainClassMappingContext ctx,
             GrailsDomainClassProperty grailsDomainClassProperty) {
-        final PropertyMapping<Property> mapping = createDefaultMapping();
+        final PropertyMapping<Property> mapping = createDefaultMapping(grailsDomainClassProperty);
         final ManyToMany manyToMany = new ManyToMany(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
             public PropertyMapping getMapping() {
                 return mapping;
@@ -285,7 +287,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private PersistentProperty createOneToOne(
             GrailsDomainClassMappingContext ctx,
             GrailsDomainClassProperty grailsDomainClassProperty) {
-        final PropertyMapping<Property> mapping = createDefaultMapping();
+        final PropertyMapping<Property> mapping = createDefaultMapping(grailsDomainClassProperty);
         final OneToOne oneToOne = new OneToOne(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
             public PropertyMapping getMapping() {
                 return mapping;
@@ -297,7 +299,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
 
     private OneToMany createOneToMany(GrailsDomainClassMappingContext mappingContext,
                                       GrailsDomainClassProperty grailsDomainClassProperty) {
-        final PropertyMapping<Property> mapping = createDefaultMapping();
+        final PropertyMapping<Property> mapping = createDefaultMapping(grailsDomainClassProperty);
         final OneToMany oneToMany = new OneToMany(this, mappingContext, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
 
             public PropertyMapping getMapping() {
@@ -309,8 +311,11 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
         return oneToMany;
     }
 
-    private PropertyMapping<Property> createDefaultMapping() {
+    private PropertyMapping<Property> createDefaultMapping(GrailsDomainClassProperty grailsDomainClassProperty) {
         final Property property = new Property();
+        if(grailsDomainClassProperty.getFetchMode() == GrailsDomainClassProperty.FETCH_EAGER) {
+            property.setFetchStrategy(FetchType.EAGER);
+        }
         return new PropertyMapping<Property>() {
             @Override
             public ClassMapping getClassMapping() {
@@ -343,7 +348,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private PersistentProperty createEmbedded(
             GrailsDomainClassMappingContext mappingContext,
             GrailsDomainClassProperty grailsDomainClassProperty) {
-        final PropertyMapping<Property> mapping = createDefaultMapping();
+        final PropertyMapping<Property> mapping = createDefaultMapping(grailsDomainClassProperty);
         Embedded persistentProperty = new Embedded(this, mappingContext, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
             public PropertyMapping getMapping() {
                 return mapping;
