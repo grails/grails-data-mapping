@@ -17,8 +17,7 @@ package grails.gorm;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.AbstractList;
-import java.util.List;
+import java.util.*;
 
 import org.grails.datastore.mapping.query.Query;
 
@@ -30,13 +29,13 @@ import org.grails.datastore.mapping.query.Query;
  * @since 1.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class PagedResultList extends AbstractList implements Serializable {
+public class PagedResultList<E> implements Serializable, List<E> {
 
 
     private static final long serialVersionUID = -5820655628956173929L;
 
     private Query query;
-    protected List resultList;
+    protected List<E> resultList;
     protected int totalCount = Integer.MIN_VALUE;
 
     public PagedResultList(Query query) {
@@ -59,28 +58,60 @@ public class PagedResultList extends AbstractList implements Serializable {
     }
 
     @Override
-    public Object get(int i) {
+    public E get(int i) {
         initialize();
         return resultList.get(i);
     }
 
     @Override
-    public Object set(int i, Object o) {
+    public E set(int i, E o) {
         initialize();
         return resultList.set(i, o);
     }
 
     @Override
-    public Object remove(int i) {
+    public E remove(int i) {
         initialize();
         return resultList.remove(i);
     }
 
     @Override
-    public void add(int i, Object o) {
+    public int indexOf(Object o) {
+        initialize();
+        return resultList.indexOf(o);
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        initialize();
+        return resultList.lastIndexOf(o);
+    }
+
+    @Override
+    public ListIterator<E> listIterator() {
+        initialize();
+        return resultList.listIterator();
+    }
+
+    @Override
+    public ListIterator<E> listIterator(int index) {
+        initialize();
+        return resultList.listIterator(index);
+    }
+
+    @Override
+    public List<E> subList(int fromIndex, int toIndex) {
+        initialize();
+        return resultList.subList(fromIndex, toIndex);
+    }
+
+    @Override
+    public void add(int i, E o) {
         initialize();
         resultList.add(i, o);
     }
+
+
 
     protected void initialize() {
         if (resultList == null) {
@@ -92,6 +123,82 @@ public class PagedResultList extends AbstractList implements Serializable {
     public int size() {
         initialize();
         return resultList.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return size() == 0;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        initialize();
+        return resultList.contains(o);
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        initialize();
+        return resultList.iterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        initialize();
+        return resultList.toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        initialize();
+        return resultList.toArray(a);
+    }
+
+    @Override
+    public boolean add(E e) {
+        initialize();
+        return resultList.add(e);
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        initialize();
+        return resultList.remove(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        initialize();
+        return resultList.containsAll(c);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends E> c) {
+        initialize();
+        return resultList.addAll(c);
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends E> c) {
+        initialize();
+        return resultList.addAll(index, c);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        initialize();
+        return resultList.removeAll(c);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        initialize();
+        return resultList.retainAll(c);
+    }
+
+    @Override
+    public void clear() {
+        resultList = new ArrayList<E>();
     }
 
     @Override

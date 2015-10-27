@@ -7,7 +7,7 @@ import grails.gorm.tests.*
 
 @RunWith(Suite)
 @SuiteClasses([
-OptimisticLockingSpec
+DetachedCriteriaSpec
 ])
 class Neo4jSuite {
 }

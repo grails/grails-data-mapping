@@ -266,9 +266,10 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private PersistentProperty createManyToOne(
             GrailsDomainClassMappingContext ctx,
             GrailsDomainClassProperty grailsDomainClassProperty) {
+        final PropertyMapping<Property> mapping = createDefaultMapping();
         final ManyToOne oneToOne = new ManyToOne(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
             public PropertyMapping getMapping() {
-                return null;
+                return mapping;
             }
         };
         configureAssociation(grailsDomainClassProperty, oneToOne);
@@ -290,9 +291,10 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private PersistentProperty createOneToOne(
             GrailsDomainClassMappingContext ctx,
             GrailsDomainClassProperty grailsDomainClassProperty) {
+        final PropertyMapping<Property> mapping = createDefaultMapping();
         final OneToOne oneToOne = new OneToOne(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
             public PropertyMapping getMapping() {
-                return null;
+                return mapping;
             }
         };
         configureAssociation(grailsDomainClassProperty, oneToOne);
@@ -301,16 +303,33 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
 
     private OneToMany createOneToMany(GrailsDomainClassMappingContext mappingContext,
                                       GrailsDomainClassProperty grailsDomainClassProperty) {
+        final PropertyMapping<Property> mapping = createDefaultMapping();
         final OneToMany oneToMany = new OneToMany(this, mappingContext, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
 
             public PropertyMapping getMapping() {
-                return null;
+                return mapping;
             }
         };
         configureAssociation(grailsDomainClassProperty, oneToMany);
 
         return oneToMany;
     }
+
+    private PropertyMapping<Property> createDefaultMapping() {
+        final Property property = new Property();
+        return new PropertyMapping<Property>() {
+            @Override
+            public ClassMapping getClassMapping() {
+                return GrailsDomainClassPersistentEntity.this.getMapping();
+            }
+
+            @Override
+            public Property getMappedForm() {
+                return property;
+            }
+        };
+    }
+
 
     private void configureAssociation(
             GrailsDomainClassProperty grailsDomainClassProperty,

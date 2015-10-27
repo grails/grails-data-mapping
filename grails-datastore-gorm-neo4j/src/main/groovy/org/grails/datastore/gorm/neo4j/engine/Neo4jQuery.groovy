@@ -399,7 +399,7 @@ class Neo4jQuery extends Query {
         }
     }
 
-    private static String matchForAssociation(Association association) {
+    public static String matchForAssociation(Association association) {
         def relationshipType = RelationshipUtils.relationshipTypeUsedFor(association)
         def reversed = RelationshipUtils.useReversedMappingFor(association)
         StringBuilder sb = new StringBuilder();

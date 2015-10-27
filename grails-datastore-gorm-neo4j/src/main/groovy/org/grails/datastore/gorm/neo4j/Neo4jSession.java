@@ -1,6 +1,5 @@
 package org.grails.datastore.gorm.neo4j;
 
-import groovy.lang.GroovyObject;
 import org.grails.datastore.gorm.neo4j.engine.*;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.Datastore;
@@ -14,6 +13,7 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.config.GormProperties;
+import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.Custom;
 import org.grails.datastore.mapping.model.types.Simple;
 import org.grails.datastore.mapping.query.Query;
@@ -26,11 +26,10 @@ import org.neo4j.helpers.collection.IteratorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import javax.persistence.FlushModeType;
+import javax.persistence.CascadeType;
 import java.io.Serializable;
 import java.util.*;
 
@@ -49,6 +48,8 @@ import java.util.*;
 public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
     public static final String CYPHER_DYNAMIC_RELATIONSHIP_MERGE = "MATCH (a%s {__id__:{id}}), (b%s {__id__:{related}}) MERGE (a)-[:%s]->(b)";
+    private static final String COUNT_RETURN = "count(n) as total";
+    private static final String TOTAL_COUNT = "total";
     private static Logger log = LoggerFactory.getLogger(Neo4jSession.class);
 
 
@@ -447,7 +448,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         query.projections().count();
 
         final CypherBuilder baseQuery = query.getBaseQuery();
-        baseQuery.addDeleteColumn(CypherBuilder.NODE_VAR);
+        buildCascadingDeletes(entity, baseQuery);
 
         final String cypher = baseQuery.build();
         final Map<String, Object> params = baseQuery.getParams();
@@ -459,10 +460,47 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         return count.longValue();
     }
 
-    // TODO: Optimize batch updates!
+    public static void buildCascadingDeletes(PersistentEntity entity, CypherBuilder baseQuery) {
+        int i = 1;
+        for (Association association : entity.getAssociations()) {
+            if(association.doesCascade(CascadeType.REMOVE)) {
+
+                String a = "a" + i++;
+                baseQuery.addOptionalMatch("(n)"+ Neo4jQuery.matchForAssociation(association)+"("+ a +")");
+                baseQuery.addDeleteColumn(a);
+
+            }
+        }
+        baseQuery.addDeleteColumn(CypherBuilder.NODE_VAR);
+    }
+
     @Override
     public long updateAll(QueryableCriteria criteria, Map<String, Object> properties) {
-        return super.updateAll(criteria, properties);
+        final PersistentEntity entity = criteria.getPersistentEntity();
+        final List<Query.Criterion> criteriaList = criteria.getCriteria();
+        final Neo4jQuery query = new Neo4jQuery(this, entity, getEntityPersister(entity.getJavaClass()));
+        for (Query.Criterion criterion : criteriaList) {
+            query.add(criterion);
+        }
+        query.projections().count();
+
+        final CypherBuilder baseQuery = query.getBaseQuery();
+        baseQuery.addPropertySet(properties);
+        baseQuery.addReturnColumn(COUNT_RETURN);
+
+        final String cypher = baseQuery.build();
+        final Map<String, Object> params = baseQuery.getParams();
+        if(log.isDebugEnabled()) {
+            log.debug("UPDATE Cypher [{}] for parameters [{}]", cypher, params);
+        }
+        final Result execute = graphDatabaseService.execute(cypher, params);
+        if(execute.hasNext()) {
+            final Map<String, Object> result = IteratorUtil.single(execute);
+            return ((Number) result.get(TOTAL_COUNT)).longValue();
+        }
+        else {
+            return 0;
+        }
     }
 }
 

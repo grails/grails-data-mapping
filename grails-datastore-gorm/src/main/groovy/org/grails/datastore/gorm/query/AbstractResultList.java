@@ -52,8 +52,7 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
         if (initialized) return;
 
         while (cursor.hasNext()) {
-            Object current = convertObject();
-            initializedObjects.add(current);
+            convertObject();
         }
         initialized = true;
     }
@@ -77,7 +76,6 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
         } else if (!initialized) {
             while (cursor.hasNext()) {
                 Object o = convertObject();
-                initializedObjects.add(internalIndex - 1, o);
                 if (index == internalIndex) {
                     return o;
                 }
@@ -92,8 +90,16 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
     }
 
     protected Object convertObject() {
-        internalIndex++;
-        return nextDecoded();
+        final Object next = convertObject(nextDecoded());
+        if(!cursor.hasNext()) {
+            initialized = true;
+        }
+        initializedObjects.add(internalIndex++, next);
+        return next;
+    }
+
+    protected Object convertObject(Object o) {
+        return o;
     }
 
     protected abstract Object nextDecoded();
@@ -127,7 +133,7 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
      */
     @Override
     public Iterator iterator() {
-        if (initialized || !cursor.hasNext()) {
+        if (initialized || !initializedObjects.isEmpty()) {
             if(!initialized) {
                 initializeFully();
             }
@@ -137,8 +143,6 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
 
         return new Iterator() {
             Object current;
-            int index = initializedObjects.size();
-
             public boolean hasNext() {
 
                 boolean hasMore = cursor.hasNext();
@@ -151,14 +155,6 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
             @SuppressWarnings("unchecked")
             public Object next() {
                 current = convertObject();
-                if (index < initializedObjects.size()){
-
-                    initializedObjects.set(index++, current);
-                }
-                else {
-                    index++;
-                    initializedObjects.add(current);
-                }
                 return current;
             }
 

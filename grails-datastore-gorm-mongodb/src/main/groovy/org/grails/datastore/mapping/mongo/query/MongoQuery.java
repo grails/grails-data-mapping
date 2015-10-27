@@ -1824,8 +1824,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         }
 
         @Override
-        protected Object convertObject() {
-            return isCodecPersister ? nextDecoded() : convertDBObject(nextDecoded());
+        protected Object convertObject(Object object) {
+            return isCodecPersister ? object : convertDBObject(object);
         }
 
         protected Object convertDBObject(Object object) {

@@ -1,7 +1,5 @@
 package org.grails.datastore.gorm.neo4j;
 
-import org.grails.datastore.mapping.model.types.Association;
-
 import java.util.*;
 
 /**
@@ -44,7 +42,9 @@ public class CypherBuilder {
     private String orderAndLimits;
     private List<String> returnColumns = new ArrayList<String>();
     private List<String> deleteColumns = new ArrayList<String>();
+    private Map<String, Object> sets = null;
     private Map<String, Object> params = new LinkedHashMap<String, Object>();
+    private int setIndex;
 
     public CypherBuilder(String forLabels) {
         this.forLabels = forLabels;
@@ -91,16 +91,41 @@ public class CypherBuilder {
         params.put(String.valueOf(position), value);
     }
 
+    /**
+     * @return The parameters to the query
+     */
     public Map<String, Object> getParams() {
         return params;
     }
 
+    /**
+     * Adds a variable to be returned by a RETURN statement
+     *
+     * @param returnColumn The name of the variable in the cypher query
+     */
     public void addReturnColumn(String returnColumn) {
         returnColumns.add(returnColumn);
     }
 
+    /**
+     * Adds a variable to be deleted by a DELETE statement
+     *
+     * @param deleteColumn The name of the variable in the cypher query
+     */
     public void addDeleteColumn(String deleteColumn) {
         deleteColumns.add(deleteColumn);
+    }
+
+    /**
+     * Adds the property to be set using SET statement
+     * @param sets The property to be set
+     */
+    public void addPropertySet(Map<String, Object> sets) {
+        if(sets != null) {
+            final int index = addParam(sets);
+            this.setIndex = index;
+            this.sets = sets;
+        }
     }
 
     public String build() {
@@ -125,22 +150,26 @@ public class CypherBuilder {
             }
         }
 
-        if (returnColumns.isEmpty()) {
-            if(deleteColumns.isEmpty()) {
-                cypher.append(DEFAULT_RETURN_STATEMENT);
-                if (orderAndLimits!=null) {
-                    cypher.append(orderAndLimits).append(NEW_LINE);
+        if(!deleteColumns.isEmpty()) {
+            cypher.append(DELETE);
+            Iterator<String> iter = deleteColumns.iterator();   // same as Collection.join(String separator)
+            if (iter.hasNext()) {
+                cypher.append(iter.next());
+                while (iter.hasNext()) {
+                    cypher.append(COMMAND_SEPARATOR).append(iter.next());
                 }
             }
-            else {
-                cypher.append(DELETE);
-                Iterator<String> iter = deleteColumns.iterator();   // same as Collection.join(String separator)
-                if (iter.hasNext()) {
-                    cypher.append(iter.next());
-                    while (iter.hasNext()) {
-                        cypher.append(COMMAND_SEPARATOR).append(iter.next());
-                    }
-                }
+            return cypher.toString();
+        }
+
+        if(sets != null) {
+            cypher.append("\nSET n += {").append(setIndex).append("}\n");
+        }
+
+        if (returnColumns.isEmpty()) {
+            cypher.append(DEFAULT_RETURN_STATEMENT);
+            if (orderAndLimits!=null) {
+                cypher.append(orderAndLimits).append(NEW_LINE);
             }
         } else {
             cypher.append(RETURN);
@@ -159,24 +188,4 @@ public class CypherBuilder {
 
         return cypher.toString();
     }
-
-    public static String findRelationshipEndpointIdsFor(Association association) {
-        String relType = RelationshipUtils.relationshipTypeUsedFor(association);
-        boolean reversed = RelationshipUtils.useReversedMappingFor(association);
-
-        StringBuilder sb = new StringBuilder();
-        GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) (association.getOwner());
-        String labels = graphPersistentEntity.getLabelsAsString();
-        sb.append("MATCH (me").append(labels).append(" {__id__:{1}})");
-        if (reversed) {
-            sb.append("<");
-        }
-        sb.append("-[:").append(relType).append("]-");
-        if (!reversed) {
-            sb.append(">");
-        }
-        sb.append("(other) RETURN other.__id__ as id");
-        return sb.toString();
-    }
-
 }

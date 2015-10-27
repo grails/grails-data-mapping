@@ -54,7 +54,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private final ClassMapping<Entity> classMapping;
 
     public GrailsDomainClassPersistentEntity(final GrailsDomainClass domainClass,
-            GrailsDomainClassMappingContext mappingContext) {
+                                             GrailsDomainClassMappingContext mappingContext) {
         this.domainClass = domainClass;
         this.mappingContext = mappingContext;
         this.classMapping = new ClassMapping<Entity>() {
@@ -73,7 +73,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
                 return new IdentityMapping() {
                     @Override
                     public String[] getIdentifierName() {
-                        return new String[] { identifier.getName() };
+                        return new String[]{identifier.getName()};
                     }
 
                     @Override
@@ -133,35 +133,28 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
             PersistentProperty persistentProperty;
             if (grailsDomainClassProperty.isAssociation()) {
                 if (grailsDomainClassProperty.isEmbedded()) {
-                    persistentProperty = createEmbedded(mappingContext,grailsDomainClassProperty);
-                }
-                else if (grailsDomainClassProperty.isOneToMany()) {
+                    persistentProperty = createEmbedded(mappingContext, grailsDomainClassProperty);
+                } else if (grailsDomainClassProperty.isOneToMany()) {
                     persistentProperty = createOneToMany(mappingContext, grailsDomainClassProperty);
-                }
-                else if (grailsDomainClassProperty.isHasOne()) {
+                } else if (grailsDomainClassProperty.isHasOne()) {
                     persistentProperty = createOneToOne(mappingContext, grailsDomainClassProperty);
-                }
-                else if (grailsDomainClassProperty.isOneToOne()) {
+                } else if (grailsDomainClassProperty.isOneToOne()) {
                     persistentProperty = createOneToOne(mappingContext, grailsDomainClassProperty);
-                }
-                else if (grailsDomainClassProperty.isManyToOne()) {
+                } else if (grailsDomainClassProperty.isManyToOne()) {
                     persistentProperty = createManyToOne(mappingContext, grailsDomainClassProperty);
-                }
-                else if (grailsDomainClassProperty.isManyToMany()) {
+                } else if (grailsDomainClassProperty.isManyToMany()) {
                     persistentProperty = createManyToMany(mappingContext, grailsDomainClassProperty);
-                }
-                else {
+                } else {
                     persistentProperty = new GrailsDomainClassPersistentProperty(this, grailsDomainClassProperty);
                 }
-            }
-            else {
+            } else {
                 persistentProperty = new GrailsDomainClassPersistentProperty(this, grailsDomainClassProperty);
             }
             propertiesByName.put(grailsDomainClassProperty.getName(), persistentProperty);
             properties.add(persistentProperty);
 
             if (persistentProperty instanceof Association) {
-                associations.add((Association)persistentProperty);
+                associations.add((Association) persistentProperty);
             }
         }
         initialized = true;
@@ -213,7 +206,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     }
 
     public List<String> getPersistentPropertyNames() {
-        return new ArrayList<String>( propertiesByName.keySet() );
+        return new ArrayList<String>(propertiesByName.keySet());
     }
 
     public String getDecapitalizedName() {
@@ -266,9 +259,10 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private PersistentProperty createManyToOne(
             GrailsDomainClassMappingContext ctx,
             GrailsDomainClassProperty grailsDomainClassProperty) {
+        final PropertyMapping<Property> mapping = createDefaultMapping();
         final ManyToOne oneToOne = new ManyToOne(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
             public PropertyMapping getMapping() {
-                return null;
+                return mapping;
             }
         };
         configureAssociation(grailsDomainClassProperty, oneToOne);
@@ -290,9 +284,10 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private PersistentProperty createOneToOne(
             GrailsDomainClassMappingContext ctx,
             GrailsDomainClassProperty grailsDomainClassProperty) {
+        final PropertyMapping<Property> mapping = createDefaultMapping();
         final OneToOne oneToOne = new OneToOne(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
             public PropertyMapping getMapping() {
-                return null;
+                return mapping;
             }
         };
         configureAssociation(grailsDomainClassProperty, oneToOne);
@@ -300,16 +295,32 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     }
 
     private OneToMany createOneToMany(GrailsDomainClassMappingContext mappingContext,
-            GrailsDomainClassProperty grailsDomainClassProperty) {
+                                      GrailsDomainClassProperty grailsDomainClassProperty) {
+        final PropertyMapping<Property> mapping = createDefaultMapping();
         final OneToMany oneToMany = new OneToMany(this, mappingContext, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
 
             public PropertyMapping getMapping() {
-                return null;
+                return mapping;
             }
         };
         configureAssociation(grailsDomainClassProperty, oneToMany);
 
         return oneToMany;
+    }
+
+    private PropertyMapping<Property> createDefaultMapping() {
+        final Property property = new Property();
+        return new PropertyMapping<Property>() {
+            @Override
+            public ClassMapping getClassMapping() {
+                return GrailsDomainClassPersistentEntity.this.getMapping();
+            }
+
+            @Override
+            public Property getMappedForm() {
+                return property;
+            }
+        };
     }
 
     private void configureAssociation(
@@ -318,13 +329,12 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
         association.setAssociatedEntity(getMappingContext().addPersistentEntity(grailsDomainClassProperty.getReferencedPropertyType()));
         association.setOwningSide(grailsDomainClassProperty.isOwningSide());
         String referencedPropertyName = grailsDomainClassProperty.getReferencedPropertyName();
-        if(referencedPropertyName != null) {
+        if (referencedPropertyName != null) {
             association.setReferencedPropertyName(referencedPropertyName);
-        }
-        else {
-        GrailsDomainClassProperty otherSide = grailsDomainClassProperty.getOtherSide();
-        if(otherSide != null) {
-            association.setReferencedPropertyName(otherSide.getName());
+        } else {
+            GrailsDomainClassProperty otherSide = grailsDomainClassProperty.getOtherSide();
+            if (otherSide != null) {
+                association.setReferencedPropertyName(otherSide.getName());
             }
         }
     }
