@@ -33,6 +33,8 @@ public class CypherBuilder {
     public static final String CYPHER_MATCH_ID = "MATCH (n%s) WHERE n.__id__={id}";
     public static final String NODE_LABELS = "labels";
     public static final String NODE_DATA = "data";
+    public final static String NODE_VAR = "n";
+    public static final String DELETE = "\n DELETE ";
 
 
     private String forLabels;
@@ -41,6 +43,7 @@ public class CypherBuilder {
     private String conditions;
     private String orderAndLimits;
     private List<String> returnColumns = new ArrayList<String>();
+    private List<String> deleteColumns = new ArrayList<String>();
     private Map<String, Object> params = new LinkedHashMap<String, Object>();
 
     public CypherBuilder(String forLabels) {
@@ -96,6 +99,10 @@ public class CypherBuilder {
         returnColumns.add(returnColumn);
     }
 
+    public void addDeleteColumn(String deleteColumn) {
+        deleteColumns.add(deleteColumn);
+    }
+
     public String build() {
         StringBuilder cypher = new StringBuilder();
         cypher.append(START_MATCH).append(forLabels).append(")");
@@ -118,11 +125,22 @@ public class CypherBuilder {
             }
         }
 
-
         if (returnColumns.isEmpty()) {
-            cypher.append(DEFAULT_RETURN_STATEMENT);
-            if (orderAndLimits!=null) {
-                cypher.append(orderAndLimits).append(NEW_LINE);
+            if(deleteColumns.isEmpty()) {
+                cypher.append(DEFAULT_RETURN_STATEMENT);
+                if (orderAndLimits!=null) {
+                    cypher.append(orderAndLimits).append(NEW_LINE);
+                }
+            }
+            else {
+                cypher.append(DELETE);
+                Iterator<String> iter = deleteColumns.iterator();   // same as Collection.join(String separator)
+                if (iter.hasNext()) {
+                    cypher.append(iter.next());
+                    while (iter.hasNext()) {
+                        cypher.append(COMMAND_SEPARATOR).append(iter.next());
+                    }
+                }
             }
         } else {
             cypher.append(RETURN);

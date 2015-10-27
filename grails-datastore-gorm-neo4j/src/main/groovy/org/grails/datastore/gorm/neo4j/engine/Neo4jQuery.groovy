@@ -17,12 +17,7 @@ package org.grails.datastore.gorm.neo4j.engine
 import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
 import groovy.util.logging.Commons
-import org.grails.datastore.gorm.neo4j.CypherBuilder
-import org.grails.datastore.gorm.neo4j.GraphPersistentEntity
-import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
-import org.grails.datastore.gorm.neo4j.Neo4jSession
-import org.grails.datastore.gorm.neo4j.Neo4jUtils
-import org.grails.datastore.gorm.neo4j.RelationshipUtils
+import org.grails.datastore.gorm.neo4j.*
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
@@ -32,12 +27,9 @@ import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.AssociationQuery
 import org.grails.datastore.mapping.query.Query
 import org.neo4j.graphdb.GraphDatabaseService
-import org.neo4j.graphdb.Label
 import org.neo4j.graphdb.Node
-import org.neo4j.helpers.collection.IteratorUtil
 
 import javax.persistence.FetchType
-
 /**
  * perform criteria queries on a Neo4j backend
  *
@@ -54,7 +46,7 @@ class Neo4jQuery extends Query {
     final Neo4jEntityPersister neo4jEntityPersister
 
 
-    protected Neo4jQuery(Session session, PersistentEntity entity, Neo4jEntityPersister neo4jEntityPersister) {
+    public Neo4jQuery(Session session, PersistentEntity entity, Neo4jEntityPersister neo4jEntityPersister) {
         super(session, entity)
         this.neo4jEntityPersister = neo4jEntityPersister
     }
@@ -283,9 +275,7 @@ class Neo4jQuery extends Query {
     @Override
     protected List executeQuery(PersistentEntity persistentEntity, Query.Junction criteria) {
 
-        CypherBuilder cypherBuilder = new CypherBuilder(((GraphPersistentEntity)persistentEntity).getLabelsAsString());
-        def conditions = buildConditions(criteria, cypherBuilder, "n")
-        cypherBuilder.setConditions(conditions)
+        CypherBuilder cypherBuilder = buildBaseQuery(persistentEntity, criteria)
         cypherBuilder.setOrderAndLimits(applyOrderAndLimits(cypherBuilder))
 
         def projectionList = projections.projectionList
@@ -364,6 +354,22 @@ class Neo4jQuery extends Query {
                 return projectedResults
             }
         }
+    }
+
+    /**
+     * Obtains the root query for this Neo4jQuery instance without any RETURN statements, projections or limits applied
+     *
+     * @return The base query containing only the conditions
+     */
+    CypherBuilder getBaseQuery() {
+        buildBaseQuery(entity, criteria)
+    }
+
+    protected CypherBuilder buildBaseQuery(PersistentEntity persistentEntity, Query.Junction criteria) {
+        CypherBuilder cypherBuilder = new CypherBuilder(((GraphPersistentEntity) persistentEntity).getLabelsAsString());
+        def conditions = buildConditions(criteria, cypherBuilder, CypherBuilder.NODE_VAR)
+        cypherBuilder.setConditions(conditions)
+        cypherBuilder
     }
 
 

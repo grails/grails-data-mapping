@@ -16,6 +16,7 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.Custom;
 import org.grails.datastore.mapping.model.types.Simple;
+import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.grails.datastore.mapping.transactions.Transaction;
@@ -434,10 +435,28 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
     }
 
 
-    // TODO: Optimize batch deletes!
     @Override
     public long deleteAll(QueryableCriteria criteria) {
-        return super.deleteAll(criteria);
+
+        final PersistentEntity entity = criteria.getPersistentEntity();
+        final List<Query.Criterion> criteriaList = criteria.getCriteria();
+        final Neo4jQuery query = new Neo4jQuery(this, entity, getEntityPersister(entity.getJavaClass()));
+        for (Query.Criterion criterion : criteriaList) {
+            query.add(criterion);
+        }
+        query.projections().count();
+
+        final CypherBuilder baseQuery = query.getBaseQuery();
+        baseQuery.addDeleteColumn(CypherBuilder.NODE_VAR);
+
+        final String cypher = baseQuery.build();
+        final Map<String, Object> params = baseQuery.getParams();
+        if(log.isDebugEnabled()) {
+            log.debug("DELETE Cypher [{}] for parameters [{}]", cypher, params);
+        }
+        Number count = (Number) query.singleResult();
+        graphDatabaseService.execute(cypher, params);
+        return count.longValue();
     }
 
     // TODO: Optimize batch updates!
