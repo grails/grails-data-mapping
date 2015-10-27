@@ -38,34 +38,15 @@ import org.grails.datastore.mapping.model.types.ManyToMany
  */
 @CompileStatic
 class Neo4jPersistentSet extends PersistentSet {
-    protected final boolean reversed
-    protected final String relType
     protected final EntityAccess parentAccess
     protected final Association association
+    protected final @Delegate GraphAdapter graphAdapter
 
-    Neo4jPersistentSet(Session session, Set collection, EntityAccess parentAccess, Association association) {
-        super(association.associatedEntity.javaClass, session, collection)
-        this.parentAccess = parentAccess
-        this.association = association
-        reversed = RelationshipUtils.useReversedMappingFor(association)
-        relType = RelationshipUtils.relationshipTypeUsedFor(association)
-    }
-
-    Neo4jPersistentSet(Collection keys, Session session, EntityAccess parentAccess, Association association) {
+    Neo4jPersistentSet(Collection keys, Neo4jSession session, EntityAccess parentAccess, Association association) {
         super(keys, association.associatedEntity.javaClass, session)
         this.parentAccess = parentAccess
         this.association = association
-        reversed = RelationshipUtils.useReversedMappingFor(association)
-        relType = RelationshipUtils.relationshipTypeUsedFor(association)
-
-    }
-
-    Neo4jPersistentSet(Serializable associationKey, Session session, AssociationIndexer indexer, EntityAccess parentAccess, Association association) {
-        super(associationKey, session, indexer)
-        this.parentAccess = parentAccess
-        this.association = association
-        reversed = RelationshipUtils.useReversedMappingFor(association)
-        relType = RelationshipUtils.relationshipTypeUsedFor(association)
+        this.graphAdapter = new GraphAdapter(session, parentAccess, association)
     }
 
 
@@ -74,7 +55,7 @@ class Neo4jPersistentSet extends PersistentSet {
         def added = super.addAll(c)
         if(added) {
             for( o in c ) {
-                adaptGraphUponAdd(o)
+                adaptGraphUponAdd(o, currentlyInitializing())
             }
         }
 
@@ -85,7 +66,7 @@ class Neo4jPersistentSet extends PersistentSet {
     boolean add(Object o) {
         def added = super.add(o)
         if(added) {
-            adaptGraphUponAdd(o)
+            adaptGraphUponAdd(o, currentlyInitializing())
         }
 
         return added
@@ -93,16 +74,22 @@ class Neo4jPersistentSet extends PersistentSet {
 
     @Override
     boolean removeAll(Collection c) {
-        for(o in c) {
-            adaptGraphUponRemove(o)
+        def removed = super.removeAll(c)
+        if(removed) {
+            for(o in c) {
+                adaptGraphUponRemove(o)
+            }
         }
-        return super.removeAll(c)
+        return removed
     }
 
     @Override
     boolean remove(Object o) {
-        adaptGraphUponRemove(o)
-        return super.remove(o)
+        def removed = super.remove(o)
+        if(removed) {
+            adaptGraphUponRemove(o, currentlyInitializing())
+        }
+        return removed
     }
 
     @Override
@@ -118,45 +105,6 @@ class Neo4jPersistentSet extends PersistentSet {
     @Override
     boolean containsAll(Collection c) {
         return super.containsAll(c)
-    }
-
-
-    protected void adaptGraphUponRemove(Object o) {
-        Neo4jSession session = (Neo4jSession)this.session
-        if (session.getMappingContext().getProxyFactory().isProxy(o)) {
-            return;
-        }
-        if (!reversed && !currentlyInitializing()) {
-            session.addPostFlushOperation(new RelationshipPendingDelete(parentAccess, relType,
-                    session.createEntityAccess(association.getAssociatedEntity(), o),
-                    session.getNativeInterface()));
-        }
-    }
-
-    protected void adaptGraphUponAdd(Object t) {
-        Neo4jSession session = (Neo4jSession)this.session
-        def proxyFactory = session.getMappingContext().getProxyFactory()
-        if (proxyFactory.isProxy(t)) {
-            if ( !proxyFactory.isInitialized(t) ) return
-            if ( !childType.isInstance(t) ) return
-        }
-        EntityAccess target = session.createEntityAccess(association.getAssociatedEntity(), t)
-        if (association.isBidirectional() && !currentlyInitializing()) {
-            if (association instanceof ManyToMany) {
-                Collection coll = (Collection) target.getProperty(association.getReferencedPropertyName());
-                coll.add(parentAccess.entity);
-            } else {
-                target.setProperty(association.getReferencedPropertyName(), parentAccess.entity);
-            }
-        }
-
-        if (target.getIdentifier() == null) { // non-persistent instance
-            session.persist(t);
-        }
-
-        if (!reversed && !currentlyInitializing()) { // prevent duplicated rels
-            session.addPostFlushOperation(new RelationshipPendingInsert(parentAccess, relType, target, session.getNativeInterface()));
-        }
     }
 
     @Override

@@ -35,19 +35,16 @@ import org.grails.datastore.mapping.model.types.ManyToMany
  */
 @CompileStatic
 class Neo4jSet extends DirtyCheckingSet {
-    private final boolean reversed
     final transient Association association
     final transient Neo4jSession session
-    private final String relType
-    private final EntityAccess owner
+
+    protected final transient @Delegate GraphAdapter graphAdapter
 
     Neo4jSet(EntityAccess parentAccess, Association association, Set delegate, Neo4jSession session) {
         super(delegate, (DirtyCheckable)parentAccess.getEntity(), association.getName())
         this.association = association
         this.session = session
-        this.owner = parentAccess
-        reversed = RelationshipUtils.useReversedMappingFor(association)
-        relType = RelationshipUtils.relationshipTypeUsedFor(association)
+        this.graphAdapter = new GraphAdapter(session, parentAccess, association)
     }
 
     @Override
@@ -55,7 +52,7 @@ class Neo4jSet extends DirtyCheckingSet {
 
         def added = super.add(o)
         if(added) {
-            adoptGraphUponAdd(o)
+            adaptGraphUponAdd(o)
         }
         return added
     }
@@ -65,7 +62,7 @@ class Neo4jSet extends DirtyCheckingSet {
         def added = super.addAll(c)
         if(added) {
             for( o in c ) {
-                adoptGraphUponAdd(o)
+                adaptGraphUponAdd(o)
             }
         }
 
@@ -74,17 +71,24 @@ class Neo4jSet extends DirtyCheckingSet {
 
     @Override
     boolean removeAll(Collection c) {
-        for(o in c) {
-            adoptGraphUponRemove(o)
+        def removed = super.removeAll(c)
+        if(removed) {
+            for(o in c) {
+                adaptGraphUponRemove(o)
+            }
         }
-        return super.removeAll(c)
+        return removed
     }
 
     @Override
     boolean remove(Object o) {
-        adoptGraphUponRemove(o)
-        return super.remove(o)
+        def removed = super.remove(o)
+        if(removed) {
+            adaptGraphUponRemove(o)
+        }
+        return removed
     }
+
 
     @Override
     boolean retainAll(Collection c) {
@@ -99,42 +103,6 @@ class Neo4jSet extends DirtyCheckingSet {
     @Override
     boolean containsAll(Collection c) {
         return super.containsAll(c)
-    }
-
-    protected void adoptGraphUponRemove(Object o) {
-        if (session.getMappingContext().getProxyFactory().isProxy(o)) {
-            return;
-        }
-        if (!reversed) {
-            session.addPostFlushOperation(new RelationshipPendingDelete(owner, relType,
-                    session.createEntityAccess(association.getAssociatedEntity(), o),
-                    session.getNativeInterface()));
-        }
-    }
-
-    protected void adoptGraphUponAdd(Object t) {
-        def proxyFactory = session.getMappingContext().getProxyFactory()
-        if (proxyFactory.isProxy(t)) {
-            if ( !proxyFactory.isInitialized(t) ) return
-            if ( !association.associatedEntity.isInstance(t) ) return
-        }
-        EntityAccess target = session.createEntityAccess(association.getAssociatedEntity(), t)
-        if (association.isBidirectional()) {
-            if (association instanceof ManyToMany) {
-                Collection coll = (Collection) target.getProperty(association.getReferencedPropertyName());
-                coll.add(parent);
-            } else {
-                target.setProperty(association.getReferencedPropertyName(), parent);
-            }
-        }
-
-        if (target.getIdentifier() == null) { // non-persistent instance
-            session.persist(t);
-        }
-
-        if (!reversed) { // prevent duplicated rels
-            session.addPostFlushOperation(new RelationshipPendingInsert(owner, relType, target, session.getNativeInterface()));
-        }
     }
 
 }
