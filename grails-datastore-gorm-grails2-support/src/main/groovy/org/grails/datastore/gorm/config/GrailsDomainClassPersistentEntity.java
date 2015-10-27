@@ -279,9 +279,10 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private PersistentProperty createManyToMany(
             GrailsDomainClassMappingContext ctx,
             GrailsDomainClassProperty grailsDomainClassProperty) {
+        final PropertyMapping<Property> mapping = createDefaultMapping();
         final ManyToMany manyToMany = new ManyToMany(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
             public PropertyMapping getMapping() {
-                return null;
+                return mapping;
             }
         };
         configureAssociation(grailsDomainClassProperty, manyToMany);
@@ -351,9 +352,10 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     private PersistentProperty createEmbedded(
             GrailsDomainClassMappingContext mappingContext,
             GrailsDomainClassProperty grailsDomainClassProperty) {
+        final PropertyMapping<Property> mapping = createDefaultMapping();
         Embedded persistentProperty = new Embedded(this, mappingContext, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getClass()) {
             public PropertyMapping getMapping() {
-                return null;
+                return mapping;
             }
         };
         persistentProperty.setOwningSide(grailsDomainClassProperty.isOwningSide());
