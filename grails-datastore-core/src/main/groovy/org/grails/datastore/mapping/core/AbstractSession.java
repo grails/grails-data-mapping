@@ -307,27 +307,27 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             }
 
             hasInserts = hasUpdates();
-            if (!hasInserts) {
-                return;
+            if (hasInserts) {
+                flushPendingInserts(pendingInserts);
+                flushPendingUpdates(pendingUpdates);
+                flushPendingDeletes(pendingDeletes);
+
+                firstLevelCollectionCache.clear();
+
+                executePendings(postFlushOperations);
             }
 
-            flushPendingInserts(pendingInserts);
-            flushPendingUpdates(pendingUpdates);
-
-
-            final Collection<Collection<PendingDelete>> deletes = pendingDeletes.values();
-            for (Collection<PendingDelete> delete : deletes) {
-                flushPendingOperations(delete);
-            }
-
-            handleDirtyCollections();
-            firstLevelCollectionCache.clear();
-
-            executePendings(postFlushOperations);
         } finally {
             clearPendingOperations();
         }
         postFlush(hasInserts);
+    }
+
+    protected void flushPendingDeletes(Map<PersistentEntity, Collection<PendingDelete>> pendingDeletes) {
+        final Collection<Collection<PendingDelete>> deletes = pendingDeletes.values();
+        for (Collection<PendingDelete> delete : deletes) {
+            flushPendingOperations(delete);
+        }
     }
 
     public boolean isDirty(Object instance) {
@@ -370,23 +370,6 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         return null;
     }
 
-    private void handleDirtyCollections() {
-        for (Map.Entry<CollectionKey, Collection> entry : firstLevelCollectionCache.entrySet()) {
-            Collection collection = entry.getValue();
-            if (!(collection instanceof PersistentCollection)) {
-                continue;
-            }
-            PersistentCollection persistentCollection = (PersistentCollection)collection;
-            if (!persistentCollection.isDirty()) {
-                continue;
-            }
-
-            //TODO once an instance is flushed, its collections need to be non-dirty
-            CollectionKey key = entry.getKey();
-            Object owner = getInstanceCache(key.clazz).get(key.key);
-            boolean d = isDirty(owner);
-        }
-    }
 
     /**
      * The default implementation of flushPendingUpdates is to iterate over each update operation

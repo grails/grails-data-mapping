@@ -17,6 +17,7 @@ import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.Custom;
 import org.grails.datastore.mapping.model.types.Simple;
 import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.Restrictions;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.grails.datastore.mapping.transactions.Transaction;
@@ -345,6 +346,51 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
     }
 
+
+    @Override
+    protected void flushPendingDeletes(Map<PersistentEntity, Collection<PendingDelete>> pendingDeletes) {
+
+        final Set<PersistentEntity> persistentEntities = pendingDeletes.keySet();
+        for (PersistentEntity entity : persistentEntities) {
+
+            final Collection<PendingDelete> deletes = pendingDeletes.get(entity);
+            final Collection<Object> ids = new ArrayList<Object>();
+            Collection<PendingOperation> cascadingOperations = new ArrayList<PendingOperation>();
+
+            for (PendingDelete delete : deletes) {
+
+                List<PendingOperation> preOperations = delete.getPreOperations();
+                for (PendingOperation preOperation : preOperations) {
+                    preOperation.run();
+                }
+
+                delete.run();
+
+                if(delete.isVetoed()) continue;
+
+                final Object id = delete.getNativeKey();
+                ids.add(id);
+                cascadingOperations.addAll(delete.getCascadeOperations());
+            }
+
+            final Neo4jQuery deleteQuery = new Neo4jQuery(this, entity, getEntityPersister(entity.getJavaClass()));
+            deleteQuery.add(Restrictions.in(GormProperties.IDENTITY, ids) );
+            final CypherBuilder cypherBuilder = deleteQuery.getBaseQuery();
+            buildCascadingDeletes(entity, cypherBuilder);
+
+            final String cypher = cypherBuilder.build();
+            final Map<String, Object> idMap = cypherBuilder.getParams();
+
+            if (log.isDebugEnabled()) {
+                log.debug("DELETE Cypher [{}] for parameters {}", cypher, idMap);
+            }
+            graphDatabaseService.execute(cypher, idMap);
+
+            executePendings(cascadingOperations);
+
+        }
+    }
+
     protected Map<String, List<Object>> amendMapWithUndeclaredProperties(Map<String, Object> simpleProps, Object pojo, MappingContext mappingContext) {
         return amendMapWithUndeclaredProperties(simpleProps, pojo, mappingContext, new ArrayList<String>());
     }
@@ -460,7 +506,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         return count.longValue();
     }
 
-    public static void buildCascadingDeletes(PersistentEntity entity, CypherBuilder baseQuery) {
+    protected void buildCascadingDeletes(PersistentEntity entity, CypherBuilder baseQuery) {
         int i = 1;
         for (Association association : entity.getAssociations()) {
             if(association.doesCascade(CascadeType.REMOVE)) {

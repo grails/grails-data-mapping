@@ -553,39 +553,20 @@ public class Neo4jEntityPersister extends EntityPersister {
     }
 
     @Override
-    protected void deleteEntity(PersistentEntity pe, Object obj) {
+    protected void deleteEntity(final PersistentEntity pe, final Object obj) {
         final EntityAccess entityAccess = createEntityAccess(pe, obj);
 
 
         final Neo4jSession session = getSession();
         session.clear(obj);
         final PendingDeleteAdapter pendingDelete = createPendingDeleteOne(session, pe, entityAccess, obj);
-        session.addPendingDelete(pendingDelete);
-
-        for (Association association: pe.getAssociations()) {
-            if (association.isOwningSide() && association.doesCascade(CascadeType.REMOVE)) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Cascading delete for property {}->{}", association.getType().getName(),  association.getName());
-                }
-
-                GraphPersistentEntity otherPersistentEntity = (GraphPersistentEntity) association.getAssociatedEntity();
-                Object otherSideValue = entityAccess.getProperty(association.getName());
-                if ((association instanceof ToOne) && otherSideValue != null) {
-                    // Add cascade operation on parent delete. If parent delete is vetoed, so are child deletes
-                    final EntityAccess access = createEntityAccess(otherPersistentEntity, otherSideValue);
-                    final Object associationId = access.getIdentifier();
-                    if(associationId == null) continue;
-
-                    pendingDelete.addCascadeOperation(
-                            createPendingDeleteOne(session, otherPersistentEntity, access, otherSideValue)
-                    );
-                } else {
-                    // TODO: Optimize cascade to associations once lazy loading is properly implemented
-                    deleteEntities(otherPersistentEntity, (Iterable) otherSideValue);
-                }
+        pendingDelete.addCascadeOperation(new PendingOperationAdapter<Object, Long>(pe, (Long) entityAccess.getIdentifier(), obj) {
+            @Override
+            public void run() {
+                firePostDeleteEvent(pe, entityAccess);
             }
-        }
-
+        });
+        session.addPendingDelete(pendingDelete);
 
     }
 
@@ -594,22 +575,9 @@ public class Neo4jEntityPersister extends EntityPersister {
         return new PendingDeleteAdapter(pe, entityAccess.getIdentifier(), obj) {
             @Override
             public void run() {
-                final PersistentEntity e = getEntity();
-                if (cancelDelete(e, entityAccess)) {
-                    return;
+                if (cancelDelete(pe, entityAccess)) {
+                    setVetoed(true);
                 }
-                final String cypher = String.format(DELETE_ONE_CYPHER,
-                        ((GraphPersistentEntity) e).getLabelsAsString());
-                final Map<String, Object> idMap = Collections.singletonMap(GormProperties.IDENTITY, entityAccess.getIdentifier());
-
-                if (log.isDebugEnabled()) {
-                    log.debug("DELETE Cypher [{}] for parameters {}", cypher, idMap);
-                }
-
-                final GraphDatabaseService graphDatabaseService = session.getNativeInterface();
-                graphDatabaseService.execute(cypher, idMap);
-
-                firePostDeleteEvent(e, entityAccess);
             }
         };
     }
@@ -618,72 +586,9 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected void deleteEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objects) {
-        List<EntityAccess> entityAccesses = new ArrayList<EntityAccess>();
-        List<Object> ids = new ArrayList<Object>();
-        Map<PersistentEntity, Collection<Object>> cascades = new HashMap<PersistentEntity, Collection<Object>>();
-
-        for (Object obj : objects) {
-            EntityAccess entityAccess = createEntityAccess(pe, obj);
-            if (cancelDelete(pe, entityAccess)) {
-                return;
-            }
-            entityAccesses.add(entityAccess);
-            ids.add(entityAccess.getIdentifier());
-
-            // populate cascades
-            for (Association association: pe.getAssociations()) {
-                Object property = entityAccess.getProperty(association.getName());
-
-                // TODO: check if property is an empty array -> exclude
-                if (association.isOwningSide() && association.doesCascade(CascadeType.REMOVE)) {
-
-                    if (propertyNotEmpty(property)) {
-
-                        PersistentEntity associatedEntity = association.getAssociatedEntity();
-
-                        Collection<Object> cascadesForPersistentEntity = cascades.get(associatedEntity);
-                        if (cascadesForPersistentEntity==null) {
-                            cascadesForPersistentEntity = new ArrayList<Object>();
-                            cascades.put(associatedEntity, cascadesForPersistentEntity);
-                        }
-
-                        if (association instanceof ToOne) {
-                            cascadesForPersistentEntity.add(property);
-                        } else {
-                            cascadesForPersistentEntity.addAll((Collection<?>) property);
-                        }
-                    }
-                }
-            }
+        for (Object object : objects) {
+            deleteEntity(pe, object);
         }
-
-        for (Map.Entry<PersistentEntity, Collection<Object>> entry: cascades.entrySet()) {
-            if (!entry.getValue().isEmpty()) {
-                deleteEntities(entry.getKey(), entry.getValue());
-            }
-        }
-
-        final String cypher = String.format(DELETE_MANY_CYPHER,
-                ((GraphPersistentEntity) pe).getLabelsAsString());
-        final Map<String, Object> params = Collections.<String, Object>singletonMap(GormProperties.IDENTITY, ids);
-
-        if (log.isDebugEnabled()) {
-            log.debug("DELETE Cypher [{}] for parameters {}", cypher, params);
-        }
-
-        final GraphDatabaseService graphDatabaseService = getSession()
-                                                            .getNativeInterface();
-        graphDatabaseService
-                .execute(cypher, params);
-
-        for (EntityAccess entityAccess: entityAccesses) {
-            getSession().clear(entityAccess.getEntity());
-            firePostDeleteEvent(pe, entityAccess);
-        }
-    }
-
-    private boolean propertyNotEmpty(Object property) {
-        return property != null && !((property instanceof Collection) && (((Collection) property).isEmpty()));
     }
 
     @Override
