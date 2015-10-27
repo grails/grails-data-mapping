@@ -23,7 +23,7 @@ public class CypherBuilder {
     public static final String WHERE = " WHERE ";
     public static final String RETURN = " RETURN ";
     public static final String COMMAND_SEPARATOR = ", ";
-    public static final String DEFAULT_RETURN_TYPES = "n.__id__ as id, labels(n) as labels, n as data \n";
+    public static final String DEFAULT_RETURN_TYPES = "n as data\n";
     public static final String DEFAULT_RETURN_STATEMENT = RETURN + DEFAULT_RETURN_TYPES;
     public static final String NEW_LINE = " \n";
     public static final String START_MATCH = "MATCH (n";
