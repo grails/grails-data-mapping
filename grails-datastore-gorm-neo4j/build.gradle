@@ -28,6 +28,8 @@ dependencies {
     // Only needed of high availability is used
     compile "org.neo4j:neo4j-ha:$neo4jVersion", optional
 
+    testRuntime "org.neo4j:neo4j-rest-graphdb:2.0.1"
+
     // during development (aka snapshot version), use project dependencies
     // during release, use 'regular' dependencies
     compile project(":grails-datastore-gorm"),
@@ -39,8 +41,8 @@ dependencies {
     testCompile 'org.codehaus.gpars:gpars:0.12',
             [group: "org.neo4j", name: "neo4j-kernel", version: neo4jVersion, classifier: 'tests'],
             [group: "org.neo4j", name: "neo4j-io", version: neo4jVersion, classifier: 'tests'],
-            [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion, classifier: 'tests'],
-            [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion],
+            [group: "org.neo4j.app", name: "neo4j-server", version: '2.2.3', classifier: 'tests'],
+            [group: "org.neo4j.app", name: "neo4j-server", version: '2.2.3'],
             "org.neo4j:neo4j-graphviz:$neo4jVersion",
             "org.neo4j:neo4j-management:$neo4jVersion",
             "org.neo4j:neo4j-ha:$neo4jVersion",

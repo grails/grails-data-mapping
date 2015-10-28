@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.neo4j;
 
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.config.utils.PropertyResolverMap;
 import org.grails.datastore.mapping.core.AbstractDatastore;
@@ -37,7 +38,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.PropertyResolver;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -51,12 +54,17 @@ import java.util.*;
 public class Neo4jDatastore extends AbstractDatastore implements InitializingBean, DisposableBean, StatelessDatastore, GraphDatastore {
 
     public static final String DEFAULT_LOCATION = "data/neo4j";
-    public static final String SETTING_NEO4J_URL = "grails.neo4j.url";
     public static final String SETTING_NEO4J_LOCATION = "grails.neo4j.location";
+    public static final String SETTING_NEO4J_TYPE = "grails.neo4j.type";
     public static final String SETTING_NEO4J_USERNAME = "grails.neo4j.username";
     public static final String SETTING_NEO4J_PASSWORD = "grails.neo4j.password";
     public static final String SETTING_NEO4J_HIGH_AVAILABILITY = "grails.neo4j.ha";
-    public static final String SETTING_NEO4J_DB_PROPERTIES = "grails.neo4j.dbProperties";
+    public static final String SETTING_NEO4J_DB_PROPERTIES = "grails.neo4j.options";
+    public static final String DEFAULT_DATABASE_TYPE = "embedded";
+    public static final String DATABASE_TYPE_HA = "ha";
+    public static final String DATABASE_TYPE_REST = "rest";
+    public static final String DATABASE_TYPE_IMPERMANENT = "impermanent";
+    public static final String DATABASE_TYPE_EMBEDDED = DEFAULT_DATABASE_TYPE;
 
     private static Logger log = LoggerFactory.getLogger(Neo4jDatastore.class);
 
@@ -105,24 +113,68 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
 
 
     protected GraphDatabaseService createGraphDatabaseService(PropertyResolver configuration) {
-        // TODO: Implement configuration properly
-        final boolean highAvailability = configuration.getProperty(SETTING_NEO4J_HIGH_AVAILABILITY, Boolean.class, false);
+        final String type = configuration.getProperty(SETTING_NEO4J_TYPE, DEFAULT_DATABASE_TYPE);
+        final String location = configuration.getProperty(SETTING_NEO4J_LOCATION, DEFAULT_LOCATION);
+        final Map dbProperties = configuration.getProperty(SETTING_NEO4J_DB_PROPERTIES, Map.class, new LinkedHashMap<String, String>());
         GraphDatabaseFactory graphDatabaseFactory;
-        if(highAvailability) {
+        if(DATABASE_TYPE_HA.equalsIgnoreCase(type)) {
             try {
                 graphDatabaseFactory = (GraphDatabaseFactory) Class.forName("org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory",true, Thread.currentThread().getContextClassLoader()).newInstance();
             } catch (Throwable e) {
-                throw new DatastoreConfigurationException("Cannot load class [org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory] for HA mode. Check neo4j-ha dependency is on your classpath", e);
+                throw new DatastoreConfigurationException("Cannot load class [org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory] for HA mode. Check 'neo4j-ha' dependency is on your classpath", e);
             }
         }
-        else {
+        else if(DATABASE_TYPE_REST.equalsIgnoreCase(type) ) {
+            if(!location.startsWith("http")) {
+                throw new DatastoreConfigurationException("The ["+SETTING_NEO4J_LOCATION+"] setting must be an HTTP or HTTPS URL");
+            }
+
+            final String username = configuration.getProperty(SETTING_NEO4J_USERNAME);
+            final String password = configuration.getProperty(SETTING_NEO4J_PASSWORD);
+
+
+            try {
+                final Class<?> restFactory = Class.forName("org.neo4j.rest.graphdb.RestGraphDatabase", true, Thread.currentThread().getContextClassLoader());
+                final boolean hasCredentials = username != null && password != null;
+
+                for (Object option : dbProperties.keySet()) {
+                    final Object value = dbProperties.get(option);
+                    if(value != null) {
+                        System.setProperty("org.neo4j.rest." + option, value.toString());
+                    }
+                }
+                if(hasCredentials) {
+                    return (GraphDatabaseService) DefaultGroovyMethods.newInstance(restFactory, new String[]{ location, username,password });
+                }
+                else {
+                    return (GraphDatabaseService) DefaultGroovyMethods.newInstance(restFactory, new String[]{location});
+                }
+            } catch (Throwable e) {
+                throw new DatastoreConfigurationException("Cannot load class [org.neo4j.rest.graphdb.GraphDatabaseFactory] for REST mode. Check 'neo4j-rest-graphdb' dependency is on your classpath", e);
+            }
+        }
+        else if(DATABASE_TYPE_IMPERMANENT.equalsIgnoreCase(type)) {
+            try {
+                graphDatabaseFactory = (GraphDatabaseFactory) Class.forName("org.neo4j.test.TestGraphDatabaseFactory",true, Thread.currentThread().getContextClassLoader()).newInstance();
+            } catch (Throwable e) {
+                throw new DatastoreConfigurationException("Cannot load class [org.neo4j.test.TestGraphDatabaseFactory] for impermanent mode. Check 'neo4j-kernel' (classifier: 'tests') dependency is on your classpath", e);
+            }
+        }
+        else if(DATABASE_TYPE_EMBEDDED.equalsIgnoreCase(type)) {
             graphDatabaseFactory = new GraphDatabaseFactory();
+        }
+        else {
+            try {
+                return (GraphDatabaseService) Class.forName(type,true, Thread.currentThread().getContextClassLoader()).newInstance();
+            } catch (Throwable e) {
+                throw new DatastoreConfigurationException("Cannot load class GraphDatabaseService for type ["+type+"]: " +e.getMessage(), e);
+            }
         }
 
         final GraphDatabaseBuilder graphDatabaseBuilder = graphDatabaseFactory.newEmbeddedDatabaseBuilder(
-                configuration.getProperty(SETTING_NEO4J_LOCATION, DEFAULT_LOCATION)
+                location
         );
-        final Map dbProperties = configuration.getProperty(SETTING_NEO4J_DB_PROPERTIES, Map.class, new LinkedHashMap<String, Object>());
+
         if(!dbProperties.containsKey(GraphDatabaseSettings.cache_type.name())) {
             graphDatabaseBuilder.setConfig(GraphDatabaseSettings.cache_type, "soft");
         }

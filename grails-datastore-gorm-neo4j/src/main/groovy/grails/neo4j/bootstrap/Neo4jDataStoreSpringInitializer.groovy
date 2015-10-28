@@ -67,7 +67,6 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
             }
 
 
-            // TODO: Reinstate property transaction management
             callable = getAdditionalBeansConfiguration(beanDefinitionRegistry, "neo4j")
             callable.delegate = delegate
             callable.call()
