@@ -21,6 +21,7 @@ import groovy.transform.stc.MapEntryOrKeyValue
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jSession
 import org.grails.datastore.gorm.neo4j.engine.Neo4jEntityPersister
+import org.grails.datastore.gorm.neo4j.engine.Neo4jResultList
 import org.grails.datastore.mapping.core.AbstractDatastore
 import org.grails.datastore.mapping.core.Session
 import org.neo4j.graphdb.GraphDatabaseService
@@ -61,11 +62,55 @@ class Neo4jExtensions {
      * @param c The domain class type
      * @return The domain instance
      */
-    public <N> N asType(Node node, Class<N> c) {
+    static <N> N asType(Node node, Class<N> c) {
         Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
         def entityPersister = session.getEntityPersister(c)
         if(entityPersister != null) {
             return (N)entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node)
+        }
+        else {
+            throw new ClassCastException("Class [$c.name] is not a GORM entity")
+        }
+    }
+
+    /**
+     * Allow casting from Result to domain class
+     *
+     * @param node The node
+     *
+     * @param c The domain class type
+     * @return The domain instance
+     */
+    static <N> N asType(Result result, Class<N> c) {
+        Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
+        def entityPersister = session.getEntityPersister(c)
+        if(entityPersister != null) {
+            def resultList = new Neo4jResultList(0, result, entityPersister)
+            if(!resultList.isEmpty()) {
+                return (N)resultList.get(0)
+            }
+            else {
+                return null
+            }
+        }
+        else {
+            throw new ClassCastException("Class [$c.name] is not a GORM entity")
+        }
+    }
+
+    /**
+     * Allow casting from Result to a list of domain class
+     *
+     * @param node The node
+     *
+     * @param c The domain class type
+     * @return The domain instance
+     */
+    static <N> List<N> toList(Result result, Class<N> c) {
+        Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
+        def entityPersister = session.getEntityPersister(c)
+        if(entityPersister != null) {
+            return new Neo4jResultList(0, result, entityPersister)
         }
         else {
             throw new ClassCastException("Class [$c.name] is not a GORM entity")

@@ -82,6 +82,32 @@ class CypherQueryStringSpec extends GormDatastoreSpec {
 
     }
 
+    void "Test convert nodes using asType for a cypher result"() {
+        given:
+        setupDomain()
+
+        when:"A cypher query is executed"
+        def result = Club.cypherStatic("MATCH n where n.name = {name} RETURN n", [name:'FC Bayern Muenchen'])
+        Club club = result as Club
+
+        then:"the conversion is correct"
+        club instanceof Club
+        club.name == 'FC Bayern Muenchen'
+        club.teams
+        club.teams.size() == 2
+
+        when:"A cypher query is executed"
+        result = Club.cypherStatic("MATCH n where n.name = {name} RETURN n", [name:'FC Bayern Muenchen'])
+        List<Club> clubs = result.toList(Club)
+
+        then:"the conversion is correct"
+        clubs.size() == 1
+        clubs[0].name == 'FC Bayern Muenchen'
+        clubs[0].teams
+        clubs[0].teams.size() == 2
+
+    }
+
     void setupDomain() {
         def club = new Club(name: 'FC Bayern Muenchen')
         club.addToTeams(new Team(name: 'FCB Team 1'))
