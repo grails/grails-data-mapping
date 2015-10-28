@@ -419,14 +419,14 @@ class Neo4jQuery extends Query {
         }
     }
 
-    public static String matchForAssociation(Association association) {
+    public static String matchForAssociation(Association association, String var = "") {
         def relationshipType = RelationshipUtils.relationshipTypeUsedFor(association)
         def reversed = RelationshipUtils.useReversedMappingFor(association)
         StringBuilder sb = new StringBuilder();
         if (reversed) {
             sb.append('<')
         }
-        sb.append("-[:").append(relationshipType).append("]-")
+        sb.append("-[$var:").append(relationshipType).append("]-")
         if (!reversed) {
             sb.append('>')
         }

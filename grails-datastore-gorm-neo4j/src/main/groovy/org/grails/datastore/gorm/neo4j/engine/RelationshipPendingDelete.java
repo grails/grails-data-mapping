@@ -20,10 +20,12 @@ import org.grails.datastore.gorm.neo4j.GraphPersistentEntity;
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter;
 import org.grails.datastore.mapping.core.impl.PendingOperationAdapter;
 import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.model.types.Association;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -35,37 +37,30 @@ import java.util.Map;
  */
 public class RelationshipPendingDelete extends PendingOperationAdapter<Object, Long> {
 
-    public static final String CYPHER_DELETE_WITH_TARGET = "MATCH (from%s {__id__: {start}})-[r:%s]->(to%s {__id__: {end}}) DELETE r";
-    public static final String CYPHER_DELETE_RELATIONSHIP = "MATCH (from%s {__id__: {start}})-[r:%s]->() DELETE r";
+    public static final String CYPHER_DELETE_WITH_TARGET = "MATCH (from%s {__id__: {start}})%s(to%s) WHERE to.__id__ IN {end} DELETE r";
     private static Logger log = LoggerFactory.getLogger(RelationshipPendingDelete.class);
 
-    private final String relType;
-    private final EntityAccess target;
     private final GraphDatabaseService graphDatabaseService;
+    private final Association association;
+    private final Collection<Long> targetIdentifiers;
 
-    public RelationshipPendingDelete(EntityAccess source, String relType, EntityAccess target, GraphDatabaseService graphDatabaseService) {
-        super(source.getPersistentEntity(), (Long) source.getIdentifier(), source.getEntity());
-        this.target = target;
+
+    public RelationshipPendingDelete(EntityAccess parent, Association association, Collection<Long> pendingInserts, GraphDatabaseService graphDatabaseService) {
+        super(parent.getPersistentEntity(), (Long) parent.getIdentifier(), parent.getEntity());
+        this.targetIdentifiers = pendingInserts;
         this.graphDatabaseService = graphDatabaseService;
-        this.relType = relType;
+        this.association = association;
     }
 
     @Override
     public void run() {
-        String labelsFrom = ((GraphPersistentEntity) getEntity()).getLabelsAsString();
-        String labelsTo;
-        String cypher;
+        final String labelsFrom = ((GraphPersistentEntity) getEntity()).getLabelsAsString();
+        final String labelsTo = ((GraphPersistentEntity) association.getAssociatedEntity()).getLabelsAsString();
 
-        Map<String, Object> params = new LinkedHashMap<String, Object>(2);
+        final Map<String, Object> params = new LinkedHashMap<String, Object>(2);
         params.put(CypherBuilder.START, getNativeKey());
-        if (target != null) {
-            params.put(CypherBuilder.END, target.getIdentifier());
-            labelsTo = ((GraphPersistentEntity) target.getPersistentEntity()).getLabelsAsString();
-            cypher = String.format(CYPHER_DELETE_WITH_TARGET, labelsFrom, relType, labelsTo);
-        } else {
-            cypher = String.format(CYPHER_DELETE_RELATIONSHIP, labelsFrom, relType);
-
-        }
+        params.put(CypherBuilder.END, targetIdentifiers);
+        String cypher = String.format(CYPHER_DELETE_WITH_TARGET, labelsFrom, Neo4jQuery.matchForAssociation(association, "r"), labelsTo);
         if (log.isDebugEnabled()) {
             log.debug("DELETE Cypher [{}] for parameters [{}]", cypher, params);
         }

@@ -19,8 +19,6 @@ import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.grails.datastore.gorm.neo4j.Neo4jSession
 import org.grails.datastore.gorm.neo4j.RelationshipUtils
-import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingDelete
-import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingInsert
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToMany
@@ -59,9 +57,8 @@ class GraphAdapter {
             return;
         }
         if (!reversed && !currentlyInitializing) {
-            session.addPostFlushOperation(new RelationshipPendingDelete(parentAccess, relType,
-                    session.createEntityAccess(association.getAssociatedEntity(), o),
-                    session.getNativeInterface()));
+            def childAccess = session.createEntityAccess(association.getAssociatedEntity(), o)
+            session.addPendingRelationshipDelete((Long)parentAccess.getIdentifier(), association, (Long)childAccess.getIdentifier() )
         }
     }
 
@@ -87,7 +84,7 @@ class GraphAdapter {
         }
 
         if (!reversed && !currentlyInitializing) { // prevent duplicated rels
-            session.addPostFlushOperation(new RelationshipPendingInsert(parentAccess, relType, target, session.getNativeInterface()));
+            session.addPendingRelationshipInsert((Long)parentAccess.getIdentifier(), association, (Long)target.getIdentifier())
         }
     }
 }

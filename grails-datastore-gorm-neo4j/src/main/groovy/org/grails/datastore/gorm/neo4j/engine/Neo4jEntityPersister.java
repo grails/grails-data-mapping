@@ -393,7 +393,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         return association.isList() ? new ArrayList() : new HashSet();
     }
 
-    private Collection createDirtyCheckableAwareCollection(PendingOperation<Object, Long> pendingOperation, EntityAccess entityAccess, Association association, Collection delegate) {
+    private Collection createDirtyCheckableAwareCollection(EntityAccess entityAccess, Association association, Collection delegate) {
         if (delegate==null) {
             delegate = createCollection(association);
         }
@@ -404,10 +404,8 @@ public class Neo4jEntityPersister extends EntityPersister {
             if(entity instanceof DirtyCheckable) {
                 final Neo4jSession session = getSession();
                 for( Object o : delegate ) {
-                    String relType = RelationshipUtils.relationshipTypeUsedFor(association)                                                                                                       ;
                     final EntityAccess associationAccess = getSession().createEntityAccess(association.getAssociatedEntity(), o);
-                    final RelationshipPendingInsert insert = new RelationshipPendingInsert(entityAccess, relType, associationAccess, session.getNativeInterface());
-                    pendingOperation.addCascadeOperation(insert);
+                    session.addPendingRelationshipInsert((Long) entityAccess.getIdentifier(), association, (Long) associationAccess.getIdentifier());
                 }
 
                 delegate = association.isList() ?
@@ -420,10 +418,8 @@ public class Neo4jEntityPersister extends EntityPersister {
             final Neo4jSession session = getSession();
             if(dirtyCheckableCollection.hasChanged()) {
                 for (Object o : ((Iterable)dirtyCheckableCollection)) {
-                    String relType = RelationshipUtils.relationshipTypeUsedFor(association)                                                                                                       ;
                     final EntityAccess associationAccess = getSession().createEntityAccess(association.getAssociatedEntity(), o);
-                    final RelationshipPendingInsert insert = new RelationshipPendingInsert(entityAccess, relType, associationAccess, session.getNativeInterface());
-                    pendingOperation.addCascadeOperation(insert);
+                    session.addPendingRelationshipInsert((Long) entityAccess.getIdentifier(),association, (Long) associationAccess.getIdentifier());
                 }
             }
         }
@@ -541,7 +537,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                         boolean reversed = RelationshipUtils.useReversedMappingFor(association);
 
                         if (!reversed) {
-                            Collection dcc = createDirtyCheckableAwareCollection(pendingOperation, entityAccess, association, targets);
+                            Collection dcc = createDirtyCheckableAwareCollection(entityAccess, association, targets);
                             entityAccess.setProperty(association.getName(), dcc);
                         }
                     }
@@ -568,16 +564,10 @@ public class Neo4jEntityPersister extends EntityPersister {
                         persistEntity(to.getAssociatedEntity(), propertyValue);
 
                         boolean reversed = RelationshipUtils.useReversedMappingFor(to);
-                        String relType = RelationshipUtils.relationshipTypeUsedFor(to);
 
                         if (!reversed) {
                             final EntityAccess assocationAccess = getSession().createEntityAccess(to.getAssociatedEntity(), propertyValue);
-                            if (isUpdate) {
-                                pendingOperation.addCascadeOperation(new RelationshipPendingDelete(entityAccess, relType, null, getSession().getNativeInterface()));
-                            }
-                            pendingOperation.addCascadeOperation(new RelationshipPendingInsert(entityAccess, relType,
-                                    assocationAccess,
-                                    getSession().getNativeInterface()));
+                            getSession().addPendingRelationshipInsert((Long) entityAccess.getIdentifier(), to, (Long) assocationAccess.getIdentifier());
                         }
 
                     }

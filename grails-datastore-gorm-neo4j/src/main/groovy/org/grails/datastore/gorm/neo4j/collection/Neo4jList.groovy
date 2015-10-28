@@ -17,14 +17,10 @@ package org.grails.datastore.gorm.neo4j.collection
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.neo4j.Neo4jSession
-import org.grails.datastore.gorm.neo4j.RelationshipUtils
-import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingDelete
-import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingInsert
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingList
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.types.Association
-import org.grails.datastore.mapping.model.types.ManyToMany
 
 
 /**

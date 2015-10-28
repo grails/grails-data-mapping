@@ -1,5 +1,7 @@
 package org.grails.datastore.gorm.neo4j;
 
+import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
+import com.googlecode.concurrentlinkedhashmap.EvictionListener;
 import org.grails.datastore.gorm.neo4j.engine.*;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.Datastore;
@@ -27,6 +29,7 @@ import org.neo4j.helpers.collection.IteratorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -34,6 +37,7 @@ import javax.persistence.CascadeType;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  *
@@ -53,6 +57,22 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
     private static final String COUNT_RETURN = "count(n) as total";
     private static final String TOTAL_COUNT = "total";
     private static Logger log = LoggerFactory.getLogger(Neo4jSession.class);
+    private static final EvictionListener<RelationshipUpdateKey, Collection<Long>> EXCEPTION_THROWING_INSERT_LISTENER =
+            new EvictionListener<RelationshipUpdateKey, Collection<Long>>() {
+                public void onEviction(RelationshipUpdateKey association, Collection<Long> value) {
+                    throw new DataAccessResourceFailureException("Maximum number (5000) of relationship update operations to flush() exceeded. Flush the session periodically to avoid this error for batch operations.");
+                }
+            };
+
+    protected Map<RelationshipUpdateKey, Collection<Long>> pendingRelationshipInserts =
+            new ConcurrentLinkedHashMap.Builder<RelationshipUpdateKey, Collection<Long>>()
+                    .listener(EXCEPTION_THROWING_INSERT_LISTENER)
+                    .maximumWeightedCapacity(5000).build();
+
+    protected Map<RelationshipUpdateKey, Collection<Long>> pendingRelationshipDeletes =
+            new ConcurrentLinkedHashMap.Builder<RelationshipUpdateKey, Collection<Long>>()
+                    .listener(EXCEPTION_THROWING_INSERT_LISTENER)
+                    .maximumWeightedCapacity(5000).build();
 
 
     /** map node id -> hashmap of relationship types showing startNode id and endNode id */
@@ -67,6 +87,48 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         this.graphDatabaseService = graphDatabaseService;
     }
 
+
+
+
+    /**
+     * Adds a relationship that is pending insertion
+     *
+     * @param association The association
+     * @param id The id
+     */
+    public void addPendingRelationshipInsert(Long parentId, Association association, Long id) {
+        addRelationshipUpdate(parentId, association, id, this.pendingRelationshipInserts);
+    }
+
+    /**
+     * Adds a relationship that is pending deletion
+     *
+     * @param association The association
+     * @param id The id
+     */
+    public void addPendingRelationshipDelete(Long parentId, Association association, Long id) {
+        addRelationshipUpdate(parentId, association, id, this.pendingRelationshipDeletes);
+    }
+
+    protected void addRelationshipUpdate(Long parentId, Association association, Long id, Map<RelationshipUpdateKey, Collection<Long>> targetMap) {
+        final RelationshipUpdateKey key = new RelationshipUpdateKey(parentId, association);
+        Collection<Long> inserts = targetMap.get(key);
+        if (inserts == null) {
+            inserts = new ConcurrentLinkedQueue<Long>();
+            targetMap.put(key, inserts);
+        }
+
+        inserts.add(id);
+    }
+
+    @Override
+    protected void clearPendingOperations() {
+        try {
+            super.clearPendingOperations();
+        } finally {
+            pendingRelationshipInserts.clear();
+        }
+    }
 
     /**
      * Gets a Neo4jEntityPersister for the given object
@@ -148,7 +210,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
             final boolean isVersioned = entity.hasProperty(GormProperties.VERSION, Long.class) && entity.isVersioned();
 
             for (PendingUpdate pendingUpdate : pendingUpdates) {
-                List<PendingOperation> preOperations = pendingUpdate.getPreOperations();
+                final List<PendingOperation> preOperations = pendingUpdate.getPreOperations();
                 executePendings(preOperations);
 
                 pendingUpdate.run();
@@ -156,14 +218,15 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                 if(pendingUpdate.isVetoed()) continue;
 
                 final EntityAccess access = pendingUpdate.getEntityAccess();
+                final Collection<PendingOperation> cascadingOperations = new ArrayList<PendingOperation>(pendingUpdate.getCascadeOperations());
 
                 final String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance(access.getEntity());
                 final StringBuilder cypherStringBuilder = new StringBuilder();
 
-                Map<String,Object> params =  new LinkedHashMap<String, Object>(2);
-                final Object id = pendingUpdate.getNativeKey();
+                final Map<String,Object> params =  new LinkedHashMap<String, Object>(2);
+                final Long id = (Long)pendingUpdate.getNativeKey();
                 params.put(GormProperties.IDENTITY, id);
-                Map<String, Object> simpleProps = new HashMap<String, Object>();
+                final Map<String, Object> simpleProps = new HashMap<String, Object>();
 
                 cypherStringBuilder.append(CypherBuilder.CYPHER_MATCH_ID);
 
@@ -193,13 +256,16 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                     }
                 }
 
+                for (Association association : entity.getAssociations()) {
+                    processPendingRelationshipUpdates(access, id, association, cascadingOperations);
+                }
                 amendMapWithUndeclaredProperties(simpleProps, object, mappingContext, nulls);
-                final boolean hasPropertyUpdates = simpleProps.isEmpty();
-                if(hasPropertyUpdates && nulls.isEmpty()) {
+                final boolean hasNoUpdates = simpleProps.isEmpty();
+                if(hasNoUpdates && nulls.isEmpty()) {
                     // if there are no simply property updates then only the assocations were dirty
                     // reset track changes
                     dirtyCheckable.trackChanges();
-                    executePendings(pendingUpdate.getCascadeOperations());
+                    executePendings(cascadingOperations);
 
                 }
                 else {
@@ -235,12 +301,24 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                     else {
                         // reset track changes
                         dirtyCheckable.trackChanges();
-                        executePendings(pendingUpdate.getCascadeOperations());
+                        executePendings(cascadingOperations);
                     }
                 }
             }
         }
 
+    }
+
+    private void processPendingRelationshipUpdates(EntityAccess parent, Long parentId, Association association, Collection<PendingOperation> cascadingOperations) {
+        final RelationshipUpdateKey key = new RelationshipUpdateKey(parentId, association);
+        final Collection<Long> pendingInserts = pendingRelationshipInserts.get(key);
+        if(pendingInserts != null) {
+            cascadingOperations.add(new RelationshipPendingInsert(parent, association, pendingInserts, graphDatabaseService, true));
+        }
+        final Collection<Long> pendingDeletes = pendingRelationshipDeletes.get(key);
+        if(pendingDeletes != null) {
+            cascadingOperations.add(new RelationshipPendingDelete(parent, association, pendingDeletes, graphDatabaseService));
+        }
     }
 
     @Override
@@ -272,7 +350,8 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                 hasInserts = true;
                 final List<PersistentProperty> persistentProperties = entity.getPersistentProperties();
                 Map<String, Object> simpleProps = new HashMap<String, Object>(persistentProperties.size());
-                simpleProps.put(CypherBuilder.IDENTIFIER, entityInsert.getNativeKey());
+                final Long id = (Long)entityInsert.getNativeKey();
+                simpleProps.put(CypherBuilder.IDENTIFIER, id);
 
 
                 i++;
@@ -308,6 +387,10 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                         Object value = access.getProperty(pp.getName());
                         customTypeMarshaller.write(custom, value, simpleProps);
                     }
+                    else if(pp instanceof Association) {
+                        Association association = (Association) pp;
+                        processPendingRelationshipUpdates(access, id, association, cascadingOperations);
+                    }
                 }
 
                 if(graphEntity.hasDynamicAssociations()) {
@@ -324,7 +407,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                                         final String labelsWithInheritance = gpe.getLabelsWithInheritance(o);
                                         String cypher = String.format(CYPHER_DYNAMIC_RELATIONSHIP_MERGE, labels, labelsWithInheritance, e.getKey());
                                         Map<String,Object> p =  new LinkedHashMap<String, Object>(2);
-                                        p.put(GormProperties.IDENTITY, entityInsert.getNativeKey());
+                                        p.put(GormProperties.IDENTITY, id);
                                         p.put(CypherBuilder.RELATED, dynamicAccess.getIdentifier());
 
                                         if(log.isDebugEnabled()) {
@@ -556,6 +639,35 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         }
         else {
             return 0;
+        }
+    }
+
+    private static class RelationshipUpdateKey {
+        private final Long id;
+        private final Association association;
+
+        public RelationshipUpdateKey(Long id, Association association) {
+            this.id = id;
+            this.association = association;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            RelationshipUpdateKey that = (RelationshipUpdateKey) o;
+
+            if (association != null ? !association.equals(that.association) : that.association != null) return false;
+            return !(id != null ? !id.equals(that.id) : that.id != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = association != null ? association.hashCode() : 0;
+            result = 31 * result + (id != null ? id.hashCode() : 0);
+            return result;
         }
     }
 }
