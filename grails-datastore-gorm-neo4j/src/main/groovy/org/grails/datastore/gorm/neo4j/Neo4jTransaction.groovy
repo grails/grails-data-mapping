@@ -41,7 +41,7 @@ class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction>, Cl
 
     Neo4jTransaction(GraphDatabaseService databaseService, TransactionDefinition transactionDefinition = new DefaultTransactionDefinition()) {
 
-        log.debug("Transaction Started: Neo4J beginTx()")
+        log.debug("TX START: Neo4J beginTx()")
         transaction = databaseService.beginTx()
         this.databaseService = databaseService;
         this.transactionDefinition = transactionDefinition
@@ -49,21 +49,21 @@ class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction>, Cl
 
     void commit() {
         if(isActive()) {
-            log.debug("Transaction Committed: Neo4J success()")
+            log.debug("TX COMMIT: Neo4J success()")
             transaction.success()
         }
     }
 
     void rollback() {
         if(isActive()) {
-            log.debug("Transaction Rollback: Neo4J failure()")
+            log.debug("TX ROLLBACK: Neo4J failure()")
             transaction.failure()
         }
     }
 
     void rollbackOnly() {
         if(active) {
-            log.debug("Transaction Rollback Only: Neo4J failure()")
+            log.debug("TX ROLLBACK ONLY: Neo4J failure()")
             transaction.failure()
             close()
             active = false
@@ -74,7 +74,7 @@ class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction>, Cl
     void close() throws IOException {
 
         if(active) {
-            log.debug("Transaction closed: Neo4j tx.close()");
+            log.debug("TX CLOSE: Neo4j tx.close()");
             transaction.close()
             active = false
         }

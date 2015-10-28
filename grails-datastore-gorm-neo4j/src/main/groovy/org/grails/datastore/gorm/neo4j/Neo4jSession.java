@@ -31,6 +31,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.CascadeType;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
@@ -61,7 +62,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
     public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, GraphDatabaseService graphDatabaseService) {
         super(datastore, mappingContext, publisher, stateless);
         if(log.isDebugEnabled()) {
-            log.debug("session created");
+            log.debug("Session created");
         }
         this.graphDatabaseService = graphDatabaseService;
     }
@@ -110,8 +111,17 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         super.disconnect();
         if(transaction != null) {
             Neo4jTransaction transaction = (Neo4jTransaction) getTransaction();
-            transaction.getTransaction().close();
-            this.transaction = null;
+            try {
+                transaction.close();
+            } catch (IOException e) {
+                log.error("Error closing transaction: " + e.getMessage(), e);
+            }
+            finally {
+                if(log.isDebugEnabled()) {
+                    log.debug("Session disconnected");
+                }
+                this.transaction = null;
+            }
         }
     }
 
