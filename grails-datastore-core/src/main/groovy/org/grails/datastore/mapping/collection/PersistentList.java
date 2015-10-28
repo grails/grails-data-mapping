@@ -22,6 +22,7 @@ import java.util.ListIterator;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
+import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.Association;
 
@@ -46,7 +47,7 @@ public class PersistentList extends AbstractPersistentCollection implements List
         list = (List)collection;
     }
 
-    public PersistentList(Serializable associationKey, Session session, AssociationIndexer indexer) {
+    public PersistentList(Serializable associationKey, Session session, AssociationQueryExecutor indexer) {
         super(associationKey, session, indexer, new ArrayList());
         list = (List)collection;
     }

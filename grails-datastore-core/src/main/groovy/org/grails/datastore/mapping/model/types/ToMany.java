@@ -43,7 +43,7 @@ public abstract class ToMany<T extends Property> extends Association<T> {
      * @return Whether this association is lazy
      */
     public boolean isLazy() {
-        return getFetchStrategy() == FetchType.LAZY && getMapping().getMappedForm().isLazy();
+        return getFetchStrategy() == FetchType.EAGER && getMapping().getMappedForm().isLazy();
     }
 
 }

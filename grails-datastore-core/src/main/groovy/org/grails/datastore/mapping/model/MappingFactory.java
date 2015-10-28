@@ -254,6 +254,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
     public ToOne createOneToOne(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
         return new OneToOne<T>(entity, context, property) {
             PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
+
             public PropertyMapping getMapping() {
                 return propertyMapping;
             }

@@ -16,7 +16,9 @@
 package org.grails.datastore.gorm.neo4j.engine
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.neo4j.CypherBuilder
 import org.grails.datastore.gorm.query.AbstractResultList
+import org.grails.datastore.mapping.query.QueryException
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Result
 
@@ -56,7 +58,18 @@ class Neo4jResultList extends AbstractResultList {
         }
         else {
             Map<String,Object> map = (Map<String,Object>) next
-            return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), map)
+            if(map.containsKey(CypherBuilder.NODE_DATA)) {
+                return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), map)
+            }
+            else {
+                Node node = (Node)map.values().find() { it instanceof Node }
+                if(node != null) {
+                    return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node, map)
+                }
+                else {
+                    throw new QueryException("Query must return a node as the first column of the RETURN statement")
+                }
+            }
         }
     }
 

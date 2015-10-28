@@ -16,8 +16,6 @@ package org.grails.datastore.mapping.engine;
 
 import java.util.List;
 
-import org.grails.datastore.mapping.model.PersistentEntity;
-
 /**
  * Responsible for creating indices for associations used in queries.
  *
@@ -27,7 +25,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface AssociationIndexer<K, T> {
+public interface AssociationIndexer<K, T> extends AssociationQueryExecutor<K, T> {
 
     /**
      * Creates an index queryable via the primary key. This is called *before* the entity that this association
@@ -51,16 +49,6 @@ public interface AssociationIndexer<K, T> {
      * @param foreignKeys The foreign keys
      */
     void index(K primaryKey, List<T> foreignKeys);
-
-    /**
-     * Queries the given primary key and returns the foreign keys
-     *
-     * @param primaryKey The primary key
-     * @return The foreign keys
-     */
-    List<T> query(K primaryKey);
-
-    PersistentEntity getIndexedEntity();
 
     /**
      * Index a single foreign key

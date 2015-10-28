@@ -18,6 +18,7 @@ package org.grails.datastore.gorm.neo4j.collection
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.neo4j.Neo4jSession
 import org.grails.datastore.gorm.neo4j.RelationshipUtils
+import org.grails.datastore.gorm.neo4j.engine.Neo4jAssociationQueryExecutor
 import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingDelete
 import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingInsert
 import org.grails.datastore.mapping.collection.PersistentSet
@@ -44,6 +45,14 @@ class Neo4jPersistentSet extends PersistentSet {
 
     Neo4jPersistentSet(Collection keys, Neo4jSession session, EntityAccess parentAccess, ToMany association) {
         super(keys, association.associatedEntity.javaClass, session)
+        this.parentAccess = parentAccess
+        this.association = association
+        this.graphAdapter = new GraphAdapter(session, parentAccess, association)
+        setProxyEntities(association.isLazy())
+    }
+
+    Neo4jPersistentSet(Serializable associationKey, Neo4jSession session, EntityAccess parentAccess, ToMany association) {
+        super(associationKey, session, new Neo4jAssociationQueryExecutor(session, association, association.isLazy()))
         this.parentAccess = parentAccess
         this.association = association
         this.graphAdapter = new GraphAdapter(session, parentAccess, association)

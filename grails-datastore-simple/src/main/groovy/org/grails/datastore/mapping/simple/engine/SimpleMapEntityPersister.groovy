@@ -148,6 +148,11 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
             }
 
             @Override
+            boolean doesReturnKeys() {
+                return true
+            }
+
+            @Override
             void preIndex(Object primaryKey, List foreignKeys) {
                 // handled by index below.
             }

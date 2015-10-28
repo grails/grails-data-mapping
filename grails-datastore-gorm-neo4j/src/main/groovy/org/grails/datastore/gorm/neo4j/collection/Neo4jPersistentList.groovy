@@ -19,6 +19,7 @@ package org.grails.datastore.gorm.neo4j.collection
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.neo4j.Neo4jSession
 import org.grails.datastore.gorm.neo4j.RelationshipUtils
+import org.grails.datastore.gorm.neo4j.engine.Neo4jAssociationQueryExecutor
 import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingDelete
 import org.grails.datastore.gorm.neo4j.engine.RelationshipPendingInsert
 import org.grails.datastore.mapping.collection.PersistentList
@@ -52,6 +53,13 @@ class Neo4jPersistentList extends PersistentList {
         setProxyEntities(association.isLazy())
     }
 
+    Neo4jPersistentList(Serializable associationKey, Neo4jSession session, EntityAccess parentAccess, ToMany association) {
+        super(associationKey, session, new Neo4jAssociationQueryExecutor(session, association, association.isLazy()))
+        this.parentAccess = parentAccess
+        this.association = association
+        this.graphAdapter = new GraphAdapter(session, parentAccess, association)
+        setProxyEntities(association.isLazy())
+    }
 
     @Override
     boolean addAll(Collection c) {

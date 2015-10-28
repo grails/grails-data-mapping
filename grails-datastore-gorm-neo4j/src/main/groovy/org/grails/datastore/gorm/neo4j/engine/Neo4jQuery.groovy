@@ -23,6 +23,7 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
+import org.grails.datastore.mapping.model.types.ToMany
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.AssociationQuery
 import org.grails.datastore.mapping.query.Query
@@ -288,17 +289,36 @@ class Neo4jQuery extends Query {
                  cypherBuilder.addReturnColumn(CypherBuilder.DEFAULT_RETURN_TYPES)
 
                  for(Association a in persistentEntity.associations) {
-                     if( (a instanceof ToOne) || (a instanceof OneToMany) || (a instanceof ManyToMany)) {
-                         String r = "r${i++}";
-                         String o = "o${i}";
+                     def associationMatch = matchForAssociation(a)
+                     def fetchType = fetchStrategy(a.name)
+                     String r = "r${i++}";
+                     String o = "o${i}";
+                     def associationName = a.name
+
+                     if( a instanceof ToMany ) {
+                         boolean isLazy = ((ToMany)a).lazy
+                         if(fetchType.is(fetchType.EAGER)) {
+
+
+                             rs.add(r)
+                             os.add(o)
+                             // if there are associations, add a join to get them
+                             cypherBuilder.addOptionalMatch("(n)${associationMatch}(${associationName}Node)")
+                             if(isLazy) {
+                                 cypherBuilder.addReturnColumn("collect(${associationName}Node.__id__) as ${associationName}Ids")
+                             }
+                             else {
+                                 cypherBuilder.addReturnColumn("collect(${associationName}Node) as ${associationName}Nodes")
+                             }
+                         }
+                     }
+                     else if(a instanceof ToOne) {
 
                          rs.add(r)
                          os.add(o)
-                         def associationMatch = matchForAssociation(a)
                          // if there are associations, add a join to get them
-                         def associationName = a.name
                          cypherBuilder.addOptionalMatch("(n)${associationMatch}(${associationName}Node)")
-                         if(fetchStrategy(associationName) == FetchType.LAZY) {
+                         if(!fetchType.is(fetchType.EAGER)) {
                              cypherBuilder.addReturnColumn("collect(${associationName}Node.__id__) as ${associationName}Ids")
                          }
                          else {
@@ -404,11 +424,11 @@ class Neo4jQuery extends Query {
         def reversed = RelationshipUtils.useReversedMappingFor(association)
         StringBuilder sb = new StringBuilder();
         if (reversed) {
-            sb.append("<")
+            sb.append('<')
         }
         sb.append("-[:").append(relationshipType).append("]-")
         if (!reversed) {
-            sb.append(">")
+            sb.append('>')
         }
         sb.toString()
     }

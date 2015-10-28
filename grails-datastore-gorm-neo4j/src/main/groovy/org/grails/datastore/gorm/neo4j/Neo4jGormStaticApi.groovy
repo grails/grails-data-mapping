@@ -18,6 +18,15 @@ package org.grails.datastore.gorm.neo4j
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.neo4j.engine.Neo4jEntityPersister
+import org.grails.datastore.gorm.neo4j.engine.Neo4jResultList
+import org.grails.datastore.gorm.neo4j.extensions.Neo4jExtensions
+import org.grails.datastore.mapping.core.AbstractDatastore
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.query.QueryException
+import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.graphdb.Node
+import org.neo4j.graphdb.Result
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
@@ -32,11 +41,11 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
         super(persistentClass, datastore, finders, transactionManager)
     }
 
-    def cypherStatic(String queryString, Map params) {
+    Result cypherStatic(String queryString, Map params) {
         ((Neo4jDatastore)datastore).graphDatabaseService.execute(queryString, params)
     }
 
-    def cypherStatic(String queryString, List params) {
+    Result cypherStatic(String queryString, List params) {
         Map paramsMap = new LinkedHashMap()
         int i = 0
         for(p in params) {
@@ -45,8 +54,74 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
         ((Neo4jDatastore)datastore).graphDatabaseService.execute(queryString, paramsMap)
     }
 
-    def cypherStatic(String queryString) {
+    Result cypherStatic(String queryString) {
         ((Neo4jDatastore)datastore).graphDatabaseService.execute(queryString)
     }
 
+    @Override
+    List<D> findAll(String query, Collection params, Map args) {
+        Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
+
+        GraphDatabaseService graphDatabaseService = (GraphDatabaseService)session.nativeInterface
+        Result result = Neo4jExtensions.execute(graphDatabaseService, query, (List<Object>)params.toList())
+        def persister = session
+                .getEntityPersister(persistentEntity)
+
+        if(result.hasNext()) {
+            return new Neo4jResultList(0, (Iterator<Object>)result.iterator(), persister)
+        }
+        else {
+            return Collections.emptyList()
+        }
+    }
+
+    @Override
+    List<D> findAll(String query, Map params, Map args) {
+        Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
+
+        GraphDatabaseService graphDatabaseService = (GraphDatabaseService)session.nativeInterface
+        Result result = graphDatabaseService.execute( query, (Map<String,Object>)params)
+        def persister = session
+                .getEntityPersister(persistentEntity)
+
+        if(result.hasNext()) {
+            return new Neo4jResultList(0, (Iterator<Object>)result.iterator(), persister)
+        }
+        else {
+            return Collections.emptyList()
+        }
+    }
+
+    @Override
+    D find(String query, Collection params, Map args) {
+        Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
+
+        GraphDatabaseService graphDatabaseService = (GraphDatabaseService)session.nativeInterface
+        Result result = Neo4jExtensions.execute(graphDatabaseService, query, (List<Object>)params.toList())
+
+        def persister = session
+                .getEntityPersister(persistentEntity)
+
+        def resultList = new Neo4jResultList(0, 1, (Iterator<Object>)result.iterator(), persister)
+        if( !resultList.isEmpty() ) {
+            return (D)resultList.get(0)
+        }
+        return null
+    }
+
+    @Override
+    D find(String query, Map params, Map args) {
+        Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
+
+        GraphDatabaseService graphDatabaseService = (GraphDatabaseService)session.nativeInterface
+        Result result = graphDatabaseService.execute( query, (Map<String,Object>)params)
+        def persister = session
+                .getEntityPersister(persistentEntity)
+
+        def resultList = new Neo4jResultList(0, 1, (Iterator<Object>)result.iterator(), persister)
+        if( !resultList.isEmpty() ) {
+            return (D)resultList.get(0)
+        }
+        return null
+    }
 }

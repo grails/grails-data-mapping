@@ -35,12 +35,14 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
     public AbstractResultList(int offset, Iterator<Object> cursor) {
         this.offset = offset;
         this.cursor = cursor;
+        this.initialized = !cursor.hasNext();
     }
 
     public AbstractResultList(int offset, Integer size, Iterator<Object> cursor) {
         this.offset = offset;
         this.size = size;
         this.cursor = cursor;
+        this.initialized = !cursor.hasNext();
     }
 
     public Iterator<Object> getCursor() {
@@ -60,7 +62,9 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
 
     @Override
     public boolean isEmpty() {
-        if (initialized) return initializedObjects.isEmpty();
+        if (initialized) {
+            return initializedObjects.isEmpty();
+        }
         else {
             return initializedObjects.isEmpty() && !cursor.hasNext();
         }

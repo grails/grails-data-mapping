@@ -45,6 +45,11 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
         this.association = association;
     }
 
+    @Override
+    public boolean doesReturnKeys() {
+        return true;
+    }
+
     public void preIndex(Long primaryKey, List<Long> foreignKeys) {
         // handled by index below.
     }

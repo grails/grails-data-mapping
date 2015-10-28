@@ -18,8 +18,15 @@ package org.grails.datastore.gorm.neo4j.extensions
 import groovy.transform.CompileStatic
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.MapEntryOrKeyValue
+import org.grails.datastore.gorm.neo4j.Neo4jDatastore
+import org.grails.datastore.gorm.neo4j.Neo4jSession
+import org.grails.datastore.gorm.neo4j.engine.Neo4jEntityPersister
+import org.grails.datastore.mapping.core.AbstractDatastore
+import org.grails.datastore.mapping.core.Session
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Node
+import org.neo4j.graphdb.PropertyContainer
+import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.Result
 
 
@@ -35,15 +42,34 @@ class Neo4jExtensions {
     /**
      * Allows the subscript operator on nodes
      */
-    static Object getAt(Node node, String name) {
+    static Object getAt(PropertyContainer node, String name) {
         node.getProperty(name)
     }
 
     /**
      * Allows the subscript operator on nodes
      */
-    static void putAt(Node node, String name, value) {
+    static void putAt(PropertyContainer node, String name, value) {
         node.setProperty(name, value)
+    }
+
+    /**
+     * Allow casting from Node to domain class
+     *
+     * @param node The node
+     *
+     * @param c The domain class type
+     * @return The domain instance
+     */
+    public <N> N asType(Node node, Class<N> c) {
+        Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
+        def entityPersister = session.getEntityPersister(c)
+        if(entityPersister != null) {
+            return (N)entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node)
+        }
+        else {
+            throw new ClassCastException("Class [$c.name] is not a GORM entity")
+        }
     }
 
     /**
@@ -63,7 +89,7 @@ class Neo4jExtensions {
      * @param closure the 1 or 2 arg closure applied on each entry of the map
      * @return returns the self parameter
      */
-    public static Node each(Node self, @ClosureParams(MapEntryOrKeyValue.class) Closure closure) {
+    public static PropertyContainer each(PropertyContainer self, @ClosureParams(MapEntryOrKeyValue.class) Closure closure) {
         for (final String prop : self.propertyKeys) {
             final value = self.getProperty(prop)
             callClosureForMapEntry(closure, new Map.Entry<String, Object>() {

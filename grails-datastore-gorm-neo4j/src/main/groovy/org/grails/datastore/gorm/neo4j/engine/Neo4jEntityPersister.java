@@ -93,7 +93,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         return unmarshallOrFromCache(defaultPersistentEntity, data, Collections.<String,Object>emptyMap());
     }
 
-    protected Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Node data, Map<String, Object> resultData) {
+    public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Node data, Map<String, Object> resultData) {
         final Iterable<Label> labels = data.getLabels();
         PersistentEntity persistentEntity = mostSpecificPersistentEntity(defaultPersistentEntity, labels);
         final long id = ((Number) data.getProperty(CypherBuilder.IDENTIFIER)).longValue();
@@ -217,7 +217,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                 }
                 final String associationName = association.getName();
                 final String associationNodesKey = associationName + "Nodes";
-
+                final String associationIdsKey = associationName + "Ids";
 
                 // if the node key is present we have an eager fetch, so initialise the association
                 if(resultData.containsKey(associationNodesKey)) {
@@ -253,9 +253,8 @@ public class Neo4jEntityPersister extends EntityPersister {
                         entityAccess.setPropertyNoConversion(propertyName, values);
                     }
                 }
-                else {
+                else if(resultData.containsKey(associationIdsKey)) {
 
-                    final String associationIdsKey = associationName + "Ids";
                     final Object associationValues = resultData.get(associationIdsKey);
                     List<Long> targetIds = Collections.emptyList();
                     if(associationValues instanceof Collection) {
@@ -294,6 +293,46 @@ public class Neo4jEntityPersister extends EntityPersister {
                         entityAccess.setPropertyNoConversion(propertyName, values);
                     } else {
                         throw new IllegalArgumentException("association " + associationName + " is of type " + association.getClass().getSuperclass().getName());
+                    }
+                }
+                else {
+                    // No OPTIONAL MATCH specified so the association queries are lazily executed
+                    if(association instanceof ToOne) {
+                        // first check whether the object has already been loaded from the cache
+
+                        // if a lazy proxy should be created for this association then create it,
+                        // note that this strategy does not allow for null checks
+                        final Neo4jAssociationQueryExecutor associationQueryExecutor = new Neo4jAssociationQueryExecutor(session, association);
+                        if(association.getMapping().getMappedForm().isLazy()) {
+                            final Object proxy = getMappingContext().getProxyFactory().createProxy(
+                                    this.session,
+                                    associationQueryExecutor,
+                                    id
+                            );
+                            entityAccess.setPropertyNoConversion(propertyName,
+                                    proxy
+                            );
+                        }
+                        else {
+                            final List<Object> results = associationQueryExecutor.query(id);
+                            if(!results.isEmpty()) {
+                                entityAccess.setPropertyNoConversion(propertyName, results.get(0));
+                            }
+                        }
+                    }
+                    else if(association instanceof ToMany) {
+                        Collection values;
+                        final Class type = association.getType();
+                        if(List.class.isAssignableFrom(type)) {
+                            values = new Neo4jPersistentList(id, session, entityAccess, (ToMany) association);
+                        }
+                        else if(SortedSet.class.isAssignableFrom(type)) {
+                            values = new Neo4jPersistentSortedSet(id, session, entityAccess, (ToMany) association);
+                        }
+                        else {
+                            values = new Neo4jPersistentSet(id, session, entityAccess, (ToMany) association);
+                        }
+                        entityAccess.setPropertyNoConversion(propertyName, values);
                     }
                 }
 

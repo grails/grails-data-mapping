@@ -18,6 +18,7 @@ import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.runtime.HandleMetaClass
 import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.engine.AssociationQueryExecutor
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.proxy.ProxyFactory
 
@@ -87,7 +88,12 @@ class GroovyProxyFactory implements ProxyFactory {
         }
         return proxy
     }
-    
+
+    @Override
+    def <T, K extends Serializable> T createProxy(Session session, AssociationQueryExecutor<K, T> executor, K associationKey) {
+        throw new UnsupportedOperationException("Association proxies are not currently supported by the Groovy project factory")
+    }
+
     protected <T> MetaClass resolveTargetMetaClass(T proxy, Class<T> type) {
         unwrapHandleMetaClass(proxy.getMetaClass())
     }

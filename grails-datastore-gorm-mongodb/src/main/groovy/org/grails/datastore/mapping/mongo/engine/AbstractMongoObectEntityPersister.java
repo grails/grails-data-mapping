@@ -396,6 +396,11 @@ public abstract class AbstractMongoObectEntityPersister<T> extends NativeEntryEn
             this.isReference = isReference(association);
         }
 
+        @Override
+        public boolean doesReturnKeys() {
+            return true;
+        }
+
         public void preIndex(final Object primaryKey, final List foreignKeys) {
             // if the association is a unidirectional one-to-many we store the keys
             // embedded in the owning entity, otherwise we use a foreign key

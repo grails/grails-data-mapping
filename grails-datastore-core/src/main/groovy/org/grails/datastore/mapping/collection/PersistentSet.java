@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
+import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
 import org.grails.datastore.mapping.model.types.Association;
 
 /**
@@ -48,7 +49,7 @@ public class PersistentSet extends AbstractPersistentCollection implements Set {
         return new HashSet();
     }
 
-    public PersistentSet(Serializable associationKey, Session session, AssociationIndexer indexer) {
+    public PersistentSet(Serializable associationKey, Session session, AssociationQueryExecutor indexer) {
         super(associationKey, session, indexer, createCollection());
     }
 }

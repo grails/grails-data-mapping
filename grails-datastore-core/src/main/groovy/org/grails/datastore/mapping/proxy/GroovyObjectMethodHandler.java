@@ -34,6 +34,11 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 public class GroovyObjectMethodHandler implements MethodHandler {
     public static final Object INVOKE_IMPLEMENTATION = new Object();
     public static final String META_CLASS_PROPERTY = "metaClass";
+    public static final String GET_META_CLASS = "getMetaClass";
+    public static final String GET_PROPERTY = "getProperty";
+    public static final String SET_META_CLASS = "setMetaClass";
+    public static final String SET_PROPERTY = "setProperty";
+    public static final String INVOKE_METHOD = "invokeMethod";
     protected final Class<?> proxyClass;
     protected transient MetaClass metaClass;
 
@@ -110,10 +115,10 @@ public class GroovyObjectMethodHandler implements MethodHandler {
     }
 
     public Object invokeMethodBeforeResolving(Object self, String name, Object[] args) {
-        if("getMetaClass".equals(name) && args.length==0) {
+        if(GET_META_CLASS.equals(name) && args.length==0) {
             return getThisMetaClass();
         }
-        if("setMetaClass".equals(name) && args.length==1) {
+        if(SET_META_CLASS.equals(name) && args.length==1) {
             setThisMetaClass((MetaClass)args[0]);
             return Void.class;
         }
@@ -135,6 +140,7 @@ public class GroovyObjectMethodHandler implements MethodHandler {
     public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
         Object result = handleInvocation(self, thisMethod, args);
         if(!wasHandled(result)) {
+
             return proceed.invoke(self, args);
         } else {
             return result;
@@ -148,25 +154,25 @@ public class GroovyObjectMethodHandler implements MethodHandler {
     public Object handleInvocation(Object self, Method thisMethod, Object[] args) {
         String methodName = thisMethod.getName();
         if (args.length == 0) {
-            if ("getMetaClass".equals(methodName)) {
+            if (GET_META_CLASS.equals(methodName)) {
                 return getThisMetaClass();
             }
         }
         else if (args.length == 1) {
-            if ("getProperty".equals(methodName)) {
+            if (GET_PROPERTY.equals(methodName)) {
                 String name = args[0].toString();
                 if(META_CLASS_PROPERTY.equals(name)) {
                     return getThisMetaClass();
                 } else {
                     return getProperty(self, name);
                 }
-            } else if ("setMetaClass".equals(methodName)) {
+            } else if (SET_META_CLASS.equals(methodName)) {
                 setThisMetaClass((MetaClass)args[0]);
                 return Void.class;
             }
         }
         else if (args.length == 2) {
-            if ("setProperty".equals(methodName)) {
+            if (SET_PROPERTY.equals(methodName)) {
                 String name = args[0].toString();
                 Object value = args[1];
                 if(META_CLASS_PROPERTY.equals(name)) {
@@ -175,7 +181,7 @@ public class GroovyObjectMethodHandler implements MethodHandler {
                     setProperty(self, name, value);
                 }
                 return Void.class;
-            } else if ("invokeMethod".equals(methodName)) {
+            } else if (INVOKE_METHOD.equals(methodName)) {
                 invokeThisMethod(self, args[0].toString(), (Object[])args[1]);
                 return Void.class;
             }

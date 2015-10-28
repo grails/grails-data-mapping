@@ -20,6 +20,7 @@ import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
 import org.grails.datastore.mapping.reflect.ReflectionUtils;
 
 import java.io.Serializable;
@@ -81,11 +82,24 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
         return (T) getProxyInstance(session, type, key);
     }
 
+    @Override
+    public <T, K extends Serializable> T createProxy(Session session, AssociationQueryExecutor<K, T> executor, K associationKey) {
+        MethodHandler mi = createMethodHandler(session, executor, associationKey);
+        Class proxyClass = getProxyClass(executor.getIndexedEntity().getJavaClass());
+        Object proxy = ReflectionUtils.instantiate(proxyClass);
+        ((ProxyObject)proxy).setHandler(mi);
+        return (T) proxy;
+    }
+
     protected Object createProxiedInstance(final Session session, final Class cls, Class proxyClass, final Serializable id) {
         MethodHandler mi = createMethodHandler(session, cls, proxyClass, id);
         Object proxy = ReflectionUtils.instantiate(proxyClass);
         ((ProxyObject)proxy).setHandler(mi);
         return proxy;
+    }
+
+    protected <K extends Serializable, T> MethodHandler createMethodHandler(Session session, AssociationQueryExecutor<K, T> executor, K associationKey) {
+        return new AssociationQueryProxyHandler(session, executor, associationKey);
     }
 
     protected MethodHandler createMethodHandler(Session session, Class cls, Class proxyClass, Serializable id) {

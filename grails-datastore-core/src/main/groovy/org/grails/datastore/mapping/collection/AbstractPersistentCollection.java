@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.collection;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
+import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.query.Query;
@@ -33,7 +34,7 @@ import java.util.List;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractPersistentCollection implements PersistentCollection, Serializable {
     protected final transient Session session;
-    protected final transient AssociationIndexer indexer;
+    protected final transient AssociationQueryExecutor indexer;
     protected final transient Class childType;
 
     private boolean initialized;
@@ -62,15 +63,11 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
         this.associationKey = associationKey;
         this.proxyEntities = association.getMapping().getMappedForm().isLazy();
         this.childType = association.getAssociatedEntity().getJavaClass();
-        this.indexer = new AssociationIndexer() {
-            @Override
-            public void preIndex(Object primaryKey, List foreignKeys) {
-                // no-op
-            }
+        this.indexer = new AssociationQueryExecutor() {
 
             @Override
-            public void index(Object primaryKey, List foreignKeys) {
-                // no-op
+            public boolean doesReturnKeys() {
+                return true;
             }
 
             @Override
@@ -86,11 +83,6 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
             public PersistentEntity getIndexedEntity() {
                 return association.getAssociatedEntity();
             }
-
-            @Override
-            public void index(Object primaryKey, Object foreignKey) {
-                // no op
-            }
         };
     }
 
@@ -104,7 +96,7 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
     }
 
     protected AbstractPersistentCollection(Serializable associationKey, Session session,
-                                           AssociationIndexer indexer, Collection collection) {
+                                           AssociationQueryExecutor indexer, Collection collection) {
         this.session = session;
         this.associationKey = associationKey;
         this.indexer = indexer;
@@ -305,16 +297,22 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
             }
             else {
                 List results = indexer.query(associationKey);
-                PersistentEntity entity = indexer.getIndexedEntity();
+                if(indexer.doesReturnKeys()) {
 
-                // This should really only happen for unit testing since entities are
-                // mocked selectively and may not always be registered in the indexer. In this
-                // case, there can't be any results to be added to the collection.
-                if( entity != null ) {
-                    loadInverseChildKeys(session, entity.getJavaClass(), results);
+                    PersistentEntity entity = indexer.getIndexedEntity();
+
+                    // This should really only happen for unit testing since entities are
+                    // mocked selectively and may not always be registered in the indexer. In this
+                    // case, there can't be any results to be added to the collection.
+                    if( entity != null ) {
+                        loadInverseChildKeys(session, entity.getJavaClass(), results);
+                    }
+                    else if(childType != null ){
+                        loadInverseChildKeys(session, childType, results);
+                    }
                 }
-                else if(childType != null ){
-                    loadInverseChildKeys(session, childType, results);
+                else {
+                    addAll(results);
                 }
             }
             this.originalSize = size();
