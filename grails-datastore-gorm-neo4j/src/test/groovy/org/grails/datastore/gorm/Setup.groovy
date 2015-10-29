@@ -54,7 +54,7 @@ class Setup {
         enhancer.close()
         webServer?.stop()
 
-        graphDb.@neoDataSource.kernel.stop()
+//        graphDb.@neoDataSource.kernel.stop()
 
 
         graphDb?.shutdown()

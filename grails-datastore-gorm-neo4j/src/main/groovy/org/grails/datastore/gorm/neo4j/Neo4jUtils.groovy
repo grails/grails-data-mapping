@@ -19,6 +19,13 @@ import org.slf4j.Logger
 abstract class Neo4jUtils {
 
     /**
+     * @return The neo4j version
+     */
+    static String getNeojVersion() {
+        GraphDatabaseService.package.implementationVersion
+    }
+
+    /**
      * dump a given node with all properties and relationships
      * @param node
      * @param logger

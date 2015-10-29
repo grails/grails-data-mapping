@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.neo4j
 
 import org.neo4j.kernel.GraphDatabaseAPI
 import org.neo4j.kernel.configuration.Config
+import org.neo4j.kernel.impl.logging.LogService
 import org.neo4j.server.WrappingNeoServer
 import org.neo4j.server.configuration.Configurator
 import org.neo4j.server.modules.DBMSModule
@@ -24,16 +25,18 @@ class TestWrappingNeoServer extends WrappingNeoServer {
     protected Iterable<ServerModule> createServerModules() {
         [
                 new DBMSModule(webServer),
+
                 new RESTApiModule(
                         webServer,
                         database,
                         config,
-                        logging
+                        getDependencyResolver(),
+                        getDependencyResolver().resolveDependency( LogService.class ).getUserLogProvider()
                 ),
                 new ThirdPartyJAXRSModule(
                         webServer,
                         config,
-                        logging,
+                        getDependencyResolver().resolveDependency( LogService.class ).getUserLogProvider(),
                         this
                 )
         ]

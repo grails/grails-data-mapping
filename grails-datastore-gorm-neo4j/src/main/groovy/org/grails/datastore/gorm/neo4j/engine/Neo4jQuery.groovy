@@ -344,9 +344,9 @@ class Neo4jQuery extends Query {
         if (projectionList.empty) {
             return new Neo4jResultList(offset, executionResult, neo4jEntityPersister)
         } else {
-            def columnNames = executionResult.columns()
-            def projectedResults = executionResult.collect { Map<String, Object> row ->
 
+            def projectedResults = executionResult.collect { Map<String, Object> row ->
+                def columnNames = executionResult.columns()
                 columnNames.collect { String columnName ->
                     def value = row.get(columnName)
                     if(value instanceof Node) {

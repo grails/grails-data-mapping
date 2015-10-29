@@ -32,7 +32,7 @@ project.ext {
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
 
     // driver versions
-    neo4jVersion = '2.2.5'
+    neo4jVersion = '2.3.0'
 
     // plugin versions
     hibernateVersion = "4.3.10"

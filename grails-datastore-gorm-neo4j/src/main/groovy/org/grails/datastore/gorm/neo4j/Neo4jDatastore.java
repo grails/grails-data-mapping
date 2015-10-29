@@ -134,7 +134,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
 
 
             try {
-                final Class<?> restFactory = Class.forName("org.neo4j.rest.graphdb.RestGraphDatabase", true, Thread.currentThread().getContextClassLoader());
+                final Class<?> restFactory = Class.forName("org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase", true, Thread.currentThread().getContextClassLoader());
                 final boolean hasCredentials = username != null && password != null;
 
                 for (Object option : dbProperties.keySet()) {
@@ -238,6 +238,9 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
             }
         } catch (QueryExecutionException e) {
             transaction.failure();
+        } catch(Throwable e) {
+            log.error("Error creating Neo4j index: " + e.getMessage(), e);
+            throw new DatastoreConfigurationException("Error creating Neo4j index: " + e.getMessage(), e);
         }
         finally {
             transaction.close();

@@ -1,6 +1,9 @@
 package grails.neo4j.bootstrap
 
 import grails.persistence.Entity
+import org.grails.datastore.gorm.neo4j.TestServer
+import org.neo4j.server.web.WebServer
+import org.neo4j.test.TestGraphDatabaseFactory
 import spock.lang.Specification
 
 /*
@@ -33,17 +36,37 @@ class Neo4jDataStoreSpringInitializerSpec extends Specification {
         Book.count() == 0
     }
 
+    void "Test Neo4jDataStoreSpringInitializer loads neo4j for REST"() {
+        setup:
+        def graphDb = new TestGraphDatabaseFactory().newImpermanentDatabase()
+        def port
+        WebServer webServer
+        (port, webServer) = TestServer.startWebServer(graphDb)
+
+        when:"neo4j is initialised"
+        def config = [grails: [neo4j: [type: "rest", username:'neo4j', password:'letmein', location:"http://localhost:${port}/db/data"]]]
+        def init = new Neo4jDataStoreSpringInitializer( config, Book)
+        init.configure()
+
+        then:"GORM for Neo4j is correctly configured"
+        Book.count() == 0
+
+//        cleanup:
+//        graphDb.shutdown()
+//        webServer.stop()
+    }
+
 
     void "Test configuration from map Neo4jDataStoreSpringInitializer loads neo4j correctly"() {
         when:"neo4j is initialised"
 
-        def config = [grails: [neo4j: [url: "jdbc:foo:bar", dbProperties:[one:"two"]]]]
+        def config = [grails: [neo4j: [url: "jdbc:foo:bar", options:[one:"two"]]]]
         def init = new Neo4jDataStoreSpringInitializer(config,Book)
 //        init.configure()
 
         then:"GORM for Neo4j is correctly configured"
         init.configuration.getProperty("grails.neo4j.url") == "jdbc:foo:bar"
-        init.configuration.getProperty("grails.neo4j.dbProperties", Map.class) == [one:"two"]
+        init.configuration.getProperty("grails.neo4j.options", Map.class) == [one:"two"]
 
     }
 }
