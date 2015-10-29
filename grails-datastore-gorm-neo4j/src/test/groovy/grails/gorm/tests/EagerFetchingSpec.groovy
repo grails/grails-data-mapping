@@ -31,7 +31,8 @@ class EagerFetchingSpec extends GormDatastoreSpec {
 
     void "Test eager fetch with query"() {
         given:
-        def club = new Club(name: 'FC Bayern Muenchen')
+        def league = new League(name:"Bundesliga").save()
+        def club = new Club(name: 'FC Bayern Muenchen', league: league)
         club.addToTeams(new Team(name: 'FCB Team 1'))
         club.addToTeams(new Team(name: 'FCB Team 2'))
         club.save(flush:true)
@@ -47,6 +48,7 @@ class EagerFetchingSpec extends GormDatastoreSpec {
         !(club.teams[0] instanceof ProxyObject)
         club.teams[0].name == 'FCB Team 1'
         club.teams[1].name == 'FCB Team 2'
+        League.count() == 1
 
         when:"A join query is executed"
         session.clear()

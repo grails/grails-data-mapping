@@ -305,10 +305,10 @@ class Neo4jQuery extends Query {
                              // if there are associations, add a join to get them
                              cypherBuilder.addOptionalMatch("(n)${associationMatch}(${associationName}Node)")
                              if(isLazy) {
-                                 cypherBuilder.addReturnColumn("collect(${associationName}Node.__id__) as ${associationName}Ids")
+                                 cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node.__id__) as ${associationName}Ids")
                              }
                              else {
-                                 cypherBuilder.addReturnColumn("collect(${associationName}Node) as ${associationName}Nodes")
+                                 cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node) as ${associationName}Nodes")
                              }
                          }
                      }
@@ -319,10 +319,10 @@ class Neo4jQuery extends Query {
                          // if there are associations, add a join to get them
                          cypherBuilder.addOptionalMatch("(n)${associationMatch}(${associationName}Node)")
                          if(!fetchType.is(fetchType.EAGER)) {
-                             cypherBuilder.addReturnColumn("collect(${associationName}Node.__id__) as ${associationName}Ids")
+                             cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node.__id__) as ${associationName}Ids")
                          }
                          else {
-                             cypherBuilder.addReturnColumn("collect(${associationName}Node) as ${associationName}Nodes")
+                             cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node) as ${associationName}Nodes")
                          }
                      }
                  }
