@@ -59,6 +59,21 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
+    List<D> executeQuery(String query, Map params, Map args) {
+        def result = cypherStatic(query, params)
+        Neo4jDatastore datastore = (Neo4jDatastore)this.datastore
+        return new Neo4jResultList(0, (Iterator<Object>)result.iterator(),(Neo4jEntityPersister) datastore.currentSession.getPersister(persistentEntity))
+
+    }
+
+    @Override
+    List<D> executeQuery(String query, Collection params, Map args) {
+        def result = cypherStatic(query, params.toList())
+        Neo4jDatastore datastore = (Neo4jDatastore)this.datastore
+        return new Neo4jResultList(0, (Iterator<Object>)result.iterator(), (Neo4jEntityPersister)datastore.currentSession.getPersister(persistentEntity))
+    }
+
+    @Override
     List<D> findAll(String query, Collection params, Map args) {
         Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
 
