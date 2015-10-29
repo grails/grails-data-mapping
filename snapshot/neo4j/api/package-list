@@ -9,3 +9,4 @@ org.grails.datastore.gorm.neo4j.mapping.config
 org.grails.datastore.gorm.neo4j.mapping.reflect
 org.grails.datastore.gorm.neo4j.parsers
 org.grails.datastore.gorm.neo4j.plugin.support
+org.grails.datastore.gorm.neo4j.rest

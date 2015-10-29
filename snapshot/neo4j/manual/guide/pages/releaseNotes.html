@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>1.2 Release Notes 4.0.0</title>
+    <title>1.2 Release Notes 5.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -33,10 +33,10 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0"><a href="../../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/querying.html"><strong>4</strong><span>Querying with GORM for Neo4j</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/neo4jEnhancements.html"><strong>5</strong><span>Enhancements to Neo4j core API</span></a>
                     </div>
                     
                 </div>
@@ -73,9 +73,9 @@ function addJsClass() {
                 <div class="project">
                     <h1>1.2 Release Notes - Reference Documentation</h1>
 
-                    <p><strong>Authors:</strong> Stefan Armbruster</p>
+                    <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 4.0.0</p>
+                    <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
 
                     
                 </div>
@@ -85,19 +85,18 @@ function addJsClass() {
                 
 
 <h2 id="releaseNotes">1.2 Release Notes</h2>
-Below are the details of the changes across releases:<p class="paragraph"/><h4>1.0.0</h4>
+The following new features are available in this release.
 <ul class="star">
-<li>works with Neo4j HA</li>
-<li>implementing new GORM property criteria filters</li>
-<li>uses Neo4j 1.8.2</li>
-</ul><p class="paragraph"/><h4>0.9-SNAPSHOT</h4>
+<li>Support for Neo4j 2.2.x and Neo4j 2.3.x</li>
+<li>Ability to query using Cypher with the default GORM methods (find, findAll)</li>
+<li>Robust Spring Transaction Management</li>
+<li>Support for Lazy &#38; Eager Loading using OPTIONAL MATCH</li>
+<li>Improved Performance</li>
+<li>Dirty Checking Implementation</li>
+</ul><p class="paragraph"/>If you are using an older version of the plugin, and looking to upgrade the following changes may impact you:
 <ul class="star">
-<li>first GORM compliant version of the plugin</li>
-<li>works with embedded and REST Neo4j databases</li>
-<li>exposing traversal options to domain classes</li>
-</ul><p class="paragraph"/><h4>up to 0.3.1</h4>
-<ul class="star">
-<li>uses non GORM compliant implementation.</li>
+<li>Neo4j JDBC is no longer used and the corresponding CypherEngine interface was removed</li>
+<li>Dynamic associations are disabled by default, you can re-enable them in your entity mapping</li>
 </ul><p class="paragraph"/>
 
 
@@ -119,28 +118,13 @@ Below are the details of the changes across releases:<p class="paragraph"/><h4>1
                     <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Additional Gorm Methods</h1><div class="menu-sub">
                         
                             
-                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/createInstanceForNode.html">createInstanceForNode</a>
-                            </div>
-                            
                             <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/cypher.html">cypher</a>
                             </div>
                             
                             <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/cypherStatic.html">cypherStatic</a>
                             </div>
                             
-                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/getNode.html">getNode</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/getSubreferenceNode.html">getSubreferenceNode</a>
-                            </div>
-                            
                             <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/schemaless%20attributes.html">schemaless attributes</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/traverse.html">traverse</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/traverseStatic.html">traverseStatic</a>
                             </div>
                             
                             </div>

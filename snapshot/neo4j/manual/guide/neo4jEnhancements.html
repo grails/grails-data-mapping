@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>4 Enhancements to Neo4j core API 4.0.0</title>
+    <title>5 Enhancements to Neo4j core API 5.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -33,10 +33,10 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0"><a href="../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/querying.html"><strong>4</strong><span>Querying with GORM for Neo4j</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/neo4jEnhancements.html"><strong>5</strong><span>Enhancements to Neo4j core API</span></a>
                     </div>
                     
                 </div>
@@ -62,22 +62,20 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../guide/mapping.html">&lt;&lt; <strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a></div>
+                    <div class="toc-item prev-left"><a href="../guide/querying.html">&lt;&lt; <strong>4</strong><span>Querying with GORM for Neo4j</span></a></div>
                 
 
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span> >></a></div>
-                
 
 
                 <div class="project">
-                    <h1>4 Enhancements to Neo4j core API - Reference Documentation</h1>
+                    <h1>5 Enhancements to Neo4j core API - Reference Documentation</h1>
 
-                    <p><strong>Authors:</strong> Stefan Armbruster</p>
+                    <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 4.0.0</p>
+                    <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
 
                     
                 </div>
@@ -86,25 +84,20 @@ function addJsClass() {
 
                 
 
-<h1 id="neo4jEnhancements">4 Enhancements to Neo4j core API</h1>
-Inspired by a <a href="https://github.com/SpringSource/grails-data-mapping/issues/66" target="blank">Github issue ticket</a> the Neo4j Grails contains some
-enhancements to the Neo4j core API. These enhancements are implemented using Groovy's ExpandoMetaClass.<p class="paragraph"/><h4>setting properties on nodes/relationships</h4><p class="paragraph"/>Assigning an arbitrary property onto a Neo4j node or relationship can be simply done by using Groovy's property
+<h1 id="neo4jEnhancements">5 Enhancements to Neo4j core API</h1>
+Neo4j Grails contains some enhancements to the Neo4j core API.<p class="paragraph"/><h4>setting properties on nodes/relationships</h4><p class="paragraph"/>Assigning an arbitrary property onto a Neo4j node or relationship can be simply done by using Groovy's property
 mechanism:
 <div class="code"><pre>def node = graphDatabaseService.createNode()
 node.myProperty = myValue</pre></div><p class="paragraph"/>The same words for getting properties:<p class="paragraph"/><div class="code"><pre>def node = &#8230;
 def value = node.myProperty</pre></div><p class="paragraph"/><blockquote class="note">
 There is a important convention: when the property ends with "Date" then a date type is assumed. The node property then
 helds respective millis.
-</blockquote><p class="paragraph"/><h4>JSON marshalling</h4>
-Neo4j nodes and relationships can be easily marshalled to JSON, e.g. in a controller using:<p class="paragraph"/><div class="code"><pre>def node = graphDatabaseService.getNodeById(myid)
-render node as JSON</pre></div>
+</blockquote><p class="paragraph"/>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../guide/mapping.html">&lt;&lt; <strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a></div>
-                
-                    <div class="toc-item next-right"><a href="../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span> >></a></div>
+                    <div class="toc-item prev-left"><a href="../guide/querying.html">&lt;&lt; <strong>4</strong><span>Querying with GORM for Neo4j</span></a></div>
                 
                 <div style="clear:both"></div>
             </div>
@@ -120,28 +113,13 @@ render node as JSON</pre></div>
                     <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Additional Gorm Methods</h1><div class="menu-sub">
                         
                             
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/createInstanceForNode.html">createInstanceForNode</a>
-                            </div>
-                            
                             <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/cypher.html">cypher</a>
                             </div>
                             
                             <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/cypherStatic.html">cypherStatic</a>
                             </div>
                             
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/getNode.html">getNode</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/getSubreferenceNode.html">getSubreferenceNode</a>
-                            </div>
-                            
                             <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/schemaless%20attributes.html">schemaless attributes</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/traverse.html">traverse</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/traverseStatic.html">traverseStatic</a>
                             </div>
                             
                             </div>

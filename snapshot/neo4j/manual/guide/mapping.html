@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3 Mapping domain classes to Neo4j node space 4.0.0</title>
+    <title>3 Mapping domain classes to Neo4j node space 5.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -33,10 +33,10 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0"><a href="../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/querying.html"><strong>4</strong><span>Querying with GORM for Neo4j</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/neo4jEnhancements.html"><strong>5</strong><span>Enhancements to Neo4j core API</span></a>
                     </div>
                     
                 </div>
@@ -68,44 +68,100 @@ function addJsClass() {
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/querying.html"><strong>4</strong><span>Querying with GORM for Neo4j</span> >></a></div>
                 
 
 
                 <div class="project">
                     <h1>3 Mapping domain classes to Neo4j node space - Reference Documentation</h1>
 
-                    <p><strong>Authors:</strong> Stefan Armbruster</p>
+                    <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 4.0.0</p>
+                    <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
 
                     
                 </div>
 
                 
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#associations"><strong>3.1</strong><span>Understanding Association Mapping</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#labelStrategy"><strong>3.2</strong><span>Customizing the Label Strategy</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#schemaless"><strong>3.3</strong><span>Dynamic Properties and Associations</span></a>
+                    </div>
+                    
+                </div>
+                
 
                 
 
 <h1 id="mapping">3 Mapping domain classes to Neo4j node space</h1>
-Since the nodespace in Neo4j has no schema as opposed to SQL, there must be some structure applied to map a given
-set of domain classes.<p class="paragraph"/>Starting with <a href="http://api.neo4j.org/current/org/neo4j/graphdb/GraphDatabaseService.html#getReferenceNode()," target="blank">Neo4j's reference node</a>
-each domain class itself is represented by a subreference node. The subreference node has a relationship to the reference node,
-type "SUBREFERENCE". Each instance of this domain class is represented by a node connected to the respective subreference
-node by a relationship of type "INSTANCE".<p class="paragraph"/>All simple properties of a domain instance are mapped to the node's properties. Since a node can only store primitives,
-Strings and arrays of both, properties of any other type must be converted before persisting. The conversion uses Spring's
-ConversionService, <a href="https://github.com/SpringSource/grails-data-mapping/blob/master/grails-datastore-gorm-neo4j/src/main/groovy/org/grails/datastore/gorm/neo4j/Neo4jMappingContext.groovy" target="blank">Neo4jMappingContext</a>
-adds a couple of converters to it. References to other domain classes are mapped by relationships.<p class="paragraph"/><blockquote class="note">
-Type conversion is not 100% complete for now. If you experience conversion problems, please file a ticket in Github's
-issue tracker.
-</blockquote><p class="paragraph"/>The described mapping of domain classes to the node space is best illustrated with an picture:<p class="paragraph"/><img border="0" class="center" src="../img/mapping.png"></img>
-<img border="0" class="center" src="https://github.com/SpringSource/grails-data-mapping/raw/master/grails-documentation-neo4j/resources/img/mapping.png"></img>
+GORM for Neo4j will map each Grails domain instance to a Node in the node space. For example given the following domain class:<p class="paragraph"/>
+<div class="code"><pre>class Pet &#123;
+    <span class="java&#45;object">String</span> name
+&#125;</pre></div><p class="paragraph"/>When an instance of <code>Pet</code> is saved:<p class="paragraph"/><div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Pet(name:<span class="java&#45;quote">"Dino"</span>)
+p.save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>Then the following Cypher CREATE is issued:<p class="paragraph"/><div class="code"><pre>CREATE (n2:Pet &#123;props&#125;)</pre></div><p class="paragraph"/>The properties of the class are converted to native Neo4j types and set as the <code>props</code> parameter to the query.<p class="paragraph"/><blockquote class="note">
+If you want to see what queries GORM for Neo4j generates, enabling logging for the <code>org.grails.datastore.gorm.neo4j</code> package
+</blockquote>
+
+
+
+<h2 id="associations">3.1 Understanding Association Mapping</h2>
+GORM for Neo4j will create Neo4j relationships between nodes for you based on the relationship ownership rules defined in your GORM mapping. For example the following mapping:<p class="paragraph"/><div class="code"><pre>class Owner &#123;
+    <span class="java&#45;object">String</span> name
+    <span class="java&#45;keyword">static</span> hasMany = &#91;pets:Pet&#93;
+&#125;
+class Pet &#123;
+    <span class="java&#45;object">String</span> name
+    <span class="java&#45;keyword">static</span> belongsTo = &#91;owner:Owner&#93;
+&#125;</pre></div><p class="paragraph"/>Will generate a Cypher relationship creation query as follows:<p class="paragraph"/><div class="code"><pre>MATCH (from:Owner &#123; <em class="italic">_id_</em> :&#123;start&#125;&#125;), (to:Pet) WHERE to. <em class="italic">_id_</em>  IN &#123;end&#125; CREATE (from)&#45;&#91;r:PETS&#93;&#45;&#62;(to)</pre></div><p class="paragraph"/>As you can see from the query the relationships is defined as <code>(from)-r:PETS-&#62;(to)</code>, with the direction of the association being dedicated by who "owns" the association. Since <code>Pet</code> defines a <code>belongTo</code> association to <code>Owner</code>, this means that <code>Owner</code> owns the association and the relationship is from <code>Owner</code> to <code>Pet</code>.<p class="paragraph"/>For more information on defining relationships with GORM, see the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#gormAssociation" target="blank">corresponding guide in the GORM documentation</a>.
+
+
+
+<h2 id="labelStrategy">3.2 Customizing the Label Strategy</h2>
+The default strategy for defining the labels is to use the class name, however the strategy to define labels for a given node is completely configurable. For example you can use static mapping to define you labels:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        labels <span class="java&#45;quote">"Person"</span>, <span class="java&#45;quote">"People"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>You can also define labels dynamically. For example:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        labels &#123; GraphPersistentEntity pe &#45;&#62; <span class="java&#45;quote">"`$&#123;pe.javaClass.name&#125;`"</span> &#125;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Or mix static and dynamic labels:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapping = &#123;
+    labels <span class="java&#45;quote">"People"</span>, &#123; GraphPersistentEntity pe &#45;&#62; <span class="java&#45;quote">"`$&#123;pe.javaClass.name&#125;`"</span> &#125;
+&#125;</pre></div><p class="paragraph"/>At a small read/write performance cost you can define dynamic labels based on an instance:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapping = &#123;
+    labels &#123; GraphPersistentEntity pe, instance &#45;&#62;  // 2 arguments: instance dependent label
+        <span class="java&#45;quote">"`$&#123;instance.profession&#125;`"</span>
+    &#125;
+&#125;</pre></div>
+
+
+<h2 id="schemaless">3.3 Dynamic Properties and Associations</h2>
+Neo4j is a schemaless database. This means that, unlike SQL where you can only have a fixed number of rows and columns, nodes can have unlimited properties.<p class="paragraph"/> Most existing object mapping tools in statically typed languages don't allow you to harness this power, but GORM for Neo4j allows you to define both statically defined properties (ie the properties of the domain class) and domain properties.<p class="paragraph"/> For example, take the following domain class:<p class="paragraph"/> <div class="code"><pre>class Plant &#123;
+    <span class="java&#45;object">String</span> name
+ &#125;</pre></div><p class="paragraph"/> You can set both the statically defined <code>name</code> property, but also any arbitrary number of dynamic properties using the subscript operator in Groovy:<p class="paragraph"/>  <div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Plant(name:<span class="java&#45;quote">"Carrot"</span>)
+  p&#91;'goesInPatch'&#93; = <span class="java&#45;keyword">true</span>
+  p.save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>  Any simply properties can be included, however if you wish have dynamic associations you can as well by modifying the mapping:<p class="paragraph"/> <div class="code"><pre>class Plant &#123;
+    <span class="java&#45;object">String</span> name
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        dynamicAssociations <span class="java&#45;keyword">true</span>
+    &#125;
+ &#125;</pre></div><p class="paragraph"/> With this in place you can define dynamic associations:<p class="paragraph"/>  <div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Plant(name:<span class="java&#45;quote">"Carrot"</span>)
+  p&#91;'related'&#93; = &#91; <span class="java&#45;keyword">new</span> Plant(name:<span class="java&#45;quote">"Potato"</span>).save() &#93;
+  p.save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>  The downside of dynamic associations is that GORM has to issue a separate query for each loaded instance when retrieving entities. If you have a small amount of data this is not a problem, but for larger data sets it is not recommended.<p class="paragraph"/><p class="paragraph"/>
+
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
                     <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/querying.html"><strong>4</strong><span>Querying with GORM for Neo4j</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>
@@ -121,28 +177,13 @@ issue tracker.
                     <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Additional Gorm Methods</h1><div class="menu-sub">
                         
                             
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/createInstanceForNode.html">createInstanceForNode</a>
-                            </div>
-                            
                             <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/cypher.html">cypher</a>
                             </div>
                             
                             <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/cypherStatic.html">cypherStatic</a>
                             </div>
                             
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/getNode.html">getNode</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/getSubreferenceNode.html">getSubreferenceNode</a>
-                            </div>
-                            
                             <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/schemaless%20attributes.html">schemaless attributes</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/traverse.html">traverse</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/traverseStatic.html">traverseStatic</a>
                             </div>
                             
                             </div>

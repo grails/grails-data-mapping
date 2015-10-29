@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2 Getting Started 4.0.0</title>
+    <title>2 Getting Started 5.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -33,10 +33,10 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0"><a href="../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/querying.html"><strong>4</strong><span>Querying with GORM for Neo4j</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/neo4jEnhancements.html"><strong>5</strong><span>Enhancements to Neo4j core API</span></a>
                     </div>
                     
                 </div>
@@ -75,9 +75,9 @@ function addJsClass() {
                 <div class="project">
                     <h1>2 Getting Started - Reference Documentation</h1>
 
-                    <p><strong>Authors:</strong> Stefan Armbruster</p>
+                    <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 4.0.0</p>
+                    <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
 
                     
                 </div>
@@ -101,14 +101,17 @@ function addJsClass() {
                 
 
 <h1 id="gettingStarted">2 Getting Started</h1>
-To get started with GORM for Neo4j you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin neo4j</pre></div><p class="paragraph"/>Or configure it as a dependency in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
-	compile <span class="java&#45;quote">"&#58;neo4j:latest.version"</span>
+To get started with GORM for Neo4j you need to install the plugin into a Grails application.<p class="paragraph"/>To do so for Grails 2.x edit the <code>grails-app/conf/BuildConfig.groovy</code> file and add the following plugin definition, where <code>VERSION</code> is the version of the plugin you plan to use:<p class="paragraph"/>
+<div class="code"><pre>plugins &#123;
+    compile ':neo4j:VERSION'
+&#125;</pre></div><p class="paragraph"/>For Grails 3.x you need to edit your <code>build.gradle</code> file and add the plugin as a dependency:<p class="paragraph"/><p class="paragraph"/><div class="code"><pre>dependencies &#123;
+	compile 'org.grails.plugins:neo4j:VERSION'
 &#125;</pre></div><p class="paragraph"/>By default Neo4j will used as embedded database inside the JVM, the default directory for the Neo4j datastore is <code>data/neo4j</code>.<p class="paragraph"/>
 
 
 
 <h2 id="usingNeo4jStandalone">2.1 Using Neo4j Standalone</h2>
-If you plan to use Neo4j as your primary datastore then you need to uninstall the Hibernate plugin:<p class="paragraph"/><div class="code"><pre>grails uninstall&#45;plugin hibernate</pre></div><p class="paragraph"/>Or if it has been defined in the <code>grails-app/conf/BuildConfig.groovy</code> file comment out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile <span class="java&#45;quote">"&#58;hibernate:$grailsVersion"</span></pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Neo4j and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Neo4j.
+If you plan to use Neo4j as your primary datastore then you need to remove the Hibernate plugin by editing your <code>BuildConfig</code> or <code>build.gradle</code> (dependending on the version of Grails) and removing the Hibernate plugin definition<p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Neo4j and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Neo4j.
 
 
 
@@ -117,14 +120,12 @@ If you have both the Hibernate and Neo4j plugins installed then by default all c
 
 
 <h2 id="advancedConfiguration">2.3 Advanced Configuration</h2>
-As mentioned the GORM for Neo4j plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
+As mentioned the GORM for Neo4j plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your <code>grails-app/conf/DataSource.groovy</code> file or in the <code>grails-app/conf/application.groovy</code> file for Grails 3.x and above:<p class="paragraph"/><div class="code"><pre>grails &#123;
     neo4j &#123;
         type = <span class="java&#45;quote">"embedded"</span>
         location = <span class="java&#45;quote">"/<span class="java&#45;keyword">var</span>/neo4j"</span>
-        params = &#91;&#93;
     &#125;
-&#125;</pre></div><p class="paragraph"/>The <code>type</code> provides currently the following choices:<p class="paragraph"/><h4>type = "embedded"</h4>
-Runs the Neo4j in embedded mode, Neo4j and Tomcat use the same JVM. No seperate setup outside the Grails application is required. <code>location</code> specifies the directory where Neo4j stores its data.<p class="paragraph"/>Example:
+&#125;</pre></div><p class="paragraph"/>The <code>type</code> provides currently the following choices:<p class="paragraph"/><h4>type = "embedded"</h4><p class="paragraph"/>Runs the Neo4j in embedded mode, Neo4j and Tomcat use the same JVM. No seperate setup outside the Grails application is required. <code>location</code> specifies the directory where Neo4j stores its data.<p class="paragraph"/>Example:
 <div class="code"><pre>grails &#123;
     neo4j &#123;
         type = <span class="java&#45;quote">"embedded"</span>
@@ -132,36 +133,36 @@ Runs the Neo4j in embedded mode, Neo4j and Tomcat use the same JVM. No seperate 
     &#125;
 &#125;</pre></div><p class="paragraph"/><blockquote class="note">
 If your configuration is empty, 'embedded' is used as default.
-</blockquote><p class="paragraph"/><h4>type = "rest"</h4>
-Uses a <code>org.neo4j.rest.graphdb.RestGraphDatabase</code> instance to connect to a Neo4j database. See <a href="http://docs.neo4j.org/chunked/stable/server.html" target="blank">http://docs.neo4j.org/chunked/stable/server.html</a> for how to setup a Neo4j server.<p class="paragraph"/><code>location</code> specifies the URL of he Neo4j REST server. When using the Heroku neo4j addon, omit the location. In this case location will default to env.NEO4J_URL that is provided by Heroku.<p class="paragraph"/>Example:
+</blockquote><p class="paragraph"/><h4>type = "rest"</h4><p class="paragraph"/>Uses a <code>org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase</code> instance to connect to a Neo4j database. See <a href="http://neo4j.com/docs/stable/server-installation.html" target="blank">http://neo4j.com/docs/stable/server-installation.html</a> for how to setup a Neo4j server.<p class="paragraph"/><code>location</code> specifies the URL of he Neo4j REST server. When using the Heroku Neo4j addon, omit the location. In this case location will default to env.NEO4J_URL that is provided by Heroku.<p class="paragraph"/>Example:
 <div class="code"><pre>grails &#123;
     neo4j &#123;
         type = <span class="java&#45;quote">"<span class="java&#45;keyword">rest</span>"</span>
         location = <span class="java&#45;quote">"http://localhost:7474/db/data/"</span>
     &#125;
-&#125;</pre></div><p class="paragraph"/>Additionally you must add another dependency to your application's <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>compile(<span class="java&#45;quote">"org.neo4j:neo4j&#45;<span class="java&#45;keyword">rest</span>&#45;graphdb:1.6"</span>)</pre></div><p class="paragraph"/><h4>type = "ha"</h4>
-Uses a Neo4j HA setup, for details see <a href="http://docs.neo4j.org/chunked/stable/ha.html" target="blank">http://docs.neo4j.org/chunked/stable/ha.html</a>. In this case params must at least contain<p class="paragraph"/><blockquote class="note">
+&#125;</pre></div><p class="paragraph"/>Additionally you must add the following dependencies to your application's <code>build.gradle</code> or <code>grails-app/conf/BuildConfig.groovy</code> file:<p class="paragraph"/><div class="code"><pre>compile 'org.springframework.data:spring&#45;data&#45;neo4j:3.4.0.RELEASE'
+compile 'org.springframework.data:spring&#45;data&#45;neo4j&#45;<span class="java&#45;keyword">rest</span>:3.4.0.RELEASE'
+    exclude group:'org.neo4j.test', module:'neo4j&#45;harness'
+&#125;</pre></div><p class="paragraph"/>GORM for Neo4j uses the REST implementation from the Spring Data Neo4j REST project.<p class="paragraph"/><h4>type = "ha"</h4><p class="paragraph"/>Uses a Neo4j HA setup, for details see <a href="http://neo4j.com/docs/stable/ha.html" target="blank">http://neo4j.com/docs/stable/ha.html</a>. In this case params must at least contain<p class="paragraph"/><blockquote class="note">
 For Neo4j HA either a commercial license is <a href="http://neo4j.org/licensing-guide/" target="blank">required</a>, or you could use AGPL.
 </blockquote><p class="paragraph"/>Example:
 <div class="code"><pre>grails &#123;
     neo4j &#123;
         type = <span class="java&#45;quote">"ha"</span>
         location = <span class="java&#45;quote">"/<span class="java&#45;keyword">var</span>/neo4j"</span>
-        params = &#91; // see http://docs.neo4j.org/chunked/stable/ha&#45;configuration.html
+        // see http://neo4j.com/docs/stable/ha&#45;configuration.html
+        options = &#91;
                 'ha.server_id': 1,
                 'ha.coordinators': 'localhost:2181,localhost:2182,localhost:2183'
         &#93;
     &#125;
-&#125;</pre></div><p class="paragraph"/>Additionally you must add another dependency to your application's <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>compile('org.neo4j:neo4j&#45;enterprise:1.8.RC1')</pre></div><p class="paragraph"/><h4>type = "impermanent"</h4>
-Uses <a href="https://github.com/neo4j/community/blob/master/kernel/src/test/java/org/neo4j/test/ImpermanentGraphDatabase.java" target="blank">ImpermanentGraphDatabase</a>.
-This option required a dependency to artifact group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests' in BuildConfig.groovy.
-ImpermanentGraphDatabase is intended to be used for testing.<p class="paragraph"/><h4>custom graph database</h4>
-If you use a custom implementation of GraphDatabaseService, you can use
+&#125;</pre></div><p class="paragraph"/>Additionally you must add another dependency to your application's <code>build.gradle</code> or <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>compile 'org.neo4j:neo4j&#45;ha:$neo4jVersion'</pre></div><p class="paragraph"/><h4>type = "impermanent"</h4><p class="paragraph"/>Uses ImpermanentGraphDatabase which is good for testing and early stage development.<p class="paragraph"/>This option required a dependency to artifact group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests' in <code>build.gradle</code> or <code>BuildConfig.groovy</code>.<p class="paragraph"/><div class="code"><pre>compile group: <span class="java&#45;quote">"org.neo4j"</span>, name: <span class="java&#45;quote">"neo4j&#45;kernel"</span>, version: neo4jVersion, classifier: 'tests'</pre></div><p class="paragraph"/><blockquote class="note">
+ImpermanentGraphDatabase is intended to be used for testing.
+</blockquote><p class="paragraph"/><h4>custom graph database</h4><p class="paragraph"/>If you use a custom implementation of GraphDatabaseService, you can use
 <div class="code"><pre>grails &#123;
     neo4j &#123;
         type = <span class="java&#45;quote">"my.fancy.custom.GraphDatabaseServiceImplementation"</span>
         location = <span class="java&#45;quote">"/<span class="java&#45;keyword">var</span>/neo4j"</span>
-        params = &#91; :&#93;
+        options = &#91; :&#93;
     &#125;
 &#125;</pre></div>
 
@@ -187,28 +188,13 @@ If you use a custom implementation of GraphDatabaseService, you can use
                     <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Additional Gorm Methods</h1><div class="menu-sub">
                         
                             
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/createInstanceForNode.html">createInstanceForNode</a>
-                            </div>
-                            
                             <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/cypher.html">cypher</a>
                             </div>
                             
                             <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/cypherStatic.html">cypherStatic</a>
                             </div>
                             
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/getNode.html">getNode</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/getSubreferenceNode.html">getSubreferenceNode</a>
-                            </div>
-                            
                             <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/schemaless%20attributes.html">schemaless attributes</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/traverse.html">traverse</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/traverseStatic.html">traverseStatic</a>
                             </div>
                             
                             </div>
