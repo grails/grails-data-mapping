@@ -185,5 +185,8 @@ public abstract class AbstractHibernateSession extends AbstractAttributeStoringS
         return hibernateTemplate;
     }
 
-
+    @Override
+    public void setSynchronizedWithTransaction(boolean synchronizedWithTransaction) {
+        // no-op
+    }
 }
