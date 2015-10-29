@@ -1,15 +1,13 @@
-Below are the details of the changes across releases:
+The following new features are available in this release.
 
-h4. 1.0.0
+* Support for Neo4j 2.2.x and Neo4j 2.3.x
+* Ability to query using Cypher with the default GORM methods (find, findAll)
+* Robust Spring Transaction Management
+* Support for Lazy & Eager Loading using OPTIONAL MATCH
+* Improved Performance
+* Dirty Checking Implementation
 
-* works with Neo4j HA
-* implementing new GORM property criteria filters
-* uses Neo4j 1.8.2
+If you are using an older version of the plugin, and looking to upgrade the following changes may impact you:
 
-h4. 0.9-SNAPSHOT
-* first GORM compliant version of the plugin
-* works with embedded and REST Neo4j databases
-* exposing traversal options to domain classes
-
-h4. up to 0.3.1
-* uses non GORM compliant implementation.
+* Neo4j JDBC is no longer used and the corresponding CypherEngine interface was removed
+* Dynamic associations are disabled by default, you can re-enable them in your entity mapping

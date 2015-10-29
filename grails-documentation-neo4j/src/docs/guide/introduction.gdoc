@@ -1,12 +1,11 @@
-[Neo4j|http://www.neo4j.org] is (as of now) the only graph database that fits nicely in a Grails application.
+[Neo4j|http://www.neo4j.org] a Graph database that fits nicely in a Grails application.
 
-The goal of this grails-data-mapping subproject is to provide a 'as-complete-as-possible' GORM implemenatition that maps domain classes and instances to the Neo4j nodespace. The following features are supported:
+The goal of GORM for Neo4j is to provide a 'as-complete-as-possible' GORM implementation that maps domain classes and instances to the Neo4j nodespace. The following features are supported:
 
-* Marshalling from Neo4j nodespace to Groovy/Java types and back again
+* Marshalling from Neo4j Nodes to Groovy types and back again
 * Support for GORM dynamic finders, criteria and named queries
 * Session-managed transactions
-* Validating domain instances
 * access to Neo4j's traversal capabilities
-* access the Neo4j graph database in all flavours (Embedded, REST and HA)
-* using Neo4j autoindexing
+* Access the Neo4j graph database in all flavours (Embedded, REST and HA)
+* Neo4j autoindexing
 

@@ -1,14 +1,4 @@
-If you plan to use Neo4j as your primary datastore then you need to uninstall the Hibernate plugin:
-
-{code}
-grails uninstall-plugin hibernate
-{code}
-
-Or if it has been defined in the @grails-app/conf/BuildConfig.groovy@ file comment out the hibernate line in the plugins block 
-
-{code}
-compile "\:hibernate:$grailsVersion"
-{code}
+If you plan to use Neo4j as your primary datastore then you need to remove the Hibernate plugin by editing your @BuildConfig@ or @build.gradle@ (dependending on the version of Grails) and removing the Hibernate plugin definition
 
 With this done all domain classes in grails-app/domain will be persisted via Neo4j and not Hibernate. You can create a domain class by running the regular @create-domain-class@ command:
 

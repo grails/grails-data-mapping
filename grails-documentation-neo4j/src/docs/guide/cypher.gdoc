@@ -1,0 +1,27 @@
+To query with raw Cypher queries you can use the built in @find@ and @findAll@ methods:
+
+ {code}
+ def club = Club.find("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')
+ def clubs = Club.findAll("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')
+ {code}
+
+ Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results using @cypherStatic@:
+
+ {code}
+  Result result = Club.cypherStatic("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')
+ {code}
+
+ When working with raw results, you can convert any @org.neo4j.graphdb.Node@ into a domain instance using the @as@ keyword:
+
+ {code}
+ Node myNode = ...
+ Club club = myNode as Club
+ {code}
+
+ You can also convert any @org.neo4j.graphdb.Result@ instance to a list of domain classes:
+
+ {code}
+  Result result = ...
+  List<Club> clubs = result.toList(Club)
+  {code}
+

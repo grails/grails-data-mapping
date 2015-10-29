@@ -1,22 +1,27 @@
-Since the nodespace in Neo4j has no schema as opposed to SQL, there must be some structure applied to map a given
-set of domain classes.
+GORM for Neo4j will map each Grails domain instance to a Node in the node space. For example given the following domain class:
 
-Starting with "Neo4j's reference node":http://api.neo4j.org/current/org/neo4j/graphdb/GraphDatabaseService.html#getReferenceNode(),
-each domain class itself is represented by a subreference node. The subreference node has a relationship to the reference node,
-type "SUBREFERENCE". Each instance of this domain class is represented by a node connected to the respective subreference
-node by a relationship of type "INSTANCE".
 
-All simple properties of a domain instance are mapped to the node's properties. Since a node can only store primitives,
-Strings and arrays of both, properties of any other type must be converted before persisting. The conversion uses Spring's
-ConversionService, [Neo4jMappingContext|https://github.com/SpringSource/grails-data-mapping/blob/master/grails-datastore-gorm-neo4j/src/main/groovy/org/grails/datastore/gorm/neo4j/Neo4jMappingContext.groovy]
-adds a couple of converters to it. References to other domain classes are mapped by relationships.
+{code}
+class Pet {
+    String name
+}
+{code}
+
+When an instance of @Pet@ is saved:
+
+{code}
+def p = new Pet(name:"Dino")
+p.save(flush:true)
+{code}
+
+Then the following Cypher CREATE is issued:
+
+{code}
+CREATE (n2:Pet {props})
+{code}
+
+The properties of the class are converted to native Neo4j types and set as the @props@ parameter to the query.
 
 {note}
-Type conversion is not 100% complete for now. If you experience conversion problems, please file a ticket in Github's
-issue tracker.
+If you want to see what queries GORM for Neo4j generates, enabling logging for the @org.grails.datastore.gorm.neo4j@ package
 {note}
-
-The described mapping of domain classes to the node space is best illustrated with an picture:
-
-!mapping.png!
-!https://github.com/SpringSource/grails-data-mapping/raw/master/grails-documentation-neo4j/resources/img/mapping.png!

@@ -7,6 +7,14 @@ gettingStarted:
     usingNeo4jStandalone: Using Neo4j Standalone
     combiningNeo4jAndHibernate: Combining Neo4j And Hibernate
     advancedConfiguration: Advanced Configuration
-mapping: Mapping domain classes to Neo4j node space
+mapping:
+  title: Mapping domain classes to Neo4j node space
+  associations: Understanding Association Mapping
+  labelStrategy: Customizing the Label Strategy
+  schemaless: Dynamic Properties and Associations
+querying:
+  title: Querying with GORM for Neo4j
+  lazyLoading: Understanding Lazy Loading
+  cypher: Querying with Cypher
+  indexing: Defining the Query Index
 neo4jEnhancements: Enhancements to Neo4j core API
-sampleApp: Sample Application
