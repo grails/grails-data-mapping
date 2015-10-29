@@ -18,8 +18,8 @@ class Neo4jGrailsPlugin extends Plugin {
     def issueManagement = [ system: "JIRA", url: "https://github.com/grails/grails-data-mapping/issues" ]
     def scm = [ url: "https://github.com/grails/grails-data-mapping" ]
 
-    def grailsVersion = "2.3 > *"
-    def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry', 'converters']
+    def grailsVersion = "3.0.0 > *"
+    def loadAfter = ['domainClass', 'hibernate', 'services', 'converters']
     //def loadBefore = ['dataSource']
     def observe = ['services', 'domainClass']
         
@@ -44,16 +44,6 @@ class Neo4jGrailsPlugin extends Plugin {
         initializer.registerApplicationIfNotPresent = false
         initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate")  )
         return initializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
-    }
-
-    @Override
-    @CompileStatic
-    void onChange(Map<String, Object> event) {
-        def ctx = applicationContext
-        def datastore = ctx.getBean(Neo4jDatastore)
-        def transactionManager = ctx.getBean('neo4jTransactionManager',PlatformTransactionManager)
-
-        new Neo4jOnChangeHandler(datastore, transactionManager).onChange(this, event)
     }
 
 }
