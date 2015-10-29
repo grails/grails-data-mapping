@@ -52,7 +52,6 @@ import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.grails.datastore.mapping.query.projections.ManualProjections;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.util.StringUtils;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -781,19 +780,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     private static void handleLike(PersistentEntity entity, Like like, Document query, boolean caseSensitive) {
         Object value = like.getValue();
-        if (value == null) value = "null";
-
-        String[] array = value.toString().split("%", -1);
-        for (int i = 0; i < array.length; i++) {
-            array[i] = Pattern.quote(array[i]);
-        }
-        String expr = StringUtils.arrayToDelimitedString(array, ".*");
-        if (!expr.startsWith(".*")) {
-            expr = '^' + expr;
-        }
-        if (!expr.endsWith(".*")) {
-            expr = expr + '$';
-        }
+        String expr = patternToRegex(value);
 
         Pattern regex = caseSensitive ? Pattern.compile(expr) : Pattern.compile(expr, Pattern.CASE_INSENSITIVE);
         String propertyName = getPropertyName(entity, like);

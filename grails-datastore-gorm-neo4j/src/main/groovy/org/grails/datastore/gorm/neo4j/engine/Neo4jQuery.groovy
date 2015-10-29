@@ -198,7 +198,25 @@ class Neo4jQuery extends Query {
                 @CompileStatic
                 CypherExpression handle(PersistentEntity entity, Query.Like criterion, CypherBuilder builder, String prefix) {
                     int paramNumber = addBuildParameterForCriterion(builder, entity, criterion)
-                    builder.replaceParamAt(paramNumber, criterion.value.toString().replaceAll("%", ".*"))
+                    builder.replaceParamAt(paramNumber, Query.patternToRegex(criterion.value))
+                    return new CypherExpression("${prefix}.$criterion.property", "{$paramNumber}", CriterionHandler.OPERATOR_LIKE)
+                }
+            },
+            (Query.ILike): new CriterionHandler<Query.ILike>() {
+                @Override
+                @CompileStatic
+                CypherExpression handle(PersistentEntity entity, Query.ILike criterion, CypherBuilder builder, String prefix) {
+                    int paramNumber = addBuildParameterForCriterion(builder, entity, criterion)
+                    def pattern = Query.patternToRegex(criterion.value)
+                    builder.replaceParamAt(paramNumber, "(?i)${pattern}".toString())
+                    return new CypherExpression("${prefix}.$criterion.property", "{$paramNumber}", CriterionHandler.OPERATOR_LIKE)
+                }
+            },
+            (Query.RLike): new CriterionHandler<Query.RLike>() {
+                @Override
+                @CompileStatic
+                CypherExpression handle(PersistentEntity entity, Query.RLike criterion, CypherBuilder builder, String prefix) {
+                    int paramNumber = addBuildParameterForCriterion(builder, entity, criterion)
                     return new CypherExpression("${prefix}.$criterion.property", "{$paramNumber}", CriterionHandler.OPERATOR_LIKE)
                 }
             },

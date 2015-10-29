@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
@@ -40,6 +41,7 @@ import org.grails.datastore.mapping.query.event.PreQueryEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Models a query that can be executed against a data store.
@@ -645,6 +647,29 @@ public abstract class Query implements Cloneable{
         Conjunction con = new Conjunction();
         currentJunction.add(con);
         return con;
+    }
+
+    /**
+     * Converts a pattern to regex for regex queruies
+     *
+     * @param value The value
+     * @return The pattern
+     */
+    public static String patternToRegex(Object value) {
+        if (value == null) value = "null";
+
+        String[] array = value.toString().split("%", -1);
+        for (int i = 0; i < array.length; i++) {
+            array[i] = Pattern.quote(array[i]);
+        }
+        String expr = StringUtils.arrayToDelimitedString(array, ".*");
+        if (!expr.startsWith(".*")) {
+            expr = '^' + expr;
+        }
+        if (!expr.endsWith(".*")) {
+            expr = expr + '$';
+        }
+        return expr;
     }
 
     /**
