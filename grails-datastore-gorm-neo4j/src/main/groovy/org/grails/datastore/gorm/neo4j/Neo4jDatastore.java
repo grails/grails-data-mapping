@@ -233,6 +233,9 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
         final Transaction transaction = graphDatabaseService.beginTx();
         try {
             for (String cypher: schemaStrings) {
+                if(log.isDebugEnabled()) {
+                    log.debug("CREATE INDEX Cypher [{}]", cypher);
+                }
                 graphDatabaseService.execute(cypher);
                 transaction.success();
             }

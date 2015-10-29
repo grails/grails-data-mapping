@@ -1,7 +1,9 @@
 package grails.neo4j.bootstrap
 
 import grails.persistence.Entity
+import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.TestServer
+import org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase
 import org.neo4j.server.web.WebServer
 import org.neo4j.test.TestGraphDatabaseFactory
 import spock.lang.Specification
@@ -46,10 +48,11 @@ class Neo4jDataStoreSpringInitializerSpec extends Specification {
         when:"neo4j is initialised"
         def config = [grails: [neo4j: [type: "rest", location:"http://localhost:${port}/db/data"]]]
         def init = new Neo4jDataStoreSpringInitializer( config, Author, Book)
-        init.configure()
+        def ctx = init.configure()
 
         then:"GORM for Neo4j is correctly configured"
         Book.count() == 0
+        ctx.getBean(Neo4jDatastore).graphDatabaseService instanceof GrailsCypherRestGraphDatabase
 
         when:"A book is saved"
         Book.withTransaction {
