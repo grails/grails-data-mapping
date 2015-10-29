@@ -453,6 +453,8 @@ class Club implements Serializable {
     Long version
     String name
     List teams
+    League league
+    static belongsTo = [league:League]
     static hasMany = [teams: Team ]
 
     // TODO: maybe refactor this into a AST
