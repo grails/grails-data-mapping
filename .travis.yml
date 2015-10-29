@@ -29,6 +29,7 @@ env:
   - secure: D604qHBpW7UuFuxkhu/cqVzpEESkkipWTKyz3j75i2k+ocQXcYXSj3zDMk4Hmo/iTHszwCgXk1w/5aj+mxRVecewmXmpFk3Q63qPvJprAjcvatmxp82aBmmpPd9GHjKbyLmu6Gn3R8QtX6yAT75T9lf4Y1FMi9mVwFPOtLiSEs0=
   matrix:
   - GORM_IMPL=test
+  - GORM_IMPL=testgrails2
   - GORM_IMPL=hibernate
   - GORM_IMPL=hibernate4
   - GORM_IMPL=mongodb

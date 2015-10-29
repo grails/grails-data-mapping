@@ -16,6 +16,9 @@ case "$GORM_IMPL"  in
     redis)
         ./gradlew grails-datastore-gorm-redis:test -no-daemon  || EXIT_STATUS=$?
         ;;
+    testgrails2)
+        ./gradlew grails-datastore-gorm-grails2-test:test -no-daemon  || EXIT_STATUS=$?
+        ;;
     cassandra)
         # wait for Cassandra to start up
         sleep 5

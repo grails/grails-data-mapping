@@ -69,6 +69,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
     protected  MetaObjectProtocol queryMetaClass;
     protected  Query.ProjectionList projectionList;
     protected PersistentEntity persistentEntity;
+    protected boolean readOnly;
 
     public CriteriaBuilder(final Class targetClass, final Session session) {
         Assert.notNull(targetClass, "Argument [targetClass] cannot be null");
@@ -100,7 +101,8 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
    }
 
    public Criteria readOnly(boolean readOnly) {
-        throw new UnsupportedOperationException("readOnly isn't supported on this implementation of CriteriaBuilder.");
+       this.readOnly = readOnly;
+       return this;
    }
 
    public Criteria join(String property) {
