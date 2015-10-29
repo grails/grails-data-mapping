@@ -74,6 +74,7 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
             "neo4jTransactionManager"(Neo4jDatastoreTransactionManager) {
                 datastore = ref("neo4jDatastore")
             }
+            graphDatabaseService(neo4jDatastore:"getGraphDatabaseService")
 
             "org.grails.gorm.neo4j.internal.GORM_ENHANCER_BEAN-neo4j"(Neo4jGormEnhancer, ref("neo4jDatastore"), ref("neo4jTransactionManager")) { bean ->
                 bean.initMethod = 'enhance'

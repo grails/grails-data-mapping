@@ -4,6 +4,7 @@ import grails.persistence.Entity
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.TestServer
 import org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase
+import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.server.web.WebServer
 import org.neo4j.test.TestGraphDatabaseFactory
 import spock.lang.Specification
@@ -52,7 +53,7 @@ class Neo4jDataStoreSpringInitializerSpec extends Specification {
 
         then:"GORM for Neo4j is correctly configured"
         Book.count() == 0
-        ctx.getBean(Neo4jDatastore).graphDatabaseService instanceof GrailsCypherRestGraphDatabase
+        ctx.getBean(GraphDatabaseService) instanceof GrailsCypherRestGraphDatabase
 
         when:"A book is saved"
         Book.withTransaction {
