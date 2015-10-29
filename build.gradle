@@ -242,7 +242,18 @@ subprojects {
                 }
 
             }
-            ant.docs(src:"src/docs", dest:destinationDir, properties:"src/docs/doc.properties")
+            def props = new Properties()
+            project.file("src/docs/doc.properties").withReader {
+                props.load(it)
+            }
+
+            props['version'] = project.version.toString()
+            def f = new File(File.createTempDir(), "${project.name}-docs.properties")
+            f.withWriter {
+                props.store(it, "Generated")
+            }
+            f.deleteOnExit()
+            ant.docs(src:"src/docs", dest:destinationDir, properties:f.canonicalPath)
         }
         docs.ext.destinationDir = "${buildDir}/docs"
 
