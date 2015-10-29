@@ -46,7 +46,7 @@ public class Neo4jDatastoreTransactionManager extends DatastoreTransactionManage
         TransactionObject txObject = (TransactionObject) transaction;
         Neo4jTransaction neo4jTransaction = (Neo4jTransaction) txObject.getTransaction();
         if(log.isDebugEnabled()) {
-            log.debug("Transaction closed: Neo4j tx.close()");
+            log.debug("TX CLOSE: Neo4j tx.close()");
         }
         neo4jTransaction.getTransaction().close();
     }
@@ -86,6 +86,7 @@ public class Neo4jDatastoreTransactionManager extends DatastoreTransactionManage
                 TransactionSynchronizationManager.bindResource(getDatastore(), txObject.getSessionHolder());
             }
             txObject.getSessionHolder().setSynchronizedWithTransaction(true);
+            session.setSynchronizedWithTransaction(true);
         } catch (Exception ex) {
             if (txObject.isNewSession()) {
                 try {

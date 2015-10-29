@@ -85,6 +85,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             };
 
     protected Map<Class, Persister> persisters = new ConcurrentHashMap<Class,Persister>();
+    protected boolean isSynchronizedWithTransaction = false;
     private MappingContext mappingContext;
     protected ConcurrentLinkedQueue lockedObjects = new ConcurrentLinkedQueue();
     protected Transaction transaction;
@@ -891,6 +892,15 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
                 return ea;
             }
         }
+    }
+
+    /**
+     * Whether the session is synchronized with an external transaction
+     *
+     * @param isSynchronizedWithTransaction True if it is
+     */
+    public void setSynchronizedWithTransaction(boolean isSynchronizedWithTransaction) {
+        this.isSynchronizedWithTransaction = isSynchronizedWithTransaction;
     }
 
     private static class CollectionKey {

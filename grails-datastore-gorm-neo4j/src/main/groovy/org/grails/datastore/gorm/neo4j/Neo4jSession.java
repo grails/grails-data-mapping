@@ -171,19 +171,21 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
     @Override
     public void disconnect() {
         super.disconnect();
-        if(transaction != null) {
-            Neo4jTransaction transaction = (Neo4jTransaction) getTransaction();
-            try {
+        // if there is no active synchronization defined by a TransactionManager then close the transaction is if was created
+        try {
+            if(transaction != null && !isSynchronizedWithTransaction) {
+                Neo4jTransaction transaction = (Neo4jTransaction) getTransaction();
+
                 transaction.close();
-            } catch (IOException e) {
-                log.error("Error closing transaction: " + e.getMessage(), e);
             }
-            finally {
-                if(log.isDebugEnabled()) {
-                    log.debug("Session disconnected");
-                }
-                this.transaction = null;
+        } catch (IOException e) {
+            log.error("Error closing transaction: " + e.getMessage(), e);
+        }
+        finally {
+            if(log.isDebugEnabled()) {
+                log.debug("Session closed");
             }
+            this.transaction = null;
         }
     }
 

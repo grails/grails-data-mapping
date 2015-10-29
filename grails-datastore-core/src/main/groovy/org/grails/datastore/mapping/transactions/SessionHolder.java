@@ -48,6 +48,14 @@ public class SessionHolder extends ResourceHolderSupport {
         return null;
     }
 
+    @Override
+    public void setSynchronizedWithTransaction(boolean synchronizedWithTransaction) {
+        for (Session session : sessions) {
+            session.setSynchronizedWithTransaction(synchronizedWithTransaction);
+        }
+        super.setSynchronizedWithTransaction(synchronizedWithTransaction);
+    }
+
     public void setTransaction(Transaction<?> transaction) {
         this.transaction = transaction;
     }

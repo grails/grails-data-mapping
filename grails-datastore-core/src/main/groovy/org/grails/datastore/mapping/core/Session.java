@@ -318,4 +318,10 @@ public interface Session {
     Serializable getObjectIdentifier(Object instance);
 
 
+    /**
+     * Whether the session is synchronized with a transaction
+     *
+     * @param synchronizedWithTransaction True if it is
+     */
+    void setSynchronizedWithTransaction(boolean synchronizedWithTransaction);
 }

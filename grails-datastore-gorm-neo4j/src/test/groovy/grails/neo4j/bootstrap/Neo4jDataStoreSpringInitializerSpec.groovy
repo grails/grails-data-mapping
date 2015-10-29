@@ -44,16 +44,36 @@ class Neo4jDataStoreSpringInitializerSpec extends Specification {
         (port, webServer) = TestServer.startWebServer(graphDb)
 
         when:"neo4j is initialised"
-        def config = [grails: [neo4j: [type: "rest", username:'neo4j', password:'letmein', location:"http://localhost:${port}/db/data"]]]
-        def init = new Neo4jDataStoreSpringInitializer( config, Book)
+        def config = [grails: [neo4j: [type: "rest", location:"http://localhost:${port}/db/data"]]]
+        def init = new Neo4jDataStoreSpringInitializer( config, Author, Book)
         init.configure()
 
         then:"GORM for Neo4j is correctly configured"
         Book.count() == 0
 
-//        cleanup:
-//        graphDb.shutdown()
-//        webServer.stop()
+        when:"A book is saved"
+        Book.withTransaction {
+            def a = new Author(name:"Stephen King")
+            def b = new Book(title: "The Stand")
+            a.addToBooks(b)
+            a.save(flush:true)
+        }
+
+        then:"The save count is 1"
+        Book.count() == 1
+
+        when:"A book is queried"
+        Book.withSession { it.clear() }
+        Book book = Book.findByTitle("The Stand")
+
+        then:"The result is correct"
+        book != null
+        book.title == "The Stand"
+        book.author.name == "Stephen King"
+
+        cleanup:
+        graphDb.shutdown()
+        webServer?.stop()
     }
 
 
@@ -70,7 +90,14 @@ class Neo4jDataStoreSpringInitializerSpec extends Specification {
 
     }
 }
+
+@Entity
+class Author {
+    String name
+    static hasMany = [books:Book]
+}
 @Entity
 class Book {
     String title
+    static belongsTo = [author:Author]
 }

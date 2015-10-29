@@ -102,9 +102,11 @@ public abstract class DatastoreUtils {
                 // register pre-bound Session with it for transactional flushing.
                 session = sessionHolder.getValidatedSession();
                 if (session != null && !sessionHolder.isSynchronizedWithTransaction()) {
-                    logger.debug("Registering Spring transaction synchronization for existing Datastore Session");
-                        TransactionSynchronizationManager.registerSynchronization(
-                                new SpringSessionSynchronization(sessionHolder, datastore, false));
+                    if(logger.isDebugEnabled()) {
+                        logger.debug("Registering Spring transaction synchronization for existing Datastore Session");
+                    }
+                    TransactionSynchronizationManager.registerSynchronization(
+                            new SpringSessionSynchronization(sessionHolder, datastore, false));
                     sessionHolder.setSynchronizedWithTransaction(true);
 
                 }
@@ -120,14 +122,18 @@ public abstract class DatastoreUtils {
             }
         }
 
-        logger.debug("Opening Datastore Session");
+        if(logger.isDebugEnabled()) {
+            logger.debug("Opening Datastore Session");
+        }
         Session session = datastore.connect();
 
         // Use same Session for further Datastore actions within the transaction.
         // Thread object will get removed by synchronization at transaction completion.
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             // We're within a Spring-managed transaction, possibly from JtaTransactionManager.
-            logger.debug("Registering Spring transaction synchronization for new Datastore Session");
+            if(logger.isDebugEnabled()) {
+                logger.debug("Registering Spring transaction synchronization for new Datastore Session");
+            }
             SessionHolder holderToUse = sessionHolder;
             if (holderToUse == null) {
                 holderToUse = new SessionHolder(session);
@@ -219,7 +225,9 @@ public abstract class DatastoreUtils {
         if (holderMap == null || !holderMap.containsKey(datastore)) {
             throw new IllegalStateException("Deferred close not active for Datastore [" + datastore + "]");
         }
-        logger.debug("Processing deferred close of Datastore Sessions");
+        if(logger.isDebugEnabled()) {
+            logger.debug("Processing deferred close of Datastore Sessions");
+        }
         Set<Session> sessions = holderMap.remove(datastore);
         for (Session session : sessions) {
             closeSession(session);
@@ -362,12 +370,16 @@ public abstract class DatastoreUtils {
     public static void unbindSession(final Session session) {
         SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(session.getDatastore());
         if (sessionHolder == null) {
-            logger.warn("Cannot unbind session, there's no SessionHolder registered");
+            if(logger.isWarnEnabled()) {
+                logger.warn("Cannot unbind session, there's no SessionHolder registered");
+            }
             return;
         }
 
         if (!sessionHolder.containsSession(session)) {
-            logger.warn("Cannot unbind session, it's not registered in a SessionHolder");
+            if(logger.isWarnEnabled()) {
+                logger.warn("Cannot unbind session, it's not registered in a SessionHolder");
+            }
             return;
         }
 
