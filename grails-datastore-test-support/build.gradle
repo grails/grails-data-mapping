@@ -33,7 +33,7 @@ dependencies {
     provided "junit:junit:4.11"
     provided "org.springframework:spring-orm:$springVersion"
     provided "com.h2database:h2:1.3.173"
-    provided "com.github.fakemongo:fongo:1.5.4"
+    provided "com.github.fakemongo:fongo:2.0.1"
 
     testRuntime "org.hibernate:hibernate-ehcache:4.3.5.Final", {
         exclude group: 'net.sf.ehcache', module: 'ehcache-core'

@@ -31,9 +31,16 @@ case "$GORM_IMPL"  in
         ./gradlew grails-datastore-gorm-rest-client:test -no-daemon  || EXIT_STATUS=$?
         ;;
     *)
-        # Run Grails 2 plugin smoke test
-        ./gradlew grails2-plugins/mongodb:test
-        ./gradlew grails-datastore-gorm:test grails-datastore-gorm-test:test || EXIT_STATUS=$?
+        # Run Grails 2 plugin tests
+        ./gradlew grails2-plugins/mongodb:test || EXIT_STATUS=$?
+
+        # Run unit testing API tests
+        if [[ $EXIT_STATUS -eq 0 ]]; then
+            ./gradlew grails-datastore-test-support:test || EXIT_STATUS=$?
+        fi
+        if [[ $EXIT_STATUS -eq 0 ]]; then
+            ./gradlew grails-datastore-gorm:test grails-datastore-gorm-test:test || EXIT_STATUS=$?
+        fi
         ;;
 esac
 
