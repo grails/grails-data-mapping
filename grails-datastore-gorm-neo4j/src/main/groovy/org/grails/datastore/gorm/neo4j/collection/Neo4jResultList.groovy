@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.neo4j.engine
+package org.grails.datastore.gorm.neo4j.collection
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.neo4j.CypherBuilder
+import org.grails.datastore.gorm.neo4j.engine.Neo4jEntityPersister
 import org.grails.datastore.gorm.query.AbstractResultList
+import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.query.QueryException
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Result
@@ -32,7 +34,12 @@ import org.neo4j.graphdb.Result
 @CompileStatic
 class Neo4jResultList extends AbstractResultList {
 
-    final Neo4jEntityPersister entityPersister;
+    private static final Map<Association, Object> EMPTY_ASSOCIATIONS = Collections.<Association, Object> emptyMap()
+    private static final Map<String, Object> EMPTY_RESULT_DATA = Collections.<String, Object> emptyMap()
+
+    final protected transient  Neo4jEntityPersister entityPersister;
+
+    protected transient Map<Association, Object> initializedAssociations = EMPTY_ASSOCIATIONS
 
     Neo4jResultList(int offset, Result cursor, Neo4jEntityPersister entityPersister) {
         super(offset, (Iterator<Object>)cursor)
@@ -49,24 +56,35 @@ class Neo4jResultList extends AbstractResultList {
         this.entityPersister = entityPersister
     }
 
+    /**
+     * Set any already initialized associations to avoid extra proxy queries
+     *
+     * @param initializedAssociations
+     */
+    void setInitializedAssociations(Map<Association, Object> initializedAssociations) {
+        this.initializedAssociations = initializedAssociations
+    }
+
     @Override
     protected Object nextDecoded() {
+        return nextDecodedInternal()
+    }
+
+    private Object nextDecodedInternal() {
         def next = cursor.next()
-        if(next instanceof Node) {
+        if (next instanceof Node) {
             Node node = (Node) next
-            return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node)
-        }
-        else {
-            Map<String,Object> map = (Map<String,Object>) next
-            if(map.containsKey(CypherBuilder.NODE_DATA)) {
-                return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), map)
-            }
-            else {
-                Node node = (Node)map.values().find() { it instanceof Node }
-                if(node != null) {
-                    return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node, map)
-                }
-                else {
+            return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node, EMPTY_RESULT_DATA, initializedAssociations)
+        } else {
+            Map<String, Object> map = (Map<String, Object>) next
+            if (map.containsKey(CypherBuilder.NODE_DATA)) {
+                Node data = (Node) map.get(CypherBuilder.NODE_DATA);
+                return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), data, map, initializedAssociations)
+            } else {
+                Node node = (Node) map.values().find() { it instanceof Node }
+                if (node != null) {
+                    return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node, map, initializedAssociations)
+                } else {
                     throw new QueryException("Query must return a node as the first column of the RETURN statement")
                 }
             }

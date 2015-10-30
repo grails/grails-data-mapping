@@ -19,13 +19,10 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.neo4j.engine.Neo4jEntityPersister
-import org.grails.datastore.gorm.neo4j.engine.Neo4jResultList
+import org.grails.datastore.gorm.neo4j.collection.Neo4jResultList
 import org.grails.datastore.gorm.neo4j.extensions.Neo4jExtensions
 import org.grails.datastore.mapping.core.AbstractDatastore
-import org.grails.datastore.mapping.core.Session
-import org.grails.datastore.mapping.query.QueryException
 import org.neo4j.graphdb.GraphDatabaseService
-import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Result
 import org.springframework.transaction.PlatformTransactionManager
 

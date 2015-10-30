@@ -22,7 +22,7 @@ import org.grails.datastore.gorm.neo4j.RelationshipUtils
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToMany
-
+import org.grails.datastore.mapping.model.types.ToOne
 
 
 /**
@@ -52,39 +52,55 @@ class GraphAdapter {
     }
 
     void adaptGraphUponRemove(Object o, boolean currentlyInitializing = false) {
+        if(currentlyInitializing) return
+
         Neo4jSession session = (Neo4jSession)this.session
         if (session.getMappingContext().getProxyFactory().isProxy(o)) {
             return;
         }
-        if (!reversed && !currentlyInitializing) {
+        if (!reversed) {
             def childAccess = session.createEntityAccess(association.getAssociatedEntity(), o)
             session.addPendingRelationshipDelete((Long)parentAccess.getIdentifier(), association, (Long)childAccess.getIdentifier() )
         }
     }
 
     void adaptGraphUponAdd(Object t, boolean currentlyInitializing = false) {
-        Neo4jSession session = (Neo4jSession)this.session
         def proxyFactory = session.getMappingContext().getProxyFactory()
-        if (proxyFactory.isProxy(t)) {
-            if ( !proxyFactory.isInitialized(t) ) return
-            if ( !childType.isInstance(t) ) return
+        Neo4jSession session = (Neo4jSession)this.session
+        if(currentlyInitializing) {
+            // if the association is initializing then replace parent entities with non proxied version to prevent N+1 problem
+            if (association.isBidirectional() && !proxyFactory.isProxy(t)) {
+                def inverseSide = association.inverseSide
+                if(inverseSide instanceof ToOne) {
+                    EntityAccess target = session.createEntityAccess(association.getAssociatedEntity(), t)
+                    target.setPropertyNoConversion( inverseSide.name, parentAccess.entity )
+                }
+            }
         }
-        EntityAccess target = session.createEntityAccess(association.getAssociatedEntity(), t)
-        if (association.isBidirectional() && !currentlyInitializing) {
-            if (association instanceof ManyToMany) {
-                Collection coll = (Collection) target.getProperty(association.getReferencedPropertyName());
-                coll.add(parentAccess.entity);
-            } else {
-                target.setProperty(association.getReferencedPropertyName(), parentAccess.entity);
+        else {
+
+            if (proxyFactory.isProxy(t)) {
+                if ( !proxyFactory.isInitialized(t) ) return
+                if ( !childType.isInstance(t) ) return
+            }
+            EntityAccess target = session.createEntityAccess(association.getAssociatedEntity(), t)
+            if (association.isBidirectional()) {
+                if (association instanceof ManyToMany) {
+                    Collection coll = (Collection) target.getProperty(association.getReferencedPropertyName());
+                    coll.add(parentAccess.entity);
+                } else {
+                    target.setProperty(association.getReferencedPropertyName(), parentAccess.entity);
+                }
+            }
+
+            if (target.getIdentifier() == null) { // non-persistent instance
+                session.persist(t);
+            }
+
+            if (!reversed) { // prevent duplicated rels
+                session.addPendingRelationshipInsert((Long)parentAccess.getIdentifier(), association, (Long)target.getIdentifier())
             }
         }
 
-        if (target.getIdentifier() == null) { // non-persistent instance
-            session.persist(t);
-        }
-
-        if (!reversed && !currentlyInitializing) { // prevent duplicated rels
-            session.addPendingRelationshipInsert((Long)parentAccess.getIdentifier(), association, (Long)target.getIdentifier())
-        }
     }
 }

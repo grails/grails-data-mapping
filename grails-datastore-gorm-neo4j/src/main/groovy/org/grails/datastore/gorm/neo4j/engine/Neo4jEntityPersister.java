@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import javax.persistence.CascadeType;
 import java.io.Serializable;
 import java.util.*;
 
@@ -89,18 +88,22 @@ public class Neo4jEntityPersister extends EntityPersister {
         return unmarshallOrFromCache(defaultPersistentEntity, data, resultData);
     }
 
-    protected Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Node data) {
+    public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Node data) {
         return unmarshallOrFromCache(defaultPersistentEntity, data, Collections.<String,Object>emptyMap());
     }
 
     public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Node data, Map<String, Object> resultData) {
+        return unmarshallOrFromCache(defaultPersistentEntity, data, Collections.<String,Object>emptyMap(), Collections.<Association, Object>emptyMap());
+    }
+
+    public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Node data, Map<String, Object> resultData, Map<Association, Object> initializedAssociations ) {
         final Iterable<Label> labels = data.getLabels();
         PersistentEntity persistentEntity = mostSpecificPersistentEntity(defaultPersistentEntity, labels);
         final long id = ((Number) data.getProperty(CypherBuilder.IDENTIFIER)).longValue();
         Object instance = getSession().getCachedInstance(persistentEntity.getJavaClass(), id);
 
         if (instance == null) {
-            instance = unmarshall(persistentEntity, id, data, resultData);
+            instance = unmarshall(persistentEntity, id, data, resultData, initializedAssociations);
             getSession().cacheInstance(persistentEntity.getJavaClass(), id, instance);
         }
         return instance;
@@ -156,7 +159,7 @@ public class Neo4jEntityPersister extends EntityPersister {
     }
 
 
-    private Object unmarshall(PersistentEntity persistentEntity, Long id, Node node, Map<String, Object> resultData) {
+    protected Object unmarshall(PersistentEntity persistentEntity, Long id, Node node, Map<String, Object> resultData, Map<Association, Object> initializedAssociations) {
 
         if(log.isDebugEnabled()) {
             log.debug( "unmarshalling entity [{}] with id [{}], props {}, {}", persistentEntity.getName(), id, node);
@@ -208,6 +211,13 @@ public class Neo4jEntityPersister extends EntityPersister {
 
                 Association association = (Association) property;
 
+                final String associationName = association.getName();
+
+                if(initializedAssociations.containsKey(association)) {
+                    entityAccess.setPropertyNoConversion(associationName, initializedAssociations.get(association));
+                    continue;
+                }
+
                 if(hasDynamicAssociations) {
                     TypeDirectionPair typeDirectionPair = new TypeDirectionPair(
                             RelationshipUtils.relationshipTypeUsedFor(association),
@@ -215,7 +225,6 @@ public class Neo4jEntityPersister extends EntityPersister {
                     );
                     relationshipsMap.remove(typeDirectionPair);
                 }
-                final String associationName = association.getName();
                 final String associationNodesKey = associationName + "Nodes";
                 final String associationIdsKey = associationName + "Ids";
 
@@ -228,7 +237,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                         final Node associationNode = IteratorUtil.singleOrNull(associationNodes);
                         if(associationNode != null) {
                             entityAccess.setPropertyNoConversion(
-                                    association.getName(),
+                                    associationName,
                                     associationPersister.unmarshallOrFromCache(associatedEntity, associationNode)
                             );
                         }
@@ -236,11 +245,16 @@ public class Neo4jEntityPersister extends EntityPersister {
                     else if(association instanceof ToMany) {
                         Collection values;
                         final Class type = association.getType();
-                        final PersistentEntity associatedEntity = association.getAssociatedEntity();
-                        final Neo4jEntityPersister associationPersister = getSession().getEntityPersister(associatedEntity.getJavaClass());
-
                         final Collection<Object> associationNodes = (Collection<Object>) resultData.get(associationNodesKey);
-                        final Neo4jResultList resultSet = new Neo4jResultList(0, associationNodes.size(), associationNodes.iterator(), associationPersister);
+                        final Neo4jResultList resultSet = new Neo4jResultList(0, associationNodes.size(), associationNodes.iterator(), session.getEntityPersister(association.getAssociatedEntity()));
+                        if(association.isBidirectional()) {
+                            final Association inverseSide = association.getInverseSide();
+                            if(inverseSide instanceof ToOne) {
+                                resultSet.setInitializedAssociations(Collections.singletonMap(
+                                        inverseSide, entityAccess.getEntity()
+                                ));
+                            }
+                        }
                         if(List.class.isAssignableFrom(type)) {
                             values = new Neo4jList(entityAccess, association, resultSet, session);
                         }

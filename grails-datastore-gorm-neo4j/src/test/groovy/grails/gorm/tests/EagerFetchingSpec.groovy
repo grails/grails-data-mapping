@@ -46,6 +46,7 @@ class EagerFetchingSpec extends GormDatastoreSpec {
         !club.teams.isInitialized()
         club.teams[0] instanceof Team
         !(club.teams[0] instanceof ProxyObject)
+        !(club.teams[0].club instanceof ProxyObject)
         club.teams[0].name == 'FCB Team 1'
         club.teams[1].name == 'FCB Team 2'
         League.count() == 1

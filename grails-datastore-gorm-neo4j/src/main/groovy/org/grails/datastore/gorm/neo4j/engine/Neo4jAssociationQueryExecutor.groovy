@@ -20,11 +20,12 @@ import groovy.util.logging.Slf4j
 import org.grails.datastore.gorm.neo4j.CypherBuilder
 import org.grails.datastore.gorm.neo4j.GraphPersistentEntity
 import org.grails.datastore.gorm.neo4j.Neo4jSession
-import org.grails.datastore.gorm.neo4j.RelationshipUtils
+import org.grails.datastore.gorm.neo4j.collection.Neo4jResultList
 import org.grails.datastore.mapping.engine.AssociationQueryExecutor
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.ToOne
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Result
 
@@ -87,7 +88,17 @@ class Neo4jAssociationQueryExecutor implements AssociationQueryExecutor<Long, Ob
             return results
         }
         else {
-            return new Neo4jResultList(0, result, session.getEntityPersister(related))
+            def resultList = new Neo4jResultList(0, result, session.getEntityPersister(related))
+            if(association.isBidirectional()) {
+                def inverseSide = association.inverseSide
+                if(inverseSide instanceof ToOne) {
+                    def parentObject = session.getCachedInstance(association.getOwner().getJavaClass(), primaryKey)
+                    if(parentObject != null) {
+                        resultList.setInitializedAssociations(Collections.<Association,Object>singletonMap(inverseSide, parentObject))
+                    }
+                }
+            }
+            return resultList
         }
     }
 

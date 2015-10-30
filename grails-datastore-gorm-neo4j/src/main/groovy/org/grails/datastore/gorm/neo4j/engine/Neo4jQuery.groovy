@@ -18,11 +18,10 @@ import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
 import groovy.util.logging.Commons
 import org.grails.datastore.gorm.neo4j.*
+import org.grails.datastore.gorm.neo4j.collection.Neo4jResultList
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
-import org.grails.datastore.mapping.model.types.ManyToMany
-import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.model.types.ToMany
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.AssociationQuery
@@ -30,7 +29,6 @@ import org.grails.datastore.mapping.query.Query
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Node
 
-import javax.persistence.FetchType
 /**
  * perform criteria queries on a Neo4j backend
  *

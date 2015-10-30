@@ -20,14 +20,11 @@ import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.MapEntryOrKeyValue
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jSession
-import org.grails.datastore.gorm.neo4j.engine.Neo4jEntityPersister
-import org.grails.datastore.gorm.neo4j.engine.Neo4jResultList
+import org.grails.datastore.gorm.neo4j.collection.Neo4jResultList
 import org.grails.datastore.mapping.core.AbstractDatastore
-import org.grails.datastore.mapping.core.Session
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.PropertyContainer
-import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.Result
 
 
