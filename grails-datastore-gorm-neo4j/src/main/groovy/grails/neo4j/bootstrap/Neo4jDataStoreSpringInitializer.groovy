@@ -18,8 +18,10 @@ package grails.neo4j.bootstrap
 
 import groovy.transform.InheritConstructors
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
+import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
+import org.grails.datastore.gorm.neo4j.bean.factory.DefaultMappingHolder
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
@@ -35,6 +37,8 @@ import org.springframework.beans.propertyeditors.ClassEditor
 class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
     static String neo4jDefaultLocation = "data/neo4j"
     public static final String JDBC_NEO4J_PREFIX = "jdbc:neo4j:instance:"
+
+    protected Closure defaultMapping
 
     @Override
     protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {
@@ -56,9 +60,14 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
                 customEditors = [(Class.name): ClassEditor.name ]
             }
 
+            Closure defaultMapping = configuration.getProperty(Neo4jDatastore.SETTING_DEFAULT_MAPPING,Closure, this.defaultMapping)
+
             neo4jMappingContext(Neo4jMappingContextFactoryBean) {
                 grailsApplication = ref('grailsApplication')
                 defaultExternal = secondaryDatastore
+                if (defaultMapping) {
+                    delegate.defaultMapping = new DefaultMappingHolder(defaultMapping)
+                }
             }
 
             neo4jDatastore(Neo4jDatastoreFactoryBean) {
@@ -83,5 +92,12 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
                 includeExternal = !secondaryDatastore
             }
         }
+    }
+
+    /**
+     * Sets the default Neo4j GORM mapping configuration
+     */
+    void setDefaultMapping(Closure defaultMapping) {
+        this.defaultMapping = defaultMapping
     }
 }

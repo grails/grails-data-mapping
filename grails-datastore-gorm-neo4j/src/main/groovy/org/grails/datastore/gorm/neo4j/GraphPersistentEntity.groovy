@@ -1,11 +1,13 @@
 package org.grails.datastore.gorm.neo4j
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.neo4j.identity.SnowflakeIdGenerator
 import org.grails.datastore.gorm.neo4j.mapping.config.Neo4jEntity
-import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.model.AbstractPersistentEntity
 import org.grails.datastore.mapping.model.ClassMapping
+import org.grails.datastore.mapping.model.DatastoreConfigurationException
 import org.grails.datastore.mapping.model.MappingContext
+import org.springframework.util.ClassUtils
 
 
 /**
@@ -21,22 +23,67 @@ import org.grails.datastore.mapping.model.MappingContext
 public class GraphPersistentEntity extends AbstractPersistentEntity<Neo4jEntity> {
 
     public static final String LABEL_SEPARATOR = ':'
-    protected Neo4jEntity mappedForm;
-    protected Collection<String> staticLabels = []
+    protected final Neo4jEntity mappedForm;
+    protected final Collection<String> staticLabels = []
     protected Collection<Object> labelObjects
-    protected boolean hasDynamicLabels = false
-    protected boolean hasDynamicAssociations = false
+    protected final boolean hasDynamicLabels
+    protected final boolean hasDynamicAssociations
+    protected IdGenerator idGenerator
 
     public GraphPersistentEntity(Class javaClass, MappingContext context) {
         super(javaClass, context);
         this.mappedForm = (Neo4jEntity) context.getMappingFactory().createMappedForm(this);
         this.hasDynamicAssociations = mappedForm.isDynamicAssociations()
-        establishLabels()
+        this.hasDynamicLabels = establishLabels()
+    }
+
+    @Override
+    void initialize() {
+        super.initialize()
+        def generatorType = getIdentity().getMapping().getMappedForm().getGenerator()
+        this.idGenerator = createIdGenerator(generatorType)
+    }
+
+    protected IdGenerator createIdGenerator(String generatorType) {
+        try {
+            def type = generatorType == null ? IdGenerator.Type.SNOWFLAKE : IdGenerator.Type.valueOf(generatorType.toUpperCase())
+            switch(type) {
+                case IdGenerator.Type.NATIVE:
+                    // for the native generator use null to indicate that generation requires an insert
+                    return null
+                case IdGenerator.Type.ASSIGNED:
+                    throw new DatastoreConfigurationException("Assigned identifiers are currently not supported")
+                case IdGenerator.Type.SNOWFLAKE:
+                    return SnowflakeIdGenerator.INSTANCE
+                default:
+                    return SnowflakeIdGenerator.INSTANCE
+            }
+        } catch (IllegalArgumentException e) {
+            try {
+                def generatorClass = ClassUtils.forName(generatorType)
+                if(IdGenerator.isAssignableFrom(generatorClass)) {
+                    return (IdGenerator)generatorClass.newInstance()
+                }
+                else {
+                    throw new DatastoreConfigurationException("Entity $javaClass defines an invalid id generator [$generatorClass]. The class must implement the IdGenerator interface")
+                }
+            } catch (Throwable e2) {
+                def types = IdGenerator.Type.values().collect() { Enum en -> "'${en.name()}'" }.join(',')
+                throw new DatastoreConfigurationException("Entity $javaClass defines an invalid id generator [$generatorType]. Should be one of ${types} or a class that implements the IdGenerator interface",e2 )
+            }
+        }
     }
 
     @Override
     public ClassMapping<Neo4jEntity> getMapping() {
         new GraphClassMapping(this, context);
+    }
+
+    /**
+     * @return The ID generator to use
+     */
+    IdGenerator getIdGenerator() {
+        return idGenerator
     }
 
     /**
@@ -97,15 +144,16 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Neo4jEntity>
         }
     }
 
-    protected void establishLabels() {
+    protected boolean establishLabels() {
         labelObjects = establishLabelObjects()
-        hasDynamicLabels = labelObjects.any() { it instanceof Closure }
+        boolean hasDynamicLabels = labelObjects.any() { it instanceof Closure }
         for (obj in labelObjects) {
             String label = getLabelFor(obj)
             if (label != null) {
                 staticLabels.add(label)
             }
         }
+        return hasDynamicLabels
     }
 
     protected Collection<Object> establishLabelObjects() {

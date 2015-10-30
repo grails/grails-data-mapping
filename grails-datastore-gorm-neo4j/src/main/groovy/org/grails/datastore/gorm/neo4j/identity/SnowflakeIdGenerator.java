@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.neo4j;
+package org.grails.datastore.gorm.neo4j.identity;
 
+import org.grails.datastore.gorm.neo4j.IdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
@@ -29,6 +31,7 @@ import java.util.Random;
  *
  * @author Stefan
  */
+
 public class SnowflakeIdGenerator implements IdGenerator {
 
     private static Logger log = LoggerFactory.getLogger(SnowflakeIdGenerator.class);
@@ -46,7 +49,9 @@ public class SnowflakeIdGenerator implements IdGenerator {
     private volatile long lastTimestamp = -1L;
     private volatile long sequence = 0L;
 
-    public SnowflakeIdGenerator() {
+    public static final SnowflakeIdGenerator INSTANCE  = new SnowflakeIdGenerator();
+
+    private SnowflakeIdGenerator() {
         datacenterId = getDatacenterId();
         if (datacenterId > maxDatacenterId || datacenterId < 0) {
             throw new IllegalStateException("datacenterId > maxDatacenterId");
@@ -54,7 +59,7 @@ public class SnowflakeIdGenerator implements IdGenerator {
     }
 
     @Override
-    public synchronized long nextId() {
+    public synchronized Serializable nextId() {
         long timestamp = System.currentTimeMillis();
         if (timestamp < lastTimestamp) {
             throw new IllegalArgumentException("Clock moved backwards.  Refusing to generate id for " + (

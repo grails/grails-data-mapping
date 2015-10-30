@@ -38,7 +38,7 @@ import org.neo4j.graphdb.Result
  */
 @CompileStatic
 @Slf4j
-class Neo4jAssociationQueryExecutor implements AssociationQueryExecutor<Long, Object> {
+class Neo4jAssociationQueryExecutor implements AssociationQueryExecutor<Serializable, Object> {
 
     final Neo4jSession session
     final PersistentEntity indexedEntity
@@ -60,7 +60,7 @@ class Neo4jAssociationQueryExecutor implements AssociationQueryExecutor<Long, Ob
     }
 
     @Override
-    List<Object> query(Long primaryKey) {
+    List<Object> query(Serializable primaryKey) {
 
         GraphDatabaseService graphDatabaseService = (GraphDatabaseService)session.nativeInterface
         def relType = Neo4jQuery.matchForAssociation(association)
@@ -68,7 +68,28 @@ class Neo4jAssociationQueryExecutor implements AssociationQueryExecutor<Long, Ob
         GraphPersistentEntity related = (GraphPersistentEntity)indexedEntity
         String relationship = "(from${parent.labelsAsString})${relType}(to${related.labelsAsString})"
 
-        String cypher = "MATCH $relationship WHERE from.${CypherBuilder.IDENTIFIER} = {id} RETURN ${lazy ? "to.${CypherBuilder.IDENTIFIER} as id" : 'to as data'} ${singleResult ? 'LIMIT 1' : ''}"
+        StringBuilder cypher = new StringBuilder("MATCH $relationship WHERE ")
+
+        if(parent.idGenerator == null) {
+            cypher.append("ID(from) = {id} RETURN ")
+        }
+        else {
+            cypher.append("from.${CypherBuilder.IDENTIFIER} = {id}  RETURN ")
+        }
+
+        if(lazy) {
+            if(related.idGenerator == null) {
+                cypher.append("ID(to) as id")
+            }
+            else {
+                cypher.append("to.${CypherBuilder.IDENTIFIER} as id")
+            }
+        }
+        else {
+            cypher.append('to as data')
+        }
+        cypher.append(singleResult ? 'LIMIT 1' : '')
+
 
         Map<String,Object> params = (Map<String,Object>)Collections.singletonMap(GormProperties.IDENTITY, primaryKey)
 
@@ -76,7 +97,7 @@ class Neo4jAssociationQueryExecutor implements AssociationQueryExecutor<Long, Ob
         log.debug("Lazy loading association [${association}] using relationship $relationship")
         log.debug("QUERY Cypher [$cypher] for params [$params]")
 
-        Result result = graphDatabaseService.execute(cypher, params)
+        Result result = graphDatabaseService.execute(cypher.toString(), params)
         if(isLazy()) {
             List<Object> results = []
             while(result.hasNext()) {

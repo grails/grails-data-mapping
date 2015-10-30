@@ -5,6 +5,7 @@ import org.grails.datastore.gorm.neo4j.*;
 import org.grails.datastore.gorm.neo4j.collection.*;
 import org.grails.datastore.gorm.neo4j.mapping.reflect.Neo4jNameUtils;
 import org.grails.datastore.mapping.collection.PersistentCollection;
+import org.grails.datastore.mapping.core.IdentityGenerationException;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.impl.*;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
@@ -17,14 +18,12 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.query.Query;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Label;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Result;
+import org.neo4j.graphdb.*;
 import org.neo4j.helpers.collection.IteratorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.io.Serializable;
@@ -75,9 +74,23 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected Object retrieveEntity(PersistentEntity pe, Serializable key) {
-        List<Criterion> criteria = new ArrayList<Criterion>(1);
-        criteria.add(new IdEquals(key));
-        return IteratorUtil.singleOrNull(new Neo4jQuery(session, pe, this).executeQuery(pe, new Conjunction(criteria)).iterator());
+        GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) pe;
+        if(graphPersistentEntity.getIdGenerator() == null) {
+
+            final Neo4jSession session = getSession();
+            final ConversionService conversionService = getMappingContext().getConversionService();
+            try {
+                final Node node = session.getNativeInterface().getNodeById(conversionService.convert(key, Long.class));
+                return unmarshallOrFromCache(pe, node);
+            } catch (NotFoundException e) {
+                return null;
+            }
+        }
+        else {
+            final Neo4jQuery query = new Neo4jQuery(session, pe, this);
+            query.idEq(key);
+            return IteratorUtil.singleOrNull(query.max(1).list().iterator());
+        }
     }
 
     public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Map<String, Object> resultData) {
@@ -96,8 +109,15 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Node data, Map<String, Object> resultData, Map<Association, Object> initializedAssociations ) {
         final Iterable<Label> labels = data.getLabels();
+        GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) defaultPersistentEntity;
         PersistentEntity persistentEntity = mostSpecificPersistentEntity(defaultPersistentEntity, labels);
-        final long id = ((Number) data.getProperty(CypherBuilder.IDENTIFIER)).longValue();
+        final Serializable id;
+        if(graphPersistentEntity.getIdGenerator() == null) {
+            id = data.getId();
+        }
+        else {
+            id = (Serializable) data.getProperty(CypherBuilder.IDENTIFIER);
+        }
         Object instance = getSession().getCachedInstance(persistentEntity.getJavaClass(), id);
 
         if (instance == null) {
@@ -157,7 +177,7 @@ public class Neo4jEntityPersister extends EntityPersister {
     }
 
 
-    protected Object unmarshall(PersistentEntity persistentEntity, Long id, Node node, Map<String, Object> resultData, Map<Association, Object> initializedAssociations) {
+    protected Object unmarshall(PersistentEntity persistentEntity, Serializable id, Node node, Map<String, Object> resultData, Map<Association, Object> initializedAssociations) {
 
         if(log.isDebugEnabled()) {
             log.debug( "unmarshalling entity [{}] with id [{}], props {}, {}", persistentEntity.getName(), id, node);
@@ -268,14 +288,14 @@ public class Neo4jEntityPersister extends EntityPersister {
                 else if(resultData.containsKey(associationIdsKey)) {
 
                     final Object associationValues = resultData.get(associationIdsKey);
-                    List<Long> targetIds = Collections.emptyList();
+                    List<Serializable> targetIds = Collections.emptyList();
                     if(associationValues instanceof Collection) {
-                        targetIds = (List<Long>) associationValues;
+                        targetIds = (List<Serializable>) associationValues;
                     }
                     if (association instanceof ToOne) {
                         ToOne toOne = (ToOne) association;
                         if (!targetIds.isEmpty()) {
-                            Long targetId;
+                            Serializable targetId;
                             try {
                                 targetId = IteratorUtil.single(targetIds);
                             } catch (NoSuchElementException e) {
@@ -362,12 +382,12 @@ public class Neo4jEntityPersister extends EntityPersister {
             for (Map.Entry<TypeDirectionPair, Map<String,Collection>> entry: relationshipsMap.entrySet()) {
 
                 if (entry.getKey().isOutgoing()) {
-                    Iterator<Long> idIter = entry.getValue().get("ids").iterator();
+                    Iterator<Serializable> idIter = entry.getValue().get("ids").iterator();
                     Iterator<Collection<String>> labelIter = entry.getValue().get("labels").iterator();
 
                     Collection values = new ArrayList();
                     while (idIter.hasNext() && labelIter.hasNext()) {
-                        Long targetId = idIter.next();
+                        Serializable targetId = idIter.next();
                         Collection<String> labels = labelIter.next();
                         Object proxy = getMappingContext().getProxyFactory().createProxy(
                                 this.session,
@@ -417,7 +437,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                 final Neo4jSession session = getSession();
                 for( Object o : delegate ) {
                     final EntityAccess associationAccess = getSession().createEntityAccess(association.getAssociatedEntity(), o);
-                    session.addPendingRelationshipInsert((Long) entityAccess.getIdentifier(), association, (Long) associationAccess.getIdentifier());
+                    session.addPendingRelationshipInsert((Serializable) entityAccess.getIdentifier(), association, (Serializable) associationAccess.getIdentifier());
                 }
 
                 delegate = association.isList() ?
@@ -431,7 +451,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             if(dirtyCheckableCollection.hasChanged()) {
                 for (Object o : ((Iterable)dirtyCheckableCollection)) {
                     final EntityAccess associationAccess = getSession().createEntityAccess(association.getAssociatedEntity(), o);
-                    session.addPendingRelationshipInsert((Long) entityAccess.getIdentifier(),association, (Long) associationAccess.getIdentifier());
+                    session.addPendingRelationshipInsert((Serializable) entityAccess.getIdentifier(),association, (Serializable) associationAccess.getIdentifier());
                 }
             }
         }
@@ -469,7 +489,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         boolean isUpdate = identifier != null;
         if (isUpdate) {
 
-            final PendingUpdateAdapter<Object, Long> pendingUpdate = new PendingUpdateAdapter<Object, Long>(pe, (Long) identifier, obj, entityAccess) {
+            final PendingUpdateAdapter<Object, Serializable> pendingUpdate = new PendingUpdateAdapter<Object, Serializable>(pe, (Serializable) identifier, obj, entityAccess) {
                 @Override
                 public void run() {
                     if (cancelUpdate(pe, entityAccess)) {
@@ -477,7 +497,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                     }
                 }
             };
-            pendingUpdate.addCascadeOperation(new PendingOperationAdapter<Object, Long>(pe, (Long) identifier, obj) {
+            pendingUpdate.addCascadeOperation(new PendingOperationAdapter<Object, Serializable>(pe, (Serializable) identifier, obj) {
                 @Override
                 public void run() {
                     firePostUpdateEvent(pe, entityAccess);
@@ -485,12 +505,19 @@ public class Neo4jEntityPersister extends EntityPersister {
             });
             session.addPendingUpdate(pendingUpdate);
 
-            persistAssociationsOfEntity(pendingUpdate, pe, entityAccess, true);
+            persistAssociationsOfEntity(pe, entityAccess, true);
 
         } else {
-            identifier = session.getDatastore().nextIdForType(pe);
-            entityAccess.setIdentifier(identifier);
-            final PendingInsertAdapter<Object, Long> pendingInsert = new PendingInsertAdapter<Object, Long>(pe, (Long) identifier, obj, entityAccess) {
+            GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity)pe;
+            final IdGenerator idGenerator = graphPersistentEntity.getIdGenerator();
+            final boolean isNativeId = idGenerator == null;
+            if(!isNativeId) {
+
+                identifier = idGenerator.nextId();
+                entityAccess.setIdentifier(identifier);
+            }
+
+            final PendingInsertAdapter<Object, Serializable> pendingInsert = new PendingInsertAdapter<Object, Serializable>(pe, (Serializable) identifier, obj, entityAccess) {
                 @Override
                 public void run() {
                     if (cancelInsert(pe, entityAccess)) {
@@ -498,21 +525,69 @@ public class Neo4jEntityPersister extends EntityPersister {
                     }
                 }
             };
-            pendingInsert.addCascadeOperation(new PendingOperationAdapter<Object, Long>(pe, (Long) identifier, obj) {
+            pendingInsert.addCascadeOperation(new PendingOperationAdapter<Object, Serializable>(pe, (Serializable) identifier, obj) {
                 @Override
                 public void run() {
                     firePostInsertEvent(pe, entityAccess);
                 }
             });
-            session.addPendingInsert(pendingInsert);
-            persistAssociationsOfEntity(pendingInsert,pe, entityAccess, false);
+
+            if(isNativeId) {
+                // if we have a native identifier then we have to perform an insert to obtain the id
+                final List<PendingOperation<Object, Serializable>> preOperations = pendingInsert.getPreOperations();
+                for (PendingOperation preOperation : preOperations) {
+                    preOperation.run();
+                }
+
+                pendingInsert.run();
+
+                if(pendingInsert.isVetoed()) {
+                    return null;
+                }
+
+
+                List<PendingOperation> cascadingOperations = new ArrayList<PendingOperation>(pendingInsert.getCascadeOperations());
+                final Map<String, Object> params = new HashMap<String, Object>(1);
+                final String cypher = session.buildEntityCreateOperation(pe, pendingInsert, params, cascadingOperations);
+                final GraphDatabaseService graphDatabaseService = session.getNativeInterface();
+                final String finalCypher = cypher + " RETURN n";
+                if(log.isDebugEnabled()) {
+                    log.debug("CREATE Cypher [{}] for parameters [{}]", finalCypher, params);
+                }
+                final Result result = graphDatabaseService.execute(cypher, params);
+
+                if(!result.hasNext()) {
+                    throw new IdentityGenerationException("CREATE operation did not generate an identifier for entity " + entityAccess.getEntity());
+                }
+
+                Map<String,Object> idMap = IteratorUtil.singleOrNull(result);
+                if(idMap != null) {
+                    Node n = (Node) idMap.get("n");
+                    if(n == null) {
+                        throw new IdentityGenerationException("CREATE operation did not generate an identifier for entity " + entityAccess.getEntity());
+                    }
+                    identifier = n.getId();
+                    entityAccess.setIdentifier(identifier);
+                    persistAssociationsOfEntity(pe, entityAccess, false);
+                }
+                else {
+                    throw new IdentityGenerationException("CREATE operation did not generate an identifier for entity " + entityAccess.getEntity());
+                }
+                for (PendingOperation cascadingOperation : cascadingOperations) {
+                    cascadingOperation.run();
+                }
+            }
+            else {
+                session.addPendingInsert(pendingInsert);
+                persistAssociationsOfEntity(pe, entityAccess, false);
+            }
 
         }
 
         return (Serializable) identifier;
     }
 
-    private void persistAssociationsOfEntity(PendingOperation<Object, Long> pendingOperation, PersistentEntity pe, EntityAccess entityAccess, boolean isUpdate) {
+    private void persistAssociationsOfEntity(PersistentEntity pe, EntityAccess entityAccess, boolean isUpdate) {
 
         Object obj = entityAccess.getEntity();
         DirtyCheckable dirtyCheckable = null;
@@ -579,7 +654,7 @@ public class Neo4jEntityPersister extends EntityPersister {
 
                         if (!reversed) {
                             final EntityAccess assocationAccess = getSession().createEntityAccess(to.getAssociatedEntity(), propertyValue);
-                            getSession().addPendingRelationshipInsert((Long) entityAccess.getIdentifier(), to, (Long) assocationAccess.getIdentifier());
+                            getSession().addPendingRelationshipInsert((Serializable) entityAccess.getIdentifier(), to, (Serializable) assocationAccess.getIdentifier());
                         }
 
                     }
@@ -601,7 +676,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         final Neo4jSession session = getSession();
         session.clear(obj);
         final PendingDeleteAdapter pendingDelete = createPendingDeleteOne(session, pe, entityAccess, obj);
-        pendingDelete.addCascadeOperation(new PendingOperationAdapter<Object, Long>(pe, (Long) entityAccess.getIdentifier(), obj) {
+        pendingDelete.addCascadeOperation(new PendingOperationAdapter<Object, Serializable>(pe, (Serializable) entityAccess.getIdentifier(), obj) {
             @Override
             public void run() {
                 firePostDeleteEvent(pe, entityAccess);

@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm.neo4j.bean.factory
 
+import groovy.transform.Canonical
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
 import org.grails.datastore.gorm.neo4j.HashcodeEqualsAwareProxyFactory
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
@@ -23,10 +25,23 @@ import org.grails.datastore.mapping.model.MappingContext
  * Factory bean for construction the Neo4j DocumentMappingContext.
  *
  * @author Stefan Armbruster
+ * @author Graeme Rocher
  */
+@CompileStatic
 class Neo4jMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
 
+    DefaultMappingHolder defaultMapping
+
     protected MappingContext createMappingContext() {
-        new Neo4jMappingContext(proxyFactory: new HashcodeEqualsAwareProxyFactory())
+        def defaultMapping = defaultMapping?.defaultMapping
+        def context = defaultMapping != null ?  new Neo4jMappingContext(defaultMapping) : new Neo4jMappingContext()
+        context.proxyFactory = new HashcodeEqualsAwareProxyFactory()
+        return context
     }
 }
+
+@Canonical
+class DefaultMappingHolder {
+    Closure defaultMapping
+}
+

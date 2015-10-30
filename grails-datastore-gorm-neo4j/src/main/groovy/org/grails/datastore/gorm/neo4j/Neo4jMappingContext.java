@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.neo4j;
 
+import groovy.lang.Closure;
 import org.grails.datastore.mapping.engine.NonPersistentTypeException;
 import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
@@ -66,13 +67,18 @@ public class Neo4jMappingContext extends AbstractMappingContext  {
             String[].class
     ) ) );
 
-    MappingFactory mappingFactory = new GraphGormMappingFactory();
+    GraphGormMappingFactory mappingFactory = new GraphGormMappingFactory();
     MappingConfigurationStrategy mappingSyntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
 
     protected Map<Collection<String>, GraphPersistentEntity> entitiesByLabel = new LinkedHashMap<Collection<String>, GraphPersistentEntity>();
 
     public Neo4jMappingContext() {
         super();
+    }
+
+    public Neo4jMappingContext(Closure defaultMapping) {
+        super();
+        mappingFactory.setDefaultMapping(defaultMapping);
     }
 
     @Override

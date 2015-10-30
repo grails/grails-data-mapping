@@ -26,6 +26,7 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -37,18 +38,18 @@ import java.util.*;
  */
 public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long> {
 
-    public static final String CYPHER_UPDATE_RELATIONSHIP = "MATCH (from%s {"+CypherBuilder.IDENTIFIER+":{start}}), (to%s) WHERE to."+CypherBuilder.IDENTIFIER+" IN {end} CREATE (from)%s(to)";
     public static final String CYPHER_DELETE_RELATIONSHIP = "MATCH (from%s {"+CypherBuilder.IDENTIFIER+": {start}})%s() DELETE r";
+    public static final String CYPHER_DELETE_NATIVE_RELATIONSHIP = "MATCH (from%s)%s() WHERE ID(from) = {start} DELETE r";
 
     private static Logger log = LoggerFactory.getLogger(RelationshipPendingInsert.class);
     private final GraphDatabaseService graphDatabaseService;
     private final Association association;
-    private final Collection<Long> targetIdentifiers;
+    private final Collection<Serializable> targetIdentifiers;
     private final boolean isUpdate;
 
 
 
-    public RelationshipPendingInsert(EntityAccess parent, Association association, Collection<Long> pendingInserts, GraphDatabaseService graphDatabaseService, boolean isUpdate) {
+    public RelationshipPendingInsert(EntityAccess parent, Association association, Collection<Serializable> pendingInserts, GraphDatabaseService graphDatabaseService, boolean isUpdate) {
         super(parent.getPersistentEntity(), -1L, parent.getEntity(), parent);
 
         this.graphDatabaseService = graphDatabaseService;
@@ -57,7 +58,7 @@ public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long
         this.isUpdate = isUpdate;
     }
 
-    public RelationshipPendingInsert(EntityAccess parent, Association association, Collection<Long> pendingInserts, GraphDatabaseService graphDatabaseService) {
+    public RelationshipPendingInsert(EntityAccess parent, Association association, Collection<Serializable> pendingInserts, GraphDatabaseService graphDatabaseService) {
         this(parent, association, pendingInserts, graphDatabaseService, false);
     }
 
@@ -70,24 +71,52 @@ public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long
         params.put(CypherBuilder.START, parentId);
         params.put(CypherBuilder.END, targetIdentifiers);
 
-        String labelsFrom = ((GraphPersistentEntity)getEntity()).getLabelsAsString();
-        String labelsTo = ((GraphPersistentEntity)association.getAssociatedEntity()).getLabelsAsString();
+        final GraphPersistentEntity graphParent = (GraphPersistentEntity) getEntity();
+        final GraphPersistentEntity graphChild = (GraphPersistentEntity) association.getAssociatedEntity();
+        final boolean nativeParent = graphParent.getIdGenerator() == null;
+        String labelsFrom = graphParent.getLabelsAsString();
+        String labelsTo = graphChild.getLabelsAsString();
 
         final String relMatch = Neo4jQuery.matchForAssociation(association, "r");
 
         boolean reversed = RelationshipUtils.useReversedMappingFor(association);
         if(!reversed && (association instanceof ToOne) && isUpdate) {
             // delete any previous
-            String cypher = String.format(CYPHER_DELETE_RELATIONSHIP, labelsFrom, relMatch);
+
+            String cypher;
+            if(nativeParent) {
+                cypher = String.format(CYPHER_DELETE_NATIVE_RELATIONSHIP, labelsFrom, relMatch);
+            }
+            else {
+                cypher = String.format(CYPHER_DELETE_RELATIONSHIP, labelsFrom, relMatch);
+            }
+
             if(log.isDebugEnabled()) {
                 log.debug("DELETE Cypher [{}] for parameters [{}]", cypher, params);
             }
             graphDatabaseService.execute(cypher, Collections.singletonMap(CypherBuilder.START,parentId));
         }
 
-        String cypher = String.format(CYPHER_UPDATE_RELATIONSHIP, labelsFrom, labelsTo, relMatch);
+        StringBuilder cypherQuery = new StringBuilder("MATCH (from").append(labelsFrom).append("), (to").append(labelsTo).append(") WHERE ");
 
-        if(log.isDebugEnabled()) {
+        if(nativeParent) {
+            cypherQuery.append("ID(from) = {start}");
+        }
+        else {
+            cypherQuery.append("from.").append(CypherBuilder.IDENTIFIER).append(" = {start}");
+        }
+        cypherQuery.append(" AND ");
+        if(graphChild.getIdGenerator() == null) {
+            cypherQuery.append(" ID(to) IN {end} ");
+        }
+        else {
+            cypherQuery.append("to.").append(CypherBuilder.IDENTIFIER).append(" IN {end}");
+        }
+        cypherQuery.append(" CREATE (from)").append(relMatch).append("(to)");
+
+        String cypher = cypherQuery.toString();
+
+        if (log.isDebugEnabled()) {
             log.debug("CREATE Cypher [{}] for parameters [{}]", cypher, params);
         }
         graphDatabaseService.execute(cypher, params);

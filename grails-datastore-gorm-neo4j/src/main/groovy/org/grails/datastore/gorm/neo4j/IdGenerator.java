@@ -15,16 +15,24 @@
  */
 package org.grails.datastore.gorm.neo4j;
 
+import java.io.Serializable;
+
 /**
  * An interface for generating unique identifiers for instances
  *
  * @author Stefan
  */
 public interface IdGenerator {
+    /**
+     * Default id generator types
+     */
+    enum Type {
+        NATIVE, ASSIGNED, SNOWFLAKE
+    }
 
     /**
      * @return Generate and return the next identifier
      */
-    long nextId();
+    Serializable nextId();
 
 }

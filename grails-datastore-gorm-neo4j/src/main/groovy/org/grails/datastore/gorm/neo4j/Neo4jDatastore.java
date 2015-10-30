@@ -40,6 +40,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.util.ReflectionUtils;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -58,7 +59,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     public static final String SETTING_NEO4J_TYPE = "grails.neo4j.type";
     public static final String SETTING_NEO4J_USERNAME = "grails.neo4j.username";
     public static final String SETTING_NEO4J_PASSWORD = "grails.neo4j.password";
-    public static final String SETTING_NEO4J_HIGH_AVAILABILITY = "grails.neo4j.ha";
+    public static final String SETTING_DEFAULT_MAPPING = "grails.neo4j.default.mapping";
     public static final String SETTING_NEO4J_DB_PROPERTIES = "grails.neo4j.options";
     public static final String DEFAULT_DATABASE_TYPE = "embedded";
     public static final String DATABASE_TYPE_HA = "ha";
@@ -70,7 +71,6 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
 
     protected GraphDatabaseService graphDatabaseService;
     protected boolean skipIndexSetup = false;
-    protected IdGenerator idGenerator = new SnowflakeIdGenerator();
 
 
     /**
@@ -203,27 +203,40 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
         }
     }
 
-    public long nextIdForType(PersistentEntity pe) {
-        return idGenerator.nextId();
-    }
-
     public void setupIndexing() {
-        Set<String> schemaStrings = new HashSet<String>(); // using set to avoid duplicate index creation
+        List<String> schemaStrings = new ArrayList<String>(); // using set to avoid duplicate index creation
 
         for (PersistentEntity persistentEntity:  mappingContext.getPersistentEntities()) {
-
-            for (String label: ((GraphPersistentEntity)persistentEntity).getLabels()) {
+            if(log.isDebugEnabled()) {
+                log.debug("Setting up indexing for entity " + persistentEntity.getName());
+            }
+            final GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) persistentEntity;
+            for (String label: graphPersistentEntity.getLabels()) {
                 StringBuilder sb = new StringBuilder();
-                sb.append("CREATE INDEX ON :").append(label).append("(").append(CypherBuilder.IDENTIFIER).append(")");
-                schemaStrings.add(sb.toString());
+                if(graphPersistentEntity.getIdGenerator() != null) {
+                    sb.append("CREATE CONSTRAINT ON (n:").append(label).append(") ASSERT n.").append(CypherBuilder.IDENTIFIER).append(" IS UNIQUE");
+                    schemaStrings.add(sb.toString());
+                }
+
+
+
                 for (PersistentProperty persistentProperty : persistentEntity.getPersistentProperties()) {
                     Property mappedForm = persistentProperty.getMapping().getMappedForm();
-                    if ((persistentProperty instanceof Simple) && (mappedForm != null) && (mappedForm.isIndex())) {
-                        sb = new StringBuilder();
-                        sb.append("CREATE INDEX ON :").append(label).append("(").append(persistentProperty.getName()).append(")");
-                        schemaStrings.add(sb.toString());
-                        if(log.isDebugEnabled()) {
-                            log.debug("setting up indexing for " + label + " property " + persistentProperty.getName());
+                    if ((persistentProperty instanceof Simple) && (mappedForm != null) ) {
+
+                        if(mappedForm.isUnique()) {
+                            sb = new StringBuilder();
+
+                            sb.append("CREATE CONSTRAINT ON (n:").append(label).append(") ASSERT n.").append(persistentProperty.getName()).append(" IS UNIQUE");
+                            schemaStrings.add(sb.toString());
+                        }
+                        else if(mappedForm.isIndex()) {
+                            sb = new StringBuilder();
+                            sb.append("CREATE INDEX ON :").append(label).append("(").append(persistentProperty.getName()).append(")");
+                            schemaStrings.add(sb.toString());
+                            if(log.isDebugEnabled()) {
+                                log.debug("setting up indexing for " + label + " property " + persistentProperty.getName());
+                            }
                         }
                     }
                 }

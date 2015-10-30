@@ -41,6 +41,7 @@ class Neo4jQuery extends Query {
 
     private static final String ORDER_BY_CLAUSE = " ORDER BY "
     private static final String BLANK = ""
+    private static final String ID_EQUALS = "ID(n)"
 
     final Neo4jEntityPersister neo4jEntityPersister
 
@@ -175,9 +176,22 @@ class Neo4jQuery extends Query {
                     if (association instanceof Association) {
                         def targetNodeName = "m_${builder.getNextMatchNumber()}"
                         builder.addMatch("(${prefix})${matchForAssociation(association)}(${targetNodeName})")
-                        lhs = "${targetNodeName}.${CypherBuilder.IDENTIFIER}"
+
+                        def graphEntity = (GraphPersistentEntity) ((Association) association).associatedEntity
+                        if(graphEntity.idGenerator == null) {
+                            lhs = "ID(${targetNodeName})"
+                        }
+                        else {
+                            lhs = "${targetNodeName}.${CypherBuilder.IDENTIFIER}"
+                        }
                     } else {
-                        lhs = criterion.property == "id" ? "${prefix}.${CypherBuilder.IDENTIFIER}" : "${prefix}.${criterion.property}"
+                        def graphEntity = (GraphPersistentEntity) entity
+                        if(graphEntity.idGenerator == null) {
+                            lhs = criterion.property == "id" ? "ID(${prefix})" : "${prefix}.${criterion.property}"
+                        }
+                        else {
+                            lhs = criterion.property == "id" ? "${prefix}.${CypherBuilder.IDENTIFIER}" : "${prefix}.${criterion.property}"
+                        }
                     }
 
                     return new CypherExpression(lhs, "{$paramNumber}", CriterionHandler.OPERATOR_EQUALS)
@@ -188,7 +202,13 @@ class Neo4jQuery extends Query {
                 @CompileStatic
                 CypherExpression handle(PersistentEntity entity, Query.IdEquals criterion, CypherBuilder builder, String prefix) {
                     int paramNumber = addBuildParameterForCriterion(builder, entity, criterion)
-                    return new CypherExpression("${prefix}.${CypherBuilder.IDENTIFIER}", "{$paramNumber}", CriterionHandler.OPERATOR_EQUALS)
+                    GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity)entity
+                    if(graphPersistentEntity.idGenerator == null) {
+                        return new CypherExpression(ID_EQUALS, "{$paramNumber}", CriterionHandler.OPERATOR_EQUALS)
+                    }
+                    else {
+                        return new CypherExpression("${prefix}.${CypherBuilder.IDENTIFIER}", "{$paramNumber}", CriterionHandler.OPERATOR_EQUALS)
+                    }
                 }
             },
             (Query.Like): new CriterionHandler<Query.Like>() {
@@ -223,7 +243,14 @@ class Neo4jQuery extends Query {
                 @CompileStatic
                 CypherExpression handle(PersistentEntity entity, Query.In criterion, CypherBuilder builder, String prefix) {
                     int paramNumber = addBuildParameterForCriterion(builder, entity, criterion)
-                    String lhs = criterion.property == "id" ? "${prefix}.${CypherBuilder.IDENTIFIER}" : "${prefix}.$criterion.property"
+                    GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity)entity
+                    String lhs
+                    if(graphPersistentEntity.idGenerator == null) {
+                        lhs = criterion.property == "id" ? "ID(${prefix})" : "${prefix}.$criterion.property"
+                    }
+                    else {
+                        lhs = criterion.property == "id" ? "${prefix}.${CypherBuilder.IDENTIFIER}" : "${prefix}.$criterion.property"
+                    }
                     builder.replaceParamAt(paramNumber, convertEnumsInList(((Query.In) criterion).values))
                     return new CypherExpression(lhs, "{$paramNumber}", CriterionHandler.OPERATOR_IN)
                 }
@@ -310,6 +337,7 @@ class Neo4jQuery extends Query {
                      String r = "r${i++}";
                      String o = "o${i}";
                      def associationName = a.name
+                     GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity)a.associatedEntity
 
                      if( a instanceof ToMany ) {
                          boolean isLazy = ((ToMany)a).lazy
@@ -321,7 +349,12 @@ class Neo4jQuery extends Query {
                              // if there are associations, add a join to get them
                              cypherBuilder.addOptionalMatch("(n)${associationMatch}(${associationName}Node)")
                              if(isLazy) {
-                                 cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node.${CypherBuilder.IDENTIFIER}) as ${associationName}Ids")
+                                 if(graphPersistentEntity.idGenerator == null) {
+                                     cypherBuilder.addReturnColumn("collect(DISTINCT ID(${associationName}Node)) as ${associationName}Ids")
+                                 }
+                                 else {
+                                     cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node.${CypherBuilder.IDENTIFIER}) as ${associationName}Ids")
+                                 }
                              }
                              else {
                                  cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node) as ${associationName}Nodes")
@@ -335,7 +368,13 @@ class Neo4jQuery extends Query {
                          // if there are associations, add a join to get them
                          cypherBuilder.addOptionalMatch("(n)${associationMatch}(${associationName}Node)")
                          if(!fetchType.is(fetchType.EAGER)) {
-                             cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node.${CypherBuilder.IDENTIFIER}) as ${associationName}Ids")
+                             if(graphPersistentEntity.idGenerator == null) {
+                                 cypherBuilder.addReturnColumn("collect(DISTINCT ID(${associationName}Node)) as ${associationName}Ids")
+                             }
+                             else {
+                                 cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node.${CypherBuilder.IDENTIFIER}) as ${associationName}Ids")
+                             }
+
                          }
                          else {
                              cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node) as ${associationName}Nodes")

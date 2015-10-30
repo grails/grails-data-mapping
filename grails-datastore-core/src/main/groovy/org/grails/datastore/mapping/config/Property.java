@@ -27,6 +27,7 @@ public class Property implements Cloneable {
 
     private boolean index = false;
     private boolean nullable = false;
+    private boolean unique = false;
     private FetchType fetchStrategy = FetchType.LAZY;
     private boolean lazy = false;
     private String targetName;
@@ -136,6 +137,17 @@ public class Property implements Cloneable {
 
     public void setNullable(boolean nullable) {
         this.nullable = nullable;
+    }
+
+    /**
+     * @return Whether the property should be unique
+     */
+    public boolean isUnique() {
+        return unique;
+    }
+
+    public void setUnique(boolean unique) {
+        this.unique = unique;
     }
 
     /**

@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
 import org.grails.datastore.gorm.neo4j.IdGenerator
-import org.grails.datastore.gorm.neo4j.SnowflakeIdGenerator
+import org.grails.datastore.gorm.neo4j.identity.SnowflakeIdGenerator
 import spock.lang.Specification
 
 /**
@@ -15,7 +15,7 @@ class SnowflakeIdGeneratorSpec extends Specification {
             def numberOfInvocations = 100000
             def ids = [] as Set
 
-            IdGenerator generator = new SnowflakeIdGenerator()
+            IdGenerator generator = SnowflakeIdGenerator.INSTANCE
 
         when:
             for (def i=0; i<numberOfInvocations; i++) {
