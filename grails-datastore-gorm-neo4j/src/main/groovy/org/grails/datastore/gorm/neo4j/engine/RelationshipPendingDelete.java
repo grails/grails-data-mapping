@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class RelationshipPendingDelete extends PendingOperationAdapter<Object, Long> {
 
-    public static final String CYPHER_DELETE_WITH_TARGET = "MATCH (from%s {__id__: {start}})%s(to%s) WHERE to.__id__ IN {end} DELETE r";
+    public static final String CYPHER_DELETE_WITH_TARGET = "MATCH (from%s {"+CypherBuilder.IDENTIFIER+": {start}})%s(to%s) WHERE to."+CypherBuilder.IDENTIFIER+" IN {end} DELETE r";
     private static Logger log = LoggerFactory.getLogger(RelationshipPendingDelete.class);
 
     private final GraphDatabaseService graphDatabaseService;

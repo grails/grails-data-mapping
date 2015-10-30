@@ -214,7 +214,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
 
             for (String label: ((GraphPersistentEntity)persistentEntity).getLabels()) {
                 StringBuilder sb = new StringBuilder();
-                sb.append("CREATE INDEX ON :").append(label).append("(__id__)");
+                sb.append("CREATE INDEX ON :").append(label).append("(").append(CypherBuilder.IDENTIFIER).append(")");
                 schemaStrings.add(sb.toString());
                 for (PersistentProperty persistentProperty : persistentEntity.getPersistentProperties()) {
                     Property mappedForm = persistentProperty.getMapping().getMappedForm();

@@ -223,7 +223,7 @@ class Neo4jQuery extends Query {
                 @CompileStatic
                 CypherExpression handle(PersistentEntity entity, Query.In criterion, CypherBuilder builder, String prefix) {
                     int paramNumber = addBuildParameterForCriterion(builder, entity, criterion)
-                    String lhs = criterion.property == "id" ? "${prefix}.__id__" : "${prefix}.$criterion.property"
+                    String lhs = criterion.property == "id" ? "${prefix}.${CypherBuilder.IDENTIFIER}" : "${prefix}.$criterion.property"
                     builder.replaceParamAt(paramNumber, convertEnumsInList(((Query.In) criterion).values))
                     return new CypherExpression(lhs, "{$paramNumber}", CriterionHandler.OPERATOR_IN)
                 }
@@ -321,7 +321,7 @@ class Neo4jQuery extends Query {
                              // if there are associations, add a join to get them
                              cypherBuilder.addOptionalMatch("(n)${associationMatch}(${associationName}Node)")
                              if(isLazy) {
-                                 cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node.__id__) as ${associationName}Ids")
+                                 cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node.${CypherBuilder.IDENTIFIER}) as ${associationName}Ids")
                              }
                              else {
                                  cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node) as ${associationName}Nodes")
@@ -335,7 +335,7 @@ class Neo4jQuery extends Query {
                          // if there are associations, add a join to get them
                          cypherBuilder.addOptionalMatch("(n)${associationMatch}(${associationName}Node)")
                          if(!fetchType.is(fetchType.EAGER)) {
-                             cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node.__id__) as ${associationName}Ids")
+                             cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node.${CypherBuilder.IDENTIFIER}) as ${associationName}Ids")
                          }
                          else {
                              cypherBuilder.addReturnColumn("collect(DISTINCT ${associationName}Node) as ${associationName}Nodes")

@@ -53,7 +53,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
-    public static final String CYPHER_DYNAMIC_RELATIONSHIP_MERGE = "MATCH (a%s {__id__:{id}}), (b%s {__id__:{related}}) MERGE (a)-[:%s]->(b)";
+    public static final String CYPHER_DYNAMIC_RELATIONSHIP_MERGE = "MATCH (a%s {"+CypherBuilder.IDENTIFIER+":{id}}), (b%s {"+CypherBuilder.IDENTIFIER+":{related}}) MERGE (a)-[:%s]->(b)";
     private static final String COUNT_RETURN = "count(n) as total";
     private static final String TOTAL_COUNT = "total";
     private static Logger log = LoggerFactory.getLogger(Neo4jSession.class);

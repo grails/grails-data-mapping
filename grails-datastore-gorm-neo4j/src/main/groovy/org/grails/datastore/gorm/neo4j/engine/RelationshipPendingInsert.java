@@ -37,8 +37,8 @@ import java.util.*;
  */
 public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long> {
 
-    public static final String CYPHER_UPDATE_RELATIONSHIP = "MATCH (from%s {__id__:{start}}), (to%s) WHERE to.__id__ IN {end} CREATE (from)%s(to)";
-    public static final String CYPHER_DELETE_RELATIONSHIP = "MATCH (from%s {__id__: {start}})%s() DELETE r";
+    public static final String CYPHER_UPDATE_RELATIONSHIP = "MATCH (from%s {"+CypherBuilder.IDENTIFIER+":{start}}), (to%s) WHERE to."+CypherBuilder.IDENTIFIER+" IN {end} CREATE (from)%s(to)";
+    public static final String CYPHER_DELETE_RELATIONSHIP = "MATCH (from%s {"+CypherBuilder.IDENTIFIER+": {start}})%s() DELETE r";
 
     private static Logger log = LoggerFactory.getLogger(RelationshipPendingInsert.class);
     private final GraphDatabaseService graphDatabaseService;

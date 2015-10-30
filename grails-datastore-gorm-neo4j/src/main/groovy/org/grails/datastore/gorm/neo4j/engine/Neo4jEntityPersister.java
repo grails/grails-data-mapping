@@ -37,9 +37,7 @@ import static org.grails.datastore.mapping.query.Query.*;
  */
 public class Neo4jEntityPersister extends EntityPersister {
 
-    public static final String DELETE_ONE_CYPHER = "MATCH (n%s) WHERE n.__id__={id} OPTIONAL MATCH (n)-[r]-() DELETE r,n";
-    public static final String DELETE_MANY_CYPHER = "MATCH (n%s) WHERE n.__id__ in {id} OPTIONAL MATCH (n)-[r]-() DELETE r,n";
-    public static final String DYNAMIC_ASSOCIATIONS_QUERY = "MATCH (m%s {__id__:{id}})-[r]-(o) RETURN type(r) as relType, startNode(r)=m as out, {ids: collect(o.__id__), labels: collect(labels(o))} as values";
+    public static final String DYNAMIC_ASSOCIATIONS_QUERY = "MATCH (m%s {"+CypherBuilder.IDENTIFIER+":{id}})-[r]-(o) RETURN type(r) as relType, startNode(r)=m as out, {ids: collect(o."+CypherBuilder.IDENTIFIER+"), labels: collect(labels(o))} as values";
 
     private static Logger log = LoggerFactory.getLogger(Neo4jEntityPersister.class);
 
