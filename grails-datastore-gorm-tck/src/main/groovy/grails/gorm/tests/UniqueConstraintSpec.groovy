@@ -1,8 +1,7 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
-import grails.validation.ConstrainedProperty
-import org.grails.core.support.GrailsDomainConfigurationUtil
+import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
 import org.grails.datastore.gorm.validation.constraints.UniqueConstraint
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -98,7 +97,7 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
         def groupValidator = [supports: {Class cls -> true},
             validate: {Object target, Errors errors ->
                 def constrainedProperties = GrailsDomainConfigurationUtil.evaluateConstraints(UniqueGroup)
-                for (ConstrainedProperty cp in constrainedProperties.values()) {
+                for (cp in constrainedProperties.values()) {
                     cp.validate(target, target[cp.propertyName], errors)
                 }
             }] as Validator
@@ -106,7 +105,7 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
         def groupWithinValidator = [supports: {Class cls -> true},
             validate: {Object target, Errors errors ->
                 def constrainedProperties = GrailsDomainConfigurationUtil.evaluateConstraints(GroupWithin)
-                for (ConstrainedProperty cp in constrainedProperties.values()) {
+                for (cp in constrainedProperties.values()) {
                     cp.validate(target, target[cp.propertyName], errors)
                 }
             }] as Validator

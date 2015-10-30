@@ -1,9 +1,8 @@
-def grailsVersion = '2.5.1'
 configurations.all {
     resolutionStrategy {
         eachDependency { DependencyResolveDetails details ->
             if(details.requested.group == 'org.grails' && !details.requested.name.startsWith('grails-datastore')) {
-                 details.useVersion(grailsVersion)
+                 details.useVersion(grails2Version)
             }
         }
     }
@@ -32,8 +31,8 @@ dependencies {
         exclude group:"org.grails",module: "grails-datastore-gorm"
     }
 
-    compile "org.grails:grails-test:$grailsVersion", excludes
-    compile "org.grails:grails-plugin-testing:$grailsVersion", excludes
+    compile "org.grails:grails-test:$grails2Version", excludes
+    compile "org.grails:grails-plugin-testing:$grails2Version", excludes
 
     compile project(":grails-datastore-gorm-grails2-support")
     compile project(":grails-datastore-gorm"), {
@@ -43,15 +42,15 @@ dependencies {
     compile project(":grails-datastore-simple"),
             project(":grails-datastore-core")
 
-    compile "org.grails:grails-test:$grailsVersion",excludes
-    compile "org.grails:grails-core:$grailsVersion",excludes
-    compile("org.grails:grails-bootstrap:$grailsVersion",excludes)
+    compile "org.grails:grails-test:$grails2Version",excludes
+    compile "org.grails:grails-core:$grails2Version",excludes
+    compile("org.grails:grails-bootstrap:$grails2Version",excludes)
 
     testCompile project(":grails-datastore-gorm-tck"), {
         exclude group:'org.grails',module:'grails-datastore-gorm-support'
         exclude group:'org.grails',module:'grails-datastore-gorm-plugin-support'
     }
     testRuntime "javax.servlet:javax.servlet-api:$servletApiVersion"
-    testRuntime "org.grails:grails-web:$grailsVersion",excludes
+    testRuntime "org.grails:grails-web:$grails2Version",excludes
     testRuntime "log4j:log4j:1.2.16"
 }

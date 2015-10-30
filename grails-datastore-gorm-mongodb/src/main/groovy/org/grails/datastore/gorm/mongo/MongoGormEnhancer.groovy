@@ -19,7 +19,6 @@ import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
-import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
 /**

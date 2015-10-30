@@ -1,15 +1,24 @@
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if(details.requested.group == 'org.grails' && !details.requested.name.startsWith('grails-datastore')) {
+                details.useVersion(grails2Version)
+            }
+        }
+    }
+}
 dependencies {
     compile project(':grails-datastore-gorm'), {
         exclude group:'org.grails',module:'grails-validation'
         exclude group:'org.grails',module:'grails-async'
     }
-    compile("org.grails:grails-validation:2.5.1") {
+    compile("org.grails:grails-validation") {
         exclude group:'org.grails',module:'grails-core'
     }
-    compile("org.grails:grails-async:2.5.1") {
+    compile("org.grails:grails-async") {
         exclude group:'org.grails',module:'grails-core'
     }
-    compile("org.grails:grails-core:2.5.1") {
+    compile("org.grails:grails-core") {
         exclude group:'aopalliance',module:'aopalliance'
         exclude group:'commons-logging',module:'commons-logging'
         exclude group:'commons-lang',module:'commons-lang'
@@ -36,7 +45,7 @@ dependencies {
         exclude group:'commons-validator',module:'commons-validator'
         exclude group:'com.googlecode.concurrentlinkedhashmap',module:'concurrentlinkedhashmap-lru'
     }
-    compile("org.grails:grails-bootstrap:2.5.1") {
+    compile("org.grails:grails-bootstrap") {
         exclude group:'org.apache.ant',module:'ant'
         exclude group:'org.apache.ant',module:'ant-launcher'
         exclude group:'org.apache.ant',module:'ant-trax'
