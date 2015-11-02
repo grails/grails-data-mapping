@@ -347,6 +347,16 @@ public abstract class DatastoreUtils {
     }
 
     /**
+     * Bind the session to the thread with a SessionHolder keyed by its Datastore.
+     * @param session the session
+     * @return the session (for method chaining)
+     */
+    public static Session bindSession(final Session session, Object creator) {
+        TransactionSynchronizationManager.bindResource(session.getDatastore(), new SessionHolder(session, creator));
+        return session;
+    }
+
+    /**
      * Adds the session to the current SessionHolder's list of sessions, making it the current session.
      * If there's no current session, calls bindSession.
      * @param session the session

@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.CascadeType;
@@ -174,22 +175,25 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
     @Override
     public void disconnect() {
-        super.disconnect();
-        // if there is no active synchronization defined by a TransactionManager then close the transaction is if was created
-        try {
-            if(transaction != null && !isSynchronizedWithTransaction) {
-                Neo4jTransaction transaction = (Neo4jTransaction) getTransaction();
+        if(isConnected()) {
 
-                transaction.close();
+            super.disconnect();
+            // if there is no active synchronization defined by a TransactionManager then close the transaction is if was created
+            try {
+                if(transaction != null && !isSynchronizedWithTransaction) {
+                    Neo4jTransaction transaction = (Neo4jTransaction) getTransaction();
+
+                    transaction.close();
+                }
+            } catch (IOException e) {
+                log.error("Error closing transaction: " + e.getMessage(), e);
             }
-        } catch (IOException e) {
-            log.error("Error closing transaction: " + e.getMessage(), e);
-        }
-        finally {
-            if(log.isDebugEnabled()) {
-                log.debug("Session closed");
+            finally {
+                if(log.isDebugEnabled()) {
+                    log.debug("Session closed");
+                }
+                this.transaction = null;
             }
-            this.transaction = null;
         }
     }
 
@@ -609,6 +613,16 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         if (publisher!=null) {
             publisher.publishEvent(new SessionFlushedEvent(this));
         }
+    }
+
+
+    @Override
+    public Query createQuery(Class type) {
+        if(wasTransactionTerminated() && !TransactionSynchronizationManager.isSynchronizationActive()) {
+            // start a new transaction upon termination
+            transaction = new Neo4jTransaction(graphDatabaseService, new DefaultTransactionDefinition(), true);
+        }
+        return super.createQuery(type);
     }
 
     /**

@@ -34,23 +34,20 @@ public abstract class AbstractDatastorePersistenceContextInterceptor  {
 
     private static final Log LOG = LogFactory.getLog(AbstractDatastorePersistenceContextInterceptor.class);
     protected Datastore datastore;
-    protected boolean participate;
 
     public AbstractDatastorePersistenceContextInterceptor(Datastore datastore) {
         this.datastore = datastore;
     }
 
     public void init() {
-      if (TransactionSynchronizationManager.getResource(datastore) != null) {
-            // Do not modify the Session: just set the participate flag.
-            participate = true;
-        }
-        else {
+
+        final SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(datastore);
+        if (sessionHolder == null) {
             LOG.debug("Opening single Datastore session in DatastorePersistenceContextInterceptor");
             Session session = getSession();
             session.setFlushMode(FlushModeType.AUTO);
             try {
-                DatastoreUtils.bindSession(session);
+                DatastoreUtils.bindSession(session, this);
             } catch (IllegalStateException e) {
                 // ignore, already bound
             }
@@ -62,12 +59,9 @@ public abstract class AbstractDatastorePersistenceContextInterceptor  {
     }
 
     public void destroy() {
-        if (participate) {
-            return;
-        }
-
         // single session mode
-        if (TransactionSynchronizationManager.getResource(datastore) != null) {
+        final SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(datastore);
+        if (sessionHolder != null && this == sessionHolder.getCreator()) {
             SessionHolder holder = (SessionHolder)TransactionSynchronizationManager.unbindResource(datastore);
             LOG.debug("Closing single Datastore session in DatastorePersistenceContextInterceptor");
             try {

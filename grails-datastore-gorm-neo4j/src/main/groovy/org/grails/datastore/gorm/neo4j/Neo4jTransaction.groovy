@@ -34,21 +34,24 @@ import org.springframework.transaction.support.DefaultTransactionDefinition
 class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction>, Closeable {
 
     boolean active = true
+    final boolean sessionCreated
+    boolean rollbackOnly = false
 
     GraphDatabaseService databaseService
     org.neo4j.graphdb.Transaction transaction
     TransactionDefinition transactionDefinition
 
-    Neo4jTransaction(GraphDatabaseService databaseService, TransactionDefinition transactionDefinition = new DefaultTransactionDefinition()) {
+    Neo4jTransaction(GraphDatabaseService databaseService, TransactionDefinition transactionDefinition = new DefaultTransactionDefinition(), boolean sessionCreated = false) {
 
         log.debug("TX START: Neo4J beginTx()")
         transaction = databaseService.beginTx()
         this.databaseService = databaseService;
         this.transactionDefinition = transactionDefinition
+        this.sessionCreated = sessionCreated
     }
 
     void commit() {
-        if(isActive()) {
+        if(isActive() && !rollbackOnly) {
             log.debug("TX COMMIT: Neo4J success()")
             transaction.success()
         }
@@ -63,10 +66,9 @@ class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction>, Cl
 
     void rollbackOnly() {
         if(active) {
+            rollbackOnly = true
             log.debug("TX ROLLBACK ONLY: Neo4J failure()")
             transaction.failure()
-            close()
-            active = false
         }
     }
 

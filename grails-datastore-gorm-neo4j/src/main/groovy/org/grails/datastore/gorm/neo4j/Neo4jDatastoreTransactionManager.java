@@ -13,6 +13,7 @@ import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.FlushModeType;
+import java.io.IOException;
 
 /**
  * @author Stefan Armbruster
@@ -45,10 +46,13 @@ public class Neo4jDatastoreTransactionManager extends DatastoreTransactionManage
         super.doCleanupAfterCompletion(transaction);
         TransactionObject txObject = (TransactionObject) transaction;
         Neo4jTransaction neo4jTransaction = (Neo4jTransaction) txObject.getTransaction();
-        if(log.isDebugEnabled()) {
-            log.debug("TX CLOSE: Neo4j tx.close()");
+        if(!neo4jTransaction.isSessionCreated()) {
+            try {
+                neo4jTransaction.close();
+            } catch (IOException e) {
+                log.warn("Error closing transaction: " + e.getMessage(), e);
+            }
         }
-        neo4jTransaction.getTransaction().close();
     }
 
     /**

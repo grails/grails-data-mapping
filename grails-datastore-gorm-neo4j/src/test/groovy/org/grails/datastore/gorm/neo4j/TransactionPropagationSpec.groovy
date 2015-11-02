@@ -37,6 +37,7 @@ class TransactionPropagationSpec extends GormDatastoreSpec {
             }
 
         }
+        session.disconnect()
 
         then:"Both transactions are rolled back"
         Person.count() == 0
@@ -63,13 +64,17 @@ class TransactionPropagationSpec extends GormDatastoreSpec {
 
     void "Test nested exception transaction"() {
         when:"An entity is persisted in a nested transaction"
-        Person.withTransaction {
-            new Person(lastName:"person1").save()
-            Person.withTransaction { TransactionStatus status ->
-                new Person(lastName:"person2").save()
-                throw new RuntimeException("bad")
-            }
+        try {
+            Person.withTransaction {
+                new Person(lastName:"person1").save()
+                Person.withTransaction { TransactionStatus status ->
+                    new Person(lastName:"person2").save()
+                    throw new RuntimeException("bad")
+                }
 
+            }
+        } finally {
+            session.disconnect()
         }
 
         then:"Both transactions are rolled back"

@@ -30,9 +30,19 @@ public class SessionHolder extends ResourceHolderSupport {
 
     private Deque<Session> sessions = new LinkedBlockingDeque<Session>();
     private Transaction<?> transaction;
+    private Object creator = null;
 
     public SessionHolder(Session session) {
         sessions.add(session);
+    }
+
+    public SessionHolder(Session session, Object creator) {
+        this(session);
+        this.creator = creator;
+    }
+
+    public Object getCreator() {
+        return creator;
     }
 
     public Transaction<?> getTransaction() {
