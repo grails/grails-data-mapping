@@ -15,6 +15,7 @@ import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
 import org.grails.datastore.gorm.neo4j.TestServer
+import org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -102,10 +103,19 @@ class Setup {
                         .newGraphDatabase()
                 break
             case "server":
-                graphDb = new TestGraphDatabaseFactory().newImpermanentDatabase()
+
+                def impermanentDatabase = new TestGraphDatabaseFactory().newImpermanentDatabase()
 
                 def port
-                (port, webServer) = TestServer.startWebServer(graphDb)
+                (port, webServer) = TestServer.startWebServer(impermanentDatabase)
+                skipIndexSetup = true
+                graphDb = new GrailsCypherRestGraphDatabase("http://localhost:$port/db/data") {
+                    @Override
+                    void shutdown() {
+                        impermanentDatabase.shutdown()
+                        super.shutdown()
+                    }
+                }
                 break
 
             case "remote":
