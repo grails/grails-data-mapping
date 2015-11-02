@@ -33,5 +33,23 @@ class MongodbGrailsPlugin {
         def definitions = initializer.getBeanDefinitions((BeanDefinitionRegistry) springConfig.getUnrefreshedApplicationContext())
         definitions.delegate = delegate
         definitions.call()
+
+        def currentSpringConfig = getSpringConfig()
+        if (manager?.hasGrailsPlugin("controllers")) {
+            mongoOpenSessionInViewInterceptor(org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor) {
+                datastore = ref("mongoDatastore")
+            }
+            if (currentSpringConfig.containsBean("controllerHandlerMappings")) {
+                controllerHandlerMappings.interceptors << ref("mongoOpenSessionInViewInterceptor")
+            }
+            if (currentSpringConfig.containsBean("annotationHandlerMapping")) {
+                if (annotationHandlerMapping.interceptors) {
+                    annotationHandlerMapping.interceptors << ref("mongoOpenSessionInViewInterceptor")
+                }
+                else {
+                    annotationHandlerMapping.interceptors = [ref("mongoOpenSessionInViewInterceptor")]
+                }
+            }
+        }
     }    
 }

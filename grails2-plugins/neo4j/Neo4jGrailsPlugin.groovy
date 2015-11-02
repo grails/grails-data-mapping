@@ -1,4 +1,5 @@
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
+import org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
 class Neo4jGrailsPlugin {
@@ -33,5 +34,23 @@ class Neo4jGrailsPlugin {
         def definitions = initializer.getBeanDefinitions((BeanDefinitionRegistry) springConfig.getUnrefreshedApplicationContext())
         definitions.delegate = delegate
         definitions.call()
+
+        def currentSpringConfig = getSpringConfig()
+        if (manager?.hasGrailsPlugin("controllers")) {
+            neo4jOpenSessionInViewInterceptor(OpenSessionInViewInterceptor) {
+                datastore = ref("neo4jDatastore")
+            }
+            if (currentSpringConfig.containsBean("controllerHandlerMappings")) {
+                controllerHandlerMappings.interceptors << ref("neo4jOpenSessionInViewInterceptor")
+            }
+            if (currentSpringConfig.containsBean("annotationHandlerMapping")) {
+                if (annotationHandlerMapping.interceptors) {
+                    annotationHandlerMapping.interceptors << ref("neo4jOpenSessionInViewInterceptor")
+                }
+                else {
+                    annotationHandlerMapping.interceptors = [ref("neo4jOpenSessionInViewInterceptor")]
+                }
+            }
+        }
     }
 }
