@@ -230,6 +230,9 @@ public class Neo4jEntityPersister extends EntityPersister {
     }
 
     public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Node data, Map<String, Object> resultData, Map<Association, Object> initializedAssociations ) {
+        final Neo4jSession session = getSession();
+        session.assertTransaction();
+
         final Iterable<Label> labels = data.getLabels();
         GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) defaultPersistentEntity;
         PersistentEntity persistentEntity = mostSpecificPersistentEntity(defaultPersistentEntity, labels);
@@ -240,7 +243,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         else {
             id = (Serializable) data.getProperty(CypherBuilder.IDENTIFIER);
         }
-        Object instance = getSession().getCachedInstance(persistentEntity.getJavaClass(), id);
+        Object instance = session.getCachedInstance(persistentEntity.getJavaClass(), id);
 
         if (instance == null) {
             instance = unmarshall(persistentEntity, id, data, resultData, initializedAssociations);

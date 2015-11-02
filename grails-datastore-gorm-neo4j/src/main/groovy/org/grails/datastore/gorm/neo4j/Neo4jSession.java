@@ -618,11 +618,15 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
     @Override
     public Query createQuery(Class type) {
+        assertTransaction();
+        return super.createQuery(type);
+    }
+
+    public void assertTransaction() {
         if(wasTransactionTerminated() && !TransactionSynchronizationManager.isSynchronizationActive()) {
             // start a new transaction upon termination
             transaction = new Neo4jTransaction(graphDatabaseService, new DefaultTransactionDefinition(), true);
         }
-        return super.createQuery(type);
     }
 
     /**
