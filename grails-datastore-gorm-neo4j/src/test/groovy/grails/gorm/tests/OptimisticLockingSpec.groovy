@@ -102,13 +102,17 @@ class OptimisticLockingSpec extends GormDatastoreSpec {
         when:
         o = OptLockNotVersioned.get(o.id)
 
-        Thread.start {
-            OptLockNotVersioned.withNewSession { s ->
-                def reloaded = OptLockNotVersioned.get(o.id)
-                reloaded.name += ' in new session'
-                reloaded.save(flush: true)
-            }
-        }.join()
+        try {
+            Thread.start {
+                OptLockNotVersioned.withNewSession { s ->
+                    def reloaded = OptLockNotVersioned.get(o.id)
+                    reloaded.name += ' in new session'
+                    reloaded.save(flush: true)
+                }
+            }.join(2000)
+        } catch (InterruptedException e) {
+            // ignore
+        }
         sleep 2000 // heisenbug
 
         o.name += ' in main session'
