@@ -44,7 +44,7 @@ class MongoGrails2PluginSpec extends spock.lang.Specification {
         Book.count() == 1
 
         cleanup:
-        context.close()
+        context?.close()
 
     }
 }

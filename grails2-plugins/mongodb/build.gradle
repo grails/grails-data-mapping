@@ -21,7 +21,9 @@ grails {
 
 dependencies {
     compile project(':grails-datastore-core')
+    compile project(':grails-datastore-web')
     compile project(':grails-datastore-gorm')
+    compile project(':grails-datastore-gorm-grails2-support')
     compile project(':grails-datastore-gorm-mongodb'), {
         exclude group:'org.grails',module:'grails-datastore-gorm-support'
         exclude group:'org.grails',module:'grails-datastore-gorm-plugin-support'
@@ -29,8 +31,9 @@ dependencies {
         exclude group:'org.grails',module:'grails-bootstrap'
         exclude group:'org.grails',module:'grails-async'
     }
-    compile project(':grails-datastore-gorm-grails2-support')
 
     test "org.spockframework:spock-core:1.0-groovy-2.4"
     provided 'javax.servlet:javax.servlet-api:3.1.0'
 }
+
+test.jvmOptions.jvmArgs '-Dgrails.full.stacktrace=true'
