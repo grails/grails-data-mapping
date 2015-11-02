@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.3 Dynamic Properties and Associations 5.0.0.BUILD-SNAPSHOT</title>
+    <title>3.4 Dynamic Properties and Associations 5.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -73,7 +73,7 @@ function addJsClass() {
 
 
                 <div class="project">
-                    <h1>3.3 Dynamic Properties and Associations - Reference Documentation</h1>
+                    <h1>3.4 Dynamic Properties and Associations - Reference Documentation</h1>
 
                     <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
@@ -86,7 +86,7 @@ function addJsClass() {
 
                 
 
-<h2 id="schemaless">3.3 Dynamic Properties and Associations</h2>
+<h2 id="schemaless">3.4 Dynamic Properties and Associations</h2>
 Neo4j is a schemaless database. This means that, unlike SQL where you can only have a fixed number of rows and columns, nodes can have unlimited properties.<p class="paragraph"/> Most existing object mapping tools in statically typed languages don't allow you to harness this power, but GORM for Neo4j allows you to define both statically defined properties (ie the properties of the domain class) and domain properties.<p class="paragraph"/> For example, take the following domain class:<p class="paragraph"/> <div class="code"><pre>class Plant &#123;
     <span class="java&#45;object">String</span> name
  &#125;</pre></div><p class="paragraph"/> You can set both the statically defined <code>name</code> property, but also any arbitrary number of dynamic properties using the subscript operator in Groovy:<p class="paragraph"/>  <div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Plant(name:<span class="java&#45;quote">"Carrot"</span>)

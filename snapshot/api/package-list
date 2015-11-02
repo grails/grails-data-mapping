@@ -22,7 +22,6 @@ org.grails.datastore.gorm.support
 org.grails.datastore.gorm.timestamp
 org.grails.datastore.gorm.utils
 org.grails.datastore.gorm.validation
-org.grails.datastore.gorm.validation.constraints
 org.grails.datastore.mapping.annotation
 org.grails.datastore.mapping.cache
 org.grails.datastore.mapping.cache.exception
