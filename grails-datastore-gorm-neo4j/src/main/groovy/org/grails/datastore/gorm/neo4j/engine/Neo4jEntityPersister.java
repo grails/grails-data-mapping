@@ -17,6 +17,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.*;
+import org.grails.datastore.mapping.proxy.EntityProxy;
 import org.grails.datastore.mapping.query.Query;
 import org.neo4j.graphdb.*;
 import org.neo4j.helpers.collection.IteratorUtil;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.*;
@@ -37,6 +39,7 @@ import static org.grails.datastore.mapping.query.Query.*;
 public class Neo4jEntityPersister extends EntityPersister {
 
     public static final String DYNAMIC_ASSOCIATIONS_QUERY = "MATCH (m%s {"+CypherBuilder.IDENTIFIER+":{id}})-[r]-(o) RETURN type(r) as relType, startNode(r)=m as out, {ids: collect(o."+CypherBuilder.IDENTIFIER+"), labels: collect(labels(o))} as values";
+    public static final String RETURN_NODE_ID = " RETURN ID(n) as id";
 
     private static Logger log = LoggerFactory.getLogger(Neo4jEntityPersister.class);
 
@@ -64,12 +67,128 @@ public class Neo4jEntityPersister extends EntityPersister {
     }
 
     @Override
-    protected List<Serializable> persistEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objs) {
-        List<Serializable> result = new ArrayList<Serializable>();
-        for (Object obj: objs) {
-            result.add(persistEntity(pe, obj));
+    protected List<Serializable> persistEntities(final PersistentEntity pe, @SuppressWarnings("rawtypes") final Iterable objs) {
+
+        GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) pe;
+
+        List<Serializable> idList = new ArrayList<Serializable>();
+        if(graphPersistentEntity.getIdGenerator() == null) {
+            List<EntityAccess> entityAccesses = new ArrayList<EntityAccess>();
+            // optimize batch inserts for multiple entities with native id
+            final Neo4jSession session = getSession();
+
+            StringBuilder createCypher = new StringBuilder(CypherBuilder.CYPHER_CREATE);
+            int listIndex = 0;
+            List<PendingOperation<Object,Serializable>> cascadingOperations = new ArrayList<PendingOperation<Object,Serializable>>();
+            final Map<String, Object> params = new HashMap<String, Object>(1);
+            final Map<Integer, Integer> indexMap = new HashMap<Integer, Integer>();
+            int insertIndex = 0;
+            final Iterator iterator = objs.iterator();
+            while (iterator.hasNext()) {
+                Object obj = iterator.next();
+                listIndex++;
+                if (shouldIgnore(session, obj)) {
+                    EntityAccess entityAccess = createEntityAccess(pe, obj);
+                    idList.add((Serializable) entityAccess.getIdentifier());
+                    continue;
+                }
+
+                final EntityAccess entityAccess = createEntityAccess(pe, obj);
+                if (getMappingContext().getProxyFactory().isProxy(obj)) {
+                    idList.add(((EntityProxy) obj).getProxyKey());
+                    continue;
+                }
+
+                session.registerPending(obj);
+
+                Serializable identifier = (Serializable) entityAccess.getIdentifier();
+                boolean isUpdate = identifier != null;
+                if (isUpdate) {
+
+                    registerPendingUpdate(session, pe, entityAccess, obj, identifier);
+                    idList.add(identifier);
+                }
+                else {
+                    final PendingInsertAdapter<Object, Serializable> pendingInsert = new PendingInsertAdapter<Object, Serializable>(pe, (Serializable) identifier, obj, entityAccess) {
+                        @Override
+                        public void run() {
+                            if (cancelInsert(pe, entityAccess)) {
+                                setVetoed(true);
+                            }
+                        }
+                    };
+                    pendingInsert.addCascadeOperation(new PendingOperationAdapter<Object, Serializable>(pe, (Serializable) identifier, obj) {
+                        @Override
+                        public void run() {
+                            firePostInsertEvent(pe, entityAccess);
+                        }
+                    });
+
+                    cascadingOperations.addAll(pendingInsert.getCascadeOperations());
+                    final List<PendingOperation<Object, Serializable>> preOperations = pendingInsert.getPreOperations();
+                    for (PendingOperation preOperation : preOperations) {
+                        preOperation.run();
+                    }
+
+                    pendingInsert.run();
+                    pendingInsert.setExecuted(true);
+
+                    // temporarily add null so it is replaced later
+                    idList.add(null);
+
+                    if(pendingInsert.isVetoed()) {
+                        continue;
+                    }
+
+                    session.addPendingInsert(pendingInsert);
+
+                    indexMap.put(insertIndex++, listIndex - 1);
+                    entityAccesses.add(entityAccess);
+                    session.buildEntityCreateOperation(createCypher, String.valueOf(insertIndex), pe, pendingInsert, params, cascadingOperations, (Neo4jMappingContext)getMappingContext());
+                    if(iterator.hasNext()) {
+                        createCypher.append(CypherBuilder.COMMAND_SEPARATOR);
+                    }
+
+                }
+
+            }
+            if(insertIndex > 0) {
+
+                final GraphDatabaseService graphDatabaseService = session.getNativeInterface();
+
+                if(log.isDebugEnabled()) {
+                    log.debug("CREATE Cypher [{}] for parameters [{}]", createCypher, params);
+                }
+                final String finalCypher = createCypher.toString() + " RETURN *";
+                final Result result = graphDatabaseService.execute(finalCypher, params);
+
+                if(!result.hasNext()) {
+                    throw new IdentityGenerationException("CREATE operation did not generate an identifier for entity " + pe.getJavaClass());
+                }
+
+                final Map<String, Object> resultMap = IteratorUtil.singleOrNull(result);
+                for (int j = 0; j < insertIndex; j++) {
+                    final Integer targetIndex = indexMap.get(j);
+                    Assert.notNull(targetIndex, "Should never be null. Please file an issue");
+
+                    final Node node = (Node) resultMap.get("n" + (j + 1));
+                    if(node == null) {
+                        throw new IdentityGenerationException("CREATE operation did not generate an identifier for entity " + pe.getJavaClass());
+                    }
+                    final long identifier = node.getId();
+                    final EntityAccess entityAccess = entityAccesses.get(j);
+                    entityAccess.setIdentifier(identifier);
+                    idList.set(targetIndex, identifier);
+                    persistAssociationsOfEntity(pe, entityAccess, false);
+                }
+            }
         }
-        return result;
+        else {
+            for (Object obj: objs) {
+                idList.add(persistEntity(pe, obj));
+            }
+        }
+        return idList;
     }
 
     @Override
@@ -80,6 +199,9 @@ public class Neo4jEntityPersister extends EntityPersister {
             final Neo4jSession session = getSession();
             final ConversionService conversionService = getMappingContext().getConversionService();
             try {
+                if(log.isDebugEnabled()) {
+                    log.debug("Retrieving entity [{}] by node id [{}]", pe.getJavaClass(), key);
+                }
                 final Node node = session.getNativeInterface().getNodeById(conversionService.convert(key, Long.class));
                 return unmarshallOrFromCache(pe, node);
             } catch (NotFoundException e) {
@@ -122,7 +244,6 @@ public class Neo4jEntityPersister extends EntityPersister {
 
         if (instance == null) {
             instance = unmarshall(persistentEntity, id, data, resultData, initializedAssociations);
-            getSession().cacheInstance(persistentEntity.getJavaClass(), id, instance);
         }
         return instance;
     }
@@ -186,6 +307,8 @@ public class Neo4jEntityPersister extends EntityPersister {
         GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) persistentEntity;
         EntityAccess entityAccess = session.createEntityAccess(persistentEntity, persistentEntity.newInstance());
         entityAccess.setIdentifierNoConversion(id);
+        final Object entity = entityAccess.getEntity();
+        getSession().cacheInstance(persistentEntity.getJavaClass(), id, entity);
 
         Map<TypeDirectionPair, Map<String, Collection>> relationshipsMap = new HashMap<TypeDirectionPair, Map<String, Collection>>();
         final boolean hasDynamicAssociations = graphPersistentEntity.hasDynamicAssociations();
@@ -269,7 +392,7 @@ public class Neo4jEntityPersister extends EntityPersister {
                             final Association inverseSide = association.getInverseSide();
                             if(inverseSide instanceof ToOne) {
                                 resultSet.setInitializedAssociations(Collections.singletonMap(
-                                        inverseSide, entityAccess.getEntity()
+                                        inverseSide, entity
                                 ));
                             }
                         }
@@ -412,7 +535,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             }
         }
 
-        final Object obj = entityAccess.getEntity();
+        final Object obj = entity;
         if(!undeclared.isEmpty()) {
             getSession().setAttribute(obj, Neo4jGormEnhancer.UNDECLARED_PROPERTIES, undeclared);
         }
@@ -468,19 +591,18 @@ public class Neo4jEntityPersister extends EntityPersister {
             throw new IllegalStateException("obj is null");
         }
 
-        boolean isDirty = obj instanceof DirtyCheckable ? ((DirtyCheckable)obj).hasChanged() : true;
-
         final Neo4jSession session = getSession();
-        if (session.isPendingAlready(obj) || (!isDirty)) {
+        if (shouldIgnore(session, obj)) {
             EntityAccess entityAccess = createEntityAccess(pe, obj);
             return (Serializable) entityAccess.getIdentifier();
         }
 
+        if (getMappingContext().getProxyFactory().isProxy(obj)) {
+            return ((EntityProxy) obj).getProxyKey();
+        }
+
         final EntityAccess entityAccess = createEntityAccess(pe, obj);
         Object identifier = entityAccess.getIdentifier();
-        if (getMappingContext().getProxyFactory().isProxy(obj)) {
-            return (Serializable) identifier;
-        }
 
 
         session.registerPending(obj);
@@ -489,23 +611,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         boolean isUpdate = identifier != null;
         if (isUpdate) {
 
-            final PendingUpdateAdapter<Object, Serializable> pendingUpdate = new PendingUpdateAdapter<Object, Serializable>(pe, (Serializable) identifier, obj, entityAccess) {
-                @Override
-                public void run() {
-                    if (cancelUpdate(pe, entityAccess)) {
-                        setVetoed(true);
-                    }
-                }
-            };
-            pendingUpdate.addCascadeOperation(new PendingOperationAdapter<Object, Serializable>(pe, (Serializable) identifier, obj) {
-                @Override
-                public void run() {
-                    firePostUpdateEvent(pe, entityAccess);
-                }
-            });
-            session.addPendingUpdate(pendingUpdate);
-
-            persistAssociationsOfEntity(pe, entityAccess, true);
+            registerPendingUpdate(session, pe, entityAccess, obj, (Serializable) identifier);
 
         } else {
             GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity)pe;
@@ -540,21 +646,23 @@ public class Neo4jEntityPersister extends EntityPersister {
                 }
 
                 pendingInsert.run();
+                pendingInsert.setExecuted(true);
 
                 if(pendingInsert.isVetoed()) {
                     return null;
                 }
 
 
-                List<PendingOperation> cascadingOperations = new ArrayList<PendingOperation>(pendingInsert.getCascadeOperations());
+
                 final Map<String, Object> params = new HashMap<String, Object>(1);
-                final String cypher = session.buildEntityCreateOperation(pe, pendingInsert, params, cascadingOperations);
+
+                final String cypher = session.buildEntityCreateOperation(pe, pendingInsert, params, pendingInsert.getCascadeOperations());
                 final GraphDatabaseService graphDatabaseService = session.getNativeInterface();
-                final String finalCypher = cypher + " RETURN n";
+                final String finalCypher = cypher + RETURN_NODE_ID;
                 if(log.isDebugEnabled()) {
                     log.debug("CREATE Cypher [{}] for parameters [{}]", finalCypher, params);
                 }
-                final Result result = graphDatabaseService.execute(cypher, params);
+                final Result result = graphDatabaseService.execute(finalCypher, params);
 
                 if(!result.hasNext()) {
                     throw new IdentityGenerationException("CREATE operation did not generate an identifier for entity " + entityAccess.getEntity());
@@ -562,20 +670,17 @@ public class Neo4jEntityPersister extends EntityPersister {
 
                 Map<String,Object> idMap = IteratorUtil.singleOrNull(result);
                 if(idMap != null) {
-                    Node n = (Node) idMap.get("n");
-                    if(n == null) {
+                    identifier = idMap.get(GormProperties.IDENTITY);;
+                    if(identifier == null) {
                         throw new IdentityGenerationException("CREATE operation did not generate an identifier for entity " + entityAccess.getEntity());
                     }
-                    identifier = n.getId();
                     entityAccess.setIdentifier(identifier);
                     persistAssociationsOfEntity(pe, entityAccess, false);
                 }
                 else {
                     throw new IdentityGenerationException("CREATE operation did not generate an identifier for entity " + entityAccess.getEntity());
                 }
-                for (PendingOperation cascadingOperation : cascadingOperations) {
-                    cascadingOperation.run();
-                }
+                session.addPendingInsert(pendingInsert);
             }
             else {
                 session.addPendingInsert(pendingInsert);
@@ -585,6 +690,31 @@ public class Neo4jEntityPersister extends EntityPersister {
         }
 
         return (Serializable) identifier;
+    }
+
+    private void registerPendingUpdate(Neo4jSession session, final PersistentEntity pe, final EntityAccess entityAccess, final Object obj, final Serializable identifier) {
+        final PendingUpdateAdapter<Object, Serializable> pendingUpdate = new PendingUpdateAdapter<Object, Serializable>(pe, identifier, obj, entityAccess) {
+            @Override
+            public void run() {
+                if (cancelUpdate(pe, entityAccess)) {
+                    setVetoed(true);
+                }
+            }
+        };
+        pendingUpdate.addCascadeOperation(new PendingOperationAdapter<Object, Serializable>(pe, identifier, obj) {
+            @Override
+            public void run() {
+                firePostUpdateEvent(pe, entityAccess);
+            }
+        });
+        session.addPendingUpdate(pendingUpdate);
+
+        persistAssociationsOfEntity(pe, entityAccess, true);
+    }
+
+    private boolean shouldIgnore(Neo4jSession session, Object obj) {
+        boolean isDirty = obj instanceof DirtyCheckable ? ((DirtyCheckable)obj).hasChanged() : true;
+        return session.isPendingAlready(obj) || (!isDirty);
     }
 
     private void persistAssociationsOfEntity(PersistentEntity pe, EntityAccess entityAccess, boolean isUpdate) {

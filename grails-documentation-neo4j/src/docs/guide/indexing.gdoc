@@ -16,3 +16,16 @@ On startup GORM will use Cypher to create indexes as follows:
 {code}
 CREATE INDEX ON :Club(name)
 {code}
+
+To define a unique index using @unique@ instead:
+
+{code}
+class Club {
+    String name
+
+    ...
+    static mapping = {
+        name unique:true
+    }
+}
+{code}

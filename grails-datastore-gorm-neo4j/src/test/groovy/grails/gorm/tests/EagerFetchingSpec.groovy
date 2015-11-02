@@ -91,7 +91,7 @@ class EagerFetchingSpec extends GormDatastoreSpec {
         session.clear()
 
         when:"an object query is executed"
-        league = League.get(league.id)
+        league = League.findById(league.id)
 
         then:"The associations were eagerly fetched"
         league.clubs instanceof Neo4jPersistentSet

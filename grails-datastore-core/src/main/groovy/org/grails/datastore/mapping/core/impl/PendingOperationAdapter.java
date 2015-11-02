@@ -36,11 +36,21 @@ public abstract class PendingOperationAdapter<E, K> implements PendingOperation<
     private List<PendingOperation<E, K>> pendingOperations = new LinkedList<PendingOperation<E, K>>();
     private List<PendingOperation<E, K>> preOperations = new LinkedList<PendingOperation<E, K>>();
     private boolean vetoed;
+    protected boolean executed;
 
     public PendingOperationAdapter(PersistentEntity entity, K nativeKey, E nativeEntry) {
         this.entity = entity;
         this.nativeKey = nativeKey;
         this.nativeEntry = nativeEntry;
+    }
+
+    @Override
+    public boolean wasExecuted() {
+        return this.executed;
+    }
+
+    public void setExecuted(boolean executed) {
+        this.executed = executed;
     }
 
     public boolean isVetoed() {
@@ -60,7 +70,7 @@ public abstract class PendingOperationAdapter<E, K> implements PendingOperation<
     }
 
     public List<PendingOperation<E, K>> getCascadeOperations() {
-        return Collections.unmodifiableList(pendingOperations);
+        return pendingOperations;
     }
 
     public void addCascadeOperation(PendingOperation<E, K> pendingOperation) {

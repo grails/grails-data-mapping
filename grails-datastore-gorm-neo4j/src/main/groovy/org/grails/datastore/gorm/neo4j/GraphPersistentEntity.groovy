@@ -54,9 +54,9 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Neo4jEntity>
                 case IdGenerator.Type.ASSIGNED:
                     throw new DatastoreConfigurationException("Assigned identifiers are currently not supported")
                 case IdGenerator.Type.SNOWFLAKE:
-                    return SnowflakeIdGenerator.INSTANCE
+                    return ((Neo4jMappingContext)mappingContext).getIdGenerator()
                 default:
-                    return SnowflakeIdGenerator.INSTANCE
+                    return ((Neo4jMappingContext)mappingContext).getIdGenerator()
             }
         } catch (IllegalArgumentException e) {
             try {

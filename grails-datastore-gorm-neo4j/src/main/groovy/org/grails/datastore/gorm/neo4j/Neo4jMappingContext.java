@@ -15,6 +15,7 @@
 package org.grails.datastore.gorm.neo4j;
 
 import groovy.lang.Closure;
+import org.grails.datastore.gorm.neo4j.identity.SnowflakeIdGenerator;
 import org.grails.datastore.mapping.engine.NonPersistentTypeException;
 import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
@@ -72,6 +73,8 @@ public class Neo4jMappingContext extends AbstractMappingContext  {
 
     protected Map<Collection<String>, GraphPersistentEntity> entitiesByLabel = new LinkedHashMap<Collection<String>, GraphPersistentEntity>();
 
+    protected IdGenerator idGenerator = new SnowflakeIdGenerator();
+
     public Neo4jMappingContext() {
         super();
     }
@@ -79,6 +82,10 @@ public class Neo4jMappingContext extends AbstractMappingContext  {
     public Neo4jMappingContext(Closure defaultMapping) {
         super();
         mappingFactory.setDefaultMapping(defaultMapping);
+    }
+
+    public IdGenerator getIdGenerator() {
+        return idGenerator;
     }
 
     @Override

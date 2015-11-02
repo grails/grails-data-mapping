@@ -24,17 +24,36 @@ import spock.lang.Ignore
  */
 class NativeIdentityGeneratorSpec extends GormDatastoreSpec {
 
-    @Ignore // currently not working, CREATE returns no results
+//    @Ignore // currently not working, CREATE returns no results
     void "Test native id generator save and query"() {
         when:"An entity with a native id is persisted"
         def c1 = new Competition(name:"FA Cup")
         def c2 = new Competition(name:"League Cup")
         c1.save(flush:true)
         c2.save(flush:true)
+        session.clear()
 
         then:"The id is generated from the native datastore"
         c1.id == 0L
         c2.id == 1L
+        Competition.get(c1.id).id == 0L
+        Competition.get(c2.id).id == 1L
+    }
+
+    void "Test native id generator save multiple"() {
+        when:"An entity with a native id is persisted"
+        def c1 = new Competition(name:"FA Cup")
+        def c2 = new Competition(name:"League Cup")
+        def results = Competition.saveAll(c1, c2)
+        session.flush()
+        session.clear()
+
+        then:"The id is generated from the native datastore"
+        c1.id == 0L
+        c2.id == 1L
+        results == [c1.id, c2.id]
+        Competition.get(c1.id).id == 0L
+        Competition.get(c2.id).id == 1L
     }
 
     @Override

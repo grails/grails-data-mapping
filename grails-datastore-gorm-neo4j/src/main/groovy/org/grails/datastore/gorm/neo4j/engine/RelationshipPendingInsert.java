@@ -36,7 +36,7 @@ import java.util.*;
  * @author Graeme Rocher
  *
  */
-public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Long> {
+public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Serializable> {
 
     public static final String CYPHER_DELETE_RELATIONSHIP = "MATCH (from%s {"+CypherBuilder.IDENTIFIER+": {start}})%s() DELETE r";
     public static final String CYPHER_DELETE_NATIVE_RELATIONSHIP = "MATCH (from%s)%s() WHERE ID(from) = {start} DELETE r";

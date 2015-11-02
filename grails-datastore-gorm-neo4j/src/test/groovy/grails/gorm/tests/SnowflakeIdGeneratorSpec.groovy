@@ -15,7 +15,7 @@ class SnowflakeIdGeneratorSpec extends Specification {
             def numberOfInvocations = 100000
             def ids = [] as Set
 
-            IdGenerator generator = SnowflakeIdGenerator.INSTANCE
+            IdGenerator generator = new SnowflakeIdGenerator()
 
         when:
             for (def i=0; i<numberOfInvocations; i++) {

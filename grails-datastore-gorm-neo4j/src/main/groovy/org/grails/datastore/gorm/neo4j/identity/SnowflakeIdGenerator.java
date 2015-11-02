@@ -49,9 +49,7 @@ public class SnowflakeIdGenerator implements IdGenerator {
     private volatile long lastTimestamp = -1L;
     private volatile long sequence = 0L;
 
-    public static final SnowflakeIdGenerator INSTANCE  = new SnowflakeIdGenerator();
-
-    private SnowflakeIdGenerator() {
+    public SnowflakeIdGenerator() {
         datacenterId = getDatacenterId();
         if (datacenterId > maxDatacenterId || datacenterId < 0) {
             throw new IllegalStateException("datacenterId > maxDatacenterId");

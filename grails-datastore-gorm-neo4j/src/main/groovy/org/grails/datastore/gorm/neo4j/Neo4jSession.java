@@ -213,6 +213,8 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
         for (PersistentEntity entity : entities) {
             final Collection<PendingUpdate> pendingUpdates = updates.get(entity);
+            GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) entity;
+            final boolean isNativeId = graphPersistentEntity.getIdGenerator() == null;
             final boolean isVersioned = entity.hasProperty(GormProperties.VERSION, Long.class) && entity.isVersioned();
 
             for (PendingUpdate pendingUpdate : pendingUpdates) {
@@ -224,7 +226,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                 if(pendingUpdate.isVetoed()) continue;
 
                 final EntityAccess access = pendingUpdate.getEntityAccess();
-                final Collection<PendingOperation> cascadingOperations = new ArrayList<PendingOperation>(pendingUpdate.getCascadeOperations());
+                final List<PendingOperation<Object, Serializable>> cascadingOperations = new ArrayList<PendingOperation<Object, Serializable>>(pendingUpdate.getCascadeOperations());
 
                 final String labels = ((GraphPersistentEntity)entity).getLabelsWithInheritance(access.getEntity());
                 final StringBuilder cypherStringBuilder = new StringBuilder();
@@ -234,7 +236,12 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                 params.put(GormProperties.IDENTITY, id);
                 final Map<String, Object> simpleProps = new HashMap<String, Object>();
 
-                cypherStringBuilder.append(CypherBuilder.CYPHER_MATCH_ID);
+                if(isNativeId) {
+                    cypherStringBuilder.append(CypherBuilder.CYPHER_MATCH_NATIVE_ID);
+                }
+                else {
+                    cypherStringBuilder.append(CypherBuilder.CYPHER_MATCH_ID);
+                }
 
                 final Object object = pendingUpdate.getObject();
                 final DirtyCheckable dirtyCheckable = (DirtyCheckable) object;
@@ -293,7 +300,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                             cypherStringBuilder.append(",n.").append(aNull).append(" = NULL");
                         }
                     }
-                    cypherStringBuilder.append(" RETURN id(n) as id");
+                    cypherStringBuilder.append(Neo4jEntityPersister.RETURN_NODE_ID);
                     String cypher = String.format(cypherStringBuilder.toString(), labels);
                     if( log.isDebugEnabled() ) {
                         log.debug("UPDATE Cypher [{}] for parameters [{}]", cypher, params);
@@ -315,7 +322,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
     }
 
-    private void processPendingRelationshipUpdates(EntityAccess parent, Serializable parentId, Association association, Collection<PendingOperation> cascadingOperations) {
+    private void processPendingRelationshipUpdates(EntityAccess parent, Serializable parentId, Association association, List<PendingOperation<Object, Serializable>> cascadingOperations) {
         final RelationshipUpdateKey key = new RelationshipUpdateKey(parentId, association);
         final Collection<Serializable> pendingInserts = pendingRelationshipInserts.get(key);
         if(pendingInserts != null) {
@@ -338,32 +345,45 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         boolean hasInserts = false;
         StringBuilder createCypher = new StringBuilder(CypherBuilder.CYPHER_CREATE);
         final Map<String, Object> params = new HashMap<String, Object>(inserts.size());
-        Collection<PendingOperation> cascadingOperations = new ArrayList<PendingOperation>();
+        List<PendingOperation<Object, Serializable>> cascadingOperations = new ArrayList<PendingOperation<Object, Serializable>>();
         for (PersistentEntity entity : entities) {
             final Collection<PendingInsert> entityInserts = inserts.get(entity);
             for (final PendingInsert entityInsert : entityInserts) {
-                List<PendingOperation> preOperations = entityInsert.getPreOperations();
-                for (PendingOperation preOperation : preOperations) {
-                    preOperation.run();
-                }
 
-                entityInsert.run();
+                if(entityInsert.wasExecuted()) {
 
-                if(entityInsert.isVetoed()) continue;
 
-                cascadingOperations.addAll(entityInsert.getCascadeOperations());
-
-                hasInserts = true;
-                i++;
-                if(!first) {
-                    createCypher.append(',');
-                    createCypher.append('\n');
+                    for (Association association : entity.getAssociations()) {
+                        final EntityAccess entityAccess = entityInsert.getEntityAccess();
+                        processPendingRelationshipUpdates(entityAccess, (Serializable) entityAccess.getIdentifier(), association, cascadingOperations);
+                    }
+                    cascadingOperations.addAll(entityInsert.getCascadeOperations());
                 }
                 else {
-                    first = false;
-                }
 
-                buildEntityCreateOperation(createCypher, String.valueOf(i), entity, entityInsert, params, cascadingOperations, mappingContext);
+                    List<PendingOperation> preOperations = entityInsert.getPreOperations();
+                    for (PendingOperation preOperation : preOperations) {
+                        preOperation.run();
+                    }
+
+                    entityInsert.run();
+
+                    if(entityInsert.isVetoed()) continue;
+
+                    cascadingOperations.addAll(entityInsert.getCascadeOperations());
+
+                    hasInserts = true;
+                    i++;
+                    if(!first) {
+                        createCypher.append(',');
+                        createCypher.append('\n');
+                    }
+                    else {
+                        first = false;
+                    }
+
+                    buildEntityCreateOperation(createCypher, String.valueOf(i), entity, entityInsert, params, cascadingOperations, mappingContext);
+                }
             }
 
         }
@@ -377,18 +397,18 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
             }
             graphDatabaseService.execute(finalCypher, params);
 
-            executePendings(cascadingOperations);
         }
+        executePendings(cascadingOperations);
 
     }
 
-    public String buildEntityCreateOperation(PersistentEntity entity, PendingInsert entityInsert, Map<String, Object> params, Collection<PendingOperation> cascadingOperations) {
+    public String buildEntityCreateOperation(PersistentEntity entity, PendingInsert entityInsert, Map<String, Object> params, List<PendingOperation<Object, Serializable>> cascadingOperations) {
         StringBuilder createCypher = new StringBuilder(CypherBuilder.CYPHER_CREATE);
         buildEntityCreateOperation(createCypher, "", entity, entityInsert, params, cascadingOperations, (Neo4jMappingContext) getMappingContext());
         return createCypher.toString();
     }
 
-    protected void buildEntityCreateOperation(StringBuilder createCypher, String index, PersistentEntity entity, PendingInsert entityInsert, Map<String, Object> params, Collection<PendingOperation> cascadingOperations, Neo4jMappingContext mappingContext) {
+    public void buildEntityCreateOperation(StringBuilder createCypher, String index, PersistentEntity entity, PendingInsert entityInsert, Map<String, Object> params, List<PendingOperation<Object, Serializable>> cascadingOperations, Neo4jMappingContext mappingContext) {
         GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) entity;
         final List<PersistentProperty> persistentProperties = entity.getPersistentProperties();
         Map<String, Object> simpleProps = new HashMap<String, Object>(persistentProperties.size());

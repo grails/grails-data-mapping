@@ -15,6 +15,7 @@
 package org.grails.datastore.gorm.neo4j;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.grails.datastore.gorm.neo4j.identity.SnowflakeIdGenerator;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.config.utils.PropertyResolverMap;
 import org.grails.datastore.mapping.core.AbstractDatastore;
@@ -72,7 +73,6 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     protected GraphDatabaseService graphDatabaseService;
     protected boolean skipIndexSetup = false;
 
-
     /**
      * Configures a new {@link Neo4jDatastore} for the given arguments
      *
@@ -110,7 +110,6 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     public Neo4jDatastore(MappingContext mappingContext, ConfigurableApplicationContext applicationContext, GraphDatabaseService graphDatabaseService) {
         this(mappingContext, applicationContext.getEnvironment(), applicationContext, graphDatabaseService);
     }
-
 
     protected GraphDatabaseService createGraphDatabaseService(PropertyResolver configuration) {
         final String type = configuration.getProperty(SETTING_NEO4J_TYPE, DEFAULT_DATABASE_TYPE);

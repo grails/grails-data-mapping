@@ -28,6 +28,11 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  */
 public interface PendingOperation<E, K> extends Runnable {
 
+
+    /**
+     * @return Whether it was already executed
+     */
+    boolean wasExecuted();
     /**
      * @return Whether the operation has been vetoed
      */

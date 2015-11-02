@@ -1,0 +1,46 @@
+GORM by default uses a custom identity generator based on the Snowflake algorithm and stores the generated identifier in a property of each Neo4j node called @__id__@.
+
+This has the advantage of enabling GORM to batch insert operations into a single CREATE cypher statement, hence why it is the default.
+
+However, if you prefer to use native Neo4j node identifiers then you can do so by changing the generator used in the mapping:
+
+{code}
+class Club {
+
+    ...
+    static mapping = {
+        id generator:'native'
+    }
+
+}
+{code}
+
+This will instead use the Neo4j node identifier as the object identifier with the downside being that GORM has to execute individual CREATE  statements for each new object saved, similar to the way GORM for Hibernate has to perform a SQL INSERT if the id generation strategy is a auto-increment column.
+
+This disadvantage can be worked around by using the @saveAll@ method to save multiple domain classes at once:
+
+{code}
+Club.saveAll([
+    new Club(name:"Manchester United"),
+    new Club(name:"Arsenal")
+])
+{code}
+
+If you wish to globally change id generation then you can do so in @grails-app/conf/application.groovy@ (@Config.groovy in Grails 2.x):
+
+
+{code}
+grails.neo4j.default.mapping = {
+    id generator:'native'
+}
+{code}
+
+In addition, if you wish to use a custom identity generation strategy you can do specify a class name that implements the @IdGenerator@ interface:
+
+{code}
+grails.neo4j.default.mapping = {
+    id generator:'com.foo.MyIdGenerator'
+}
+{code}
+
+

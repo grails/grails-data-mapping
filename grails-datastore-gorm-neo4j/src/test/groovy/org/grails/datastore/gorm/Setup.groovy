@@ -39,13 +39,11 @@ class Setup {
 
     static Neo4jDatastore datastore
     static GraphDatabaseService graphDb
-    static DataSource dataSource
     static WebServer webServer
     static skipIndexSetup = true
     static Closure extendedValidatorSetup = null
 
     static destroy() {
-        dataSource.close()
 //        TxManager txManager = graphDb.getDependencyResolver().resolveDependency(TxManager)
 //        log.info "before shutdown, active: $txManager.activeTxCount, committed $txManager.committedTxCount, started: $txManager.startedTxCount, rollback: $txManager.rolledbackTxCount, status: $txManager.status"
 //        assert txManager.activeTxCount == 0, "something is wrong with connection handling - we still have $txManager.activeTxCount connections open"
@@ -61,7 +59,6 @@ class Setup {
         datastore.destroy()
         graphDb = null
         webServer = null
-        dataSource = null
         datastore = null
 
         // force clearing of thread locals, Neo4j connection pool leaks :(
@@ -87,41 +84,35 @@ class Setup {
         def ctx = new GenericApplicationContext()
         ctx.refresh()
 
-        MappingContext mappingContext = new Neo4jMappingContext()
+        boolean nativeId = Boolean.getBoolean("gorm.neo4j.test.nativeId")
+
+        def nativeIdMapping = {
+            id generator:'native'
+        }
+        MappingContext mappingContext = nativeId ? new Neo4jMappingContext(nativeIdMapping) : new Neo4jMappingContext()
 
         // setup datasource
-        def testMode = System.properties.get("gorm_neo4j_test_mode", "embedded")
+        def testMode = System.getProperty("gorm_neo4j_test_mode", "embedded")
 
-        def poolprops = [
-                driverClassName: 'org.neo4j.jdbc.Driver',
-                defaultAutoCommit: false,
-        ]
 
         switch (testMode) {
             case "embedded":
                 graphDb = new TestGraphDatabaseFactory().newImpermanentDatabaseBuilder()
                         .setConfig("cache_type", "soft") // prevent hpc cache during tests, potentially leaking memory due to many restarts
                         .newGraphDatabase()
-                def instanceName = ManagementFactory.runtimeMXBean.name
-                poolprops.url = "jdbc:neo4j:instance:${instanceName}"
-                        //url: 'jdbc:neo4j:mem',
-                poolprops.dbProperties = ["$instanceName": graphDb]
                 break
             case "server":
                 graphDb = new TestGraphDatabaseFactory().newImpermanentDatabase()
+
                 def port
                 (port, webServer) = TestServer.startWebServer(graphDb)
-                poolprops.url = "jdbc:neo4j://localhost:$port/"
                 break
 
             case "remote":
-                poolprops.url = "jdbc:neo4j://localhost:7474/"
                 break
             default:
                 throw new IllegalStateException("dunno know how to handle mode $testMode")
         }
-        dataSource = new DataSource(new PoolProperties(poolprops))
-
         datastore = new Neo4jDatastore(
                 mappingContext,
                 ctx,
@@ -131,7 +122,6 @@ class Setup {
         datastore.mappingContext.proxyFactory = new HashcodeEqualsAwareProxyFactory()
 
 
-//        ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
         for (Class cls in classes) {
             mappingContext.addPersistentEntity(cls)
         }

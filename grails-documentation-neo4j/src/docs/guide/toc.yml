@@ -9,6 +9,7 @@ gettingStarted:
     advancedConfiguration: Advanced Configuration
 mapping:
   title: Mapping domain classes to Neo4j node space
+  idGeneration: Neo4j ID generators
   associations: Understanding Association Mapping
   labelStrategy: Customizing the Label Strategy
   schemaless: Dynamic Properties and Associations

@@ -7,7 +7,7 @@ import grails.gorm.tests.*
 
 @RunWith(Suite)
 @SuiteClasses([
-DetachedCriteriaSpec
+PropertyComparisonQuerySpec
 ])
 class Neo4jSuite {
 }
