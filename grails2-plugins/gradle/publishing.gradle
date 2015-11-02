@@ -60,6 +60,18 @@ publishing {
             pom.withXml {
                 def xml = asNode()
 
+                xml.dependencies.dependency.each { dep ->
+                    if(!dep.exclusions) {
+                        dep.appendNode('exclusions').replaceNode {
+                            delegate.exclusions {
+                                delegate.exclusion {
+                                    delegate.artifactId 'grails-datastore-gorm-support'
+                                    delegate.groupId 'org.grails'
+                                }
+                            }
+                        }
+                    }
+                }
                 def grailsDep = xml.dependencies.dependency.find { dep -> 
                     dep.artifactId.text() == 'grails-dependencies' 
                 }

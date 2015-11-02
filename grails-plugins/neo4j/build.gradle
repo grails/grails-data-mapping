@@ -50,8 +50,6 @@ dependencies {
     provided("org.grails:grails-plugin-converters")
     provided 'javax.servlet:javax.servlet-api:3.1.0'
 
-    compile("org.neo4j:neo4j-community:$neo4jVersion")
-    compile "org.neo4j:neo4j-jdbc:2.1.4"
 
     compile project(":grails-datastore-gorm-plugin-support"), {
         exclude group:'org.springframework', module:'spring-context'

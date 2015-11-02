@@ -16,6 +16,21 @@ grails {
     groovyVersion = grails2GroovyVersion
 }
 
+configurations.all { Configuration c ->
+    c.exclude(group:'org.grails',module:'grails-datastore-gorm-support')
+
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if(details.requested.group == 'org.grails' && !details.requested.name.startsWith('grails-datastore')) {
+                details.useVersion(grails2Version)
+            }
+        }
+    }
+    resolutionStrategy.dependencySubstitution {
+        // Substitute project and module dependencies
+        substitute project(':grails-datastore-gorm-support') with project(':grails-datastore-gorm-grails2-support')
+    }
+}
 
 repositories {
     maven { url "http://m2.neo4j.org/content/repositories/releases/" }
@@ -25,14 +40,15 @@ repositories {
 dependencies {
     compile project(':grails-datastore-core')
     compile project(':grails-datastore-gorm')
+    compile project(':grails-datastore-simple')
+    compile project(':grails-datastore-gorm-grails2-support')
     compile project(':grails-datastore-gorm-neo4j'), {
         exclude group:'org.grails',module:'grails-datastore-gorm-support'
-        exclude group:'org.grails',module:'grails-datastore-gorm-plugin-support'
         exclude group:'org.grails',module:'grails-core'
         exclude group:'org.grails',module:'grails-bootstrap'
         exclude group:'org.grails',module:'grails-async'
     }
-    compile project(':grails-datastore-gorm-grails2-support')
+
 
     test "org.spockframework:spock-core:1.0-groovy-2.4"
     provided 'javax.servlet:javax.servlet-api:3.1.0'
