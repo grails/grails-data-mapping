@@ -5,9 +5,7 @@ import grails.neo4j.bootstrap.Neo4jDataStoreSpringInitializer
 import grails.plugins.Plugin
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
-import org.grails.datastore.gorm.neo4j.plugin.support.Neo4jOnChangeHandler
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
-import org.springframework.transaction.PlatformTransactionManager
 
 class Neo4jGrailsPlugin extends Plugin {
 
