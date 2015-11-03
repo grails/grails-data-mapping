@@ -18,7 +18,6 @@ import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.config.DefaultMappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -51,12 +50,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
         this.keyspace = keyspace;
         initializeDefaultMappingFactory(keyspace);
 
-        if (ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader())) {
-            syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
-        }
-        else {
-            syntaxStrategy = new DefaultMappingConfigurationStrategy(mappingFactory);
-        }
+        syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
     }
 
     public String getKeyspace() {
@@ -64,13 +58,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
     }
 
     protected void initializeDefaultMappingFactory(String keyspace) {
-        // TODO: Need to abstract the construction of these to support JPA syntax etc.
-        if (ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader())) {
-            mappingFactory = new GormKeyValueMappingFactory(keyspace);
-        }
-        else {
-            mappingFactory = new AnnotationKeyValueMappingFactory(keyspace);
-        }
+        mappingFactory = new GormKeyValueMappingFactory(keyspace);
     }
 
     public void setMappingFactory(MappingFactory<Family, KeyValue> mappingFactory) {
