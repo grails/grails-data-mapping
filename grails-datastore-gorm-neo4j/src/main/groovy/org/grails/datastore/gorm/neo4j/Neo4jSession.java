@@ -625,12 +625,13 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         }
     }
 
-    public void assertTransaction() {
+    public Neo4jTransaction assertTransaction() {
         if(transaction == null || (wasTransactionTerminated() && !TransactionSynchronizationManager.isSynchronizationActive())) {
             // start a new transaction upon termination
             final DefaultTransactionDefinition transactionDefinition = createDefaultTransactionDefinition(null);
             transaction = new Neo4jTransaction(graphDatabaseService, transactionDefinition, true);
         }
+        return (Neo4jTransaction) transaction;
     }
 
     protected DefaultTransactionDefinition createDefaultTransactionDefinition(TransactionDefinition other) {

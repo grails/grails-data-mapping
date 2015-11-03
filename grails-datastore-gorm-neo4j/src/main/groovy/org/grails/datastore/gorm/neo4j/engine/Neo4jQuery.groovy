@@ -399,7 +399,7 @@ class Neo4jQuery extends Query {
 
         Result executionResult = params.isEmpty() ? graphDatabaseService.execute(cypher) : graphDatabaseService.execute(cypher, params)
         if (projectionList.empty) {
-            return new Neo4jResultList(offset, executionResult, neo4jEntityPersister)
+            return new Neo4jResultList(offset, executionResult, neo4jEntityPersister, lockResult)
         } else {
 
             def projectedResults = executionResult.collect { Map<String, Object> row ->

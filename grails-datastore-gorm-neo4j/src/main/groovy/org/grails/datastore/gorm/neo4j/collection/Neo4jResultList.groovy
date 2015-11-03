@@ -24,6 +24,8 @@ import org.grails.datastore.mapping.query.QueryException
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Result
 
+import javax.persistence.LockModeType
+
 
 /**
  * A Neo4j result list for decoding objects from the {@link Result} interface
@@ -41,19 +43,24 @@ class Neo4jResultList extends AbstractResultList {
 
     protected transient Map<Association, Object> initializedAssociations = EMPTY_ASSOCIATIONS
 
-    Neo4jResultList(int offset, Result cursor, Neo4jEntityPersister entityPersister) {
+    protected final LockModeType lockMode
+
+    Neo4jResultList(int offset, Result cursor, Neo4jEntityPersister entityPersister, LockModeType lockMode = LockModeType.NONE) {
         super(offset, (Iterator<Object>)cursor)
         this.entityPersister = entityPersister
+        this.lockMode = lockMode;
     }
 
     Neo4jResultList(int offset, Iterator<Object> cursor, Neo4jEntityPersister entityPersister) {
         super(offset, cursor)
         this.entityPersister = entityPersister
+        this.lockMode = LockModeType.NONE;
     }
 
     Neo4jResultList(int offset, Integer size, Iterator<Object> cursor, Neo4jEntityPersister entityPersister) {
         super(offset, size, cursor)
         this.entityPersister = entityPersister
+        this.lockMode = LockModeType.NONE;
     }
 
     /**
@@ -74,16 +81,16 @@ class Neo4jResultList extends AbstractResultList {
         def next = cursor.next()
         if (next instanceof Node) {
             Node node = (Node) next
-            return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node, EMPTY_RESULT_DATA, initializedAssociations)
+            return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node, EMPTY_RESULT_DATA, initializedAssociations, lockMode)
         } else {
             Map<String, Object> map = (Map<String, Object>) next
             if (map.containsKey(CypherBuilder.NODE_DATA)) {
                 Node data = (Node) map.get(CypherBuilder.NODE_DATA);
-                return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), data, map, initializedAssociations)
+                return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), data, map, initializedAssociations, lockMode)
             } else {
                 Node node = (Node) map.values().find() { it instanceof Node }
                 if (node != null) {
-                    return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node, map, initializedAssociations)
+                    return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node, map, initializedAssociations, lockMode)
                 } else {
                     throw new QueryException("Query must return a node as the first column of the RETURN statement")
                 }

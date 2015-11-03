@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
@@ -62,7 +63,7 @@ public abstract class Query implements Cloneable{
     protected boolean uniqueResult;
     protected Map<String, FetchType> fetchStrategies = new HashMap<String,FetchType>();
     protected Boolean queryCache;
-    protected Boolean lockResult;
+    protected LockModeType lockResult;
 
     protected Query(Session session, PersistentEntity entity) {
         this.entity = entity;
@@ -125,6 +126,17 @@ public abstract class Query implements Cloneable{
      * @return The query
      */
     public Query lock(boolean lock) {
+        lockResult = LockModeType.PESSIMISTIC_WRITE;
+        return this;
+    }
+
+    /**
+     * Specifies whether the query should obtain a pessimistic lock
+     *
+     * @param lock True if a lock should be obtained
+     * @return The query
+     */
+    public Query lock(LockModeType lock) {
         lockResult = lock;
         return this;
     }

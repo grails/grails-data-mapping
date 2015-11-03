@@ -28,6 +28,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.Assert;
 
+import javax.persistence.LockModeType;
 import java.io.Serializable;
 import java.util.*;
 
@@ -228,12 +229,22 @@ public class Neo4jEntityPersister extends EntityPersister {
     }
 
     public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Node data, Map<String, Object> resultData) {
-        return unmarshallOrFromCache(defaultPersistentEntity, data, Collections.<String,Object>emptyMap(), Collections.<Association, Object>emptyMap());
+        return unmarshallOrFromCache(defaultPersistentEntity, data, resultData, Collections.<Association, Object>emptyMap());
     }
 
     public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Node data, Map<String, Object> resultData, Map<Association, Object> initializedAssociations ) {
+        return unmarshallOrFromCache(defaultPersistentEntity, data, resultData, initializedAssociations, LockModeType.NONE);
+    }
+    public Object unmarshallOrFromCache(PersistentEntity defaultPersistentEntity, Node data, Map<String, Object> resultData, Map<Association, Object> initializedAssociations, LockModeType lockModeType) {
         final Neo4jSession session = getSession();
-        session.assertTransaction();
+        final Neo4jTransaction neo4jTransaction = session.assertTransaction();
+
+        if (LockModeType.PESSIMISTIC_WRITE.equals(lockModeType)) {
+            if(log.isDebugEnabled()) {
+                log.debug("Locking entity [{}] node [{}] for pessimistic write", defaultPersistentEntity.getName(), data.getId());
+            }
+            neo4jTransaction.getTransaction().acquireWriteLock(data);
+        }
 
         final Iterable<Label> labels = data.getLabels();
         GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) defaultPersistentEntity;
