@@ -33,6 +33,8 @@ import org.springframework.transaction.support.DefaultTransactionDefinition
 @Slf4j
 class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction>, Closeable {
 
+    public static final String DEFAULT_NAME = "Neo4j Transaction"
+
     boolean active = true
     final boolean sessionCreated
     boolean rollbackOnly = false

@@ -157,18 +157,28 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
     }
 
     public Transaction beginTransaction(TransactionDefinition transactionDefinition) {
-        if (transaction != null) {
+        return beginTransactionInternal(transactionDefinition, false);
+    }
+
+    protected Transaction beginTransactionInternal(TransactionDefinition transactionDefinition, boolean sessionCreated) {
+        if (transaction != null && transaction.isActive()) {
             return transaction;
         }
         else {
             // if there is a current transaction, return that, since Neo4j doesn't really supported transaction nesting
+            Transaction tx = null;
             if (TransactionSynchronizationManager.isSynchronizationActive()) {
                 SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
-                transaction = sessionHolder.getTransaction();
-            } else {
-
-                transaction = new Neo4jTransaction(graphDatabaseService, transactionDefinition);
+                tx = sessionHolder.getTransaction();
             }
+
+            if(tx == null || !tx.isActive()) {
+                if(transactionDefinition.getName() == null) {
+                    transactionDefinition = createDefaultTransactionDefinition(transactionDefinition);
+                }
+                tx = new Neo4jTransaction(graphDatabaseService, transactionDefinition, sessionCreated);
+            }
+            this.transaction = tx;
             return transaction;
         }
     }
@@ -615,18 +625,18 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         }
     }
 
-
-    @Override
-    public Query createQuery(Class type) {
-        assertTransaction();
-        return super.createQuery(type);
+    public void assertTransaction() {
+        if(transaction == null || (wasTransactionTerminated() && !TransactionSynchronizationManager.isSynchronizationActive())) {
+            // start a new transaction upon termination
+            final DefaultTransactionDefinition transactionDefinition = createDefaultTransactionDefinition(null);
+            transaction = new Neo4jTransaction(graphDatabaseService, transactionDefinition, true);
+        }
     }
 
-    public void assertTransaction() {
-        if(wasTransactionTerminated() && !TransactionSynchronizationManager.isSynchronizationActive()) {
-            // start a new transaction upon termination
-            transaction = new Neo4jTransaction(graphDatabaseService, new DefaultTransactionDefinition(), true);
-        }
+    protected DefaultTransactionDefinition createDefaultTransactionDefinition(TransactionDefinition other) {
+        final DefaultTransactionDefinition transactionDefinition = other != null ? new DefaultTransactionDefinition(other) : new DefaultTransactionDefinition();
+        transactionDefinition.setName(Neo4jTransaction.DEFAULT_NAME);
+        return transactionDefinition;
     }
 
     /**

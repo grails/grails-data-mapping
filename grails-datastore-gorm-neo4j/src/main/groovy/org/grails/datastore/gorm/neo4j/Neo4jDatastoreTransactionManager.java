@@ -110,7 +110,7 @@ public class Neo4jDatastoreTransactionManager extends DatastoreTransactionManage
     @Override
     protected boolean isExistingTransaction(Object transaction) throws TransactionException {
         TransactionObject txObject = (TransactionObject) transaction;
-        Transaction<?> tx = txObject == null ? null : txObject.getTransaction();
-        return tx != null && tx.isActive();
+        Neo4jTransaction tx = txObject == null ? null : (Neo4jTransaction) txObject.getTransaction();
+        return tx != null && tx.isActive() && !tx.isSessionCreated();
     }
 }

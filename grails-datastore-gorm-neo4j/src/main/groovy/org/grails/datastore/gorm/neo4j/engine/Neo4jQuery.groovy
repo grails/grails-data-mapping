@@ -28,6 +28,7 @@ import org.grails.datastore.mapping.query.AssociationQuery
 import org.grails.datastore.mapping.query.Query
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Node
+import org.neo4j.graphdb.Result
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -46,8 +47,9 @@ class Neo4jQuery extends Query {
     final Neo4jEntityPersister neo4jEntityPersister
 
 
-    public Neo4jQuery(Session session, PersistentEntity entity, Neo4jEntityPersister neo4jEntityPersister) {
+    public Neo4jQuery(Neo4jSession session, PersistentEntity entity, Neo4jEntityPersister neo4jEntityPersister) {
         super(session, entity)
+        session.assertTransaction();
         this.neo4jEntityPersister = neo4jEntityPersister
     }
 
@@ -395,7 +397,7 @@ class Neo4jQuery extends Query {
 
         log.debug("QUERY Cypher [$cypher] for params [$params]")
 
-        def executionResult = graphDatabaseService.execute(cypher, params)
+        Result executionResult = params.isEmpty() ? graphDatabaseService.execute(cypher) : graphDatabaseService.execute(cypher, params)
         if (projectionList.empty) {
             return new Neo4jResultList(offset, executionResult, neo4jEntityPersister)
         } else {

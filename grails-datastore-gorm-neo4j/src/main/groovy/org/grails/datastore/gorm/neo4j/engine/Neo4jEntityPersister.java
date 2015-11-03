@@ -63,7 +63,7 @@ public class Neo4jEntityPersister extends EntityPersister {
         List<Criterion> criterions = new ArrayList<Criterion>(1);
         criterions.add(new In(GormProperties.IDENTITY, IteratorUtil.asCollection(keys)));
         Junction junction = new Conjunction(criterions);
-        return new Neo4jQuery(session, pe, this).executeQuery(pe, junction);
+        return new Neo4jQuery(getSession(), pe, this).executeQuery(pe, junction);
     }
 
     @Override
@@ -193,8 +193,10 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected Object retrieveEntity(PersistentEntity pe, Serializable key) {
+
         GraphPersistentEntity graphPersistentEntity = (GraphPersistentEntity) pe;
         if(graphPersistentEntity.getIdGenerator() == null) {
+            getSession().assertTransaction();
 
             final Neo4jSession session = getSession();
             final ConversionService conversionService = getMappingContext().getConversionService();
@@ -209,7 +211,7 @@ public class Neo4jEntityPersister extends EntityPersister {
             }
         }
         else {
-            final Neo4jQuery query = new Neo4jQuery(session, pe, this);
+            final Neo4jQuery query = new Neo4jQuery(getSession(), pe, this);
             query.idEq(key);
             return IteratorUtil.singleOrNull(query.max(1).list().iterator());
         }
@@ -842,7 +844,7 @@ public class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     public Query createQuery() {
-        return new Neo4jQuery(session, getPersistentEntity(), this);
+        return new Neo4jQuery(getSession(), getPersistentEntity(), this);
     }
 
     @Override
