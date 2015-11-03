@@ -12,7 +12,7 @@ public class HibernateUtilities {
         if (domainClass instanceof AbstractGrailsHibernateDomainClass) {
             AbstractGrailsHibernateDomainClass hibernateDomainClass = (AbstractGrailsHibernateDomainClass)domainClass;
             String sessionFactoryName = hibernateDomainClass.getSessionFactoryName();
-            if (dataSourceName.equals(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE)) {
+            if (dataSourceName.equals(Mapping.DEFAULT_DATA_SOURCE)) {
                 return "sessionFactory".equals(sessionFactoryName);
             }
             return sessionFactoryName.endsWith("_" + dataSourceName);
@@ -20,7 +20,7 @@ public class HibernateUtilities {
 
         List<String> names = getDatasourceNames(domainClass, binder);
         return names.contains(dataSourceName) ||
-               names.contains(GrailsDomainClassProperty.ALL_DATA_SOURCES);
+               names.contains(Mapping.ALL_DATA_SOURCES);
     }
 
     public static List<String> getDatasourceNames(GrailsDomainClass domainClass, AbstractGrailsDomainBinder binder) {

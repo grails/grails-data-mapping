@@ -17,7 +17,6 @@ package grails.plugin.hibernate3
 
 import grails.core.GrailsApplication
 import grails.core.GrailsDomainClass
-import grails.core.GrailsDomainClassProperty
 import grails.validation.ConstrainedProperty
 import grails.validation.ConstraintsEvaluator
 import groovy.transform.CompileStatic
@@ -31,6 +30,7 @@ import org.grails.orm.hibernate.SessionFactoryHolder
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.orm.hibernate.cfg.HibernateUtils
+import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.events.PatchedDefaultFlushEventListener
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler
 import org.grails.orm.hibernate.support.AggregatePersistenceContextInterceptor
@@ -89,7 +89,7 @@ class HibernatePluginSupport {
 
         def datasourceNames = []
         if (getSpringConfig().containsBean('dataSource')) {
-            datasourceNames << GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
+            datasourceNames << Mapping.DEFAULT_DATA_SOURCE
         }
 
         for (name in application.config.keySet()) {
@@ -114,7 +114,7 @@ class HibernatePluginSupport {
 
         for (String datasourceName in datasourceNames) {
             LOG.debug "processing DataSource $datasourceName"
-            boolean isDefault = datasourceName == GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
+            boolean isDefault = datasourceName == Mapping.DEFAULT_DATA_SOURCE
             String suffix = isDefault ? '' : '_' + datasourceName
             String prefix = isDefault ? '' : datasourceName + '_'
 
@@ -355,7 +355,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'""",t
     static final onChange = { event ->
         LOG.debug "onChange() started"
 
-        def allDatasourceNames = [GrailsDomainClassProperty.DEFAULT_DATA_SOURCE] as Set
+        def allDatasourceNames = [Mapping.DEFAULT_DATA_SOURCE] as Set
         for (name in application.config.keySet()) {
             if (name.startsWith('dataSource_')) {
                 allDatasourceNames << name - 'dataSource_'
@@ -372,7 +372,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'""",t
             def dcMappingDsNames = GrailsHibernateUtil.getDatasourceNames(dc) as Set
             datasourceNames = [] as Set
             for(name in allDatasourceNames) {
-                if (name in dcMappingDsNames || dcMappingDsNames.contains(GrailsDomainClassProperty.ALL_DATA_SOURCES)) {
+                if (name in dcMappingDsNames || dcMappingDsNames.contains(Mapping.ALL_DATA_SOURCES)) {
                     datasourceNames << name
                 }
             }
@@ -384,7 +384,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'""",t
         def beans = beans {
             for (String datasourceName in datasourceNames) {
                 LOG.debug "processing DataSource $datasourceName"
-                boolean isDefault = datasourceName == GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
+                boolean isDefault = datasourceName == Mapping.DEFAULT_DATA_SOURCE
                 String suffix = isDefault ? '' : '_' + datasourceName
                 def hibConfig = application.config["hibernate$suffix"]
                 def sessionFactoryReload = hibConfig?.containsKey('reload') ? hibConfig.reload : true

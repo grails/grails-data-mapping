@@ -540,7 +540,7 @@ public class GrailsHibernateUtil implements HibernateQueryConstants{
         if (domainClass instanceof GrailsHibernateDomainClass) {
             GrailsHibernateDomainClass hibernateDomainClass = (GrailsHibernateDomainClass)domainClass;
             String sessionFactoryName = hibernateDomainClass.getSessionFactoryName();
-            if (dataSourceName.equals(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE)) {
+            if (dataSourceName.equals(Mapping.DEFAULT_DATA_SOURCE)) {
                 return "sessionFactory".equals(sessionFactoryName);
             }
             return sessionFactoryName.endsWith("_" + dataSourceName);
@@ -548,7 +548,7 @@ public class GrailsHibernateUtil implements HibernateQueryConstants{
 
         List<String> names = getDatasourceNames(domainClass);
         return names.contains(dataSourceName) ||
-               names.contains(GrailsDomainClassProperty.ALL_DATA_SOURCES);
+               names.contains(Mapping.ALL_DATA_SOURCES);
     }
 
     /**
@@ -563,14 +563,14 @@ public class GrailsHibernateUtil implements HibernateQueryConstants{
             GrailsHibernateDomainClass hibernateDomainClass = (GrailsHibernateDomainClass)domainClass;
             String sessionFactoryName = hibernateDomainClass.getSessionFactoryName();
             if ("sessionFactory".equals(sessionFactoryName)) {
-                return GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+                return Mapping.DEFAULT_DATA_SOURCE;
             }
             return sessionFactoryName.substring("sessionFactory_".length());
         }
 
         List<String> names = getDatasourceNames(domainClass);
-        if (names.size() == 1 && GrailsDomainClassProperty.ALL_DATA_SOURCES.equals(names.get(0))) {
-            return GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+        if (names.size() == 1 && Mapping.ALL_DATA_SOURCES.equals(names.get(0))) {
+            return Mapping.DEFAULT_DATA_SOURCE;
         }
         return names.get(0);
     }

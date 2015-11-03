@@ -93,7 +93,7 @@ public abstract class AbstractGrailsDomainBinder {
      */
     public static Map<String, NamingStrategy> NAMING_STRATEGIES = new HashMap<String, NamingStrategy>();
     static {
-       NAMING_STRATEGIES.put(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE, ImprovedNamingStrategy.INSTANCE);
+       NAMING_STRATEGIES.put(Mapping.DEFAULT_DATA_SOURCE, ImprovedNamingStrategy.INSTANCE);
     }
 
 
@@ -220,7 +220,7 @@ public abstract class AbstractGrailsDomainBinder {
      * @throws IllegalAccessException
      */
     public static void configureNamingStrategy(final Object strategy) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        configureNamingStrategy(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE, strategy);
+        configureNamingStrategy(Mapping.DEFAULT_DATA_SOURCE, strategy);
     }
 
     /**
@@ -1219,7 +1219,7 @@ public abstract class AbstractGrailsDomainBinder {
 
     protected NamingStrategy getNamingStrategy(String sessionFactoryBeanName) {
         String key = "sessionFactory".equals(sessionFactoryBeanName) ?
-                GrailsDomainClassProperty.DEFAULT_DATA_SOURCE :
+                Mapping.DEFAULT_DATA_SOURCE :
                     sessionFactoryBeanName.substring("sessionFactory_".length());
         NamingStrategy namingStrategy = NAMING_STRATEGIES.get(key);
         return namingStrategy != null ? namingStrategy : new ImprovedNamingStrategy();

@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import grails.core.GrailsApplication;
 import grails.core.GrailsDomainClass;
-import grails.core.GrailsDomainClassProperty;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder;
@@ -78,10 +77,10 @@ public abstract class AbstractEventTriggeringInterceptor extends AbstractPersist
         }
 
         for (String dataSource : dataSourceNames) {
-            if (GrailsDomainClassProperty.ALL_DATA_SOURCES.equals(dataSource)) {
+            if (Mapping.ALL_DATA_SOURCES.equals(dataSource)) {
                 return true;
             }
-            boolean isDefault = dataSource.equals(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE);
+            boolean isDefault = dataSource.equals(Mapping.DEFAULT_DATA_SOURCE);
             String suffix = isDefault ? "" : "_" + dataSource;
             String sessionFactoryBeanName = "sessionFactory" + suffix;
 

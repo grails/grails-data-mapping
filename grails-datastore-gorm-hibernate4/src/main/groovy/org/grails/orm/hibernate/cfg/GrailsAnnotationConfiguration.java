@@ -77,7 +77,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
     private Set<GrailsDomainClass> domainClasses = new HashSet<GrailsDomainClass>();
     private boolean configLocked;
     private String sessionFactoryBeanName = "sessionFactory";
-    private String dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+    private String dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
 
     private static final String RESOURCE_PATTERN = "/**/*.class";
 
@@ -430,7 +430,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
             return;
         }
 
-        String dsName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE.equals(dataSourceName) ? "dataSource" : "dataSource_" + dataSourceName;
+        String dsName = Mapping.DEFAULT_DATA_SOURCE.equals(dataSourceName) ? "dataSource" : "dataSource_" + dataSourceName;
         getProperties().put(Environment.DATASOURCE, applicationContext.getBean(dsName));
         getProperties().put(Environment.CURRENT_SESSION_CONTEXT_CLASS, GrailsSessionContext.class.getName());
         getProperties().put(AvailableSettings.CLASSLOADERS, grailsApplication.getClassLoader());

@@ -1,44 +1,5 @@
 dependencies {
-    compile("org.grails:grails-core:$grailsVersion") {
-        exclude group:'aopalliance',module:'aopalliance'
-        exclude group:'commons-logging',module:'commons-logging'
-        exclude group:'commons-lang',module:'commons-lang'
-        exclude group:'commons-collections',module:'commons-collections'
-        exclude group:'commons-io',module:'commons-io'
-        exclude group:'org.grails',module:'grails-spring'
-        exclude group:'org.grails',module:'grails-bootstrap'
-        exclude group:'org.aspectj',module:'aspectjweaver'
-        exclude group:'org.aspectj',module:'aspectjrt'
-        exclude group:'oro',module:'oro'
-        exclude group:'asm',module:'asm'
-        exclude group:'cglib',module:'cglib'
-        exclude group:'cglib', module:'cglib-nodep'
-        exclude group:'xalan',module:'serializer'
-        exclude group:'org.springframework',module:'spring-core'
-        exclude group:'org.springframework',module:'spring-tx'
-        exclude group:'org.springframework',module:'spring-aspects'
-        exclude group:'org.springframework',module:'spring-beans'
-        exclude group:'org.springframework',module:'spring-context'
-        exclude group:'org.springframework',module:'spring-expression'
-        exclude group:'org.springframework',module:'spring-web'
-        exclude group:'org.springframework',module:'spring-aop'
-        exclude group:'org.springframework',module:'spring-context-support'
-        exclude group:'commons-logging',module:'commons-logging'
-        exclude group:'commons-validator',module:'commons-validator'
-        exclude group:'com.googlecode.concurrentlinkedhashmap',module:'concurrentlinkedhashmap-lru'
-    }
-    compile("org.grails:grails-bootstrap:$grailsVersion") {
-        exclude group:'org.apache.ant',module:'ant'
-        exclude group:'org.apache.ant',module:'ant-launcher'
-        exclude group:'org.apache.ant',module:'ant-trax'
-        exclude group:'org.apache.ant',module:'ant-junit'
-        exclude group:'org.apache.ant',module:'ant'
-        exclude group:'org.apache.ivy',module:'ivy'
-        exclude group:'org.codehaus.gant',module:'gant_groovy1.8'
-        exclude group:'jline',module:'jline'
-        exclude group:'org.fusesource.jansi',module:'jansi'
-        exclude group:'net.java.dev.jna',module:'jna'
-    }
+
 
     compile(project(":grails-datastore-gorm")) {
         exclude group: 'org.grails', module:'grails-bootstrap'
@@ -71,16 +32,10 @@ dependencies {
     }
 
 
-    compile "org.springframework:spring-core:$springVersion", {
-        exclude group: 'commons-logging', module:'commons-logging'
-    }
     compile "org.springframework:spring-jdbc:$springVersion", {
         exclude group: 'commons-logging', module:'commons-logging'
     }
     compile "org.springframework:spring-orm:$springVersion", {
-        exclude group: 'commons-logging', module:'commons-logging'
-    }
-    compile "org.springframework:spring-tx:$springVersion", {
         exclude group: 'commons-logging', module:'commons-logging'
     }
 

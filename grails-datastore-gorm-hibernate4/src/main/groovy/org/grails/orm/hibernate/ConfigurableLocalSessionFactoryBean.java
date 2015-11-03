@@ -16,7 +16,6 @@
 package org.grails.orm.hibernate;
 
 import grails.core.GrailsApplication;
-import grails.core.GrailsDomainClassProperty;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
 
@@ -31,6 +30,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration;
+import org.grails.orm.hibernate.cfg.Mapping;
 import org.grails.orm.hibernate.transaction.GrailsJdbcTransactionFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
@@ -96,7 +96,7 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
     protected ApplicationContext applicationContext;
     protected boolean proxyIfReloadEnabled = true;
     protected String sessionFactoryBeanName = "sessionFactory";
-    protected String dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+    protected String dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
 
     /**
      * Set the DataSource to be used by the SessionFactory.
@@ -487,7 +487,7 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
 
             // if reloading is enabled in this environment then we need to use a SessionFactoryProxy instance
             SessionFactoryProxy sfp = new SessionFactoryProxy();
-            String suffix = dataSourceName.equals(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE) ? "" : '_' + dataSourceName;
+            String suffix = dataSourceName.equals(Mapping.DEFAULT_DATA_SOURCE) ? "" : '_' + dataSourceName;
             SessionFactoryHolder sessionFactoryHolder = applicationContext.getBean(
                     SessionFactoryHolder.BEAN_ID + suffix, SessionFactoryHolder.class);
             sessionFactoryHolder.setSessionFactory(sessionFactory);

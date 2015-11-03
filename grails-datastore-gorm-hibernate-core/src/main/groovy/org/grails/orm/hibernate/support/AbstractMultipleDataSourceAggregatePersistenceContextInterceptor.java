@@ -17,12 +17,12 @@ package org.grails.orm.hibernate.support;
 
 import grails.config.Config;
 import grails.core.GrailsApplication;
-import grails.core.GrailsDomainClassProperty;
 import grails.core.support.GrailsConfigurationAware;
 import grails.persistence.support.PersistenceContextInterceptor;
 
 import java.util.*;
 
+import org.grails.orm.hibernate.cfg.Mapping;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -124,7 +124,7 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
         // looks for instances of PersistenceContextInterceptor and picks one assuming
         // there's only one, so this one has to be the only one
         for (String name : aggregateDataSourceNames()) {
-            String suffix = name.equals( GrailsDomainClassProperty.DEFAULT_DATA_SOURCE ) ? "" : "_" + name;
+            String suffix = name.equals( Mapping.DEFAULT_DATA_SOURCE ) ? "" : "_" + name;
             String beanName = "sessionFactory" + suffix;
             if (applicationContext.containsBean(beanName)) {
                 SessionFactoryAwarePersistenceContextInterceptor interceptor = createPersistenceContextInterceptor(name);
@@ -146,7 +146,7 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
         Set<String> resolvedDataSourceNames = new HashSet<String>();
         Set<String> dataSourceNames = calculateDataSourceNames(applicationContext.getBean(GrailsApplication.class));
         for (String dataSourceName : dataSourceNames) {
-            if (applicationContext.containsBean(dataSourceName.equals(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE) ? "dataSource" : "dataSource_" + dataSourceName)) {
+            if (applicationContext.containsBean(dataSourceName.equals(Mapping.DEFAULT_DATA_SOURCE) ? "dataSource" : "dataSource_" + dataSourceName)) {
                 resolvedDataSourceNames.add(dataSourceName);
             }
         }
@@ -167,7 +167,7 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
             for (Object name : dataSources.keySet()) {
                 String nameAsString = name.toString();
                 if (nameAsString.equals( DEFAULT_DATA_SOURCE_NAME) ) {
-                    datasourceNames.add( GrailsDomainClassProperty.DEFAULT_DATA_SOURCE );
+                    datasourceNames.add( Mapping.DEFAULT_DATA_SOURCE );
                 } else {
                     datasourceNames.add( nameAsString );
                 }
@@ -175,7 +175,7 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
         } else {
             Map dataSource = config.getProperty(DEFAULT_DATA_SOURCE_NAME, Map.class, Collections.emptyMap());
             if (!dataSource.isEmpty()) {
-                datasourceNames.add( GrailsDomainClassProperty.DEFAULT_DATA_SOURCE);
+                datasourceNames.add( Mapping.DEFAULT_DATA_SOURCE);
             }
         }
         return datasourceNames;

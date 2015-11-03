@@ -49,7 +49,7 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
     private Set<GrailsDomainClass> domainClasses = new HashSet<GrailsDomainClass>();
     private boolean configLocked;
     private String sessionFactoryBeanName = "sessionFactory";
-    private String dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+    private String dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
 
     protected static GrailsDomainBinder binder = new GrailsDomainBinder();
 

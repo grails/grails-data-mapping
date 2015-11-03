@@ -109,7 +109,7 @@ class HibernateUtils {
         PlatformTransactionManager transactionManager = ctx.getBean("transactionManager$suffix", PlatformTransactionManager)
         HibernateDatastore datastore = (HibernateDatastore)ctx.getBean("hibernateDatastore$suffix", Datastore)
         datastores[sessionFactory] = datastore
-        String datasourceName = suffix ? suffix[1..-1] : GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
+        String datasourceName = suffix ? suffix[1..-1] : Mapping.DEFAULT_DATA_SOURCE
 
         HibernateGormEnhancer enhancer = new HibernateGormEnhancer(datastore, transactionManager, application)
 
@@ -119,12 +119,12 @@ class HibernateUtils {
                 return
             }
 
-            if (!datasourceName.equals(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE)) {
+            if (!datasourceName.equals(Mapping.DEFAULT_DATA_SOURCE)) {
                 LOG.debug "Registering namespace methods for $dc.clazz.name in DataSource '$datasourceName'"
                 registerNamespaceMethods dc, datastore, datasourceName, transactionManager, application
             }
 
-            if (datasourceName.equals(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE) || datasourceName.equals(GrailsHibernateUtil.getDefaultDataSource(dc))) {
+            if (datasourceName.equals(Mapping.DEFAULT_DATA_SOURCE) || datasourceName.equals(GrailsHibernateUtil.getDefaultDataSource(dc))) {
                 LOG.debug "Enhancing GORM entity ${entity.name}"
                 if (entity.javaClass.getAnnotation(Enhanced) == null) {
                     enhancer.enhance entity

@@ -15,7 +15,9 @@
  */
 package org.grails.orm.hibernate.cfg
 
+import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.grails.datastore.mapping.config.Entity
 
 /**
  * Models the mapping from GORM classes to the db.
@@ -23,7 +25,11 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
  * @author Graeme Rocher
  * @since 1.0
  */
-class Mapping {
+@CompileStatic
+class Mapping extends Entity {
+
+    public static final String ALL_DATA_SOURCES = "ALL";
+    public static final String DEFAULT_DATA_SOURCE = "DEFAULT"
 
     /**
      * Custom hibernate user types
@@ -143,7 +149,7 @@ class Mapping {
      * Get the datasource names that this domain class works with.
      * @return the datasource names
      */
-    List<String> datasources = [GrailsDomainClassProperty.DEFAULT_DATA_SOURCE]
+    List<String> datasources = [ DEFAULT_DATA_SOURCE ]
 
     /**
      * DDL comment.

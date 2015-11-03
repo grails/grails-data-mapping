@@ -15,7 +15,6 @@
 package grails.orm.bootstrap
 
 import grails.core.GrailsApplication
-import grails.core.GrailsDomainClassProperty
 import grails.util.Environment
 import grails.validation.CascadingValidator
 import grails.validation.ConstrainedProperty
@@ -28,6 +27,7 @@ import org.grails.datastore.mapping.engine.event.DatastoreInitializedEvent
 import org.grails.orm.hibernate.*
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.HibernateUtils
+import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler
 import org.grails.orm.hibernate.support.AggregatePersistenceContextInterceptor
 import org.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
@@ -63,7 +63,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory"
     public static final String DEFAULT_DATA_SOURCE_NAME = 'dataSource'
 
-    String defaultDataSourceBeanName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
+    String defaultDataSourceBeanName = Mapping.DEFAULT_DATA_SOURCE
     String defaultSessionFactoryBeanName = SESSION_FACTORY_BEAN_NAME
     String ddlAuto = "update"
     Set<String> dataSources = [defaultDataSourceBeanName]

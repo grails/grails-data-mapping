@@ -50,7 +50,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
     protected Set<GrailsDomainClass> domainClasses = new HashSet<GrailsDomainClass>();
     protected boolean configLocked;
     protected String sessionFactoryBeanName = "sessionFactory";
-    protected String dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+    protected String dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
     protected GrailsDomainBinder binder = new GrailsDomainBinder();
 
     private boolean subclassForeignKeysCreated = false;

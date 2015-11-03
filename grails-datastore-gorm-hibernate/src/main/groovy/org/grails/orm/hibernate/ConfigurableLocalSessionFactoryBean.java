@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.orm.hibernate.cfg.DefaultGrailsDomainConfiguration;
 import org.grails.orm.hibernate.cfg.GrailsDomainConfiguration;
+import org.grails.orm.hibernate.cfg.Mapping;
 import org.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor;
 import org.grails.orm.hibernate.transaction.HibernateJtaTransactionManagerAdapter;
 import org.hibernate.EntityMode;
@@ -98,7 +99,7 @@ public class ConfigurableLocalSessionFactoryBean extends
     protected ApplicationContext applicationContext;
     protected boolean proxyIfReloadEnabled = true;
     protected String sessionFactoryBeanName = "sessionFactory";
-    protected String dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+    protected String dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
     protected PlatformTransactionManager transactionManager;
 
     public PlatformTransactionManager getTransactionManager() {
@@ -250,7 +251,7 @@ public class ConfigurableLocalSessionFactoryBean extends
 
             // if reloading is enabled in this environment then we need to use a SessionFactoryProxy instance
             SessionFactoryProxy sfp = new SessionFactoryProxy();
-            String suffix = dataSourceName.equals(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE) ? "" : '_' + dataSourceName;
+            String suffix = dataSourceName.equals(Mapping.DEFAULT_DATA_SOURCE) ? "" : '_' + dataSourceName;
             SessionFactoryHolder sessionFactoryHolder = applicationContext.getBean(
                     SessionFactoryHolder.BEAN_ID + suffix, SessionFactoryHolder.class);
             sessionFactoryHolder.setSessionFactory(sf);

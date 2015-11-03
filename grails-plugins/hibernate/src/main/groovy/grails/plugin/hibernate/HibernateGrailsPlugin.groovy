@@ -4,7 +4,6 @@ import grails.config.Config
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.core.GrailsDomainClass
-import grails.core.GrailsDomainClassProperty
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import grails.plugins.Plugin
 import grails.validation.ConstrainedProperty
@@ -15,6 +14,7 @@ import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.orm.hibernate.SessionFactoryHolder
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.orm.hibernate.validation.UniqueConstraint
@@ -88,7 +88,7 @@ class HibernateGrailsPlugin extends Plugin {
             ApplicationContext applicationContext = applicationContext
             applicationContext.getBean(GrailsDomainClassMappingContext).addPersistentEntity(cls, true)
             for(String dataSourceName in dataSourceNames) {
-                boolean isDefault = dataSourceName == GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
+                boolean isDefault = dataSourceName == Mapping.DEFAULT_DATA_SOURCE
                 String suffix = isDefault ? '' : '_' + dataSourceName
                 String sessionFactoryName = isDefault ? HibernateDatastoreSpringInitializer.SESSION_FACTORY_BEAN_NAME : "sessionFactory$suffix"
 

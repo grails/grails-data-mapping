@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.grails.core.lifecycle.ShutdownOperations;
+import org.grails.orm.hibernate.cfg.Mapping;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -68,7 +69,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
     private String dataSourceName;
 
     public HibernatePersistenceContextInterceptor() {
-        this.dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+        this.dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
     }
 
     /**

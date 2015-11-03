@@ -242,7 +242,7 @@ class TablePerSubclassSubclass extends TablePerSubclassSuperclass {
         ExpandoMetaClass.enableGlobally()
         MockGrailsPluginManager pluginManager = new MockGrailsPluginManager()
         Holders.setPluginManager(pluginManager)
-        previousNamingStrategyClass = grailsDomainBinder.NAMING_STRATEGIES[GrailsDomainClassProperty.DEFAULT_DATA_SOURCE].getClass()
+        previousNamingStrategyClass = grailsDomainBinder.NAMING_STRATEGIES[Mapping.DEFAULT_DATA_SOURCE].getClass()
     }
 
     @Override
@@ -250,7 +250,7 @@ class TablePerSubclassSubclass extends TablePerSubclassSuperclass {
         super.tearDown()
         grailsDomainBinder.NAMING_STRATEGIES.clear()
         grailsDomainBinder.NAMING_STRATEGIES.put(
-                GrailsDomainClassProperty.DEFAULT_DATA_SOURCE, ImprovedNamingStrategy.INSTANCE)
+                Mapping.DEFAULT_DATA_SOURCE, ImprovedNamingStrategy.INSTANCE)
         Holders.setPluginManager(null)
         grailsDomainBinder.configureNamingStrategy previousNamingStrategyClass
     }
