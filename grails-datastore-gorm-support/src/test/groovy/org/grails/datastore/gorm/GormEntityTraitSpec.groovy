@@ -2,6 +2,7 @@ package org.grails.datastore.gorm
 
 import grails.artefact.Artefact
 import grails.persistence.Entity
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import spock.lang.Specification
 
 /*
@@ -25,6 +26,77 @@ import spock.lang.Specification
  */
 class GormEntityTraitSpec extends Specification {
 
+    void "Test dynamic parse"(){
+        when:
+        def cls = new GroovyClassLoader().parseClass('''
+import grails.persistence.*
+
+@Entity
+class Book {
+
+    String title
+
+    Author author
+}
+
+@Entity
+class Author {
+
+    String name
+    // here to test properties with only a single letter
+    static belongsTo = [p:Publisher]
+}
+
+@Entity
+class Publisher {
+    String name
+}
+''')
+        def instance = cls.newInstance()
+
+        then:
+        cls.transients.contains('authorId')
+        GormEntity.isAssignableFrom(cls)
+        GormValidateable.isAssignableFrom(cls)
+        DirtyCheckable.isAssignableFrom(cls)
+        cls.getAnnotation(grails.gorm.Entity)
+        instance.hasProperty('authorId')
+    }
+
+    void "Test dynamic parse 2"(){
+        when:
+        def cls = new GroovyClassLoader().parseClass('''
+import grails.persistence.*
+
+@Entity
+class Group {
+    Long id
+    String name
+    static hasMany = [members:Member]
+    Collection members
+}
+
+@Entity
+class Member   {
+    Long id
+    String name
+    String externalId
+}
+
+@Entity
+class SubMember extends Member {
+    String extraName
+}
+
+''')
+        def instance = cls.newInstance()
+        then:
+        instance.respondsTo('addToMembers')
+        GormEntity.isAssignableFrom(cls)
+        GormValidateable.isAssignableFrom(cls)
+        DirtyCheckable.isAssignableFrom(cls)
+        cls.getAnnotation(grails.gorm.Entity)
+    }
     void "test that a class marked with @Artefact('Domain') is enhanced with GormEntityTraitSpec"() {
         expect:
         GormEntity.isAssignableFrom QueryMethodArtefactDomain

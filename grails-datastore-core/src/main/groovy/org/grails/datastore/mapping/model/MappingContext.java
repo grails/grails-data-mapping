@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.model;
 import java.util.Collection;
 
 import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.datastore.mapping.reflect.FastClassData;
 import org.grails.datastore.mapping.reflect.FastEntityAccess;
 import org.springframework.core.convert.ConversionService;
@@ -174,6 +175,13 @@ public interface MappingContext {
      * @return The proxy factory
      */
     ProxyFactory getProxyFactory();
+
+    /**
+     * For handling proxies
+     *
+     * @return The proxy handler
+     */
+    ProxyHandler getProxyHandler();
 
     /**
      * Factory to use for creating proxies

@@ -6,12 +6,14 @@ import grails.core.GrailsApplication
 import grails.core.GrailsDomainClass
 import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.proxy.ProxyHandlerAdapter
 import org.grails.orm.hibernate.GrailsHibernateTransactionManager
 import org.grails.orm.hibernate.HibernateDatastore
 import org.grails.orm.hibernate.HibernateGormEnhancer
 import org.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
 import org.grails.orm.hibernate.cfg.HibernateUtils
 import org.grails.orm.hibernate.events.PatchedDefaultFlushEventListener
+import org.grails.orm.hibernate.proxy.HibernateProxyHandler
 import org.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
 import org.grails.orm.hibernate.validation.HibernateConstraintsEvaluator
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
@@ -150,6 +152,7 @@ class Setup {
         hibernateConfig.grailsApplication = grailsApplication
 
         def context = new GrailsDomainClassMappingContext(grailsApplication)
+        context.setProxyFactory(new ProxyHandlerAdapter(new HibernateProxyHandler()))
         ctx.beanFactory.registerSingleton 'grailsDomainClassMappingContext', context
 
         sessionFactory = hibernateConfig.buildSessionFactory()

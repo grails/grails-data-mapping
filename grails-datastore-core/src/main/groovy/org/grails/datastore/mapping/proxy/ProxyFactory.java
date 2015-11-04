@@ -25,7 +25,7 @@ import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface ProxyFactory {
+public interface ProxyFactory extends ProxyHandler {
 
     /**
      * Creates a proxy
@@ -49,31 +49,4 @@ public interface ProxyFactory {
      */
     <T,K extends Serializable> T createProxy(Session session, AssociationQueryExecutor<K, T> executor, K associationKey);
 
-    /**
-     * Checks whether the specified instance is a proxy
-     *
-     * @param object The object to check
-     * @return True if it is a proxy
-     */
-    boolean isProxy(Object object);
-
-    /**
-     * Checks whether a given proxy is initialized
-     * @param object The object to check
-     * @return True if it is
-     */
-    boolean isInitialized(Object object);
-
-    /**
-     * Unwraps the given proxy if it is one
-     * @param object The object
-     * @return The unwrapped proxy
-     */
-    Object unwrap(Object object);
-    /**
-     * Obtains the identifier of an object without initializing the proxy if it is one
-     * @param obj The object
-     * @return The identifier
-     */
-    Serializable getIdentifier(Object obj);
 }

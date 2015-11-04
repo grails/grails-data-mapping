@@ -6,7 +6,7 @@ dependencies {
     }
 
 
-    compile "org.grails:grails-async:3.0.10.BUILD-SNAPSHOT"
+    compile "org.grails:grails-async:$grailsVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
 
@@ -15,19 +15,5 @@ dependencies {
     testCompile "org.grails:grails-spring:$grailsVersion"
     testCompile "org.grails:grails-core:$grailsVersion"
 }
-
-//def astTransformPath
-//jar.doFirst {
-//    def metaInfPath = "${compileGroovy.destinationDir}/META-INF/services"
-//
-//    ant.mkdir(dir:metaInfPath)
-//    astTransformPath = new File(metaInfPath, "org.codehaus.groovy.transform.ASTTransformation")
-//    astTransformPath.text = "org.grails.datastore.gorm.query.transform.GlobalDetachedCriteriaASTTransformation"
-//}
-//jar.doLast {
-//    if(astTransformPath) {
-//        ant.delete file:astTransformPath
-//    }
-//}
 
 //compileGroovy.groovyOptions.forkOptions.jvmArgs = ['-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005']

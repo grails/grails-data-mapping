@@ -26,12 +26,7 @@ import org.grails.datastore.gorm.validation.ValidatorProvider;
 import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.*;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.Embedded;
-import org.grails.datastore.mapping.model.types.ManyToMany;
-import org.grails.datastore.mapping.model.types.ManyToOne;
-import org.grails.datastore.mapping.model.types.OneToMany;
-import org.grails.datastore.mapping.model.types.OneToOne;
+import org.grails.datastore.mapping.model.types.*;
 import org.springframework.validation.Validator;
 
 import javax.persistence.FetchType;
@@ -156,6 +151,9 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
                     persistentProperty = new GrailsDomainClassPersistentProperty(this, grailsDomainClassProperty);
                 }
             }
+            else if(grailsDomainClassProperty.isBasicCollectionType()) {
+                persistentProperty = createBasicCollection(mappingContext, grailsDomainClassProperty);
+            }
             else {
                 persistentProperty = new GrailsDomainClassPersistentProperty(this, grailsDomainClassProperty);
             }
@@ -263,6 +261,16 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
 
     public boolean isIdentityName(String propertyName) {
         return domainClass.getIdentifier().getName().equals(propertyName);
+    }
+
+    private PersistentProperty createBasicCollection(GrailsDomainClassMappingContext mappingContext, GrailsDomainClassProperty grailsDomainClassProperty) {
+        final PropertyMapping<Property> mapping = createDefaultMapping(grailsDomainClassProperty);
+        final Basic basic = new Basic(this, mappingContext, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
+            public PropertyMapping getMapping() {
+                return mapping;
+            }
+        };
+        return basic;
     }
 
     private PersistentProperty createManyToOne(

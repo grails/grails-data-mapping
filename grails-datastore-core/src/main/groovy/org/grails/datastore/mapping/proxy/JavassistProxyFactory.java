@@ -21,6 +21,7 @@ import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.ReflectionUtils;
 
 import java.io.Serializable;
@@ -63,6 +64,12 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
      */
     public boolean isInitialized(Object object) {
         return !isProxy(object) || ((EntityProxy) object).isInitialized();
+    }
+
+    @Override
+    public boolean isInitialized(Object object, String associationName) {
+        final Object value = ClassPropertyFetcher.forClass(object.getClass()).getPropertyValue(associationName);
+        return value == null || isInitialized(value);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 original authors
+ * Copyright 2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.compiler.gorm
+package org.grails.datastore.gorm
 
-import grails.compiler.ast.GrailsArtefactClassInjector
-import grails.compiler.ast.GrailsDomainClassInjector
-import org.codehaus.groovy.grails.compiler.injection.AstTransformer
+import grails.compiler.traits.TraitInjector
+import grails.gorm.Domain
+import groovy.transform.CompileStatic
+
 import org.grails.core.artefact.DomainClassArtefactHandler
 
-
 /**
- * Concrete implementation of DirtyCheckTransformer for Grails 3
  *
- * @author Graeme Rocher
- * @since 5.0
+ * @author Jeff Brown
+ * @since 4.0
+ *
  */
-@AstTransformer
-class GrailsDirtyCheckingTransformer extends DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtefactClassInjector{
+@CompileStatic
+class DomainTraitInjector implements TraitInjector {
+
+    Class getTrait() {
+        Domain
+    }
 
     @Override
     String[] getArtefactTypes() {
-        [DomainClassArtefactHandler.TYPE]
+        [DomainClassArtefactHandler.TYPE] as String[]
     }
 }

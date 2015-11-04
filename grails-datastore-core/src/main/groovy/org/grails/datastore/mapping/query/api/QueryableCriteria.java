@@ -23,7 +23,7 @@ import java.util.List;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface QueryableCriteria<T> extends Criteria{
+public interface QueryableCriteria<T> extends Criteria {
 
     /**
      * @return The target entity

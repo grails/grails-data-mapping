@@ -19,9 +19,19 @@ import grails.gorm.DetachedCriteria
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.Basic
+import org.grails.datastore.mapping.model.types.ManyToMany
+import org.grails.datastore.mapping.model.types.OneToMany
+import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.api.BuildableCriteria
 import org.grails.datastore.mapping.query.api.Criteria
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.reflect.FastClassData
+import org.springframework.cglib.reflect.FastMethod
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.validation.Errors
 
@@ -34,7 +44,7 @@ import org.springframework.validation.Errors
  * @since 4.0
  */
 @CompileStatic
-trait GormEntity<D> implements GormValidateable {
+trait GormEntity<D extends GormEntity> implements GormValidateable, DirtyCheckable {
     
     private static GormInstanceApi internalInstanceApi
     private static GormStaticApi<D> internalStaticApi
@@ -258,6 +268,174 @@ trait GormEntity<D> implements GormValidateable {
      */
     Object getPersistentValue(String fieldName) {
         currentGormInstanceApi().getPersistentValue this, fieldName
+    }
+
+    /**
+     * Obtains the id of an association without initialising the association
+     *
+     * @param associationName The association name
+     * @return The id of the association or null if it doesn't have one
+     */
+    Serializable getAssociationId(String associationName) {
+        PersistentEntity entity = getGormPersistentEntity()
+        def association = entity.getPropertyByName(associationName)
+        if(association instanceof ToOne) {
+            def datastore = currentGormStaticApi().datastore
+            def proxyHandler = datastore.mappingContext.getProxyHandler()
+            def value = ClassPropertyFetcher.forClass(getClass()).getPropertyValue(this, associationName)
+            if(proxyHandler.isProxy(value)) {
+                return proxyHandler.getIdentifier(value)
+            }
+            else {
+                return datastore.currentSession.getObjectIdentifier(value)
+            }
+        }
+        return null
+    }
+
+    /**
+     * Removes the given value to given association ensuring both sides are correctly disassociated
+     *
+     * @param associationName The association name
+     * @param arg The value
+     * @return This domain instance
+     */
+    D removeFrom(String associationName, Object arg) {
+        final PersistentEntity entity = getGormPersistentEntity()
+        def prop = entity.getPropertyByName(associationName)
+        final MappingContext mappingContext = lookupMappingContext()
+        final FastClassData fastClassData = mappingContext.getFastClassData(entity)
+
+        if(prop instanceof Association) {
+            Association association = (Association)prop
+            final javaClass = association.associatedEntity?.javaClass
+            final boolean isBasic = association instanceof Basic
+            if(isBasic) {
+                javaClass = ((Basic)association).componentType
+            }
+
+            if (javaClass.isInstance(arg)) {
+                final propertyName = prop.name
+                final FastMethod fastGetter = fastClassData.getFastGetters().get(propertyName)
+
+                Collection currentValue = (Collection)fastGetter.invoke(this, propertyName)
+                currentValue?.remove(arg)
+                markDirty(propertyName)
+
+                if (association.bidirectional) {
+                    def otherSide = association.inverseSide
+                    def associatedFastData = mappingContext.getFastClassData(association.associatedEntity)
+                    if (otherSide instanceof ManyToMany) {
+                        def otherSideGetter = associatedFastData.getFastGetters().get(otherSide.name)
+                        Collection otherSideValue = (Collection) otherSideGetter.invoke(arg)
+                        otherSideValue?.remove(this)
+
+                    }
+                    else {
+                        def otherSideSetter = associatedFastData.getFastSetters().get(otherSide.name)
+                        otherSideSetter.invoke(arg, null)
+                    }
+                }
+            }
+            else {
+                throw new IllegalArgumentException("")
+            }
+
+        }
+        return (D)this
+    }
+
+    /**
+     * Adds the given value to given association ensuring both sides are correctly associated
+     *
+     * @param associationName The association name
+     * @param arg The value
+     * @return This domain instance
+     */
+    D addTo(String associationName, Object arg) {
+        final PersistentEntity entity = getGormPersistentEntity()
+        final def prop = entity.getPropertyByName(associationName)
+        final D targetObject = (D)this
+
+        final MappingContext mappingContext = lookupMappingContext()
+        final FastClassData fastClassData = mappingContext.getFastClassData(entity)
+        if(fastClassData != null && (prop instanceof Association)) {
+
+            final Association association = (Association)prop
+            final propertyName = association.name
+            final FastMethod fastGetter = fastClassData.getFastGetters().get(propertyName)
+
+            def obj
+            def currentValue = fastGetter.invoke(targetObject)
+            if (currentValue == null) {
+                currentValue = [].asType(prop.type)
+                fastClassData.getFastSetters()
+                                    .get(propertyName)
+                                    .invoke(targetObject, currentValue)
+            }
+
+            final javaClass = association.associatedEntity?.javaClass
+            final boolean isBasic = association instanceof Basic
+            if(isBasic) {
+                javaClass = ((Basic)association).componentType
+            }
+
+            if (arg instanceof Map) {
+                obj = javaClass.newInstance(arg)
+            }
+            else if (javaClass.isInstance(arg)) {
+                obj = arg
+            }
+            else {
+                def conversionService = mappingContext.conversionService
+                if(conversionService.canConvert(arg.getClass(), javaClass)) {
+                    obj = conversionService.convert(arg, javaClass)
+                }
+                else {
+                    throw new IllegalArgumentException("Cannot add value [$arg] to collection [$propertyName] with type [$javaClass.name]")
+                }
+            }
+
+            def coll = (Collection)currentValue
+            coll.add(obj)
+            markDirty(propertyName)
+
+            if (isBasic) {
+                return targetObject
+            }
+
+            if (association.bidirectional && association.inverseSide) {
+                def otherSide = association.inverseSide
+                String name = otherSide.name
+                def associatedFastData = mappingContext.getFastClassData(association.associatedEntity)
+                if (otherSide instanceof OneToMany || otherSide instanceof ManyToMany) {
+                    def otherSideGetter = associatedFastData.getFastGetters().get(name)
+                    Collection otherSideValue = (Collection)otherSideGetter.invoke(obj)
+                    if (otherSideValue == null) {
+                        otherSideValue =  (Collection)( [].asType(otherSide.type) )
+                        associatedFastData.getFastSetters().get(name).invoke(obj, otherSideValue)
+                    }
+                    otherSideValue.add(targetObject)
+                    if(obj instanceof DirtyCheckable) {
+                        ((DirtyCheckable)obj).markDirty(name)
+                    }
+                }
+
+                else {
+                    associatedFastData
+                            .getFastSetters()
+                            .get(name)
+                            .invoke(obj, targetObject)
+                }
+            }
+            targetObject
+        }
+
+        return targetObject
+    }
+
+    private MappingContext lookupMappingContext() {
+        currentGormStaticApi().datastore.mappingContext
     }
 
 
@@ -920,26 +1098,81 @@ trait GormEntity<D> implements GormValidateable {
         currentGormStaticApi().executeQuery query, params, args
     }
 
+    /**
+     * Executes an update for the given String
+     *
+     * @param query The query represented by the given string
+     *
+     * @return The number of entities updated
+     *
+     */
     static Integer executeUpdate(String query) {
         currentGormStaticApi().executeUpdate query
     }
 
+    /**
+     * Executes an update for the given String
+     *
+     * @param query The query represented by the given string
+     * @param params The parameters to the query
+     *
+     * @return The number of entities updated
+     *
+     */
     static Integer executeUpdate(String query, Map args) {
         currentGormStaticApi().executeUpdate query, args
     }
 
+    /**
+     * Executes an update for the given String
+     *
+     * @param query The query represented by the given string
+     * @param params The parameters to the query
+     * @param args The arguments to the query
+     *
+     * @return The number of entities updated
+     *
+     */
     static Integer executeUpdate(String query, Map params, Map args) {
         currentGormStaticApi().executeUpdate query, params, args
     }
 
+    /**
+     * Executes an update for the given String
+     *
+     * @param query The query represented by the given string
+     * @param params The positional parameters to the query
+     *
+     * @return The number of entities updated
+     *
+     */
     static Integer executeUpdate(String query, Collection params) {
         currentGormStaticApi().executeUpdate query, params
     }
 
+    /**
+     * Executes an update for the given String
+     *
+     * @param query The query represented by the given string
+     * @param params The positional parameters to the query
+     *
+     * @return The number of entities updated
+     *
+     */
     static Integer executeUpdate(String query, Object...params) {
         currentGormStaticApi().executeUpdate query, params
     }
 
+    /**
+     * Executes an update for the given String
+     *
+     * @param query The query represented by the given string
+     * @param params The positional parameters to the query
+     * @param args The arguments to the query
+     *
+     * @return The number of entities updated
+     *
+     */
     static Integer executeUpdate(String query, Collection params, Map args) {
         currentGormStaticApi().executeUpdate query, params, args
     }

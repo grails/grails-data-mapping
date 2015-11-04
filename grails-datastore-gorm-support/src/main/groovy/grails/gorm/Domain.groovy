@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2015 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm
+package grails.gorm
 
-import grails.compiler.traits.TraitInjector
-import groovy.transform.CompileStatic
 
-import org.grails.core.artefact.DomainClassArtefactHandler
 
 /**
+ * Trait added to all domain classes
  *
- * @author Jeff Brown
- * @since 4.0
- *
+ * @author Graeme Rocher
+ * @since 5.0
  */
-@CompileStatic
-class GormValidateableTraitInjector implements TraitInjector {
+trait Domain {
 
-    Class getTrait() {
-        GormValidateable
-    }
-
-    @Override
-    String[] getArtefactTypes() {
-        [DomainClassArtefactHandler.TYPE] as String[]
-    }
 }

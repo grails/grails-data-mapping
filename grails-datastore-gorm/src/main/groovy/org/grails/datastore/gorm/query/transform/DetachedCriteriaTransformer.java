@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import grails.gorm.Entity;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassCodeVisitorSupport;
@@ -1322,7 +1323,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         currentBody.addStatement(new ExpressionStatement(new MethodCallExpression(thisExpression, "projections", projectionsBody.getArguments())));
     }
 
-    protected boolean isDomainClass(ClassNode classNode) {
+    public static boolean isDomainClass(ClassNode classNode) {
         if (classNode == null) return false;
         String filePath = classNode.getModule() != null ? classNode.getModule().getDescription() : null;
         if (filePath != null) {
@@ -1339,6 +1340,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             for (AnnotationNode annotation : annotations) {
                 String className = annotation.getClassNode().getName();
                 if ("grails.persistence.Entity".equals(className)) {
+                    return true;
+                }
+                if (Entity.class.getName().equals(className)) {
                     return true;
                 }
                 if (javax.persistence.Entity.class.getName().equals(className)) {

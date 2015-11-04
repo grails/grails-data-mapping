@@ -8,5 +8,5 @@ appender('STDOUT', ConsoleAppender) {
 
 root(ERROR, ['STDOUT'])
 
-logger("org.grails.datastore.gorm.neo4j", DEBUG)
+//logger("org.grails.datastore.gorm.neo4j", DEBUG)
 

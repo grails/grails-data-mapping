@@ -26,12 +26,7 @@ import org.grails.datastore.gorm.validation.ValidatorProvider;
 import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.*;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.Embedded;
-import org.grails.datastore.mapping.model.types.ManyToMany;
-import org.grails.datastore.mapping.model.types.ManyToOne;
-import org.grails.datastore.mapping.model.types.OneToMany;
-import org.grails.datastore.mapping.model.types.OneToOne;
+import org.grails.datastore.mapping.model.types.*;
 import org.springframework.validation.Validator;
 
 import javax.persistence.FetchType;
@@ -149,7 +144,11 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
                 } else {
                     persistentProperty = new GrailsDomainClassPersistentProperty(this, grailsDomainClassProperty);
                 }
-            } else {
+            }
+            else if(grailsDomainClassProperty.isBasicCollectionType()) {
+                persistentProperty = createBasicCollection(mappingContext, grailsDomainClassProperty);
+            }
+            else {
                 persistentProperty = new GrailsDomainClassPersistentProperty(this, grailsDomainClassProperty);
             }
             propertiesByName.put(grailsDomainClassProperty.getName(), persistentProperty);
@@ -161,6 +160,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
         }
         initialized = true;
     }
+
 
     public String getName() {
         return domainClass.getFullName();
@@ -270,6 +270,17 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
         configureAssociation(grailsDomainClassProperty, oneToOne);
         return oneToOne;
     }
+
+    private PersistentProperty createBasicCollection(GrailsDomainClassMappingContext mappingContext, GrailsDomainClassProperty grailsDomainClassProperty) {
+        final PropertyMapping<Property> mapping = createDefaultMapping(grailsDomainClassProperty);
+        final Basic basic = new Basic(this, mappingContext, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
+            public PropertyMapping getMapping() {
+                return mapping;
+            }
+        };
+        return basic;
+    }
+
 
     private PersistentProperty createManyToMany(
             GrailsDomainClassMappingContext ctx,

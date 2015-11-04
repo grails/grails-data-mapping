@@ -21,6 +21,7 @@ import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.AssociationQueryExecutor
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.proxy.ProxyFactory
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 
 /**
  * Implements the proxy interface and creates a Groovy proxy by passing the need for javassist style proxies
@@ -109,6 +110,12 @@ class GroovyProxyFactory implements ProxyFactory {
             return proxyMc.isProxyInitiated()
         }
         return true
+    }
+
+    @Override
+    public boolean isInitialized(Object object, String associationName) {
+        final Object value = ClassPropertyFetcher.forClass(object.getClass()).getPropertyValue(associationName)
+        return value == null || isInitialized(value)
     }
 
     @Override

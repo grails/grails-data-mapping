@@ -37,7 +37,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
 
 
 
-    Class<? extends Exception> validationException = ValidationException
+    protected Class<? extends Exception> validationException = ValidationException
     boolean failOnError = false
 
     GormInstanceApi(Class<D> persistentClass, Datastore datastore) {

@@ -16,12 +16,20 @@
 package org.grails.datastore.mapping.reflect
 
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.GenericsType
+import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
+import org.codehaus.groovy.ast.PropertyNode
 import org.codehaus.groovy.ast.expr.ArgumentListExpression
+import org.codehaus.groovy.ast.expr.ConstantExpression
+import org.codehaus.groovy.ast.expr.Expression
+import org.springframework.util.StringUtils
 
+import java.lang.annotation.Annotation
+import java.lang.reflect.Modifier
 import java.util.regex.Pattern
 
 
@@ -78,6 +86,36 @@ class AstUtils {
         if (url == null) return false;
 
         return DOMAIN_PATH_PATTERN.matcher(url.getFile()).find();
+    }
+
+    public static boolean isDomainClass(ClassNode classNode) {
+        if (classNode == null) return false;
+        String filePath = classNode.getModule() != null ? classNode.getModule().getDescription() : null;
+        if (filePath != null) {
+            try {
+                if (isDomainClass(new File(filePath).toURI().toURL())) {
+                    return true;
+                }
+            } catch (MalformedURLException e) {
+                // ignore
+            }
+        }
+        List<AnnotationNode> annotations = classNode.getAnnotations();
+        if (annotations != null && !annotations.isEmpty()) {
+            for (AnnotationNode annotation : annotations) {
+                String className = annotation.getClassNode().getName();
+                if ("grails.persistence.Entity".equals(className)) {
+                    return true;
+                }
+                if ("grails.gorm.Entity".equals(className)) {
+                    return true;
+                }
+                if (javax.persistence.Entity.class.getName().equals(className)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static ClassNode nonGeneric(ClassNode type) {
@@ -171,4 +209,215 @@ class AstUtils {
             classNode.addInterface(replaceGenericsPlaceholders(traitClassNode, parameterNameToParameterValue, classNode));
         }
     }
+
+    public static boolean hasOrInheritsProperty(ClassNode classNode, String propertyName) {
+        if (hasProperty(classNode, propertyName)) {
+            return true;
+        }
+
+        ClassNode parent = classNode.getSuperClass();
+        while (parent != null && !parent.name.equals("java.lang.Object")) {
+            if (hasProperty(parent, propertyName)) {
+                return true;
+            }
+            parent = parent.getSuperClass();
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns whether a classNode has the specified property or not
+     *
+     * @param classNode    The ClassNode
+     * @param propertyName The name of the property
+     * @return true if the property exists in the ClassNode
+     */
+    public static boolean hasProperty(ClassNode classNode, String propertyName) {
+        if (classNode == null || !StringUtils.hasText(propertyName)) {
+            return false
+        }
+
+        final MethodNode method = classNode.getMethod(NameUtils.getGetterName(propertyName), Parameter.EMPTY_ARRAY)
+        if (method != null) return true
+
+        // check read-only field with setter
+        if( classNode.getField(propertyName) != null && !classNode.getMethods(NameUtils.getSetterName(propertyName)).isEmpty()) {
+            return true
+        }
+
+        for (PropertyNode pn in classNode.getProperties()) {
+            if (pn.name.equals(propertyName) && !pn.isPrivate()) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    public static ClassNode getFurthestUnresolvedParent(ClassNode classNode) {
+        ClassNode parent = classNode.getSuperClass()
+
+        while (parent != null && !parent.name.equals("java.lang.Object") &&
+                !parent.isResolved() && !Modifier.isAbstract(parent.getModifiers())) {
+            classNode = parent
+            parent = parent.getSuperClass()
+        }
+        return classNode;
+    }
+
+    /**
+     * Adds an annotation to the give nclass node if it doesn't already exist
+     *
+     * @param classNode The class node
+     * @param annotationClass The annotation class
+     */
+    public static void addAnnotationIfNecessary(ClassNode classNode, Class<? extends Annotation> annotationClass) {
+        addAnnotationOrGetExisting(classNode, annotationClass);
+    }
+
+    /**
+     * Adds an annotation to the given class node or returns the existing annotation
+     *
+     * @param classNode The class node
+     * @param annotationClass The annotation class
+     */
+    public static AnnotationNode addAnnotationOrGetExisting(ClassNode classNode, Class<? extends Annotation> annotationClass) {
+        return addAnnotationOrGetExisting(classNode, annotationClass, Collections.<String, Object>emptyMap());
+    }
+
+    /**
+     * Adds an annotation to the given class node or returns the existing annotation
+     *
+     * @param classNode The class node
+     * @param annotationClass The annotation class
+     */
+    public static AnnotationNode addAnnotationOrGetExisting(ClassNode classNode, Class<? extends Annotation> annotationClass, Map<String, Object> members) {
+        ClassNode annotationClassNode = ClassHelper.make(annotationClass);
+        return addAnnotationOrGetExisting(classNode, annotationClassNode, members);
+    }
+
+    public static AnnotationNode addAnnotationOrGetExisting(ClassNode classNode, ClassNode annotationClassNode) {
+        return addAnnotationOrGetExisting(classNode, annotationClassNode, Collections.<String, Object>emptyMap());
+    }
+
+    public static AnnotationNode addAnnotationOrGetExisting(ClassNode classNode, ClassNode annotationClassNode, Map<String, Object> members) {
+        List<AnnotationNode> annotations = classNode.getAnnotations();
+        AnnotationNode annotationToAdd = new AnnotationNode(annotationClassNode);
+        if (annotations.isEmpty()) {
+            classNode.addAnnotation(annotationToAdd);
+        }
+        else {
+            AnnotationNode existing = findAnnotation(annotationClassNode, annotations);
+            if (existing != null){
+                annotationToAdd = existing;
+            }
+            else {
+                classNode.addAnnotation(annotationToAdd);
+            }
+        }
+
+        if(members != null && !members.isEmpty()) {
+            for (Map.Entry<String, Object> memberEntry : members.entrySet()) {
+                Object value = memberEntry.getValue();
+                annotationToAdd.setMember( memberEntry.getKey(), value instanceof Expression ? (Expression)value : new ConstantExpression(value));
+            }
+        }
+        return annotationToAdd;
+    }
+
+    public static AnnotationNode findAnnotation(ClassNode classNode, Class<?> type) {
+        List<AnnotationNode> annotations = classNode.getAnnotations();
+        return annotations == null ? null : findAnnotation(new ClassNode(type),annotations);
+    }
+
+    public static AnnotationNode findAnnotation(ClassNode annotationClassNode, List<AnnotationNode> annotations) {
+        for (AnnotationNode annotation : annotations) {
+            if (annotation.getClassNode().equals(annotationClassNode)) {
+                return annotation;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Tests whether the ClasNode implements the specified method name.
+     *
+     * @param classNode  The ClassNode
+     * @param methodName The method name
+     * @return true if it does implement the method
+     */
+    public static boolean implementsZeroArgMethod(ClassNode classNode, String methodName) {
+        MethodNode method = classNode.getDeclaredMethod(methodName, Parameter.EMPTY_ARRAY);
+        return method != null && (method.isPublic() || method.isProtected()) && !method.isAbstract();
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static boolean implementsOrInheritsZeroArgMethod(ClassNode classNode, String methodName) {
+        if (implementsZeroArgMethod(classNode, methodName)) {
+            return true;
+        }
+
+        ClassNode parent = classNode.getSuperClass();
+        while (parent != null && !parent.name.equals("java.lang.Object")) {
+            if (implementsZeroArgMethod(parent, methodName)) {
+                return true;
+            }
+            parent = parent.getSuperClass();
+        }
+        return false;
+    }
+
+
+
+    public static boolean isSubclassOfOrImplementsInterface(ClassNode childClass, ClassNode superClass) {
+        String superClassName = superClass.getName();
+        return isSubclassOfOrImplementsInterface(childClass, superClassName);
+    }
+
+    public static boolean isSubclassOfOrImplementsInterface(ClassNode childClass, String superClassName) {
+        return isSubclassOf(childClass, superClassName) || implementsInterface(childClass, superClassName);
+    }
+
+    /**
+     * Returns true if the given class name is a parent class of the given class
+     *
+     * @param classNode The class node
+     * @param parentClassName the parent class name
+     * @return True if it is a subclass
+     */
+    public static boolean isSubclassOf(ClassNode classNode, String parentClassName) {
+        ClassNode currentSuper = classNode.getSuperClass();
+        while (currentSuper != null && !currentSuper.getName().equals(OBJECT_CLASS_NODE.getName())) {
+            if (currentSuper.getName().equals(parentClassName)) return true;
+            currentSuper = currentSuper.getSuperClass();
+        }
+        return false;
+    }
+
+    private static boolean implementsInterface(ClassNode classNode, String interfaceName) {
+        ClassNode currentClassNode = classNode;
+        while (currentClassNode != null && !currentClassNode.getName().equals(OBJECT_CLASS_NODE.getName())) {
+            ClassNode[] interfaces = currentClassNode.getInterfaces();
+            if (implementsInterfaceInternal(interfaces, interfaceName)) return true;
+            currentClassNode = currentClassNode.getSuperClass();
+        }
+        return false;
+    }
+
+    private static boolean implementsInterfaceInternal(ClassNode[] interfaces, String interfaceName) {
+        for (ClassNode anInterface : interfaces) {
+            if(anInterface.getName().equals(interfaceName)) {
+                return true;
+            }
+            ClassNode[] childInterfaces = anInterface.getInterfaces();
+            if(childInterfaces != null && childInterfaces.length>0) {
+                return implementsInterfaceInternal(childInterfaces,interfaceName );
+            }
+
+        }
+        return false;
+    }
+
+
 }

@@ -16,41 +16,22 @@ package org.grails.datastore.gorm
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
-import org.grails.datastore.mapping.reflect.MetaClassUtils
-import org.grails.datastore.mapping.reflect.NameUtils
-
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
-
 import org.codehaus.groovy.reflection.CachedMethod
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
-import org.grails.datastore.gorm.finders.CountByFinder
-import org.grails.datastore.gorm.finders.FindAllByBooleanFinder
-import org.grails.datastore.gorm.finders.FindAllByFinder
-import org.grails.datastore.gorm.finders.FindByBooleanFinder
-import org.grails.datastore.gorm.finders.FindByFinder
-import org.grails.datastore.gorm.finders.FindOrCreateByFinder
-import org.grails.datastore.gorm.finders.FindOrSaveByFinder
-import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.gorm.finders.ListOrderByFinder
+import org.grails.datastore.gorm.finders.*
 import org.grails.datastore.gorm.internal.InstanceMethodInvokingClosure
 import org.grails.datastore.gorm.internal.StaticMethodInvokingClosure
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.types.Basic
-import org.grails.datastore.mapping.model.types.EmbeddedCollection
-import org.grails.datastore.mapping.model.types.ManyToMany
-import org.grails.datastore.mapping.model.types.OneToMany
-import org.grails.datastore.mapping.model.types.ToOne
-import org.grails.datastore.mapping.proxy.ProxyFactory
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.reflect.MetaClassUtils
 import org.springframework.transaction.PlatformTransactionManager
-import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
-import org.grails.datastore.mapping.model.types.Association
 
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 /**
  * Enhances a class with GORM behavior
  *
@@ -157,8 +138,6 @@ class GormEnhancer implements Closeable {
 
         addInstanceMethods(e, onlyExtendedMethods)
 
-        addAssociationMethods(e)
-
         addStaticMethods(e, onlyExtendedMethods)
     }
 
@@ -185,93 +164,6 @@ class GormEnhancer implements Closeable {
     protected void registerStaticMethod(ExpandoMetaClass mc, String methodName, Class<?>[] parameterTypes, GormStaticApi staticApiProvider) {
         def callable = new StaticMethodInvokingClosure(staticApiProvider, methodName, parameterTypes)
         mc.static."$methodName" = callable
-    }
-
-    protected void addAssociationMethods(PersistentEntity e) {
-        Class cls = e.javaClass
-        ExpandoMetaClass mc = MetaClassUtils.getExpandoMetaClass(cls)
-        final proxyFactory = datastore.mappingContext.proxyFactory
-        for (p in e.associations) {
-            def prop = p
-            def isBasic = prop instanceof Basic
-            if(prop instanceof ToOne) {
-                registerAssociationIdentifierGetter(proxyFactory, mc, (ToOne)prop)
-            }
-            else if ((prop instanceof OneToMany) || (prop instanceof ManyToMany) || isBasic || (prop instanceof EmbeddedCollection)) {
-                def associatedEntity = prop.associatedEntity
-                def javaClass = associatedEntity?.javaClass
-                if(javaClass || isBasic) {
-                    mc."addTo${prop.capitilizedName}" = { arg ->
-                        def obj
-                        final targetObject = delegate
-                        if (targetObject[prop.name] == null) {
-                            targetObject[prop.name] = [].asType(prop.type)
-                        }
-                        if (arg instanceof Map) {
-                            obj = javaClass.newInstance(arg)
-                            addObjectToCollection(prop, targetObject, obj)
-                        }
-                        else if (isBasic) {
-                            addObjectToCollection(prop, targetObject, arg)
-                            return targetObject
-                        }
-                        else if (javaClass.isInstance(arg)) {
-                            obj = arg
-                            addObjectToCollection(prop, targetObject, obj)
-                        }
-                        else {
-                            throw new MissingMethodException("addTo${prop.capitilizedName}", cls, [arg] as Object[])
-                        }
-                        if (prop.bidirectional && prop.inverseSide) {
-                            def otherSide = prop.inverseSide
-                            String name = otherSide.name
-                            if (otherSide instanceof OneToMany || otherSide instanceof ManyToMany) {
-                                if (obj[name] == null) {
-                                    obj[name] = [].asType(otherSide.type)
-                                }
-                                addObjectToCollection(otherSide, obj, targetObject)
-                            }
-                            else {
-                                obj[name] = targetObject
-                            }
-                        }
-                        targetObject
-                    }
-                    mc."removeFrom${prop.capitilizedName}" = { arg ->
-                        if (javaClass.isInstance(arg)) {
-                            final targetObject = delegate
-                            targetObject[prop.name]?.remove(arg)
-                            if (targetObject instanceof DirtyCheckable) {
-                                ((DirtyCheckable)targetObject).markDirty(prop.name)
-                            }
-                            if (prop.bidirectional) {
-                                def otherSide = prop.inverseSide
-                                if (otherSide instanceof ManyToMany) {
-                                    String name = otherSide.name
-                                    arg[name]?.remove(targetObject)
-                                }
-                                else {
-                                    arg[otherSide.name] = null
-                                }
-                            }
-                        }
-                        else {
-                            throw new MissingMethodException("removeFrom${prop.capitilizedName}", cls, [arg] as Object[])
-                        }
-                        delegate
-                    }
-                }
-            }
-        }
-    }
-
-    @CompileStatic
-    protected void addObjectToCollection(Association prop, targetObject, obj) {
-        def coll = (Collection)targetObject[prop.name]
-        coll.add(obj)
-        if (targetObject instanceof DirtyCheckable) {
-            targetObject.markDirty(prop.name)
-        }
     }
 
 
@@ -347,21 +239,6 @@ class GormEnhancer implements Closeable {
         existingMethod instanceof CachedMethod
     }
 
-    protected void registerAssociationIdentifierGetter(ProxyFactory proxyFactory, MetaClass metaClass, ToOne association) {
-        final propName = association.name
-        final getterName = NameUtils.getGetterName(propName)
-        metaClass."${getterName}Id" = {->
-            final associationInstance = delegate.getProperty(propName)
-            if (associationInstance != null) {
-                if (proxyFactory.isProxy(associationInstance)) {
-                    return proxyFactory.getIdentifier(associationInstance)
-                }
-                else {
-                    return datastore.currentSession.getObjectIdentifier(associationInstance)
-                }
-            }
-        }
-    }
 
     @CompileStatic
     protected void registerNamedQueries(PersistentEntity entity, Closure namedQueries) {

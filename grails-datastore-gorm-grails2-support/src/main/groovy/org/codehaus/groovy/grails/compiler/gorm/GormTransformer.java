@@ -23,7 +23,6 @@ package org.codehaus.groovy.grails.compiler.gorm;
  * @since 5.0
  */
 
-import grails.persistence.Entity;
 import groovy.transform.Canonical;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.CompileUnit;
@@ -35,7 +34,7 @@ import org.codehaus.groovy.grails.compiler.injection.AstTransformer;
 import org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils;
 import org.codehaus.groovy.grails.compiler.injection.GrailsArtefactClassInjector;
 import org.codehaus.groovy.grails.io.support.GrailsResourceUtils;
-import org.grails.datastore.gorm.GormEntity;
+import org.grails.compiler.gorm.GormEntityTransformation;
 import org.grails.datastore.mapping.reflect.AstUtils;
 
 import java.net.URL;
@@ -67,10 +66,7 @@ public class GormTransformer implements GrailsArtefactClassInjector {
         if(GrailsASTUtils.hasAnnotation(classNode, Canonical.class)) {
             GrailsASTUtils.error(source, classNode, "Class [" + classNode.getName() + "] is marked with @groovy.transform.Canonical which is not supported for GORM entities.", true);
         }
-        classNode.setUsingGenerics(true);
-        GrailsASTUtils.addAnnotationIfNecessary(classNode, Entity.class);
-        AstUtils.addTransformedEntityName(classNode.getName());
-        AstUtils.injectTrait(classNode, GormEntity.class);
+        new GormEntityTransformation().visit(classNode, source);
         final CompileUnit compileUnit = source.getAST().getUnit();
         org.codehaus.groovy.transform.trait.TraitComposer.doExtendTraits(classNode, source, new CompilationUnit(compileUnit.getConfig(), compileUnit.getCodeSource(), compileUnit.getClassLoader()));
     }

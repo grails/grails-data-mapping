@@ -21,6 +21,7 @@ import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
 import org.grails.config.NavigableMap
+import org.grails.datastore.gorm.proxy.ProxyHandlerAdapter
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.grails.datastore.mapping.engine.event.DatastoreInitializedEvent
@@ -135,7 +136,9 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             // Useful interceptor for wrapping Hibernate behavior
             persistenceInterceptor(AggregatePersistenceContextInterceptor)
             // domain model mapping context, used for configuration
-            grailsDomainClassMappingContext(GrailsDomainClassMappingContext, ref(GrailsApplication.APPLICATION_ID))
+            grailsDomainClassMappingContext(GrailsDomainClassMappingContext, ref(GrailsApplication.APPLICATION_ID)) {
+                proxyFactory = bean(ProxyHandlerAdapter, ref("proxyHandler"))
+            }
 
 
 

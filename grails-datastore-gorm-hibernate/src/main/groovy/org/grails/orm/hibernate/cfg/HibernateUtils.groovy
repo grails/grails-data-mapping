@@ -132,8 +132,6 @@ class HibernateUtils {
                 else {
                     enhancer.enhance entity, false
                 }
-
-                HibernateGormEnhancer.addRelationshipManagementMethods(dc, ctx)
             }
         }
 

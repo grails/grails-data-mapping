@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.model.lifecycle.Initializable;
 import org.grails.datastore.mapping.model.types.conversion.DefaultConversionService;
 import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
+import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.datastore.mapping.reflect.FastClassData;
 import org.grails.datastore.mapping.reflect.FastEntityAccess;
 import org.springframework.beans.BeanUtils;
@@ -71,6 +72,12 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     }
 
     public abstract MappingFactory getMappingFactory();
+
+
+    @Override
+    public ProxyHandler getProxyHandler() {
+        return this.proxyFactory;
+    }
 
     public ProxyFactory getProxyFactory() {
         if (this.proxyFactory == null) {

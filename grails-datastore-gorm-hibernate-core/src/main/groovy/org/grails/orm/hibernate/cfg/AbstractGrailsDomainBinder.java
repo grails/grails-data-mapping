@@ -2143,7 +2143,7 @@ public abstract class AbstractGrailsDomainBinder {
         Class<?> propertyType = property.getDomainClass().getClazz();
 
         for (GrailsDomainClassProperty currentGrailsProp : properties) {
-            if (currentGrailsProp.isIdentity()) continue;
+            if (currentGrailsProp.isIdentity() || !currentGrailsProp.isPersistent()) continue;
             if (currentGrailsProp.getName().equals(GrailsDomainClassProperty.VERSION)) continue;
 
             if (currentGrailsProp.getType().equals(propertyType)) {
