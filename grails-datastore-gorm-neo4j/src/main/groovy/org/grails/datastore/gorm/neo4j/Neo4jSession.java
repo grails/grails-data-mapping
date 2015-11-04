@@ -609,8 +609,20 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
     @Override
     public void flush() {
         if(wasTransactionTerminated()) return;
+
+        final Neo4jTransaction transaction = getTransaction();
+        if(transaction != null) {
+            if( transaction.getTransactionDefinition().isReadOnly() ) {
+                return;
+            }
+        }
         persistDirtyButUnsavedInstances();
         super.flush();
+    }
+
+    @Override
+    public Neo4jTransaction getTransaction() {
+        return (Neo4jTransaction) super.getTransaction();
     }
 
     protected boolean wasTransactionTerminated() {
