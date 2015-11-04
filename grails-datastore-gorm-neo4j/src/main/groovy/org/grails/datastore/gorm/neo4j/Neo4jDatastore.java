@@ -41,6 +41,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.util.ReflectionUtils;
 
+import javax.persistence.FlushModeType;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -58,6 +59,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     public static final String DEFAULT_LOCATION = "data/neo4j";
     public static final String SETTING_NEO4J_LOCATION = "grails.neo4j.location";
     public static final String SETTING_NEO4J_TYPE = "grails.neo4j.type";
+    public static final String SETTING_NEO4J_FLUSH_MODE = "grails.neo4j.flush.mode";
     public static final String SETTING_NEO4J_USERNAME = "grails.neo4j.username";
     public static final String SETTING_NEO4J_PASSWORD = "grails.neo4j.password";
     public static final String SETTING_DEFAULT_MAPPING = "grails.neo4j.default.mapping";
@@ -72,6 +74,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
 
     protected GraphDatabaseService graphDatabaseService;
     protected boolean skipIndexSetup = false;
+    protected FlushModeType defaultFlushMode = FlushModeType.AUTO;
 
     /**
      * Configures a new {@link Neo4jDatastore} for the given arguments
@@ -112,6 +115,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     }
 
     protected GraphDatabaseService createGraphDatabaseService(PropertyResolver configuration) {
+        this.defaultFlushMode = configuration.getProperty(SETTING_NEO4J_FLUSH_MODE, FlushModeType.class, FlushModeType.AUTO);
         final String type = configuration.getProperty(SETTING_NEO4J_TYPE, DEFAULT_DATABASE_TYPE);
         final String location = configuration.getProperty(SETTING_NEO4J_LOCATION, DEFAULT_LOCATION);
         final Map dbProperties = configuration.getProperty(SETTING_NEO4J_DB_PROPERTIES, Map.class, new LinkedHashMap<String, String>());
@@ -192,7 +196,9 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        return new Neo4jSession(this, mappingContext, getApplicationContext(), false, graphDatabaseService);
+        final Neo4jSession neo4jSession = new Neo4jSession(this, mappingContext, getApplicationContext(), false, graphDatabaseService);
+        neo4jSession.setFlushMode(defaultFlushMode);
+        return neo4jSession;
     }
 
     @Override
