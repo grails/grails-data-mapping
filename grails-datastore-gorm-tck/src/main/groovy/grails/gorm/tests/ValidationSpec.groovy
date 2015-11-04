@@ -4,7 +4,7 @@ import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.validation.ValidatingEventListener
 import org.springframework.validation.Validator
-
+import spock.lang.IgnoreIf
 import spock.lang.Unroll
 
 /**
@@ -171,6 +171,7 @@ class ValidationSpec extends GormDatastoreSpec {
             ['name'] == entityWithOverloadedBeforeValidateMethod.propertiesPassedToBeforeValidate
     }
 
+    @IgnoreIf({ Boolean.getBoolean("neo4j.gorm.suite")}) // neo4j requires a transaction present for inserts
     void "Test that validate works without a bound Session"() {
 
         given:

@@ -80,6 +80,7 @@ class Setup {
     }
 
     static Session setup(classes) {
+        System.setProperty("neo4j.gorm.suite", "true")
 
         assert datastore == null
         def ctx = new GenericApplicationContext()

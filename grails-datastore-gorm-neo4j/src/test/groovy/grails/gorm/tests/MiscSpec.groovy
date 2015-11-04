@@ -151,7 +151,9 @@ class MiscSpec extends GormDatastoreSpec {
         when:
         GParsPool.withPool(concurrency) {
             (1..count).eachParallel { counter ->
-                new Team(name: "Team $counter").save(flush:true, failOnError: true)
+                Team.withTransaction {
+                    new Team(name: "Team $counter").save(flush:true, failOnError: true)
+                }
             }
         }
 
