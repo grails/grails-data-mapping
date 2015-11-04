@@ -25,7 +25,7 @@ import org.grails.datastore.mapping.config.Entity
  * @author Graeme Rocher
  * @since 1.0
  */
-@CompileStatic
+//@CompileStatic
 class Mapping extends Entity {
 
     public static final String ALL_DATA_SOURCES = "ALL";
