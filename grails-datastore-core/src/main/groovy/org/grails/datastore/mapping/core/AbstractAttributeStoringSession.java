@@ -32,7 +32,7 @@ public abstract class AbstractAttributeStoringSession implements Session {
             return;
         }
 
-        int id = entity.hashCode();
+        int id = System.identityHashCode(entity);
         Map<String, Object> attrs = attributes.get(id);
         if (attrs == null) {
             attrs = new ConcurrentHashMap<String, Object>();
@@ -52,7 +52,7 @@ public abstract class AbstractAttributeStoringSession implements Session {
             return null;
         }
 
-        final Map<String, Object> attrs = attributes.get(entity.hashCode());
+        final Map<String, Object> attrs = attributes.get(System.identityHashCode(entity));
         if (attrs == null || attributeName == null) {
             return null;
         }
@@ -64,7 +64,7 @@ public abstract class AbstractAttributeStoringSession implements Session {
         if (entity == null) {
             return;
         }
-        attributes.remove(entity.hashCode());
+        attributes.remove(System.identityHashCode(entity));
     }
 
     /**
