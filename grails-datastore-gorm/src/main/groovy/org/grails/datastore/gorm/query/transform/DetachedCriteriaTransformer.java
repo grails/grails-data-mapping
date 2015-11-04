@@ -193,7 +193,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     @Override
     public void visitField(FieldNode node) {
         ClassNode classNode = node.getOwner();
-        if (node.isStatic() && isDomainClass(classNode)) {
+        if (node.isStatic() && AstUtils.isDomainClass(classNode)) {
             Expression initialExpression = node.getInitialExpression();
             if (initialExpression instanceof MethodCallExpression) {
                 MethodCallExpression mce = (MethodCallExpression) initialExpression;
@@ -264,7 +264,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             if (isCandidateMethod(method.getText(), arguments, CANDIDATE_METHODS_WHERE_ONLY)) {
                 ClassNode classNode = new ClassNode(DetachedCriteria.class);
                 ClassNode targetType = objectExpression.getType();
-                if (isDomainClass(targetType)) {
+                if (AstUtils.isDomainClass(targetType)) {
                     classNode.setGenericsTypes(new GenericsType[]{new GenericsType(targetType)});
 
                     VariableExpression variableExpression = expression.getVariableExpression();
@@ -363,7 +363,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 } else if (var.isThisExpression() &&
                            currentClassNode != null &&
                            isCandidateWhereMethod(method.getText(), arguments)) {
-                    if (isDomainClass(currentClassNode)) {
+                    if (AstUtils.isDomainClass(currentClassNode)) {
                         visitMethodCall(this.currentClassNode, arguments);
                         call.setMethod(WHERE_LAZY);
                     }
@@ -372,7 +372,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 PropertyExpression pe = (PropertyExpression) objectExpression;
                 String propName = pe.getPropertyAsString();
                 ClassNode classNode = pe.getObjectExpression().getType();
-                if (isDomainClass(classNode)) {
+                if (AstUtils.isDomainClass(classNode)) {
                     ClassNode propertyType = getPropertyType(classNode, propName);
                     if (propertyType != null && DETACHED_CRITERIA_CLASS_NODE.equals(propertyType)) {
                         visitMethodCall(classNode, arguments);
@@ -399,7 +399,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         } else if (objectExpression instanceof VariableExpression) {
             VariableExpression ve = (VariableExpression) objectExpression;
             if (ve.isThisExpression() &&
-                isDomainClass(this.currentClassNode)) {
+                AstUtils.isDomainClass(this.currentClassNode)) {
                 return new ClassExpression(this.currentClassNode);
             }
         }
@@ -426,7 +426,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     private void visitMethodCall(ClassNode classNode, Expression arguments) {
-        if (isDomainClass(classNode) && (arguments instanceof ArgumentListExpression)) {
+        if (AstUtils.isDomainClass(classNode) && (arguments instanceof ArgumentListExpression)) {
             visitMethodCallOnDetachedCriteria(classNode, (ArgumentListExpression) arguments);
         }
     }
@@ -752,7 +752,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                 List<String> associationPropertyNames = null;
                 ClassNode type = getPropertyType(methodName);
-                if (!isDomainClass(type)) {
+                if (!AstUtils.isDomainClass(type)) {
                     ClassNode associationTypeFromGenerics = getAssociationTypeFromGenerics(type);
                     if (associationTypeFromGenerics != null) {
                         type = associationTypeFromGenerics;
@@ -765,7 +765,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                 ClassNode existing = currentClassNode;
                 try {
-                    if (!associationPropertyNames.isEmpty() && !isDomainClass(type)) {
+                    if (!associationPropertyNames.isEmpty() && !AstUtils.isDomainClass(type)) {
 
                         type = getAssociationTypeFromGenerics(type);
                         if (type != null) {
@@ -793,7 +793,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private List<String> getPropertyNamesForAssociation(ClassNode type) {
         List<String> associationPropertyNames = Collections.emptyList();
         if (type != null) {
-            if (isDomainClass(type)) {
+            if (AstUtils.isDomainClass(type)) {
                 associationPropertyNames = getPropertyNames(type);
             } else {
                 ClassNode associationType = getAssociationTypeFromGenerics(type);
@@ -1075,7 +1075,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                 ClassNode classNode = currentClassNode;
                 ClassNode type = getPropertyTypeFromGenerics(actualPropertyName, classNode);
-                if(!isDomainClass(type)) {
+                if(!AstUtils.isDomainClass(type)) {
                     addCriteriaCallMethodExpression(newCode, operator, pe, oppositeSide, associationProperty, Collections.<String>emptyList(), false, variableScope);
                 }
                 else {
@@ -1126,9 +1126,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private ClassNode getPropertyTypeFromGenerics(String propertyName, ClassNode classNode) {
         ClassNode type = getPropertyType(classNode, propertyName);
-        if (type != null && !isDomainClass(type)) {
+        if (type != null && !AstUtils.isDomainClass(type)) {
             ClassNode associationTypeFromGenerics = getAssociationTypeFromGenerics(type);
-            if (associationTypeFromGenerics != null && isDomainClass(associationTypeFromGenerics)) {
+            if (associationTypeFromGenerics != null && AstUtils.isDomainClass(associationTypeFromGenerics)) {
                 type = associationTypeFromGenerics;
             }
         }
@@ -1321,36 +1321,6 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         VariableExpression thisExpression = new VariableExpression("this");
         projectionsBody.getCurrentBody().addStatement(new ExpressionStatement(new MethodCallExpression(thisExpression, functionName, aggregateArgs)));
         currentBody.addStatement(new ExpressionStatement(new MethodCallExpression(thisExpression, "projections", projectionsBody.getArguments())));
-    }
-
-    public static boolean isDomainClass(ClassNode classNode) {
-        if (classNode == null) return false;
-        String filePath = classNode.getModule() != null ? classNode.getModule().getDescription() : null;
-        if (filePath != null) {
-            try {
-                if (AstUtils.isDomainClass(new File(filePath).toURI().toURL())) {
-                    return true;
-                }
-            } catch (MalformedURLException e) {
-                // ignore
-            }
-        }
-        List<AnnotationNode> annotations = classNode.getAnnotations();
-        if (annotations != null && !annotations.isEmpty()) {
-            for (AnnotationNode annotation : annotations) {
-                String className = annotation.getClassNode().getName();
-                if ("grails.persistence.Entity".equals(className)) {
-                    return true;
-                }
-                if (Entity.class.getName().equals(className)) {
-                    return true;
-                }
-                if (javax.persistence.Entity.class.getName().equals(className)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     @Override
