@@ -1,5 +1,9 @@
 To get started with GORM for Neo4j you need to install the plugin into a Grails application.
 
+{note}
+GORM for Neo4j requires Grails 2.5.x or above and Neo4j 2.3.x or above
+{note}
+
 To do so for Grails 2.x edit the @grails-app/conf/BuildConfig.groovy@ file and add the following plugin definition, where @VERSION@ is the version of the plugin you plan to use:
 
 

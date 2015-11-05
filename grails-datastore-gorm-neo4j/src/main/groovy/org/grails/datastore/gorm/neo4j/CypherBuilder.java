@@ -33,7 +33,7 @@ public class CypherBuilder {
     public static final String NODE_LABELS = "labels";
     public static final String NODE_DATA = "data";
     public final static String NODE_VAR = "n";
-    public static final String DELETE = "\n DELETE ";
+    public static final String DELETE = "\n DETACH DELETE ";
 
 
     private String forLabels;

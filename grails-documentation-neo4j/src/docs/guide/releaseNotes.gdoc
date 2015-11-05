@@ -1,6 +1,6 @@
 The following new features are available in this release.
 
-* Support for Neo4j 2.2.x and Neo4j 2.3.x
+* Support for Neo4j Neo4j 2.3.x or above
 * Ability to query using Cypher with the default GORM methods (find, findAll)
 * Robust Spring Transaction Management
 * Support for Lazy & Eager Loading using OPTIONAL MATCH
