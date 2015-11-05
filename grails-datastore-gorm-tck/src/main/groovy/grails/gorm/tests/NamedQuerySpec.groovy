@@ -413,7 +413,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             !result
 
         when:
-            result = Publication.lastPublishedBefore(now - 50).list()
+            result = Publication.lastPublishedBefore(now - 50).get()
 
         then:
             'One Hundred Day Old Paperback' == result?.title

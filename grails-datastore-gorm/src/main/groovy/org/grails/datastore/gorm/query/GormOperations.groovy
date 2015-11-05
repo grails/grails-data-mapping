@@ -20,98 +20,13 @@ package org.grails.datastore.gorm.query
  * @author Graeme Rocher
  * @since 2.0
  */
-interface GormOperations<T> {
+interface GormOperations<T> extends GormQueryOperations<T> {
 
     /**
      * @return The class these operations apply to
      */
     T getPersistentClass()
 
-    /**
-     * Synonym for #get
-     */
-    T find(Map args , Closure additionalCriteria)
-
-    /**
-     * Synonym for #get
-     */
-    T find(Map args)
-
-    /**
-     * Synonym for #get
-     */
-    T find()
-
-    /**
-     * Returns a single result matching the criterion contained within this DetachedCriteria instance
-     *
-     * @param args The arguments
-     * @param additionalCriteria Additional criteria
-     * @return A single entity
-     */
-    T get(Map args, Closure additionalCriteria)
-
-    /**
-     * Returns a single result matching the criterion contained within this DetachedCriteria instance
-     * @param args The arguments
-     * @return A single entity
-     */
-    T get(Map args)
-
-    /**
-     * Returns a single result matching the criterion contained within this DetachedCriteria instance
-     *
-     * @return A single entity
-     */
-    T get()
-
-    /**
-     * Lists all records matching the criterion contained within this DetachedCriteria instance
-     *
-     * @return A list of matching instances
-     */
-    List<T> list()
-
-    /**
-     * Lists all records matching the criterion contained within this DetachedCriteria instance
-     *
-     * @param args The arguments
-     * @return A list of matching instances
-     */
-    List<T> list(Map args)
-
-    /**
-     * Lists all records matching the criterion contained within this DetachedCriteria instance
-     *
-     * @param args The arguments
-     * @param additionalCriteria The additional criteria
-     * @return A list of matching instances
-     */
-    List<T> list(Map args , Closure additionalCriteria)
-
-    /**
-     * Counts the number of records returned by the query
-     *
-     * @return The count
-     */
-    Number count()
-
-    /**
-     * Counts the number of records returned by the query
-     *
-     * @param args The arguments
-     * @return The count
-     */
-    Number count(Map args)
-
-    /**
-     * Counts the number of records returned by the query
-     *
-     * @param args The arguments
-     * @param additionalCriteria Any additional criteria
-     * @return The count
-     */
-    Number count(Map args, Closure additionalCriteria)
 
     /**
      * Deletes all entities matching this criteria
@@ -126,14 +41,5 @@ interface GormOperations<T> {
      * @return The total number deleted
      */
     Number updateAll(Map properties)
-
-    /**
-     * Method missing handler for dynamic finders
-     *
-     * @param methodName The method name
-     * @param args The arguments
-     * @return The return value
-     */
-    def methodMissing(String methodName, args)
 
 }

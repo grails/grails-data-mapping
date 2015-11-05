@@ -33,7 +33,7 @@ import java.lang.reflect.Modifier
  *
  * @since 5.0
  */
-class NamedCriteriaProxy<D> {
+class NamedCriteriaProxy<D> implements GormQueryOperations<D> {
 
     Closure criteriaClosure
     PersistentEntity entity
@@ -47,15 +47,85 @@ class NamedCriteriaProxy<D> {
         crit()
     }
 
-    private listInternal(Object[] params, Closure additionalCriteriaClosure, Boolean isDistinct) {
-        def conversionService = entity.mappingContext.conversionService
-        def listClosure = {
-            queryBuilder = delegate
-            invokeCriteriaClosure(additionalCriteriaClosure)
-            def paramsMap
-            if (params && params[-1] instanceof Map) {
-                paramsMap = params[-1]
+    def call(Object[] params) {
+        if (params && params[-1] instanceof Closure) {
+            Closure additionalCriteriaClosure = (Closure)params[-1]
+            params = params.length > 1 ? params[0..-2] : [:]
+            if (params) {
+                if (params[-1] instanceof Map) {
+                    if (params.length > 1) {
+                        namedCriteriaParams = params[0..-2] as Object[]
+                    }
+                    return list((Map)params[-1], additionalCriteriaClosure)
+                } else {
+                    namedCriteriaParams = params
+                    return list(Collections.emptyMap(), additionalCriteriaClosure)
+                }
             }
+            else {
+                return list(Collections.emptyMap(), additionalCriteriaClosure)
+            }
+        }
+        else {
+            namedCriteriaParams = params
+            this
+        }
+    }
+
+    D get(Serializable id) {
+        id = (Serializable)entity.mappingContext.conversionService.convert(id, entity.identity.type)
+        def getClosure = {
+            queryBuilder = delegate
+            invokeCriteriaClosure()
+            eq 'id', id
+            uniqueResult = true
+        }
+        return  entity.javaClass.createCriteria().get(getClosure)
+    }
+
+    @Override
+    D find(Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
+        return get(args, additionalCriteria)
+    }
+
+    D find(Closure additionalCriteria) {
+        return get(Collections.emptyMap(), additionalCriteria)
+    }
+
+    D get(Closure additionalCriteria) {
+        return get(Collections.emptyMap(), additionalCriteria)
+    }
+
+    @Override
+    D get(Map paramsMap = Collections.emptyMap(), Closure additionalCriteria = null) {
+        def conversionService = entity.mappingContext.conversionService
+        return (D) entity.javaClass.createCriteria().get( {
+            queryBuilder = delegate
+            invokeCriteriaClosure(additionalCriteria)
+            if (paramsMap?.max) {
+                maxResults conversionService.convert(paramsMap.max, Integer)
+            }
+            if (paramsMap?.offset) {
+                firstResult conversionService.convert(paramsMap.offset, Integer)
+            }
+            uniqueResult = true
+            if (paramsMap && queryBuilder instanceof CriteriaBuilder) {
+                DynamicFinder.populateArgumentsForCriteria(entity.javaClass, queryBuilder.query, paramsMap)
+            }
+        } )
+    }
+
+
+    List<D> list(Closure additionalCriteria) {
+        list(Collections.emptyMap(), additionalCriteria)
+    }
+
+    @Override
+    List<D> list(Map paramsMap = Collections.emptyMap(), Closure additionalCriteria = null) {
+        def conversionService = entity.mappingContext.conversionService
+        return entity.javaClass.withCriteria {
+            queryBuilder = delegate
+            invokeCriteriaClosure(additionalCriteria)
             if (paramsMap?.max) {
                 maxResults conversionService.convert(paramsMap.max, Integer)
             }
@@ -66,80 +136,41 @@ class NamedCriteriaProxy<D> {
                 DynamicFinder.populateArgumentsForCriteria(entity.javaClass, queryBuilder.query, paramsMap)
             }
         }
-        entity.javaClass.withCriteria(listClosure)
     }
 
-    def list(Object[] params, Closure additionalCriteriaClosure = null) {
-        listInternal params, additionalCriteriaClosure, false
-    }
-
-    def listDistinct(Object[] params, Closure additionalCriteriaClosure = null) {
-        listInternal params, additionalCriteriaClosure, true
-    }
-
-    def call(Object[] params) {
-        if (params && params[-1] instanceof Closure) {
-            def additionalCriteriaClosure = params[-1]
-            params = params.length > 1 ? params[0..-2] : [:]
-            if (params) {
-                if (params[-1] instanceof Map) {
-                    if (params.length > 1) {
-                        namedCriteriaParams = params[0..-2] as Object[]
-                    }
-                } else {
-                    namedCriteriaParams = params
-                }
-            }
-            list(params, additionalCriteriaClosure)
-        }
-        else {
-            namedCriteriaParams = params
-            this
-        }
-    }
-
-    def get(id) {
-        id = entity.mappingContext.conversionService.convert(id, entity.identity.type)
-        def getClosure = {
-            queryBuilder = delegate
-            invokeCriteriaClosure()
-            eq 'id', id
-            uniqueResult = true
-        }
-        entity.javaClass.createCriteria().get(getClosure)
-    }
-
-    def get() {
-        def getClosure = {
-            queryBuilder = delegate
-            invokeCriteriaClosure()
-            uniqueResult = true
-        }
-        entity.javaClass.createCriteria().get(getClosure)
-    }
-
-    def count(Closure additionalCriteriaClosure = null) {
+    @Override
+    Number count(Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
         def countClosure = {
             queryBuilder = delegate
-            invokeCriteriaClosure(additionalCriteriaClosure)
+            invokeCriteriaClosure(additionalCriteria)
         }
         entity.javaClass.createCriteria().count(countClosure)
     }
 
-    def findWhere(params) {
-        findAllWhere(params, true)
+    Number count(Closure additionalCriteria ) {
+        count(Collections.emptyMap(), additionalCriteria)
     }
 
-    def findAllWhere(Map params, Boolean uniq = false) {
+
+    D findWhere(Map params) {
         def queryClosure = {
             queryBuilder = delegate
             invokeCriteriaClosure()
             params.each {key, val ->
                 eq key, val
             }
-            if (uniq) {
-                maxResults 1
-                uniqueResult = true
+            maxResults 1
+            uniqueResult = true
+        }
+        entity.javaClass.withCriteria(queryClosure)
+    }
+
+    List<D> findAllWhere(Map params) {
+        def queryClosure = {
+            queryBuilder = delegate
+            invokeCriteriaClosure()
+            params.each {key, val ->
+                eq key, val
             }
         }
         entity.javaClass.withCriteria(queryClosure)
@@ -209,4 +240,6 @@ class NamedCriteriaProxy<D> {
         }
         c
     }
+
+
 }
