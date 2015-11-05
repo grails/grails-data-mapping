@@ -5,7 +5,7 @@ Grails Datastore API (aka GORM)
 
 [Grails][Grails] is a framework used to build web applications with the [Groovy][Groovy] programming language. This project provides the plumbings for the GORM API both for Hibernate and for new implementations of GORM ontop of NoSQL datastores.
 [Grails]: http://grails.org/
-[Groovy]: http://groovy.codehaus.org/
+[Groovy]: http://groovy-lang.org/
 
 
 Getting Started
@@ -15,12 +15,14 @@ See the following links for documentation on the various implementations:
 
 * [GORM for Hibernate](http://grails.org/doc/latest/guide/GORM.html)
 * [GORM for MongoDB](http://grails.github.io/grails-data-mapping/latest/mongodb/index.html)
+* [GORM for Neo4j](http://grails.github.io/grails-data-mapping/snapshot/neo4j/index.html)
  
 For API documentation see:
 
 * [Core API / GORM for Hibernate](http://grails.github.io/grails-data-mapping/latest/api)
 * [GORM for MongoDB API](http://grails.github.io/grails-data-mapping/latest/mongodb/api/index.html)
-* 
+* [GORM for Neo4j API](http://grails.github.io/grails-data-mapping/snapshot/neo4j/api/index.html)
+
 For other implementations see the [following page](http://grails.github.io/grails-data-mapping/latest).
 
 Below is an example of using GORM for Hibernate in a Groovy script:
@@ -58,7 +60,7 @@ Developing Implementations
 ---
 
 For further information on the project see the comprehensive [developer guide][Developer Guide].
-[Developer Guide]: http://projects.spring.io/grails-data-mapping/manual/index.html
+[Developer Guide]: http://grails.github.io/grails-data-mapping/latest/manual/index.html
 	
 License
 ---
