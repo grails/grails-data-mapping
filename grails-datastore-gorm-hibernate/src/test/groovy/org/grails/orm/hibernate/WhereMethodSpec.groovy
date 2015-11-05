@@ -33,7 +33,6 @@ class WhereMethodSpec extends GormSpec {
         def gcl = new GroovyClassLoader(getClass().classLoader)
         gcl.parseClass('''
 import  org.grails.orm.hibernate.*
-import grails.gorm.*
 import grails.persistence.*
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
