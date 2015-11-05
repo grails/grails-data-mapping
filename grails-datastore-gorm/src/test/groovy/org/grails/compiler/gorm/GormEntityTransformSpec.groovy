@@ -54,7 +54,7 @@ class GormEntityTransformSpec extends Specification{
         def mappingFactory = new GormKeyValueMappingFactory("test")
         mappingContext.getMappingFactory() >> mappingFactory
         mappingContext.getMappingSyntaxStrategy() >> new GormMappingConfigurationStrategy(mappingFactory)
-        mappingContext.getProxyFactory() >> new JavassistProxyFactory()
+        mappingContext.getProxyHandler() >> new JavassistProxyFactory()
 
         def session = Mock(Session)
         session.getObjectIdentifier(_) >> 1L
