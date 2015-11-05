@@ -16,6 +16,7 @@
 package org.grails.datastore.mapping.reflect
 
 import groovy.transform.CompileStatic
+import groovy.transform.Memoized
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
@@ -28,6 +29,7 @@ import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.springframework.util.StringUtils
 
+import javax.persistence.Entity
 import java.lang.annotation.Annotation
 import java.lang.reflect.Modifier
 import java.util.regex.Pattern
@@ -47,6 +49,7 @@ class AstUtils {
     public static final ClassNode OBJECT_CLASS_NODE = new ClassNode(Object.class).getPlainNodeReference();
 
     private static final Set<String> TRANSFORMED_CLASSES = new HashSet<String>();
+    private static final Set<String> ENTITY_ANNOTATIONS = ["grails.persistence.Entity", "grails.gorm.annotation.Entity", Entity.class.getName()] as Set<String>
 
     /**
      * @return The names of the transformed entities for this context
@@ -88,8 +91,12 @@ class AstUtils {
         return DOMAIN_PATH_PATTERN.matcher(url.getFile()).find();
     }
 
+    @Memoized
     public static boolean isDomainClass(ClassNode classNode) {
         if (classNode == null) return false;
+        if(implementsInterface(classNode, "org.grails.datastore.gorm.GormEntity")) {
+            return true
+        }
         String filePath = classNode.getModule() != null ? classNode.getModule().getDescription() : null;
         if (filePath != null) {
             try {
@@ -104,14 +111,8 @@ class AstUtils {
         if (annotations != null && !annotations.isEmpty()) {
             for (AnnotationNode annotation : annotations) {
                 String className = annotation.getClassNode().getName();
-                if ("grails.persistence.Entity".equals(className)) {
-                    return true;
-                }
-                if ("grails.gorm.Entity".equals(className)) {
-                    return true;
-                }
-                if (javax.persistence.Entity.class.getName().equals(className)) {
-                    return true;
+                if( ENTITY_ANNOTATIONS.any() { String ann -> ann.equals(className)} ) {
+                    return true
                 }
             }
         }
