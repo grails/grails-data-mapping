@@ -21,6 +21,7 @@ import org.grails.datastore.mapping.core.AbstractDatastore
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.neo4j.graphdb.Result
 
 
 /**
@@ -32,6 +33,15 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
 
     Neo4jGormInstanceApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
+    }
+
+    /**
+     * @return Returns all dynamic attributes
+     */
+    Map<String, Object> dynamicAttributes(D instance) {
+        def unwrappedInstance = unwrappedInstance(instance)
+        def session = datastore.currentSession
+        return (Map<String,Object>)getOrInitializeUndeclared(session, unwrappedInstance)
     }
 
     /**
@@ -126,7 +136,7 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param params
      * @return
      */
-    def cypher(instance, String queryString, Map params ) {
+    Result cypher(instance, String queryString, Map params ) {
         params['this'] = instance.id
         ((Neo4jDatastore)datastore).graphDatabaseService.execute(queryString, params)
     }
@@ -137,7 +147,7 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param params
      * @return
      */
-    def cypher(instance, String queryString, List params ) {
+    Result cypher(instance, String queryString, List params ) {
         Map paramsMap = new LinkedHashMap()
         paramsMap.put("this", instance.id)
         int i = 0
@@ -152,7 +162,7 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param queryString
      * @return
      */
-    def cypher(instance, String queryString) {
+    Result cypher(instance, String queryString) {
         ((Neo4jDatastore)datastore).graphDatabaseService.execute(queryString, Collections.singletonMap("this", instance.id))
     }
 

@@ -23,6 +23,7 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
             pet.buddy = 'Lara'
 
         then:
+            pet.dynamicAttributes() == [buddy: 'Lara']
             pet.buddy == 'Lara'
 
 
