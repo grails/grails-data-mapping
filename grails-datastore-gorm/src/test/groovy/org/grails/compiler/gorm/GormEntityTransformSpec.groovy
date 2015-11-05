@@ -1,6 +1,6 @@
 package org.grails.compiler.gorm
 
-import grails.gorm.Entity
+import grails.gorm.annotation.Entity
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormValidateable

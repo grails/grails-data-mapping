@@ -59,7 +59,7 @@ class Publisher {
         GormEntity.isAssignableFrom(cls)
         GormValidateable.isAssignableFrom(cls)
         DirtyCheckable.isAssignableFrom(cls)
-        cls.getAnnotation(grails.gorm.Entity)
+        cls.getAnnotation(grails.gorm.annotation.Entity)
         instance.hasProperty('authorId')
     }
 
@@ -95,7 +95,7 @@ class SubMember extends Member {
         GormEntity.isAssignableFrom(cls)
         GormValidateable.isAssignableFrom(cls)
         DirtyCheckable.isAssignableFrom(cls)
-        cls.getAnnotation(grails.gorm.Entity)
+        cls.getAnnotation(grails.gorm.annotation.Entity)
     }
     void "test that a class marked with @Artefact('Domain') is enhanced with GormEntityTraitSpec"() {
         expect:

@@ -16,7 +16,7 @@
 package org.grails.datastore.gorm
 
 import grails.compiler.traits.TraitInjector
-import grails.gorm.Domain
+import grails.gorm.Entity
 import groovy.transform.CompileStatic
 
 import org.grails.core.artefact.DomainClassArtefactHandler
@@ -28,10 +28,10 @@ import org.grails.core.artefact.DomainClassArtefactHandler
  *
  */
 @CompileStatic
-class DomainTraitInjector implements TraitInjector {
+class EntityTraitInjector implements TraitInjector {
 
     Class getTrait() {
-        Domain
+        Entity
     }
 
     @Override

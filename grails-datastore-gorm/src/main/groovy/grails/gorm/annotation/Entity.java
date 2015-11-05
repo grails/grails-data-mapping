@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package grails.gorm;
+package grails.gorm.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

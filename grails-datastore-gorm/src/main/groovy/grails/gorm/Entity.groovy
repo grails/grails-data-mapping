@@ -15,6 +15,7 @@
  */
 package grails.gorm
 
+import org.grails.datastore.gorm.GormEntity
 
 
 /**
@@ -23,6 +24,6 @@ package grails.gorm
  * @author Graeme Rocher
  * @since 5.0
  */
-trait Domain {
+trait Entity<D> extends GormEntity<D> {
 
 }

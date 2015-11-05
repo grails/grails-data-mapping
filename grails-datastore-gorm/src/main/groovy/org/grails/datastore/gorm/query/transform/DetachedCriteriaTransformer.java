@@ -16,10 +16,8 @@ package org.grails.datastore.gorm.query.transform;
 
 import grails.gorm.DetachedCriteria;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,9 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import grails.gorm.Entity;
 import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassCodeVisitorSupport;
 import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.ClassNode;

@@ -15,7 +15,7 @@
  */
 package org.grails.compiler.gorm
 
-import grails.gorm.Entity
+import grails.gorm.annotation.Entity
 import groovy.transform.CompilationUnitAware
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ASTNode

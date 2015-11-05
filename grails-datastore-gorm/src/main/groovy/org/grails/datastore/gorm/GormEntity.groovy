@@ -44,7 +44,7 @@ import org.springframework.validation.Errors
  * @since 4.0
  */
 @CompileStatic
-trait GormEntity<D extends GormEntity> implements GormValidateable, DirtyCheckable {
+trait GormEntity<D> implements GormValidateable, DirtyCheckable {
     
     private static GormInstanceApi internalInstanceApi
     private static GormStaticApi<D> internalStaticApi
