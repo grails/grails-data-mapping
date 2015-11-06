@@ -176,7 +176,7 @@ trait MongoEntity<D> extends GormEntity<D> {
      * @return Custom MongoDB criteria builder
      */
     static MongoCriteriaBuilder createCriteria() {
-        withSession { Session session ->
+        (MongoCriteriaBuilder)withSession { Session session ->
             def entity = session.mappingContext.getPersistentEntity(this.name)
             return new MongoCriteriaBuilder(entity.javaClass, session)
         }
@@ -186,7 +186,7 @@ trait MongoEntity<D> extends GormEntity<D> {
      * @return The database for this domain class
      */
     static MongoDatabase getDB() {
-        withSession({ AbstractMongoSession session ->
+        (MongoDatabase)withSession({ AbstractMongoSession session ->
             def databaseName = session.getDatabase(session.mappingContext.getPersistentEntity(this.name))
             session.getNativeInterface()
                     .getDatabase(databaseName)
@@ -198,7 +198,7 @@ trait MongoEntity<D> extends GormEntity<D> {
      * @return The name of the Mongo collection that entity maps to
      */
     static String getCollectionName() {
-        withSession({ AbstractMongoSession session ->
+        (String)withSession({ AbstractMongoSession session ->
             def entity = session.mappingContext.getPersistentEntity(this.name)
             return session.getCollectionName(entity)
         })
@@ -210,7 +210,7 @@ trait MongoEntity<D> extends GormEntity<D> {
      * @return The actual collection
      */
     static MongoCollection<Document> getCollection() {
-        withSession { AbstractMongoSession session ->
+        (MongoCollection<Document>)withSession { AbstractMongoSession session ->
             def entity = session.mappingContext.getPersistentEntity(this.name)
             return session.getCollection(entity)
         }
@@ -222,7 +222,7 @@ trait MongoEntity<D> extends GormEntity<D> {
      * @param callable The callable
      * @return The result of the closure
      */
-    static <T> T withCollection(String collectionName, Closure<T> callable) {
+    static withCollection(String collectionName, Closure callable) {
         withSession { AbstractMongoSession session ->
             def entity = session.mappingContext.getPersistentEntity(this.name)
             final previous = session.useCollection(entity, collectionName)
@@ -257,7 +257,7 @@ trait MongoEntity<D> extends GormEntity<D> {
      * @param callable The callable
      * @return The result of the closure
      */
-    static <T> T withDatabase(String databaseName, Closure<T> callable) {
+    static withDatabase(String databaseName, Closure callable) {
         withSession { AbstractMongoSession session ->
             def entity = session.mappingContext.getPersistentEntity(this.name)
             final previous = session.useDatabase(entity, databaseName)
@@ -417,7 +417,7 @@ trait MongoEntity<D> extends GormEntity<D> {
      * @param callable the closure
      * @return The result of the closure
      */
-    static <T> T withSession(Closure<T> callable) {
+    static withSession(Closure callable) {
         GormEnhancer.findStaticApi(this).withSession callable
     }
 

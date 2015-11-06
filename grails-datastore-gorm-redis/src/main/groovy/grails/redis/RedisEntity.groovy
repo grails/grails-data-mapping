@@ -51,10 +51,10 @@ trait RedisEntity<D> extends GormEntity<D> {
      * @return A random domain class
      */
     static D random() {
-        withSession( { RedisSession session ->
+        (D)withSession( { RedisSession session ->
             def entity = session.mappingContext.getPersistentEntity(this.name)
             def persistentClass = entity.javaClass
-            (D)session.random(persistentClass)
+            session.random(persistentClass)
         })
     }
 
@@ -63,10 +63,10 @@ trait RedisEntity<D> extends GormEntity<D> {
      * @return A random removed domain class
      */
     static D pop() {
-        withSession( { RedisSession session ->
+        (D)withSession( { RedisSession session ->
             def entity = session.mappingContext.getPersistentEntity(this.name)
             def persistentClass = entity.javaClass
-            (D)session.pop(persistentClass)
+            session.pop(persistentClass)
         })
     }
 
@@ -76,7 +76,7 @@ trait RedisEntity<D> extends GormEntity<D> {
      * @param callable the closure
      * @return The result of the closure
      */
-    static <T> T withSession(Closure<T> callable) {
+    static withSession(Closure callable) {
         GormEnhancer.findStaticApi(this).withSession callable
     }
 }

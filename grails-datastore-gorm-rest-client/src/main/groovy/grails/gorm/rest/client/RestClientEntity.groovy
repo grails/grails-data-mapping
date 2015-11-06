@@ -82,7 +82,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
      */
     public D put(@DelegatesTo(RequestCustomizer)  Closure requestCustomizer ) {
         RestClientEntity<D> me = this
-        withSession ({ Session session ->
+        (D)withSession ({ Session session ->
             withRequestCustomizer(session, me, requestCustomizer) {
                 (D)me.save()
             }
@@ -98,7 +98,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
     @CompileStatic(TypeCheckingMode.SKIP) // TODO: Report JIRA, removal causes GroovyCastException
     public D post(@DelegatesTo(RequestCustomizer)  Closure requestCustomizer) {
         RestClientEntity<D> me = this
-        withSession ({ Session session ->
+        (D)withSession ({ Session session ->
             withRequestCustomizer(session, me, requestCustomizer) {
                 (D)me.insert()
             }
@@ -142,7 +142,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
      */
     public D put(URL url = null, @DelegatesTo(RequestCustomizer) Closure requestCustomizer = null) {
         RestClientEntity<D> me = this
-        withSession ({ Session session ->
+        (D)withSession ({ Session session ->
             withCustomUrl(session, me, url) {
                 withRequestCustomizer(session, me, requestCustomizer) {
                     (D)me.save()
@@ -159,7 +159,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
      */
     public D post(URL url= null, @DelegatesTo(RequestCustomizer) Closure requestCustomizer = null) {
         RestClientEntity<D> me = this
-        withSession ({ Session session ->
+        (D)withSession ({ Session session ->
             withCustomUrl(session, me, url) {
                 withRequestCustomizer(session, me, requestCustomizer) {
                     (D)me.insert()
@@ -205,7 +205,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
      */
     public D put(Map params, URL url,@DelegatesTo(RequestCustomizer) Closure requestCustomizer = null) {
         RestClientEntity<D> me = this
-        withSession ({ Session session ->
+        (D)withSession ({ Session session ->
             withCustomUrl(session, me, url) {
                 withRequestCustomizer(session, me, requestCustomizer) {
                     (D)me.save(params)
@@ -222,7 +222,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
      */
     public D post(Map params, URL url, @DelegatesTo(RequestCustomizer) Closure requestCustomizer = null) {
         RestClientEntity<D> me = this
-        withSession ({ Session session ->
+        (D)withSession ({ Session session ->
             withCustomUrl(session, me, url) {
                 withRequestCustomizer(session, me, requestCustomizer) {
                     (D)me.insert(params)
@@ -231,7 +231,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
         } )
     }
 
-    private <T> T withCustomUrl(Session currentSession, Object instance, URL url, Closure<T> callable) {
+    private withCustomUrl(Session currentSession, Object instance, URL url, Closure callable) {
         if (url) {
             currentSession.setAttribute(instance, RestClientSession.ATTRIBUTE_URL, url)
         }
@@ -244,7 +244,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
         }
     }
 
-    private <T> T withRequestCustomizer(Session currentSession, Object instance, @DelegatesTo(RequestCustomizer) Closure customizer, Closure<T> callable) {
+    private withRequestCustomizer(Session currentSession, Object instance, @DelegatesTo(RequestCustomizer) Closure customizer, Closure callable) {
         if (customizer) {
             currentSession.setAttribute(instance, RestClientSession.ATTRIBUTE_REQUEST_CUSTOMIZER, customizer)
         }
@@ -271,12 +271,12 @@ trait RestClientEntity<D> extends GormEntity<D> {
      * @param callable the closure
      * @return The result of the closure
      */
-    static <T> T withSession(Closure<T> callable) {
+    static withSession(Closure callable) {
         GormEnhancer.findStaticApi(this).withSession callable
     }
 
     static List<D> getAll(URL url, Serializable... ids) {
-        withSession ({ Session session ->
+        (List<D>)withSession ({ Session session ->
             withCustomUrl(session, url) {
                 (List<D>)GormEnhancer.findStaticApi(this).getAll(ids)
             }
@@ -300,7 +300,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
     }
 
     static D get(URL url, Serializable id) {
-        withSession ({ Session session ->
+        (D)withSession ({ Session session ->
             withCustomUrl(session, url) {
                 (D)GormEnhancer.findStaticApi(this).get(id)
             }
@@ -309,7 +309,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
     }
 
     static List<D> getAll(URL url, Iterable<Serializable> ids, @DelegatesTo(RequestCustomizer) Closure customizer) {
-        withSession ({ Session session ->
+        (List<D>)withSession ({ Session session ->
             withRequestCustomizer(session, customizer) {
                 withCustomUrl(session, url) {
                     (List<D>)GormEnhancer.findStaticApi(this).getAll((Serializable[])ids.toList().toArray())
@@ -319,7 +319,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
     }
 
     static D get(URL url, Serializable id, @DelegatesTo(RequestCustomizer) Closure customizer) {
-        withSession ({ Session session ->
+        (D)withSession ({ Session session ->
             withRequestCustomizer(session, customizer) {
                 withCustomUrl(session, url) {
                     (D)GormEnhancer.findStaticApi(this).get(id)
@@ -330,7 +330,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
     }
 
 
-    private static <T> T withCustomUrl(Session currentSession, URL url, Closure<T> callable) {
+    private static withCustomUrl(Session currentSession, URL url, Closure callable) {
         def persistentEntity = currentSession.mappingContext.getPersistentEntity(this.name)
         if (url) {
             currentSession.setAttribute(persistentEntity, RestClientSession.ATTRIBUTE_URL, url)
@@ -344,7 +344,7 @@ trait RestClientEntity<D> extends GormEntity<D> {
         }
     }
 
-    private static <T> T withRequestCustomizer(Session currentSession, @DelegatesTo(RequestCustomizer) Closure customizer, Closure<T> callable) {
+    private static withRequestCustomizer(Session currentSession, @DelegatesTo(RequestCustomizer) Closure customizer, Closure callable) {
         def persistentEntity = currentSession.mappingContext.getPersistentEntity(this.name)
         if (customizer) {
             currentSession.setAttribute(persistentEntity, RestClientSession.ATTRIBUTE_REQUEST_CUSTOMIZER, customizer)

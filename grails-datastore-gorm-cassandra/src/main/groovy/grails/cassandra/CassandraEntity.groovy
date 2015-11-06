@@ -40,7 +40,7 @@ trait CassandraEntity<D> extends GormEntity<D> {
      */
     @Override
     D save( Map params) {
-        withSession ({ Session session ->
+        (D)withSession ({ Session session ->
             ((CassandraDatastore)session.datastore).setWriteOptions(this, OptionsUtil.convertToWriteOptions(params))
             doSave params, session
         } )
@@ -187,7 +187,7 @@ trait CassandraEntity<D> extends GormEntity<D> {
     }
 
     static CassandraTemplate getCassandraTemplate() {
-        withSession { CassandraSession session ->
+        (CassandraTemplate)withSession { CassandraSession session ->
             return session.cassandraTemplate
         }
     }
@@ -343,7 +343,7 @@ trait CassandraEntity<D> extends GormEntity<D> {
      * @param callable the closure
      * @return The result of the closure
      */
-    static <T> T withSession(Closure<T> callable) {
+    static withSession(Closure callable) {
         GormEnhancer.findStaticApi(this).withSession callable
     }
 }
