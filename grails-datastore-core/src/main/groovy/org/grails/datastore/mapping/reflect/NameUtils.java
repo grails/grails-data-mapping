@@ -35,6 +35,8 @@ public class NameUtils {
     private static final String PROPERTY_IS_PREFIX = "is";
 
     private static final Set<String> CONFIGURATIONAL_PROPERTIES;
+    public static final String DOLLAR_SEPARATOR = "$";
+
     static {
         Set<String> configurational = new HashSet<String>( Arrays.asList(
                 GormProperties.META_CLASS,
@@ -93,6 +95,20 @@ public class NameUtils {
     public static String getGetterName(String propertyName, boolean useBooleanPrefix) {
         String prefix = useBooleanPrefix ? PROPERTY_IS_PREFIX : PROPERTY_GET_PREFIX;
         return prefix + capitalize(propertyName);
+    }
+
+    /**
+     * Get the class name, taking into account proxies
+     *
+     * @param clazz The class
+     * @return The class name
+     */
+    public static String getClassName(Class clazz) {
+        final String sn = clazz.getSimpleName();
+        if(sn.contains(DOLLAR_SEPARATOR)) {
+            return clazz.getSuperclass().getName();
+        }
+        return clazz.getName();
     }
 
     /**

@@ -16,6 +16,7 @@ package grails.gorm;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.api.BuildableCriteria;
 import org.grails.datastore.mapping.query.api.Criteria;
 
 /**
@@ -34,7 +35,7 @@ public class TestCriteriaBuilder extends CriteriaBuilder {
         super(targetClass, session);
     }
 
-   public Criteria readOnly(boolean readOnly) {
+   public BuildableCriteria readOnly(boolean readOnly) {
    		//no-op for now
         return this;
    }

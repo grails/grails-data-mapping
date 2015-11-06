@@ -30,7 +30,7 @@ class SaveWithFailOnErrorDefaultSpec extends GormDatastoreSpec {
 
     void "test save with fail on error default"() {
         when: "A product is saved with fail on error default true"
-            TestProduct.currentGormInstanceApi().failOnError = true
+            GormEnhancer.findInstanceApi(TestProduct).failOnError = true
             def p = new TestProduct()
             p.save()
 
@@ -38,7 +38,7 @@ class SaveWithFailOnErrorDefaultSpec extends GormDatastoreSpec {
             thrown(ValidationException)
 
         when: "A product is saved with fail on error default false"
-            TestProduct.currentGormInstanceApi().failOnError = false
+            GormEnhancer.findInstanceApi(TestProduct).failOnError = false
             p = new TestProduct()
             def result = p.save()
 
@@ -48,7 +48,7 @@ class SaveWithFailOnErrorDefaultSpec extends GormDatastoreSpec {
 
     void "test override fail on error default"() {
         when: "A product is saved with fail on error override to false"
-            TestProduct.currentGormInstanceApi().failOnError = true
+            GormEnhancer.findInstanceApi(TestProduct).failOnError = true
             def p = new TestProduct()
             def result = p.save(failOnError: false, flush: true)
 
@@ -56,7 +56,7 @@ class SaveWithFailOnErrorDefaultSpec extends GormDatastoreSpec {
             !result
 
         when: "A product is saved with fail on error override to true"
-            TestProduct.currentGormInstanceApi().failOnError = false
+            GormEnhancer.findInstanceApi(TestProduct).failOnError = false
             p = new TestProduct()
             p.save(failOnError: true)
 

@@ -924,8 +924,8 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         find(query, Collections.emptyMap())
     }
 
-    D find(String query, Map args) {
-        find(query, args, args)
+    D find(String query, Map params) {
+        find(query, params, params)
     }
 
     D find(String query, Map params, Map args) {

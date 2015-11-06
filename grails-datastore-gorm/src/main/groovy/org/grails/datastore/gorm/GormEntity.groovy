@@ -19,6 +19,7 @@ import grails.gorm.DetachedCriteria
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -46,50 +47,6 @@ import org.springframework.validation.Errors
 @CompileStatic
 trait GormEntity<D> implements GormValidateable, DirtyCheckable {
     
-    private static GormInstanceApi internalInstanceApi
-    private static GormStaticApi<D> internalStaticApi
-
-    /**
-     * Used to initialise the state of GORM. This method is used internally by the framework and SHOULD NOT be called by the developer
-     */
-    static void initInternalApi(GormInstanceApi api) {
-        internalInstanceApi = api
-    }
-
-    /**
-     * Resets internal state. This is an internal method and should not be used
-     */
-    static void resetInternalApi() {
-        internalInstanceApi = null
-        internalStaticApi = null
-    }
-
-    /**
-     * Used to obtain the {@link GormInstanceApi} instance. This method is used internally by the framework and SHOULD NOT be called by the developer
-     */
-    static GormInstanceApi currentGormInstanceApi() {
-        if(internalInstanceApi == null) {
-            throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
-        }
-        internalInstanceApi
-    }
-
-    /**
-     * Used to initialise the state of GORM. This method is used internally by the framework and SHOULD NOT be called by the developer
-     */
-    static void initInternalStaticApi(GormStaticApi<D> api) {
-        internalStaticApi = api
-    }
-
-    /**
-     * Used to obtain the {@link GormInstanceApi} instance. This method is used internally by the framework and SHOULD NOT be called by the developer
-     */
-    static GormStaticApi<D> currentGormStaticApi() {
-        if(internalStaticApi == null) {
-            throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
-        }
-        internalStaticApi
-    }
 
     /**
      * Proxy aware instanceOf implementation.
@@ -1177,51 +1134,170 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable {
         currentGormStaticApi().executeUpdate query, params, args
     }
 
+    /**
+     * Finds an object for the given string-based query
+     *
+     * @param query The query
+     * @return The object
+     */
     static D find(String query) {
         currentGormStaticApi().find query
     }
 
-    static D find(String query, Map args) {
-        currentGormStaticApi().find query, args
+    /**
+     * Finds an object for the given string-based query and named parameters
+     *
+     * @param query The query
+     * @param params The parameters
+     *
+     * @return The object
+     */
+    static D find(String query, Map params) {
+        currentGormStaticApi().find query, params
     }
 
+    /**
+     * Finds an object for the given string-based query, named parameters and arguments
+     *
+     * @param query The query
+     * @param params The parameters
+     * @params args The arguments
+     *
+     * @return The object
+     */
     static D find(String query, Map params, Map args) {
         currentGormStaticApi().find query, params, args
     }
 
+    /**
+     * Finds an object for the given string-based query and positional parameters
+     *
+     * @param query The query
+     * @param params The parameters
+     *
+     * @return The object
+     */
     static D find(String query, Collection params) {
         currentGormStaticApi().find query, params
     }
 
+    /**
+     * Finds an object for the given string-based query and positional parameters
+     *
+     * @param query The query
+     * @param params The parameters
+     * @params args The arguments
+     *
+     * @return The object
+     */
     static D find(String query, Object[] params) {
         currentGormStaticApi().find query, params
     }
 
+    /**
+     * Finds an object for the given string-based query, positional parameters and arguments
+     *
+     * @param query The query
+     * @param params The parameters
+     * @params args The arguments
+     *
+     * @return The object
+     */
     static D find(String query, Collection params, Map args) {
         currentGormStaticApi().find query, params, args
     }
 
+    /**
+     * Finds all objects for the given string-based query
+     *
+     * @param query The query
+     *
+     * @return The object
+     */
     static List<D> findAll(String query) {
         currentGormStaticApi().findAll query
     }
 
+    /**
+     * Finds all objects for the given string-based query and named parameters
+     *
+     * @param query The query
+     * @param params The parameters
+     *
+     * @return The objects
+     */
     static List<D> findAll(String query, Map params) {
         currentGormStaticApi().findAll query, params
     }
 
+    /**
+     * Finds all objects for the given string-based query, named parameters and arguments
+     *
+     * @param query The query
+     * @param params The parameters
+     * @params args The arguments
+     *
+     * @return The objects
+     */
     static List<D> findAll(String query, Map params, Map args) {
         currentGormStaticApi().findAll query, params, args
     }
 
+    /**
+     * Finds all objects for the given string-based query and positional parameters
+     *
+     * @param query The query
+     * @param params The parameters
+     *
+     * @return The objects
+     */
     static List<D> findAll(String query, Collection params) {
         currentGormStaticApi().findAll query, params
     }
 
+    /**
+     * Finds all objects for the given string-based query and positional parameters
+     *
+     * @param query The query
+     * @param params The parameters
+     *
+     * @return The objects
+     */
     static List<D> findAll(String query, Object[] params) {
         currentGormStaticApi().findAll query, params
     }
 
+    /**
+     * Finds all objects for the given string-based query, positional parameters and arguments
+     *
+     * @param query The query
+     * @param params The parameters
+     * @params args The arguments
+     *
+     * @return The objects
+     */
     static List<D> findAll(String query, Collection params, Map args) {
         currentGormStaticApi().findAll query, params, args
+    }
+
+    /**
+     * Looks up a named query
+     *
+     * @param queryName The name of the query
+     * @return The query or null
+     *
+     * @deprecated Named queries are deprecated, use where queries instead
+     */
+    @Deprecated
+    static GormQueryOperations<D> getNamedQuery(String queryName) {
+        GormEnhancer.findNamedQuery(this, queryName)
+    }
+
+    private GormInstanceApi<D> currentGormInstanceApi() {
+        (GormInstanceApi<D>)GormEnhancer.findInstanceApi(getClass())
+    }
+
+    private static GormStaticApi<D> currentGormStaticApi() {
+        (GormStaticApi<D>)GormEnhancer.findStaticApi(this)
     }
 }

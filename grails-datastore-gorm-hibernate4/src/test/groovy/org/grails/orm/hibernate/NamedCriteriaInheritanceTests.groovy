@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import org.junit.Ignore
+
 import static junit.framework.Assert.*
 import org.junit.Test
 
@@ -13,6 +15,7 @@ class NamedCriteriaInheritanceTests extends AbstractGrailsHibernateTests {
     }
 
     @Test
+    @Ignore // deprecated feature
     void testInheritedNamedQueries() {
         def now = new Date()
         assert new NamedCriteriaPublicationSubclassWithoutNamedQueries(title: "Some New Book",

@@ -4,11 +4,15 @@ import grails.core.GrailsApplication;
 import grails.util.CollectionUtils;
 import grails.util.GrailsClassUtils;
 import groovy.lang.*;
+import org.grails.datastore.mapping.query.*;
+import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.*;
 import org.hibernate.*;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.*;
 import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.transform.ResultTransformer;
 import org.hibernate.type.AssociationType;
@@ -254,8 +258,9 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
      *
      * @param associationPath The path of the association
      */
-    public void join(String associationPath) {
+    public BuildableCriteria join(String associationPath) {
         criteria.setFetchMode(calculatePropertyName(associationPath), FetchMode.JOIN);
+        return this;
     }
 
     /**
@@ -289,15 +294,16 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
      *
      * @param associationPath The path of the association
      */
-    public void select(String associationPath) {
+    public BuildableCriteria select(String associationPath) {
         criteria.setFetchMode(calculatePropertyName(associationPath), FetchMode.SELECT);
+        return this;
     }
 
     /**
      * Whether to use the query cache
      * @param shouldCache True if the query should be cached
      */
-    public org.grails.datastore.mapping.query.api.Criteria cache(boolean shouldCache) {
+    public BuildableCriteria cache(boolean shouldCache) {
         criteria.setCacheable(shouldCache);
         return this;
     }
@@ -306,7 +312,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
      * Whether to check for changes on the objects loaded
      * @param readOnly True to disable dirty checking
      */
-    public org.grails.datastore.mapping.query.api.Criteria readOnly(boolean readOnly) {
+    public BuildableCriteria readOnly(boolean readOnly) {
         criteria.setReadOnly(readOnly);
         return this;
     }
@@ -400,6 +406,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
     }
 
     public org.grails.datastore.mapping.query.api.ProjectionList distinct() {
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return this;
     }
 
@@ -1285,12 +1292,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         }
         propertyName = calculatePropertyName(propertyName);
         Order o = Order.asc(propertyName);
-        if (paginationEnabledList) {
-            orderEntries.add(o);
-        }
-        else {
-            criteria.addOrder(o);
-        }
+        addOrderInternal(this.criteria, o);
         return this;
     }
 
@@ -1301,6 +1303,12 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
      * @return A Order instance
      */
     public org.grails.datastore.mapping.query.api.Criteria order(Order o) {
+        final Criteria criteria = this.criteria;
+        addOrderInternal(criteria, o);
+        return this;
+    }
+
+    private void addOrderInternal(Criteria criteria, Order o) {
         if (criteria == null) {
             throwRuntimeException(new IllegalArgumentException("Call to [order] not allowed here."));
         }
@@ -1310,7 +1318,47 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         else {
             criteria.addOrder(o);
         }
+    }
+
+    @Override
+    public org.grails.datastore.mapping.query.api.Criteria order(Query.Order o) {
+
+        final Criteria criteria = this.criteria;
+        final String property = o.getProperty();
+        addOrderInternal(criteria, o, property);
         return this;
+    }
+
+    private void addOrderInternal(Criteria criteria, Query.Order o, String property) {
+        final int i = property.indexOf('.');
+        if(i == -1) {
+
+            Order order = convertOrder(o, property);
+            addOrderInternal(criteria, order);
+        }
+        else {
+            String sortHead = property.substring(0,i);
+            String sortTail = property.substring(i+1);
+            createAliasIfNeccessary(sortHead, sortHead, CriteriaSpecification.INNER_JOIN);
+            final Criteria sub = aliasInstanceStack.get(aliasInstanceStack.size()-1);
+            addOrderInternal(sub, o, sortTail);
+        }
+    }
+
+    protected Order convertOrder(Query.Order o, String property) {
+        Order order;
+        switch (o.getDirection()) {
+            case DESC:
+                order =  Order.desc(property);
+                break;
+            default:
+                order = Order.asc(property);
+                break;
+        }
+        if(o.isIgnoreCase()) {
+            order.ignoreCase();
+        }
+        return order;
     }
 
     /**
@@ -1798,16 +1846,6 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         return args.length == 2 && (args[0] instanceof Number) && (args[1] instanceof Closure);
     }
 
-    @SuppressWarnings("unused")
-    private void addToCurrentOrAliasedCriteria(Criterion criterion) {
-        if (!aliasInstanceStack.isEmpty()) {
-            Criteria c = aliasInstanceStack.get(aliasInstanceStack.size()-1);
-            c.add(criterion);
-        }
-        else {
-            criteria.add(criterion);
-        }
-    }
 
     private void createAliasIfNeccessary(String associationName, String associationPath, int joinType) {
         String newAlias;

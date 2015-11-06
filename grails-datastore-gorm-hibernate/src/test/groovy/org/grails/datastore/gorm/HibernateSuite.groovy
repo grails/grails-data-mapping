@@ -64,6 +64,6 @@ import org.junit.runners.Suite.SuiteClasses
 //    FindWhereSpec
 //DetachedCriteriaSpec
 //SizeQuerySpec
-    FindByExampleSpec
+    NamedQuerySpec
 ])
 class HibernateSuite {}

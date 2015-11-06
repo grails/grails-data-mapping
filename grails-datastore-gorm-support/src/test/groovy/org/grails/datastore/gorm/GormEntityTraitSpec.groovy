@@ -2,8 +2,11 @@ package org.grails.datastore.gorm
 
 import grails.artefact.Artefact
 import grails.persistence.Entity
+import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import spock.lang.Specification
+
+import java.lang.reflect.Modifier
 
 /*
  * Copyright 2014 original authors
@@ -37,6 +40,14 @@ class Book {
     String title
 
     Author author
+
+    static namedQueries = {
+        kingBooks {
+            author {
+                eq 'name', 'Stephen King'
+            }
+        }
+    }
 }
 
 @Entity
@@ -56,6 +67,8 @@ class Publisher {
 
         then:
         cls.transients.contains('authorId')
+        cls.getMethod("getKingBooks").returnType == GormQueryOperations
+        Modifier.isStatic(cls.getMethod("getKingBooks").modifiers)
         GormEntity.isAssignableFrom(cls)
         GormValidateable.isAssignableFrom(cls)
         DirtyCheckable.isAssignableFrom(cls)
@@ -119,12 +132,12 @@ class SubMember extends Member {
     }
 }
 
-@Artefact('Domain')
-class QueryMethodArtefactDomain {
-    String name
-}
-
-@Entity
-class QueryMethodEntityDomain {
-    String name
-}
+//@Artefact('Domain')
+//class QueryMethodArtefactDomain {
+//    String name
+//}
+//
+//@Entity
+//class QueryMethodEntityDomain {
+//    String name
+//}

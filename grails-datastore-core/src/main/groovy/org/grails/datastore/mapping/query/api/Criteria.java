@@ -15,6 +15,7 @@
 package org.grails.datastore.mapping.query.api;
 
 import groovy.lang.Closure;
+import org.grails.datastore.mapping.query.Query;
 
 import java.util.Collection;
 import java.util.Map;
@@ -331,6 +332,14 @@ public interface Criteria  {
      * @return This criteria
      */
     Criteria order(String propertyName);
+
+    /**
+     * Adds an order object
+     *
+     * @param o The order object
+     * @return The order object
+     */
+    Criteria order(Query.Order o);
 
     /**
      * Orders by the specified property name and direction

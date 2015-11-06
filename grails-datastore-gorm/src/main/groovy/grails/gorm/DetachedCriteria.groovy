@@ -318,6 +318,12 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return this
     }
 
+    @Override
+    Criteria order(Order o) {
+        orders << o
+        return this
+    }
+
     /**
      * @see Criteria
      */

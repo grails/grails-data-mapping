@@ -46,6 +46,7 @@ import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.Basic;
 import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.api.BuildableCriteria;
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.grails.datastore.mapping.reflect.ClassUtils;
 import org.springframework.core.convert.ConversionException;
@@ -354,6 +355,67 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
     public Object invoke(final Class clazz, String methodName, Object[] arguments) {
         return invoke(clazz, methodName, (Closure)null, arguments);
+    }
+
+
+    public static void populateArgumentsForCriteria(BuildableCriteria q, Map argMap) {
+        if (argMap == null) {
+            return;
+        }
+        String orderParam = (String)argMap.get(ARGUMENT_ORDER);
+
+        Object fetchObj = argMap.get(ARGUMENT_FETCH);
+        if (fetchObj instanceof Map) {
+            Map fetch = (Map)fetchObj;
+            for (Object o : fetch.keySet()) {
+                String associationName = (String) o;
+                FetchType fetchType = getFetchMode(fetch.get(associationName));
+                switch(fetchType) {
+                    case LAZY:
+                        q.select(associationName);
+                        break;
+                    case EAGER:
+                        q.join(associationName);
+                }
+            }
+        }
+
+        if(argMap.containsKey(ARGUMENT_CACHE)) {
+            q.cache(ClassUtils.getBooleanFromMap(ARGUMENT_CACHE, argMap));
+        }
+
+        Object sortObject = argMap.get(ARGUMENT_SORT);
+        boolean ignoreCase = !argMap.containsKey(ARGUMENT_IGNORE_CASE) || ClassUtils.getBooleanFromMap(ARGUMENT_IGNORE_CASE, argMap);
+
+
+        if (sortObject != null) {
+            if(sortObject instanceof CharSequence) {
+                final String sort = sortObject.toString();
+                final Query.Order order = ORDER_DESC.equalsIgnoreCase(orderParam) ? Query.Order.desc(sort) : Query.Order.asc(sort);
+                if(ignoreCase) {
+                    order.ignoreCase();
+                }
+                q.order(order);
+            }
+            else if(sortObject instanceof Map) {
+                Map sortMap = (Map)sortObject;
+                for (Object key : sortMap.keySet()) {
+                    Object value = sortMap.get(key);
+                    String sort = key.toString();
+                    final Query.Order order = ORDER_DESC.equalsIgnoreCase(orderParam) ? Query.Order.desc(sort) : Query.Order.asc(sort);
+                    if(ignoreCase) {
+                        order.ignoreCase();
+                    }
+                    q.order(order);
+                }
+
+            }
+        }
+
+
+        if (q instanceof QueryArgumentsAware) {
+            ((QueryArgumentsAware)q).setArguments(argMap);
+        }
     }
 
     public static void populateArgumentsForCriteria(Class<?> targetClass, Query q, Map argMap) {

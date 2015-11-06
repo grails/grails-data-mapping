@@ -16,9 +16,13 @@
 package org.grails.datastore.gorm.query
 
 import grails.gorm.CriteriaBuilder
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.query.api.BuildableCriteria
+import org.grails.datastore.mapping.reflect.NameUtils
+import org.springframework.util.ReflectionUtils
 
 import java.lang.reflect.Modifier
 
@@ -32,15 +36,25 @@ import java.lang.reflect.Modifier
  *
  *
  * @since 5.0
+ * @deprecated Use where queries instead
  */
+@Deprecated
 class NamedCriteriaProxy<D> implements GormQueryOperations<D> {
 
-    Closure criteriaClosure
-    PersistentEntity entity
-    List finders
+    final Closure criteriaClosure
+    final PersistentEntity entity
+    final List finders
     private namedCriteriaParams
     private previousInChain
     private queryBuilder
+
+
+    NamedCriteriaProxy(Closure criteriaClosure, PersistentEntity entity, List finders) {
+        this.criteriaClosure = (Closure)criteriaClosure.clone()
+        this.criteriaClosure.delegate = this
+        this.entity = entity
+        this.finders = finders
+    }
 
     private invokeCriteriaClosure(additionalCriteriaClosure = null) {
         def crit = getPreparedCriteriaClosure(additionalCriteriaClosure)
@@ -101,14 +115,9 @@ class NamedCriteriaProxy<D> implements GormQueryOperations<D> {
         def conversionService = entity.mappingContext.conversionService
         return (D) entity.javaClass.createCriteria().get( {
             queryBuilder = delegate
-            invokeCriteriaClosure(additionalCriteria)
-            if (paramsMap?.max) {
-                maxResults conversionService.convert(paramsMap.max, Integer)
-            }
-            if (paramsMap?.offset) {
-                firstResult conversionService.convert(paramsMap.offset, Integer)
-            }
+            maxResults 1
             uniqueResult = true
+            invokeCriteriaClosure(additionalCriteria)
             if (paramsMap && queryBuilder instanceof CriteriaBuilder) {
                 DynamicFinder.populateArgumentsForCriteria(entity.javaClass, queryBuilder.query, paramsMap)
             }
@@ -123,8 +132,29 @@ class NamedCriteriaProxy<D> implements GormQueryOperations<D> {
     @Override
     List<D> list(Map paramsMap = Collections.emptyMap(), Closure additionalCriteria = null) {
         def conversionService = entity.mappingContext.conversionService
+        def callable = {
+            queryBuilder = delegate
+            invokeCriteriaClosure(additionalCriteria)
+        }
+        if(paramsMap.isEmpty()) {
+            return entity.javaClass.createCriteria().list(callable)
+        }
+        else {
+            return entity.javaClass.createCriteria().list(paramsMap, callable)
+        }
+    }
+
+    List<D> listDistinct(Closure additionalCriteria) {
+        listDistinct(Collections.emptyMap(), additionalCriteria)
+    }
+
+    List<D> listDistinct(Map paramsMap = Collections.emptyMap(), Closure additionalCriteria = null) {
+        def conversionService = entity.mappingContext.conversionService
         return entity.javaClass.withCriteria {
             queryBuilder = delegate
+            projections {
+                distinct()
+            }
             invokeCriteriaClosure(additionalCriteria)
             if (paramsMap?.max) {
                 maxResults conversionService.convert(paramsMap.max, Integer)
@@ -206,19 +236,38 @@ class NamedCriteriaProxy<D> implements GormQueryOperations<D> {
             return nextInChain(args)
         }
 
-        def metaProperty = javaClass.metaClass.getMetaProperty(methodName)
+
+        def getterName = NameUtils.getGetterName(methodName)
+        def metaProperty = ReflectionUtils.findMethod(javaClass, getterName)
         if (metaProperty && Modifier.isStatic(metaProperty.modifiers)) {
-            def staticProperty = metaProperty.getProperty(javaClass)
+            def staticProperty = javaClass."$getterName"()
             if (staticProperty instanceof NamedCriteriaProxy) {
                 def nestedCriteria = staticProperty.criteriaClosure.clone()
-                nestedCriteria.delegate = queryBuilder
-                return nestedCriteria(*args)
+                nestedCriteria.delegate = this
+                nestedCriteria(*args)
+                return this
             }
         }
-        queryBuilder."${methodName}"(*args)
+        try {
+            return queryBuilder."${methodName}"(*args)
+        } catch (MissingMethodException e) {
+            try {
+                return queryBuilder."${methodName}"(*args)
+            } catch (MissingMethodException mme) {
+                def targetType = queryBuilder?.targetClass
+                def proxy = GormEnhancer.findNamedQuery(targetType, methodName)
+                if (proxy != null) {
+                    def nestedCriteria = proxy.criteriaClosure.clone()
+                    nestedCriteria.delegate = this
+                    nestedCriteria(*args)
+                    return this
+                }
+                throw mme
+            }
+        }
     }
 
-    private getPreparedCriteriaClosure(additionalCriteriaClosure = null) {
+    private Closure getPreparedCriteriaClosure(additionalCriteriaClosure = null) {
         Closure closureClone = criteriaClosure.clone()
         closureClone.resolveStrategy = Closure.DELEGATE_FIRST
         if (namedCriteriaParams) {
@@ -238,7 +287,8 @@ class NamedCriteriaProxy<D> implements GormQueryOperations<D> {
                 additionalCriteriaClosure()
             }
         }
-        c
+        c.delegate = this
+        return c
     }
 
 

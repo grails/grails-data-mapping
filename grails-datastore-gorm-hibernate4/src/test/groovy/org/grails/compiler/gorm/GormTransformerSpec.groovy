@@ -37,7 +37,7 @@ class TestEntity {
             cls.load(1)
         then:
             def e = thrown(IllegalStateException)
-            e.message.contains '''Method on class [TestEntity] was used outside of a Grails application.'''
+        e.message.contains '''Either class [TestEntity] is not a domain class or GORM has not been initialized correctly or has already been shutdown. If you are unit testing your entities using the mocking APIs'''
     }
 
     void 'Test that the compiler will not allow an entity to be marked with @Canonical'() {

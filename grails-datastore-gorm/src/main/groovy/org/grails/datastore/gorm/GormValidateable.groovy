@@ -29,37 +29,11 @@ import org.springframework.validation.Errors
  */
 @CompileStatic
 trait GormValidateable {
-    protected static GormValidationApi internalValidationApi
-
     /**
      * The validation errors object
      */
     Errors errors
 
-    /**
-     * Used to initialise the state of GORM. This method is used internally by the framework and SHOULD NOT be called by the developer
-     */
-    static void initInternalValidationApi(GormValidationApi gvi) {
-        internalValidationApi = gvi
-    }
-
-    /**
-     * Resets internal state. This is an internal method and should not be used
-     */
-    static void resetInternalValidationApi() {
-        internalValidationApi = null
-    }
-
-
-    /**
-     * Used to obtain the {@link GormValidationApi} instance. This method is used internally by the framework and SHOULD NOT be called by the developer
-     */
-    static GormValidationApi currentGormValidationApi() {
-        if(internalValidationApi == null) {
-            throw new IllegalStateException("Method on class [${this.getName()}] was used outside of a Grails application. If running in the context of a test using the mocking API or bootstrap Grails correctly.")
-        }
-        internalValidationApi
-    }
 
     /**
      * Validates an instance for the given arguments
@@ -114,5 +88,12 @@ trait GormValidateable {
      */
     Boolean hasErrors() {
         getErrors().hasErrors()
+    }
+
+    /**
+     * Used to obtain the {@link GormValidationApi} instance. This method is used internally by the framework and SHOULD NOT be called by the developer
+     */
+    private GormValidationApi currentGormValidationApi() {
+        GormEnhancer.findValidationApi(getClass())
     }
 }

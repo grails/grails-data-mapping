@@ -3,6 +3,7 @@ package org.grails.orm.hibernate
 import grails.orm.PagedResultList
 
 import org.hibernate.NonUniqueResultException
+import org.junit.Ignore
 
 import static junit.framework.Assert.*
 import org.junit.Test
@@ -17,6 +18,7 @@ class NamedCriteriaTests extends AbstractGrailsHibernateTests {
     }
 
     @Test
+    @Ignore // deprecated feature
     void testDynamicFinderAppendedToNamedQueryWhichCallsAnotherNamedQuery() {
         // GRAILS-7253
 
@@ -58,7 +60,7 @@ class NamedCriteriaTests extends AbstractGrailsHibernateTests {
         def result = NamedCriteriaPublication.lastPublishedBefore(now - 200).list()
         assertNull result
 
-        result = NamedCriteriaPublication.lastPublishedBefore(now - 50).list()
+        result = NamedCriteriaPublication.lastPublishedBefore(now - 50).find()
         assertEquals 'One Hundred Day Old Paperback', result?.title
 
         shouldFail(NonUniqueResultException) {
@@ -67,6 +69,7 @@ class NamedCriteriaTests extends AbstractGrailsHibernateTests {
     }
 
     @Test
+    @Ignore // feature deprecated
     void testCountMethodOnSortedNamedQuery() {
         def today = new Date()
         def nextWeek = today + 7

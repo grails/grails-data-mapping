@@ -30,6 +30,7 @@ import org.codehaus.groovy.ast.PropertyNode
 import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.BooleanExpression
 import org.codehaus.groovy.ast.expr.ClassExpression
+import org.codehaus.groovy.ast.expr.ClosureExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.GStringExpression
@@ -49,6 +50,7 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.datastore.gorm.GormEntity
+import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.reflect.NameUtils
@@ -75,6 +77,7 @@ import java.lang.reflect.Modifier
 class GormEntityTransformation implements CompilationUnitAware,ASTTransformation {
     private static final ClassNode MY_TYPE = new ClassNode(Entity.class);
 
+    private static final String GET_NAMED_QUERY = "getNamedQuery"
     private static ClassNode GORM_ENTITY_CLASS_NODE = ClassHelper.make(GormEntity)
     private static MethodNode ADD_TO_METHOD_NODE =  GORM_ENTITY_CLASS_NODE.getMethods("addTo").get(0)
     private static MethodNode REMOVE_FROM_METHOD_NODE =  GORM_ENTITY_CLASS_NODE.getMethods("removeFrom").get(0)
@@ -141,10 +144,59 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         AstUtils.injectTrait(classNode, GormEntity)
 
 
-        // TODO: now process named query associations
+        // now process named query associations
         // see https://grails.github.io/grails-doc/latest/ref/Domain%20Classes/namedQueries.html
 
         // for each method call create a named query proxy lookup
+        def thisClassNode = classNode
+        def namedQueriesProp = thisClassNode.getProperty(GormProperties.NAMED_QUERIES)
+        def currentClassNode = classNode
+        while(namedQueriesProp != null) {
+            def expression = namedQueriesProp.getInitialExpression()
+            if(expression instanceof ClosureExpression) {
+                ClosureExpression ce = (ClosureExpression)expression
+                def statement = ce.code
+                if(statement instanceof BlockStatement) {
+                    BlockStatement body = (BlockStatement)statement
+                    def allStatements = body.statements
+                    for(s in allStatements) {
+                        if(s instanceof ExpressionStatement) {
+                            ExpressionStatement es = (ExpressionStatement)s
+                            if(es.expression instanceof MethodCallExpression) {
+                                MethodCallExpression mce = (MethodCallExpression) es.expression
+                                def methodName = mce.getMethodAsString()
+
+
+                                def namedQueryGetter = NameUtils.getGetterName(methodName)
+                                def existing = thisClassNode.getMethod(namedQueryGetter, AstUtils.ZERO_PARAMETERS)
+
+                                if(existing == null || !existing.getDeclaringClass().equals(thisClassNode)) {
+                                    def queryOperationsClassNode = AstUtils.nonGeneric( ClassHelper.make(GormQueryOperations) )
+                                    final GenericsType[] genericsTypes = queryOperationsClassNode.getGenericsTypes()
+                                    final Map<String, ClassNode> parameterNameToParameterValue = new LinkedHashMap<String, ClassNode>()
+                                    if(genericsTypes != null) {
+                                        for(GenericsType gt : genericsTypes) {
+                                            parameterNameToParameterValue.put(gt.getName(), thisClassNode.getPlainNodeReference());
+                                        }
+                                    }
+                                    AstUtils.replaceGenericsPlaceholders(queryOperationsClassNode, parameterNameToParameterValue)
+
+                                    def methodBody = new BlockStatement()
+
+                                    def getNamedQueryMethodCall = new MethodCallExpression(new VariableExpression("this"), GET_NAMED_QUERY, new ArgumentListExpression(new ConstantExpression(methodName)))
+                                    methodBody.addStatement(new ReturnStatement(getNamedQueryMethodCall))
+                                    thisClassNode.addMethod( new MethodNode(namedQueryGetter, Modifier.PUBLIC | Modifier.STATIC, queryOperationsClassNode, AstUtils.ZERO_PARAMETERS, null, methodBody))
+                                }
+
+                            }
+                        }
+                    }
+                }
+                currentClassNode = currentClassNode.getSuperClass()
+                namedQueriesProp = currentClassNode.getProperty(GormProperties.NAMED_QUERIES)
+            }
+
+        }
 
 
         if(compilationUnit != null) {
@@ -205,6 +257,9 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         ListExpression listExpression = getOrCreateListProperty(classNode, GormProperties.TRANSIENT)
         for(PropertyNode pn in classNode.getProperties()) {
             def type = pn.getType()
+            if(!Modifier.isPublic(pn.getModifiers()) || Modifier.isStatic(pn.getModifiers())) {
+                continue
+            }
             if(AstUtils.isDomainClass(type)) {
                 addToOneIdProperty(pn.getName(), classNode, listExpression)
             }

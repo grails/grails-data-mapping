@@ -82,7 +82,7 @@ class GrailsTransactionTemplate {
         }
     }
 
-    Object execute(Closure action) throws TransactionException {
+    public <T> T execute(Closure<T> action) throws TransactionException {
         try {
             Object result = transactionTemplate.execute(new TransactionCallback() {
                 Object doInTransaction(TransactionStatus status) {
@@ -114,7 +114,7 @@ class GrailsTransactionTemplate {
             if (result instanceof ThrowableHolder) {
                 throw result.getThrowable()
             } else {
-                return result
+                return (T)result
             }
         }
         catch (ThrowableHolderException e) {

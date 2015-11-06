@@ -15,6 +15,7 @@
 
 package org.grails.datastore.gorm.query
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.reflect.NameUtils
@@ -25,48 +26,38 @@ import org.grails.datastore.mapping.reflect.NameUtils
  * @author Jeff Brown
  */
 class NamedQueriesBuilder {
-    PersistentEntity entity
-    List<FinderMethod> finders
-    boolean initialized = false
+    final PersistentEntity entity
+    final List<FinderMethod> finders
+
+    private boolean initialized = false
+    private Map<String, GormQueryOperations> namedQueries = [:]
 
     NamedQueriesBuilder(PersistentEntity entity, List<FinderMethod> finders) {
         this.entity = entity
         this.finders = finders
     }
 
-    def evaluate(Closure namedQueriesClosure) {
-        def closure = namedQueriesClosure.clone()
+    @CompileStatic
+    Map<String, GormQueryOperations> evaluate(Closure namedQueriesClosure) {
+        Closure closure = (Closure)namedQueriesClosure.clone()
         closure.resolveStrategy = Closure.DELEGATE_ONLY
         closure.delegate = this
         closure.call()
         initialized = true
+        return namedQueries
     }
 
-    protected def handleMethodMissing(String name, args) {
-        Closure criteriaClosure = args[0]
-        def getterName = NameUtils.getGetterName(name)
-        classesToAugment.each { clz ->
-            def methodMissingClosure = {->
-                // creating a new proxy each time because the proxy class has
-                // some state that cannot be shared across requests (namedCriteriaParams)
-                createNamedCriteriaProxy(criteriaClosure)
-            }
-            clz.metaClass.static."${getterName}" = methodMissingClosure
-        }
-        null
-    }
-    
-    protected List<Class<?>> getClassesToAugment() {
-        [entity.javaClass]
-    }
-    
-    protected def createNamedCriteriaProxy(Closure criteriaClosure) {
-        new NamedCriteriaProxy(criteriaClosure: criteriaClosure, entity: entity, finders: finders)
+    @CompileStatic
+    protected NamedCriteriaProxy createNamedCriteriaProxy(Closure criteriaClosure) {
+        new NamedCriteriaProxy(criteriaClosure, entity, finders)
     }
 
     def methodMissing(String name, args) {
         if (args && args[0] instanceof Closure && !initialized) {
-            return handleMethodMissing(name, args)
+            Closure criteriaClosure = (Closure)args[0]
+            namedQueries.put(name, createNamedCriteriaProxy(criteriaClosure))
+
+            return null
         }
         throw new MissingMethodException(name, NamedQueriesBuilder, args)
     }

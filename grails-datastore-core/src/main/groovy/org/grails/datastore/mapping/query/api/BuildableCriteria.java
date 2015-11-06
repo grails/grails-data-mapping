@@ -27,7 +27,45 @@ import java.util.Map;
  *
  */
 public interface BuildableCriteria extends Criteria {
-    
+
+
+    /**
+     * @return The class the criteria applies to
+     */
+    Class getTargetClass();
+
+    /**
+     * Whether to cache the query
+     *
+     * @param cache True if the query should be cached
+     * @return This criteria
+     */
+    BuildableCriteria cache(boolean cache);
+
+    /**
+     * Whether to cache the query should be readOnly
+     *
+     * @param readOnly True if the results should be read-only
+     * @return This criteria
+     */
+    BuildableCriteria readOnly(boolean readOnly);
+
+    /**
+     * Whether to join on an association
+     *
+     * @param property The property to join on
+     * @return This criteria
+     */
+    BuildableCriteria join(String property);
+
+    /**
+     * Whether to select on an association
+     *
+     * @param property The property to join on
+     * @return This criteria
+     */
+    BuildableCriteria select(String property);
+
     /**
      * Defines an executes a list query in a single call. Example: Foo.createCriteria().list { }
      * @param closure The closure to execute

@@ -15,6 +15,7 @@
 package org.grails.datastore.gorm
 
 import groovy.transform.CompileStatic
+import groovy.transform.Memoized
 import groovy.util.logging.Commons
 import org.codehaus.groovy.reflection.CachedMethod
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -23,15 +24,20 @@ import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import org.grails.datastore.gorm.finders.*
 import org.grails.datastore.gorm.internal.InstanceMethodInvokingClosure
 import org.grails.datastore.gorm.internal.StaticMethodInvokingClosure
+import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.MetaClassUtils
+import org.grails.datastore.mapping.reflect.NameUtils
 import org.springframework.transaction.PlatformTransactionManager
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.util.concurrent.ConcurrentHashMap
+
 /**
  * Enhances a class with GORM behavior
  *
@@ -39,6 +45,12 @@ import java.lang.reflect.Modifier
  */
 @Commons
 class GormEnhancer implements Closeable {
+
+    private static final Map<String, Map<String, GormQueryOperations>> NAMED_QUERIES = new ConcurrentHashMap<>()
+    private static final Map<String, GormStaticApi> STATIC_APIS = new ConcurrentHashMap<>()
+    private static final Map<String, GormInstanceApi> INSTANCE_APIS = new ConcurrentHashMap<>()
+    private static final Map<String, GormValidationApi> VALIDATION_APIS = new ConcurrentHashMap<>()
+    private static final Map<String, Datastore> DATASTORES = new ConcurrentHashMap<>()
 
     Datastore datastore
     PlatformTransactionManager transactionManager
@@ -56,6 +68,94 @@ class GormEnhancer implements Closeable {
         if(datastore != null) {
             registerConstraints(datastore)
         }
+        NAMED_QUERIES.clear()
+        for(entity in datastore.mappingContext.persistentEntities) {
+            if(!entity.isExternal()) {
+                def cls = entity.javaClass
+                def staticApi = getStaticApi(cls)
+                def name = entity.name
+                STATIC_APIS.put(name, staticApi)
+                def instanceApi = getInstanceApi(cls)
+                INSTANCE_APIS.put(name, instanceApi)
+                def validationApi = getValidationApi(cls)
+                VALIDATION_APIS.put(name, validationApi)
+                DATASTORES.put(name, datastore)
+            }
+        }
+    }
+
+
+    /**
+     * Finds a named query for the given entity
+     *
+     * @param entity The entity name
+     * @param queryName The query name
+     *
+     * @return The named query or null if it doesn't exist
+     */
+    static GormQueryOperations findNamedQuery(Class entity, String queryName) {
+        def className = entity.getName()
+        def namedQueries = NAMED_QUERIES.get(className)
+        if(namedQueries == null) {
+            def cpf = ClassPropertyFetcher.forClass(entity)
+            def closure = cpf.getStaticPropertyValue(GormProperties.NAMED_QUERIES, Closure.class)
+            if(closure != null) {
+
+                def evaluator = new NamedQueriesBuilder(findEntity(entity), findStaticApi(entity).gormDynamicFinders)
+                namedQueries = evaluator.evaluate(closure)
+                NAMED_QUERIES.put(className, namedQueries)
+                return namedQueries.get(queryName)
+            }
+            else {
+                NAMED_QUERIES.put(className, new LinkedHashMap<String, GormQueryOperations>());
+            }
+
+        }
+        else {
+            return namedQueries.get(queryName)
+        }
+        return null
+    }
+
+
+    static GormStaticApi findStaticApi(Class entity) {
+        def staticApi = STATIC_APIS.get(NameUtils.getClassName(entity))
+        if(staticApi == null) {
+            throw stateException(entity)
+        }
+        return staticApi
+    }
+
+    private static IllegalStateException stateException(Class entity) {
+        new IllegalStateException("Either class [$entity.name] is not a domain class or GORM has not been initialized correctly or has already been shutdown. If you are unit testing your entities using the mocking APIs")
+    }
+
+    static GormInstanceApi findInstanceApi(Class entity) {
+        def instanceApi = INSTANCE_APIS.get(NameUtils.getClassName(entity))
+        if(instanceApi == null) {
+            throw stateException(entity)
+        }
+        return instanceApi
+    }
+
+    static  GormValidationApi findValidationApi(Class entity) {
+        def instanceApi = VALIDATION_APIS.get(NameUtils.getClassName(entity))
+        if(instanceApi == null) {
+            throw stateException(entity)
+        }
+        return instanceApi
+    }
+
+    static Datastore findDatastore(Class entity) {
+        def datastore = DATASTORES.get(entity.name)
+        if(datastore == null) {
+            throw stateException(entity)
+        }
+        return datastore
+    }
+
+    static PersistentEntity findEntity(Class entity) {
+        findDatastore(entity).getMappingContext().getPersistentEntity(entity.name)
     }
 
     @Override
@@ -65,14 +165,14 @@ class GormEnhancer implements Closeable {
         def registry = GroovySystem.metaClassRegistry
         for(entity in datastore.mappingContext.persistentEntities) {
             def cls = entity.javaClass
-            try {
-                registry.removeMetaClass(cls)
-                InvokerHelper.invokeStaticMethod(cls, "resetInternalApi", null)
-                InvokerHelper.invokeStaticMethod(cls, "resetInternalValidationApi", null)
-            } catch (Exception ex) {
-                log.warn("There was an error shutting down GORM for entity [$cls.name]: ${ex.message}", ex)
-            }
+            def className = cls.name
+            NAMED_QUERIES.remove(className)
+            STATIC_APIS.remove(className)
+            INSTANCE_APIS.remove(className)
+            VALIDATION_APIS.remove(className)
+            registry.removeMetaClass(cls)
         }
+        DATASTORES.remove(datastore)
     }
 
     protected void removeConstraints() {

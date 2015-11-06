@@ -91,26 +91,40 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
         this.query = query;
     }
 
-   public void setUniqueResult(boolean uniqueResult) {
+    @Override
+    public Class getTargetClass() {
+        return this.targetClass;
+    }
+
+    public void setUniqueResult(boolean uniqueResult) {
         this.uniqueResult = uniqueResult;
    }
 
-   public Criteria cache(boolean cache) {
+   @Override
+   public BuildableCriteria cache(boolean cache) {
        query.cache(cache);
        return this;
    }
 
-   public Criteria readOnly(boolean readOnly) {
+   @Override
+   public BuildableCriteria readOnly(boolean readOnly) {
        this.readOnly = readOnly;
        return this;
    }
 
-   public Criteria join(String property) {
+   @Override
+   public BuildableCriteria join(String property) {
        query.join(property);
        return this;
    }
 
-   public Query.ProjectionList id() {
+    @Override
+    public BuildableCriteria select(String property) {
+        query.select(property);
+        return this;
+    }
+
+    public Query.ProjectionList id() {
        if (projectionList != null) {
            projectionList.id();
        }
@@ -1036,6 +1050,24 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
      */
     public Criteria order(String propertyName) {
         Query.Order o = Query.Order.asc(propertyName);
+        if (paginationEnabledList) {
+            orderEntries.add(o);
+        }
+        else {
+            query.order(o);
+        }
+        return this;
+    }
+
+
+    /**
+     * Orders by the specified property name (defaults to ascending)
+     *
+     * @param o The order object
+     * @return This criteria
+     */
+    @Override
+    public Criteria order(Query.Order o) {
         if (paginationEnabledList) {
             orderEntries.add(o);
         }
