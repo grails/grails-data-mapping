@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.redis
 
 import grails.gorm.tests.*
+import grails.persistence.Entity
 
 /**
  * @author graemerocher
@@ -56,5 +57,31 @@ class RedisSpecificMethodsSpec extends GormDatastoreSpec {
             t != null
             names.find { it == t.name }
             5 == TestEntity.count()
+    }
+
+    @Override
+    List getDomainClasses() {
+        [TestEntity]
+    }
+}
+
+@Entity
+class TestEntity implements Serializable {
+    Long id
+    Long version
+    String name
+    Integer age = 30
+
+    ChildEntity child
+
+    static mapping = {
+        name index:true
+        age index:true, nullable:true
+        child index:true, nullable:true
+    }
+
+    static constraints = {
+        name blank:false
+        child nullable:true
     }
 }

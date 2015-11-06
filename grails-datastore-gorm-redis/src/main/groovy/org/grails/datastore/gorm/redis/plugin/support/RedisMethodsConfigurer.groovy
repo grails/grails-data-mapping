@@ -14,17 +14,9 @@
  */
 package org.grails.datastore.gorm.redis.plugin.support
 
-import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.GormInstanceApi
-import org.grails.datastore.gorm.GormStaticApi
-import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
-import org.grails.datastore.gorm.redis.RedisGormEnhancer
-import org.grails.datastore.gorm.redis.RedisGormInstanceApi
-import org.grails.datastore.gorm.redis.RedisGormStaticApi
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
-
 /**
  * Methods configurer for Redis
  */
@@ -37,27 +29,4 @@ class RedisMethodsConfigurer extends DynamicMethodsConfigurer {
     @Override
     String getDatastoreType() { "Redis" }
 
-    @Override
-    protected GormStaticApi createGormStaticApi(Class cls, List<FinderMethod> finders) {
-        return new RedisGormStaticApi(cls, datastore, finders)
-    }
-
-    @Override
-    protected GormInstanceApi createGormInstanceApi(Class cls) {
-        def api = new RedisGormInstanceApi(cls, datastore)
-        api.failOnError = failOnError
-        api
-    }
-
-    @Override
-    protected GormEnhancer createEnhancer() {
-        def ge
-        if (transactionManager) {
-            ge = new RedisGormEnhancer(datastore, transactionManager)
-        } else {
-            ge = new RedisGormEnhancer(datastore)
-        }
-        ge.failOnError = failOnError
-        ge
-    }
 }

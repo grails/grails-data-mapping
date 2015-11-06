@@ -1,4 +1,9 @@
-/* Copyright (C) 2011 SpringSource
+package grails.neo4j
+
+import spock.lang.Specification
+
+/*
+ * Copyright 2014 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,23 +17,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.mongo.plugin.support
-
-import org.grails.datastore.gorm.plugin.support.OnChangeHandler
-import org.grails.datastore.mapping.core.Datastore
-import org.springframework.transaction.PlatformTransactionManager
 
 /**
- * On change handler for MongoDB
+ * @author graemerocher
  */
-class MongoOnChangeHandler extends OnChangeHandler{
+class Neo4jEntitySpec extends Specification {
 
-    MongoOnChangeHandler(Datastore datastore, PlatformTransactionManager transactionManager) {
-        super(datastore, transactionManager)
-    }
+    void "Test GORM adds Neo4j entity"() {
 
-    @Override
-    String getDatastoreType() {
-        return "Mongo"
+        when:
+        def cls = new GroovyClassLoader().parseClass('''
+import grails.persistence.*
+
+@Entity
+class Foo {
+    String name
+}
+''')
+
+        then:
+        Neo4jEntity.isAssignableFrom(cls)
+
     }
 }

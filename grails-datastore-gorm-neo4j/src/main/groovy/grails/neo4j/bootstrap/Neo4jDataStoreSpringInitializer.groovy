@@ -17,10 +17,10 @@
 package grails.neo4j.bootstrap
 
 import groovy.transform.InheritConstructors
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
-import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.bean.factory.DefaultMappingHolder
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
@@ -85,7 +85,7 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
             }
             graphDatabaseService(neo4jDatastore:"getGraphDatabaseService")
 
-            "org.grails.gorm.neo4j.internal.GORM_ENHANCER_BEAN-neo4j"(Neo4jGormEnhancer, ref("neo4jDatastore"), ref("neo4jTransactionManager")) { bean ->
+            "org.grails.gorm.neo4j.internal.GORM_ENHANCER_BEAN-neo4j"(GormEnhancer, ref("neo4jDatastore"), ref("neo4jTransactionManager")) { bean ->
                 bean.initMethod = 'enhance'
                 bean.destroyMethod = 'close'
                 bean.lazyInit = false

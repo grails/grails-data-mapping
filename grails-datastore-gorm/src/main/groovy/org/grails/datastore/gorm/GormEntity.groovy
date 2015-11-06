@@ -16,6 +16,7 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.DetachedCriteria
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
@@ -732,6 +733,17 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable {
      */
     static D last(String propertyName) {
         currentGormStaticApi().last propertyName
+    }
+
+    /**
+     * Handles static method missing for dynamic finders
+     *
+     * @param methodName The name of the method
+     * @param arg the argument to the method
+     * @return The value
+     */
+    static Object staticMethodMissing(String methodName, arg) {
+        currentGormStaticApi().methodMissing(methodName, arg)
     }
 
     /**

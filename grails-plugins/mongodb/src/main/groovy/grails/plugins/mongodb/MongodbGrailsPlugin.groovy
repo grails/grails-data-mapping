@@ -8,8 +8,6 @@ import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
 import grails.plugins.Plugin
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
-import org.grails.datastore.gorm.mongo.plugin.support.MongoMethodsConfigurer
-import org.grails.datastore.gorm.mongo.plugin.support.MongoOnChangeHandler
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.web.json.JSONWriter
 import grails.converters.JSON
@@ -81,17 +79,6 @@ class MongodbGrailsPlugin extends Plugin {
         }
     }
 
-    @Override
-    @CompileStatic
-    void doWithDynamicMethods() {
-        def ctx = applicationContext
-        def datastore = ctx.getBean(MongoDatastore)
-        def transactionManager = ctx.getBean('mongoTransactionManager', PlatformTransactionManager)
-        def methodsConfigurer = new MongoMethodsConfigurer(datastore, transactionManager)
-        methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")
-        methodsConfigurer.failOnError = config.getProperty('grails.gorm.failOnError', Boolean, false)
-        methodsConfigurer.configure()
-    }
 
 
     @Override
@@ -104,6 +91,5 @@ class MongodbGrailsPlugin extends Plugin {
 
         def mongoDatastore = ctx.getBean(MongoDatastore)
         def mongoTransactionManager = ctx.getBean('mongoTransactionManager', PlatformTransactionManager)
-        new MongoOnChangeHandler(mongoDatastore, mongoTransactionManager).onChange(this, event)
     }
 }

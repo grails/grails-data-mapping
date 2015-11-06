@@ -43,6 +43,7 @@ class Neo4jQuery extends Query {
     private static final String ORDER_BY_CLAUSE = " ORDER BY "
     private static final String BLANK = ""
     private static final String ID_EQUALS = "ID(n)"
+    public static final String UNDECLARED_PROPERTIES = "_neo4j_gorm_undecl_"
 
     final Neo4jEntityPersister neo4jEntityPersister
 

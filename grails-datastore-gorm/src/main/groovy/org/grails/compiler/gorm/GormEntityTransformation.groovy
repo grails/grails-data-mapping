@@ -18,6 +18,7 @@ package org.grails.compiler.gorm
 import grails.gorm.annotation.Entity
 import groovy.transform.CompilationUnitAware
 import groovy.transform.CompileStatic
+import groovy.transform.Memoized
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotatedNode
 import org.codehaus.groovy.ast.AnnotationNode
@@ -141,7 +142,23 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         injectAssociations(classNode)
 
         // inject the GORM entity trait
-        AstUtils.injectTrait(classNode, GormEntity)
+        def classGormEntityTrait = pickGormEntityTrait(classNode, sourceUnit)
+        AstUtils.injectTrait(classNode, classGormEntityTrait)
+
+        // convert the methodMissing and propertyMissing implementations to $static_methodMissing and $static_propertyMissing for the static versions
+        def methodMissingBody = new BlockStatement()
+
+
+        def methodNameParam = new Parameter(ClassHelper.make(String), "name")
+        def methodArgsParam = new Parameter(AstUtils.OBJECT_CLASS_NODE, "args")
+        def methodMissingArgs = new ArgumentListExpression(methodNameParam, methodArgsParam)
+        def methodMissingMethodCall = new MethodCallExpression(new VariableExpression("this"), "staticMethodMissing", methodMissingArgs)
+        methodMissingBody.addStatement(
+                new ExpressionStatement(methodMissingMethodCall)
+        )
+
+        def methodMissingParameters = [methodNameParam, methodArgsParam] as Parameter[]
+        classNode.addMethod('$static_methodMissing', Modifier.PUBLIC | Modifier.STATIC, AstUtils.OBJECT_CLASS_NODE, methodMissingParameters, null, methodMissingBody)
 
 
         // now process named query associations
@@ -203,6 +220,71 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
             org.codehaus.groovy.transform.trait.TraitComposer.doExtendTraits(classNode, sourceUnit, compilationUnit);
         }
 
+    }
+
+    protected Class pickGormEntityTrait(ClassNode classNode, SourceUnit source) {
+        def classLoader = getClass().classLoader
+
+
+        // first try the `mapWithValue`
+        def mapWith = classNode.getProperty(GormProperties.MAPPING_STRATEGY)
+        String mapWithValue = mapWith?.initialExpression?.text
+        Class gormEntityTrait = null
+        if(mapWithValue) {
+            gormEntityTrait = findGormEntityTraitForValue(mapWithValue, classLoader)
+        }
+
+        if(gormEntityTrait == null) {
+            boolean isHibernatePresent = isHibernatePresent(classLoader)
+            if(isHibernatePresent) {
+                gormEntityTrait = GormEntity
+            }
+            else {
+                def traitProviderInterface = GormEntityTraitProvider
+                List<GormEntityTraitProvider> allTraitProviders = findTraitProviders(traitProviderInterface, classLoader)
+                if(allTraitProviders.isEmpty()) {
+                    gormEntityTrait = GormEntity
+                }
+                else if(allTraitProviders.size() > 1) {
+                    AstUtils.warning(source, classNode, "There are multiple GORM implementations on the classpath. GORM cannot choose automatically which implementation to use. Please use 'mapWith' on your entity to avoid this conflict and warning.")
+                    gormEntityTrait = GormEntity
+                }
+                else {
+                    gormEntityTrait = allTraitProviders.get(0).entityTrait
+                }
+            }
+        }
+        return gormEntityTrait
+    }
+
+    @Memoized
+    private List<GormEntityTraitProvider> findTraitProviders(Class<GormEntityTraitProvider> traitProviderInterface, ClassLoader classLoader) {
+        def traitProviders = ServiceLoader.load(traitProviderInterface, classLoader)
+        def allTraitProviders = traitProviders.toList()
+        if(allTraitProviders.isEmpty()) {
+            traitProviders = ServiceLoader.load(traitProviderInterface, Thread.currentThread().contextClassLoader)
+            allTraitProviders = traitProviders.toList()
+        }
+        return allTraitProviders
+    }
+
+    @Memoized
+    private Class findGormEntityTraitForValue(String mapWithValue, ClassLoader classLoader) {
+        try {
+            return Class.forName("grails.gorm.${mapWithValue}.${NameUtils.capitalize(mapWithValue)}Entity", true, classLoader)
+        } catch (Throwable e) {
+            // ignore
+        }
+        return null
+    }
+
+    @Memoized
+    private boolean isHibernatePresent(ClassLoader classLoader) {
+        try {
+            return Class.forName("org.hibernate.Hibernate", false, classLoader) != null
+        } catch (Throwable e) {
+            return false
+        }
     }
 
     protected void injectVersionProperty(ClassNode classNode) {

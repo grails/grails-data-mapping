@@ -2,13 +2,10 @@ package org.grails.datastore.gorm.cassandra
 
 import org.codehaus.groovy.grails.commons.GrailsMetaClassUtils
 import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.GormInstanceApi
-import org.grails.datastore.gorm.GormStaticApi
-import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.transaction.PlatformTransactionManager
-
 /**
  * Extends the default {@link GormEnhancer} adding supporting for passing arguments and Cassandra specific methods
  *
@@ -21,6 +18,7 @@ class CassandraGormEnhancer extends GormEnhancer {
     
     CassandraGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
         super(datastore, transactionManager)
+		DynamicFinder.registerNewMethodExpression(InList.class)
     }
     
 	@Override
@@ -133,16 +131,5 @@ class CassandraGormEnhancer extends GormEnhancer {
 		}
 	}
 	
-    @Override
-    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new CassandraGormStaticApi<D>(cls, datastore, getFinders(), transactionManager)
-    }
-    
-    @Override
-    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
-        final api = new CassandraGormInstanceApi<D>(cls, datastore)
-        api.failOnError = failOnError
-        return api
-    }
 
 }

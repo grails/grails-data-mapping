@@ -1,30 +1,38 @@
 package org.grails.datastore.gorm.neo4j
 
+import grails.gorm.tests.Club
 import grails.gorm.tests.GormDatastoreSpec
+import grails.gorm.tests.League
 import grails.gorm.tests.Person
 import grails.gorm.tests.Pet
 import grails.gorm.tests.PetType
+import grails.gorm.tests.Team
 
 /**
  * check the traverser extension
  */
 class ApiExtensionsSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        [Club, Team, League]
+    }
+
     def "test cypher queries"() {
         setup:
-        new Person(lastName:'person1').save()
-        new Person(lastName:'person2').save()
+        new Club(name:'person1').save()
+        new Club(name:'person2').save()
         session.flush()
         session.clear()
 
         when:
-        def result = Person.cypherStatic("MATCH (p:Person) RETURN p")
+        def result = Club.cypherStatic("MATCH (p:Club) RETURN p")
 
         then:
         result.iterator().size()==2
 
         when: "test with parameters"
-        result = Person.cypherStatic("MATCH (p:Person) WHERE p.lastName={1} RETURN p", [ 'person1'])
+        result = Club.cypherStatic("MATCH (p:Club) WHERE p.name={1} RETURN p", [ 'person1'])
 
         then:
         result.iterator().size()==1
@@ -32,15 +40,17 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
 
     def "test instance based cypher query"() {
         setup:
-        def person = new Person(firstName: "Bob", lastName: "Builder")
-        def petType = new PetType(name: "snake")
-        def pet = new Pet(name: "Fred", type: petType, owner: person)
-        person.addToPets(pet)
-        person.save(flush: true)
+
+        def team = new Team(name:"Manchester United FC")
+        def club = new Club(name: "Manchester United")
+        def league = new League(name:"EPL")
+        league.addToClubs(club)
+        club.addToTeams(team)
+        club.save(flush: true)
         session.clear()
 
         when:
-        def result = person.cypher("MATCH (p:Person)<-[:OWNER]->m WHERE p.__id__={this} return m")
+        def result = team.cypher("MATCH (p:Team)<-[:CLUB]->m WHERE p.__id__={this} return m")
 
         then:
         result.iterator().size() == 1

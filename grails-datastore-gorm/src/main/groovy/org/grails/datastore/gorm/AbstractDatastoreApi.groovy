@@ -40,4 +40,8 @@ abstract class AbstractDatastoreApi {
     protected void execute(VoidSessionCallback callback) {
         DatastoreUtils.execute datastore, callback
     }
+
+    Datastore getDatastore() {
+        return datastore
+    }
 }

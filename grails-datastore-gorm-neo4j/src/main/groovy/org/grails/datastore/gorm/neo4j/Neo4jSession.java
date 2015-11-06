@@ -558,7 +558,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
     protected Map<String, List<Object>> amendMapWithUndeclaredProperties(Map<String, Object> simpleProps, Object pojo, MappingContext mappingContext, List<String> nulls) {
         Map<String, List<Object>> dynRelProps = new LinkedHashMap<String, List<Object>>();
-        Map<String,Object> map = (Map<String, Object>) getAttribute(pojo, Neo4jGormEnhancer.UNDECLARED_PROPERTIES);
+        Map<String,Object> map = (Map<String, Object>) getAttribute(pojo, Neo4jQuery.UNDECLARED_PROPERTIES);
         if (map!=null) {
             for (Map.Entry<String,Object> entry : map.entrySet()) {
                 Object value = entry.getValue();

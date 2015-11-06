@@ -15,8 +15,6 @@
  */
 package grails.gorm
 
-import org.grails.datastore.gorm.GormEntity
-
 
 /**
  * Trait added to all domain classes
@@ -24,6 +22,6 @@ import org.grails.datastore.gorm.GormEntity
  * @author Graeme Rocher
  * @since 5.0
  */
-trait Entity<D> extends GormEntity<D> {
+trait Entity<D> {
 
 }

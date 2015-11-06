@@ -4,14 +4,16 @@ import com.mongodb.client.MongoCollection
 import grails.gorm.tests.GormDatastoreSpec
 
 import com.mongodb.DBCollection
+import grails.mongodb.MongoEntity
 import spock.lang.*
 
 @IgnoreIf( { System.getenv('TRAVIS_BRANCH') != null } )
 class MongoGormEnhancerSpec extends GormDatastoreSpec{
-
+    def "Test is MongoEntity"() {
+        expect:
+        MongoEntity.isAssignableFrom(MyMongoEntity)
+    }
     def "Test getCollectionName static method" () {
-        given:
-            session.mappingContext.addPersistentEntity MyMongoEntity
 
         when:
             def collectionName = MyMongoEntity.collectionName
@@ -22,13 +24,15 @@ class MongoGormEnhancerSpec extends GormDatastoreSpec{
     }
 
     def "Test getCollection static method" () {
-        given:
-            session.mappingContext.addPersistentEntity MyMongoEntity
-
         when:
             MongoCollection collection = MyMongoEntity.collection
 
         then:
             collection.name == 'mycollection'
+    }
+
+    @Override
+    List getDomainClasses() {
+        [MyMongoEntity]
     }
 }

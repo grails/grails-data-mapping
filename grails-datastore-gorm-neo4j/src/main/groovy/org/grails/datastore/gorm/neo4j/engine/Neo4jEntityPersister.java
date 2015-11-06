@@ -553,7 +553,7 @@ public class Neo4jEntityPersister extends EntityPersister {
 
         final Object obj = entity;
         if(!undeclared.isEmpty()) {
-            getSession().setAttribute(obj, Neo4jGormEnhancer.UNDECLARED_PROPERTIES, undeclared);
+            getSession().setAttribute(obj, Neo4jQuery.UNDECLARED_PROPERTIES, undeclared);
         }
 
         firePostLoadEvent(entityAccess.getPersistentEntity(), entityAccess);

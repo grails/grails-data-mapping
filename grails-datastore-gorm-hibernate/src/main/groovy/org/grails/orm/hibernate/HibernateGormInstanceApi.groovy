@@ -62,6 +62,7 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
      *
      * @return true if the field is dirty
      */
+    @Override
     boolean isDirty(D instance, String fieldName) {
         SessionImplementor session = (SessionImplementor)sessionFactory.currentSession
         def entry = findEntityEntry(instance, session)
@@ -82,6 +83,7 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
      * @param instance The instance
      * @return true if it is dirty
      */
+    @Override
     boolean isDirty(D instance) {
         SessionImplementor session = (SessionImplementor)sessionFactory.currentSession
         def entry = findEntityEntry(instance, session)
@@ -100,6 +102,7 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
      * @param instance The instance
      * @return A list of property names that are dirty
      */
+    @Override
     List getDirtyPropertyNames(D instance) {
         SessionImplementor session = (SessionImplementor)sessionFactory.currentSession
         def entry = findEntityEntry(instance, session)
@@ -122,6 +125,7 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
      * @param fieldName The field name
      * @return The original persisted value
      */
+    @Override
     Object getPersistentValue(D instance, String fieldName) {
         SessionImplementor session = (SessionImplementor)sessionFactory.currentSession
         def entry = findEntityEntry(instance, session, false)

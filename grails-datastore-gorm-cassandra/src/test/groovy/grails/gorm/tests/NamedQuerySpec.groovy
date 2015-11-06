@@ -28,6 +28,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             thrown UnsupportedOperationException
     }
 
+    @Ignore
     void "Test max and offset parameter"() {
         given:
             (1..25).each {num ->
@@ -472,6 +473,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             2 == results?.size()
     }
 
+    @Ignore
     void "Test chaining named queries"() {
 
         given:

@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.reflect
 
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
+import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
@@ -27,6 +28,8 @@ import org.codehaus.groovy.ast.PropertyNode
 import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.control.Janitor
+import org.codehaus.groovy.control.SourceUnit
 import org.springframework.util.StringUtils
 
 import javax.persistence.Entity
@@ -420,5 +423,8 @@ class AstUtils {
         return false;
     }
 
-
+    public static void warning(final SourceUnit sourceUnit, final ASTNode node, final String warningMessage) {
+        final String sample = sourceUnit.getSample(node.getLineNumber(), node.getColumnNumber(), new Janitor());
+        System.err.println("WARNING: " + warningMessage + "\n\n" + sample);
+    }
 }

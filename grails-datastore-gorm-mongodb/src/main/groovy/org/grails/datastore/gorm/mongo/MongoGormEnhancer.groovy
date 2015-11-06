@@ -14,10 +14,8 @@
  */
 package org.grails.datastore.gorm.mongo
 
-import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.GormInstanceApi
-import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
@@ -26,6 +24,7 @@ import org.springframework.transaction.PlatformTransactionManager
  *
  * @author Graeme Rocher
  */
+@CompileStatic
 class MongoGormEnhancer extends GormEnhancer {
 
     MongoGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
@@ -41,24 +40,8 @@ class MongoGormEnhancer extends GormEnhancer {
         DynamicFinder.registerNewMethodExpression(GeoIntersects)
     }
 
-    @Override
-    @CompileDynamic
-    protected void registerConstraints(Datastore datastore) {
-        super.registerConstraints(datastore)
-//        ConstrainedProperty.registerNewConstraint("unique", new UniqueConstraintFactory(datastore));
-    }
-
     MongoGormEnhancer(Datastore datastore) {
         this(datastore, null)
     }
 
-    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new MongoGormStaticApi<D>(cls, datastore, getFinders(), transactionManager)
-    }
-
-    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
-        final api = new MongoGormInstanceApi<D>(cls, datastore)
-        api.failOnError = failOnError
-        return api
-    }
 }

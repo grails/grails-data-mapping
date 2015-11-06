@@ -2,7 +2,7 @@ package org.grails.datastore.gorm.mongo
 
 import com.mongodb.MongoClient
 import grails.gorm.tests.GormDatastoreSpec
-
+import grails.persistence.Entity
 import org.grails.datastore.mapping.document.config.DocumentPersistentEntity
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.mongo.AbstractMongoSession
@@ -59,6 +59,7 @@ class MongoEntityConfigSpec extends GormDatastoreSpec{
     }
 }
 
+@Entity
 class MyMongoEntity {
     String id
 

@@ -35,7 +35,12 @@ import groovy.transform.CompileStatic
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
+import org.grails.datastore.mapping.core.AbstractDatastore
+import org.grails.datastore.mapping.mongo.AbstractMongoSession
+import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
+import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
+import org.grails.datastore.mapping.mongo.query.MongoQuery
 
 import java.util.concurrent.TimeUnit
 
@@ -51,6 +56,40 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS
  */
 @CompileStatic
 class MongoExtensions {
+
+
+    static <T> T asType(Document document, Class<T> cls) {
+        AbstractMongoSession session = (AbstractMongoSession)AbstractDatastore.retrieveSession(MongoDatastore)
+        if (session != null) {
+            return session.decode(cls, document)
+        }
+        else if(cls.name == 'grails.converters.JSON') {
+            return cls.newInstance( document )
+        }
+        else {
+            throw new IllegalArgumentException("Cannot convert DBOject [$document] to target type $cls. Type is not a persistent entity")
+        }
+    }
+
+    static <T> T asType(FindIterable iterable, Class<T> cls) {
+        AbstractMongoSession session = (AbstractMongoSession)AbstractDatastore.retrieveSession(MongoDatastore)
+        if (session != null) {
+            return session.decode(cls, iterable)
+        }
+        else {
+            throw new IllegalArgumentException("Cannot convert DBOject [$iterable] to target type $cls. Type is not a persistent entity")
+        }
+    }
+
+    static <T> List<T> toList(FindIterable iterable, Class<T> cls) {
+        AbstractMongoSession session = (AbstractMongoSession)AbstractDatastore.retrieveSession(MongoDatastore)
+        MongoEntityPersister p = (MongoEntityPersister)session.getPersister(cls)
+        if (p)
+            return new MongoQuery.MongoResultList(((FindIterable<Document>)iterable).iterator(),0,p)
+        else {
+            throw new IllegalArgumentException("Cannot convert DBCursor [$iterable] to target type $cls. Type is not a persistent entity")
+        }
+    }
 
     @CompileStatic
     static DBObject toDBObject(Document document) {

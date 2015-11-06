@@ -12,7 +12,6 @@ import org.grails.datastore.gorm.neo4j.internal.tools.DumpGraphOnSessionFlushLis
 import org.grails.datastore.gorm.neo4j.HashcodeEqualsAwareProxyFactory
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
-import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
 import org.grails.datastore.gorm.neo4j.TestServer
 import org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase
@@ -49,7 +48,7 @@ class Setup {
 //        log.info "before shutdown, active: $txManager.activeTxCount, committed $txManager.committedTxCount, started: $txManager.startedTxCount, rollback: $txManager.rolledbackTxCount, status: $txManager.status"
 //        assert txManager.activeTxCount == 0, "something is wrong with connection handling - we still have $txManager.activeTxCount connections open"
 
-        def enhancer = new Neo4jGormEnhancer(datastore, new Neo4jDatastoreTransactionManager(datastore: datastore))
+        def enhancer = new GormEnhancer(datastore, new Neo4jDatastoreTransactionManager(datastore: datastore))
         enhancer.close()
         webServer?.stop()
 
@@ -145,7 +144,7 @@ class Setup {
 
 
         def transactionManager = new Neo4jDatastoreTransactionManager(datastore: datastore)
-        def enhancer = new Neo4jGormEnhancer(datastore, transactionManager)
+        def enhancer = new GormEnhancer(datastore, transactionManager)
         enhancer.enhance()
 
         datastore.afterPropertiesSet()

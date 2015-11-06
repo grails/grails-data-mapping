@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
+import org.grails.datastore.gorm.neo4j.engine.Neo4jQuery
 import org.neo4j.helpers.collection.IteratorUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,24 +12,24 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
-        [Pet]
+        [Club]
     }
 
     def "should non declared properties work for transient instances"() {
         setup:
-            def pet = new Pet(name: 'Cosima')
+            def club = new Club(name: 'Cosima')
 
         when:
-            pet.buddy = 'Lara'
+            club.buddy = 'Lara'
 
         then:
-            pet.dynamicAttributes() == [buddy: 'Lara']
-            pet.buddy == 'Lara'
+            club.dynamicAttributes() == [buddy: 'Lara']
+            club.buddy == 'Lara'
 
 
         when: "setting null means deleting the property"
-            pet.buddy = null
-            def x = pet.buddy
+            club.buddy = null
+            def x = club.buddy
 
         then:
             x == null
@@ -37,111 +37,111 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
 
     def "should non declared properties throw error if not set"() {
         setup:
-            def pet = new Pet(name: 'Cosima')
+            def club = new Club(name: 'Cosima')
 
         expect:
-            pet.buddy == null
+            club.buddy == null
     }
 
     def "should non declared properties get persisted"() {
         setup:
-            def pet = new Pet(name: 'Cosima').save()
-            pet.buddy = 'Lara'
+            def club = new Club(name: 'Cosima').save()
+            club.buddy = 'Lara'
 
             def date = new Date()
-            pet.born = date
-            pet.save(flush:true)
+            club.born = date
+            club.save(flush:true)
             session.clear()
 
         when:
-            pet = Pet.findByName('Cosima')
+            club = Club.findByName('Cosima')
 
         then:
-            pet.buddy == 'Lara'
+            club.buddy == 'Lara'
 
         and: "dates are converted to long"
-            pet.born == date.time
+            club.born == date.time
 
         and: "we have no additional properties"
-            session.getAttribute(pet, Neo4jGormEnhancer.UNDECLARED_PROPERTIES).size() == 2
+        club.dynamicAttributes().size() == 2
     }
 
     def "test handling of non-declared properties"() {
         when:
-        def person = new Person(lastName:'person1').save()
-        person['notDeclaredProperty'] = 'someValue'   // n.b. the 'dot' notation is not valid for undeclared properties
-        person['emptyArray'] = []
-        person['someIntArray'] = [1,2,3]
-        person['someStringArray'] = ['a', 'b', 'c']
+        def club = new Club(name:'person1').save()
+        club['notDeclaredProperty'] = 'someValue'   // n.b. the 'dot' notation is not valid for undeclared properties
+        club['emptyArray'] = []
+        club['someIntArray'] = [1,2,3]
+        club['someStringArray'] = ['a', 'b', 'c']
 //        person['someDoubleArray'] = [0.9, 1.0, 1.1]
         session.flush()
         session.clear()
-        person = Person.get(person.id)
+        club = Club.get(club.id)
 
         then:
-        person['notDeclaredProperty'] == 'someValue'
-        person['lastName'] == 'person1'  // declared properties are also available via map semantics
-        person['someIntArray'] == [1,2,3]
-        person['someStringArray'] == ['a', 'b', 'c']
+        club['notDeclaredProperty'] == 'someValue'
+        club['name'] == 'person1'  // declared properties are also available via map semantics
+        club['someIntArray'] == [1,2,3]
+        club['someStringArray'] == ['a', 'b', 'c']
 //        person['someDoubleArray'] == [0.9, 1.0, 1.1]
     }
 
     def "test handling of non-declared properties using dot notation"() {
         setup:
-        def person = new Person(lastName:'person1').save(flush:true)
+        def club = new Club(name:'club1').save(flush:true)
         session.clear()
-        person = Person.load(person.id)
+        club = Club.load(club.id)
 
         when:
-        person.notDeclaredProperty = 'someValue'   // n.b. the 'dot' notation is not valid for undeclared properties
-        person.emptyArray = []
-        person.someIntArray = [1,2,3]
-        person.someStringArray = ['a', 'b', 'c']
+        club.notDeclaredProperty = 'someValue'   // n.b. the 'dot' notation is not valid for undeclared properties
+        club.emptyArray = []
+        club.someIntArray = [1,2,3]
+        club.someStringArray = ['a', 'b', 'c']
 //        person.someDoubleArray= [0.9, 1.0, 1.1]
         session.flush()
         session.clear()
-        person = Person.get(person.id)
+        club = Club.get(club.id)
 
         then:
-        person.notDeclaredProperty == 'someValue'
-        person.lastName == 'person1'  // declared properties are also available via map semantics
-        person.someIntArray == [1,2,3]
-        person.someStringArray == ['a', 'b', 'c']
-        person.emptyArray == []
+        club.notDeclaredProperty == 'someValue'
+        club.name == 'club1'  // declared properties are also available via map semantics
+        club.someIntArray == [1,2,3]
+        club.someStringArray == ['a', 'b', 'c']
+        club.emptyArray == []
 //        person.someDoubleArray == [0.9, 1.0, 1.1]
     }
 
     def "test null values on dynamic properties"() {
         setup:
-        def person = new Person(lastName: 'person1').save(flush: true)
+        def club = new Club(name: 'person1').save(flush: true)
         session.clear()
-        person = Person.load(person.id)
+        club = Club.load(club.id)
         when:
-        person.notDeclaredProperty = null
+        club.notDeclaredProperty = null
         session.flush()
         session.clear()
-        person = Person.get(person.id)
+        club = Club.get(club.id)
 
         then:
-        person.notDeclaredProperty == null
+        club.notDeclaredProperty == null
 
         when:
-        person.notDeclaredProperty = 'abc'
+        club.notDeclaredProperty = 'abc'
         session.flush()
         session.clear()
-        person = Person.get(person.id)
+        club = Club.get(club.id)
 
         then:
-        person.notDeclaredProperty == 'abc'
+        club.notDeclaredProperty == 'abc'
 
         when:
-        person.notDeclaredProperty = null
+        club.notDeclaredProperty = null
         session.flush()
         session.clear()
-        person = Person.get(person.id)
+        club = Club.get(club.id)
 
         then:
-        person.notDeclaredProperty == null
+        club.notDeclaredProperty == null
     }
 
     @Issue("GPNEO4J-25")

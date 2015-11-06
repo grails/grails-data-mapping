@@ -14,16 +14,9 @@
  */
 package org.grails.datastore.gorm.rest.client.plugin.support
 
-import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.GormStaticApi
-import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.gorm.rest.client.RestClientGormEnhancer
-import org.grails.datastore.gorm.rest.client.RestClientGormStaticApi
-import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.rest.client.RestClientDatastore
-import org.springframework.transaction.PlatformTransactionManager
 import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
-
+import org.grails.datastore.mapping.core.Datastore
+import org.springframework.transaction.PlatformTransactionManager
 /**
  * Methods configurer for the GORM REST client
  *
@@ -33,16 +26,6 @@ import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
 class RestClientMethodsConfigurer extends DynamicMethodsConfigurer {
     RestClientMethodsConfigurer(Datastore datastore, PlatformTransactionManager transactionManager) {
         super(datastore, transactionManager)
-    }
-
-    @Override
-    protected GormStaticApi createGormStaticApi(Class cls, List<FinderMethod> finders) {
-        return new RestClientGormStaticApi(cls, (RestClientDatastore)datastore, finders, transactionManager)
-    }
-
-    @Override
-    protected GormEnhancer createEnhancer() {
-        return new RestClientGormEnhancer((RestClientDatastore)datastore, transactionManager)
     }
 
     @Override

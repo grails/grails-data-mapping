@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 import groovy.util.logging.Commons
@@ -44,6 +45,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author Graeme Rocher
  */
 @Commons
+@CompileStatic
 class GormEnhancer implements Closeable {
 
     private static final Map<String, Map<String, GormQueryOperations>> NAMED_QUERIES = new ConcurrentHashMap<>()
@@ -52,11 +54,18 @@ class GormEnhancer implements Closeable {
     private static final Map<String, GormValidationApi> VALIDATION_APIS = new ConcurrentHashMap<>()
     private static final Map<String, Datastore> DATASTORES = new ConcurrentHashMap<>()
 
-    Datastore datastore
+    final Datastore datastore
     PlatformTransactionManager transactionManager
     List<FinderMethod> finders
     boolean failOnError
+    /**
+     * Whether to include external entities
+     */
     boolean includeExternal = true
+    /**
+     * Whether to enhance classes dynamically using meta programming as well, only necessary for Java classes
+     */
+    boolean dynamicEnhance = false
 
     GormEnhancer(Datastore datastore) {
         this(datastore, null)
@@ -118,7 +127,7 @@ class GormEnhancer implements Closeable {
     }
 
 
-    static GormStaticApi findStaticApi(Class entity) {
+    static <D> GormStaticApi<D> findStaticApi(Class<D> entity) {
         def staticApi = STATIC_APIS.get(NameUtils.getClassName(entity))
         if(staticApi == null) {
             throw stateException(entity)
@@ -175,6 +184,7 @@ class GormEnhancer implements Closeable {
         DATASTORES.remove(datastore)
     }
 
+    @CompileDynamic
     protected void removeConstraints() {
         try {
             Thread.currentThread().contextClassLoader.loadClass("org.codehaus.groovy.grails.validation.ConstrainedProperty").removeConstraint('unique')
@@ -206,9 +216,11 @@ class GormEnhancer implements Closeable {
      */
     @CompileStatic
     void enhance(boolean onlyExtendedMethods = false) {
-        for (PersistentEntity e in datastore.mappingContext.persistentEntities) {
-            if(e.external && !includeExternal) continue
-            enhance e, onlyExtendedMethods
+        if(dynamicEnhance) {
+            for (PersistentEntity e in datastore.mappingContext.persistentEntities) {
+                if(e.external && !includeExternal) continue
+                enhance e, onlyExtendedMethods
+            }
         }
     }
     
@@ -220,25 +232,11 @@ class GormEnhancer implements Closeable {
      */
     @CompileStatic
     void enhance(PersistentEntity e, boolean onlyExtendedMethods = false) {
-        def cls = e.javaClass
-        try {
-            InvokerHelper.invokeStaticMethod(cls, "initInternalApi", getInstanceApi(cls))
-        } catch (Exception ex) {
-        }
-        try {
-            InvokerHelper.invokeStaticMethod(cls, "initInternalValidationApi", getValidationApi(cls))
-        } catch (Exception ex) {
-        }
-        try {
-            InvokerHelper.invokeStaticMethod(cls, "initInternalStaticApi", getStaticApi(cls))
-        } catch (Exception ex) {
-        }
+        if(!(GroovyObject.isAssignableFrom(e.javaClass) ) || dynamicEnhance) {
+            addInstanceMethods(e, onlyExtendedMethods)
 
-        addNamedQueryMethods(e)
-
-        addInstanceMethods(e, onlyExtendedMethods)
-
-        addStaticMethods(e, onlyExtendedMethods)
+            addStaticMethods(e, onlyExtendedMethods)
+        }
     }
 
     @CompileStatic
@@ -261,21 +259,13 @@ class GormEnhancer implements Closeable {
         }
     }
 
+    @CompileDynamic
     protected void registerStaticMethod(ExpandoMetaClass mc, String methodName, Class<?>[] parameterTypes, GormStaticApi staticApiProvider) {
         def callable = new StaticMethodInvokingClosure(staticApiProvider, methodName, parameterTypes)
         mc.static."$methodName" = callable
     }
 
 
-
-    protected void addNamedQueryMethods(PersistentEntity e) {
-        def cpf = ClassPropertyFetcher.forClass(e.javaClass)
-        List<Closure> namedQueries = cpf.getStaticPropertyValuesFromInheritanceHierarchy('namedQueries', Closure)
-        for (int i = namedQueries.size(); i > 0; i--) {
-            Closure closure = namedQueries.get(i - 1)
-            registerNamedQueries(e, closure)
-        }
-    }
 
     @CompileStatic
     protected <D> List<AbstractGormApi<D>> getInstanceMethodApiProviders(Class cls) {
@@ -337,12 +327,6 @@ class GormEnhancer implements Closeable {
     @CompileStatic
     protected static boolean isRealMethod(MetaMethod existingMethod) {
         existingMethod instanceof CachedMethod
-    }
-
-
-    @CompileStatic
-    protected void registerNamedQueries(PersistentEntity entity, Closure namedQueries) {
-        new NamedQueriesBuilder(entity, getFinders()).evaluate(namedQueries)
     }
 
     @CompileStatic

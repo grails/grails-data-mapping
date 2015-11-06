@@ -44,8 +44,7 @@ class Setup {
             }
         ] as Validator)
 
-        def enhancer = new RedisGormEnhancer(redis, new DatastoreTransactionManager(datastore: redis))
-        enhancer.enhance()
+        def enhancer = new GormEnhancer(redis, new DatastoreTransactionManager(datastore: redis))
 
         redis.mappingContext.addMappingContextListener({ e ->
             enhancer.enhance e

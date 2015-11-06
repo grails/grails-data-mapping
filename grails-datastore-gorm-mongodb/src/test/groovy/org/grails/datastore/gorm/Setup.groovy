@@ -2,14 +2,12 @@
 package org.grails.datastore.gorm
 
 import com.mongodb.BasicDBObject
-import com.mongodb.DBObject
 import grails.gorm.tests.GormDatastoreSpec
 import org.bson.Document
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.mongo.Birthday
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
-import org.grails.datastore.gorm.mongo.plugin.support.MongoMethodsConfigurer
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
 import org.grails.datastore.mapping.model.MappingContext
@@ -17,7 +15,6 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.mongo.AbstractMongoSession
 import org.grails.datastore.mapping.mongo.MongoDatastore
-import org.grails.datastore.mapping.mongo.MongoSession
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query.Between
@@ -96,8 +93,6 @@ class Setup {
         ] as Validator)
 
         def txMgr = new DatastoreTransactionManager(datastore: mongo)
-        MongoMethodsConfigurer methodsConfigurer = new MongoMethodsConfigurer(mongo, txMgr)
-        methodsConfigurer.configure()
 
         def enhancer = new MongoGormEnhancer(mongo, txMgr)
         mongo.mappingContext.addMappingContextListener({ e ->
