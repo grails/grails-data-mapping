@@ -7,8 +7,6 @@ import org.bson.types.ObjectId
 class ObjectIdPersistenceSpec extends GormDatastoreSpec {
 
     def "Test that we can persist an object that has a BSON ObjectId"() {
-        given:
-            session.mappingContext.addPersistentEntity MongoObjectIdEntity
 
         when:
             def t = new MongoObjectIdEntity(name:"Bob").save(flush:true)
@@ -18,6 +16,11 @@ class ObjectIdPersistenceSpec extends GormDatastoreSpec {
         then:
             t != null
             t.id != null
+    }
+
+    @Override
+    List getDomainClasses() {
+        [MongoObjectIdEntity]
     }
 }
 
