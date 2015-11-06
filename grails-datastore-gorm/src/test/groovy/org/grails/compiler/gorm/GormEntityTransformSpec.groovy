@@ -1,6 +1,7 @@
 package org.grails.compiler.gorm
 
 import grails.gorm.annotation.Entity
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormValidateable
@@ -42,63 +43,11 @@ class GormEntityTransformSpec extends Specification{
         GormValidateable.isAssignableFrom(Book)
         DirtyCheckable.isAssignableFrom(Book)
         Book.getAnnotation(Entity)
+        new Author().respondsTo('addToBooks', Book)
+        new Book().hasProperty('authorId')
     }
 
-    void "Test addTo and removeFrom"() {
 
-        given:
-        def datastore = Mock(Datastore)
-
-        def mappingContext = Mock(MappingContext)
-
-        def mappingFactory = new GormKeyValueMappingFactory("test")
-        mappingContext.getMappingFactory() >> mappingFactory
-        mappingContext.getMappingSyntaxStrategy() >> new GormMappingConfigurationStrategy(mappingFactory)
-        mappingContext.getProxyHandler() >> new JavassistProxyFactory()
-
-        def session = Mock(Session)
-        session.getObjectIdentifier(_) >> 1L
-        datastore.getCurrentSession() >> session
-        def authorEntity = new KeyValuePersistentEntity(Author, mappingContext)
-        def bookEntity = new KeyValuePersistentEntity(Book, mappingContext)
-        mappingContext.getFastClassData(authorEntity) >> {
-            new FastClassData(authorEntity)
-        }
-        mappingContext.getFastClassData(bookEntity) >> {
-            new FastClassData(bookEntity)
-        }
-        mappingContext.getPersistentEntity(Author.name) >> authorEntity
-        mappingContext.getPersistentEntity(Book.name) >> bookEntity
-        authorEntity.initialize()
-        bookEntity.initialize()
-        datastore.getMappingContext() >> mappingContext
-
-
-        Author.initInternalStaticApi(new GormStaticApi<Author>(Author, datastore, []))
-        Book.initInternalStaticApi(new GormStaticApi<Book>(Book, datastore, []))
-        when:
-        def a = new Author(name:"Stephen King")
-        a.id = 1L
-        a.addToBooks(title:"The Stand")
-
-        def book = new Book(title: "The Shining")
-        a.addToBooks(book)
-
-        then:
-        book.author != null
-        book.getAuthorId() == 1L
-        book.authorId == 1L
-        a.books.size() == 2
-        a.books.contains(book)
-
-        when:
-        a.removeFromBooks(book)
-
-        then:
-        a.books.size() == 1
-        !a.books.contains(book)
-
-    }
 }
 
 @Entity
