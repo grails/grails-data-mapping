@@ -4,6 +4,8 @@ import grails.artefact.Artefact
 import grails.persistence.Entity
 import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import spock.lang.Specification
 
 import java.lang.reflect.Modifier
@@ -77,8 +79,9 @@ class Publisher {
     }
 
     void "Test dynamic parse 2"(){
+        def cl = new GroovyClassLoader()
         when:
-        def cls = new GroovyClassLoader().parseClass('''
+        def cls = cl.parseClass('''
 import grails.persistence.*
 
 @Entity
@@ -99,16 +102,27 @@ class Member   {
 @Entity
 class SubMember extends Member {
     String extraName
+
+   String getTransientProperty() {
+        return transientProperty
+    }
+
+    void setTransientProperty(String transientProperty) {
+        this.transientProperty = transientProperty
+    }
+    static transients = ["transientProperty"]
 }
 
 ''')
         def instance = cls.newInstance()
+        def SubMember = cl.loadClass('SubMember')
         then:
         instance.respondsTo('addToMembers')
         GormEntity.isAssignableFrom(cls)
         GormValidateable.isAssignableFrom(cls)
         DirtyCheckable.isAssignableFrom(cls)
         cls.getAnnotation(grails.gorm.annotation.Entity)
+        ClassPropertyFetcher.forClass(SubMember).getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.TRANSIENT, Collection) ==  [[], ["transientProperty"]]
     }
     void "test that a class marked with @Artefact('Domain') is enhanced with GormEntityTraitSpec"() {
         expect:

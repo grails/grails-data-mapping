@@ -367,7 +367,7 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         }
         else if(transientProperty == null) {
             listExpression = new ListExpression()
-            classNode.addProperty(GormProperties.TRANSIENT, Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL, ClassHelper.make(List).getPlainNodeReference(), listExpression, null, null)
+            classNode.addProperty(GormProperties.TRANSIENT, Modifier.PUBLIC | Modifier.STATIC, AstUtils.OBJECT_CLASS_NODE, listExpression, null, null)
         }
 
         if(listExpression == null) {

@@ -156,15 +156,9 @@ public class ClassPropertyFetcher {
             if (method.getParameterTypes().length == 0) {
                 String name = method.getName();
                 if (name.indexOf('$') == -1) {
-                    if (name.length() > 3 && name.startsWith("get") &&
-                            Character.isUpperCase(name.charAt(3))) {
-                        name = name.substring(3);
-                    } else if (name.length() > 2 &&
-                            name.startsWith("is") &&
-                            Character.isUpperCase(name.charAt(2)) &&
-                            (method.getReturnType() == Boolean.class ||
-                                    method.getReturnType() == boolean.class)) {
-                        name = name.substring(2);
+                    final String propertyName = NameUtils.getPropertyNameForGetterOrSetter(name);
+                    if(propertyName != null) {
+                        name = propertyName;
                     }
                     PropertyFetcher fetcher = new GetterPropertyFetcher(method, true);
                     List<PropertyFetcher> propertyFetchers = staticFetchers.get(name);
@@ -361,11 +355,11 @@ public class ClassPropertyFetcher {
         return properties;
     }
 
-    public static interface ReferenceInstanceCallback {
+    public interface ReferenceInstanceCallback {
         Object getReferenceInstance();
     }
 
-    static interface PropertyFetcher {
+    interface PropertyFetcher {
         Object get(ReferenceInstanceCallback callback)
                 throws IllegalArgumentException, IllegalAccessException,
                 InvocationTargetException;
