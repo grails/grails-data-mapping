@@ -112,12 +112,12 @@ public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Seri
         else {
             cypherQuery.append("to.").append(CypherBuilder.IDENTIFIER).append(" IN {end}");
         }
-        cypherQuery.append(" CREATE (from)").append(relMatch).append("(to)");
+        cypherQuery.append(" MERGE (from)").append(relMatch).append("(to)");
 
         String cypher = cypherQuery.toString();
 
         if (log.isDebugEnabled()) {
-            log.debug("CREATE Cypher [{}] for parameters [{}]", cypher, params);
+            log.debug("MERGE Cypher [{}] for parameters [{}]", cypher, params);
         }
         graphDatabaseService.execute(cypher, params);
     }
