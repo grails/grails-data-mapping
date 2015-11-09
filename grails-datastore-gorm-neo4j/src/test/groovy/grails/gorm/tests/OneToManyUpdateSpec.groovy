@@ -63,6 +63,21 @@ class OneToManyUpdateSpec extends GormDatastoreSpec {
         t.teams.size() == 2
         result.iterator().size() == 2
 
+
+        when:"A relationship is removed"
+        def secondTeam = t.teams.find { it.name == "Second Team"}
+        t.removeFromTeams(secondTeam)
+        t.save(flush:true)
+        session.clear()
+
+        t = Tournament.get(t.id)
+        result = Club.cypherStatic('MATCH (from:Tournament)-[r:TEAMS]->(to:Team) WHERE from.__id__ = {id}  RETURN r', [id:t.id])
+        then: "the relationship is correct and no duplicates are added"
+        t != null
+        t.teams.size() == 1
+        result.iterator().size() == 1
+
+
     }
 
     @Override
