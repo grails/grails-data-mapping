@@ -71,12 +71,6 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         failOnError = config.getProperty(CONFIG_PROPERTY_FAIL_ON_ERROR, Boolean.class, false);
     }
 
-    @Override
-    public void destroy() throws Exception {
-        AbstractPersistentConstraint.sessionFactory.remove();
-        super.destroy();
-    }
-
     public boolean isAutoFlush() {
         return defaultFlushMode == FlushMode.AUTO.level;
     }

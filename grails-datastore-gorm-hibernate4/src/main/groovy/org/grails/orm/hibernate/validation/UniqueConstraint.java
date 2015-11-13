@@ -26,6 +26,9 @@ import grails.util.GrailsClassUtils;
 import grails.validation.ConstrainedProperty;
 import groovy.lang.Closure;
 
+import org.grails.datastore.gorm.GormEnhancer;
+import org.grails.datastore.gorm.GormInstanceApi;
+import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.grails.orm.hibernate.HibernateDatastore;
 import org.grails.orm.hibernate.IHibernateTemplate;
@@ -147,7 +150,7 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                   "domain classes and not custom user types or embedded instances");
         }
 
-        GrailsHibernateTemplate hibernateTemplate = (GrailsHibernateTemplate )getHibernateTemplate();
+        GrailsHibernateTemplate hibernateTemplate = (GrailsHibernateTemplate )getHibernateTemplate(target);
         hibernateTemplate.setFlushMode(GrailsHibernateTemplate.FLUSH_NEVER);
         List<?> results = hibernateTemplate.execute(new Closure<List<?>>(this) {
 
@@ -256,8 +259,13 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
 
 
     @Override
-    public IHibernateTemplate getHibernateTemplate() {
-        SessionFactory sf = sessionFactory.get();
+    public IHibernateTemplate getHibernateTemplate(Object target) {
+        SessionFactory sf = sessionFactory;
+        GormInstanceApi instanceApi = GormEnhancer.findInstanceApi(target.getClass());
+        if(instanceApi instanceof AbstractHibernateGormInstanceApi) {
+            sf = ((AbstractHibernateGormInstanceApi)instanceApi).getSessionFactory();
+        }
+
         if (sf == null) {
             sf = applicationContext.getBean("sessionFactory", SessionFactory.class);
         }

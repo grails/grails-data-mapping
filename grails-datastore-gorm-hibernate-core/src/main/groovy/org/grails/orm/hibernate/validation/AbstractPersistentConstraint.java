@@ -33,7 +33,7 @@ import org.springframework.context.ApplicationContext;
  */
 public abstract class AbstractPersistentConstraint extends AbstractConstraint implements PersistentConstraint {
 
-    public static ThreadLocal<SessionFactory> sessionFactory = new ThreadLocal<SessionFactory>();
+    protected SessionFactory sessionFactory;
 
 
     protected ApplicationContext applicationContext;
@@ -42,7 +42,7 @@ public abstract class AbstractPersistentConstraint extends AbstractConstraint im
         this.applicationContext = applicationContext;
     }
 
-    public abstract IHibernateTemplate getHibernateTemplate();
+    public abstract IHibernateTemplate getHibernateTemplate(Object target);
 
     /**
      * Returns whether the constraint supports being applied against the specified type;

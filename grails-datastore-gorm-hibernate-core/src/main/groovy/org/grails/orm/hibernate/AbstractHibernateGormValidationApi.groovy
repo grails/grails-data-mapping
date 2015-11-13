@@ -75,17 +75,11 @@ abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D
 
         fireEvent instance, validatedFieldsList
 
-        AbstractPersistentConstraint.sessionFactory.set datastore.sessionFactory
-        try {
-            if (deepValidate && (validator instanceof CascadingValidator)) {
-                ((CascadingValidator)validator).validate instance, errors, deepValidate
-            }
-            else {
-                validator.validate instance, errors
-            }
+        if (deepValidate && (validator instanceof CascadingValidator)) {
+            ((CascadingValidator)validator).validate instance, errors, deepValidate
         }
-        finally {
-            AbstractPersistentConstraint.sessionFactory.remove()
+        else {
+            validator.validate instance, errors
         }
 
         int oldErrorCount = errors.errorCount

@@ -14,8 +14,8 @@
  */
 package grails.orm.bootstrap
 
-import grails.core.GrailsApplication
 import grails.validation.ConstrainedProperty
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
@@ -203,7 +203,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                     "${cls.name}Validator$suffix"(HibernateDomainClassValidator) {
                         messageSource = ref("messageSource")
                         domainClass = ref("${cls.name}DomainClass")
-                        grailsApplication = ref(GrailsApplication.APPLICATION_ID)
+                        grailsApplication = ref('grailsApplication')
                         sessionFactory = ref(sessionFactoryName)
                     }
                 }
@@ -233,7 +233,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                         delegate.dataSourceName = dataSourceName
                         dataSource = ref("dataSource$suffix")
                         delegate.hibernateProperties = ref("hibernateProperties$suffix")
-                        grailsApplication = ref(GrailsApplication.APPLICATION_ID)
+                        grailsApplication = ref('grailsApplication')
                         entityInterceptor = ref("entityInterceptor$suffix")
                         sessionFactoryBeanName = sessionFactoryName
 
@@ -273,7 +273,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 }
 
                 "org.grails.gorm.hibernate.internal.POST_INIT_BEAN-${dataSourceName}$suffix"(PostInitializationHandling) { bean ->
-                    grailsApplication = ref(GrailsApplication.APPLICATION_ID)
+                    grailsApplication = ref('grailsApplication')
                     bean.lazyInit = false
                 }
 
@@ -342,7 +342,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
     static class PostInitializationHandling implements InitializingBean, ApplicationContextAware {
 
         @Autowired
-        GrailsApplication grailsApplication
+        def grailsApplication
 
         // required to force initialisation of validators
         @Autowired(required = false)
@@ -351,6 +351,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
         ApplicationContext applicationContext
 
         @Override
+        @CompileDynamic
         void afterPropertiesSet() throws Exception {
             grailsApplication.setMainContext(applicationContext)
             HibernateUtils.enhanceSessionFactories(applicationContext)

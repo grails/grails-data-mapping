@@ -125,17 +125,11 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
                     deepValidate = ClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments);
                 }
 
-                AbstractPersistentConstraint.sessionFactory.set(sessionFactory)
-                try {
-                    if (deepValidate && (validator instanceof CascadingValidator)) {
-                        ((CascadingValidator)validator).validate target, errors, deepValidate
-                    }
-                    else {
-                        validator.validate target, errors
-                    }
+                if (deepValidate && (validator instanceof CascadingValidator)) {
+                    ((CascadingValidator)validator).validate target, errors, deepValidate
                 }
-                finally {
-                    AbstractPersistentConstraint.sessionFactory.remove()
+                else {
+                    validator.validate target, errors
                 }
 
                 if (errors.hasErrors()) {
@@ -486,4 +480,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         }
     }
 
+    SessionFactory getSessionFactory() {
+        return this.sessionFactory;
+    }
 }

@@ -30,6 +30,7 @@ public interface PersistentConstraint extends Constraint, ApplicationContextAwar
      * Obtains the HibernateTemplate.
      *
      * @return the template
+     * @param target
      */
-    IHibernateTemplate getHibernateTemplate();
+    IHibernateTemplate getHibernateTemplate(Object target);
 }
