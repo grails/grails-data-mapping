@@ -154,8 +154,8 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             // domain model mapping context, used for configuration
             grailsDomainClassMappingContext(HibernateMappingContextFactoryBean) {
                 delegate.configuration = this.configuration
-                grailsApplication = ref('grailsApplication')
                 proxyFactory = hibernateProxyHandler
+                delegate.persistentClasses = persistentClasses
             }
 
             def config = this.configuration
@@ -239,6 +239,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                         domainClass = ref("${cls.name}DomainClass")
                         grailsApplication = ref("grailsApplication")
                         sessionFactory = ref(sessionFactoryName)
+                        mappingContext = ref('grailsDomainClassMappingContext')
                     }
                 }
 
@@ -260,12 +261,11 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
 
                 // the main SessionFactory bean
                 if(!beanDefinitionRegistry.containsBeanDefinition(sessionFactoryName)) {
-                    "$sessionFactoryName"(ConfigurableLocalSessionFactoryBean) { bean ->
-                        bean.autowire = "byType"
+                    "$sessionFactoryName"(HibernateMappingContextSessionFactoryBean) { bean ->
                         delegate.dataSourceName = dataSourceName
                         dataSource = ref("dataSource$suffix")
+                        delegate.hibernateMappingContext = ref('grailsDomainClassMappingContext')
                         delegate.hibernateProperties = ref("hibernateProperties$suffix")
-                        grailsApplication = ref("grailsApplication")
                         entityInterceptor = ref("entityInterceptor$suffix")
                         sessionFactoryBeanName = sessionFactoryName
 

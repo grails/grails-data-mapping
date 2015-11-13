@@ -15,9 +15,9 @@
  */
 package org.grails.orm.hibernate.support;
 
-import grails.util.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.grails.orm.hibernate.HibernateDatastore;
 import org.grails.orm.hibernate.SessionFactoryProxy;
@@ -41,9 +41,7 @@ import org.springframework.util.ReflectionUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Listens for Hibernate events and publishes corresponding Datastore events.
@@ -67,7 +65,7 @@ public class ClosureEventTriggeringInterceptor extends SaveOrUpdateEventListener
     protected static final Log LOG = LogFactory.getLog(ClosureEventTriggeringInterceptor.class);
     private static final long serialVersionUID = 1;
 
-    public static final Collection<String> IGNORED = CollectionUtils.newSet("version", "id");
+    public static final Collection<String> IGNORED = new HashSet<String>(Arrays.asList(GormProperties.VERSION, GormProperties.IDENTITY));
     public static final String ONLOAD_EVENT = "onLoad";
     public static final String ONLOAD_SAVE = "onSave";
     public static final String BEFORE_LOAD_EVENT = "beforeLoad";

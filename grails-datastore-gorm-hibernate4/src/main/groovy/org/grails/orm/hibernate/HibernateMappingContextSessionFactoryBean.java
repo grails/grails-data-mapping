@@ -1,35 +1,9 @@
-/*
- * Copyright 2004-2005 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.grails.orm.hibernate;
-
-import grails.core.GrailsApplication;
-import groovy.lang.GroovySystem;
-import groovy.lang.MetaClassRegistry;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.naming.NameNotFoundException;
-import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration;
+import org.grails.orm.hibernate.cfg.HibernateMappingContext;
+import org.grails.orm.hibernate.cfg.HibernateMappingContextConfiguration;
 import org.grails.orm.hibernate.cfg.Mapping;
 import org.grails.orm.hibernate.transaction.GrailsJdbcTransactionFactory;
 import org.hibernate.HibernateException;
@@ -39,7 +13,6 @@ import org.hibernate.cache.CacheException;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.cfg.NamingStrategy;
-import org.hibernate.metadata.ClassMetadata;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -56,21 +29,28 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.Assert;
 
+import javax.naming.NameNotFoundException;
+import javax.sql.DataSource;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.Properties;
+
 /**
- * A SessionFactory bean that allows the configuration class to
- * be changed and customise for usage within Grails.
+ * Configures a SessionFactory using a {@link org.grails.orm.hibernate.cfg.HibernateMappingContext} and a {@link org.grails.orm.hibernate.cfg.HibernateMappingContextConfiguration}
  *
  * @author Graeme Rocher
- * @since 07-Jul-2005
- * @deprecated  Use {@link HibernateMappingContextSessionFactoryBean} instead
- *
+ * @since 5.0
  */
-@Deprecated
-public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTranslator
-          implements FactoryBean<SessionFactory>, ResourceLoaderAware, InitializingBean, DisposableBean,
-                     ApplicationContextAware, BeanClassLoaderAware {
+public class HibernateMappingContextSessionFactoryBean extends HibernateExceptionTranslator
+        implements FactoryBean<SessionFactory>, ResourceLoaderAware, DisposableBean,
+        ApplicationContextAware, InitializingBean, BeanClassLoaderAware {
+    protected Class<? extends HibernateMappingContextConfiguration> configClass = HibernateMappingContextConfiguration.class;
+    protected HibernateMappingContext hibernateMappingContext;
+    protected PlatformTransactionManager transactionManager;
 
     private DataSource dataSource;
     private Resource[] configLocations;
@@ -86,13 +66,10 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
     private String[] annotatedPackages;
     private String[] packagesToScan;
     private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-    private GrailsAnnotationConfiguration configuration;
+    private HibernateMappingContextConfiguration configuration;
     private SessionFactory sessionFactory;
 
-    private static final Log LOG = LogFactory.getLog(ConfigurableLocalSessionFactoryBean.class);
-    protected GrailsApplication grailsApplication;
-    protected ClassLoader classLoader;
-    protected Class<?> configClass;
+    private static final Log LOG = LogFactory.getLog(HibernateMappingContextSessionFactoryBean.class);
     protected Class<?> currentSessionContextClass;
     protected Map<String, Object> eventListeners;
     protected HibernateEventListeners hibernateEventListeners;
@@ -100,7 +77,45 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
     protected boolean proxyIfReloadEnabled = true;
     protected String sessionFactoryBeanName = "sessionFactory";
     protected String dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
+    protected ClassLoader classLoader;
 
+
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        Thread thread = Thread.currentThread();
+        ClassLoader cl = thread.getContextClassLoader();
+        try {
+            thread.setContextClassLoader(classLoader);
+            buildSessionFactory();
+        }
+        finally {
+            thread.setContextClassLoader(cl);
+        }
+    }
+
+    public PlatformTransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+
+    public void setHibernateMappingContext(HibernateMappingContext hibernateMappingContext) {
+        this.hibernateMappingContext = hibernateMappingContext;
+    }
+
+    /**
+     * Sets the class to be used for Hibernate Configuration.
+     * @param configClass A subclass of the Hibernate Configuration class
+     */
+    public void setConfigClass(Class<? extends HibernateMappingContextConfiguration> configClass) {
+        this.configClass = configClass;
+    }
     /**
      * Set the DataSource to be used by the SessionFactory.
      * If set, this will override corresponding settings in Hibernate properties.
@@ -324,25 +339,8 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
         return currentSessionContextClass;
     }
 
-    /**
-     * Sets the class to be used for Hibernate Configuration.
-     * @param configClass A subclass of the Hibernate Configuration class
-     */
-    public void setConfigClass(Class<?> configClass) {
-        this.configClass = configClass;
-    }
-    public Class<?> getConfigClass() {
+    public Class<? extends HibernateMappingContextConfiguration> getConfigClass() {
         return configClass;
-    }
-
-    /**
-     * @param grailsApplication The grailsApplication to set.
-     */
-    public void setGrailsApplication(GrailsApplication grailsApplication) {
-        this.grailsApplication = grailsApplication;
-    }
-    public GrailsApplication getGrailsApplication() {
-        return grailsApplication;
     }
 
     public void setHibernateEventListeners(final HibernateEventListeners listeners) {
@@ -382,21 +380,16 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
         return eventListeners;
     }
 
-    public void afterPropertiesSet() throws Exception {
-        Thread thread = Thread.currentThread();
-        ClassLoader cl = thread.getContextClassLoader();
-        try {
-            thread.setContextClassLoader(classLoader);
-            buildSessionFactory();
-        }
-        finally {
-            thread.setContextClassLoader(cl);
-        }
-    }
-
     protected void buildSessionFactory() throws Exception {
 
         configuration = newConfiguration();
+
+        if(hibernateMappingContext == null) {
+
+            throw new IllegalArgumentException("HibernateMappingContext is required.");
+        }
+
+        configuration.setHibernateMappingContext(hibernateMappingContext);
 
         if (configLocations != null) {
             for (Resource resource : configLocations) {
@@ -461,6 +454,7 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
             configuration.addAnnotatedClasses(annotatedClasses);
         }
 
+
         if (annotatedPackages != null) {
             configuration.addPackages(annotatedPackages);
         }
@@ -471,7 +465,7 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
 
         if (eventListeners != null) {
             configuration.setEventListeners(eventListeners);
-         }
+        }
 
         sessionFactory = doBuildSessionFactory();
 
@@ -505,8 +499,8 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
             if (isCacheConfigurationError(cause)) {
                 LOG.error("There was an error configuring the Hibernate second level cache: " + getCauseMessage(e));
                 LOG.error("This is normally due to one of two reasons. Either you have incorrectly specified the cache " +
-                     "provider class name in [DataSource.groovy] or you do not have the cache provider on your classpath " +
-                     "(eg. runtime (\"net.sf.ehcache:ehcache:2.4.8\"))");
+                        "provider class name in [DataSource.groovy] or you do not have the cache provider on your classpath " +
+                        "(eg. runtime (\"net.sf.ehcache:ehcache:2.4.8\"))");
                 if (grails.util.Environment.isDevelopmentMode()) {
                     System.exit(1);
                 }
@@ -538,14 +532,6 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
     }
 
     public void destroy() {
-        if (grailsApplication.isWarDeployed()) {
-            MetaClassRegistry registry = GroovySystem.getMetaClassRegistry();
-            Map<?, ?> classMetaData = sessionFactory.getAllClassMetadata();
-            for (Object o : classMetaData.values()) {
-                registry.removeMetaClass(((ClassMetadata)o).getMappedClass());
-            }
-        }
-
         try {
             sessionFactory.close();
         }
@@ -559,21 +545,19 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
         }
     }
 
-    protected GrailsAnnotationConfiguration newConfiguration() throws Exception {
+    protected HibernateMappingContextConfiguration newConfiguration() throws Exception {
         if (configClass == null) {
-            configClass = GrailsAnnotationConfiguration.class;
+            configClass = HibernateMappingContextConfiguration.class;
         }
-        GrailsAnnotationConfiguration config = (GrailsAnnotationConfiguration) BeanUtils.instantiateClass(configClass);
-        config.setApplicationContext(applicationContext);
-        config.setGrailsApplication(grailsApplication);
-        config.setSessionFactoryBeanName(sessionFactoryBeanName);
+        HibernateMappingContextConfiguration config = BeanUtils.instantiateClass(configClass);
         config.setDataSourceName(dataSourceName);
+        config.setApplicationContext(applicationContext);
+        config.setSessionFactoryBeanName(sessionFactoryBeanName);
         config.setHibernateEventListeners(hibernateEventListeners);
         if (currentSessionContextClass != null) {
             config.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, currentSessionContextClass.getName());
         }
         configureGrailsJdbcTransactionFactory(config);
-        config.afterPropertiesSet();
         return config;
     }
 
@@ -582,10 +566,6 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
         if(configuredStrategy == null || "jdbc".equals(configuredStrategy)) {
             config.setProperty(Environment.TRANSACTION_STRATEGY, GrailsJdbcTransactionFactory.class.getName());
         }
-    }
-    
-    public void setBeanClassLoader(ClassLoader beanClassLoader) {
-        classLoader = beanClassLoader;
     }
 
     protected String getCauseMessage(HibernateException e) {
@@ -606,4 +586,5 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
+
 }

@@ -19,7 +19,7 @@ import grails.dev.commands.ApplicationCommand
 import grails.dev.commands.ExecutionContext
 import grails.util.Environment
 import org.grails.build.parsing.CommandLine
-import org.grails.orm.hibernate.ConfigurableLocalSessionFactoryBean
+import org.grails.orm.hibernate.HibernateMappingContextSessionFactoryBean
 import org.hibernate.tool.hbm2ddl.SchemaExport as HibernateSchemaExport
 
 /**
@@ -55,7 +55,7 @@ class SchemaExportCommand implements ApplicationCommand {
         def file = new File(filename)
         file.parentFile.mkdirs()
 
-        def sessionFactory = applicationContext.getBean('&sessionFactory' + datasourceSuffix, ConfigurableLocalSessionFactoryBean)
+        def sessionFactory = applicationContext.getBean('&sessionFactory' + datasourceSuffix, HibernateMappingContextSessionFactoryBean)
         def configuration = sessionFactory.configuration
 
         def schemaExport = new HibernateSchemaExport(configuration, sessionFactory.dataSource.connection)

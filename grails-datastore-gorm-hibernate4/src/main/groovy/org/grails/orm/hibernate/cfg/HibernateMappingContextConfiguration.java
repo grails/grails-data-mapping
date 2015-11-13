@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.orm.hibernate.EventListenerIntegrator;
+import org.grails.orm.hibernate.GrailsSessionContext;
 import org.grails.orm.hibernate.HibernateEventListeners;
 import org.grails.orm.hibernate.proxy.GroovyAwarePojoEntityTuplizer;
 import org.hibernate.*;
@@ -20,7 +21,24 @@ import org.hibernate.mapping.RootClass;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.type.Type;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternUtils;
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.core.type.filter.TypeFilter;
+import org.springframework.util.ClassUtils;
 
+import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.MappedSuperclass;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -28,10 +46,16 @@ import java.util.*;
  *
  * @since 5.0
  */
-public class HibernateMappingContextConfiguration extends Configuration {
+public class HibernateMappingContextConfiguration extends Configuration implements ApplicationContextAware {
     private static final long serialVersionUID = -7115087342689305517L;
 
-    protected static final Log LOG = LogFactory.getLog(GrailsAnnotationConfiguration.class);
+    protected static final Log LOG = LogFactory.getLog(HibernateMappingContextConfiguration.class);
+    private static final String RESOURCE_PATTERN = "/**/*.class";
+
+    private static final TypeFilter[] ENTITY_TYPE_FILTERS = new TypeFilter[] {
+            new AnnotationTypeFilter(Entity.class, false),
+            new AnnotationTypeFilter(Embeddable.class, false),
+            new AnnotationTypeFilter(MappedSuperclass.class, false)};
 
     protected boolean configLocked;
     protected String sessionFactoryBeanName = "sessionFactory";
@@ -42,10 +66,86 @@ public class HibernateMappingContextConfiguration extends Configuration {
     private HibernateEventListeners hibernateEventListeners;
     private Map<String, Object> eventListeners;
     private ServiceRegistry serviceRegistry;
-
+    private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 
     public void setHibernateMappingContext(HibernateMappingContext hibernateMappingContext) {
         this.hibernateMappingContext = hibernateMappingContext;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(applicationContext);
+        String dsName = Mapping.DEFAULT_DATA_SOURCE.equals(dataSourceName) ? "dataSource" : "dataSource_" + dataSourceName;
+        getProperties().put(Environment.DATASOURCE, applicationContext.getBean(dsName));
+        getProperties().put(Environment.CURRENT_SESSION_CONTEXT_CLASS, GrailsSessionContext.class.getName());
+        getProperties().put(AvailableSettings.CLASSLOADERS, applicationContext.getClassLoader());
+    }
+
+    /**
+     * Add the given annotated classes in a batch.
+     * @see #addAnnotatedClass
+     * @see #scanPackages
+     */
+    public void addAnnotatedClasses(Class<?>... annotatedClasses) {
+        for (Class<?> annotatedClass : annotatedClasses) {
+            addAnnotatedClass(annotatedClass);
+        }
+    }
+
+    /**
+     * Add the given annotated packages in a batch.
+     * @see #addPackage
+     * @see #scanPackages
+     */
+    public void addPackages(String... annotatedPackages) {
+        for (String annotatedPackage :annotatedPackages) {
+            addPackage(annotatedPackage);
+        }
+    }
+
+    /**
+     * Perform Spring-based scanning for entity classes, registering them
+     * as annotated classes with this {@code Configuration}.
+     * @param packagesToScan one or more Java package names
+     * @throws HibernateException if scanning fails for any reason
+     */
+    public void scanPackages(String... packagesToScan) throws HibernateException {
+        try {
+            for (String pkg : packagesToScan) {
+                String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
+                        ClassUtils.convertClassNameToResourcePath(pkg) + RESOURCE_PATTERN;
+                Resource[] resources = resourcePatternResolver.getResources(pattern);
+                MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory(resourcePatternResolver);
+                for (Resource resource : resources) {
+                    if (resource.isReadable()) {
+                        MetadataReader reader = readerFactory.getMetadataReader(resource);
+                        String className = reader.getClassMetadata().getClassName();
+                        if (matchesFilter(reader, readerFactory)) {
+                            addAnnotatedClasses(resourcePatternResolver.getClassLoader().loadClass(className));
+                        }
+                    }
+                }
+            }
+        }
+        catch (IOException ex) {
+            throw new MappingException("Failed to scan classpath for unlisted classes", ex);
+        }
+        catch (ClassNotFoundException ex) {
+            throw new MappingException("Failed to load annotated classes from classpath", ex);
+        }
+    }
+
+    /**
+     * Check whether any of the configured entity type filters matches
+     * the current class descriptor contained in the metadata reader.
+     */
+    protected boolean matchesFilter(MetadataReader reader, MetadataReaderFactory readerFactory) throws IOException {
+        for (TypeFilter filter : ENTITY_TYPE_FILTERS) {
+            if (filter.match(reader, readerFactory)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setSessionFactoryBeanName(String name) {
@@ -155,6 +255,7 @@ public class HibernateMappingContextConfiguration extends Configuration {
 
             // do Grails class configuration
             // configure the static binder first
+            final ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
             for (PersistentEntity entity : hibernateMappingContext.getPersistentEntities()) {
                 binder.evaluateMapping(entity);
@@ -165,6 +266,8 @@ public class HibernateMappingContextConfiguration extends Configuration {
                 final String fullClassName = domainClass.getName();
 
                 String hibernateConfig = fullClassName.replace('.', '/') + ".hbm.xml";
+                // don't configure Hibernate mapped classes
+                if (loader.getResource(hibernateConfig) != null) continue;
 
                 final Mappings mappings = super.createMappings();
                 if (!GrailsHibernateUtil.usesDatasource(domainClass, dataSourceName)) {

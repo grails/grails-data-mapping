@@ -22,6 +22,8 @@ import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.datastore.gorm.proxy.ProxyHandlerAdapter;
 import org.grails.datastore.gorm.support.BeforeValidateHelper;
 import org.grails.datastore.gorm.validation.CascadingValidator;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.grails.validation.GrailsDomainClassValidator;
 import org.hibernate.FlushMode;
@@ -30,6 +32,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.collection.spi.PersistentCollection;
 import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.validation.Errors;
@@ -43,11 +46,12 @@ import java.util.ArrayList;
  * @author Graeme Rocher
  * @since 0.5
  */
-public class HibernateDomainClassValidator extends GrailsDomainClassValidator implements MessageSourceAware,CascadingValidator {
+public class HibernateDomainClassValidator extends GrailsDomainClassValidator implements MessageSourceAware,CascadingValidator, InitializingBean {
 
     private BeforeValidateHelper beforeValidateHelper = new BeforeValidateHelper();
     private SessionFactory sessionFactory;
     private ProxyHandler proxyHandler = new ProxyHandlerAdapter(new HibernateProxyHandler());
+    private MappingContext mappingContext;
 
     @Autowired(required = false)
     public void setProxyHandler(ProxyHandler proxyHandler) {
@@ -127,5 +131,20 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
 
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+    }
+
+    public void setMappingContext(MappingContext mappingContext) {
+        this.mappingContext = mappingContext;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if(mappingContext != null) {
+
+            PersistentEntity mappedEntity = mappingContext.getPersistentEntity(getDomainClass().getFullName());
+            if(mappedEntity != null) {
+                mappingContext.addEntityValidator(mappedEntity, this);
+            }
+        }
     }
 }

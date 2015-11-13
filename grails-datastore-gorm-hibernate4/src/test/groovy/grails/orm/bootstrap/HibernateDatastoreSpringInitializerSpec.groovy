@@ -6,6 +6,7 @@ import org.hibernate.Session
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.util.Log4jConfigurer
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 /**
@@ -97,6 +98,8 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
 
 
     }
+
+    @IgnoreRest
     void "Test configure multiple data sources"() {
         given:"An initializer instance"
 

@@ -95,6 +95,7 @@ public class HibernateMappingContextConfiguration extends Configuration {
 
             // do Grails class configuration
             // configure the static binder first
+            final ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
             for (PersistentEntity entity : hibernateMappingContext.getPersistentEntities()) {
                 binder.evaluateMapping(entity);
@@ -105,6 +106,8 @@ public class HibernateMappingContextConfiguration extends Configuration {
                 final String fullClassName = domainClass.getName();
 
                 String hibernateConfig = fullClassName.replace('.', '/') + ".hbm.xml";
+                // don't configure Hibernate mapped classes
+                if (loader.getResource(hibernateConfig) != null) continue;
 
                 final Mappings mappings = super.createMappings();
                 if (!GrailsHibernateUtil.usesDatasource(domainClass, dataSourceName)) {

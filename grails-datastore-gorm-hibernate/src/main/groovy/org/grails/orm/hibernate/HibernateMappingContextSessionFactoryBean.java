@@ -1,107 +1,50 @@
-/* Copyright 2004-2005 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.grails.orm.hibernate;
-
-import grails.core.GrailsApplication;
-import groovy.lang.GroovySystem;
-import groovy.lang.MetaClassRegistry;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-
-import javax.naming.NameNotFoundException;
-import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.grails.orm.hibernate.cfg.DefaultGrailsDomainConfiguration;
-import org.grails.orm.hibernate.cfg.GrailsDomainConfiguration;
+import org.grails.orm.hibernate.cfg.HibernateMappingContext;
+import org.grails.orm.hibernate.cfg.HibernateMappingContextConfiguration;
 import org.grails.orm.hibernate.cfg.Mapping;
 import org.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor;
 import org.grails.orm.hibernate.transaction.HibernateJtaTransactionManagerAdapter;
-import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cache.CacheException;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-import org.hibernate.event.AutoFlushEventListener;
-import org.hibernate.event.DeleteEventListener;
-import org.hibernate.event.DirtyCheckEventListener;
-import org.hibernate.event.EventListeners;
-import org.hibernate.event.EvictEventListener;
-import org.hibernate.event.FlushEntityEventListener;
-import org.hibernate.event.FlushEventListener;
-import org.hibernate.event.InitializeCollectionEventListener;
-import org.hibernate.event.LoadEventListener;
-import org.hibernate.event.LockEventListener;
-import org.hibernate.event.MergeEventListener;
-import org.hibernate.event.PersistEventListener;
-import org.hibernate.event.PostCollectionRecreateEventListener;
-import org.hibernate.event.PostCollectionRemoveEventListener;
-import org.hibernate.event.PostCollectionUpdateEventListener;
-import org.hibernate.event.PostDeleteEventListener;
-import org.hibernate.event.PostInsertEventListener;
-import org.hibernate.event.PostLoadEventListener;
-import org.hibernate.event.PostUpdateEventListener;
-import org.hibernate.event.PreCollectionRecreateEventListener;
-import org.hibernate.event.PreCollectionRemoveEventListener;
-import org.hibernate.event.PreCollectionUpdateEventListener;
-import org.hibernate.event.PreDeleteEventListener;
-import org.hibernate.event.PreInsertEventListener;
-import org.hibernate.event.PreLoadEventListener;
-import org.hibernate.event.PreUpdateEventListener;
-import org.hibernate.event.RefreshEventListener;
-import org.hibernate.event.ReplicateEventListener;
-import org.hibernate.event.SaveOrUpdateEventListener;
-import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.event.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.springframework.orm.hibernate3.LocalTransactionManagerLookup;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.ReflectionUtils;
 
+import javax.naming.NameNotFoundException;
+import javax.transaction.TransactionManager;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+
 /**
- * A SessionFactory bean that allows the configuration class to
- * be changed and customise for usage within Grails.
+ * Configures a SessionFactory using a {@link org.grails.orm.hibernate.cfg.HibernateMappingContext} and a {@link org.grails.orm.hibernate.cfg.HibernateMappingContextConfiguration}
  *
  * @author Graeme Rocher
- * @since 07-Jul-2005
- * @deprecated  Use {@link HibernateMappingContextSessionFactoryBean} instead
- *
+ * @since 5.0
  */
-@Deprecated
-public class ConfigurableLocalSessionFactoryBean extends
-        LocalSessionFactoryBean implements ApplicationContextAware {
-
-    protected static final Log LOG = LogFactory.getLog(ConfigurableLocalSessionFactoryBean.class);
-    protected ClassLoader classLoader;
-    protected GrailsApplication grailsApplication;
-    protected Class<?> configClass;
+public class HibernateMappingContextSessionFactoryBean extends LocalSessionFactoryBean {
+    protected static final Log LOG = LogFactory.getLog(HibernateMappingContextSessionFactoryBean.class);
+    protected Class<? extends HibernateMappingContextConfiguration> configClass = HibernateMappingContextConfiguration.class;
     protected Class<?> currentSessionContextClass;
     protected HibernateEventListeners hibernateEventListeners;
     protected ApplicationContext applicationContext;
     protected boolean proxyIfReloadEnabled = true;
     protected String sessionFactoryBeanName = "sessionFactory";
     protected String dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
+    protected HibernateMappingContext hibernateMappingContext;
     protected PlatformTransactionManager transactionManager;
 
     public PlatformTransactionManager getTransactionManager() {
@@ -128,64 +71,41 @@ public class ConfigurableLocalSessionFactoryBean extends
         this.currentSessionContextClass = currentSessionContextClass;
     }
 
+    public void setHibernateMappingContext(HibernateMappingContext hibernateMappingContext) {
+        this.hibernateMappingContext = hibernateMappingContext;
+    }
+
     /**
      * Sets the class to be used for Hibernate Configuration.
      * @param configClass A subclass of the Hibernate Configuration class
      */
-    public void setConfigClass(Class<?> configClass) {
+    public void setConfigClass(Class<? extends HibernateMappingContextConfiguration> configClass) {
         this.configClass = configClass;
-    }
-
-    /**
-     * @return Returns the grailsApplication.
-     */
-    public GrailsApplication getGrailsApplication() {
-        return grailsApplication;
-    }
-
-    /**
-     * @param grailsApplication The grailsApplication to set.
-     */
-    public void setGrailsApplication(GrailsApplication grailsApplication) {
-        this.grailsApplication = grailsApplication;
     }
 
     /**
      * Overrides default behaviour to allow for a configurable configuration class.
      */
-     @Override
+    @Override
     protected Configuration newConfiguration() {
-        ClassLoader cl = classLoader != null ? classLoader : Thread.currentThread().getContextClassLoader();
-        if (configClass == null) {
-            try {
-                configClass = cl.loadClass("org.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration");
-            }
-            catch (Throwable e) {
-                // probably not Java 5 or missing some annotation jars, use default
-                configClass = DefaultGrailsDomainConfiguration.class;
-            }
-        }
-        Object config = BeanUtils.instantiateClass(configClass);
-        if (config instanceof GrailsDomainConfiguration) {
-            GrailsDomainConfiguration grailsConfig = (GrailsDomainConfiguration)config;
-            grailsConfig.setGrailsApplication(grailsApplication);
-            grailsConfig.setSessionFactoryBeanName(sessionFactoryBeanName);
-            grailsConfig.setDataSourceName(dataSourceName);
-        }
+        HibernateMappingContextConfiguration grailsConfig = BeanUtils.instantiate(configClass);
+        grailsConfig.setHibernateMappingContext(hibernateMappingContext);
+        grailsConfig.setSessionFactoryBeanName(sessionFactoryBeanName);
+        grailsConfig.setDataSourceName(dataSourceName);
         if (currentSessionContextClass != null) {
-            ((Configuration)config).setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, currentSessionContextClass.getName());
+            grailsConfig.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, currentSessionContextClass.getName());
             // don't allow Spring's LocaalSessionFactoryBean to override setting
             setExposeTransactionAwareSessionFactory(false);
         }
-        return (Configuration)config;
+        return grailsConfig;
     }
-     
+
     @Override
     protected void postProcessMappings(Configuration config) throws HibernateException {
         super.postProcessMappings(config);
         if(requiresJtaTransactionManagerAdapter()) {
             configureJtaTransactionManagerAdapter(config);
-        }        
+        }
     }
 
     @Override
@@ -204,14 +124,14 @@ public class ConfigurableLocalSessionFactoryBean extends
     /**
      * Configures adapter for adding transaction controlling hooks for supporting
      * Hibernate's org.hibernate.engine.transaction.Isolater class's interaction with transactions
-     * 
+     *
      * This is required when there is no real JTA transaction manager in use and Spring's
      * {@link TransactionAwareDataSourceProxy} is used.
-     * 
+     *
      * @param config
      */
     protected void configureJtaTransactionManagerAdapter(Configuration config) {
-        getConfigTimeTransactionManagerHolder().set(new HibernateJtaTransactionManagerAdapter(getTransactionManager()));        
+        getConfigTimeTransactionManagerHolder().set(new HibernateJtaTransactionManagerAdapter(getTransactionManager()));
         config.setProperty(Environment.TRANSACTION_MANAGER_STRATEGY, LocalTransactionManagerLookup.class.getName());
     }
 
@@ -223,24 +143,7 @@ public class ConfigurableLocalSessionFactoryBean extends
         return configTimeTransactionManagerHolder;
     }
 
-    @Override
-    public void setBeanClassLoader(ClassLoader beanClassLoader) {
-        classLoader = beanClassLoader;
-        super.setBeanClassLoader(beanClassLoader);
-    }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        Thread thread = Thread.currentThread();
-        ClassLoader cl = thread.getContextClassLoader();
-        try {
-            thread.setContextClassLoader(classLoader);
-            super.afterPropertiesSet();
-        } finally {
-            thread.setContextClassLoader(cl);
-        }
-    }
-    
     @Override
     protected SessionFactory newSessionFactory(Configuration configuration) throws HibernateException {
         try {
@@ -293,16 +196,6 @@ public class ConfigurableLocalSessionFactoryBean extends
 
     @Override
     public void destroy() throws HibernateException {
-        if (grailsApplication.isWarDeployed()) {
-            MetaClassRegistry registry = GroovySystem.getMetaClassRegistry();
-            Map<?, ?> classMetaData = getSessionFactory().getAllClassMetadata();
-            for (Object o : classMetaData.values()) {
-                ClassMetadata classMetadata = (ClassMetadata) o;
-                Class<?> mappedClass = classMetadata.getMappedClass(EntityMode.POJO);
-                registry.removeMetaClass(mappedClass);
-            }
-        }
-
         try {
             super.destroy();
         } catch (HibernateException e) {
@@ -395,13 +288,13 @@ public class ConfigurableLocalSessionFactoryBean extends
 
     @SuppressWarnings("unchecked")
     protected <T> void addNewListenerToConfiguration(final Configuration config, final String listenerType,
-            final Class<? extends T> klass, final T[] currentListeners, final Map<String,Object> newlistenerMap) {
+                                                     final Class<? extends T> klass, final T[] currentListeners, final Map<String,Object> newlistenerMap) {
 
         Object newListener = newlistenerMap.get(listenerType);
         if (newListener == null) return;
 
         if (currentListeners != null && currentListeners.length > 0) {
-            T[] newListeners = (T[])Array.newInstance(klass, currentListeners.length + 1);
+            T[] newListeners = (T[]) Array.newInstance(klass, currentListeners.length + 1);
             System.arraycopy(currentListeners, 0, newListeners, 0, currentListeners.length);
             newListeners[currentListeners.length] = (T)newListener;
             config.setListeners(listenerType, newListeners);
@@ -426,4 +319,5 @@ public class ConfigurableLocalSessionFactoryBean extends
     public void setDataSourceName(String name) {
         dataSourceName = name;
     }
+
 }

@@ -26,6 +26,7 @@ import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.mapping.model.DatastoreConfigurationException
 import org.grails.orm.hibernate.*
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
+import org.grails.orm.hibernate.cfg.HibernateMappingContextConfiguration
 import org.grails.orm.hibernate.cfg.HibernateUtils
 import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler
@@ -152,8 +153,8 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             // domain model mapping context, used for configuration
             grailsDomainClassMappingContext(HibernateMappingContextFactoryBean) {
                 delegate.configuration = this.configuration
-                grailsApplication = ref('grailsApplication')
                 proxyFactory = hibernateProxyHandler
+                delegate.persistentClasses = persistentClasses
             }
 
 
@@ -205,6 +206,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                         domainClass = ref("${cls.name}DomainClass")
                         grailsApplication = ref('grailsApplication')
                         sessionFactory = ref(sessionFactoryName)
+                        mappingContext = ref('grailsDomainClassMappingContext')
                     }
                 }
                 // Used to detect the database dialect to use
@@ -229,11 +231,11 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
 
                 // the main SessionFactory bean
                 if(!beanDefinitionRegistry.containsBeanDefinition(sessionFactoryName)) {
-                    "$sessionFactoryName"(ConfigurableLocalSessionFactoryBean) { bean ->
+                    "$sessionFactoryName"(HibernateMappingContextSessionFactoryBean) { bean ->
                         delegate.dataSourceName = dataSourceName
                         dataSource = ref("dataSource$suffix")
+                        delegate.hibernateMappingContext = ref('grailsDomainClassMappingContext')
                         delegate.hibernateProperties = ref("hibernateProperties$suffix")
-                        grailsApplication = ref('grailsApplication')
                         entityInterceptor = ref("entityInterceptor$suffix")
                         sessionFactoryBeanName = sessionFactoryName
 
