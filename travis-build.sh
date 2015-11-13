@@ -12,6 +12,9 @@ case "$GORM_IMPL"  in
         ;;
     mongodb)
         ./gradlew grails-datastore-gorm-mongodb:test -no-daemon --stacktrace || EXIT_STATUS=$?
+        if [[ $EXIT_STATUS -eq 0 ]]; then
+            ./gradlew grails2-plugins/mongodb:test || EXIT_STATUS=$?
+        fi
         ;;
     redis)
         ./gradlew grails-datastore-gorm-redis:test -no-daemon  || EXIT_STATUS=$?
@@ -26,13 +29,14 @@ case "$GORM_IMPL"  in
         ;;
     neo4j)
         ./gradlew grails-datastore-gorm-neo4j:test -no-daemon  || EXIT_STATUS=$?
+        if [[ $EXIT_STATUS -eq 0 ]]; then
+            ./gradlew grails2-plugins/neo4j:test || EXIT_STATUS=$?
+        fi
         ;;
     restclient)
         ./gradlew grails-datastore-gorm-rest-client:test -no-daemon  || EXIT_STATUS=$?
         ;;
     *)
-        # Run Grails 2 plugin tests
-        ./gradlew grails2-plugins/mongodb:test || EXIT_STATUS=$?
 
         # Run unit testing API tests
         if [[ $EXIT_STATUS -eq 0 ]]; then
