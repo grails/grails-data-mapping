@@ -30,6 +30,7 @@ class CascadeToCompositeIdAssociationTests extends AbstractGrailsHibernateTests 
 
         session.clear()
 
+        assert product.validate()
         assertEquals 1, CascadeToCompositeIdAssociationTrade.count()
         assertEquals 1, CascadeToCompositeIdAssociationSegment.count()
         assertEquals 1, CascadeToCompositeIdAssociationProduct.count()

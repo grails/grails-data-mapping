@@ -14,12 +14,12 @@
  */
 package org.grails.orm.hibernate
 
-import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
-
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormValidationApi
+import org.grails.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
@@ -30,23 +30,28 @@ import org.springframework.transaction.PlatformTransactionManager
  * @since 1.0
  */
 @CompileStatic
-class HibernateGormEnhancer extends AbstractHibernateGormEnhancer {
+class HibernateGormEnhancer extends GormEnhancer {
 
-    HibernateGormEnhancer(HibernateDatastore datastore, PlatformTransactionManager transactionManager, GrailsApplication grailsApplication) {
-        super(datastore, transactionManager, grailsApplication)
+    HibernateGormEnhancer(HibernateDatastore datastore, PlatformTransactionManager transactionManager) {
+        super(datastore, transactionManager)
     }
 
     protected <D> GormValidationApi<D> getValidationApi(Class<D> cls) {
-        new HibernateGormValidationApi<D>(cls, (HibernateDatastore)datastore, classLoader)
+        new HibernateGormValidationApi<D>(cls, (HibernateDatastore)datastore, Thread.currentThread().contextClassLoader)
     }
 
     @Override
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        new HibernateGormStaticApi<D>(cls, (HibernateDatastore)datastore, getFinders(), classLoader, transactionManager)
+        new HibernateGormStaticApi<D>(cls, (HibernateDatastore)datastore, getFinders(), Thread.currentThread().contextClassLoader, transactionManager)
     }
 
     @Override
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
-        new HibernateGormInstanceApi<D>(cls, (HibernateDatastore)datastore, classLoader)
+        new HibernateGormInstanceApi<D>(cls, (HibernateDatastore)datastore, Thread.currentThread().contextClassLoader)
+    }
+
+    @Override
+    protected void registerConstraints(Datastore datastore) {
+        // no-op
     }
 }

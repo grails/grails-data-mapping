@@ -36,7 +36,7 @@ class CharSequenceSpec extends GormDatastoreSpec{
 
     @Override
     List getDomainClasses() {
-        [SomeDomainClass]
+        [Task, SomeDomainClass]
     }
 }
 

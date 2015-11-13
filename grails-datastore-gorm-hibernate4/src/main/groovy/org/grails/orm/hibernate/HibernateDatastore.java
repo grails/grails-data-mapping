@@ -14,9 +14,6 @@
  */
 package org.grails.orm.hibernate;
 
-import grails.core.GrailsApplication;
-import grails.core.support.GrailsApplicationAware;
-
 import java.util.Map;
 
 import org.grails.datastore.mapping.core.Session;
@@ -33,9 +30,8 @@ import org.springframework.core.env.PropertyResolver;
  * @author Graeme Rocher
  * @since 2.0
  */
-public class HibernateDatastore extends AbstractHibernateDatastore implements GrailsApplicationAware {
+public class HibernateDatastore extends AbstractHibernateDatastore  {
 
-    private GrailsApplication grailsApplication;
     private int defaultFlushMode;
 
     public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {
@@ -64,21 +60,6 @@ public class HibernateDatastore extends AbstractHibernateDatastore implements Gr
             eventTriggeringInterceptor = new EventTriggeringInterceptor(this, config);
             ((ConfigurableApplicationContext)applicationContext).addApplicationListener(eventTriggeringInterceptor);
         }
-    }
-
-    @Override
-    public void setGrailsApplication(GrailsApplication grailsApplication) {
-        this.grailsApplication = grailsApplication;
-    }
-
-    public GrailsApplication getGrailsApplication() {
-        if(grailsApplication == null) {
-            Map<String, GrailsApplication> grailsApplicationBeans = getApplicationContext().getBeansOfType(GrailsApplication.class);
-            if(!grailsApplicationBeans.isEmpty()) {
-                grailsApplication = grailsApplicationBeans.values().iterator().next();
-            }
-        }
-        return grailsApplication;
     }
 
     public int getDefaultFlushMode() {

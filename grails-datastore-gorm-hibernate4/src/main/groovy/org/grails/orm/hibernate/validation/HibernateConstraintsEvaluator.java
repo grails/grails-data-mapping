@@ -16,9 +16,13 @@ package org.grails.orm.hibernate.validation;
 
 import java.util.Map;
 
+import grails.core.GrailsDomainClass;
 import grails.core.GrailsDomainClassProperty;
 import grails.validation.Constrained;
 import grails.validation.ConstrainedProperty;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder;
 import org.grails.orm.hibernate.cfg.PropertyConfig;
 import org.grails.validation.DefaultConstraintEvaluator;
@@ -31,6 +35,8 @@ import org.grails.validation.DefaultConstraintEvaluator;
  */
 public class HibernateConstraintsEvaluator extends DefaultConstraintEvaluator {
 
+    private MappingContext mappingContext;
+
     public HibernateConstraintsEvaluator(Map<String, Object> defaultConstraints) {
         super(defaultConstraints);
     }
@@ -39,16 +45,95 @@ public class HibernateConstraintsEvaluator extends DefaultConstraintEvaluator {
         // default
     }
 
+    public void setMappingContext(MappingContext mappingContext) {
+        this.mappingContext = mappingContext;
+    }
+
+    @Override
+    protected boolean canPropertyBeConstrained(GrailsDomainClassProperty property) {
+        PersistentEntity entity = getPersistentEntity(property);
+        PersistentProperty p = getPersistentProperty(property);
+
+        if(p != null) {
+            PropertyConfig propertyConfig = getPropertyConfig(p);
+
+            if(propertyConfig != null) {
+                property.setDerived( propertyConfig.getFormula() != null);
+            }
+
+            PersistentProperty identity = entity.getIdentity();
+            if(identity != null && identity.getName().equals(property.getName())) {
+                return false;
+            }
+        }
+
+        return super.canPropertyBeConstrained(property);
+    }
+
+    @Override
+    protected boolean canApplyNullableConstraint(String propertyName, GrailsDomainClassProperty property, Constrained constrained) {
+        PropertyConfig propertyConfig = getPropertyConfig(property);
+        if(propertyConfig != null) {
+            property.setDerived( propertyConfig.getFormula() != null);
+        }
+        return super.canApplyNullableConstraint(propertyName, property, constrained);
+    }
+
     @Override
     protected void applyDefaultNullableConstraint(GrailsDomainClassProperty p, Constrained cp) {
-        final PropertyConfig propertyConfig = new GrailsDomainBinder().getPropertyConfig(p);
-        boolean insertable = propertyConfig != null ? propertyConfig.isInsertable() : true;
+
+
+        PropertyConfig propertyConfig = getPropertyConfig(p);
+
+        if(propertyConfig != null) {
+            if(propertyConfig.getFormula() != null) {
+                p.setDerived(true);
+            }
+        }
+        boolean insertable = propertyConfig == null || propertyConfig.isInsertable();
 
         if (!insertable) {
-           cp.applyConstraint(ConstrainedProperty.NULLABLE_CONSTRAINT,true);
+            cp.applyConstraint(ConstrainedProperty.NULLABLE_CONSTRAINT,true);
         }
         else {
-            super.applyDefaultNullableConstraint(p, cp);
+            if(canApplyNullableConstraint(p.getName(), p, cp)) {
+                super.applyDefaultNullableConstraint(p, cp);
+            }
         }
+    }
+
+    private PropertyConfig getPropertyConfig(GrailsDomainClassProperty p) {
+        PersistentProperty property = getPersistentProperty(p);
+        return getPropertyConfig(property);
+    }
+
+    private PropertyConfig getPropertyConfig(PersistentProperty property) {
+        PropertyConfig propertyConfig = null;
+        if(property != null) {
+            propertyConfig = (PropertyConfig) property
+                    .getMapping()
+                    .getMappedForm();
+        }
+        return propertyConfig;
+    }
+
+    protected PersistentProperty getPersistentProperty(GrailsDomainClassProperty p ) {
+        PersistentProperty property = null;
+        PersistentEntity entity = getPersistentEntity(p);
+        if(entity != null) {
+            property = entity
+                    .getPropertyByName(p.getName());
+        }
+        return property;
+    }
+
+    private PersistentEntity getPersistentEntity(GrailsDomainClassProperty p) {
+        final GrailsDomainClass domainClass = p.getDomainClass();
+        PersistentEntity entity = null;
+        if(mappingContext != null) {
+
+            entity = mappingContext.getPersistentEntity(domainClass.getFullName());
+        }
+        return entity;
     }
 }

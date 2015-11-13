@@ -2,13 +2,14 @@ package org.grails.orm.hibernate
 
 import grails.persistence.Entity
 import org.grails.datastore.gorm.GormEnhancer
-import org.junit.Test
-import static junit.framework.Assert.*
+import org.grails.datastore.gorm.GormInstanceApi
 import org.hibernate.event.service.spi.EventListenerRegistry
 import org.hibernate.event.spi.EventType
 import org.hibernate.event.spi.FlushEvent
 import org.hibernate.event.spi.FlushEventListener
 import org.hibernate.service.ServiceRegistry
+import org.junit.Test
+import static junit.framework.Assert.*
 
 class AutoFlushPropertyTests extends AbstractGrailsHibernateTests {
 
@@ -113,15 +114,8 @@ class AutoFlushPropertyTests extends AbstractGrailsHibernateTests {
     }
 
     private void setAutoFlush(boolean auto) {
-        def config = GormEnhancer.findInstanceApi(AutoFlushBand).config
-        if (config == null) {
-            config = [:]
-            GormEnhancer.findInstanceApi(AutoFlushBand).config = config
-        }
-        config.autoFlush = auto
-
-        ga.config.grails.gorm.autoFlush = auto
-        ga.configChanged()
+        def api = GormEnhancer.findInstanceApi(AutoFlushBand)
+        api.autoFlush = auto
     }
 }
 

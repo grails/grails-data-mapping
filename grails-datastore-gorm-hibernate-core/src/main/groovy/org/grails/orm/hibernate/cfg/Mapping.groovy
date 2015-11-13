@@ -25,7 +25,7 @@ import org.grails.datastore.mapping.config.Entity
  * @author Graeme Rocher
  * @since 1.0
  */
-//@CompileStatic
+@CompileStatic
 class Mapping extends Entity {
 
     public static final String ALL_DATA_SOURCES = "ALL";
@@ -45,7 +45,7 @@ class Mapping extends Entity {
             return null
         }
 
-        return type instanceof Class ? type.name : type.toString()
+        return type instanceof Class ? ((Class)type).name : type.toString()
     }
 
     /**
@@ -88,7 +88,7 @@ class Mapping extends Entity {
      */
     boolean autoImport = true
 
-    Map columns = [:]
+    Map<String, PropertyConfig> columns = [:]
 
     /**
      * The identity definition

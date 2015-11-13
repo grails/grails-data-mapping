@@ -25,6 +25,7 @@ import grails.util.GrailsClassUtils;
 import grails.validation.ConstrainedProperty;
 import groovy.lang.Closure;
 import org.grails.orm.hibernate.GrailsHibernateTemplate;
+import org.grails.orm.hibernate.HibernateDatastore;
 import org.grails.orm.hibernate.IHibernateTemplate;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.grails.core.artefact.DomainClassArtefactHandler;
@@ -251,7 +252,7 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
         if (sf == null) {
             sf = applicationContext.getBean("sessionFactory", SessionFactory.class);
         }
-        GrailsApplication app = applicationContext.getBean("grailsApplication", GrailsApplication.class);
+        HibernateDatastore app = applicationContext.getBean(HibernateDatastore.class);
         GrailsHibernateTemplate hibernateTemplate = new GrailsHibernateTemplate(sf, app, GrailsHibernateTemplate.FLUSH_NEVER);
         hibernateTemplate.setAllowCreate(true);
         return hibernateTemplate;

@@ -88,6 +88,11 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     }
 
     @Override
+    public boolean isAbstract() {
+        return domainClass.isAbstract();
+    }
+
+    @Override
     public int hashCode() {
         return getName().hashCode();
     }
@@ -161,6 +166,11 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
         initialized = true;
     }
 
+
+    @Override
+    public PersistentProperty[] getCompositeIdentity() {
+        return null;
+    }
 
     public String getName() {
         return domainClass.getFullName();

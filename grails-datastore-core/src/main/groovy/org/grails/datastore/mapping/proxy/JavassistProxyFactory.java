@@ -56,6 +56,19 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
 
     }
 
+    @Override
+    public Class<?> getProxiedClass(Object o) {
+        if(isProxy(o)) {
+            return o.getClass().getSuperclass();
+        }
+        return o.getClass();
+    }
+
+    @Override
+    public void initialize(Object o) {
+        ((EntityProxy)o).initialize();
+    }
+
     /**
      * Checks whether a given proxy is initialized
      *

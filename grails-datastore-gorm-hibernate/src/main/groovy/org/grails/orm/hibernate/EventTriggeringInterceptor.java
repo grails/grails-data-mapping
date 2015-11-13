@@ -15,13 +15,13 @@
  */
 package org.grails.orm.hibernate;
 
-import grails.core.GrailsDomainClass;
 import groovy.lang.GroovySystem;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder;
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.grails.orm.hibernate.support.ClosureEventListener;
@@ -238,7 +238,7 @@ public class EventTriggeringInterceptor extends AbstractEventTriggeringIntercept
         return AbstractPersistenceEvent.class.isAssignableFrom(eventType);
     }
 
-    protected List<String> getDatasourceNames(GrailsDomainClass dc) {
+    protected List<String> getDatasourceNames(PersistentEntity dc) {
         return GrailsHibernateUtil.getDatasourceNames(dc);
     }
     

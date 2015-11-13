@@ -227,18 +227,5 @@ public class ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventL
         return AbstractHibernateGormInstanceApi.getAssumedUnsaved();
     }
 
-    /**
-     * Called by org.grails.orm.hibernate.metaclass.SavePersistentMethod's performInsert
-     * to set a ThreadLocal variable that determines the value for getAssumedUnsaved().
-     */
-    public static void markInsertActive() {
-        AbstractHibernateGormInstanceApi.markInsertActive();
-    }
 
-    /**
-     * Clears the ThreadLocal variable set by markInsertActive().
-     */
-    public static void resetInsertActive() {
-        AbstractHibernateGormInstanceApi.resetInsertActive();
-    }
 }

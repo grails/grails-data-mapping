@@ -16,14 +16,19 @@
 package org.grails.orm.hibernate.proxy;
 
 
-import grails.core.support.proxy.EntityProxyHandler;
 import groovy.lang.GroovyObject;
 import groovy.lang.GroovySystem;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
+import org.grails.datastore.mapping.proxy.ProxyFactory;
+import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.HibernateProxyHelper;
 import org.hibernate.proxy.LazyInitializer;
+
+import java.io.Serializable;
 
 /**
  * Implementation of the ProxyHandler interface for Hibernate.
@@ -31,7 +36,7 @@ import org.hibernate.proxy.LazyInitializer;
  * @author Graeme Rocher
  * @since 1.2.2
  */
-public class SimpleHibernateProxyHandler implements EntityProxyHandler {
+public class SimpleHibernateProxyHandler implements ProxyHandler, ProxyFactory {
 
     public boolean isInitialized(Object o) {
         if (o instanceof HibernateProxy) {
@@ -48,6 +53,16 @@ public class SimpleHibernateProxyHandler implements EntityProxyHandler {
         catch (RuntimeException e) {
             return false;
         }
+    }
+
+    @Override
+    public Object unwrap(Object object) {
+        return unwrapIfProxy(object);
+    }
+
+    @Override
+    public Serializable getIdentifier(Object obj) {
+        return (Serializable) getProxyIdentifier(obj);
     }
 
     public Object unwrapIfProxy(Object instance) {
@@ -121,5 +136,15 @@ public class SimpleHibernateProxyHandler implements EntityProxyHandler {
 
     public Class<?> getProxiedClass(Object o) {
         return HibernateProxyHelper.getClassWithoutInitializingProxy(o);
+    }
+
+    @Override
+    public <T> T createProxy(Session session, Class<T> type, Serializable key) {
+        throw new UnsupportedOperationException("Proxy creation not supported");
+    }
+
+    @Override
+    public <T, K extends Serializable> T createProxy(Session session, AssociationQueryExecutor<K, T> executor, K associationKey) {
+        throw new UnsupportedOperationException("Proxy creation not supported");
     }
 }

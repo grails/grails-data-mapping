@@ -22,7 +22,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 import org.grails.datastore.mapping.config.Entity;
-import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
+import org.grails.datastore.mapping.config.groovy.DefaultMappingConfigurationBuilder;
 import org.grails.datastore.mapping.core.EntityCreationException;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.Association;
@@ -52,10 +52,11 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     protected Set owners;
     private PersistentEntity parentEntity;
     private boolean external;
-    private MappingProperties mappingProperties = new MappingProperties();
     private boolean initialized = false;
     private boolean propertiesInitialized = false;
     private boolean versionCompatibleType;
+    private boolean versioned = true;
+    private PersistentProperty[] compositeIdentity;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         Assert.notNull(javaClass, "The argument [javaClass] cannot be null");
@@ -64,8 +65,19 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
         decapitalizedName = Introspector.decapitalize(javaClass.getSimpleName());
     }
 
+
+    @Override
+    public PersistentProperty[] getCompositeIdentity() {
+        return compositeIdentity;
+    }
+
     public boolean isExternal() {
         return external;
+    }
+
+    @Override
+    public boolean isAbstract() {
+        return Modifier.isAbstract(javaClass.getModifiers());
     }
 
     public void setExternal(boolean external) {
@@ -81,18 +93,25 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     }
 
     public void initialize() {
+        ClassMapping<T> mapping = getMapping();
         if(!initialized) {
 
 
-            initializeMappingProperties();
             initialized = true;
 
             final MappingConfigurationStrategy mappingSyntaxStrategy = context.getMappingSyntaxStrategy();
             owners = mappingSyntaxStrategy.getOwningEntities(javaClass, context);
-            persistentProperties = mappingSyntaxStrategy.getPersistentProperties(this, context, getMapping());
+            Class superClass = javaClass.getSuperclass();
+            if (superClass != null &&
+                    !superClass.equals(Object.class) ) {
+                parentEntity = context.addPersistentEntity(superClass);
+            }
+
+            persistentProperties = mappingSyntaxStrategy.getPersistentProperties(this, context, mapping, includeIdentifiers());
             identity = resolveIdentifier();
             persistentPropertyNames = new ArrayList<String>();
             associations = new ArrayList();
+
 
             for (PersistentProperty persistentProperty : persistentProperties) {
 
@@ -111,20 +130,16 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
                 }
             }
 
-            Class superClass = javaClass.getSuperclass();
-            if (superClass != null &&
-                    !superClass.equals(Object.class) &&
-                    !Modifier.isAbstract(superClass.getModifiers())) {
-                parentEntity = context.addPersistentEntity(superClass);
-            }
+            final T mappedForm = mapping.getMappedForm();// initialize mapping
 
-            getMapping().getMappedForm(); // initialize mapping
-
-            if (mappingProperties.isVersioned()) {
+            if (mappedForm.isVersioned()) {
                 version = propertiesByName.get(GormProperties.VERSION);
                 if(version == null) {
-                    mappingProperties.setVersion(false);
+                    versioned = false;
                 }
+            }
+            else {
+                versioned = false;
             }
 
             final PersistentProperty v = getVersion();
@@ -136,8 +151,36 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
 
         }
 
+
+        final PersistentProperty idProp = getPropertyByName(GormProperties.IDENTITY);
+        if(idProp != null) {
+            persistentProperties.remove(idProp);
+            persistentPropertyNames.remove(GormProperties.IDENTITY);
+        }
+        IdentityMapping identifier = mapping != null ? mapping.getIdentifier() : null;
+        if(identifier != null) {
+
+            final String[] identifierName = identifier.getIdentifierName();
+            final MappingContext mappingContext = getMappingContext();
+            if(identifierName.length > 1) {
+                compositeIdentity = mappingContext.getMappingSyntaxStrategy().getCompositeIdentity(javaClass, mappingContext);
+
+            }
+            for (String in : identifierName) {
+                final PersistentProperty p = propertiesByName.get(in);
+                if(p != null) {
+                    persistentProperties.remove(p);
+                }
+                persistentPropertyNames.remove(in);
+            }
+        }
+
         propertiesInitialized = true;
 
+    }
+
+    protected boolean includeIdentifiers() {
+        return false;
     }
 
     protected PersistentProperty resolveIdentifier() {
@@ -224,7 +267,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     }
 
     public boolean isVersioned() {
-        return (this.versionCompatibleType || !propertiesInitialized) && mappingProperties.isVersioned();
+        return (this.versionCompatibleType || !propertiesInitialized) && versioned;
     }
 
     public Class getJavaClass() {
@@ -251,27 +294,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
         return mappedPropertiesByName.get(name);
     }
 
-    private void initializeMappingProperties() {
-        if(!mappingProperties.isIntialized()) {
-            mappingProperties.setIntialized(true);
 
-            MappingConfigurationBuilder builder = new MappingConfigurationBuilder(
-                    mappingProperties, MappingProperties.class);
-
-            ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(getJavaClass());
-            List<Closure> values =
-                    cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.MAPPING, Closure.class);
-            for (int i = values.size(); i > 0; i--) {
-                Closure value = values.get(i - 1);
-                builder.evaluate(value);
-            }
-
-            Object mappingVersion = builder.getProperties().get(MappingConfigurationBuilder.VERSION_KEY);
-            if (mappingVersion instanceof Boolean) {
-                mappingProperties.setVersion((Boolean)mappingVersion);
-            }
-        }
-    }
 
     private static class MappingProperties {
         private Boolean version = true;

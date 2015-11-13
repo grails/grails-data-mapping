@@ -15,7 +15,11 @@
  */
 package org.grails.orm.hibernate.cfg
 
+import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.config.Property
 import org.hibernate.FetchMode
+
+import javax.persistence.FetchType
 
 /**
  * Custom mapping for a single domain property. Note that a property
@@ -24,8 +28,15 @@ import org.hibernate.FetchMode
  * @since 1.0.4
  * @author pledbrook
  */
-class PropertyConfig {
+@CompileStatic
+class PropertyConfig extends Property {
 
+    boolean explicitSaveUpdateCascade;
+
+    /**
+     * Whether the property is derived
+     */
+    boolean derived = false
     /**
      * The Hibernate type or user type of the property. This can be
      * a string or a class.
@@ -82,10 +93,19 @@ class PropertyConfig {
 
     List<ColumnConfig> columns = []
 
-    boolean lazy = true
     CacheConfig cache
     JoinTable joinTable = new JoinTable()
 
+    void setFetch(FetchMode fetch) {
+        if(FetchMode.JOIN.equals(fetch)) {
+            super.setFetchStrategy(FetchType.EAGER)
+        }
+        this.fetch = fetch
+    }
+
+    FetchMode getFetch() {
+        return fetch
+    }
     /**
      * The column used to produce the index for index based collections (lists and maps)
      */
@@ -98,11 +118,13 @@ class PropertyConfig {
      */
     String getColumn() {
         checkHasSingleColumn()
+        if(columns.isEmpty()) return null
         return columns[0].name
     }
 
     String getEnumType() {
-      checkHasSingleColumn()
+        checkHasSingleColumn()
+        if(columns.isEmpty()) return "default"
         return columns[0].enumType
     }
 
@@ -113,6 +135,7 @@ class PropertyConfig {
      */
     String getSqlType() {
         checkHasSingleColumn()
+        if(columns.isEmpty()) return null
         return columns[0].sqlType
     }
 
@@ -123,6 +146,7 @@ class PropertyConfig {
      */
     String getIndex() {
         checkHasSingleColumn()
+        if(columns.isEmpty()) return null
         return columns[0].index?.toString()
     }
 
@@ -133,8 +157,13 @@ class PropertyConfig {
      * column.
      */
     boolean isUnique() {
-        checkHasSingleColumn()
-        return columns[0].unique
+        if(columns.size()>1) {
+            return super.isUnique()
+        }
+        else {
+            if(columns.isEmpty()) return super.isUnique()
+            return columns[0].unique
+        }
     }
 
     /**
@@ -144,6 +173,7 @@ class PropertyConfig {
      */
     int getLength() {
         checkHasSingleColumn()
+        if(columns.isEmpty()) return -1
         return columns[0].length
     }
 
@@ -154,6 +184,7 @@ class PropertyConfig {
      */
     int getPrecision() {
         checkHasSingleColumn()
+        if(columns.isEmpty()) return -1
         return columns[0].precision
     }
 
@@ -164,7 +195,21 @@ class PropertyConfig {
      */
     int getScale() {
         checkHasSingleColumn()
+        if(columns.isEmpty()) {
+            return super.getScale()
+        }
         return columns[0].scale
+    }
+
+    @Override
+    void setScale(int scale) {
+        checkHasSingleColumn()
+        if(!columns.isEmpty())  {
+            columns[0].scale = scale
+        }
+        else {
+            super.setScale(scale)
+        }
     }
 
     String toString() {

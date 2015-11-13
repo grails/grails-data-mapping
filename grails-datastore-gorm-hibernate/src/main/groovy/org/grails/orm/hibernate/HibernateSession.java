@@ -21,8 +21,7 @@ import java.util.Map;
 
 import javax.persistence.FlushModeType;
 
-import grails.core.GrailsApplication;
-import grails.core.support.proxy.ProxyHandler;
+import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.grails.orm.hibernate.query.HibernateQuery;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -58,15 +57,7 @@ public class HibernateSession extends AbstractHibernateSession {
     public HibernateSession(HibernateDatastore hibernateDatastore, SessionFactory sessionFactory, int defaultFlushMode) {
         super(hibernateDatastore, sessionFactory);
 
-
-        GrailsApplication grailsApplication = hibernateDatastore.getGrailsApplication();
-        if (grailsApplication != null) {
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory,grailsApplication,defaultFlushMode);
-        }
-        else {
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory);
-            hibernateTemplate.setFlushMode(defaultFlushMode);
-        }
+        hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, (HibernateDatastore) getDatastore());
     }
     
     public HibernateSession(HibernateDatastore hibernateDatastore, SessionFactory sessionFactory) {

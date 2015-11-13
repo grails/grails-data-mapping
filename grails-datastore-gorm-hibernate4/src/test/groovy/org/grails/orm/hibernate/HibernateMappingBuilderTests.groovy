@@ -243,7 +243,7 @@ class HibernateMappingBuilderTests extends GroovyTestCase {
             }
         }
 
-        assertTrue "should have been lazy",mapping.getPropertyConfig('things').lazy
+        assertNull "should have been lazy",mapping.getPropertyConfig('things').getLazy()
 
         mapping = builder.evaluate {
             columns {
@@ -626,12 +626,12 @@ class HibernateMappingBuilderTests extends GroovyTestCase {
             version false
             columns {
                 firstName  column:'First_Name',
-                           lazy:true,
-                           unique:true,
-                           type: java.sql.Clob,
-                           length:255,
-                           index:'foo',
-                           sqlType: 'text'
+                        lazy:true,
+                        unique:true,
+                        type: java.sql.Clob,
+                        length:255,
+                        index:'foo',
+                        sqlType: 'text'
 
                 lastName column:'Last_Name'
             }
@@ -642,7 +642,7 @@ class HibernateMappingBuilderTests extends GroovyTestCase {
         assertTrue mapping.columns.firstName.unique
         assertEquals java.sql.Clob,mapping.columns.firstName.type
         assertEquals 255,mapping.columns.firstName.length
-        assertEquals 'foo',mapping.columns.firstName.index
+        assertEquals 'foo',mapping.columns.firstName.getIndex()
         assertEquals "text",mapping.columns.firstName.sqlType
         assertEquals "Last_Name",mapping.columns.lastName.column
     }
@@ -653,12 +653,12 @@ class HibernateMappingBuilderTests extends GroovyTestCase {
             table 'myTable'
             version false
             firstName  column:'First_Name',
-                       lazy:true,
-                       unique:true,
-                       type: java.sql.Clob,
-                       length:255,
-                       index:'foo',
-                       sqlType: 'text'
+                    lazy:true,
+                    unique:true,
+                    type: java.sql.Clob,
+                    length:255,
+                    index:'foo',
+                    sqlType: 'text'
 
             lastName column:'Last_Name'
         }
@@ -668,7 +668,7 @@ class HibernateMappingBuilderTests extends GroovyTestCase {
         assertTrue mapping.columns.firstName.unique
         assertEquals java.sql.Clob,mapping.columns.firstName.type
         assertEquals 255,mapping.columns.firstName.length
-        assertEquals 'foo',mapping.columns.firstName.index
+        assertEquals 'foo',mapping.columns.firstName.getIndex()
         assertEquals "text",mapping.columns.firstName.sqlType
         assertEquals "Last_Name",mapping.columns.lastName.column
     }
@@ -718,54 +718,54 @@ class HibernateMappingBuilderTests extends GroovyTestCase {
     }
 
     void testInsertablePropertyConfig() {
-         def builder = new HibernateMappingBuilder("Foo")
-         def mapping = builder.evaluate {
+        def builder = new HibernateMappingBuilder("Foo")
+        def mapping = builder.evaluate {
             firstName insertable:true
             lastName insertable:false
-          }
-         assertTrue mapping.getPropertyConfig('firstName').insertable
-         assertFalse mapping.getPropertyConfig('lastName').insertable
+        }
+        assertTrue mapping.getPropertyConfig('firstName').insertable
+        assertFalse mapping.getPropertyConfig('lastName').insertable
     }
 
     void testUpdatablePropertyConfig() {
-          def builder = new HibernateMappingBuilder("Foo")
-          def mapping = builder.evaluate {
-              firstName updateable:true
-              lastName updateable:false
-          }
-         assertTrue mapping.getPropertyConfig('firstName').updateable
-         assertFalse mapping.getPropertyConfig('lastName').updateable
+        def builder = new HibernateMappingBuilder("Foo")
+        def mapping = builder.evaluate {
+            firstName updateable:true
+            lastName updateable:false
+        }
+        assertTrue mapping.getPropertyConfig('firstName').updateable
+        assertFalse mapping.getPropertyConfig('lastName').updateable
     }
 
     void testDefaultValue() {
-          def builder = new HibernateMappingBuilder("Foo")
-          def mapping = builder.evaluate {
-              comment 'wahoo'
-              name comment: 'bar'
-              foo defaultValue: '5'
-          }
-         assertEquals '5', mapping.getPropertyConfig('foo').columns[0].defaultValue
-         assertNull mapping.getPropertyConfig('name').columns[0].defaultValue
+        def builder = new HibernateMappingBuilder("Foo")
+        def mapping = builder.evaluate {
+            comment 'wahoo'
+            name comment: 'bar'
+            foo defaultValue: '5'
+        }
+        assertEquals '5', mapping.getPropertyConfig('foo').columns[0].defaultValue
+        assertNull mapping.getPropertyConfig('name').columns[0].defaultValue
     }
 
     void testColumnComment() {
-          def builder = new HibernateMappingBuilder("Foo")
-          def mapping = builder.evaluate {
-              comment 'wahoo'
-              name comment: 'bar'
-              foo defaultValue: '5'
-          }
-         assertEquals 'bar', mapping.getPropertyConfig('name').columns[0].comment
-         assertNull mapping.getPropertyConfig('foo').columns[0].comment
+        def builder = new HibernateMappingBuilder("Foo")
+        def mapping = builder.evaluate {
+            comment 'wahoo'
+            name comment: 'bar'
+            foo defaultValue: '5'
+        }
+        assertEquals 'bar', mapping.getPropertyConfig('name').columns[0].comment
+        assertNull mapping.getPropertyConfig('foo').columns[0].comment
     }
 
     void testTableComment() {
-          def builder = new HibernateMappingBuilder("Foo")
-          def mapping = builder.evaluate {
-              comment 'wahoo'
-              name comment: 'bar'
-              foo defaultValue: '5'
-          }
-         assertEquals 'wahoo', mapping.comment
+        def builder = new HibernateMappingBuilder("Foo")
+        def mapping = builder.evaluate {
+            comment 'wahoo'
+            name comment: 'bar'
+            foo defaultValue: '5'
+        }
+        assertEquals 'wahoo', mapping.comment
     }
 }

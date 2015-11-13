@@ -380,10 +380,11 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable {
                 }
 
                 else {
-                    associatedFastData
+                    def method = associatedFastData
                             .getFastSetters()
                             .get(name)
-                            .invoke(obj, targetObject)
+
+                    method?.invoke(obj, targetObject)
                 }
             }
             targetObject

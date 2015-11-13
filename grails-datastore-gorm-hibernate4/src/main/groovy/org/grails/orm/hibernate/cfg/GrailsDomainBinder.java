@@ -21,6 +21,8 @@ import grails.core.GrailsDomainClass;
 import grails.core.GrailsDomainClassProperty;
 import grails.validation.ConstrainedProperty;
 import grails.validation.Constraint;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.orm.hibernate.persister.entity.GroovyAwareJoinedSubclassEntityPersister;
 import org.grails.orm.hibernate.persister.entity.GroovyAwareSingleTableEntityPersister;
 import org.grails.orm.hibernate.validation.UniqueConstraint;
@@ -41,42 +43,26 @@ public class GrailsDomainBinder extends AbstractGrailsDomainBinder {
         return GroovyAwareJoinedSubclassEntityPersister.class;
     }
 
+    @Override
+    protected void handleLazyProxy(PersistentEntity domainClass, PersistentProperty grailsProperty) {
+        HibernateUtils.handleLazyProxy(domainClass, grailsProperty);
+    }
+
     protected Class<?> getGroovyAwareSingleTableEntityPersisterClass() {
         return GroovyAwareSingleTableEntityPersister.class;
     }
 
-    protected void handleLazyProxy(GrailsDomainClass domainClass, GrailsDomainClassProperty grailsProperty) {
-        HibernateUtils.handleLazyProxy(domainClass, grailsProperty);
-    }
+    protected void handleUniqueConstraint(PersistentProperty property, Column column, String path, Table table, String columnName, String sessionFactoryBeanName) {
+        final PropertyConfig mappedForm = (PropertyConfig) property.getMapping().getMappedForm();
+        if (mappedForm.isUnique()) {
+            if (!mappedForm.isUniqueWithinGroup()) {
+                column.setUnique(true);
+            }
+            else {
+                createKeyForProps(property, path, table, columnName, mappedForm.getUniquenessGroup(), sessionFactoryBeanName);
+            }
+        }
 
-    protected void handleUniqueConstraint(GrailsDomainClassProperty property, Column column, String path, Table table, String columnName, String sessionFactoryBeanName) {
-        ConstrainedProperty cp = getConstrainedProperty(property);
-        if (cp != null && cp.hasAppliedConstraint(UniqueConstraint.UNIQUE_CONSTRAINT)) {
-            Constraint appliedConstraint = cp.getAppliedConstraint(UniqueConstraint.UNIQUE_CONSTRAINT);
-            if (appliedConstraint instanceof UniqueConstraint) {
-                UniqueConstraint uc = (UniqueConstraint) appliedConstraint;
-                if (uc != null && uc.isUnique()) {
-                    if (!uc.isUniqueWithinGroup()) {
-                        column.setUnique(true);
-                    }
-                    else if (uc.getUniquenessGroup().size() > 0) {
-                        createKeyForProps(property, path, table, columnName, uc.getUniquenessGroup(), sessionFactoryBeanName);
-                    }
-                }
-            }
-        }
-        else {
-            Object val = cp != null ? cp.getMetaConstraintValue(UniqueConstraint.UNIQUE_CONSTRAINT) : null;
-            if (val instanceof Boolean) {
-                column.setUnique((Boolean)val);
-            }
-            else if (val instanceof String) {
-                createKeyForProps(property, path, table, columnName, Arrays.asList((String) val), sessionFactoryBeanName);
-            }
-            else if (val instanceof List<?> && ((List<?>)val).size() > 0) {
-                createKeyForProps(property, path, table, columnName, (List<?>)val, sessionFactoryBeanName);
-            }
-        }
     }
 
     protected boolean identityEnumTypeSupports(Class<?> propertyType) {
@@ -96,7 +82,7 @@ public class GrailsDomainBinder extends AbstractGrailsDomainBinder {
     }
 
     @Override
-    protected void bindOneToOneInternal(GrailsDomainClassProperty property, OneToOne oneToOne, String path) {
+    protected void bindOneToOneInternal(org.grails.datastore.mapping.model.types.OneToOne property, OneToOne oneToOne, String path) {
         oneToOne.setReferenceToPrimaryKey(false);
     }
 }

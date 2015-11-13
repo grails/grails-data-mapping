@@ -1,5 +1,6 @@
 package grails.gorm.tests
 
+import org.hibernate.cfg.Configuration
 import spock.lang.Issue
 import grails.persistence.Entity
 import org.grails.datastore.gorm.Setup
@@ -27,7 +28,7 @@ class JoinTableWithSchemaMappingSpec extends GormDatastoreSpec{
     @Issue('GRAILS-8737')
     void "Test that the schema created for a join table is correct"() {
         when:"The hibernate configuration is obtained"
-            GrailsAnnotationConfiguration config = Setup.hibernateConfig
+            Configuration config = Setup.hibernateConfig
             final authorMapping = config.getClassMapping(JoinTableSchemaAuthor.name)
 
 
@@ -65,7 +66,7 @@ class JoinTableSchemaBook {
 @Entity
 class JoinTableSchemaAuthor {
     Long id
-    Long version
+//    Long version
     String name
     Set books
     static hasMany = [books:JoinTableSchemaBook]

@@ -62,21 +62,27 @@ class FastClassData {
 
         def version = entity.version
         if(version != null) {
-            def versionName = version.name
-            def getterName = MappingUtils.getGetterName(versionName)
-            def setterName = MappingUtils.getSetterName(versionName)
-            fastGetters[versionName] = fastClass.getMethod(getterName, ZERO_CLASS_ARRAY)
-            fastSetters[versionName] = fastClass.getMethod(setterName, [version.type] as Class[])
+            registerProp(version)
+        }
+
+        def identity = entity.compositeIdentity
+        if(identity != null) {
+            for(p in identity) {
+                registerProp(p)
+            }
         }
 
         for(prop in entity.persistentProperties) {
-            def name = prop.name
-
-            def getterName = MappingUtils.getGetterName(name)
-            def setterName = MappingUtils.getSetterName(name)
-            fastGetters[name] = fastClass.getMethod(getterName, ZERO_CLASS_ARRAY)
-            fastSetters[name] = fastClass.getMethod(setterName, [prop.type] as Class[])
+            registerProp(prop)
         }
+    }
+
+    private void registerProp(PersistentProperty prop) {
+        def name = prop.name
+        def getterName = MappingUtils.getGetterName(name)
+        def setterName = MappingUtils.getSetterName(name)
+        fastGetters[name] = fastClass.getMethod(getterName, ZERO_CLASS_ARRAY)
+        fastSetters[name] = fastClass.getMethod(setterName, [prop.type] as Class[])
     }
 
     Object getIdentifier(Object o) {

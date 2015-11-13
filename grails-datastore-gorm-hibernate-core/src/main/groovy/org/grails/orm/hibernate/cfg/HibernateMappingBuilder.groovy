@@ -15,6 +15,8 @@
  */
 package org.grails.orm.hibernate.cfg
 
+import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder
 import org.hibernate.FetchMode
 import org.hibernate.InvalidMappingException
 import org.slf4j.Logger
@@ -30,7 +32,8 @@ import org.springframework.validation.DataBinder
  * @author Graeme Rocher
  * @since 1.0
  */
-class HibernateMappingBuilder {
+
+class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, PropertyConfig>{
 
     static final Logger LOG = LoggerFactory.getLogger(this)
 
@@ -46,30 +49,48 @@ class HibernateMappingBuilder {
         this.className = className
     }
 
+    HibernateMappingBuilder(Mapping mapping, String className) {
+        this.mapping = mapping
+        this.className = className
+    }
+
+    @Override
+    Map<String, PropertyConfig> getProperties() {
+        return mapping.columns
+    }
+
     /**
      * Central entry point for the class. Passing a closure that defines a set of mappings will evaluate said mappings
      * and populate the "mapping" property of this class which can then be obtained with getMappings()
      *
      * @param mappingClosure The closure that defines the ORM DSL
      */
-    Mapping evaluate(Closure mappingClosure, ApplicationContext applicationContext = null) {
+
+    @Override
+    @CompileStatic
+    Mapping evaluate(Closure mappingClosure, Object context = null) {
         if (mapping == null) {
             mapping = new Mapping()
         }
         mappingClosure.resolveStrategy = Closure.DELEGATE_ONLY
         mappingClosure.delegate = this
         try {
-            mappingClosure.call(applicationContext)
+            if(context != null) {
+                mappingClosure.call(context)
+            }
+            else {
+                mappingClosure.call()
+            }
         }
         finally {
             mappingClosure.delegate = null
         }
         mapping
     }
-
     /**
      * Include another config in this one
      */
+    @CompileStatic
     void includes(Closure callable) {
         if (!callable) {
             return
@@ -84,7 +105,7 @@ class HibernateMappingBuilder {
             callable.delegate = null
         }
     }
-
+    @CompileStatic
     void hibernateCustomUserType(Map args) {
         if (args.type && (args['class'] instanceof Class)) {
             mapping.userTypes[args['class']] = args.type
@@ -97,6 +118,7 @@ class HibernateMappingBuilder {
      *
      * @param name The name of the table
      */
+    @CompileStatic
     void table(String name) {
         mapping.tableName = name
     }
@@ -107,6 +129,7 @@ class HibernateMappingBuilder {
     *
     * @param name The name of the table
     */
+    @CompileStatic
     void discriminator(String name) {
         mapping.discriminator = name
     }
@@ -137,6 +160,7 @@ class HibernateMappingBuilder {
      * <p>Configures whether to auto import packages domain classes in HQL queries. Default is true
      * <code> { autoImport false }
      */
+    @CompileStatic
     void autoImport(boolean b) {
         mapping.autoImport = b
     }
@@ -145,6 +169,7 @@ class HibernateMappingBuilder {
      * <p>Configures the table name. Example:
      * <code> { table name:'foo', schema:'dbo', catalog:'CRM' }
      */
+    @CompileStatic
     void table(Map tableDef) {
         mapping.table.name = tableDef?.name?.toString()
         mapping.table.schema = tableDef?.schema?.toString()
@@ -157,15 +182,21 @@ class HibernateMappingBuilder {
      *
      * @param name The name of the property to sort by
      */
+    @CompileStatic
     void sort(String name) {
         if (name) {
             mapping.sort.name = name
         }
     }
 
+    void autowire(boolean autowire) {
+        mapping.autowire = autowire
+    }
+
     /**
      * Whether to use dynamic update queries
      */
+    @CompileStatic
     void dynamicUpdate(boolean b) {
         mapping.dynamicUpdate = b
     }
@@ -173,6 +204,7 @@ class HibernateMappingBuilder {
     /**
      * Whether to use dynamic update queries
      */
+    @CompileStatic
     void dynamicInsert(boolean b) {
         mapping.dynamicInsert = b
     }
@@ -183,6 +215,7 @@ class HibernateMappingBuilder {
      *
      * @param namesAndDirections The names and directions of the property to sort by
      */
+    @CompileStatic
     void sort(Map namesAndDirections) {
         if (namesAndDirections) {
             mapping.sort.namesAndDirections = namesAndDirections
@@ -193,6 +226,7 @@ class HibernateMappingBuilder {
      * Configures the batch-size used for lazy loading
      * @param num The batch size to use
      */
+    @CompileStatic
     void batchSize(Integer num) {
         if (num) {
             mapping.batchSize = num
@@ -205,6 +239,7 @@ class HibernateMappingBuilder {
      *
      * @param name The name of the property to sort by
      */
+    @CompileStatic
     void order(String direction) {
         if ("desc".equalsIgnoreCase(direction) || "asc".equalsIgnoreCase(direction)) {
             mapping.sort.direction = direction
@@ -214,6 +249,7 @@ class HibernateMappingBuilder {
     /**
      * Set whether auto time stamping should occur for last_updated and date_created columns
      */
+    @CompileStatic
     void autoTimestamp(boolean b) {
         mapping.autoTimestamp = b
     }
@@ -224,6 +260,7 @@ class HibernateMappingBuilder {
      *
      * @param isVersioned True if a version property should be configured
      */
+    @CompileStatic
     void version(boolean isVersioned) {
         mapping.versioned = isVersioned
     }
@@ -234,6 +271,7 @@ class HibernateMappingBuilder {
      *
      * @param isVersioned True if a version property should be configured
      */
+    @CompileStatic
     void version(String versionColumn) {
         PropertyConfig pc = mapping.getPropertyConfig("version")
         if (!pc) {
@@ -249,6 +287,7 @@ class HibernateMappingBuilder {
      *
      * @param args Named arguments that contain the "usage" and/or "include" parameters
      */
+    @CompileStatic
     void cache(Map args) {
         mapping.cache = new CacheConfig(enabled:true)
         if (args.usage) {
@@ -275,6 +314,7 @@ class HibernateMappingBuilder {
      *
      * @param usage The usage type for the cache which is one of CacheConfig.USAGE_OPTIONS
      */
+    @CompileStatic
     void cache(String usage) {
         cache(usage:usage)
     }
@@ -285,6 +325,7 @@ class HibernateMappingBuilder {
      *
      * @param usage The usage type for the cache which is one of CacheConfig.USAGE_OPTIONS
      */
+    @CompileStatic
     void cache(String usage, Map args) {
         args = args ? args : [:]
         args.usage = usage
@@ -294,6 +335,7 @@ class HibernateMappingBuilder {
     /**
      * If true the class and its sub classes will be mapped with table per hierarchy mapping
      */
+    @CompileStatic
     void tablePerHierarchy(boolean isTablePerHierarchy) {
         mapping.tablePerHierarchy = isTablePerHierarchy
     }
@@ -301,6 +343,7 @@ class HibernateMappingBuilder {
     /**
      * If true the class and its subclasses will be mapped with table per subclass mapping
      */
+    @CompileStatic
     void tablePerSubclass(boolean isTablePerSubClass) {
         mapping.tablePerHierarchy = !isTablePerSubClass
     }
@@ -308,9 +351,12 @@ class HibernateMappingBuilder {
     /**
      * If true the class and its subclasses will be mapped with table per subclass mapping
      */
+    @CompileStatic
     void tablePerConcreteClass(boolean isTablePerConcreteClass) {
-        mapping.tablePerHierarchy = false
-        mapping.tablePerConcreteClass = true
+        if(isTablePerConcreteClass) {
+            mapping.tablePerHierarchy = false
+            mapping.tablePerConcreteClass = true
+        }
     }
 
 
@@ -322,6 +368,7 @@ class HibernateMappingBuilder {
      *
      * @param shouldCache True if the default cache configuration should be applied
      */
+    @CompileStatic
     void cache(boolean shouldCache) {
         mapping.cache = new CacheConfig(enabled:shouldCache)
     }
@@ -387,9 +434,9 @@ class HibernateMappingBuilder {
         if (args && ((args[0] instanceof Map) || (args[0] instanceof Closure))) {
             def namedArgs = args[0] instanceof Map ? args[0] : [:]
             PropertyConfig property = mapping.columns[name] ?: new PropertyConfig()
-            property.formula = namedArgs.formula
+            property.formula = namedArgs.formula ?: property.formula
             property.type = namedArgs.type ?: property.type
-            property.lazy = namedArgs.lazy != null ? namedArgs.lazy : property.lazy
+            property.setLazy( namedArgs.lazy instanceof Boolean ? namedArgs.lazy : property.getLazy() )
             property.insertable = namedArgs.insertable != null ? namedArgs.insertable : property.insertable
             property.updateable = namedArgs.updateable != null ? namedArgs.updateable : property.updateable
             property.cascade = namedArgs.cascade ?: property.cascade
@@ -398,6 +445,16 @@ class HibernateMappingBuilder {
             property.batchSize = namedArgs.batchSize instanceof Integer ? namedArgs.batchSize : property.batchSize
             property.ignoreNotFound = namedArgs.ignoreNotFound != null ? namedArgs.ignoreNotFound : property.ignoreNotFound
             property.typeParams = namedArgs.params ?: property.typeParams
+            property.setUnique( namedArgs.unique ? namedArgs.unique : property.unique)
+            property.nullable = namedArgs.nullable ? true : property.nullable
+            property.maxSize = namedArgs.maxSize instanceof Number ? namedArgs.maxSize : property.maxSize
+            property.minSize = namedArgs.minSize instanceof Number ? namedArgs.minSize : property.minSize
+            property.max = namedArgs.max instanceof Comparable ? namedArgs.max : property.max
+            property.min = namedArgs.min instanceof Comparable ? namedArgs.min : property.min
+            property.range = namedArgs.range instanceof ObjectRange ? namedArgs.range : null
+            property.scale = namedArgs.scale instanceof Integer ? namedArgs.scale : property.scale
+            property.inList = namedArgs.inList instanceof List ? namedArgs.inList : property.inList
+
             if (namedArgs.fetch) {
                 switch(namedArgs.fetch) {
                     case ~/(join|JOIN)/:
@@ -538,6 +595,7 @@ class HibernateMappingBuilder {
      *
      * @param callable The closure containing the column definitions
      */
+    @CompileStatic
     void columns(Closure callable) {
         callable.resolveStrategy = Closure.DELEGATE_ONLY
         callable.delegate = new Object() {
@@ -548,14 +606,17 @@ class HibernateMappingBuilder {
         callable.call()
     }
 
+    @CompileStatic
     void datasource(String name) {
         mapping.datasources = [name]
     }
 
+    @CompileStatic
     void datasources(List<String> names) {
         mapping.datasources = names
     }
 
+    @CompileStatic
     void comment(String comment) {
         mapping.comment = comment
     }
@@ -573,39 +634,3 @@ class HibernateMappingBuilder {
     }
 }
 
-/**
- * Builder delegate that handles multiple-column definitions for a
- * single domain property, e.g.
- * <pre>
- *   amount type: MonetaryAmountUserType, {
- *       column name: "value"
- *       column name: "currency_code", sqlType: "text"
- *   }
- * </pre>
- */
-class PropertyDefinitionDelegate {
-    PropertyConfig config
-
-    PropertyDefinitionDelegate(PropertyConfig config) {
-        this.config = config
-    }
-
-    def column(Map args) {
-        // Check that this column has a name
-        if (!args["name"]) throw new InvalidMappingException("Column definition must have a name!")
-
-        // Create a new column configuration based on the mapping for this column.
-        def column = new ColumnConfig()
-        column.name = args["name"]
-        column.sqlType = args["sqlType"]
-        column.enumType = args["enumType"]
-        column.index = args["index"]
-        column.unique = args["unique"] ?: false
-        column.length = args["length"] ?: -1
-        column.precision = args["precision"] ?: -1
-        column.scale = args["scale"] ?: -1
-
-        // Append the new column configuration to the property config.
-        config.columns << column
-    }
-}

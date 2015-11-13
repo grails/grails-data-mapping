@@ -15,11 +15,9 @@
  */
 package org.grails.orm.hibernate;
 
-import grails.core.GrailsApplication;
 import groovy.lang.Closure;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.hibernate.*;
 import org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl;
@@ -91,16 +89,16 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
         }
     }
     
-    public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application) {
-        this(sessionFactory, application, FLUSH_AUTO);
+    public GrailsHibernateTemplate(SessionFactory sessionFactory, HibernateDatastore datastore) {
+        this(sessionFactory, datastore, FLUSH_AUTO);
     }
     
-    public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application, int defaultFlushMode) {
+    public GrailsHibernateTemplate(SessionFactory sessionFactory, HibernateDatastore datastore, int defaultFlushMode) {
         this(sessionFactory);
-        if(application != null) {
-            cacheQueries = GrailsHibernateUtil.isCacheQueriesByDefault(application);
-            this.osivReadOnly = GrailsHibernateUtil.isOsivReadonly(application);
-            this.passReadOnlyToHibernate = GrailsHibernateUtil.isPassReadOnlyToHibernate(application);
+        if(datastore != null) {
+            cacheQueries = datastore.isCacheQueries();
+            this.osivReadOnly = datastore.isOsivReadOnly();
+            this.passReadOnlyToHibernate = datastore.isPassReadOnlyToHibernate();
         }
         this.flushMode = defaultFlushMode;
     }

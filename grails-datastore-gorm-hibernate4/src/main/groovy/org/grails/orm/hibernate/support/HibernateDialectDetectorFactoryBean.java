@@ -15,10 +15,6 @@
  */
 package org.grails.orm.hibernate.support;
 
-import grails.config.Config;
-import grails.core.GrailsApplication;
-import grails.core.support.GrailsApplicationAware;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -51,13 +47,17 @@ import org.springframework.util.StringUtils;
  * @author Graeme Rocher
  * @author Burt Beckwith
  */
-public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>, InitializingBean, GrailsApplicationAware {
+public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>, InitializingBean {
 
     private DataSource dataSource;
     private Properties vendorNameDialectMappings;
     private String hibernateDialectClassName;
     private Dialect hibernateDialect;
-    private GrailsApplication grailsApplication;
+    private Properties hibernateProperties = new Properties();
+
+    public void setHibernateProperties(Properties hibernateProperties) {
+        this.hibernateProperties = hibernateProperties;
+    }
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -91,8 +91,6 @@ public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>,
             connection = DataSourceUtils.getConnection(dataSource);
 
             try {
-                Config config = grailsApplication == null ? null : grailsApplication.getConfig();
-                Properties properties = config == null ? new Properties() : config.toProperties();
                 final DialectFactory dialectFactory = createDialectFactory();
                 final Connection finalConnection = connection;
                 DialectResolutionInfoSource infoSource = new DialectResolutionInfoSource() {
@@ -106,7 +104,7 @@ public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>,
                         }
                     }
                 };
-                hibernateDialect = dialectFactory.buildDialect(properties, infoSource);
+                hibernateDialect = dialectFactory.buildDialect(hibernateProperties, infoSource);
                 hibernateDialectClassName = hibernateDialect.getClass().getName();
             } catch (HibernateException e) {
                 hibernateDialectClassName = vendorNameDialectMappings.getProperty(dbName);
@@ -162,7 +160,4 @@ public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>,
         return factory;
     }
 
-    public void setGrailsApplication(GrailsApplication grailsApplication) {
-        this.grailsApplication = grailsApplication;
-    }
 }

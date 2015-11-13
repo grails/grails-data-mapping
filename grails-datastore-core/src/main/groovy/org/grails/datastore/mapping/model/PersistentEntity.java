@@ -36,6 +36,11 @@ public interface PersistentEntity extends Initializable {
     String getName();
 
     /**
+     * @return The composite id or null if there isn't one
+     */
+    PersistentProperty[] getCompositeIdentity();
+
+    /**
      * Whether this PersistentEntity is mapped using a different store. Used for cross store persistence.
      *
      * @return true if this entity is externally mapped
@@ -182,4 +187,9 @@ public interface PersistentEntity extends Initializable {
      * @return True if it is the identifier
      */
     boolean isIdentityName(String propertyName);
+
+    /**
+     * @return Whether the entity is abstract
+     */
+    boolean isAbstract();
 }

@@ -17,7 +17,6 @@ package org.grails.orm.hibernate.validation;
 import grails.core.GrailsApplication;
 import grails.core.GrailsDomainClass;
 import grails.validation.AbstractConstraint;
-import org.grails.orm.hibernate.AbstractGrailsHibernateDomainClass;
 import org.grails.orm.hibernate.IHibernateTemplate;
 import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.core.lifecycle.ShutdownOperations;
@@ -74,8 +73,7 @@ public abstract class AbstractPersistentConstraint extends AbstractConstraint im
                     DomainClassArtefactHandler.TYPE, constraintOwningClass.getName());
             if (domainClass != null) {
                 String mappingStrategy = domainClass.getMappingStrategy();
-                return mappingStrategy.equals(GrailsDomainClass.GORM)
-                    || mappingStrategy.equals(AbstractGrailsHibernateDomainClass.HIBERNATE);
+                return mappingStrategy.equals(GrailsDomainClass.GORM);
             }
         }
         return false;

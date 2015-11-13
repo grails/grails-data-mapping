@@ -15,7 +15,6 @@
 package org.grails.orm.hibernate;
 
 import grails.core.GrailsApplication;
-import grails.core.GrailsDomainClassProperty;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
 

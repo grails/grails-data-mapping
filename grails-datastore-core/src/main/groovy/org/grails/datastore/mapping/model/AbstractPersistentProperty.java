@@ -32,12 +32,10 @@ public abstract class AbstractPersistentProperty<T extends Property> implements 
     protected MappingContext context;
     protected String name;
     protected Class type;
+    protected Boolean inherited;
 
     public AbstractPersistentProperty(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
-        this.owner = owner;
-        this.context = context;
-        this.name = descriptor.getName();
-        this.type = descriptor.getPropertyType();
+        this(owner, context, descriptor.getName(), descriptor.getPropertyType());
     }
 
     public AbstractPersistentProperty(PersistentEntity owner, MappingContext context, String name, Class type) {
@@ -69,7 +67,33 @@ public abstract class AbstractPersistentProperty<T extends Property> implements 
     }
 
     public boolean isNullable() {
-        final Object mappedForm = getMapping().getMappedForm();
-        return mappedForm instanceof Property && ((Property)mappedForm).isNullable();
+        final T mappedForm = getMapping().getMappedForm();
+        return mappedForm != null && mappedForm.isNullable();
+    }
+
+    @Override
+    public boolean isInherited() {
+        if(inherited == null) {
+
+            if(owner.isRoot()) {
+                inherited = false;
+            }
+            else {
+                PersistentEntity parentEntity = owner.getParentEntity();
+                boolean foundInParent = false;
+                while(parentEntity != null) {
+                    final PersistentProperty p = parentEntity.getPropertyByName(name);
+                    if(p != null) {
+                        foundInParent = true;
+                        break;
+                    }
+                    parentEntity = parentEntity.getParentEntity();
+                }
+
+                inherited = foundInParent;
+            }
+        }
+
+        return inherited;
     }
 }

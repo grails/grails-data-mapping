@@ -18,29 +18,19 @@ package org.grails.orm.hibernate.cfg
 import grails.artefact.Enhanced
 import grails.core.GrailsApplication
 import grails.core.GrailsDomainClass
-import grails.core.GrailsDomainClassProperty
-import grails.util.GrailsClassUtils
 import grails.util.GrailsMetaClassUtils
-import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-
-import org.grails.orm.hibernate.GrailsHibernateTemplate
-import org.grails.orm.hibernate.HibernateDatastore
-import org.grails.orm.hibernate.HibernateGormEnhancer
-import org.grails.orm.hibernate.HibernateGormInstanceApi
-import org.grails.orm.hibernate.HibernateGormStaticApi
-import org.grails.orm.hibernate.HibernateGormValidationApi
-import org.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
-import org.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
-import org.hibernate.FlushMode
-import org.hibernate.Session
+import org.grails.datastore.mapping.reflect.NameUtils
+import org.grails.orm.hibernate.*
+import org.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
+import org.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.hibernate.SessionFactory
 import org.hibernate.proxy.HibernateProxy
 import org.slf4j.Logger
@@ -48,7 +38,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.PropertyAccessorFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.core.convert.ConversionService
-import org.springframework.dao.DataAccessException
 import org.springframework.transaction.PlatformTransactionManager
 
 @CompileStatic
@@ -59,14 +48,13 @@ class HibernateUtils {
     /**
      * Overrides a getter on a property that is a Hibernate proxy in order to make sure the initialized object is returned hence avoiding Hibernate proxy hell.
      */
-    static void handleLazyProxy(GrailsDomainClass domainClass, GrailsDomainClassProperty property) {
+    static void handleLazyProxy(PersistentEntity entity, PersistentProperty property) {
         String propertyName = property.name
-        String getterName = GrailsClassUtils.getGetterName(propertyName)
-        String setterName = GrailsClassUtils.getSetterName(propertyName)
+        String getterName = NameUtils.getGetterName(propertyName)
+        String setterName = NameUtils.getSetterName(propertyName)
 
-        GroovyObject mc = (GroovyObject)domainClass.metaClass
-
-        def propertyFetcher = ClassPropertyFetcher.forClass(domainClass.getClazz())
+        GroovyObject mc = (GroovyObject)entity.javaClass.metaClass
+        def propertyFetcher = ClassPropertyFetcher.forClass(entity.getJavaClass())
 
         mc.setProperty(getterName, {->
             def propertyValue = propertyFetcher.getPropertyValue(getDelegate(), propertyName)
@@ -79,8 +67,8 @@ class HibernateUtils {
             PropertyAccessorFactory.forBeanPropertyAccess(getDelegate()).setPropertyValue(propertyName, it)
         })
 
-
-        for (GrailsDomainClass sub in domainClass.subClasses) {
+        def children = entity.getMappingContext().getDirectChildEntities(entity)
+        for (PersistentEntity sub in children) {
             handleLazyProxy(sub, sub.getPropertyByName(property.name))
         }
     }
@@ -104,7 +92,7 @@ class HibernateUtils {
     }
 
     static enhanceSessionFactory(SessionFactory sessionFactory, GrailsApplication application,
-            ApplicationContext ctx, String suffix, Map<SessionFactory, HibernateDatastore> datastores, Object source = null) {
+                                 ApplicationContext ctx, String suffix, Map<SessionFactory, HibernateDatastore> datastores, Object source = null) {
 
         MappingContext mappingContext = ctx.getBean("grailsDomainClassMappingContext", MappingContext)
         PlatformTransactionManager transactionManager = ctx.getBean("transactionManager$suffix", PlatformTransactionManager)
@@ -112,20 +100,19 @@ class HibernateUtils {
         datastores[sessionFactory] = datastore
         String datasourceName = suffix ? suffix[1..-1] : Mapping.DEFAULT_DATA_SOURCE
 
-        HibernateGormEnhancer enhancer = new HibernateGormEnhancer(datastore, transactionManager, application)
+        HibernateGormEnhancer enhancer = new HibernateGormEnhancer(datastore, transactionManager)
 
         def enhanceEntity = { PersistentEntity entity ->
-            GrailsDomainClass dc = (GrailsDomainClass)application.getArtefact(DomainClassArtefactHandler.TYPE, entity.javaClass.name)
-            if (!GrailsHibernateUtil.isMappedWithHibernate(dc) || !GrailsHibernateUtil.usesDatasource(dc, datasourceName)) {
+            if (!GrailsHibernateUtil.isMappedWithHibernate(entity) || !GrailsHibernateUtil.usesDatasource(entity, datasourceName)) {
                 return
             }
 
             if (!datasourceName.equals(Mapping.DEFAULT_DATA_SOURCE)) {
-                LOG.debug "Registering namespace methods for $dc.clazz.name in DataSource '$datasourceName'"
-                registerNamespaceMethods dc, datastore, datasourceName, transactionManager, application
+                LOG.debug "Registering namespace methods for $entity.javaClass.name in DataSource '$datasourceName'"
+                registerNamespaceMethods entity, datastore, datasourceName, transactionManager, application
             }
 
-            if (datasourceName.equals(Mapping.DEFAULT_DATA_SOURCE) || datasourceName.equals(GrailsHibernateUtil.getDefaultDataSource(dc))) {
+            if (datasourceName.equals(Mapping.DEFAULT_DATA_SOURCE) || datasourceName.equals(GrailsHibernateUtil.getDefaultDataSource(entity))) {
                 LOG.debug "Enhancing GORM entity ${entity.name}"
                 if (entity.javaClass.getAnnotation(Enhanced) == null) {
                     enhancer.enhance entity
@@ -170,22 +157,10 @@ class HibernateUtils {
         return queryArgs
     }
 
-    private static List<String> removeNullNames(Map query) {
-        List<String> nullNames = []
-        Set<String> allNames = new HashSet(query.keySet())
-        for (String name in allNames) {
-            if (query[name] == null) {
-                query.remove name
-                nullNames << name
-            }
-        }
-        nullNames
-    }
 
     // http://jira.codehaus.org/browse/GROOVY-6138 prevents using CompileStatic for this method
     @CompileStatic(TypeCheckingMode.SKIP)
     static void enhanceProxyClass(Class proxyClass) {
-
         MetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(proxyClass)
         MetaMethod grailsEnhancedMetaMethod = mc.getStaticMetaMethod("grailsEnhanced", (Class[])null)
         if (grailsEnhancedMetaMethod != null && grailsEnhancedMetaMethod.invoke(proxyClass, null) == proxyClass) {
@@ -193,6 +168,7 @@ class HibernateUtils {
         }
 
         MetaClass superMc = GrailsMetaClassUtils.getExpandoMetaClass(proxyClass.getSuperclass())
+
 
         // hasProperty
         registerMetaMethod(mc, 'hasProperty', { String name ->
@@ -260,7 +236,6 @@ class HibernateUtils {
         mc.static.grailsEnhanced = {->proxyClass}
     }
 
-
     @CompileStatic(TypeCheckingMode.SKIP)
     private static final registerMetaMethod(MetaClass mc, String name, Closure c) {
         mc."$name" = c
@@ -270,54 +245,27 @@ class HibernateUtils {
         // no need to do anything here
     }
 
-    private static void registerNamespaceMethods(GrailsDomainClass dc, HibernateDatastore datastore,
-            String datasourceName, PlatformTransactionManager  transactionManager,
-            GrailsApplication application) {
+    private static void registerNamespaceMethods(PersistentEntity dc, HibernateDatastore datastore,
+                                                 String datasourceName, PlatformTransactionManager  transactionManager,
+                                                 GrailsApplication application) {
 
-        String getter = GrailsNameUtils.getGetterName(datasourceName)
+        String getter = NameUtils.getGetterName(datasourceName)
         if (dc.metaClass.methods.any { MetaMethod it -> it.name == getter && it.parameterTypes.size() == 0 }) {
-            LOG.warn "The $dc.clazz.name domain class has a method '$getter' - unable to add namespaced methods for datasource '$datasourceName'"
+            LOG.warn "The $dc.javaClass.name domain class has a method '$getter' - unable to add namespaced methods for datasource '$datasourceName'"
             return
         }
 
         def classLoader = application.classLoader
 
-        def finders = new HibernateGormEnhancer(datastore, transactionManager, application).getFinders()
-        def staticApi = new HibernateGormStaticApi(dc.clazz, datastore, finders, classLoader, transactionManager)
+        def finders = new HibernateGormEnhancer(datastore, transactionManager).getFinders()
+        def staticApi = new HibernateGormStaticApi(dc.javaClass, datastore, finders, classLoader, transactionManager)
         ((GroovyObject)((GroovyObject)dc.metaClass).getProperty('static')).setProperty(getter, { -> staticApi })
 
-        def validateApi = new HibernateGormValidationApi(dc.clazz, datastore, classLoader)
-        def instanceApi = new HibernateGormInstanceApi(dc.clazz, datastore, classLoader)
+        def validateApi = new HibernateGormValidationApi(dc.javaClass, datastore, classLoader)
+        def instanceApi = new HibernateGormInstanceApi(dc.javaClass, datastore, classLoader)
         ((GroovyObject)dc.metaClass).setProperty(getter, { -> new InstanceProxy(getDelegate(), instanceApi, validateApi) })
     }
 
-    /**
-     * Session should no longer be flushed after a data access exception occurs (such a constriant violation)
-     */
-    static void handleDataAccessException(GrailsHibernateTemplate template, DataAccessException e) {
-        try {
-            template.execute new GrailsHibernateTemplate.HibernateCallback() {
-                def doInHibernate(Session session) {
-                    session.setFlushMode(FlushMode.MANUAL)
-                }
-            }
-        }
-        finally {
-            throw e
-        }
-    }
-
-    static shouldFlush(GrailsApplication application, Map map = [:]) {
-        def shouldFlush
-
-        if (map?.containsKey('flush')) {
-            shouldFlush = Boolean.TRUE == map.flush
-        } else {
-            def config = application.flatConfig
-            shouldFlush = Boolean.TRUE == config.get('grails.gorm.autoFlush')
-        }
-        return shouldFlush
-    }
 
     /**
      * Converts an id value to the appropriate type for a domain class.

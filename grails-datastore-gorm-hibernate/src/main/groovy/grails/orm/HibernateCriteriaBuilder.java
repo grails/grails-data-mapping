@@ -17,6 +17,7 @@ package grails.orm;
 
 import groovy.lang.GroovySystem;
 import org.grails.orm.hibernate.GrailsHibernateTemplate;
+import org.grails.orm.hibernate.HibernateDatastore;
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.grails.orm.hibernate.query.*;
 import org.grails.datastore.mapping.query.Query;
@@ -135,7 +136,7 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
 
     @Override
     protected void cacheCriteriaMapping() {
-        GrailsHibernateUtil.cacheCriteriaByMapping(grailsApplication, targetClass, criteria);
+        GrailsHibernateUtil.cacheCriteriaByMapping(targetClass, criteria);
     }
 
     @Override
@@ -227,8 +228,8 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
 
     @Override
     protected List createPagedResultList(Map args) {
-        GrailsHibernateUtil.populateArgumentsForCriteria(grailsApplication, targetClass, criteria, args, conversionService);
-        GrailsHibernateTemplate ght = new GrailsHibernateTemplate(sessionFactory, grailsApplication, getDefaultFlushMode());
+        GrailsHibernateUtil.populateArgumentsForCriteria(datastore, targetClass, criteria, args, conversionService);
+        GrailsHibernateTemplate ght = new GrailsHibernateTemplate(sessionFactory, (HibernateDatastore) datastore);
         return new PagedResultList(ght, criteria);
     }
 

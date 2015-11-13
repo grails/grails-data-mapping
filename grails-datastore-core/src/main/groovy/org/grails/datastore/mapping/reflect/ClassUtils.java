@@ -15,6 +15,7 @@
  */
 package org.grails.datastore.mapping.reflect;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,5 +45,18 @@ public class ClassUtils {
             return Boolean.valueOf(o.toString());
         }
         return false;
+    }
+
+    public static boolean isClassBelowPackage(Class<?> domainClazz, List packageList) {
+        String classPackage = domainClazz.getPackage().getName();
+        for (Object packageName : packageList) {
+            if (packageName != null) {
+                if (classPackage.startsWith(packageName.toString())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
     }
 }

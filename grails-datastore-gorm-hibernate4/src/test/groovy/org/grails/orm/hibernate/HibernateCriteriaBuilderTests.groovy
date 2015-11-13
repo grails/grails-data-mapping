@@ -28,7 +28,7 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj.lastName = "Brown"
         obj.age = 196
         obj.addToChildren2(firstName:"Zack")
-           .addToChildren2(firstName:"Jake")
+                .addToChildren2(firstName:"Jake")
 
         assertNotNull obj.save(flush:true)
 
@@ -276,13 +276,13 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj.lastName="Simpson"
         obj.age=11
         obj.addToChildren2(firstName:"Groovy Joe")
-           .addToChildren2(firstName:"Ted Grails")
-           .addToChildren2(firstName:"ginger")
+                .addToChildren2(firstName:"Ted Grails")
+                .addToChildren2(firstName:"ginger")
 
-         assertNotNull obj.save(flush:true)
+        assertNotNull obj.save(flush:true)
 
-         def c = domainClass.createCriteria()
-         def results =  c.listDistinct {
+        def c = domainClass.createCriteria()
+        def results =  c.listDistinct {
             and {
                 'in'('firstName', ['Mike', 'Bob', 'Joe'])
                 children2{
@@ -321,14 +321,14 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         assertNotNull obj2.save(flush: true)
 
         HibernateCriteriaBuilder hcb = new HibernateCriteriaBuilder(CriteriaBuilderTestClass, sessionFactory)
-        hcb.grailsApplication = ga
+        hcb.datastore = hibernateDatastore
         hcb.conversionService = new org.grails.datastore.mapping.model.types.conversion.DefaultConversionService()
         List results = hcb.list(sort: 'parent.firstName', order: 'asc') {
-                    eq('firstName','Bart')
-                    parent {
-                      eq('lastName','Simpson')
-                    }
-                }
+            eq('firstName','Bart')
+            parent {
+                eq('lastName','Simpson')
+            }
+        }
         assertEquals 1, results.size()
     }
 
@@ -527,19 +527,19 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
 
         obj.invokeMethod("save", null)
 
-    // check that calling uniqueResult version of constructor
-    // returns a single object
+        // check that calling uniqueResult version of constructor
+        // returns a single object
 
         Object result = parse(".list { " +
-                        "eq('firstName','homer');" +
+                "eq('firstName','homer');" +
                 "}", "Test1", CriteriaBuilderTestClass.name,true)
 
         assertEquals clazzName , result.getClass().getName()
 
-    // check that calling the non-uniqueResult version of constructor
-    // returns a List
+        // check that calling the non-uniqueResult version of constructor
+        // returns a List
         List results = parse(".list { " +
-                        "eq('firstName','homer');" +
+                "eq('firstName','homer');" +
                 "}", "Test1",CriteriaBuilderTestClass.name, false)
         assertTrue List.isAssignableFrom(results.getClass())
     }
@@ -547,7 +547,7 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
     @Test
     void testNestedAssociation() {
         GrailsDomainClass domainClass =  grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -574,23 +574,23 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
 
         // now within or block
         List results = parse(".list { " +
-                    "and {" +
-                        "eq('lastName','simpson');" +
-                        "children { " +
-                            "eq('firstName','bart');" +
-                        "}" +
-                    "}" +
+                "and {" +
+                "eq('lastName','simpson');" +
+                "children { " +
+                "eq('firstName','bart');" +
+                "}" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 1 , results.size()
 
         results = parse(".list { " +
-                    "or {" +
-                        "eq('firstName','lisa');" +
-                        "children { " +
-                            "eq('firstName','bart');" +
-                        "}" +
-                    "}" +
+                "or {" +
+                "eq('firstName','lisa');" +
+                "children { " +
+                "eq('firstName','bart');" +
+                "}" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 2 , results.size()
@@ -599,7 +599,7 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
     @Test
     void testNestedAssociationIsNullField() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -626,23 +626,23 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
 
         // now within or block
         List results = parse(".list { " +
-                    "and {" +
-                        "eq('lastName','simpson');" +
-                        "children { " +
-                            "isNull('lastName');" +
-                        "}" +
-                    "}" +
+                "and {" +
+                "eq('lastName','simpson');" +
+                "children { " +
+                "isNull('lastName');" +
+                "}" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 1 , results.size()
 
         results = parse(".list { " +
-                    "or {" +
-                       "eq('lastName','simpson');" +
-                        "children { " +
-                            "isNotNull('lastName');" +
-                        "}" +
-                    "}" +
+                "or {" +
+                "eq('lastName','simpson');" +
+                "children { " +
+                "isNotNull('lastName');" +
+                "}" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 2 , results.size()
@@ -674,15 +674,15 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj3.invokeMethod("save", null)
 
         List results = parse(
-            ".list { \n" +
-                "or { \n" +
-                    "gt('age', 40) \n" +
-                    "children { \n" +
+                ".list { \n" +
+                        "or { \n" +
+                        "gt('age', 40) \n" +
+                        "children { \n" +
                         "eq('lastName','simpson') \n" +
-                    "} \n" +
-                "} \n" +
-                "resultTransformer(org.hibernate.criterion.CriteriaSpecification.DISTINCT_ROOT_ENTITY) \n" +
-            "}", "Test1",CriteriaBuilderTestClass.name)
+                        "} \n" +
+                        "} \n" +
+                        "resultTransformer(org.hibernate.criterion.CriteriaSpecification.DISTINCT_ROOT_ENTITY) \n" +
+                        "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 1 , results.size()
     }
@@ -690,7 +690,7 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
     @Test
     void testJunctions() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -720,31 +720,31 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj4.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "or { " +
-                        "eq('firstName','fred');" +
-                        "eq('lastName', 'flintstone');" +
-                        "eq('age', 12);" +
-                    "}" +
+                "or { " +
+                "eq('firstName','fred');" +
+                "eq('lastName', 'flintstone');" +
+                "eq('age', 12);" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 3, results.size()
 
         results = parse("{ " +
-                    "or { " +
-                        "eq('lastName', 'flintstone');" +
-                    "}" +
+                "or { " +
+                "eq('lastName', 'flintstone');" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 2, results.size()
 
         results = parse("{ " +
-                    "and { " +
-                        "eq('age', 45);" +
-                        "or { " +
-                            "eq('firstName','fred');" +
-                            "eq('lastName', 'flintstone');" +
-                        "}" +
-                    "}" +
+                "and { " +
+                "eq('age', 45);" +
+                "or { " +
+                "eq('firstName','fred');" +
+                "eq('lastName', 'flintstone');" +
+                "}" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 1, results.size()
@@ -753,7 +753,7 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
     @Test
     void testDistinct() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -777,9 +777,9 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj3.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "projections { " +
-                        "distinct('lastName');" +
-                    "}" +
+                "projections { " +
+                "distinct('lastName');" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 2, results.size()
@@ -787,9 +787,9 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         assertTrue results.contains("dinosaur")
 
         results = parse("{ " +
-                    "projections { " +
-                        "distinct(['lastName','age']);" +
-                    "}" +
+                "projections { " +
+                "distinct(['lastName','age']);" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 3, results.size()
@@ -798,7 +798,7 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
     @Test
     void testHibernateCriteriaBuilder() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -822,44 +822,44 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj3.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "and { " +
-                        "eq('firstName','fred');" +
-                        "eq('lastName', 'flintstone');" +
-                    "}" +
+                "and { " +
+                "eq('firstName','fred');" +
+                "eq('lastName', 'flintstone');" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         results = parse("{\n" +
-                        "and {\n" +
-                            "eq(\"firstName\",\"Fred\");\n" +
-                            "and {\n" +
-                                "eq(\"age\", 42)\n" +
-                                "eq(\"lastName\", \"flintstone\")\n" +
-                             "}\n" +
-                        "}\n" +
-                    "}", "Test2",CriteriaBuilderTestClass.name)
+                "and {\n" +
+                "eq(\"firstName\",\"Fred\");\n" +
+                "and {\n" +
+                "eq(\"age\", 42)\n" +
+                "eq(\"lastName\", \"flintstone\")\n" +
+                "}\n" +
+                "}\n" +
+                "}", "Test2",CriteriaBuilderTestClass.name)
         results = parse("{\n" +
-                        "eq(\"firstName\",\"Fred\");\n" +
-                        "order(\"firstName\")\n" +
-                        "maxResults(10)\n" +
-                    "}", "Test3",CriteriaBuilderTestClass.name)
+                "eq(\"firstName\",\"Fred\");\n" +
+                "order(\"firstName\")\n" +
+                "maxResults(10)\n" +
+                "}", "Test3",CriteriaBuilderTestClass.name)
 
         shouldFail(MissingMethodException) {
             // rubbish argument
             results = parse("{\n" +
                     "and {\n" +
-                        "eq(\"firstName\",\"Fred\")\n" +
-                        "not {\n" +
-                            "eq(\"age\", 42)\n" +
-                            "rubbish()\n" +
-                         "}\n" +
+                    "eq(\"firstName\",\"Fred\")\n" +
+                    "not {\n" +
+                    "eq(\"age\", 42)\n" +
+                    "rubbish()\n" +
                     "}\n" +
-                "}", "Test5",CriteriaBuilderTestClass.name)
+                    "}\n" +
+                    "}", "Test5",CriteriaBuilderTestClass.name)
         }
     }
 
     @Test
     void testProjectionProperty() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -871,9 +871,9 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "projections { " +
-                        "property('lastName',)" +
-                    "}" +
+                "projections { " +
+                "property('lastName',)" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 1, results.size()
@@ -882,7 +882,7 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
     @Test
     void testProjectionAvg() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -901,19 +901,19 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "projections { " +
-                        "avg('age',)" +
-                    "}" +
+                "projections { " +
+                "avg('age',)" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
-    Double result = (Double) results.get(0)
+        Double result = (Double) results.get(0)
         assertEquals 40, result.longValue()
-   }
+    }
 
     @Test
-   void testProjectionCount() {
+    void testProjectionCount() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -932,17 +932,17 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "projections { " +
-                        "count('firstName')" +
-                    "}" +
+                "projections { " +
+                "count('firstName')" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 2, results.get(0)
-   }
+    }
 
-   @Test
-   void testProjectionCountDistinct() {
+    @Test
+    void testProjectionCountDistinct() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -961,17 +961,17 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "projections { " +
-                        "countDistinct('lastName')" +
-                    "}" +
+                "projections { " +
+                "countDistinct('lastName')" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 1, results.get(0)
-   }
+    }
 
-   @Test
-   void testProjectionMax() {
+    @Test
+    void testProjectionMax() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -990,17 +990,17 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "projections { " +
-                        "max('age')" +
-                    "}" +
+                "projections { " +
+                "max('age')" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 45, results.get(0)
-   }
+    }
 
-   @Test
-   void testProjectionMin() {
+    @Test
+    void testProjectionMin() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1019,17 +1019,17 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "projections { " +
-                        "min('age')" +
-                    "}" +
+                "projections { " +
+                "min('age')" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 35, results.get(0)
-   }
+    }
 
-   @Test
-   void testProjectionRowCount() {
+    @Test
+    void testProjectionRowCount() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1048,17 +1048,17 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "projections { " +
-                        "rowCount()" +
-                    "}" +
+                "projections { " +
+                "rowCount()" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 2, results.get(0)
-   }
+    }
 
-   @Test
-   void testProjectionSum() {
+    @Test
+    void testProjectionSum() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1077,17 +1077,17 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "projections { " +
-                        "sum('age')" +
-                    "}" +
+                "projections { " +
+                "sum('age')" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 80, results.get(0)
-   }
+    }
 
-   @Test
-   void testOrderAsc() {
+    @Test
+    void testOrderAsc() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1106,17 +1106,17 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "projections { " +
-                        "property('firstName');" +
-                        "order('firstName', 'asc');" +
-                    "}" +
+                "projections { " +
+                "property('firstName');" +
+                "order('firstName', 'asc');" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
-   }
+    }
 
     @Test
-   void testOrderDesc() {
+    void testOrderDesc() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1135,17 +1135,17 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                    "projections { " +
-                        "property('firstName');" +
-                        "order('firstName','desc');" +
-                    "}" +
+                "projections { " +
+                "property('firstName');" +
+                "order('firstName','desc');" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
-   }
+    }
 
     @Test
-   void testEqProperty() {
+    void testEqProperty() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1171,15 +1171,15 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj3.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "eqProperty('firstName','lastName')" +
+                "eqProperty('firstName','lastName')" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 2, results.size()
-   }
+    }
 
     @Test
-   void testGtProperty() {
+    void testGtProperty() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1198,15 +1198,15 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "gtProperty('firstName','lastName')" +
+                "gtProperty('firstName','lastName')" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 1, results.size()
-   }
+    }
 
     @Test
-   void testGe() {
+    void testGe() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1226,15 +1226,15 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "ge('age',43)" +
+                "ge('age',43)" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 2, results.size()
-   }
+    }
 
     @Test
-   void testLe() {
+    void testLe() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1253,16 +1253,16 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "le('age',45)" +
+                "le('age',45)" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 2, results.size()
-   }
+    }
 
     @Test
-   void testLt() {
+    void testLt() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1281,16 +1281,16 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "lt('age',44)" +
+                "lt('age',44)" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 1, results.size()
-   }
+    }
 
     @Test
-   void testEq() {
+    void testEq() {
         GrailsDomainClass domainClass =  grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1309,62 +1309,62 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "eq('firstName','fred')" +
+                "eq('firstName','fred')" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 1, results.size()
-   }
+    }
 
     @Test
     void testEqCaseInsensitive() {
-      GrailsDomainClass domainClass =  grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-      CriteriaBuilderTestClass.name)
+        GrailsDomainClass domainClass =  grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
+                CriteriaBuilderTestClass.name)
 
-      assertNotNull(domainClass)
+        assertNotNull(domainClass)
 
-      GroovyObject obj = domainClass.newInstance()
-      obj.setProperty("firstName", "fred")
-      obj.setProperty("lastName", "flinstone")
-      obj.setProperty("age", 43)
+        GroovyObject obj = domainClass.newInstance()
+        obj.setProperty("firstName", "fred")
+        obj.setProperty("lastName", "flinstone")
+        obj.setProperty("age", 43)
 
-      obj.invokeMethod("save", null)
+        obj.invokeMethod("save", null)
 
-      GroovyObject obj2 = domainClass.newInstance()
-      obj2.setProperty("firstName", "zulu")
-      obj2.setProperty("lastName", "alpha")
-      obj2.setProperty("age", 45)
+        GroovyObject obj2 = domainClass.newInstance()
+        obj2.setProperty("firstName", "zulu")
+        obj2.setProperty("lastName", "alpha")
+        obj2.setProperty("age", 45)
 
-      obj2.invokeMethod("save", null)
+        obj2.invokeMethod("save", null)
 
-      List results = parse("{ " +
-            "eq('firstName','Fred')" +
-            "}", "Test1",CriteriaBuilderTestClass.name)
-      assertEquals 'default not ignoring case', 0, results.size()
+        List results = parse("{ " +
+                "eq('firstName','Fred')" +
+                "}", "Test1",CriteriaBuilderTestClass.name)
+        assertEquals 'default not ignoring case', 0, results.size()
 
-      results = parse("{ " +
-            "eq 'firstName','Fred', ignoreCase: false" +
-            "}", "Test1",CriteriaBuilderTestClass.name)
-      assertEquals 'explicitly not ignoring case', 0, results.size()
+        results = parse("{ " +
+                "eq 'firstName','Fred', ignoreCase: false" +
+                "}", "Test1",CriteriaBuilderTestClass.name)
+        assertEquals 'explicitly not ignoring case', 0, results.size()
 
-      results = parse("{ " +
-            "eq 'firstName', 'Fred', ignoreCase: true" +
-            "}", "Test1",CriteriaBuilderTestClass.name)
-      assertEquals 'ignoring case should match one', 1, results.size()
+        results = parse("{ " +
+                "eq 'firstName', 'Fred', ignoreCase: true" +
+                "}", "Test1",CriteriaBuilderTestClass.name)
+        assertEquals 'ignoring case should match one', 1, results.size()
 
-      results = parse("{ " +
-              "eq('firstName', 'Fred', [ignoreCase: true])" +
-              "}", "Test1",CriteriaBuilderTestClass.name)
-      assertEquals 'ignoring case should match one', 1, results.size()
+        results = parse("{ " +
+                "eq('firstName', 'Fred', [ignoreCase: true])" +
+                "}", "Test1",CriteriaBuilderTestClass.name)
+        assertEquals 'ignoring case should match one', 1, results.size()
 
-      results = parse("{ " +
-            "eq 'firstName', 'Fred', dontKnowWhatToDoWithThis: 'foo'" +
-            "}", "Test1",CriteriaBuilderTestClass.name)
-      assertEquals 'an unknown parameter should be ignored', 0, results.size()
-   }
+        results = parse("{ " +
+                "eq 'firstName', 'Fred', dontKnowWhatToDoWithThis: 'foo'" +
+                "}", "Test1",CriteriaBuilderTestClass.name)
+        assertEquals 'an unknown parameter should be ignored', 0, results.size()
+    }
 
     @Test
     void testNe() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1383,15 +1383,15 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "ne('firstName','fred')" +
+                "ne('firstName','fred')" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 1, results.size()
-   }
+    }
 
     @Test
-   void testLtProperty() {
+    void testLtProperty() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1410,15 +1410,15 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "ltProperty('firstName','lastName')" +
+                "ltProperty('firstName','lastName')" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 1, results.size()
-   }
+    }
 
     @Test
-   void testGeProperty() {
+    void testGeProperty() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1437,16 +1437,16 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "geProperty('firstName','lastName')" +
+                "geProperty('firstName','lastName')" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 2, results.size()
-   }
+    }
 
     @Test
-   void testLeProperty() {
+    void testLeProperty() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1465,16 +1465,16 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "leProperty('firstName','lastName')" +
+                "leProperty('firstName','lastName')" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 2, results.size()
-   }
+    }
 
     @Test
-   void testNeProperty() {
+    void testNeProperty() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1493,16 +1493,16 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "neProperty('firstName','lastName')" +
+                "neProperty('firstName','lastName')" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 1, results.size()
-   }
+    }
 
     @Test
-   void testBetween() {
+    void testBetween() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1528,16 +1528,16 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj3.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "between('age',40, 46)" +
+                "between('age',40, 46)" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 2, results.size()
-   }
+    }
 
     @Test
-   void testIlike() {
+    void testIlike() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1556,16 +1556,16 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "ilike('lastName', 'flint%')" +
+                "ilike('lastName', 'flint%')" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 1, results.size()
-   }
+    }
 
     @Test
-   void testIn() {
+    void testIn() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1584,15 +1584,15 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "'in'('firstName',['fred','donkey'])" +
+                "'in'('firstName',['fred','donkey'])" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
         assertEquals 1, results.size()
-   }
+    }
 
     @Test
-   void testAnd() {
+    void testAnd() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1611,18 +1611,18 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj2.invokeMethod("save", null)
 
         List results = parse("{ " +
-                        "not{" +
-                        "eq('age', 35);" +
-                        "eq('firstName', 'fred');" +
-                        "}" +
+                "not{" +
+                "eq('age', 35);" +
+                "eq('firstName', 'fred');" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 0, results.size()
 
         results = parse("{ " +
-                        "not{" +
-                        "eq('age', 35);" +
-                        "}" +
+                "not{" +
+                "eq('age', 35);" +
+                "}" +
                 "}", "Test1",CriteriaBuilderTestClass.name)
 
         assertEquals 1, results.size()
@@ -1631,7 +1631,7 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
             results = parse("{ " +
                     "not{" +
                     "}" +
-                "}", "Test1",CriteriaBuilderTestClass.name)
+                    "}", "Test1",CriteriaBuilderTestClass.name)
         }
     }
 
@@ -1672,7 +1672,7 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
     @Test
     void testPaginationParams() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
         assertNotNull(domainClass)
 
         GroovyObject obj = domainClass.newInstance()
@@ -1697,26 +1697,26 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj3.invokeMethod("save", null)
 
         // Try sorting on one of the string fields.
-        List results = parse(".list(offset: 10, maxSize: 20, sort: 'firstName', order: 'asc') { " +
-                    "children { " +
-                        "eq('firstName','bart')" +
-                    "}" +
-                "}", "Test1",CriteriaBuilderTestClass.name)
+        List results = CriteriaBuilderTestClass.createCriteria().list(offset: 10, maxSize: 20, sort: 'firstName', order: 'asc') {
+            children {
+                eq('firstName', 'bart')
+            }
+        }
         assertEquals 0 , results.size()
 
         // Now try sorting on the integer field.
-        results = parse(".list(offset: 0, maxSize: 10, sort: 'age', order: 'asc') { " +
-                    "children { " +
-                        "eq('firstName','bart')" +
-                    "}" +
-                "}", "Test1",CriteriaBuilderTestClass.name)
+        results = CriteriaBuilderTestClass.createCriteria().list(offset: 0, maxSize: 10, sort: 'age', order: 'asc') {
+            children {
+                eq('firstName','bart')
+            }
+        }
         assertEquals 1 , results.size()
     }
 
     @Test
     void testPaginationParamsWithProjection() {
         GrailsDomainClass domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE,
-            CriteriaBuilderTestClass.name)
+                CriteriaBuilderTestClass.name)
 
         assertNotNull(domainClass)
 
@@ -1727,11 +1727,11 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
 
         obj.invokeMethod("save", null)
 
-        List results = parse(".list([:]) { " +
-                    "projections { " +
-                        "property('firstName')" +
-                    "}" +
-                "}", "Test1",CriteriaBuilderTestClass.name)
+        List results = CriteriaBuilderTestClass.createCriteria().list([:]) {
+            projections {
+                property('firstName')
+            }
+        }
 
         assertEquals 1 , results.size()
         assertTrue 'Result list should contain Strings', results[0] instanceof String
@@ -1853,8 +1853,8 @@ class CriteriaBuilderTestClass2 {
     Long id
     Long version
 
-   String firstName
-   Date dateCreated
+    String firstName
+    Date dateCreated
 }
 
 @Entity

@@ -26,6 +26,18 @@ public class Entity {
     private boolean autoTimestamp = true;
     private boolean autowire = true;
     private Object defaultSort = null;
+    private boolean version = true;
+
+    /**
+     * @return Whether the entity is versioned
+     */
+    public boolean isVersioned() {
+        return version;
+    }
+
+    public void setVersion(boolean version) {
+        this.version = version;
+    }
 
     /**
      * @return Whether the entity should be autowired

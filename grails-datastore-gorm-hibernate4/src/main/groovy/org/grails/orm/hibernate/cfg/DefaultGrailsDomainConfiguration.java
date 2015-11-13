@@ -17,14 +17,14 @@ package org.grails.orm.hibernate.cfg;
 import grails.core.GrailsApplication;
 import grails.core.GrailsClass;
 import grails.core.GrailsDomainClass;
-import grails.core.GrailsDomainClassProperty;
 import groovy.lang.Closure;
-import groovy.util.Eval;
 
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.orm.hibernate.proxy.GroovyAwarePojoEntityTuplizer;
 import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.hibernate.EntityMode;
@@ -51,7 +51,7 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
     private String sessionFactoryBeanName = "sessionFactory";
     private String dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
 
-    protected static GrailsDomainBinder binder = new GrailsDomainBinder();
+    protected GrailsDomainBinder binder = new GrailsDomainBinder();
 
     /* (non-Javadoc)
      * @see org.grails.orm.hibernate.cfg.GrailsDomainConfiguration#addDomainClass(org.codehaus.groovy.grails.commons.GrailsDomainClass)
@@ -109,42 +109,42 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
             return;
         }
 
-        // set the class loader to load Groovy classes
-        if (grailsApplication != null) {
-            Thread.currentThread().setContextClassLoader(grailsApplication.getClassLoader());
-        }
-
-        configureDomainBinder(grailsApplication, domainClasses);
-
-        for (GrailsDomainClass domainClass : domainClasses) {
-            if (!GrailsHibernateUtil.usesDatasource(domainClass, dataSourceName)) {
-                continue;
+        Thread thread = Thread.currentThread();
+        ClassLoader originalClassLoader = thread.getContextClassLoader();
+        try {
+            // set the class loader to load Groovy classes
+            if(grailsApplication != null) {
+                thread.setContextClassLoader(grailsApplication.getClassLoader());
             }
+            Closure defaultMapping = grailsApplication.getConfig().getProperty(GrailsDomainConfiguration.DEFAULT_MAPPING, Closure.class);
+            MappingContext mappingContext = new HibernateMappingContext(defaultMapping);
             final Mappings mappings = super.createMappings();
-            Mapping m = binder.getMapping(domainClass);
-            mappings.setAutoImport(m == null || m.getAutoImport());
-            binder.bindClass(domainClass, mappings, sessionFactoryBeanName);
-        }
 
-        super.secondPassCompile();
-        configLocked = true;
+            for (GrailsDomainClass domainClass : domainClasses) {
+                final PersistentEntity entity = mappingContext.addPersistentEntity(domainClass.getClazz());
+                if(entity != null) {
+                    mappingContext.addEntityValidator(entity, domainClass.getValidator());
+                    binder.evaluateMapping(entity);
+                }
+            }
+
+            for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
+                if (!GrailsHibernateUtil.usesDatasource(entity, dataSourceName)) {
+                    continue;
+                }
+                Mapping m = binder.getMapping(entity);
+                mappings.setAutoImport(m == null || m.getAutoImport());
+                binder.bindClass(entity, mappings, sessionFactoryBeanName);
+            }
+
+            super.secondPassCompile();
+            configLocked = true;
+        } finally {
+            thread.setContextClassLoader(originalClassLoader);
+        }
     }
 
-    public static void configureDomainBinder(GrailsApplication grailsApplication, Set<GrailsDomainClass> domainClasses) {
-        Closure defaultMapping = grailsApplication.getConfig().getProperty(DEFAULT_MAPPING, Closure.class);
-        if(defaultMapping != null) {
-            binder.setDefaultMapping(defaultMapping);
-        }
-        // do Grails class configuration
-        for (GrailsDomainClass domainClass : domainClasses) {
-            if (defaultMapping != null) {
-                binder.evaluateMapping(domainClass, defaultMapping);
-            }
-            else {
-                binder.evaluateMapping(domainClass);
-            }
-        }
-    }
+
     
     @Override
     protected void reset() {

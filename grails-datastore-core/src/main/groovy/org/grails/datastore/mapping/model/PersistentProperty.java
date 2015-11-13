@@ -47,4 +47,9 @@ public interface PersistentProperty<T extends Property> {
      * @return True if it can
      */
     boolean isNullable();
+
+    /**
+     * @return Whether this property is inherited
+     */
+    boolean isInherited();
 }

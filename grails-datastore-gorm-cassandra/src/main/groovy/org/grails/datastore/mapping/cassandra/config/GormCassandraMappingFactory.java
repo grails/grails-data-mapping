@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
 import org.grails.datastore.mapping.config.Property;
-import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
+import org.grails.datastore.mapping.config.groovy.DefaultMappingConfigurationBuilder;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.IdentityMapping;
 import org.grails.datastore.mapping.model.IllegalMappingException;
@@ -57,7 +57,7 @@ public class GormCassandraMappingFactory extends AbstractGormMappingFactory<Tabl
 
         //additional static mapping block handling        
         Map<String, Column> properties = entityToPropertyMap.get(entity);        
-        Object version = properties.get(MappingConfigurationBuilder.VERSION_KEY);
+        Object version = properties.get(DefaultMappingConfigurationBuilder.VERSION_KEY);
         if (version instanceof Boolean) {
         	cassandraPersistentEntity.setVersion((Boolean) version);
         }

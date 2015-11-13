@@ -13,7 +13,6 @@ import org.hibernate.mapping.ManyToOne
 import org.hibernate.mapping.OneToMany
 import org.hibernate.mapping.PersistentClass
 import org.hibernate.mapping.Property
-import org.hibernate.mapping.PropertyGeneration
 import org.hibernate.mapping.SimpleValue
 import org.hibernate.mapping.Table
 import org.hibernate.type.IntegerType
@@ -23,7 +22,7 @@ import org.hibernate.type.ManyToOneType
 
 import static junit.framework.Assert.*
 
- /**
+/**
  * @author Graeme Rocher
  * @since 1.0
  */
@@ -35,27 +34,10 @@ class BidirectionalListMappingTests extends GroovyTestCase {
         ExpandoMetaClass.enableGlobally()
 
         def gcl = new GroovyClassLoader()
-        gcl.parseClass '''
-class TestFaqSection {
-    Long id
-    Long version
-    String title
-    List elements
-    static hasMany = [elements:TestFaqElement]
-}
-
-class TestFaqElement {
-    Long id
-    Long version
-    String question
-    String answer
-    TestFaqSection section
-}
-'''
 
         config = new DefaultGrailsDomainConfiguration()
 
-        DefaultGrailsApplication application = new DefaultGrailsApplication(gcl.loadedClasses, gcl)
+        DefaultGrailsApplication application = new DefaultGrailsApplication([TestFaqElement, TestFaqSection] as Class[], gcl)
         application.initialise()
         config.grailsApplication = application
 
@@ -67,8 +49,8 @@ class TestFaqElement {
     }
 
     void testIndexBackrefMapping() {
-        PersistentClass faqSection = config.getClassMapping("TestFaqSection")
-        PersistentClass faqElement = config.getClassMapping("TestFaqElement")
+        PersistentClass faqSection = config.getClassMapping(TestFaqSection.name)
+        PersistentClass faqElement = config.getClassMapping(TestFaqElement.name)
         IndexBackref elementsIndexBackref = faqElement.getProperty("_elementsIndexBackref")
 
         assertTrue elementsIndexBackref.isBackRef()
@@ -84,10 +66,9 @@ class TestFaqElement {
 
         assertNull elementsIndexBackref.getCascade()
         assertEquals CascadeStyle.NONE, elementsIndexBackref.getCascadeStyle()
-        assertEquals "TestFaqSection.elements",  elementsIndexBackref.getCollectionRole()
+        assertEquals "${TestFaqSection.name}.elements".toString(), elementsIndexBackref.getCollectionRole()
         assertEquals 1, elementsIndexBackref.getColumnSpan()
-        assertEquals "TestFaqSection",  elementsIndexBackref.getEntityName()
-        assertEquals PropertyGeneration.NEVER, elementsIndexBackref.getGeneration()
+        assertEquals TestFaqSection.name, elementsIndexBackref.getEntityName()
         assertEquals "_elementsIndexBackref", elementsIndexBackref.getName()
         assertNull elementsIndexBackref.getNodeName()
         assertNull elementsIndexBackref.getPropertyAccessorName()
@@ -105,8 +86,8 @@ class TestFaqElement {
     }
 
     void testCollectionBackrefMapping() {
-        PersistentClass faqSection = config.getClassMapping("TestFaqSection")
-        PersistentClass faqElement = config.getClassMapping("TestFaqElement")
+        PersistentClass faqSection = config.getClassMapping(TestFaqSection.name)
+        PersistentClass faqElement = config.getClassMapping(TestFaqElement.name)
         Backref elementsBackref =faqElement.getProperty("_TestFaqSection_elementsBackref")
 
         assertTrue elementsBackref.isBackRef()
@@ -122,13 +103,12 @@ class TestFaqElement {
 
         assertNull elementsBackref.getCascade()
         assertEquals CascadeStyle.NONE, elementsBackref.getCascadeStyle()
-        assertEquals "TestFaqSection.elements", elementsBackref.getCollectionRole()
+        assertEquals "${TestFaqSection.name}.elements".toString(), elementsBackref.getCollectionRole()
         assertEquals 1, elementsBackref.getColumnSpan()
-        assertEquals "TestFaqSection", elementsBackref.getEntityName()
-        assertEquals PropertyGeneration.NEVER, elementsBackref.getGeneration()
+        assertEquals TestFaqSection.name, elementsBackref.getEntityName()
         assertEquals "_TestFaqSection_elementsBackref", elementsBackref.getName()
         assertNull elementsBackref.getNodeName()
-        assertEquals "TestFaqElement", elementsBackref.getPersistentClass().getClassName()
+        assertEquals TestFaqElement.name, elementsBackref.getPersistentClass().getClassName()
         assertNull elementsBackref.getPropertyAccessorName()
         assertEquals LongType, elementsBackref.getType().getClass()
         assertEquals DependantValue, elementsBackref.getValue().getClass()
@@ -155,8 +135,8 @@ class TestFaqElement {
     }
 
     void testManySidePropertyMapping() {
-        PersistentClass faqSection = config.getClassMapping("TestFaqSection")
-        PersistentClass faqElement = config.getClassMapping("TestFaqElement")
+        PersistentClass faqSection = config.getClassMapping(TestFaqSection.name)
+        PersistentClass faqElement = config.getClassMapping(TestFaqElement.name)
         Property section = faqElement.getProperty("section")
 
         assertFalse section.isBackRef()
@@ -172,13 +152,12 @@ class TestFaqElement {
         assertEquals "none", section.getCascade()
         assertEquals CascadeStyle.NONE, section.getCascadeStyle()
         assertEquals 1, section.getColumnSpan()
-        assertEquals PropertyGeneration.NEVER, section.getGeneration()
         assertEquals "section", section.getName()
     }
 
     void testManySideColumnMapping() {
-        PersistentClass faqSection = config.getClassMapping("TestFaqSection")
-        PersistentClass faqElement = config.getClassMapping("TestFaqElement")
+        PersistentClass faqSection = config.getClassMapping(TestFaqSection.name)
+        PersistentClass faqElement = config.getClassMapping(TestFaqElement.name)
         Property section = faqElement.getProperty("section")
         Column sectionColumn = section.getColumnIterator().next()
 
@@ -187,17 +166,17 @@ class TestFaqElement {
         assertNull sectionColumn.getComment()
         assertNull sectionColumn.getDefaultValue()
         assertEquals 255, sectionColumn.getLength()
-        assertEquals "section_id",  sectionColumn.getName()
+        assertEquals "section_id", sectionColumn.getName()
         assertEquals 19, sectionColumn.getPrecision()
-        assertEquals "section_id",  sectionColumn.getQuotedName()
+        assertEquals "section_id", sectionColumn.getQuotedName()
         assertEquals 2, sectionColumn.getScale()
-        assertEquals "section_id",  sectionColumn.getText()
+        assertEquals "section_id", sectionColumn.getText()
         assertEquals 0, sectionColumn.getTypeIndex()
     }
 
     void testManyToOneMapping() {
-        PersistentClass faqSection = config.getClassMapping("TestFaqSection")
-        PersistentClass faqElement = config.getClassMapping("TestFaqElement")
+        PersistentClass faqSection = config.getClassMapping(TestFaqSection.name)
+        PersistentClass faqElement = config.getClassMapping(TestFaqElement.name)
         Property section = faqElement.getProperty("section")
 
         ManyToOne manyToOne = section.getValue()
@@ -221,15 +200,15 @@ class TestFaqElement {
         assertNull manyToOne.getForeignKeyName()
         assertEquals "assigned", manyToOne.getIdentifierGeneratorStrategy()
         assertNull manyToOne.getNullValue()
-        assertEquals "TestFaqSection", manyToOne.getReferencedEntityName()
+        assertEquals TestFaqSection.name, manyToOne.getReferencedEntityName()
         assertNull manyToOne.getReferencedPropertyName()
         assertEquals ManyToOneType, manyToOne.getType().getClass()
-        assertEquals "TestFaqSection", manyToOne.getTypeName()
+        assertEquals TestFaqSection.name, manyToOne.getTypeName()
     }
 
     void testListMapping() {
 
-        org.hibernate.mapping.List list = config.getCollectionMapping("TestFaqSection.elements")
+        org.hibernate.mapping.List list = config.getCollectionMapping("${TestFaqSection.name}.elements")
 
         assertFalse list.isAlternateUniqueKey()
         assertFalse list.isArray()
@@ -255,12 +234,12 @@ class TestFaqElement {
         assertFalse list.isSubselectLoadable()
 
         assertEquals 0,list.getBaseIndex()
-//        assertEquals FaqElement,list.getCollectionPersisterClass()
+//		assertEquals FaqElement,list.getCollectionPersisterClass()
         Table t = list.getCollectionTable()
         assertNotNull t
         assertEquals 0, list.getColumnInsertability().size()
         assertNull list.getCacheConcurrencyStrategy()
-        assertEquals "TestFaqSection.elements", list.getCacheRegionName()
+        assertEquals "${TestFaqSection.name}.elements".toString(), list.getCacheRegionName()
         assertEquals 0,list.getColumnSpan()
         assertEquals 0, list.getColumnUpdateability().size()
         assertNull list.getElementNodeName()
@@ -311,7 +290,7 @@ class TestFaqElement {
         assertEquals 1, element.getColumnSpan()
         assertEquals FetchMode.JOIN, element.getFetchMode()
         PersistentClass associatedClass = element.getAssociatedClass()
-        assertEquals "TestFaqElement", associatedClass.getClassName()
+        assertEquals TestFaqElement.name, associatedClass.getClassName()
         assertEquals ManyToOneType, element.getType().getClass()
     }
 }

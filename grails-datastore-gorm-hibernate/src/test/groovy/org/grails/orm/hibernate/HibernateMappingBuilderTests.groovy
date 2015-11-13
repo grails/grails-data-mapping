@@ -243,7 +243,7 @@ class HibernateMappingBuilderTests extends GroovyTestCase {
             }
         }
 
-        assertTrue "should have been lazy",mapping.getPropertyConfig('things').lazy
+        assertNull "should have been lazy",mapping.getPropertyConfig('things').getLazy()
 
         mapping = builder.evaluate {
             columns {
@@ -642,7 +642,7 @@ class HibernateMappingBuilderTests extends GroovyTestCase {
         assertTrue mapping.columns.firstName.unique
         assertEquals java.sql.Clob,mapping.columns.firstName.type
         assertEquals 255,mapping.columns.firstName.length
-        assertEquals 'foo',mapping.columns.firstName.index
+        assertEquals 'foo',mapping.columns.firstName.getIndex()
         assertEquals "text",mapping.columns.firstName.sqlType
         assertEquals "Last_Name",mapping.columns.lastName.column
     }
@@ -668,7 +668,7 @@ class HibernateMappingBuilderTests extends GroovyTestCase {
         assertTrue mapping.columns.firstName.unique
         assertEquals java.sql.Clob,mapping.columns.firstName.type
         assertEquals 255,mapping.columns.firstName.length
-        assertEquals 'foo',mapping.columns.firstName.index
+        assertEquals 'foo',mapping.columns.firstName.getIndex()
         assertEquals "text",mapping.columns.firstName.sqlType
         assertEquals "Last_Name",mapping.columns.lastName.column
     }

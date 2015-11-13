@@ -15,14 +15,11 @@
  */
 package org.grails.orm.hibernate
 
-import grails.core.GrailsApplication
-import grails.core.GrailsDomainClass
 import grails.orm.HibernateCriteriaBuilder
 import grails.orm.PagedResultList
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.orm.hibernate.query.GrailsHibernateQueryUtils
-import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.query.api.BuildableCriteria as GrailsCriteria
@@ -51,7 +48,6 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
     protected ConversionService conversionService
     protected Class identityType
     protected ClassLoader classLoader
-    protected GrailsApplication grailsApplication
     private HibernateGormInstanceApi<D> instanceApi
     protected int defaultFlushMode
 
@@ -64,16 +60,7 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
 
         identityType = persistentEntity.identity?.type
 
-        grailsApplication = datastore.getGrailsApplication()
-        if (grailsApplication != null) {
-            GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
-            identityType = domainClass.identifier?.type
-
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication, datastore.getDefaultFlushMode())
-        } else {
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
-            hibernateTemplate.setFlushMode(datastore.getDefaultFlushMode())
-        }
+        hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, datastore)
         super.hibernateTemplate = hibernateTemplate
 
         this.defaultFlushMode = datastore.getDefaultFlushMode()
@@ -110,7 +97,7 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
     @Override
     GrailsCriteria createCriteria() {
         def builder = new HibernateCriteriaBuilder(persistentClass, sessionFactory)
-        builder.grailsApplication = grailsApplication
+        builder.datastore = (AbstractHibernateDatastore)datastore
         builder.conversionService = conversionService
         builder
     }
@@ -123,7 +110,7 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
 
     @Override
     Object withSession(Closure callable) {
-        GrailsHibernateTemplate template = new GrailsHibernateTemplate(sessionFactory, grailsApplication, defaultFlushMode)
+        GrailsHibernateTemplate template = new GrailsHibernateTemplate(sessionFactory, (HibernateDatastore)datastore, defaultFlushMode)
         template.setExposeNativeSession(false)
         template.setApplyFlushModeOnlyToNonExistingTransactions(true)
         template.execute({ session ->
@@ -171,7 +158,7 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
 
     @Override
     def withNewSession(Closure callable) {
-        HibernateTemplate template  = new GrailsHibernateTemplate(sessionFactory, grailsApplication, defaultFlushMode)
+        HibernateTemplate template  = new GrailsHibernateTemplate(sessionFactory, (HibernateDatastore)datastore)
         template.setExposeNativeSession(false)
         SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(sessionFactory)
         Session previousSession = sessionHolder?.session

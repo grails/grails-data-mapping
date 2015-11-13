@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.neo4j.engine;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.grails.datastore.gorm.GormEntity;
 import org.grails.datastore.gorm.neo4j.*;
 import org.grails.datastore.gorm.neo4j.collection.*;
 import org.grails.datastore.gorm.neo4j.mapping.reflect.Neo4jNameUtils;
@@ -760,7 +761,12 @@ public class Neo4jEntityPersister extends EntityPersister {
                             // Populate other side of bidi
                             for (Object associatedObject: (Iterable)propertyValue) {
                                 EntityAccess assocEntityAccess = createEntityAccess(association.getAssociatedEntity(), associatedObject);
-                                assocEntityAccess.setProperty(association.getReferencedPropertyName(), obj);
+                                if(association instanceof ManyToMany) {
+                                    ((GormEntity)associatedObject).addTo(association.getReferencedPropertyName(), associatedObject);
+                                }
+                                else {
+                                    assocEntityAccess.setPropertyNoConversion(association.getReferencedPropertyName(), obj);
+                                }
                             }
                         }
 

@@ -100,7 +100,9 @@ class DerivedPropertiesTests extends AbstractGrailsHibernateTests {
     @Test
     void testNullabilityOfDerivedPropertiesSurvivesRefreshConstraints() {
         def productDomainClass = ga.getDomainClass(DerivedPropertiesProduct.name)
-        assertFalse 'finalPrice should not have been constrained', productDomainClass.constrainedProperties.containsKey('finalPrice')
+
+        def constrainedProperties = productDomainClass.constrainedProperties
+        assertFalse 'finalPrice should not have been constrained', constrainedProperties.containsKey('finalPrice')
         def productClass = productDomainClass.clazz
 
         def product = productClass.newInstance()
@@ -109,7 +111,7 @@ class DerivedPropertiesTests extends AbstractGrailsHibernateTests {
         assertTrue 'validation should have passed before refreshing constraints', product.validate()
 
         productDomainClass.refreshConstraints()
-        assertFalse 'finalPrice should not have been constrained', productDomainClass.constrainedProperties.containsKey('finalPrice')
+        assertFalse 'finalPrice should not have been constrained', constrainedProperties.containsKey('finalPrice')
         assertTrue 'validation should have passed after refreshing constraints', product.validate()
     }
 

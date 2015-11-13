@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.FetchType;
 
-import grails.core.support.proxy.ProxyHandler;
+import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.orm.hibernate.AbstractHibernateSession;
 import org.grails.orm.hibernate.IHibernateTemplate;
 import org.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder;
@@ -693,7 +693,7 @@ public abstract class AbstractHibernateQuery extends Query {
 
         if(hasJoins) {
             try {
-                return proxyHandler.unwrapIfProxy(criteria.uniqueResult());
+                return proxyHandler.unwrap(criteria.uniqueResult());
             } catch (NonUniqueResultException e) {
                 return singleResultViaListCall();
             }
@@ -707,7 +707,7 @@ public abstract class AbstractHibernateQuery extends Query {
         criteria.setMaxResults(1);
         List results = criteria.list();
         if(results.size()>0) {
-            return proxyHandler.unwrapIfProxy(results.get(0));
+            return proxyHandler.unwrap(results.get(0));
         }
         return null;
     }

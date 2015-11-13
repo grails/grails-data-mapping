@@ -27,6 +27,7 @@ import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.grails.datastore.mapping.engine.event.DatastoreInitializedEvent
 import org.grails.orm.hibernate.*
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
+import org.grails.orm.hibernate.cfg.HibernateMappingContext
 import org.grails.orm.hibernate.cfg.HibernateUtils
 import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler
@@ -35,9 +36,9 @@ import org.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
 import org.grails.orm.hibernate.support.FlushOnRedirectEventListener
 import org.grails.orm.hibernate.support.GrailsOpenSessionInViewInterceptor
 import org.grails.orm.hibernate.support.HibernateDialectDetectorFactoryBean
+import org.grails.orm.hibernate.support.HibernateMappingContextFactoryBean
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
-import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.grails.orm.hibernate.validation.UniqueConstraint
 import org.hibernate.EmptyInterceptor
@@ -104,7 +105,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     @CompileStatic
     ApplicationContext configureForDataSource(DataSource dataSource) {
         GenericApplicationContext applicationContext = new GenericApplicationContext()
-        applicationContext.beanFactory.registerSingleton("dataSource", dataSource)
+        applicationContext.beanFactory.registerSingleton(DEFAULT_DATA_SOURCE_NAME, dataSource)
         configureForBeanDefinitionRegistry(applicationContext)
         applicationContext.refresh()
         return applicationContext
@@ -128,7 +129,8 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
 
             // for unwrapping / inspecting proxies
-            proxyHandler(HibernateProxyHandler)
+            hibernateProxyHandler(HibernateProxyHandler)
+            proxyHandler(ProxyHandlerAdapter, ref('hibernateProxyHandler'))
             // for handling GORM events
             eventTriggeringInterceptor(ClosureEventTriggeringInterceptor)
             // for listening to Hibernate events
@@ -136,9 +138,12 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             // Useful interceptor for wrapping Hibernate behavior
             persistenceInterceptor(AggregatePersistenceContextInterceptor)
             // domain model mapping context, used for configuration
-            grailsDomainClassMappingContext(GrailsDomainClassMappingContext, ref(GrailsApplication.APPLICATION_ID)) {
-                proxyFactory = bean(ProxyHandlerAdapter, ref("proxyHandler"))
+            grailsDomainClassMappingContext(HibernateMappingContextFactoryBean) {
+                delegate.configuration = this.configuration
+                grailsApplication = ref('grailsApplication')
+                proxyFactory = hibernateProxyHandler
             }
+
 
 
 
@@ -198,9 +203,11 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                     }
                 }
                 else if(noDialect) {
+                    Properties noDialectProperties = new Properties(hibernateProperties)
                     "dialectDetector$suffix"(HibernateDialectDetectorFactoryBean) {
                         dataSource = ref("dataSource$suffix")
                         vendorNameDialectMappings = vendorToDialect
+                        delegate.hibernateProperties = noDialectProperties
                     }
                 }
 

@@ -17,17 +17,12 @@ package org.grails.orm.hibernate.cfg
 
 import grails.core.DefaultGrailsApplication
 import grails.core.GrailsDomainClass
-import grails.core.GrailsDomainClassProperty
-import grails.plugins.GrailsPlugin
-import grails.plugins.GrailsPluginManager
 import grails.util.Holders
-import grails.validation.ConstrainedProperty
 import org.grails.core.DefaultGrailsDomainClass
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.plugins.MockGrailsPluginManager
 import org.grails.support.MockApplicationContext
-
-import java.lang.reflect.Field
-
 import org.grails.validation.TestClass
 import org.hibernate.cfg.ImprovedNamingStrategy
 import org.hibernate.mapping.Bag
@@ -37,8 +32,6 @@ import org.hibernate.mapping.PersistentClass
 import org.hibernate.mapping.Property
 import org.hibernate.mapping.SimpleValue
 import org.hibernate.mapping.Table
-import org.springframework.beans.BeanWrapper
-import org.springframework.beans.BeanWrapperImpl
 
 /**
  * @author Jason Rudolph
@@ -49,188 +42,188 @@ class GrailsDomainBinderTests extends GroovyTestCase {
 
 	private static final String CACHED_MAP = '''
 class Area {
-	Long id
-	Long version
-	Map names
-	static mapping = {
-		names cache: true
-	}
+    Long id
+    Long version
+    Map names
+    static mapping = {
+        names cache: true
+    }
 }
 '''
 
 	private static final String ONE_TO_ONE_CLASSES_DEFINITION = '''
 class Species {
-	Long id
-	Long version
-	String name
+    Long id
+    Long version
+    String name
 }
 class Pet {
-	Long id
-	Long version
-	Species species
+    Long id
+    Long version
+    Species species
 }'''
 
 	private static final String ONE_TO_MANY_CLASSES_DEFINITION = '''
 class Visit {
-	Long id
-	Long version
-	String description
+    Long id
+    Long version
+    String description
 }
 class Pet {
-	Long id
-	Long version
-	Set visits
-	static hasMany = [visits:Visit]
-	static mapping = { visits joinTable:false, nullable:false }
+    Long id
+    Long version
+    Set visits
+    static hasMany = [visits:Visit]
+    static mapping = { visits joinTable:false, nullable:false }
 }
 '''
 
 	private static final String BAG_ONE_TO_MANY_CLASSES_DEFINITION = '''
 class Bagged {
-	Long id
-	Long version
-	String description
+    Long id
+    Long version
+    String description
 }
 class Bagger {
-	Long id
-	Long version
-	Collection bagged
-	static hasMany = [bagged: Bagged]
+    Long id
+    Long version
+    Collection bagged
+    static hasMany = [bagged: Bagged]
 }'''
 
 	private static final String MANY_TO_MANY_CLASSES_DEFINITION = '''
 class Specialty {
-	Long id
-	Long version
-	String name
-	Set vets
-	static hasMany = [vets:Vet]
-	static belongsTo = Vet
+    Long id
+    Long version
+    String name
+    Set vets
+    static hasMany = [vets:Vet]
+    static belongsTo = Vet
 }
 class Vet {
-	Long id
-	Long version
-	Set specialities
-	static hasMany = [specialities:Specialty]
+    Long id
+    Long version
+    Set specialities
+    static hasMany = [specialities:Specialty]
 }
 '''
 
 	private static final String BAG_MANY_TO_MANY_CLASSES_DEFINITION = '''
 class ManyBagged {
-	Long id
-	Long version
-	String name
-	Collection baggers
-	static hasMany = [baggers: ManyBagger]
-	static belongsTo = ManyBagger
+    Long id
+    Long version
+    String name
+    Collection baggers
+    static hasMany = [baggers: ManyBagger]
+    static belongsTo = ManyBagger
 }
 class ManyBagger {
-	Long id
-	Long version
-	Collection bagged
-	static hasMany = [bagged: ManyBagged]
+    Long id
+    Long version
+    Collection bagged
+    static hasMany = [bagged: ManyBagged]
 }'''
 
 	private static final String MULTI_COLUMN_USER_TYPE_DEFINITION = '''
 import org.grails.orm.hibernate.cfg.*
 class Item {
-	Long id
-	Long version
-	String name
-	MyType other
-	MonetaryAmount price
-	static mapping = {
-		name column: 's_name', sqlType: 'text'
-		other type: MyUserType, sqlType: 'wrapper-characters', params:[param1: 'myParam1', param2: 'myParam2']
-		price type: MonetaryAmountUserType, {
-			column name: 'value'
-			column name: 'currency_code', sqlType: 'text'
-		}
-	}
+    Long id
+    Long version
+    String name
+    MyType other
+    MonetaryAmount price
+    static mapping = {
+        name column: 's_name', sqlType: 'text'
+        other type: MyUserType, sqlType: 'wrapper-characters', params:[param1: 'myParam1', param2: 'myParam2']
+        price type: MonetaryAmountUserType, {
+            column name: 'value'
+            column name: 'currency_code', sqlType: 'text'
+        }
+    }
 }
 '''
 
 	private static final String UNIQUE_PROPERTIES = '''
-class GrailsDomainBinderUser {
-	Long id
-	Long version
-	String login
-	String group
-	String camelCased
-	String employeeID
-	static constraints = {
-		employeeID(unique:true)
-		group(unique:'camelCased')
-		login(unique:['group','camelCased'])
-	}
+class UniquePropertiesUser {
+    Long id
+    Long version
+    String login
+    String group
+    String camelCased
+    String employeeID
+    static constraints = {
+        employeeID(unique:true)
+        group(unique:'camelCased')
+        login(unique:['group','camelCased'])
+   }
 }'''
 
 	private static final String TABLE_PER_HIERARCHY = '''
 class TablePerHierarchySuperclass {
-	Long id
-	Long version
-	String stringProperty
-	String optionalStringProperty
-	ProductStatus someProductStatus
-	ProductStatus someOptionalProductStatus
-	static constraints = {
-		optionalStringProperty nullable: true
-		someOptionalProductStatus nullable: true
-	}
+    Long id
+    Long version
+    String stringProperty
+    String optionalStringProperty
+    ProductStatus someProductStatus
+    ProductStatus someOptionalProductStatus
+    static constraints = {
+        optionalStringProperty nullable: true
+        someOptionalProductStatus nullable: true
+    }
 }
 enum ProductStatus {
-	GOOD, BAD
+    GOOD, BAD
 }
 class TablePerHierarchySubclass extends TablePerHierarchySuperclass {
-	Long id
-	Long version
-	ProductStatus productStatus
-	String productName
-	Integer productCount
-	ProductStatus optionalProductStatus
-	String optionalProductName
-	Integer optionalProductCount
-	static constraints = {
-		optionalProductName nullable: true
-		optionalProductCount nullable: true
-		optionalProductStatus nullable: true
-	}
+    Long id
+    Long version
+    ProductStatus productStatus
+    String productName
+    Integer productCount
+    ProductStatus optionalProductStatus
+    String optionalProductName
+    Integer optionalProductCount
+    static constraints = {
+        optionalProductName nullable: true
+        optionalProductCount nullable: true
+        optionalProductStatus nullable: true
+    }
 }
 '''
 
 	private static final String TABLE_PER_SUBCLASS = '''
 class TablePerSubclassSuperclass {
-	Long id
-	Long version
-	String stringProperty
-	String optionalStringProperty
-	ProductStatus someProductStatus
-	ProductStatus someOptionalProductStatus
-	static constraints = {
-		optionalStringProperty nullable: true
-		someOptionalProductStatus nullable: true
-	}
-	static mapping = {
-		tablePerHierarchy false
-	}
+    Long id
+    Long version
+    String stringProperty
+    String optionalStringProperty
+    ProductStatus someProductStatus
+    ProductStatus someOptionalProductStatus
+    static constraints = {
+        optionalStringProperty nullable: true
+        someOptionalProductStatus nullable: true
+    }
+    static mapping = {
+        tablePerHierarchy false
+    }
 }
 enum ProductStatus {
-	GOOD, BAD
+    GOOD, BAD
 }
 class TablePerSubclassSubclass extends TablePerSubclassSuperclass {
-	Long id
-	Long version
-	ProductStatus productStatus
-	String productName
-	Integer productCount
-	ProductStatus optionalProductStatus
-	String optionalProductName
-	Integer optionalProductCount
-	static constraints = {
-		optionalProductName nullable: true
-		optionalProductCount nullable: true
-		optionalProductStatus nullable: true
-	}
+    Long id
+    Long version
+    ProductStatus productStatus
+    String productName
+    Integer productCount
+    ProductStatus optionalProductStatus
+    String optionalProductName
+    Integer optionalProductCount
+    static constraints = {
+        optionalProductName nullable: true
+        optionalProductCount nullable: true
+        optionalProductStatus nullable: true
+    }
 }
 '''
 
@@ -252,7 +245,8 @@ class TablePerSubclassSubclass extends TablePerSubclassSuperclass {
 	protected void tearDown() {
 		super.tearDown()
 		grailsDomainBinder.NAMING_STRATEGIES.clear()
-		grailsDomainBinder.NAMING_STRATEGIES[Mapping.DEFAULT_DATA_SOURCE] = ImprovedNamingStrategy.INSTANCE
+		grailsDomainBinder.NAMING_STRATEGIES.put(
+				Mapping.DEFAULT_DATA_SOURCE, ImprovedNamingStrategy.INSTANCE)
 		Holders.setPluginManager(null)
 		grailsDomainBinder.configureNamingStrategy previousNamingStrategyClass
 	}
@@ -263,16 +257,16 @@ class TablePerSubclassSubclass extends TablePerSubclassSuperclass {
 	void testEmbeddedComponentMapping() {
 		DefaultGrailsDomainConfiguration config = getDomainConfig('''
 class Widget {
-	Long id
-	Long version
-	EmbeddedWidget ew
-	static embedded = ['ew']
+    Long id
+    Long version
+    EmbeddedWidget ew
+    static embedded = ['ew']
 }
 class EmbeddedWidget {
-	String ew
-	static mapping = {
-		ew column: 'widget_name'
-	}
+   String ew
+   static mapping = {
+       ew column: 'widget_name'
+   }
 }''')
 
 		Table tableMapping = getTableMapping("widget", config)
@@ -284,14 +278,14 @@ class EmbeddedWidget {
 	void testLengthProperty() {
 		DefaultGrailsDomainConfiguration config = getDomainConfig('''
 class Widget {
-	Long id
-	Long version
-	String name
-	String description
-	static mapping = {
-		name column: 's_name', sqlType: 'text', length: 42
-		description column: 's_description', sqlType: 'text'
-	}
+    Long id
+    Long version
+    String name
+    String description
+    static mapping = {
+        name column: 's_name', sqlType: 'text', length: 42
+        description column: 's_description', sqlType: 'text'
+    }
 }''')
 		Table tableMapping = getTableMapping("widget", config)
 		Column nameColumn = tableMapping.getColumn(new Column("s_name"))
@@ -303,13 +297,13 @@ class Widget {
 	void testUniqueProperty() {
 		DefaultGrailsDomainConfiguration config = getDomainConfig('''
 class Widget {
-	Long id
-	Long version
-	String name
-	String description
-	static mapping = {
-		name unique: true
-	}
+    Long id
+    Long version
+    String name
+    String description
+    static mapping = {
+        name unique: true
+    }
 }''')
 
 		Table tableMapping = getTableMapping("widget", config)
@@ -322,13 +316,13 @@ class Widget {
 	void testPrecisionProperty() {
 		DefaultGrailsDomainConfiguration config = getDomainConfig('''
 class Widget {
-	Long id
-	Long version
-	Float width
-	Float height
-	static mapping = {
-		width precision: 3
-	}
+    Long id
+    Long version
+    Float width
+    Float height
+    static mapping = {
+        width precision: 3
+    }
 }''')
 		Table tableMapping = getTableMapping("widget", config)
 		Column heightColumn = tableMapping.getColumn(new Column("height"))
@@ -340,13 +334,13 @@ class Widget {
 	void testScaleProperty() {
 		DefaultGrailsDomainConfiguration config = getDomainConfig('''
 class Widget {
-	Long id
-	Long version
-	Float width
-	Float height
-	static mapping = {
-		width scale: 7
-	}
+    Long id
+    Long version
+    Float width
+    Float height
+    static mapping = {
+        width scale: 7
+    }
 }''')
 
 		Table tableMapping = getTableMapping("widget", config)
@@ -406,44 +400,69 @@ class Widget {
 		assertColumnNullable("table_per_subclass_superclass", "optional_string_property", config)
 		assertColumnNullable("table_per_subclass_superclass", "some_optional_product_status", config)
 	}
-
-
-	void testInsertableHibernateMapping() {
-		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(cl.parseClass('''
-class TestInsertableDomain {
-	Long id
-	Long version
-	String testString1
-	String testString2
-
-	static mapping = {
-		testString1 insertable:false
-		testString2 insertable:true
-	}
-}'''))
-
-		DefaultGrailsDomainConfiguration config = getDomainConfig(cl, [domainClass.clazz])
-		Field privateDomainClasses = DefaultGrailsDomainConfiguration.getDeclaredField("domainClasses")
-		privateDomainClasses.setAccessible(true)
-
-		PersistentClass persistentClass = config.getClassMapping("TestInsertableDomain")
-
-		assertFalse persistentClass.getProperty("testString1").isInsertable()
-		assertTrue persistentClass.getProperty("testString2").isInsertable()
-	}
+//
+//    void testUniqueConstraintGeneration() {
+//        DefaultGrailsDomainConfiguration config = getDomainConfig(UNIQUE_PROPERTIES)
+//        assertEquals("Tables created", 1, getTableCount(config))
+//        List expectedKeyColumns1 = [new Column("camel_cased"), new Column("group"), new Column("login")]
+//        List expectedKeyColumns2 = [new Column("camel_cased"), new Column("group")]
+//        Table mapping = config.tableMappings.next()
+//        int cnt = 0
+//        boolean found1 = false, found2 = false
+//        for (UniqueKey key in mapping.uniqueKeyIterator) {
+//            List keyColumns = key.columns
+//            if (keyColumns.equals(expectedKeyColumns1)) {
+//                found1 = true
+//            }
+//            if (keyColumns.equals(expectedKeyColumns2)) {
+//                found2 = true
+//            }
+//            cnt++
+//        }
+//        assertEquals(2, cnt)
+//        assertTrue mapping.getColumn(new Column("employeeID")).isUnique()
+//        assertTrue found1
+//        assertTrue found2
+//    }
+//
+//    void testInsertableHibernateMapping() {
+//        GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
+//                cl.parseClass('''
+//class TestInsertableDomain {
+//    Long id
+//    Long version
+//    String testString1
+//    String testString2
+//
+//    static mapping = {
+//       testString1 insertable:false
+//       testString2 insertable:true
+//    }
+//}'''))
+//
+//        DefaultGrailsDomainConfiguration config = getDomainConfig(cl, [domainClass.clazz])
+//        Field privateDomainClasses = DefaultGrailsDomainConfiguration.getDeclaredField("domainClasses")
+//        privateDomainClasses.setAccessible(true)
+//
+//        PersistentClass persistentClass = config.getClassMapping("TestInsertableDomain")
+//
+//        assertFalse persistentClass.getProperty("testString1").isInsertable()
+//        assertTrue persistentClass.getProperty("testString2").isInsertable()
+//    }
 
 	void testUpdateableHibernateMapping() {
-		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(cl.parseClass('''
+		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
+				cl.parseClass('''
 class TestInsertableDomain {
-	Long id
-	Long version
-	String testString1
-	String testString2
+    Long id
+    Long version
+    String testString1
+    String testString2
 
-	static mapping = {
-		testString1 updateable:false
-		testString2 updateable:true
-	}
+    static mapping = {
+       testString1 updateable:false
+       testString2 updateable:true
+    }
 }'''))
 
 		DefaultGrailsDomainConfiguration config = getDomainConfig(cl, [domainClass.clazz])
@@ -455,17 +474,18 @@ class TestInsertableDomain {
 	}
 
 	void testInsertableUpdateableHibernateMapping() {
-		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(cl.parseClass('''
+		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
+				cl.parseClass('''
 class TestInsertableUpdateableDomain {
-	Long id
-	Long version
-	String testString1
-	String testString2
+    Long id
+    Long version
+    String testString1
+    String testString2
 
-	static mapping = {
-		testString1 insertable:false, updateable:false
-		testString2 updateable:false, insertable:false
-	}
+    static mapping = {
+       testString1 insertable:false, updateable:false
+       testString2 updateable:false, insertable:false
+    }
 }'''))
 
 		DefaultGrailsDomainConfiguration config = getDomainConfig(cl, [domainClass.clazz])
@@ -501,10 +521,10 @@ class TestInsertableUpdateableDomain {
 		assertForeignKey("pet", "visit", getDomainConfig(ONE_TO_MANY_CLASSES_DEFINITION))
 	}
 
-/*	void testOneToManyBindingFkColumn() {
-		DefaultGrailsDomainConfiguration config = getDomainConfig(ONE_TO_MANY_CLASSES_DEFINITION)
-		assertColumnNotNullable("visit", "pet_visits_id", config)
-	}*/
+/*    void testOneToManyBindingFkColumn() {
+        DefaultGrailsDomainConfiguration config = getDomainConfig(ONE_TO_MANY_CLASSES_DEFINITION)
+        assertColumnNotNullable("visit", "pet_visits_id", config)
+    }*/
 
 	void testManyToManyBindingTables() {
 		assertEquals("Tables created", 3, getTableCount(getDomainConfig(MANY_TO_MANY_CLASSES_DEFINITION)))
@@ -575,22 +595,23 @@ class TestInsertableUpdateableDomain {
 	}
 
 	void testDomainClassBinding() {
-		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(cl.parseClass('''
+		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
+				cl.parseClass('''
 class BinderTestClass {
-	Long id
-	Long version
+    Long id
+    Long version
 
-	String firstName
-	String lastName
-	String comment
-	Integer age
-	boolean active = true
+    String firstName
+    String lastName
+    String comment
+    Integer age
+    boolean active = true
 
-	static constraints = {
-		firstName(nullable:true,size:4..15)
-		lastName(nullable:false)
-		age(nullable:true)
-	}
+    static constraints = {
+        firstName(nullable:true,size:4..15)
+        lastName(nullable:false)
+        age(nullable:true)
+    }
 }'''))
 
 		DefaultGrailsDomainConfiguration config = getDomainConfig(cl, cl.loadedClasses)
@@ -610,29 +631,31 @@ class BinderTestClass {
 	}
 
 	void testForeignKeyColumnBinding() {
-		GrailsDomainClass oneClass = new DefaultGrailsDomainClass(cl.parseClass('''
+		GrailsDomainClass oneClass = new DefaultGrailsDomainClass(
+				cl.parseClass('''
 class TestOneSide {
-	Long id
-	Long version
-	String name
-	String description
+    Long id
+    Long version
+    String name
+    String description
 }'''))
 		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
 				cl.parseClass('''
 class TestManySide {
-	Long id
-	Long version
-	String name
-	TestOneSide testOneSide
+    Long id
+    Long version
+    String name
+    TestOneSide testOneSide
 
-	static mapping = {
-		columns {
-			testOneSide column:'EXPECTED_COLUMN_NAME'
-		}
-	}
+    static mapping = {
+        columns {
+            testOneSide column:'EXPECTED_COLUMN_NAME'
+        }
+    }
 }'''))
 
-		DefaultGrailsDomainConfiguration config = getDomainConfig(cl, [oneClass.clazz, domainClass.clazz])
+		DefaultGrailsDomainConfiguration config = getDomainConfig(cl,
+				[oneClass.clazz, domainClass.clazz])
 
 		PersistentClass persistentClass = config.getClassMapping("TestManySide")
 
@@ -641,17 +664,17 @@ class TestManySide {
 	}
 
 	/**
-	 * @see GrailsDomainBinder#bindStringColumnConstraints(Column, ConstrainedProperty)
+	 * @see org.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder#bindStringColumnConstraints(Column, PersistentProperty)
 	 */
 	void testBindStringColumnConstraints() {
 		// Verify that the correct length is set when a maxSize constraint is applied
-		ConstrainedProperty constrainedProperty = getConstrainedStringProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.MAX_SIZE_CONSTRAINT, 30)
+		PersistentProperty constrainedProperty = getConstrainedStringProperty()
+		constrainedProperty.mapping.mappedForm.maxSize = 30
 		assertColumnLength(constrainedProperty, 30)
 
 		// Verify that the correct length is set when a size constraint is applied
 		constrainedProperty = getConstrainedStringProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.SIZE_CONSTRAINT, new IntRange(6, 32768))
+		constrainedProperty.mapping.mappedForm.size = new IntRange(6, 32768)
 		assertColumnLength(constrainedProperty, 32768)
 
 		// Verify that the default length remains intact when no size-related constraints are applied
@@ -660,104 +683,112 @@ class TestManySide {
 
 		// Verify that the correct length is set when an inList constraint is applied
 		constrainedProperty = getConstrainedStringProperty()
-		List validValuesList = ["Groovy", "Java", "C++"]
-		constrainedProperty.applyConstraint(ConstrainedProperty.IN_LIST_CONSTRAINT, validValuesList)
+		constrainedProperty.mapping.mappedForm.inList = ["Groovy", "Java", "C++"]
 		assertColumnLength(constrainedProperty, 6)
 
 		// Verify that the correct length is set when a maxSize constraint *and* an inList constraint are *both* applied
 		constrainedProperty = getConstrainedStringProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.IN_LIST_CONSTRAINT, validValuesList)
-		constrainedProperty.applyConstraint(ConstrainedProperty.MAX_SIZE_CONSTRAINT, 30)
+		constrainedProperty.mapping.mappedForm.inList = ["Groovy", "Java", "C++"]
+		constrainedProperty.mapping.mappedForm.maxSize = 30
 		assertColumnLength(constrainedProperty, 30)
 	}
 
 	/**
-	 * @see GrailsDomainBinder#bindNumericColumnConstraints(Column, ConstrainedProperty)
+	 * @see org.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder#bindNumericColumnConstraints(Column, PersistentProperty, ColumnConfig)
 	 */
 	void testBindNumericColumnConstraints() {
-		ConstrainedProperty constrainedProperty = getConstrainedBigDecimalProperty()
+		PersistentProperty constrainedProperty = getConstrainedBigDecimalProperty()
 		// maxSize and minSize constraint has the number with the most digits
-		constrainedProperty.applyConstraint(ConstrainedProperty.MAX_SIZE_CONSTRAINT, 123)
-		constrainedProperty.applyConstraint(ConstrainedProperty.MIN_SIZE_CONSTRAINT, 0)
+		constrainedProperty.mapping.mappedForm.maxSize = 123
+		constrainedProperty.mapping.mappedForm.minSize = 0
 		assertColumnPrecisionAndScale(constrainedProperty, Column.DEFAULT_PRECISION, Column.DEFAULT_SCALE)
 
 		// Verify that the correct precision is set when the max constraint has the number with the most digits
 		constrainedProperty = getConstrainedBigDecimalProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.MAX_CONSTRAINT, new BigDecimal("123.45"))
-		constrainedProperty.applyConstraint(ConstrainedProperty.MIN_CONSTRAINT, new BigDecimal("0"))
+		// maxSize and minSize constraint has the number with the most digits
+		constrainedProperty.mapping.mappedForm.max = new BigDecimal("123.45")
+		constrainedProperty.mapping.mappedForm.min = new BigDecimal("0")
 		assertColumnPrecisionAndScale(constrainedProperty, 5, Column.DEFAULT_SCALE)
 
 		// Verify that the correct precision is set when the minSize constraint has the number with the most digits
 		constrainedProperty = getConstrainedBigDecimalProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.MAX_CONSTRAINT, new BigDecimal("123"))
-		constrainedProperty.applyConstraint(ConstrainedProperty.MIN_CONSTRAINT, new BigDecimal("-123.45"))
+		// maxSize and minSize constraint has the number with the most digits
+		constrainedProperty.mapping.mappedForm.max = new BigDecimal("123.45")
+		constrainedProperty.mapping.mappedForm.min = new BigDecimal("-123.45")
 		assertColumnPrecisionAndScale(constrainedProperty, 5, Column.DEFAULT_SCALE)
 
 		// Verify that the correct precision is set when the high value of a floating point range constraint has the number with the most digits
 		constrainedProperty = getConstrainedBigDecimalProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.RANGE_CONSTRAINT, new ObjectRange(new BigDecimal("0"), new BigDecimal("123.45")))
+		constrainedProperty.mapping.mappedForm.range = new ObjectRange(new BigDecimal("0"), new BigDecimal("123.45"))
 		assertColumnPrecisionAndScale(constrainedProperty, 5, Column.DEFAULT_SCALE)
 
 		// Verify that the correct precision is set when the low value of a floating point range constraint has the number with the most digits
 		constrainedProperty = getConstrainedBigDecimalProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.RANGE_CONSTRAINT, new ObjectRange(new BigDecimal("-123.45"), new BigDecimal("123")))
+		constrainedProperty.mapping.mappedForm.range = new ObjectRange(new BigDecimal("-123.45"), new BigDecimal("123.45"))
 		assertColumnPrecisionAndScale(constrainedProperty, 5, Column.DEFAULT_SCALE)
 
 		// Verify that the correct scale is set when the scale constraint is specified in isolation
 		constrainedProperty = getConstrainedBigDecimalProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.SCALE_CONSTRAINT, 4)
+		constrainedProperty.mapping.mappedForm.scale = 4
 		assertColumnPrecisionAndScale(constrainedProperty, Column.DEFAULT_PRECISION, 4)
 
 		// Verify that the precision is set correctly for a floating point number with a min/max constraint and a scale...
-		// 1) where the min/max constraint includes fewer decimal places than the scale constraint
+		//  1) where the min/max constraint includes fewer decimal places than the scale constraint
 		constrainedProperty = getConstrainedBigDecimalProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.MAX_CONSTRAINT, new BigDecimal("123.45"))
-		constrainedProperty.applyConstraint(ConstrainedProperty.MIN_CONSTRAINT, new BigDecimal("0"))
-		constrainedProperty.applyConstraint(ConstrainedProperty.SCALE_CONSTRAINT, 3)
+		// maxSize and minSize constraint has the number with the most digits
+		constrainedProperty.mapping.mappedForm.max = new BigDecimal("123.45")
+		constrainedProperty.mapping.mappedForm.min = new BigDecimal("0")
+		constrainedProperty.mapping.mappedForm.scale = 3
 		assertColumnPrecisionAndScale(constrainedProperty, 6, 3) // precision (6) = number of integer digits in max constraint ("123.45") + scale (3)
 
-		// 2) where the min/max constraint includes more decimal places than the scale constraint
+		//  2) where the min/max constraint includes more decimal places than the scale constraint
 		constrainedProperty = getConstrainedBigDecimalProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.MAX_CONSTRAINT, new BigDecimal("123.4567"))
-		constrainedProperty.applyConstraint(ConstrainedProperty.MIN_CONSTRAINT, new BigDecimal("0"))
-		constrainedProperty.applyConstraint(ConstrainedProperty.SCALE_CONSTRAINT, 3)
+		// maxSize and minSize constraint has the number with the most digits
+		constrainedProperty.mapping.mappedForm.max = new BigDecimal("123.4567")
+		constrainedProperty.mapping.mappedForm.min = new BigDecimal("0")
+		constrainedProperty.mapping.mappedForm.scale = 3
 		assertColumnPrecisionAndScale(constrainedProperty, 7, 3) // precision (7) = number of digits in max constraint ("123.4567")
 
 		// Verify that the correct precision is set when the only one of 'min' and 'max' constraint specified
 		constrainedProperty = getConstrainedBigDecimalProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.MAX_CONSTRAINT, new BigDecimal("123.4567"))
+		constrainedProperty.mapping.mappedForm.max = new BigDecimal("123.4567")
 		assertColumnPrecisionAndScale(constrainedProperty, Column.DEFAULT_PRECISION, Column.DEFAULT_SCALE)
+
 		constrainedProperty = getConstrainedBigDecimalProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.MAX_CONSTRAINT, new BigDecimal("12345678901234567890.4567"))
+		constrainedProperty.mapping.mappedForm.max = new BigDecimal("12345678901234567890.4567")
 		assertColumnPrecisionAndScale(constrainedProperty, 24, Column.DEFAULT_SCALE)
+
 		constrainedProperty = getConstrainedBigDecimalProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.MIN_CONSTRAINT, new BigDecimal("-123.4567"))
+		constrainedProperty.mapping.mappedForm.min = new BigDecimal("-123.4567")
 		assertColumnPrecisionAndScale(constrainedProperty, Column.DEFAULT_PRECISION, Column.DEFAULT_SCALE)
+
 		constrainedProperty = getConstrainedBigDecimalProperty()
-		constrainedProperty.applyConstraint(ConstrainedProperty.MIN_CONSTRAINT, new BigDecimal("-12345678901234567890.4567"))
+		constrainedProperty.mapping.mappedForm.min = new BigDecimal("-12345678901234567890.4567")
 		assertColumnPrecisionAndScale(constrainedProperty, 24, Column.DEFAULT_SCALE)
 	}
 
 	void testDefaultNamingStrategy() {
 
-		GrailsDomainClass oneClass = new DefaultGrailsDomainClass(cl.parseClass('''
+		GrailsDomainClass oneClass = new DefaultGrailsDomainClass(
+				cl.parseClass('''
 class TestOneSide {
-	Long id
-	Long version
-	String fooName
-	String barDescriPtion
+    Long id
+    Long version
+    String fooName
+    String barDescriPtion
 }'''))
-		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(cl.parseClass('''
+		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
+				cl.parseClass('''
 class TestManySide {
-	Long id
-	Long version
-	TestOneSide testOneSide
+    Long id
+    Long version
+    TestOneSide testOneSide
 
-	static mapping = {
-		columns {
-			testOneSide column:'EXPECTED_COLUMN_NAME'
-		}
-	}
+    static mapping = {
+        columns {
+            testOneSide column:'EXPECTED_COLUMN_NAME'
+        }
+    }
 }'''))
 
 		DefaultGrailsDomainConfiguration config = getDomainConfig(cl,
@@ -791,109 +822,113 @@ class TestManySide {
 		assertEquals("EXPECTED_COLUMN_NAME", column.name)
 	}
 
-	void testTableNamePrefixing() {
-		def widgetClass = new DefaultGrailsDomainClass(cl.parseClass('''
-class WidgetClass {
-	Long id
-	Long version
-}'''))
-		def personClass = new DefaultGrailsDomainClass(cl.parseClass('''
-class MyPluginPersonClass {
-	Long id
-	Long version
-}'''))
-
-		def gadgetClass = new DefaultGrailsDomainClass(cl.parseClass('''
-class GadgetClass {
-	Long id
-	Long version
-}'''))
-
-		def authorClass = new DefaultGrailsDomainClass(cl.parseClass('''
-class AuthorClass {
-	Long id
-	Long version
-}'''))
-
-		def grailsApplication = new DefaultGrailsApplication([widgetClass.clazz, gadgetClass.clazz, personClass.clazz, authorClass.clazz] as Class[], cl)
-
-		def myPluginMap = [:]
-		myPluginMap.getName = { -> 'MyPlugin' }
-		def myPlugin = myPluginMap as GrailsPlugin
-
-		def publisherPluginMap = [:]
-		publisherPluginMap.getName = { -> 'Publisher' }
-		def publisherPlugin = publisherPluginMap as GrailsPlugin
-
-		def pluginManagerMap = [setApplicationContext: { }]
-		def myPluginDomainClassNames = ['GadgetClass', 'MyPluginPersonClass']
-		def publisherPluginDomainClassNames = ['AuthorClass']
-		pluginManagerMap.getPluginForClass = { Class clz ->
-			if (myPluginDomainClassNames.contains(clz?.name)) {
-				return myPlugin
-			}
-			if (publisherPluginDomainClassNames.contains(clz?.name)) {
-				return publisherPlugin
-			}
-			return null
-		}
-		def pluginManager = pluginManagerMap as GrailsPluginManager
-
-		def config = getDomainConfig(grailsApplication, pluginManager)
-		def persistentClass = config.getClassMapping("WidgetClass")
-		assertEquals("widget_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("GadgetClass")
-		assertEquals("gadget_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("MyPluginPersonClass")
-		assertEquals("my_plugin_person_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("AuthorClass")
-		assertEquals("author_class", persistentClass.table.name)
-
-        grailsApplication.config['grails.gorm.table.prefix.enabled'] = true
-		config = getDomainConfig(grailsApplication, pluginManager)
-		persistentClass = config.getClassMapping("WidgetClass")
-		assertEquals("widget_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("GadgetClass")
-		assertEquals("my_plugin_gadget_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("MyPluginPersonClass")
-		assertEquals("my_plugin_person_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("AuthorClass")
-		assertEquals("publisher_author_class", persistentClass.table.name)
-
-        grailsApplication.config['grails.gorm.table.prefix.enabled'] = false
-		config = getDomainConfig(grailsApplication, pluginManager)
-		persistentClass = config.getClassMapping("WidgetClass")
-		assertEquals("widget_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("GadgetClass")
-		assertEquals("gadget_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("MyPluginPersonClass")
-		assertEquals("my_plugin_person_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("AuthorClass")
-		assertEquals("author_class", persistentClass.table.name)
-
-        grailsApplication.config['grails.gorm.publisher.table.prefix.enabled'] = true
-		config = getDomainConfig(grailsApplication, pluginManager)
-		persistentClass = config.getClassMapping("WidgetClass")
-		assertEquals("widget_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("GadgetClass")
-		assertEquals("gadget_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("MyPluginPersonClass")
-		assertEquals("my_plugin_person_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("AuthorClass")
-		assertEquals("publisher_author_class", persistentClass.table.name)
-
-        grailsApplication.config['grails.gorm.table.prefix.enabled'] = true
-        grailsApplication.config['grails.gorm.myPlugin.table.prefix.enabled'] = false
-		config = getDomainConfig(grailsApplication, pluginManager)
-		persistentClass = config.getClassMapping("WidgetClass")
-		assertEquals("widget_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("GadgetClass")
-		assertEquals("gadget_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("MyPluginPersonClass")
-		assertEquals("my_plugin_person_class", persistentClass.table.name)
-		persistentClass = config.getClassMapping("AuthorClass")
-		assertEquals("publisher_author_class", persistentClass.table.name)
-	}
+//    void testTableNamePrefixing() {
+//        def widgetClass = new DefaultGrailsDomainClass(
+//                cl.parseClass('''
+//class WidgetClass {
+//    Long id
+//    Long version
+//}'''))
+//        def personClass = new DefaultGrailsDomainClass(
+//                cl.parseClass('''
+//class MyPluginPersonClass {
+//    Long id
+//    Long version
+//}'''))
+//
+//        def gadgetClass = new DefaultGrailsDomainClass(
+//                cl.parseClass('''
+//class GadgetClass {
+//    Long id
+//    Long version
+//}'''))
+//
+//        def authorClass = new DefaultGrailsDomainClass(
+//                cl.parseClass('''
+//class AuthorClass {
+//    Long id
+//    Long version
+//}'''))
+//
+//        def grailsApplication = new DefaultGrailsApplication([widgetClass.clazz, gadgetClass.clazz, personClass.clazz, authorClass.clazz] as Class[], cl)
+//
+//        def myPluginMap = [:]
+//        myPluginMap.getName = { -> 'MyPlugin' }
+//        def myPlugin = myPluginMap as GrailsPlugin
+//
+//        def publisherPluginMap = [:]
+//        publisherPluginMap.getName = { -> 'Publisher' }
+//        def publisherPlugin = publisherPluginMap as GrailsPlugin
+//
+//        def pluginManagerMap = [setApplicationContext: { }]
+//        def myPluginDomainClassNames = ['GadgetClass', 'MyPluginPersonClass']
+//        def publisherPluginDomainClassNames = ['AuthorClass']
+//        pluginManagerMap.getPluginForClass = { Class clz ->
+//            if (myPluginDomainClassNames.contains(clz?.name)) {
+//                return myPlugin
+//            }
+//            if (publisherPluginDomainClassNames.contains(clz?.name)) {
+//                return publisherPlugin
+//            }
+//            return null
+//        }
+//        def pluginManager = pluginManagerMap as GrailsPluginManager
+//
+//        def config = getDomainConfig(grailsApplication, pluginManager)
+//        def persistentClass = config.getClassMapping("WidgetClass")
+//        assertEquals("widget_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("GadgetClass")
+//        assertEquals("gadget_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("MyPluginPersonClass")
+//        assertEquals("my_plugin_person_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("AuthorClass")
+//        assertEquals("author_class", persistentClass.table.name)
+//
+//        grailsApplication.config['grails.gorm.table.prefix.enabled'] = true
+//        config = getDomainConfig(grailsApplication, pluginManager)
+//        persistentClass = config.getClassMapping("WidgetClass")
+//        assertEquals("widget_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("GadgetClass")
+//        assertEquals("my_plugin_gadget_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("MyPluginPersonClass")
+//        assertEquals("my_plugin_person_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("AuthorClass")
+//        assertEquals("publisher_author_class", persistentClass.table.name)
+//
+//        grailsApplication.config['grails.gorm.table.prefix.enabled'] = false
+//        config = getDomainConfig(grailsApplication, pluginManager)
+//        persistentClass = config.getClassMapping("WidgetClass")
+//        assertEquals("widget_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("GadgetClass")
+//        assertEquals("gadget_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("MyPluginPersonClass")
+//        assertEquals("my_plugin_person_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("AuthorClass")
+//        assertEquals("author_class", persistentClass.table.name)
+//
+//        grailsApplication.config['grails.gorm.publisher.table.prefix.enabled'] = true
+//        config = getDomainConfig(grailsApplication, pluginManager)
+//        persistentClass = config.getClassMapping("WidgetClass")
+//        assertEquals("widget_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("GadgetClass")
+//        assertEquals("gadget_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("MyPluginPersonClass")
+//        assertEquals("my_plugin_person_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("AuthorClass")
+//        assertEquals("publisher_author_class", persistentClass.table.name)
+//
+//        grailsApplication.config['grails.gorm.table.prefix.enabled'] = true
+//        grailsApplication.config['grails.gorm.myPlugin.table.prefix.enabled'] = false
+//        config = getDomainConfig(grailsApplication, pluginManager)
+//        persistentClass = config.getClassMapping("WidgetClass")
+//        assertEquals("widget_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("GadgetClass")
+//        assertEquals("gadget_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("MyPluginPersonClass")
+//        assertEquals("my_plugin_person_class", persistentClass.table.name)
+//        persistentClass = config.getClassMapping("AuthorClass")
+//        assertEquals("publisher_author_class", persistentClass.table.name)
+//    }
 
 	void testCustomNamingStrategy() {
 
@@ -901,24 +936,26 @@ class AuthorClass {
 		// in DataSource.groovy works, but that's handled in DataSourceConfigurationTests
 		grailsDomainBinder.configureNamingStrategy(CustomNamingStrategy)
 
-		GrailsDomainClass oneClass = new DefaultGrailsDomainClass(cl.parseClass('''
+		GrailsDomainClass oneClass = new DefaultGrailsDomainClass(
+				cl.parseClass('''
 class TestOneSide {
-	Long id
-	Long version
-	String fooName
-	String barDescriPtion
+    Long id
+    Long version
+    String fooName
+    String barDescriPtion
 }'''))
-		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(cl.parseClass('''
+		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
+				cl.parseClass('''
 class TestManySide {
-	Long id
-	Long version
-	TestOneSide testOneSide
+    Long id
+    Long version
+    TestOneSide testOneSide
 
-	static mapping = {
-		columns {
-			testOneSide column:'EXPECTED_COLUMN_NAME'
-		}
-	}
+    static mapping = {
+        columns {
+            testOneSide column:'EXPECTED_COLUMN_NAME'
+        }
+    }
 }'''))
 
 		DefaultGrailsDomainConfiguration config = getDomainConfig(cl,
@@ -956,18 +993,20 @@ class TestManySide {
 
 		grailsDomainBinder.configureNamingStrategy(CustomNamingStrategy)
 
-		GrailsDomainClass oneClass = new DefaultGrailsDomainClass(cl.parseClass('''
+		GrailsDomainClass oneClass = new DefaultGrailsDomainClass(
+				cl.parseClass('''
 class TestOneSide2 {
-	Long id
-	Long version
-	String fooName
-	Set others
-	static hasMany = [others: TestOneSide2]
+    Long id
+    Long version
+    String fooName
+    Set others
+    static hasMany = [others: TestOneSide2]
 }'''))
-		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(cl.parseClass('''
+		GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
+				cl.parseClass('''
 class TestManySide2 {
-	Long id
-	Long version
+    Long id
+    Long version
 }'''))
 
 		DefaultGrailsDomainConfiguration config = getDomainConfig(cl, [oneClass.clazz, domainClass.clazz])
@@ -981,12 +1020,13 @@ class TestManySide2 {
 		def instance = new CustomNamingStrategy()
 		grailsDomainBinder.configureNamingStrategy(instance)
 
-		GrailsDomainClass oneClass = new DefaultGrailsDomainClass(cl.parseClass('''
+		GrailsDomainClass oneClass = new DefaultGrailsDomainClass(
+				cl.parseClass('''
 class TestOneSide {
-	Long id
-	Long version
-	String fooName
-	String barDescriPtion
+    Long id
+    Long version
+    String fooName
+    String barDescriPtion
 }'''))
 
 		assert instance.is(grailsDomainBinder.getNamingStrategy('sessionFactory'))
@@ -1026,16 +1066,16 @@ class TestOneSide {
 	void testEnumProperty() {
 		DefaultGrailsDomainConfiguration config = getDomainConfig('''
 enum AlertType {
-	INFO, WARN, ERROR
+    INFO, WARN, ERROR
 }
 class Alert {
-	Long id
-	Long version
-	String message
-	AlertType alertType
-	static mapping = {
-		alertType sqlType: 'char', length: 5
-	}
+    Long id
+    Long version
+    String message
+    AlertType alertType
+    static mapping = {
+        alertType sqlType: 'char', length: 5
+    }
 }''')
 		Table tableMapping = getTableMapping("alert", config)
 		assertNotNull("Cannot find table mapping", tableMapping)
@@ -1057,6 +1097,7 @@ class Alert {
 	}
 
 	void testTrackAllDeleteOrphanCascade() {
+
 		assertTrue(getCustomCascadedProperty('all-delete-orphan').isExplicitSaveUpdateCascade())
 	}
 
@@ -1064,24 +1105,31 @@ class Alert {
 		assertTrue(!getCustomCascadedProperty('delete').isExplicitSaveUpdateCascade())
 	}
 
-	private GrailsDomainClassProperty getCustomCascadedProperty(String cascadeValue) {
-		new DefaultGrailsDomainClass(cl.parseClass('''
+	private PropertyConfig getCustomCascadedProperty(String cascadeValue) {
+		def context = new HibernateMappingContext()
+		def child = context.addPersistentEntity(
+				cl.parseClass('''
 class CascadeChild {
-	Long id
-	Long version
-}'''))
+    Long id
+    Long version
+}''')
+		)
 
-		GrailsDomainClass cascadeParent = new DefaultGrailsDomainClass(cl.parseClass("""\
+
+
+
+		PersistentEntity cascadeParent = context.addPersistentEntity(
+				cl.parseClass("""\
 class CascadeParent {
-	Long id
-	Long version
-	CascadeChild child
-	static mapping = {
-		child cascade: '${cascadeValue}'
-	}
+    Long id
+    Long version
+    CascadeChild child
+    static mapping = {
+        child cascade: '${cascadeValue}'
+    }
 }"""))
 		grailsDomainBinder.evaluateMapping(cascadeParent)
-		return cascadeParent.persistentProperties.find { it.name == 'child' }
+		return (PropertyConfig)cascadeParent.persistentProperties.find { it.name == 'child' }.mapping.mappedForm
 	}
 
 	private org.hibernate.mapping.Collection findCollection(DefaultGrailsDomainConfiguration config, String role) {
@@ -1104,7 +1152,8 @@ class CascadeParent {
 		mainContext.registerMockBean 'pluginManager', pluginManager
 		grailsApplication.setMainContext(mainContext)
 		grailsApplication.initialise()
-		DefaultGrailsDomainConfiguration config = new DefaultGrailsDomainConfiguration(grailsApplication: grailsApplication)
+		DefaultGrailsDomainConfiguration config = new DefaultGrailsDomainConfiguration(
+				grailsApplication: grailsApplication)
 		config.buildMappings()
 		return config
 	}
@@ -1134,40 +1183,41 @@ class CascadeParent {
 
 	private void assertColumnNotNullable(String tablename, String columnName, DefaultGrailsDomainConfiguration config) {
 		Table table = getTableMapping(tablename, config)
-		assertFalse(table.name + "." + columnName + " is nullable",
-			table.getColumn(new Column(columnName)).isNullable())
+		assertFalse(table.name + "." + columnName +  " is nullable",
+				table.getColumn(new Column(columnName)).isNullable())
 	}
 
 	private void assertColumnNullable(String tablename, String columnName, DefaultGrailsDomainConfiguration config) {
 		Table table = getTableMapping(tablename, config)
-		assertTrue(table.name + "." + columnName + " is not nullable",
+		assertTrue(table.name + "." + columnName +  " is not nullable",
 				table.getColumn(new Column(columnName)).isNullable())
 	}
 
-	private void assertColumnLength(ConstrainedProperty constrainedProperty, int expectedLength) {
+	private void assertColumnLength(PersistentProperty constrainedProperty, int expectedLength) {
 		Column column = new Column()
 		grailsDomainBinder.bindStringColumnConstraints(column, constrainedProperty)
 		assertEquals(expectedLength, column.length)
 	}
 
-	private void assertColumnPrecisionAndScale(ConstrainedProperty constrainedProperty, int expectedPrecision, int expectedScale) {
+	private void assertColumnPrecisionAndScale(PersistentProperty constrainedProperty, int expectedPrecision, int expectedScale) {
 		Column column = new Column()
-		grailsDomainBinder.bindNumericColumnConstraints(column, constrainedProperty)
+		grailsDomainBinder.bindNumericColumnConstraints(column, constrainedProperty, null)
 		assertEquals(expectedPrecision, column.precision)
 		assertEquals(expectedScale, column.scale)
 	}
 
-	private ConstrainedProperty getConstrainedBigDecimalProperty() {
+	private PersistentProperty getConstrainedBigDecimalProperty() {
 		return getConstrainedProperty("testBigDecimal")
 	}
 
-	private ConstrainedProperty getConstrainedStringProperty() {
+	private PersistentProperty getConstrainedStringProperty() {
 		return getConstrainedProperty("testString")
 	}
 
-	private ConstrainedProperty getConstrainedProperty(String propertyName) {
-		BeanWrapper constrainedBean = new BeanWrapperImpl(new TestClass())
-		return new ConstrainedProperty(constrainedBean.wrappedClass, propertyName, constrainedBean.getPropertyType(propertyName))
+	private PersistentProperty getConstrainedProperty(String propertyName) {
+		HibernateMappingContext context = new HibernateMappingContext()
+		def entity = context.addPersistentEntity(TestClass)
+		entity.getPropertyByName(propertyName)
 	}
 
 	static class CustomNamingStrategy extends ImprovedNamingStrategy {

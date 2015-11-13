@@ -12,8 +12,9 @@ class CustomIdSpec extends GormSpec {
     void 'Test saving an object with a custom id'() {
         when:
         def o = new ClassWithCustomId(name: 'Jeff')
-
+        o.validate()
         then:
+        !o.errors.hasErrors()
         o.save()
     }
 
@@ -30,19 +31,6 @@ class CustomIdSpec extends GormSpec {
 
         then:
         o.save()
-    }
-
-    void 'Test that a custom id properly is configured as such'() {
-        given:
-        GrailsDomainClass grailsDomainClass = grailsApplication.getDomainClass(ClassWithCustomId.name)
-
-        when:
-        GrailsDomainClassProperty myIdProperty = grailsDomainClass.getPersistentProperty('myId')
-        GrailsDomainClassProperty myNameProperty = grailsDomainClass.getPersistentProperty('name')
-
-        then:
-        !myNameProperty.isIdentity()
-        myIdProperty.isIdentity()
     }
 
     @Override

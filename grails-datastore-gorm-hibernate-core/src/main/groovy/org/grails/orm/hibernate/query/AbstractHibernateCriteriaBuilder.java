@@ -1,12 +1,11 @@
 package org.grails.orm.hibernate.query;
 
-import grails.core.GrailsApplication;
 import grails.util.CollectionUtils;
-import grails.util.GrailsClassUtils;
 import groovy.lang.*;
-import org.grails.datastore.mapping.query.*;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.*;
+import org.grails.datastore.mapping.reflect.NameUtils;
+import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.hibernate.*;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.*;
@@ -91,9 +90,9 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
     protected int aliasCount;
     protected boolean paginationEnabledList = false;
     protected List<Order> orderEntries;
-    protected GrailsApplication grailsApplication;
     protected ConversionService conversionService;
     protected int defaultFlushMode;
+    protected AbstractHibernateDatastore datastore;
 
     @SuppressWarnings("rawtypes")
     public AbstractHibernateCriteriaBuilder(Class targetClass, SessionFactory sessionFactory) {
@@ -108,9 +107,8 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         this.uniqueResult = uniqueResult;
     }
 
-
-    public void setGrailsApplication(GrailsApplication grailsApplication) {
-        this.grailsApplication = grailsApplication;
+    public void setDatastore(AbstractHibernateDatastore datastore) {
+        this.datastore = datastore;
     }
 
     public void setConversionService(ConversionService conversionService) {
@@ -1707,7 +1705,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         if (metaMethod != null) {
             return metaMethod.invoke(criteria, args);
         }
-        metaMethod = criteriaMetaClass.getMetaMethod(GrailsClassUtils.getSetterName(name), args);
+        metaMethod = criteriaMetaClass.getMetaMethod(NameUtils.getSetterName(name), args);
         if (metaMethod != null) {
             return metaMethod.invoke(criteria, args);
         }

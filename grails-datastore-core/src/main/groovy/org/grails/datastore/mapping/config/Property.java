@@ -14,8 +14,13 @@
  */
 package org.grails.datastore.mapping.config;
 
+import groovy.lang.IntRange;
+import groovy.lang.ObjectRange;
+
 import javax.persistence.EnumType;
 import javax.persistence.FetchType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for classes returned from {@link org.grails.datastore.mapping.model.PropertyMapping#getMappedForm()}
@@ -29,15 +34,102 @@ public class Property implements Cloneable {
     private boolean nullable = false;
     private boolean unique = false;
     private FetchType fetchStrategy = FetchType.LAZY;
-    private boolean lazy = false;
+    private Boolean lazy = null;
     private String targetName;
     private String generator;
     private String propertyName;
     private EnumType enumType;
+    private Number maxSize = null;
+    private Number minSize = null;
+    private Comparable max = null;
+    private Comparable min = null;
+    private int scale = -1;
+    private List<String> inList = null;
+    private List<String> uniquenessGroup = new ArrayList<String>();
 
     @Override
     public Property clone() throws CloneNotSupportedException {
         return (Property) super.clone();
+    }
+
+    /**
+     * @return The maximum value
+     */
+    public Comparable getMax() {
+        return max;
+    }
+
+    public void setMax(Comparable max) {
+        this.max = max;
+    }
+
+    /**
+     *
+     * @return The minimum value
+     */
+    public Comparable getMin() {
+        return min;
+    }
+
+    public void setMin(Comparable min) {
+        this.min = min;
+    }
+
+    public void setRange(ObjectRange range) {
+        if(range != null) {
+            this.max = range.getTo();
+            this.min = range.getFrom();
+        }
+    }
+
+    /**
+     * @return The scale
+     */
+    public int getScale() {
+        return scale;
+    }
+
+    public void setScale(int scale) {
+        this.scale = scale;
+    }
+
+    /**
+     * @return List of valid values
+     */
+    public List<String> getInList() {
+        return inList;
+    }
+
+    public void setInList(List<String> inList) {
+        this.inList = inList;
+    }
+
+    /**
+     * @return The maximum size
+     */
+    public Number getMaxSize() {
+        return maxSize;
+    }
+
+    public void setMaxSize(Number maxSize) {
+        this.maxSize = maxSize;
+    }
+
+
+    public void setSize(IntRange maxSize) {
+        this.maxSize = maxSize.getTo();
+        this.minSize = maxSize.getFrom();
+    }
+
+    /**
+     * @return The minimum size
+     */
+    public Number getMinSize() {
+        return minSize;
+    }
+
+    public void setMinSize(Number minSize) {
+        this.minSize = minSize;
     }
 
     /**
@@ -116,6 +208,10 @@ public class Property implements Cloneable {
      * @return Whether to use lazy proxies for collection elements
      */
     public boolean isLazy() {
+        return lazy == Boolean.TRUE;
+    }
+
+    public Boolean getLazy() {
         return lazy;
     }
 
@@ -124,7 +220,7 @@ public class Property implements Cloneable {
      *
      * @param lazy Set to true if lazy proxies should be used for each element of collection types
      */
-    public void setLazy(boolean lazy) {
+    public void setLazy(Boolean lazy) {
         this.lazy = lazy;
     }
 
@@ -146,8 +242,30 @@ public class Property implements Cloneable {
         return unique;
     }
 
+    /**
+     * @return Whether the property is unique within a group
+     */
+    public boolean isUniqueWithinGroup() {
+        return !uniquenessGroup.isEmpty();
+    }
+
+
     public void setUnique(boolean unique) {
         this.unique = unique;
+    }
+
+    public void setUnique(String name) {
+        this.unique = true;
+        this.uniquenessGroup.add(name);
+    }
+
+    public void setUnique(List<String> names) {
+        this.unique = true;
+        this.uniquenessGroup.addAll(names);
+    }
+
+    public List<String> getUniquenessGroup() {
+        return uniquenessGroup;
     }
 
     /**

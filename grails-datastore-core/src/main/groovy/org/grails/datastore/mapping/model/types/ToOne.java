@@ -43,4 +43,9 @@ public abstract class ToOne<T extends Property> extends Association<T> {
     public boolean isForeignKeyInChild() {
         return foreignKeyInChild;
     }
+
+    @Override
+    public boolean isOwningSide() {
+        return super.isOwningSide() || isForeignKeyInChild();
+    }
 }

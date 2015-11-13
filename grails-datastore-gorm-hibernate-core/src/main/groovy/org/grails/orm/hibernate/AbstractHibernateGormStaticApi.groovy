@@ -1,12 +1,11 @@
 package org.grails.orm.hibernate
 
-import grails.core.support.proxy.ProxyHandler
-import grails.util.GrailsClassUtils
 import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.proxy.ProxyHandler
+import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder
 import org.grails.orm.hibernate.cfg.CompositeIdentity
 import org.grails.orm.hibernate.exceptions.GrailsQueryException
-import org.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler
 import org.grails.orm.hibernate.query.GrailsHibernateQueryUtils
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.grails.datastore.gorm.GormStaticApi
@@ -35,7 +34,7 @@ import java.util.regex.Pattern
 @CompileStatic
 abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
-    protected ProxyHandler proxyHandler = new SimpleHibernateProxyHandler()
+    protected ProxyHandler proxyHandler
     protected Pattern queryPattern
     protected IHibernateTemplate hibernateTemplate
     protected ConversionService conversionService
@@ -49,6 +48,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         this.hibernateTemplate = hibernateTemplate
         this.queryPattern = ~/(?i)from(?-i)\s+[${persistentEntity.name}|${persistentEntity.javaClass.simpleName}].*/
         this.conversionService = datastore.mappingContext.conversionService
+        this.proxyHandler = datastore.mappingContext.proxyHandler
     }
 
     @Override
@@ -56,7 +56,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         if (id || (id instanceof Number)) {
             id = convertIdentifier(id)
             D result = (D)hibernateTemplate.get((Class)persistentClass, id)
-            return (D)proxyHandler.unwrapIfProxy(result)
+            return (D)proxyHandler.unwrap(result)
         }
     }
 
@@ -66,7 +66,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             return null
         }
 
-        hibernateTemplate.execute(  { Session session ->
+        (D)hibernateTemplate.execute(  { Session session ->
 
             def criteria = session.createCriteria(persistentEntity.javaClass)
             criteria.add Restrictions.idEq(convertIdentifier(id))
@@ -74,7 +74,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             def result = (D) criteria.uniqueResult()
             if(result)
                 session.setReadOnly(result, true)
-            return proxyHandler.unwrapIfProxy( result )
+            return proxyHandler.unwrap( result )
         } )
     }
 
@@ -251,7 +251,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             crit.maxResults = 1
             List results = crit.list()
             if (results) {
-                return proxyHandler.unwrapIfProxy( results.get(0) )
+                return proxyHandler.unwrap( results.get(0) )
             }
         }
     }
@@ -344,7 +344,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
                 criteria.add Restrictions.isNull(name)
             }
             criteria.setMaxResults(1)
-            proxyHandler.unwrapIfProxy(criteria.uniqueResult())
+            proxyHandler.unwrap(criteria.uniqueResult())
         }
     }
 
@@ -416,12 +416,16 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         q.maxResults = 1
         List results = q.list()
         if (results) {
-            return (D)proxyHandler.unwrapIfProxy(results.get(0))
+            return (D)proxyHandler.unwrap(results.get(0))
         }
     }
 
     protected Serializable convertIdentifier(Serializable id) {
-        (Serializable)HibernateRuntimeUtils.convertValueToType(id, persistentEntity.identity.type, conversionService)
+        def identity = persistentEntity.identity
+        if(identity != null) {
+            return (Serializable)HibernateRuntimeUtils.convertValueToType(id, identity.type, conversionService)
+        }
+        return id
     }
 
     protected void populateQueryWithNamedArguments(Query q, Map queryNamedArgs) {
@@ -473,7 +477,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
 
         if (args.containsKey(DynamicFinder.ARGUMENT_CACHE)) {
-            q.cacheable = GrailsClassUtils.getBooleanFromMap(DynamicFinder.ARGUMENT_CACHE, args)
+            q.cacheable = ClassUtils.getBooleanFromMap(DynamicFinder.ARGUMENT_CACHE, args)
         }
         if (args.containsKey(DynamicFinder.ARGUMENT_FETCH_SIZE)) {
             Integer fetchSizeParam = conversionService.convert(args.remove(DynamicFinder.ARGUMENT_FETCH_SIZE), Integer.class);

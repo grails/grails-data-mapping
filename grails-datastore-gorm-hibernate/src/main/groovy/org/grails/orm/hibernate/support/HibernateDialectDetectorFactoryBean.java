@@ -15,9 +15,6 @@
  */
 package org.grails.orm.hibernate.support;
 
-import grails.config.Config;
-import grails.core.GrailsApplication;
-import grails.core.support.GrailsApplicationAware;
 
 import java.sql.Connection;
 import java.util.Properties;
@@ -39,13 +36,17 @@ import org.springframework.util.StringUtils;
 /**
  * @author Steven Devijver
  */
-public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>, InitializingBean, GrailsApplicationAware {
+public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>, InitializingBean {
 
     private DataSource dataSource;
     private Properties vendorNameDialectMappings;
     private String hibernateDialectClassName;
     private Dialect hibernateDialect;
-    private GrailsApplication grailsApplication;
+    private Properties hibernateProperties = new Properties();
+
+    public void setHibernateProperties(Properties hibernateProperties) {
+        this.hibernateProperties = hibernateProperties;
+    }
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -79,9 +80,7 @@ public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>,
             connection = DataSourceUtils.getConnection(dataSource);
 
             try {
-                Config config = grailsApplication != null ? grailsApplication.getConfig() : null;
-                Properties properties = config != null ? config.toProperties() : new Properties();
-                hibernateDialect = DialectFactory.buildDialect(properties, connection);
+                hibernateDialect = DialectFactory.buildDialect(hibernateProperties, connection);
                 hibernateDialectClassName = hibernateDialect.getClass().getName();
             } catch (HibernateException e) {
                 hibernateDialectClassName = vendorNameDialectMappings.getProperty(dbName);
@@ -95,9 +94,5 @@ public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>,
             DataSourceUtils.releaseConnection(connection,dataSource);
         }
 
-    }
-
-    public void setGrailsApplication(GrailsApplication grailsApplication) {
-        this.grailsApplication = grailsApplication;
     }
 }

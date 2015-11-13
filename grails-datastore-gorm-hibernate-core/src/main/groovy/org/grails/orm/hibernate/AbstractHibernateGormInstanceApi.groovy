@@ -15,18 +15,18 @@
  */
 package org.grails.orm.hibernate
 
-import grails.core.GrailsDomainClassProperty
-import grails.core.support.proxy.ProxyHandler
-import grails.util.GrailsClassUtils
-import grails.validation.CascadingValidator
 import grails.validation.DeferredBindingActions
-import grails.validation.ValidationException
-import groovy.transform.CompileDynamic
-import groovy.transform.CompileStatic
-import org.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler
-import org.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.grails.orm.hibernate.validation.AbstractPersistentConstraint
 import org.grails.core.lifecycle.ShutdownOperations
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormValidateable
+import org.grails.datastore.gorm.validation.CascadingValidator
+import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.datastore.mapping.proxy.ProxyHandler
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.reflect.ClassUtils
+import org.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -64,49 +64,32 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
      * the value. Note that this only works because the session is
      * flushed when a domain instance is saved without validation.
      */
-    static ThreadLocal<Set<Integer>> disableAutoValidationForThreadLocal = new ThreadLocal<Set<Integer>>()
     static final ThreadLocal<Boolean> insertActiveThreadLocal = new ThreadLocal<Boolean>()
 
     static {
         ShutdownOperations.addOperation(new Runnable() {
             public void run() {
-                AbstractHibernateGormInstanceApi.disableAutoValidationForThreadLocal.remove()
                 AbstractHibernateGormInstanceApi.insertActiveThreadLocal.remove()
             }
         });
     }
 
-    private static Set<Integer> getDisableAutoValidationFor() {
-        Set<Integer> identifiers = AbstractHibernateGormInstanceApi.disableAutoValidationForThreadLocal.get()
-        if (identifiers == null)
-            AbstractHibernateGormInstanceApi.disableAutoValidationForThreadLocal.set(identifiers = new HashSet<Integer>())
-        return identifiers;
-    }
-
-    public static boolean isAutoValidationDisabled(Object obj) {
-        Set<Integer> identifiers = getDisableAutoValidationFor()
-        return obj != null && identifiers.contains(System.identityHashCode(obj))
-    }
-
-    public static void clearDisabledValidations(Object obj) {
-        getDisableAutoValidationFor().remove(System.identityHashCode(obj))
-    }
-
-    public static void clearDisabledValidations() {
-        getDisableAutoValidationFor().clear();
-    }
 
     protected SessionFactory sessionFactory
     protected ClassLoader classLoader
     protected IHibernateTemplate hibernateTemplate
-    protected ProxyHandler proxyHandler = new SimpleHibernateProxyHandler()
-    Map config = Collections.emptyMap()
+    protected ProxyHandler proxyHandler
+
+    boolean autoFlush
 
     protected AbstractHibernateGormInstanceApi(Class<D> persistentClass, AbstractHibernateDatastore datastore, ClassLoader classLoader, IHibernateTemplate hibernateTemplate) {
         super(persistentClass, datastore)
         this.classLoader = classLoader
         sessionFactory = datastore.getSessionFactory()
         this.hibernateTemplate = hibernateTemplate
+        this.proxyHandler = datastore.mappingContext.getProxyHandler()
+        this.autoFlush = datastore.autoFlush
+        this.failOnError = datastore.failOnError
     }
 
 
@@ -131,7 +114,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
 
                 boolean deepValidate = true
                 if (arguments?.containsKey(ARGUMENT_DEEP_VALIDATE)) {
-                    deepValidate = GrailsClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments);
+                    deepValidate = ClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments);
                 }
 
                 AbstractPersistentConstraint.sessionFactory.set(sessionFactory)
@@ -150,7 +133,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
                 if (errors.hasErrors()) {
                     handleValidationError(domainClass,target,errors);
                     if (shouldFail(arguments)) {
-                        throw new ValidationException("Validation Error(s) occurred during save()", errors)
+                        throw validationException.newInstance("Validation Error(s) occurred during save()", errors)
                     }
                     return null
                 }
@@ -164,10 +147,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         // relieving this burden off the developer
         autoRetrieveAssocations domainClass, target
 
-        if (!shouldValidate) {
-            Set<Integer> identifiers = getDisableAutoValidationFor()
-            identifiers.add System.identityHashCode(target)
-        }
+        ((GormValidateable)target).skipValidation(!shouldValidate)
 
         if (shouldInsert(arguments)) {
             return performInsert(target, shouldFlush)
@@ -229,7 +209,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
 
     @Override
     boolean instanceOf(D instance, Class cls) {
-        return proxyHandler.unwrapIfProxy(instance) in cls
+        return proxyHandler.unwrap(instance) in cls
     }
 
     @Override
@@ -303,12 +283,12 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
      */
     @SuppressWarnings("unchecked")
     private void autoRetrieveAssocations(PersistentEntity entity, Object target) {
-        def bean = new BeanWrapperImpl(target)
+        def cpf = ClassPropertyFetcher.forClass(entity.getJavaClass())
         IHibernateTemplate t = this.hibernateTemplate
         for (PersistentProperty prop in entity.associations) {
             if(prop instanceof ToOne) {
                 ToOne toOne = (ToOne)prop
-                def propValue = bean.getPropertyValue(prop.name)
+                def propValue = cpf.getPropertyValue(target, prop.name)
                 if (propValue == null || t.contains(propValue)) {
                     continue
                 }
@@ -318,13 +298,18 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
                     continue
                 }
 
-                def propBean = new BeanWrapperImpl(propValue)
+                def identity = otherSide.identity
+                if(identity == null) {
+                    continue
+                }
+
+                def propCpf = ClassPropertyFetcher.forClass(otherSide.javaClass)
                 try {
-                    def id = (Serializable)propBean.getPropertyValue(otherSide.identity.name);
+                    def id = (Serializable)propCpf.getPropertyValue(propValue, identity.name);
                     if (id) {
                         final Object propVal = t.get(prop.type, id)
                         if (propVal) {
-                            bean.setPropertyValue prop.name, propVal
+                            ((GroovyObject)propValue).setProperty(prop.name, propValue)
                         }
                     }
                 }
@@ -348,32 +333,32 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         }
 
         if (arguments?.containsKey(ARGUMENT_VALIDATE)) {
-            return GrailsClassUtils.getBooleanFromMap(ARGUMENT_VALIDATE, arguments)
+            return ClassUtils.getBooleanFromMap(ARGUMENT_VALIDATE, arguments)
         }
         return true
     }
 
     private boolean shouldInsert(Map arguments) {
-        GrailsClassUtils.getBooleanFromMap(ARGUMENT_INSERT, arguments)
+        ClassUtils.getBooleanFromMap(ARGUMENT_INSERT, arguments)
     }
 
     private boolean shouldMerge(Map arguments) {
-        GrailsClassUtils.getBooleanFromMap(ARGUMENT_MERGE, arguments)
+        ClassUtils.getBooleanFromMap(ARGUMENT_MERGE, arguments)
     }
 
 
     protected boolean shouldFlush(Map map) {
         if (map?.containsKey(ARGUMENT_FLUSH)) {
-            return GrailsClassUtils.getBooleanFromMap(ARGUMENT_FLUSH, map)
+            return ClassUtils.getBooleanFromMap(ARGUMENT_FLUSH, map)
         }
-        return config?.autoFlush instanceof Boolean ? config.autoFlush : false
+        return autoFlush
     }
 
     protected boolean shouldFail(Map map) {
         if (map?.containsKey(ARGUMENT_FAIL_ON_ERROR)) {
-            return GrailsClassUtils.getBooleanFromMap(ARGUMENT_FAIL_ON_ERROR, map)
+            return ClassUtils.getBooleanFromMap(ARGUMENT_FAIL_ON_ERROR, map)
         }
-        return config?.get(ARGUMENT_FAIL_ON_ERROR) instanceof Boolean ? GrailsClassUtils.getBooleanFromMap(ARGUMENT_FAIL_ON_ERROR, config) : false
+        return failOnError
     }
 
     /**
@@ -416,7 +401,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
     public void setObjectToReadOnly(Object target) {
         hibernateTemplate.execute { Session session ->
             if (session.contains(target) && proxyHandler.isInitialized(target)) {
-                target = proxyHandler.unwrapIfProxy(target)
+                target = proxyHandler.unwrap(target)
                 session.setReadOnly target, true
                 session.flushMode = FlushMode.MANUAL
             }
@@ -440,7 +425,12 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
      */
     @CompileDynamic
     protected void setErrorsOnInstance(Object target, Errors errors) {
-        target."$GrailsDomainClassProperty.ERRORS" = errors
+        if(target instanceof GormValidateable) {
+            ((GormValidateable)target).setErrors(errors)
+        }
+        else {
+            target."$GormProperties.ERRORS" = errors
+        }
     }
 
     /**
@@ -475,10 +465,10 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
      */
     @CompileDynamic
     protected void incrementVersion(Object target) {
-        if (target.hasProperty(GrailsDomainClassProperty.VERSION)) {
-            Object version = target."${GrailsDomainClassProperty.VERSION}"
+        if (target.hasProperty(GormProperties.VERSION)) {
+            Object version = target."${GormProperties.VERSION}"
             if (version instanceof Long) {
-                target."${GrailsDomainClassProperty.VERSION}" = ++((Long)version)
+                target."${GormProperties.VERSION}" = ++((Long)version)
             }
         }
     }

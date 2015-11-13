@@ -1,9 +1,10 @@
 package org.grails.orm.hibernate.support
 
-import grails.core.GrailsDomainClassProperty
-import grails.core.support.proxy.ProxyHandler
 import grails.validation.ValidationErrors
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormValidateable
+import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.datastore.mapping.proxy.ProxyHandler
 import org.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler
 import org.codehaus.groovy.runtime.StringGroovyMethods
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -34,11 +35,13 @@ class HibernateRuntimeUtils {
      * @return the new Errors object
      */
     public static Errors setupErrorsProperty(Object target) {
-        MetaClass mc = GroovySystem.metaClassRegistry.getMetaClass(target.getClass())
 
+        boolean isGormValidateable = target instanceof GormValidateable
+
+        MetaClass mc = isGormValidateable ? null : GroovySystem.metaClassRegistry.getMetaClass(target.getClass())
         def errors = new ValidationErrors(target)
 
-        Errors originalErrors = (Errors) mc.getProperty(target, GrailsDomainClassProperty.ERRORS)
+        Errors originalErrors = isGormValidateable ? ((GormValidateable)target).getErrors() : (Errors) mc.getProperty(target, GormProperties.ERRORS)
         for (Object o in originalErrors.fieldErrors) {
             FieldError fe = (FieldError)o
             if (fe.isBindingFailure()) {
@@ -52,7 +55,12 @@ class HibernateRuntimeUtils {
             }
         }
 
-        mc.setProperty(target, GrailsDomainClassProperty.ERRORS, errors);
+        if(isGormValidateable) {
+            ((GormValidateable)target).setErrors(errors)
+        }
+        else {
+            mc.setProperty(target, GormProperties.ERRORS, errors);
+        }
         return errors;
     }
 

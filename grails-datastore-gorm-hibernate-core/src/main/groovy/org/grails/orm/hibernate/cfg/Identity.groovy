@@ -15,6 +15,8 @@
  */
 package org.grails.orm.hibernate.cfg
 
+import org.grails.datastore.mapping.config.Property
+
 /**
  * Defines the identity generation strategy. In the case of a 'composite' identity the properties
  * array defines the property names that formulate the composite id.
@@ -22,7 +24,7 @@ package org.grails.orm.hibernate.cfg
  * @author Graeme Rocher
  * @since 1.0
  */
-class Identity {
+class Identity extends Property {
     String generator = 'native'
     String column = 'id'
     String name

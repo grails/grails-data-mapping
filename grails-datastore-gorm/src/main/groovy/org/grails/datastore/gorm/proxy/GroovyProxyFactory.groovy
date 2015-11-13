@@ -41,6 +41,20 @@ class GroovyProxyFactory implements ProxyFactory {
         getProxyInstanceMetaClass(object) != null
     }
 
+    @Override
+    @Override
+    public Class<?> getProxiedClass(Object o) {
+        if(isProxy(o)) {
+            return o.getClass().getSuperclass()
+        }
+        return o.getClass()
+    }
+
+    @Override
+    void initialize(Object o) {
+        unwrap(o)
+    }
+
     protected ProxyInstanceMetaClass getProxyInstanceMetaClass(object) {
         if(object == null) {
             return null

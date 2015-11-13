@@ -17,11 +17,11 @@ package org.grails.datastore.mapping.config;
 
 import groovy.lang.Closure;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.grails.datastore.mapping.config.groovy.DefaultMappingConfigurationBuilder;
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.IdentityMapping;
@@ -41,29 +41,55 @@ import org.springframework.beans.BeanUtils;
 public abstract class AbstractGormMappingFactory<R extends Entity, T extends Property> extends MappingFactory<R, T> {
 
     protected Map<PersistentEntity, Map<String, T>> entityToPropertyMap = new HashMap<PersistentEntity, Map<String, T>>();
+    protected Map<PersistentEntity, R> entityToMapping = new HashMap<PersistentEntity, R>();
     private Closure defaultMapping;
+    private Object contextObject;
+
+    /**
+     * @param contextObject Context object to be passed to mapping blocks
+     */
+    public void setContextObject(Object contextObject) {
+        this.contextObject = contextObject;
+    }
 
     @Override
     public R createMappedForm(PersistentEntity entity) {
-        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
-        R family = BeanUtils.instantiate(getEntityMappedFormType());
-        MappingConfigurationBuilder builder = new MappingConfigurationBuilder(family, getPropertyMappedFormType());
+        if(entityToMapping.containsKey(entity)) {
+            return entityToMapping.get(entity);
+        }
+        else {
+            ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
+            R family = BeanUtils.instantiate(getEntityMappedFormType());
+            entityToMapping.put(entity, family);
+            MappingConfigurationBuilder builder = createConfigurationBuilder(entity, family);
 
-        if (defaultMapping != null) {
-            builder.evaluate(defaultMapping);
+            if (defaultMapping != null) {
+                evaluateWithContext(builder, defaultMapping);
+            }
+            List<Closure> values = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.MAPPING, Closure.class);
+            for (Closure value : values) {
+                evaluateWithContext(builder, value);
+            }
+            values = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.CONSTRAINTS, Closure.class);
+            for (Closure value : values) {
+                evaluateWithContext(builder, value);
+            }
+            entityToPropertyMap.put(entity, builder.getProperties());
+            return family;
         }
-        List<Closure> values = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.MAPPING, Closure.class);
-        for (int i = values.size(); i > 0; i--) {
-            Closure value = values.get(i - 1);
+    }
+
+    protected void evaluateWithContext(MappingConfigurationBuilder builder, Closure value) {
+        if(contextObject != null) {
+            builder.evaluate(value, contextObject);
+        }
+        else {
             builder.evaluate(value);
         }
-        values = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.CONSTRAINTS, Closure.class);
-        for (int i = values.size(); i > 0; i--) {
-            Closure value = values.get(i - 1);
-            builder.evaluate(value);
-        }
-        entityToPropertyMap.put(entity, builder.getProperties());
-        return family;
+    }
+
+    protected MappingConfigurationBuilder createConfigurationBuilder(PersistentEntity entity, R family) {
+        return new DefaultMappingConfigurationBuilder(family, getPropertyMappedFormType());
     }
 
     public void setDefaultMapping(Closure defaultMapping) {

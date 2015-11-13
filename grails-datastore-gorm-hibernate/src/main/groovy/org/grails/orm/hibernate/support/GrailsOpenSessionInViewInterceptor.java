@@ -80,16 +80,12 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
 
     @Override
     public void afterCompletion(WebRequest request, Exception ex) throws DataAccessException {
-        try {
-            final boolean isWebRequest = request.getAttribute(IS_FLOW_REQUEST_ATTRIBUTE, WebRequest.SCOPE_REQUEST) != null;
-            if (isWebRequest) {
-                return;
-            }
-
-            super.afterCompletion(request, ex);
-        } finally {
-            AbstractHibernateGormInstanceApi.clearDisabledValidations();
+        final boolean isWebRequest = request.getAttribute(IS_FLOW_REQUEST_ATTRIBUTE, WebRequest.SCOPE_REQUEST) != null;
+        if (isWebRequest) {
+            return;
         }
+
+        super.afterCompletion(request, ex);
     }
 
     @Override

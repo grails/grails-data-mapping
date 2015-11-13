@@ -62,4 +62,9 @@ public class GrailsDomainClassPersistentProperty implements PersistentProperty {
     public boolean isNullable() {
         return property.isOptional();
     }
+
+    @Override
+    public boolean isInherited() {
+        return property.isInherited();
+    }
 }

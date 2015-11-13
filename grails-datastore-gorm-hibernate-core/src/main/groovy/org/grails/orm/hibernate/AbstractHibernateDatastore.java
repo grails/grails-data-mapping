@@ -29,9 +29,21 @@ import org.springframework.core.env.PropertyResolver;
  */
 public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware {
 
-    protected SessionFactory sessionFactory;
-    protected PropertyResolver config;
+    public static final String CONFIG_PROPERTY_CACHE_QUERIES = "grails.hibernate.cache.queries";
+    public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";
+    public static final String CONFIG_PROPERTY_PASS_READONLY_TO_HIBERNATE = "grails.hibernate.pass.readonly";
+    public static final String CONFIG_PROPERTY_AUTO_FLUSH = "grails.gorm.autoFlush";
+    public static final String CONFIG_PROPERTY_FAIL_ON_ERROR = "grails.gorm.failOnError";
+    public static final String CONFIG_PROPERTY_DEFAULT_MAPPING = "grails.gorm.default.mapping";
+    protected final SessionFactory sessionFactory;
+    protected final PropertyResolver config;
     protected AbstractEventTriggeringInterceptor eventTriggeringInterceptor;
+    private final boolean osivReadOnly;
+    private final boolean passReadOnlyToHibernate;
+    private final boolean isCacheQueries;
+    private final boolean autoFlush;
+    private final boolean failOnError;
+
 
     protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext) {
         super(mappingContext);
@@ -41,6 +53,32 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         if(applicationContext != null) {
             setApplicationContext(applicationContext);
         }
+
+        osivReadOnly = config.getProperty(CONFIG_PROPERTY_OSIV_READONLY, Boolean.class, false);
+        passReadOnlyToHibernate = config.getProperty(CONFIG_PROPERTY_PASS_READONLY_TO_HIBERNATE, Boolean.class, false);
+        isCacheQueries = config.getProperty(CONFIG_PROPERTY_CACHE_QUERIES, Boolean.class, false);
+        autoFlush = config.getProperty(CONFIG_PROPERTY_AUTO_FLUSH, Boolean.class, false);
+        failOnError = config.getProperty(CONFIG_PROPERTY_FAIL_ON_ERROR, Boolean.class, false);
+    }
+
+    public boolean isAutoFlush() {
+        return autoFlush;
+    }
+
+    public boolean isFailOnError() {
+        return failOnError;
+    }
+
+    public boolean isOsivReadOnly() {
+        return osivReadOnly;
+    }
+
+    public boolean isPassReadOnlyToHibernate() {
+        return passReadOnlyToHibernate;
+    }
+
+    public boolean isCacheQueries() {
+        return isCacheQueries;
     }
 
     public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {

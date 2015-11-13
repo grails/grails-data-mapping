@@ -17,27 +17,19 @@ package org.grails.orm.hibernate.support;
 
 import grails.validation.ValidationException;
 import groovy.lang.*;
-
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
-import org.grails.orm.hibernate.AbstractHibernateGormValidationApi;
-import org.grails.orm.hibernate.cfg.GrailsDomainBinder;
-import org.grails.orm.hibernate.cfg.Mapping;
-import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
+import org.grails.datastore.gorm.GormValidateable;
 import org.grails.datastore.gorm.support.BeforeValidateHelper.BeforeValidateEventTriggerCaller;
 import org.grails.datastore.gorm.support.EventTriggerCaller;
 import org.grails.datastore.gorm.timestamp.DefaultTimestampProvider;
 import org.grails.datastore.gorm.timestamp.TimestampProvider;
 import org.grails.datastore.mapping.engine.event.ValidationEvent;
+import org.grails.datastore.mapping.model.config.GormProperties;
+import org.grails.datastore.mapping.reflect.ClassUtils;
+import org.grails.orm.hibernate.AbstractHibernateGormValidationApi;
+import org.grails.orm.hibernate.cfg.GrailsDomainBinder;
+import org.grails.orm.hibernate.cfg.Mapping;
 import org.hibernate.EntityMode;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
@@ -48,6 +40,12 @@ import org.hibernate.event.*;
 import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.Errors;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Invokes closure events on domain entities such as beforeInsert, beforeUpdate and beforeDelete.
@@ -85,9 +83,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
     MetaProperty lastUpdatedProperty;
     MetaClass domainMetaClass;
     boolean failOnErrorEnabled = false;
-    MetaProperty errorsProperty;
     Map validateParams;
-    MetaMethod validateMethod;
     TimestampProvider timestampProvider;
 
     public ClosureEventListener(Class<?> domainClazz, boolean failOnError, List failOnErrorPackages) {
@@ -115,7 +111,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
         beforeValidateEventListener = new BeforeValidateEventTriggerCaller(domainClazz, domainMetaClass);
 
         if (failOnErrorPackages.size() > 0) {
-            failOnErrorEnabled = GrailsClassUtils.isClassBelowPackage(domainClazz, failOnErrorPackages);
+            failOnErrorEnabled = ClassUtils.isClassBelowPackage(domainClazz, failOnErrorPackages);
         } else {
             failOnErrorEnabled = failOnError;
         }
@@ -123,11 +119,6 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
         validateParams = new HashMap();
         validateParams.put(AbstractHibernateGormValidationApi.ARGUMENT_DEEP_VALIDATE, Boolean.FALSE);
 
-        errorsProperty = domainMetaClass.getMetaProperty(GrailsDomainClassProperty.ERRORS);
-
-        validateMethod = domainMetaClass.getMetaMethod("validate",
-                new Object[] { Map.class });
-        
         try {
             actionQueueUpdatesField=ReflectionUtils.findField(ActionQueue.class, "updates");
             actionQueueUpdatesField.setAccessible(true);
@@ -139,11 +130,11 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
     }
 
     private void applyAutotimestampSettings(Class<?> domainClazz, TimestampProvider timestampProvider) {
-        dateCreatedProperty = domainMetaClass.getMetaProperty(GrailsDomainClassProperty.DATE_CREATED);
+        dateCreatedProperty = domainMetaClass.getMetaProperty(GormProperties.DATE_CREATED);
         if(dateCreatedProperty != null && !verifyTimestampFieldTypeSupport(domainClazz, timestampProvider, dateCreatedProperty)) {
             dateCreatedProperty = null;
         }
-        lastUpdatedProperty = domainMetaClass.getMetaProperty(GrailsDomainClassProperty.LAST_UPDATED);
+        lastUpdatedProperty = domainMetaClass.getMetaProperty(GormProperties.LAST_UPDATED);
         if(lastUpdatedProperty != null && !verifyTimestampFieldTypeSupport(domainClazz, timestampProvider, lastUpdatedProperty)) {
             lastUpdatedProperty = null;
         }
@@ -252,7 +243,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
 
     public void onPostInsert(PostInsertEvent event) {
         final Object entity = event.getEntity();
-        AbstractHibernateGormInstanceApi.clearDisabledValidations(entity);
+        ((GormValidateable)entity).skipValidation(false);
         if (postInsertEventListener == null) {
             return;
         }
@@ -268,7 +259,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
 
     public void onPostUpdate(PostUpdateEvent event) {
         final Object entity = event.getEntity();
-        AbstractHibernateGormInstanceApi.clearDisabledValidations(entity);
+        ((GormValidateable)entity).skipValidation(false);
         if (postUpdateEventListener == null) {
             return;
         }
@@ -284,7 +275,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
 
     public void onPostDelete(PostDeleteEvent event) {
         final Object entity = event.getEntity();
-        AbstractHibernateGormInstanceApi.clearDisabledValidations(entity);
+        ((GormValidateable)entity).skipValidation(false);
         if (postDeleteEventListener == null) {
             return;
         }
@@ -322,16 +313,13 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                     synchronizePersisterState(event, event.getState());
                 }
                 handleTimestampingBeforeUpdate(event, entity);
-                if (!AbstractHibernateGormInstanceApi.isAutoValidationDisabled(entity)
-                        && !DefaultTypeTransformation.castToBoolean(validateMethod.invoke(entity, new Object[] { validateParams }))) {
-                    evict = true;
-                    if (failOnErrorEnabled) {
-                        Errors errors = (Errors) errorsProperty.getProperty(entity);
-                        throw new ValidationException("Validation error whilst flushing entity [" + entity.getClass().getName()
-                                + "]", errors);
-                    }
+
+                if(!evict) {
+                    return doValidate(entity);
                 }
-                return evict;
+                else {
+                    return evict;
+                }
             }
         });
     }
@@ -365,21 +353,25 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                     synchronizePersisterState(event, event.getState());
                 }
 
-                boolean evict = false;
-                if (!AbstractHibernateGormInstanceApi.isAutoValidationDisabled(entity)
-                        && !DefaultTypeTransformation.castToBoolean(validateMethod.invoke(entity,
-                                new Object[] { validateParams }))) {
-                    evict = true;
-                    if (failOnErrorEnabled) {
-                        Errors errors = (Errors) errorsProperty.getProperty(entity);
-                        throw new ValidationException("Validation error whilst flushing entity [" + entity.getClass().getName()
-                                + "]", errors);
-                    }
-                }
-                return evict;
+                return doValidate(entity);
             }
 
         });
+    }
+
+    protected boolean doValidate(Object entity) {
+        boolean evict = false;
+        GormValidateable validateable = (GormValidateable) entity;
+        if ( !validateable.shouldSkipValidation()
+                && !validateable.validate(validateParams)) {
+            evict = true;
+            if (failOnErrorEnabled) {
+                Errors errors = validateable.getErrors();
+                throw new ValidationException("Validation error whilst flushing entity [" + entity.getClass().getName()
+                        + "]", errors);
+            }
+        }
+        return evict;
     }
 
     public void onValidate(ValidationEvent event) {
@@ -395,7 +387,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                 dateCreatedType = dateCreatedProperty.getType();
                 timestamp = timestampProvider.createTimestamp(dateCreatedType);
                 dateCreatedProperty.setProperty(entity, timestamp);
-                event.getState()[ Arrays.asList(propertyNames).indexOf(GrailsDomainClassProperty.DATE_CREATED) ] = timestamp;
+                event.getState()[ Arrays.asList(propertyNames).indexOf(GormProperties.DATE_CREATED) ] = timestamp;
             }
             if (lastUpdatedProperty != null) {
                 Class<?> lastUpdateType = lastUpdatedProperty.getType();
@@ -403,7 +395,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                     timestamp = timestampProvider.createTimestamp(lastUpdateType);
                 }
                 lastUpdatedProperty.setProperty(entity, timestamp);
-                event.getState()[ Arrays.asList(propertyNames).indexOf( GrailsDomainClassProperty.LAST_UPDATED) ] = timestamp;
+                event.getState()[ Arrays.asList(propertyNames).indexOf( GormProperties.LAST_UPDATED) ] = timestamp;
             }
         }
     }

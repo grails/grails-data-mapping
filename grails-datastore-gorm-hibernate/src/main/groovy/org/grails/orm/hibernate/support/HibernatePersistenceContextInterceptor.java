@@ -15,7 +15,6 @@
  */
 package org.grails.orm.hibernate.support;
 
-import grails.core.GrailsDomainClassProperty;
 import grails.persistence.support.PersistenceContextInterceptor;
 import grails.validation.DeferredBindingActions;
 import org.apache.commons.logging.Log;
@@ -88,18 +87,14 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
             return;
         }
 
+        // single session mode
+        SessionHolder holder = (SessionHolder) TransactionSynchronizationManager.unbindResource(getSessionFactory());
+        LOG.debug("Closing single Hibernate session in GrailsDispatcherServlet");
         try {
-            // single session mode
-            SessionHolder holder = (SessionHolder) TransactionSynchronizationManager.unbindResource(getSessionFactory());
-            LOG.debug("Closing single Hibernate session in GrailsDispatcherServlet");
-            try {
-                Session session = holder.getSession();
-                SessionFactoryUtils.closeSession(session);
-            } catch (RuntimeException ex) {
-                LOG.error("Unexpected exception on closing Hibernate Session", ex);
-            }
-        } finally {
-            AbstractHibernateGormInstanceApi.clearDisabledValidations();
+            Session session = holder.getSession();
+            SessionFactoryUtils.closeSession(session);
+        } catch (RuntimeException ex) {
+            LOG.error("Unexpected exception on closing Hibernate Session", ex);
         }
     }
 

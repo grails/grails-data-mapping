@@ -31,17 +31,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
-import org.grails.datastore.mapping.model.types.Basic;
-import org.grails.datastore.mapping.model.types.Custom;
-import org.grails.datastore.mapping.model.types.Embedded;
-import org.grails.datastore.mapping.model.types.EmbeddedCollection;
-import org.grails.datastore.mapping.model.types.Identity;
-import org.grails.datastore.mapping.model.types.ManyToMany;
-import org.grails.datastore.mapping.model.types.ManyToOne;
-import org.grails.datastore.mapping.model.types.OneToMany;
-import org.grails.datastore.mapping.model.types.OneToOne;
-import org.grails.datastore.mapping.model.types.Simple;
-import org.grails.datastore.mapping.model.types.ToOne;
+import org.grails.datastore.mapping.model.types.*;
 
 /**
  * <p>An abstract factory for creating persistent property instances.</p>
@@ -191,7 +181,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             // If there is no custom type marshaller for current enum, lookup marshaller for enum itself.
             customTypeMarshaller = findCustomType(context, Enum.class);
         }
-        if (customTypeMarshaller == null) {
+        if (customTypeMarshaller == null && !allowArbitraryCustomTypes()) {
             throw new IllegalStateException("Cannot create a custom type without a type converter for type " + propertyType);
         }
         return new Custom<T>(owner, context, pd, customTypeMarshaller) {
@@ -200,6 +190,10 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
                 return propertyMapping;
             }
         };
+    }
+
+    protected boolean allowArbitraryCustomTypes() {
+        return false;
     }
 
     protected static CustomTypeMarshaller findCustomType(MappingContext context, Class<?> propertyType) {
@@ -275,6 +269,12 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             public PropertyMapping getMapping() {
                 return propertyMapping;
             }
+
+            @Override
+            public String toString() {
+                return associationtoString("many-to-one: ", this);
+            }
+
         };
 
     }
@@ -292,6 +292,11 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping getMapping() {
                 return propertyMapping;
+            }
+
+            @Override
+            public String toString() {
+                return associationtoString("one-to-many: ", this);
             }
         };
 
@@ -311,6 +316,10 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             public PropertyMapping getMapping() {
                 return propertyMapping;
             }
+            @Override
+            public String toString() {
+                return associationtoString("many-to-many: ", this);
+            }
         };
     }
 
@@ -329,6 +338,10 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             public PropertyMapping getMapping() {
                 return propertyMapping;
             }
+            @Override
+            public String toString() {
+                return associationtoString("embedded: ", this);
+            }
         };
     }
 
@@ -346,6 +359,10 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping getMapping() {
                 return propertyMapping;
+            }
+            @Override
+            public String toString() {
+                return associationtoString("embedded: ", this);
             }
         };
     }
@@ -423,5 +440,10 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
                 return null;
             }
         };
+    }
+
+
+    public static String associationtoString(String desc, Association a) {
+        return desc + a.getOwner().getName() + "-> " + a.getName() + " ->" + a.getAssociatedEntity().getName();
     }
 }

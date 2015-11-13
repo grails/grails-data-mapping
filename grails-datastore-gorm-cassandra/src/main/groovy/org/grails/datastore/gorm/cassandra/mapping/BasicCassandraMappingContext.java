@@ -29,7 +29,9 @@ import org.springframework.validation.Errors;
  *
  */
 public class BasicCassandraMappingContext extends org.springframework.data.cassandra.mapping.BasicCassandraMappingContext {
-	
+
+	public static final String INTERNAL_MARKER = "$";
+	public static final String INTERNAL_GRAILS_FIELD_MARKER = "org_grails";
 	CassandraMappingContext gormCassandraMappingContext;
 	
 	public BasicCassandraMappingContext(CassandraMappingContext gormCassandraMappingContext) {
@@ -46,7 +48,7 @@ public class BasicCassandraMappingContext extends org.springframework.data.cassa
 
 	@Override
 	public CassandraPersistentProperty createPersistentProperty(Field field, PropertyDescriptor descriptor, CassandraPersistentEntity<?> owner, SimpleTypeHolder simpleTypeHolder) {
-		PersistentEntity gormEntity = gormCassandraMappingContext.getPersistentEntity(owner.getName());			
+		PersistentEntity gormEntity = gormCassandraMappingContext.getPersistentEntity(owner.getName());
 		final CassandraPersistentProperty property = super.createPersistentProperty(field, descriptor, owner, simpleTypeHolder);
 		final CassandraPersistentProperty transientProperty = new BasicCassandraPersistentProperty(field, descriptor, owner, (CassandraSimpleTypeHolder) simpleTypeHolder) {
 			public boolean isTransient() {
@@ -64,6 +66,14 @@ public class BasicCassandraMappingContext extends org.springframework.data.cassa
 		}
 
 		if (field != null && field.getType().equals(Errors.class)) {
+			return transientProperty;
+		}
+
+		if(field != null && (field.getName().contains(INTERNAL_MARKER) || field.getName().startsWith(INTERNAL_GRAILS_FIELD_MARKER))) {
+			return transientProperty;
+		}
+
+		if(descriptor != null && descriptor.getWriteMethod() == null && descriptor.getReadMethod() == null) {
 			return transientProperty;
 		}
 

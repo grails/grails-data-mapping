@@ -75,6 +75,22 @@ public interface MappingContext {
     PersistentEntity getChildEntityByDiscriminator(PersistentEntity root, String discriminator);
 
     /**
+     * Obtains all of the children for the given root
+     *
+     * @param root The root
+     * @return The children
+     */
+    Collection<PersistentEntity> getChildEntities(PersistentEntity root);
+
+    /**
+     * Obtains only the direct children (1 level down) for the given root entity
+     *
+     * @param root The root
+     * @return The children
+     */
+    Collection<PersistentEntity> getDirectChildEntities(PersistentEntity root);
+
+    /**
      * Adds several PersistentEntity instances
      *
      * @param javaClasses The Java class representing the entity

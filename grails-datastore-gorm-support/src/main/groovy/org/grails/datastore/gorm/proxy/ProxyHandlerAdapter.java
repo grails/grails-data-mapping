@@ -1,73 +1,54 @@
-/*
- * Copyright 2014 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.grails.datastore.gorm.proxy;
 
 import grails.core.support.proxy.EntityProxyHandler;
-import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
-import org.grails.datastore.mapping.proxy.ProxyFactory;
-
-import java.io.Serializable;
+import org.grails.datastore.mapping.proxy.ProxyHandler;
 
 /**
- * Adapts the proxy handler interface
+ * Adapts the core Grails proxy handler interface to the GORM one
  *
  * @author Graeme Rocher
+ * @since 5.0
  */
-public class ProxyHandlerAdapter implements ProxyFactory {
+public class ProxyHandlerAdapter implements EntityProxyHandler {
 
-    final EntityProxyHandler proxyHandler;
+    final ProxyHandler delegate;
 
-    public ProxyHandlerAdapter(EntityProxyHandler proxyHandler) {
-        this.proxyHandler = proxyHandler;
-    }
-
-
-    @Override
-    public boolean isProxy(Object object) {
-        return proxyHandler.isProxy(object);
+    public ProxyHandlerAdapter(ProxyHandler delegate) {
+        this.delegate = delegate;
     }
 
     @Override
-    public boolean isInitialized(Object object) {
-        return proxyHandler.isInitialized(object);
+    public Object getProxyIdentifier(Object o) {
+        return delegate.getIdentifier(o);
     }
 
     @Override
-    public boolean isInitialized(Object object, String associationName) {
-        return proxyHandler.isInitialized(object,associationName);
+    public Class<?> getProxiedClass(Object o) {
+        return delegate.getProxiedClass(o);
     }
 
     @Override
-    public Object unwrap(Object object) {
-        return proxyHandler.unwrapIfProxy(object);
+    public boolean isProxy(Object o) {
+        return delegate.isProxy(o);
     }
 
     @Override
-    public Serializable getIdentifier(Object obj) {
-        return (Serializable) proxyHandler.getProxyIdentifier(obj);
+    public Object unwrapIfProxy(Object instance) {
+        return delegate.unwrap(instance);
     }
 
     @Override
-    public <T> T createProxy(Session session, Class<T> type, Serializable key) {
-        throw new UnsupportedOperationException("Method createProxy is not supported by this implementation");
+    public boolean isInitialized(Object o) {
+        return delegate.isInitialized(o);
     }
 
     @Override
-    public <T, K extends Serializable> T createProxy(Session session, AssociationQueryExecutor<K, T> executor, K associationKey) {
-        throw new UnsupportedOperationException("Method createProxy is not supported by this implementation");
+    public void initialize(Object o) {
+        delegate.initialize(o);
+    }
+
+    @Override
+    public boolean isInitialized(Object obj, String associationName) {
+        return delegate.isInitialized(obj, associationName);
     }
 }

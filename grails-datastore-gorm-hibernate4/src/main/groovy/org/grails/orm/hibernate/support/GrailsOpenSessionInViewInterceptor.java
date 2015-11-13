@@ -15,7 +15,6 @@
  */
 package org.grails.orm.hibernate.support;
 
-import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.grails.web.servlet.mvc.GrailsWebRequest;
@@ -28,7 +27,6 @@ import org.springframework.orm.hibernate4.SessionHolder;
 import org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.WebRequest;
 
 /**
@@ -113,17 +111,12 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
 
     @Override
     public void afterCompletion(WebRequest request, Exception ex) throws DataAccessException {
-        try {
-            final boolean isWebRequest = request.getAttribute(IS_FLOW_REQUEST_ATTRIBUTE, WebRequest.SCOPE_REQUEST) != null;
-            if (isWebRequest) {
-                return;
-            }
+        final boolean isWebRequest = request.getAttribute(IS_FLOW_REQUEST_ATTRIBUTE, WebRequest.SCOPE_REQUEST) != null;
+        if (isWebRequest) {
+            return;
+        }
 
-            super.afterCompletion(request, ex);
-        }
-        finally {
-            AbstractHibernateGormInstanceApi.clearDisabledValidations();
-        }
+        super.afterCompletion(request, ex);
     }
 
 

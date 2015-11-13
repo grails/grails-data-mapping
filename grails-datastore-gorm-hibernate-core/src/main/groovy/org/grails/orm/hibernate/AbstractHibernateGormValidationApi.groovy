@@ -15,12 +15,11 @@
  */
 package org.grails.orm.hibernate
 
-import grails.core.GrailsDomainClassProperty
-import grails.util.GrailsClassUtils
-import grails.validation.CascadingValidator
-import grails.validation.ValidationErrors
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.config.GrailsDomainClassPersistentEntity
+import org.grails.datastore.gorm.validation.CascadingValidator
+import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.datastore.mapping.reflect.ClassUtils
+import org.grails.datastore.mapping.validation.ValidationErrors
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.grails.orm.hibernate.validation.AbstractPersistentConstraint
 import org.grails.datastore.gorm.GormValidationApi
@@ -69,10 +68,10 @@ abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D
         }
 
         if (arguments.containsKey(ARGUMENT_DEEP_VALIDATE)) {
-            deepValidate = GrailsClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments)
+            deepValidate = ClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments)
         }
 
-        evict = GrailsClassUtils.getBooleanFromMap(ARGUMENT_EVICT, arguments);
+        evict = ClassUtils.getBooleanFromMap(ARGUMENT_EVICT, arguments);
 
         fireEvent instance, validatedFieldsList
 
@@ -108,7 +107,7 @@ abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D
         // If the errors have been filtered, update the 'errors' object attached to the target.
         if (errors.errorCount != oldErrorCount) {
             MetaClass metaClass = GroovySystem.metaClassRegistry.getMetaClass(instance.getClass())
-            metaClass.setProperty( instance, GrailsDomainClassProperty.ERRORS, errors)
+            metaClass.setProperty( instance, GormProperties.ERRORS, errors)
         }
 
         return valid

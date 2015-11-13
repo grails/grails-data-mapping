@@ -158,12 +158,14 @@ public abstract class Association<T extends Property> extends AbstractPersistent
      * @return Whether the association is circular
      */
     public boolean isCircular() {
-        PersistentEntity associatedEntity1 = getAssociatedEntity();
-        if(associatedEntity1 == null) {
+        PersistentEntity associatedEntity = getAssociatedEntity();
+        if(associatedEntity == null) {
             return false;
         }
         else {
-            return isBidirectional() && associatedEntity1.equals(getOwner());
+            return associatedEntity.getJavaClass().isAssignableFrom(owner.getJavaClass());
         }
     }
+
+
 }

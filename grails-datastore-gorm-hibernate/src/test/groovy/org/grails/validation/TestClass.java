@@ -11,6 +11,8 @@ import java.util.Date;
  */
 @SuppressWarnings("rawtypes")
 public class TestClass {
+    private Long id;
+    private Long version;
     private Object[] testArray;
     private BigDecimal testBigDecimal;
     private Collection testCollection;
@@ -22,6 +24,22 @@ public class TestClass {
     private Integer testInteger;
     private Long testLong;
     private String testURL;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     public Object[] getTestArray() {
         return testArray;

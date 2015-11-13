@@ -15,9 +15,7 @@
  */
 package org.grails.orm.hibernate
 
-import grails.core.GrailsDomainClass
 import groovy.transform.CompileStatic
-import org.grails.core.artefact.DomainClassArtefactHandler
 import org.hibernate.FlushMode
 import org.hibernate.Session
 import org.hibernate.engine.EntityEntry
@@ -34,24 +32,12 @@ import org.hibernate.proxy.HibernateProxy
 @CompileStatic
 class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
 
-    protected GrailsHibernateTemplate hibernateTemplate
     protected InstanceApiHelper instanceApiHelper
 
     HibernateGormInstanceApi(Class<D> persistentClass, HibernateDatastore datastore, ClassLoader classLoader) {
         super(persistentClass, datastore, classLoader, null)
-
-        def grailsApplication = datastore.getGrailsApplication()
-        if (grailsApplication) {
-            GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
-            config = (Map)grailsApplication.getConfig().getProperty('grails.gorm',Map)
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication, datastore.getDefaultFlushMode())
-        }
-        else {
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
-            hibernateTemplate.setFlushMode(datastore.getDefaultFlushMode())
-        }
-        super.hibernateTemplate = hibernateTemplate
-        instanceApiHelper = new InstanceApiHelper(hibernateTemplate)
+        hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, datastore)
+        instanceApiHelper = new InstanceApiHelper((GrailsHibernateTemplate)hibernateTemplate)
     }
 
     /**

@@ -1,6 +1,6 @@
 package org.grails.orm.hibernate.query;
 
-import grails.util.GrailsClassUtils;
+import org.grails.datastore.mapping.reflect.ClassUtils;
 import org.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder;
 import org.grails.orm.hibernate.cfg.Mapping;
 import org.grails.datastore.gorm.finders.DynamicFinder;
@@ -55,7 +55,7 @@ public class GrailsHibernateQueryUtils {
             c.setFlushMode(convertFlushMode(argMap.get(DynamicFinder.ARGUMENT_FLUSH_MODE)));
         }
         if (argMap.containsKey(DynamicFinder.ARGUMENT_READ_ONLY)) {
-            c.setReadOnly(GrailsClassUtils.getBooleanFromMap(DynamicFinder.ARGUMENT_READ_ONLY, argMap));
+            c.setReadOnly(ClassUtils.getBooleanFromMap(DynamicFinder.ARGUMENT_READ_ONLY, argMap));
         }
         String orderParam = (String)argMap.get(DynamicFinder.ARGUMENT_ORDER);
         Object fetchObj = argMap.get(DynamicFinder.ARGUMENT_FETCH);
@@ -75,13 +75,13 @@ public class GrailsHibernateQueryUtils {
         if (offset > -1) {
             c.setFirstResult(offset);
         }
-        if (GrailsClassUtils.getBooleanFromMap(DynamicFinder.ARGUMENT_LOCK, argMap)) {
+        if (ClassUtils.getBooleanFromMap(DynamicFinder.ARGUMENT_LOCK, argMap)) {
             c.setLockMode(LockMode.PESSIMISTIC_WRITE);
             c.setCacheable(false);
         }
         else {
             if (argMap.containsKey(DynamicFinder.ARGUMENT_CACHE)) {
-                c.setCacheable(GrailsClassUtils.getBooleanFromMap(DynamicFinder.ARGUMENT_CACHE, argMap));
+                c.setCacheable(ClassUtils.getBooleanFromMap(DynamicFinder.ARGUMENT_CACHE, argMap));
             } else {
                 cacheCriteriaByMapping(entity.getJavaClass(), c);
             }

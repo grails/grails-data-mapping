@@ -18,6 +18,8 @@ import grails.core.*;
 import groovy.lang.Closure;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.orm.hibernate.proxy.GroovyAwarePojoEntityTuplizer;
 import org.grails.core.artefact.AnnotationDomainClassArtefactHandler;
 import org.grails.core.artefact.DomainClassArtefactHandler;
@@ -30,6 +32,9 @@ import org.hibernate.engine.FilterDefinition;
 import org.hibernate.mapping.JoinedSubclass;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.RootClass;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.util.*;
 
@@ -40,7 +45,7 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 18-Feb-2006
  */
-public class GrailsAnnotationConfiguration extends Configuration implements GrailsDomainConfiguration {
+public class GrailsAnnotationConfiguration extends Configuration implements GrailsDomainConfiguration, ApplicationContextAware {
 
     private static final long serialVersionUID = -7115087342689305517L;
 
@@ -54,6 +59,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
     protected GrailsDomainBinder binder = new GrailsDomainBinder();
 
     private boolean subclassForeignKeysCreated = false;
+    private ApplicationContext applicationContext;
 
     /* (non-Javadoc)
      * @see org.grails.orm.hibernate.cfg.GrailsDomainConfiguration#addDomainClass(org.codehaus.groovy.grails.commons.GrailsDomainClass)
@@ -136,10 +142,10 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
 
         SessionFactory sessionFactory = super.buildSessionFactory();
 
-        if (grailsApplication != null) {
-            GrailsHibernateUtil.configureHibernateDomainClasses(
-                    sessionFactory, sessionFactoryBeanName, grailsApplication);
-        }
+//        if (grailsApplication != null) {
+//            GrailsHibernateUtil.configureHibernateDomainClasses(
+//                    sessionFactory, sessionFactoryBeanName, grailsApplication);
+//        }
 
         return sessionFactory;
     }
@@ -158,22 +164,6 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         return settings;
     }
 
-    public void configureDomainBinder(GrailsDomainBinder binder, GrailsApplication grailsApplication, Set<GrailsDomainClass> domainClasses) {
-        GrailsHibernateUtil.setBinder(binder);
-        Closure defaultMapping = grailsApplication.getConfig().getProperty(GrailsDomainConfiguration.DEFAULT_MAPPING, Closure.class);
-        // do Grails class configuration
-        if(defaultMapping != null) {
-            binder.setDefaultMapping(defaultMapping);
-        }
-        for (GrailsDomainClass domainClass : domainClasses) {
-            if (defaultMapping != null) {
-                binder.evaluateMapping(domainClass, defaultMapping);
-            }
-            else {
-                binder.evaluateMapping(domainClass);
-            }
-        }
-    }
 
     /**
      * Overrides the default behaviour to including binding of Grails domain classes.
@@ -182,48 +172,61 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
     protected void secondPassCompile() throws MappingException {
         final Thread currentThread = Thread.currentThread();
         final ClassLoader originalContextLoader = currentThread.getContextClassLoader();
-        if (!configLocked) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("[GrailsAnnotationConfiguration] [" + domainClasses.size() +
-                        "] Grails domain classes to bind to persistence runtime");
-            }
-
-            // do Grails class configuration
-            // configure the static binder first
-            configureDomainBinder(binder, grailsApplication, domainClasses);
-
-            for (GrailsDomainClass domainClass : domainClasses) {
-
-                final String fullClassName = domainClass.getFullName();
-
-                String hibernateConfig = fullClassName.replace('.', '/') + ".hbm.xml";
-                final ClassLoader loader = originalContextLoader;
-                // don't configure Hibernate mapped classes
-                if (loader.getResource(hibernateConfig) != null) continue;
-
-                final Mappings mappings = super.createMappings();
-                if (!GrailsHibernateUtil.usesDatasource(domainClass, dataSourceName)) {
-                    continue;
-                }
-
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("[GrailsAnnotationConfiguration] Binding persistent class [" + fullClassName + "]");
-                }
-
-                Mapping m = binder.getMapping(domainClass);
-                mappings.setAutoImport(m == null || m.getAutoImport());
-                binder.bindClass(domainClass, mappings, sessionFactoryBeanName);
-            }
-        }
-
         try {
-            currentThread.setContextClassLoader(grailsApplication.getClassLoader());
-            super.secondPassCompile();
-            createSubclassForeignKeys();
+            if (grailsApplication != null) {
+                currentThread.setContextClassLoader(grailsApplication.getClassLoader());
+            }
 
+
+            final Mappings mappings = super.createMappings();
+            if (!configLocked) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("[GrailsAnnotationConfiguration] [" + domainClasses.size() +
+                            "] Grails domain classes to bind to persistence runtime");
+                }
+
+                // do Grails class configuration
+                // configure the static binder first
+                Closure defaultMapping = grailsApplication.getConfig().getProperty(GrailsDomainConfiguration.DEFAULT_MAPPING, Closure.class);
+                HibernateMappingContext mappingContext = new HibernateMappingContext(defaultMapping, applicationContext);
+
+
+                for (GrailsDomainClass domainClass : domainClasses) {
+                    final PersistentEntity entity = mappingContext.addPersistentEntity(domainClass.getClazz());
+                    mappingContext.addEntityValidator(entity, domainClass.getValidator());
+                    binder.evaluateMapping(entity);
+                }
+
+                mappingContext.initialize();
+
+                for (PersistentEntity domainClass : mappingContext.getPersistentEntities()) {
+
+                    final String fullClassName = domainClass.getName();
+
+                    String hibernateConfig = fullClassName.replace('.', '/') + ".hbm.xml";
+                    // don't configure Hibernate mapped classes
+                    if (originalContextLoader.getResource(hibernateConfig) != null) continue;
+
+                    if (!GrailsHibernateUtil.usesDatasource(domainClass, dataSourceName)) {
+                        continue;
+                    }
+
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("[GrailsAnnotationConfiguration] Binding persistent class [" + fullClassName + "]");
+                    }
+
+                    Mapping m = binder.getMapping(domainClass);
+                    mappings.setAutoImport(m == null || m.getAutoImport());
+                    binder.bindClass(domainClass, mappings, sessionFactoryBeanName);
+                }
+            }
         } finally {
             currentThread.setContextClassLoader(originalContextLoader);
         }
+
+
+        super.secondPassCompile();
+        createSubclassForeignKeys();
 
         configLocked = true;
     }
@@ -307,5 +310,10 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         catch (Exception e) {
             // ignore exception
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

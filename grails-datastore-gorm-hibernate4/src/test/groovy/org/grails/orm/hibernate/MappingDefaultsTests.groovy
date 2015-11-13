@@ -38,12 +38,12 @@ grails.gorm.default.constraints = {
 
     @Test
     void testGlobalUserTypes() {
-        GrailsDomainClass domain = ga.getDomainClass(MappingDefaults.name)
+        def domain = hibernateDatastore.mappingContext.getPersistentEntity(MappingDefaults.name)
         def mapping = new GrailsDomainBinder().getMapping(domain)
 
         assertEquals YesNoType, mapping.userTypes[Boolean]
 
-        def i = domain.clazz.newInstance(name:"helloworld", test:true)
+        def i = domain.javaClass.newInstance(name:"helloworld", test:true)
         assertNotNull "should have saved instance", i.save(flush:true)
 
         session.clear()

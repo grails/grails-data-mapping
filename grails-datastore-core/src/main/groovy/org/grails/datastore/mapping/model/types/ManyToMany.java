@@ -43,6 +43,7 @@ public abstract class ManyToMany<T extends Property> extends ToMany<T> {
     }
 
     public void setInversePropertyName(String inversePropertyName) {
+        setReferencedPropertyName(inversePropertyName);
         this.inversePropertyName = inversePropertyName;
     }
 }

@@ -18,9 +18,12 @@ package org.grails.orm.hibernate.validation;
 import grails.core.GrailsDomainClass;
 import grails.core.GrailsDomainClassProperty;
 import grails.core.support.proxy.ProxyHandler;
-import org.grails.datastore.gorm.support.BeforeValidateHelper;
-import org.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.grails.core.artefact.DomainClassArtefactHandler;
+import org.grails.datastore.gorm.proxy.ProxyHandlerAdapter;
+import org.grails.datastore.gorm.support.BeforeValidateHelper;
+import org.grails.datastore.gorm.validation.CascadingValidator;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.grails.validation.GrailsDomainClassValidator;
 import org.hibernate.FlushMode;
 import org.hibernate.Hibernate;
@@ -41,18 +44,16 @@ import java.util.ArrayList;
  * @author Graeme Rocher
  * @since 0.5
  */
-public class HibernateDomainClassValidator extends GrailsDomainClassValidator implements MessageSourceAware {
+public class HibernateDomainClassValidator extends GrailsDomainClassValidator implements MessageSourceAware,CascadingValidator {
 
     private BeforeValidateHelper beforeValidateHelper = new BeforeValidateHelper();
     private SessionFactory sessionFactory;
-    private ProxyHandler proxyHandler = new HibernateProxyHandler();
+    private ProxyHandler proxyHandler = new ProxyHandlerAdapter(new HibernateProxyHandler());
 
     @Autowired(required = false)
     public void setProxyHandler(ProxyHandler proxyHandler) {
         this.proxyHandler = proxyHandler;
     }
-
-
     @Override
     protected GrailsDomainClass getAssociatedDomainClassFromApplication(Object associatedObject) {
         String associatedObjectType = Hibernate.getClass(associatedObject).getName();

@@ -35,6 +35,11 @@ public interface MappingConfigurationStrategy {
     List<PersistentProperty> getPersistentProperties(PersistentEntity entity, MappingContext context, ClassMapping classMapping);
 
     /**
+     * @see #getPersistentProperties(Class, MappingContext, ClassMapping)
+     */
+    List<PersistentProperty> getPersistentProperties(PersistentEntity entity, MappingContext context, ClassMapping classMapping, boolean includeIdentifiers);
+
+    /**
      * Obtains a List of PersistentProperty instances for the given Mapped class
      *
      * @param javaClass The Java class
@@ -52,6 +57,15 @@ public interface MappingConfigurationStrategy {
      * @return A PersistentProperty instance
      */
     PersistentProperty getIdentity(Class javaClass, MappingContext context);
+
+    /**
+     * Obtains the identity of a persistent entity
+     *
+     * @param javaClass The Java class
+     * @param context The MappingContext
+     * @return A PersistentProperty instance
+     */
+    PersistentProperty[] getCompositeIdentity(Class javaClass, MappingContext context);
 
     /**
      * Obtains the default manner in which identifiers are mapped. In GORM

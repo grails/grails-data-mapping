@@ -1,16 +1,17 @@
 package org.grails.datastore.gorm
 
 import grails.core.DefaultGrailsApplication
+import grails.validation.ConstraintsEvaluator
 import groovy.sql.Sql
 import grails.core.GrailsApplication
 import grails.core.GrailsDomainClass
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.proxy.ProxyHandlerAdapter
 import org.grails.orm.hibernate.GrailsHibernateTransactionManager
 import org.grails.orm.hibernate.GrailsSessionContext
 import org.grails.orm.hibernate.HibernateDatastore
 import org.grails.orm.hibernate.HibernateGormEnhancer
-import org.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
+import org.grails.orm.hibernate.cfg.HibernateMappingContext
+import org.grails.orm.hibernate.cfg.HibernateMappingContextConfiguration
 import org.grails.orm.hibernate.cfg.HibernateUtils
 import org.grails.orm.hibernate.events.PatchedDefaultFlushEventListener
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler
@@ -23,7 +24,6 @@ import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.grails.core.metaclass.MetaClassEnhancer
 
 //import org.codehaus.groovy.grails.plugins.web.api.ControllersDomainBindingApi
-import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.h2.Driver
@@ -54,7 +54,7 @@ class Setup {
     static GrailsHibernateTransactionManager transactionManager
     static SessionFactory sessionFactory
     static TransactionStatus transactionStatus
-    static GrailsAnnotationConfiguration hibernateConfig
+    static HibernateMappingContextConfiguration hibernateConfig
     static ApplicationContext applicationContext
 
     @CompileStatic
@@ -137,8 +137,16 @@ class Setup {
         config.setProperty AvailableSettings.CACHE_REGION_FACTORY, EhCacheRegionFactory.name
         config.setProperty AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, GrailsSessionContext.name
 
-        hibernateConfig = new GrailsAnnotationConfiguration()
+        Closure defaultMapping = grailsConfig?.grails?.gorm?.default?.mapping instanceof Closure ? grailsConfig.grails.gorm.default.mapping : null
+        def context = new HibernateMappingContext((Closure)defaultMapping, ctx)
+        context.addPersistentEntities(*grailsApplication.domainClasses*.clazz)
+        context.setProxyFactory(new HibernateProxyHandler())
+        ctx.beanFactory.registerSingleton 'grailsDomainClassMappingContext', context
+
+        hibernateConfig = new HibernateMappingContextConfiguration()
+        hibernateConfig.setHibernateMappingContext(context)
         hibernateConfig.setProperties config
+
 
         def eventTriggeringInterceptor = new ClosureEventTriggeringInterceptor(applicationContext: ctx)
         hibernateConfig.setEventListeners(
@@ -154,13 +162,6 @@ class Setup {
              'post-update': eventTriggeringInterceptor,
              'post-delete': eventTriggeringInterceptor ] )
 
-
-
-        hibernateConfig.grailsApplication = grailsApplication
-
-        def context = new GrailsDomainClassMappingContext(grailsApplication)
-        context.setProxyFactory(new ProxyHandlerAdapter(new HibernateProxyHandler()))
-        ctx.beanFactory.registerSingleton 'grailsDomainClassMappingContext', context
 
         sessionFactory = hibernateConfig.buildSessionFactory()
         ctx.beanFactory.registerSingleton 'sessionFactory', sessionFactory
@@ -178,6 +179,8 @@ class Setup {
 //        metaClassEnhancer.addApi new ControllersDomainBindingApi()
 
         HibernateConstraintsEvaluator evaluator = new HibernateConstraintsEvaluator()
+        evaluator.setMappingContext(hibernateDatastore.mappingContext)
+        ctx.beanFactory.registerSingleton(ConstraintsEvaluator.BEAN_NAME, evaluator)
         grailsApplication.domainClasses.each { GrailsDomainClass dc ->
             if (dc.abstract) {
                 return
@@ -187,11 +190,16 @@ class Setup {
 
 
             def validator = new HibernateDomainClassValidator()
+
             validator.sessionFactory = sessionFactory
             validator.grailsApplication = grailsApplication
             validator.domainClass = dc
             validator.messageSource = ctx
             dc.validator = validator
+            def entity = context.getPersistentEntity(dc.fullName)
+            if(entity != null) {
+                context.addEntityValidator(entity, validator)
+            }
 
             dc.metaClass.constructor = { ->
                 def obj
@@ -205,7 +213,7 @@ class Setup {
             }
         }
 
-        def enhancer = new HibernateGormEnhancer(hibernateDatastore, transactionManager, grailsApplication)
+        def enhancer = new HibernateGormEnhancer(hibernateDatastore, transactionManager)
         enhancer.enhance()
 
         hibernateDatastore.mappingContext.addMappingContextListener({ e ->

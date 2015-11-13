@@ -15,25 +15,24 @@
  */
 package org.grails.orm.hibernate;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
+import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder;
+import org.grails.orm.hibernate.cfg.Mapping;
+import org.grails.orm.hibernate.support.SoftKey;
+import org.hibernate.SessionFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import grails.core.GrailsApplication;
-import grails.core.GrailsDomainClass;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder;
-import org.grails.orm.hibernate.cfg.Mapping;
-import org.grails.orm.hibernate.support.SoftKey;
-import org.grails.core.artefact.DomainClassArtefactHandler;
-import org.grails.datastore.mapping.core.Datastore;
-import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
-import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener;
-import org.hibernate.SessionFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEvent;
 
 /**
  * <p>Invokes closure events on domain entities such as beforeInsert, beforeUpdate and beforeDelete.
@@ -58,12 +57,12 @@ public abstract class AbstractEventTriggeringInterceptor extends AbstractPersist
     protected boolean isDefinedByCurrentDataStore(Object entity, AbstractGrailsDomainBinder binder) {
         SessionFactory currentDataStoreSessionFactory = ((AbstractHibernateDatastore) datastore).getSessionFactory();
         ApplicationContext applicationContext = datastore.getApplicationContext();
+        final MappingContext hibernateMappingContext = datastore.getMappingContext();
 
         Mapping mapping = binder.getMapping(entity.getClass());
         List<String> dataSourceNames = null;
         if (mapping == null) {
-            GrailsApplication grailsApplication = applicationContext.getBean("grailsApplication", GrailsApplication.class);
-            GrailsDomainClass dc = (GrailsDomainClass) grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, entity.getClass().getName());
+            final PersistentEntity dc = hibernateMappingContext.getPersistentEntity(entity.getClass().getName());
             if (dc != null) {
                 dataSourceNames = getDatasourceNames(dc);
             }
@@ -97,7 +96,7 @@ public abstract class AbstractEventTriggeringInterceptor extends AbstractPersist
         return false;
     }
 
-    protected abstract List<String> getDatasourceNames(GrailsDomainClass dc);
+    protected abstract List<String> getDatasourceNames(PersistentEntity dc);
 
     /**
      * {@inheritDoc}

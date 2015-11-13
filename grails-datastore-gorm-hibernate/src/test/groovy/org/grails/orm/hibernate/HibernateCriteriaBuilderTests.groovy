@@ -321,7 +321,7 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         assertNotNull obj2.save(flush: true)
 
         HibernateCriteriaBuilder hcb = new HibernateCriteriaBuilder(CriteriaBuilderTestClass, sessionFactory)
-        hcb.grailsApplication = ga
+        hcb.datastore = hibernateDatastore
         hcb.conversionService = new org.grails.datastore.mapping.model.types.conversion.DefaultConversionService()
         List results = hcb.list(sort: 'parent.firstName', order: 'asc') {
                     eq('firstName','Bart')
@@ -1697,19 +1697,19 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
         obj3.invokeMethod("save", null)
 
         // Try sorting on one of the string fields.
-        List results = parse(".list(offset: 10, maxSize: 20, sort: 'firstName', order: 'asc') { " +
-                    "children { " +
-                        "eq('firstName','bart')" +
-                    "}" +
-                "}", "Test1",CriteriaBuilderTestClass.name)
+        List results = CriteriaBuilderTestClass.createCriteria().list(offset: 10, maxSize: 20, sort: 'firstName', order: 'asc') {
+            children {
+                eq('firstName', 'bart')
+            }
+        }
         assertEquals 0 , results.size()
 
         // Now try sorting on the integer field.
-        results = parse(".list(offset: 0, maxSize: 10, sort: 'age', order: 'asc') { " +
-                    "children { " +
-                        "eq('firstName','bart')" +
-                    "}" +
-                "}", "Test1",CriteriaBuilderTestClass.name)
+        results = CriteriaBuilderTestClass.createCriteria().list(offset: 0, maxSize: 10, sort: 'age', order: 'asc') {
+            children {
+                eq('firstName','bart')
+            }
+        }
         assertEquals 1 , results.size()
     }
 
@@ -1727,11 +1727,11 @@ class HibernateCriteriaBuilderTests extends AbstractGrailsHibernateTests {
 
         obj.invokeMethod("save", null)
 
-        List results = parse(".list([:]) { " +
-                    "projections { " +
-                        "property('firstName')" +
-                    "}" +
-                "}", "Test1",CriteriaBuilderTestClass.name)
+        List results = CriteriaBuilderTestClass.createCriteria().list([:]) {
+                    projections {
+                        property('firstName')
+                    }
+        }
 
         assertEquals 1 , results.size()
         assertTrue 'Result list should contain Strings', results[0] instanceof String

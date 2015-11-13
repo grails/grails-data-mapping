@@ -35,6 +35,10 @@ public class ProxyHandlerAdapter implements ProxyFactory {
         this.proxyHandler = proxyHandler;
     }
 
+    @Override
+    public void initialize(Object o) {
+        proxyHandler.initialize(o);
+    }
 
     @Override
     public boolean isProxy(Object object) {
@@ -69,5 +73,10 @@ public class ProxyHandlerAdapter implements ProxyFactory {
     @Override
     public <T, K extends Serializable> T createProxy(Session session, AssociationQueryExecutor<K, T> executor, K associationKey) {
         throw new UnsupportedOperationException("Method createProxy is not supported by this implementation");
+    }
+
+    @Override
+    public Class<?> getProxiedClass(Object o) {
+        return proxyHandler.getProxiedClass(o);
     }
 }

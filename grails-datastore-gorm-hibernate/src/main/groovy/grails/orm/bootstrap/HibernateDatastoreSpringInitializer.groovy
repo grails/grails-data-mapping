@@ -26,19 +26,21 @@ import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.grails.datastore.mapping.engine.event.DatastoreInitializedEvent
 import org.grails.orm.hibernate.*
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
+import org.grails.orm.hibernate.cfg.HibernateMappingContext
 import org.grails.orm.hibernate.cfg.HibernateUtils
+import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler
 import org.grails.orm.hibernate.support.AggregatePersistenceContextInterceptor
 import org.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
 import org.grails.orm.hibernate.support.FlushOnRedirectEventListener
 import org.grails.orm.hibernate.support.GrailsOpenSessionInViewInterceptor
 import org.grails.orm.hibernate.support.HibernateDialectDetectorFactoryBean
+import org.grails.orm.hibernate.support.HibernateMappingContextFactoryBean
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.grails.orm.hibernate.validation.UniqueConstraint
-import org.grails.validation.GrailsDomainClassValidator
 import org.hibernate.EmptyInterceptor
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.ImprovedNamingStrategy
@@ -61,8 +63,9 @@ import javax.sql.DataSource
 @Commons
 class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory"
+    public static final String DEFAULT_DATA_SOURCE_NAME = 'dataSource'
 
-    String defaultDataSourceBeanName = "dataSource"
+    String defaultDataSourceBeanName = Mapping.DEFAULT_DATA_SOURCE
     String defaultSessionFactoryBeanName = SESSION_FACTORY_BEAN_NAME
     String ddlAuto = "update"
     Set<String> dataSources = [defaultDataSourceBeanName]
@@ -101,7 +104,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     @CompileStatic
     ApplicationContext configureForDataSource(DataSource dataSource) {
         GenericApplicationContext applicationContext = new GenericApplicationContext()
-        applicationContext.beanFactory.registerSingleton(defaultDataSourceBeanName, dataSource)
+        applicationContext.beanFactory.registerSingleton(DEFAULT_DATA_SOURCE_NAME, dataSource)
         configureForBeanDefinitionRegistry(applicationContext)
         applicationContext.refresh()
         return applicationContext
@@ -123,7 +126,9 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
 
             // for unwrapping / inspecting proxies
-            proxyHandler(HibernateProxyHandler)
+            hibernateProxyHandler(HibernateProxyHandler)
+            proxyHandler(ProxyHandlerAdapter, ref('hibernateProxyHandler'))
+
             // for handling GORM events
             eventTriggeringInterceptor(ClosureEventTriggeringInterceptor)
             // for listening to Hibernate events
@@ -131,8 +136,10 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             // Useful interceptor for wrapping Hibernate behavior
             persistenceInterceptor(AggregatePersistenceContextInterceptor)
             // domain model mapping context, used for configuration
-            grailsDomainClassMappingContext(GrailsDomainClassMappingContext, ref(GrailsApplication.APPLICATION_ID)) {
-                proxyFactory = bean(ProxyHandlerAdapter, ref("proxyHandler"))
+            grailsDomainClassMappingContext(HibernateMappingContextFactoryBean) {
+                delegate.configuration = this.configuration
+                grailsApplication = ref('grailsApplication')
+                proxyFactory = hibernateProxyHandler
             }
 
 
@@ -145,7 +152,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 def sessionFactoryName = isDefault ? defaultSessionFactoryBeanName : "sessionFactory$suffix"
 
                 def hibConfig = config.getProperty("hibernate$suffix", Map, Collections.emptyMap())
-                def dsConfigPrefix = config.containsProperty('dataSources') ? "dataSources.${isDefault ? 'dataSource' : dataSourceName}" : 'dataSource'
+                def dsConfigPrefix = config.containsProperty('dataSources') ? "dataSources.${isDefault ? DEFAULT_DATA_SOURCE_NAME : dataSourceName}" : DEFAULT_DATA_SOURCE_NAME
                 def ddlAutoSetting = config.getProperty("${dsConfigPrefix}.dbCreate", ddlAuto)
 
                 // default interceptor, can be overridden for extensibility
@@ -167,6 +174,8 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 }
 
                 def noDialect = !hibernateProperties['hibernate.dialect']
+                def hibConfigClass = config.getProperty("${dsConfigPrefix}.configClass", (String)hibernateProperties['hibernate.config_class']?.toString())
+                Properties noDialectProperties = new Properties(hibernateProperties)
                 if (noDialect) {
                     hibernateProperties['hibernate.dialect'] = ref("dialectDetector")
                 }
@@ -187,8 +196,9 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 // Used to detect the database dialect to use
                 if(noDialect) {
                     "dialectDetector$suffix"(HibernateDialectDetectorFactoryBean) {
-                        dataSource = ref(dataSourceName)
+                        dataSource = ref("dataSource$suffix")
                         vendorNameDialectMappings = vendorToDialect
+                        delegate.hibernateProperties = noDialectProperties
                     }
                 }
 
@@ -207,7 +217,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 if(!beanDefinitionRegistry.containsBeanDefinition(sessionFactoryName)) {
                     "$sessionFactoryName"(ConfigurableLocalSessionFactoryBean) { bean ->
                         delegate.dataSourceName = dataSourceName
-                        dataSource = ref(dataSourceName)
+                        dataSource = ref("dataSource$suffix")
                         delegate.hibernateProperties = ref("hibernateProperties$suffix")
                         grailsApplication = ref(GrailsApplication.APPLICATION_ID)
                         entityInterceptor = ref("entityInterceptor$suffix")
@@ -219,8 +229,8 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                             hibConfigLocations << 'classpath:' + prefix + 'hibernate.cfg.xml'
                         }
                         configLocations = hibConfigLocations
-                        if(configuration['hibernate.config_class']) {
-                            configClass = configuration['hibernate.config_class']
+                        if(hibConfigClass) {
+                            configClass = hibConfigClass
                         }
                         eventListeners = [
                                 'save': eventTriggeringInterceptor,
@@ -244,7 +254,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                     "transactionManager$suffix"(GrailsHibernateTransactionManager) { bean ->
                         bean.autowire = "byName"
                         sessionFactory = ref(sessionFactoryName)
-                        dataSource = ref(dataSourceName)
+                        dataSource = ref("dataSource$suffix")
                     }
                 }
 

@@ -15,9 +15,7 @@
  */
 package org.grails.orm.hibernate;
 
-import grails.core.GrailsApplication;
 import groovy.lang.Closure;
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
@@ -47,13 +45,13 @@ public class GrailsHibernateTemplate extends HibernateTemplate implements IHiber
         initialize(null);
     }
     
-    public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application) {
-        this(sessionFactory, application, FLUSH_AUTO);
+    public GrailsHibernateTemplate(SessionFactory sessionFactory, HibernateDatastore hibernateDatastore) {
+        this(sessionFactory, hibernateDatastore, hibernateDatastore.getDefaultFlushMode());
     }
      
-    public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application, int defaultFlushMode) {    
+    public GrailsHibernateTemplate(SessionFactory sessionFactory, HibernateDatastore hibernateDatastore, int defaultFlushMode) {
         super(sessionFactory);
-        initialize(application);
+        initialize(hibernateDatastore);
         setFlushMode(defaultFlushMode);
     }
 
@@ -63,12 +61,12 @@ public class GrailsHibernateTemplate extends HibernateTemplate implements IHiber
         return execute(hibernateCallback);
     }
 
-    private void initialize(GrailsApplication application) {
+    private void initialize(HibernateDatastore datastore) {
         setExposeNativeSession(true);
-        if (application != null) {
-            setCacheQueries(GrailsHibernateUtil.isCacheQueriesByDefault(application));
-            this.osivReadOnly = GrailsHibernateUtil.isOsivReadonly(application);
-            this.passReadOnlyToHibernate = GrailsHibernateUtil.isPassReadOnlyToHibernate(application);
+        if (datastore != null) {
+            setCacheQueries(datastore.isCacheQueries());
+            this.osivReadOnly = datastore.isOsivReadOnly();
+            this.passReadOnlyToHibernate = datastore.isPassReadOnlyToHibernate();
         }
     }
 

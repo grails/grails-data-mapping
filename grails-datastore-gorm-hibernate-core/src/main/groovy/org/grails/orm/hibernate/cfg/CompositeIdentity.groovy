@@ -15,13 +15,15 @@
  */
 package org.grails.orm.hibernate.cfg
 
+import org.grails.datastore.mapping.config.Property
+
 /**
  * Represents a composite identity, equivalent to Hibernate <composite-id> mapping.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-class CompositeIdentity {
+class CompositeIdentity extends Property {
     String[] propertyNames
     Class compositeClass
 }

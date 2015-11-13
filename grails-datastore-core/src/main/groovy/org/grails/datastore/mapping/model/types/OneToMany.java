@@ -35,4 +35,14 @@ public abstract class OneToMany<T extends Property> extends ToMany<T> {
     public OneToMany(PersistentEntity owner, MappingContext context, String name, Class type) {
         super(owner, context, name, type);
     }
+
+    @Override
+    public boolean isNullable() {
+        if(isCircular() && !isBidirectional()) {
+            return true;
+        }
+        else {
+            return super.isNullable();
+        }
+    }
 }

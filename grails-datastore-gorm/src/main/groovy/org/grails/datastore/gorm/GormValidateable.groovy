@@ -29,10 +29,29 @@ import org.springframework.validation.Errors
  */
 @CompileStatic
 trait GormValidateable {
+
+    private transient boolean skipValidate = false
     /**
      * The validation errors object
      */
     Errors errors
+
+    /**
+     * Marks this instance to skip validation
+     *
+     * @param shouldSkip True if validation should be skipped
+     */
+    void skipValidation(boolean shouldSkip) {
+        this.skipValidate = shouldSkip
+    }
+
+    /**
+     * @return Whether this instance should skip validation
+     */
+    boolean shouldSkipValidation() {
+        return this.skipValidate;
+    }
+
 
 
     /**
@@ -42,7 +61,9 @@ trait GormValidateable {
      * @return True if the instance is valid
      */
     boolean validate(Map arguments) {
-        currentGormValidationApi().validate this, arguments
+        if(!shouldSkipValidation()) {
+            currentGormValidationApi().validate this, arguments
+        }
     }
 
     /**
@@ -52,7 +73,9 @@ trait GormValidateable {
      * @return True if the instance is valid
      */
     boolean validate(List fields) {
-        currentGormValidationApi().validate this, fields
+        if(!shouldSkipValidation()) {
+            currentGormValidationApi().validate this, fields
+        }
     }
 
     /**

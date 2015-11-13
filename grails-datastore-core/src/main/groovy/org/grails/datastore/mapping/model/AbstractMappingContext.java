@@ -14,9 +14,7 @@
  */
 package org.grails.datastore.mapping.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -51,6 +49,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     protected Collection<PersistentEntity> persistentEntities = new ConcurrentLinkedQueue<PersistentEntity>();
     protected Map<String,PersistentEntity>  persistentEntitiesByName = new ConcurrentHashMap<String,PersistentEntity>();
     protected Map<PersistentEntity,Map<String,PersistentEntity>>  persistentEntitiesByDiscriminator = new ConcurrentHashMap<PersistentEntity,Map<String,PersistentEntity>>();
+    protected Map<PersistentEntity,Collection<PersistentEntity>>  persistentEntitiesByParent = new ConcurrentHashMap<PersistentEntity,Collection<PersistentEntity>>();
     protected Map<PersistentEntity,Validator>  entityValidators = new ConcurrentHashMap<PersistentEntity, Validator>();
     protected Collection<Listener> eventListeners = new ConcurrentLinkedQueue<Listener>();
     protected GenericConversionService conversionService = new DefaultConversionService();
@@ -275,7 +274,16 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
                 persistentEntitiesByDiscriminator.put(root, children);
             }
             children.put(entity.getDiscriminator(), entity);
+
+            PersistentEntity directParent = entity.getParentEntity();
+            Collection<PersistentEntity> directChildren = persistentEntitiesByParent.get(directParent);
+            if (directChildren == null) {
+                directChildren = new HashSet<PersistentEntity>();
+                persistentEntitiesByParent.put(directParent, directChildren);
+            }
+            directChildren.add(entity);
         }
+
     }
 
     /**
@@ -294,6 +302,26 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
             }
         }
         return false;
+    }
+
+    @Override
+    public Collection<PersistentEntity> getChildEntities(PersistentEntity root) {
+        final Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
+        if(children != null) {
+            return Collections.unmodifiableCollection(children.values());
+        }
+        else {
+            return Collections.emptySet();
+        }
+    }
+
+    @Override
+    public Collection<PersistentEntity> getDirectChildEntities(PersistentEntity root) {
+        Collection<PersistentEntity> entities = persistentEntitiesByParent.get(root);
+        if(entities == null) {
+            return Collections.emptyList();
+        }
+        return Collections.unmodifiableCollection(entities);
     }
 
     public PersistentEntity getChildEntityByDiscriminator(PersistentEntity root, String discriminator) {

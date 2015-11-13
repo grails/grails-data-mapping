@@ -15,7 +15,7 @@ public class MapFakeUserType implements UserType {
 
     public Object nullSafeGet(ResultSet rs, String[] names, owner) throws SQLException {
         String name = rs.getString(names[0])
-        rs.wasNull() ? null : new MapFakeUserType(name: name)
+        rs.wasNull() ? null : Collections.singletonMap("foo",name)
     }
 
     public void nullSafeSet(PreparedStatement ps, value, int index) throws SQLException {
@@ -23,7 +23,7 @@ public class MapFakeUserType implements UserType {
             ps.setNull(index, Types.VARCHAR)
         }
         else {
-            ps.setString(index, value.name)
+            ps.setString(index, value.foo)
         }
     }
 

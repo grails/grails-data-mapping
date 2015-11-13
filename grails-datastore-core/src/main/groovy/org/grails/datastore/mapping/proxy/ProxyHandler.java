@@ -59,4 +59,17 @@ public interface ProxyHandler {
      * @return The identifier
      */
     Serializable getIdentifier(Object obj);
+
+    /**
+     * Get the class being proxied
+     * @param o The object
+     * @return The class being proxied
+     */
+    Class<?> getProxiedClass(Object o);
+
+    /**
+     * Initialises the given object
+     * @param o The object to initialize
+     */
+    void initialize(Object o);
 }

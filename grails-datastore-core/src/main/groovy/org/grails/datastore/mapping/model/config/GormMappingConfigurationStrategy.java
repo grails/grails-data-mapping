@@ -150,7 +150,8 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return Collections.emptyList();
     }
 
-    public List<PersistentProperty> getPersistentProperties(PersistentEntity entity, MappingContext context, ClassMapping classMapping) {
+    @Override
+    public List<PersistentProperty> getPersistentProperties(PersistentEntity entity, MappingContext context, ClassMapping classMapping, boolean includeIdentifiers) {
         final List<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
 
@@ -183,7 +184,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             if (field != null && java.lang.reflect.Modifier.isTransient(field.getModifiers())) {
                 continue;
             }
-            if (isExcludedProperty(propertyName, classMapping, transients)) continue;
+            if (isExcludedProperty(propertyName, classMapping, transients, includeIdentifiers)) continue;
             Class<?> propertyType = descriptor.getPropertyType();
             Class currentPropType = propertyType;
             // establish if the property is a one-to-many
@@ -221,11 +222,15 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             else if (propertyFactory.isSimpleType(propertyType)) {
                 persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
             }
-            else if (MappingFactory.isCustomType(propertyType)) {
+            else if (supportsCustomType(propertyType)) {
                 persistentProperties.add(propertyFactory.createCustom(entity, context, descriptor));
             }
         }
         return persistentProperties;
+    }
+
+    protected boolean supportsCustomType(Class<?> propertyType) {
+        return MappingFactory.isCustomType(propertyType);
     }
 
     private List getCollectionStaticProperty(ClassPropertyFetcher cpf, String property) {
@@ -238,6 +243,10 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             values.addAll(coll);
         }
         return values;
+    }
+
+    public List<PersistentProperty> getPersistentProperties(PersistentEntity entity, MappingContext context, ClassMapping classMapping) {
+        return getPersistentProperties(entity, context, classMapping, false);
     }
 
     private Map getMapStaticProperty(ClassPropertyFetcher cpf, String property) {
@@ -369,6 +378,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 // Tie the properties together.
                 relatedClassPropertyType = pd.getPropertyType();
                 referencedPropertyName = pd.getName();
+                relatedClassPropertyName = referencedPropertyName;
             }
         }
         else {
@@ -377,7 +387,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 // if the related type has a relationships map it may be a many-to-many
                 // figure out if there is a many-to-many relationship defined
                 if (isRelationshipToMany(entity, relatedClassType, relatedClassRelationships)) {
-                    Map relatedClassMappedBy = getMapStaticProperty(cpf, MAPPED_BY);
+                    Map relatedClassMappedBy = getMapStaticProperty(referencedCpf, MAPPED_BY);
                     // retrieve the relationship property
                     for (Object o : relatedClassRelationships.keySet()) {
                         String currentKey = (String) o;
@@ -405,11 +415,16 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 // if there is more than one property then (for the moment) ignore the relationship
                 if (relatedClassPropertyType == null || Collection.class.isAssignableFrom(relatedClassPropertyType)) {
                     List<PropertyDescriptor> descriptors = getPropertiesAssignableFromType(entity.getJavaClass(), referencedCpf);
-
+                    Map relatedMappedBy = referencedCpf.getStaticPropertyValue(GormProperties.MAPPED_BY, Map.class);
+                    if(relatedMappedBy == null) {
+                        relatedMappedBy = Collections.emptyMap();
+                    }
                     if (descriptors.size() == 1) {
                         final PropertyDescriptor pd = descriptors.get(0);
-                        relatedClassPropertyType = pd.getPropertyType();
-                        referencedPropertyName = pd.getName();
+                        if(isNotMappedToDifferentProperty(property, pd.getName(), relatedMappedBy)) {
+                            relatedClassPropertyType = pd.getPropertyType();
+                            referencedPropertyName = pd.getName();
+                        }
                     }
                     else if (descriptors.size() > 1) {
                         // try now to use the class name by convention
@@ -423,8 +438,10 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                         }
 
                         if (pd != null) {
-                            relatedClassPropertyType = pd.getPropertyType();
-                            referencedPropertyName = pd.getName();
+                            if(isNotMappedToDifferentProperty(property, pd.getName(), relatedMappedBy)) {
+                                relatedClassPropertyType = pd.getPropertyType();
+                                referencedPropertyName = pd.getName();
+                            }
                         }
                     }
                 }
@@ -432,6 +449,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         }
 
         // if its a many-to-many figure out the owning side of the relationship
+
         final boolean isInverseSideEntity = isPersistentEntity(relatedClassPropertyType);
         Association association = null;
         boolean many = false;
@@ -551,11 +569,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             return association;
         }
 
-        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(propType);
+        ClassPropertyFetcher relatedCpf = ClassPropertyFetcher.forClass(propType);
 
         // establish relationship to type
-        Map relatedClassRelationships = getAllAssociationMap(cpf);
-        Map mappedBy = getMapStaticProperty(cpf, MAPPED_BY);
+        Map relatedClassRelationships = getAllAssociationMap(relatedCpf);
+        Map mappedBy = getMapStaticProperty(relatedCpf, MAPPED_BY);
 
         Class<?> relatedClassPropertyType = null;
 
@@ -567,33 +585,47 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             if (relatedClassRelationships != null && !relatedClassRelationships.isEmpty()) {
 
                 PropertyDescriptor[] descriptors = ReflectionUtils.getPropertiesOfType(entity.getJavaClass(), propType);
-                relatedClassPropertyName = findOneToManyThatMatchesType(entity, relatedClassRelationships);
-                // if there is only one property on many-to-one side of the relationship then
-                // try to establish if it is bidirectional
-                if (descriptors.length == 1 && isNotMappedToDifferentProperty(property,relatedClassPropertyName, mappedBy)) {
-                    if (StringUtils.hasText(relatedClassPropertyName)) {
-                        // get the type of the property
-                        relatedClassPropertyType = cpf.getPropertyType(relatedClassPropertyName);
-                    }
+                relatedClassPropertyName = findOneToManyThatMatchesType(entity, property, relatedClassRelationships, mappedBy, relatedCpf);
+
+                Object mappedByValue = relatedClassPropertyName != null ? mappedBy.get(relatedClassPropertyName) : null;
+                if(mappedByValue != null && property.getName().equals(mappedByValue)) {
+
+                    relatedClassPropertyType = relatedCpf.getPropertyType(relatedClassPropertyName, true);
                 }
-                // if there is more than one property on the many-to-one side then we need to either
-                // find out if there is a mappedBy property or whether a convention is used to decide
-                // on the mapping property
-                else if (descriptors.length > 1) {
-                    if (mappedBy.containsValue(property.getName())) {
-                        for (Object o : mappedBy.keySet()) {
-                            String mappedByPropertyName = (String) o;
-                            if (property.getName().equals(mappedBy.get(mappedByPropertyName))) {
-                                Class<?> mappedByRelatedType = (Class<?>) relatedClassRelationships.get(mappedByPropertyName);
-                                if (mappedByRelatedType != null && propType.isAssignableFrom(mappedByRelatedType))
-                                    relatedClassPropertyType = cpf.getPropertyType(mappedByPropertyName);
+                else {
+
+                    // if there is only one property on many-to-one side of the relationship then
+                    // try to establish if it is bidirectional
+                    if (descriptors.length == 1 && isNotMappedToDifferentProperty(property,relatedClassPropertyName, mappedBy)) {
+                        if (StringUtils.hasText(relatedClassPropertyName)) {
+                            // get the type of the property
+                            PropertyDescriptor potentialProperty = relatedCpf.getPropertyDescriptor(relatedClassPropertyName);
+
+                            // ensure circular links are not possible between one-to-one associations
+                            if(!potentialProperty.equals(property)) {
+                                relatedClassPropertyType = potentialProperty.getPropertyType();
                             }
                         }
                     }
-                    else {
-                        String classNameAsProperty = Introspector.decapitalize(propType.getName());
-                        if (property.getName().equals(classNameAsProperty) && !mappedBy.containsKey(relatedClassPropertyName)) {
-                            relatedClassPropertyType = cpf.getPropertyType(relatedClassPropertyName);
+                    // if there is more than one property on the many-to-one side then we need to either
+                    // find out if there is a mappedBy property or whether a convention is used to decide
+                    // on the mapping property
+                    else if (descriptors.length > 1) {
+                        if (mappedBy.containsValue(property.getName())) {
+                            for (Object o : mappedBy.keySet()) {
+                                String mappedByPropertyName = (String) o;
+                                if (property.getName().equals(mappedBy.get(mappedByPropertyName))) {
+                                    Class<?> mappedByRelatedType = (Class<?>) relatedClassRelationships.get(mappedByPropertyName);
+                                    if (mappedByRelatedType != null && propType.isAssignableFrom(mappedByRelatedType))
+                                        relatedClassPropertyType = relatedCpf.getPropertyType(mappedByPropertyName);
+                                }
+                            }
+                        }
+                        else {
+                            String classNameAsProperty = Introspector.decapitalize(propType.getName());
+                            if (property.getName().equals(classNameAsProperty) && !mappedBy.containsKey(relatedClassPropertyName)) {
+                                relatedClassPropertyType = relatedCpf.getPropertyType(relatedClassPropertyName);
+                            }
                         }
                     }
                 }
@@ -601,12 +633,16 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
             // otherwise retrieve all the properties of the type from the associated class
             if (relatedClassPropertyType == null) {
-                List<PropertyDescriptor> descriptors = getPropertiesAssignableFromType(entity.getJavaClass(), cpf);
+                List<PropertyDescriptor> descriptors = getPropertiesAssignableFromType(entity.getJavaClass(), relatedCpf);
 
                 // if there is only one then the association is established
                 if (descriptors.size() == 1) {
-                    relatedClassPropertyType = descriptors.get(0).getPropertyType();
-                    relatedClassPropertyName = descriptors.get(0).getName();
+                    PropertyDescriptor first = descriptors.get(0);
+                    // ensure circular links are not possible between one-to-one associations
+                    if(!first.equals(property)) {
+                        relatedClassPropertyType = first.getPropertyType();
+                        relatedClassPropertyName = first.getName();
+                    }
                 }
             }
         }
@@ -632,8 +668,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         if (association != null) {
             PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, propType);
             association.setAssociatedEntity(associatedEntity);
-            boolean isNotCircular = entity != associatedEntity;
-            if (relatedClassPropertyName != null && isNotCircular) {
+            if (relatedClassPropertyName != null ) {
                 association.setReferencedPropertyName(relatedClassPropertyName);
             }
         }
@@ -725,13 +760,18 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return true;
     }
 
-    private String findOneToManyThatMatchesType(PersistentEntity entity, Map relatedClassRelationships) {
+    private String findOneToManyThatMatchesType(PersistentEntity entity, PropertyDescriptor pd, Map relatedClassRelationships, Map mappedBy, ClassPropertyFetcher relatedCpf) {
         for (Object o : relatedClassRelationships.keySet()) {
             String currentKey = (String) o;
             Class<?> currentClass = (Class<?>)relatedClassRelationships.get(currentKey);
-
+            Object mappedByValue = mappedBy.get(currentKey);
             if (currentClass.isAssignableFrom(entity.getJavaClass())) {
-                return currentKey;
+                if(mappedByValue == null || pd.getName().equals(mappedByValue)) {
+                    PropertyDescriptor candidate = relatedCpf.getPropertyDescriptor(currentKey);
+                    if(candidate != null && !candidate.equals(pd)) {
+                        return currentKey;
+                    }
+                }
             }
         }
 
@@ -742,13 +782,23 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);
     }
 
-    private boolean isExcludedProperty(String propertyName, ClassMapping classMapping, Collection transients) {
+    private boolean isExcludedProperty(String propertyName, ClassMapping classMapping, Collection transients, boolean includeIdentifiers) {
         IdentityMapping id = classMapping != null ? classMapping.getIdentifier() : null;
         String[] identifierName = id != null ? id.getIdentifierName() : null;
-        return identifierName != null && propertyName.equals(identifierName[0]) ||
-                id == null && propertyName.equals(IDENTITY_PROPERTY) ||
+        return isExcludeId(propertyName, id, identifierName,includeIdentifiers) ||
                 EXCLUDED_PROPERTIES.contains(propertyName) ||
                 transients.contains(propertyName);
+    }
+
+    private boolean isExcludeId(String propertyName, IdentityMapping id, String[] identifierName, boolean includeIdentifiers) {
+        return !includeIdentifiers && (identifierName != null && isIdentifierProperty(propertyName, identifierName) || id == null && propertyName.equals(IDENTITY_PROPERTY));
+    }
+
+    private boolean isIdentifierProperty(String propertyName, String[] identifierName) {
+        for (String n : identifierName) {
+            if(propertyName.equals(n)) return true;
+        }
+        return false;
     }
 
     /**
@@ -789,6 +839,33 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return establishRelationshipOwners(ClassPropertyFetcher.forClass(javaClass));
     }
 
+    @Override
+    public PersistentProperty[] getCompositeIdentity(Class javaClass, MappingContext context) {
+        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(javaClass);
+        PersistentEntity entity = context.getPersistentEntity(javaClass.getName());
+        ClassMapping mapping = entity.getMapping();
+
+        IdentityMapping id = mapping.getIdentifier();
+        final String[] names = id.getIdentifierName();
+        PersistentProperty[] identifiers = new PersistentProperty[names.length];
+        for (int i = 0; i < names.length; i++) {
+            String name = names[i];
+
+            final PersistentProperty p = entity.getPropertyByName(name);
+            if(p != null) {
+                identifiers[i] = p;
+            }
+            else {
+                final PropertyDescriptor pd = cpf.getPropertyDescriptor(name);
+                if (pd != null) {
+                    identifiers[i] = propertyFactory.createIdentity(entity, context, pd);
+                }
+            }
+
+        }
+        return identifiers;
+    }
+
     /**
      * @see org.grails.datastore.mapping.model.MappingConfigurationStrategy#getIdentity(Class, org.grails.datastore.mapping.model.MappingContext)
      */
@@ -805,7 +882,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             if (pd != null) {
                 return propertyFactory.createIdentity(entity, context, pd);
             }
-            if (!entity.isExternal()) {
+            if (!entity.isExternal() && !entity.isAbstract()) {
                 throw new IllegalMappingException("Mapped identifier [" + names[0] + "] for class [" +
                       javaClass.getName() + "] is not a valid property");
             }
