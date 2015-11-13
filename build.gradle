@@ -119,6 +119,9 @@ task wrapper(type: Wrapper) {
 apply from: "gradle/idea.gradle"
 
 subprojects {
+    configurations {
+        documentation
+    }    
    version = "${projectVersion}.${releaseType}"
    group = "org.grails"
 
@@ -199,6 +202,7 @@ subprojects {
 
     dependencies {
         if (isStandardGroovyMavenProject) {
+            documentation "org.fusesource.jansi:jansi:1.11"
             compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
 
             testCompile group: 'org.codehaus.groovy', name: 'groovy-test', version: groovyVersion
@@ -223,9 +227,7 @@ subprojects {
     }
 
     if (isDocumentationProject) {
-        configurations {
-            documentation
-        }
+
         dependencies {
             documentation group: 'org.grails', name: 'grails-docs', version: grailsVersion
             documentation group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
@@ -349,6 +351,10 @@ subprojects {
             options.charSet "UTF-8"
             options.jFlags "-Xms64M", "-Xmx512M", "-XX:MaxPermSize=256m"
         }
+
+        configure([groovydoc]) {
+            groovyClasspath += configurations.documentation
+        }        
 
         modifyPom {
             delegate.project {

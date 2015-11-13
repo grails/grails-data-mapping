@@ -79,9 +79,9 @@ class HibernateGrailsPlugin extends Plugin {
             Class cls = (Class)event.source
             GrailsDomainClass dc = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, cls.name)
 
-            if(!dc || !GrailsHibernateUtil.isMappedWithHibernate(dc)) {
-                return
-            }
+            // if(!dc || !GrailsHibernateUtil.isMappedWithHibernate(dc)) {
+            //     return
+            // }
 
             GrailsDomainBinder.clearMappingCache(cls)
 

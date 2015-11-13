@@ -26,7 +26,6 @@ import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.mapping.model.DatastoreConfigurationException
 import org.grails.orm.hibernate.*
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
-import org.grails.orm.hibernate.cfg.HibernateMappingContextConfiguration
 import org.grails.orm.hibernate.cfg.HibernateUtils
 import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler
