@@ -223,14 +223,14 @@ class ManyToManySpec extends GormDatastoreSpec {
         then:
         fetchedFelix.version == felix.version
 
-//        and: "inverse side has correct number of friends"
-//        fetchedFelix.friends.size() == 100 // TODO: investigate why this domain class is not bidirectional
+        and: "inverse side has correct number of friends"
+        fetchedFelix.friends.size() == 100
 
         when: "we have 100 relationships"
         def result = session.nativeInterface.execute("MATCH (:BidirectionalFriends {name:{1}})<-[:FRIENDS]-(o) return count(o) as c", ["1":"felix"])
 
         then:
-        IteratorUtil.single(result)["c"] == 101
+        IteratorUtil.single(result)["c"] == 100
 
     }
 
