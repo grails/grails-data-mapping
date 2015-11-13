@@ -892,7 +892,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return null;
     }
     public static boolean isAbstract(PersistentEntity entity) {
-        return !Modifier.isAbstract(entity.getJavaClass().getModifiers());
+        return Modifier.isAbstract(entity.getJavaClass().getModifiers());
     }
 
     /**
