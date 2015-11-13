@@ -41,4 +41,5 @@ public interface GormProperties {
     String LAST_UPDATED = "lastUpdated";
     String EMBEDDED = "embedded";
     String CONSTRAINTS = "constraints";
+    String DEFAULT_MAPPING_STRATEGY = "GORM";
 }

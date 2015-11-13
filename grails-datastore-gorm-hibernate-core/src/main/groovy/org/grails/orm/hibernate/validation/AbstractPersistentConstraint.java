@@ -14,12 +14,12 @@
  */
 package org.grails.orm.hibernate.validation;
 
-import grails.core.GrailsApplication;
-import grails.core.GrailsDomainClass;
 import grails.validation.AbstractConstraint;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.orm.hibernate.IHibernateTemplate;
-import org.grails.core.artefact.DomainClassArtefactHandler;
-import org.grails.core.lifecycle.ShutdownOperations;
+import org.grails.orm.hibernate.cfg.HibernateMappingContext;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -34,13 +34,6 @@ public abstract class AbstractPersistentConstraint extends AbstractConstraint im
 
     public static ThreadLocal<SessionFactory> sessionFactory = new ThreadLocal<SessionFactory>();
 
-    static {
-        ShutdownOperations.addOperation(new Runnable() {
-            public void run() {
-                sessionFactory.remove();
-            }
-        });
-    }
 
     protected ApplicationContext applicationContext;
 
@@ -67,13 +60,11 @@ public abstract class AbstractPersistentConstraint extends AbstractConstraint im
      */
     public boolean isValid() {
         if (applicationContext.containsBean("sessionFactory")) {
-            GrailsApplication grailsApplication = applicationContext.getBean(
-                    GrailsApplication.APPLICATION_ID, GrailsApplication.class);
-            GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(
-                    DomainClassArtefactHandler.TYPE, constraintOwningClass.getName());
+            MappingContext mappingContext = applicationContext.getBean(HibernateMappingContext.class);
+            PersistentEntity domainClass = mappingContext.getPersistentEntity(constraintOwningClass.getName());
             if (domainClass != null) {
                 String mappingStrategy = domainClass.getMappingStrategy();
-                return mappingStrategy.equals(GrailsDomainClass.GORM);
+                return mappingStrategy.equals(GormProperties.DEFAULT_MAPPING_STRATEGY);
             }
         }
         return false;

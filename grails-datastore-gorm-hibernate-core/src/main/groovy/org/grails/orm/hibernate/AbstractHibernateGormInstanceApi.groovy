@@ -15,7 +15,6 @@
  */
 package org.grails.orm.hibernate
 
-import grails.validation.DeferredBindingActions
 import org.grails.orm.hibernate.validation.AbstractPersistentConstraint
 import org.grails.core.lifecycle.ShutdownOperations
 import groovy.transform.CompileDynamic
@@ -55,6 +54,15 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
     private static final String ARGUMENT_INSERT = "insert";
     private static final String ARGUMENT_MERGE = "merge";
     private static final String ARGUMENT_FAIL_ON_ERROR = "failOnError";
+    private static final Class DEFERRED_BINDING
+
+    static {
+        try {
+            DEFERRED_BINDING = Class.forName('grails.validation.DeferredBindingActions')
+        } catch (Throwable e) {
+            DEFERRED_BINDING = null
+        }
+    }
 
     protected static final Object[] EMPTY_ARRAY = []
     /**
@@ -98,7 +106,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
     D save(D target, Map arguments) {
 
         PersistentEntity domainClass = persistentEntity
-        DeferredBindingActions.runActions()
+        runDeferredBinding()
         boolean shouldFlush = shouldFlush(arguments)
         boolean shouldValidate = shouldValidate(arguments, persistentEntity)
 
@@ -158,6 +166,11 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         else {
             return performSave(target, shouldFlush)
         }
+    }
+
+    @CompileDynamic
+    private void runDeferredBinding() {
+        DEFERRED_BINDING?.runActions()
     }
 
     @Override

@@ -88,6 +88,11 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     }
 
     @Override
+    public String getMappingStrategy() {
+        return domainClass.getMappingStrategy();
+    }
+
+    @Override
     public boolean isAbstract() {
         return domainClass.isAbstract();
     }

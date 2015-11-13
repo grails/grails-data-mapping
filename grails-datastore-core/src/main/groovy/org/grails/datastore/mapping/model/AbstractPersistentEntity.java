@@ -39,16 +39,16 @@ import org.springframework.util.Assert;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractPersistentEntity<T extends Entity> implements PersistentEntity {
-    protected Class javaClass;
+    protected final Class javaClass;
+    protected final MappingContext context;
     protected List<PersistentProperty> persistentProperties;
     protected List<Association> associations;
     protected Map<String, PersistentProperty> propertiesByName = new HashMap<String,PersistentProperty>();
     protected Map<String, PersistentProperty> mappedPropertiesByName = new HashMap<String,PersistentProperty>();
-    protected MappingContext context;
     protected PersistentProperty identity;
     protected PersistentProperty version;
     protected List<String> persistentPropertyNames;
-    private String decapitalizedName;
+    private final String decapitalizedName;
     protected Set owners;
     private PersistentEntity parentEntity;
     private boolean external;
@@ -57,12 +57,15 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     private boolean versionCompatibleType;
     private boolean versioned = true;
     private PersistentProperty[] compositeIdentity;
+    private final String mappingStrategy;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         Assert.notNull(javaClass, "The argument [javaClass] cannot be null");
         this.javaClass = javaClass;
         this.context = context;
         decapitalizedName = Introspector.decapitalize(javaClass.getSimpleName());
+        String classSpecified = ClassPropertyFetcher.forClass(javaClass).getStaticPropertyValue(GormProperties.MAPPING_STRATEGY, String.class);
+        this.mappingStrategy = classSpecified != null ? classSpecified : GormProperties.DEFAULT_MAPPING_STRATEGY;
     }
 
 
@@ -78,6 +81,11 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     @Override
     public boolean isAbstract() {
         return Modifier.isAbstract(javaClass.getModifiers());
+    }
+
+    @Override
+    public String getMappingStrategy() {
+        return this.mappingStrategy;
     }
 
     public void setExternal(boolean external) {

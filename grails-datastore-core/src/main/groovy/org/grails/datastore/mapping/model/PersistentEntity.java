@@ -192,4 +192,9 @@ public interface PersistentEntity extends Initializable {
      * @return Whether the entity is abstract
      */
     boolean isAbstract();
+
+    /**
+     * @return The mapping strategy to use
+     */
+    String getMappingStrategy();
 }

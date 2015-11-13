@@ -1,6 +1,5 @@
 package org.grails.orm.hibernate.query;
 
-import grails.util.CollectionUtils;
 import groovy.lang.*;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.*;
@@ -157,7 +156,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
      * @param type the type of the projected value
      */
     protected void sqlProjection(String sql, String columnAlias, Type type) {
-        sqlProjection(sql, CollectionUtils.newList(columnAlias), CollectionUtils.newList(type));
+        sqlProjection(sql, Collections.singletonList(columnAlias), Collections.singletonList(type));
     }
 
     /**

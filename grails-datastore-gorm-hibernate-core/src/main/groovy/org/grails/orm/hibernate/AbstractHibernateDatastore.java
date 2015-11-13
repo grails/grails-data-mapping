@@ -17,9 +17,8 @@ package org.grails.orm.hibernate;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.orm.hibernate.cfg.Mapping;
-import org.hibernate.Session;
+import org.grails.orm.hibernate.validation.AbstractPersistentConstraint;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.PropertyResolver;
@@ -70,6 +69,12 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
             defaultFlushMode = config.getProperty(CONFIG_PROPERTY_FLUSH_MODE, Integer.class, FlushMode.COMMIT.level);
         }
         failOnError = config.getProperty(CONFIG_PROPERTY_FAIL_ON_ERROR, Boolean.class, false);
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        AbstractPersistentConstraint.sessionFactory.remove();
+        super.destroy();
     }
 
     public boolean isAutoFlush() {
