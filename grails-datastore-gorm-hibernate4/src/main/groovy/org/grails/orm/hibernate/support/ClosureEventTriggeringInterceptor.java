@@ -49,7 +49,6 @@ import org.hibernate.event.spi.PreUpdateEvent;
 import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.hibernate.persister.entity.EntityPersister;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -91,7 +90,6 @@ public class ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventL
     private Map<SessionFactory, HibernateDatastore> datastores;
 
 
-    @Autowired
     public void setDatastores(HibernateDatastore[] datastores) {
         Map<SessionFactory, HibernateDatastore> datastoreMap = new HashMap<SessionFactory, HibernateDatastore>();
         for (HibernateDatastore hibernateDatastore : datastores) {
