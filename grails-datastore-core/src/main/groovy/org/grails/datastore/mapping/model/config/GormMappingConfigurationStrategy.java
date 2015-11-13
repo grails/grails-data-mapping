@@ -21,6 +21,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -882,13 +883,16 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             if (pd != null) {
                 return propertyFactory.createIdentity(entity, context, pd);
             }
-            if (!entity.isExternal() && !entity.isAbstract()) {
+            if (!entity.isExternal() && isAbstract(entity)) {
                 throw new IllegalMappingException("Mapped identifier [" + names[0] + "] for class [" +
                       javaClass.getName() + "] is not a valid property");
             }
             return null;
         }
         return null;
+    }
+    public static boolean isAbstract(PersistentEntity entity) {
+        return !Modifier.isAbstract(entity.getJavaClass().getModifiers());
     }
 
     /**

@@ -1,5 +1,6 @@
 import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
+import org.codehaus.groovy.grails.commons.GrailsClass
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
 class MongodbGrailsPlugin {
@@ -26,7 +27,10 @@ class MongodbGrailsPlugin {
     ]
 
     def doWithSpring = {
-        def initializer = new MongoDbDataStoreSpringInitializer(application.config, application.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { org.codehaus.groovy.grails.commons.GrailsClass cls -> cls.clazz })
+        def domainClasses = application.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz }
+
+        println "DOMAIN CLASSES ARE $domainClasses"
+        def initializer = new MongoDbDataStoreSpringInitializer(application.config, domainClasses)
         initializer.registerApplicationIfNotPresent = false
         initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate")  )
 

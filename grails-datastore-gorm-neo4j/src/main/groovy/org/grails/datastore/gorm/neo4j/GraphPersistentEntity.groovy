@@ -8,7 +8,10 @@ import org.grails.datastore.mapping.model.ClassMapping
 import org.grails.datastore.mapping.model.DatastoreConfigurationException
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
 import org.springframework.util.ClassUtils
+
+import java.lang.reflect.Modifier
 
 
 /**
@@ -198,7 +201,7 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Neo4jEntity>
         sb.append(getLabelsAsString(domainInstance));
 
         def parentEntity = getParentEntity()
-        if (parentEntity !=null && !parentEntity.isAbstract()) {
+        if (parentEntity !=null && !GormMappingConfigurationStrategy.isAbstract(parentEntity)) {
             ((GraphPersistentEntity) parentEntity).appendRecursive(sb, domainInstance);
         }
     }

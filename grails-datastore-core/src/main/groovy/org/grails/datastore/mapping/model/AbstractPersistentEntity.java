@@ -58,18 +58,19 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     private boolean versioned = true;
     private PersistentProperty[] compositeIdentity;
     private final String mappingStrategy;
+    private final boolean isAbstract;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         Assert.notNull(javaClass, "The argument [javaClass] cannot be null");
         this.javaClass = javaClass;
         this.context = context;
+        this.isAbstract = Modifier.isAbstract(javaClass.getModifiers());
         decapitalizedName = Introspector.decapitalize(javaClass.getSimpleName());
         String classSpecified = ClassPropertyFetcher.forClass(javaClass).getStaticPropertyValue(GormProperties.MAPPING_STRATEGY, String.class);
         this.mappingStrategy = classSpecified != null ? classSpecified : GormProperties.DEFAULT_MAPPING_STRATEGY;
     }
 
 
-    @Override
     public PersistentProperty[] getCompositeIdentity() {
         return compositeIdentity;
     }
@@ -78,12 +79,9 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
         return external;
     }
 
-    @Override
     public boolean isAbstract() {
-        return Modifier.isAbstract(javaClass.getModifiers());
+        return isAbstract;
     }
-
-    @Override
     public String getMappingStrategy() {
         return this.mappingStrategy;
     }

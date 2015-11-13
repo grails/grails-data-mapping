@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.reflect
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.engine.internal.MappingUtils
+import org.grails.datastore.mapping.model.AbstractPersistentEntity
 import org.grails.datastore.mapping.model.ClassMapping
 import org.grails.datastore.mapping.model.IdentityMapping
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -65,7 +66,10 @@ class FastClassData {
             registerProp(version)
         }
 
-        def identity = entity.compositeIdentity
+        PersistentProperty[] identity = null
+        if(entity instanceof AbstractPersistentEntity) {
+            identity = ((AbstractPersistentEntity)entity).getCompositeIdentity()
+        }
         if(identity != null) {
             for(p in identity) {
                 registerProp(p)

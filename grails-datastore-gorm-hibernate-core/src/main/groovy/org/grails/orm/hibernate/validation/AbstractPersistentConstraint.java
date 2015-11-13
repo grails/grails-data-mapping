@@ -20,6 +20,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.orm.hibernate.IHibernateTemplate;
 import org.grails.orm.hibernate.cfg.HibernateMappingContext;
+import org.grails.orm.hibernate.cfg.HibernatePersistentEntity;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -63,7 +64,7 @@ public abstract class AbstractPersistentConstraint extends AbstractConstraint im
             MappingContext mappingContext = applicationContext.getBean(HibernateMappingContext.class);
             PersistentEntity domainClass = mappingContext.getPersistentEntity(constraintOwningClass.getName());
             if (domainClass != null) {
-                String mappingStrategy = domainClass.getMappingStrategy();
+                String mappingStrategy = ((HibernatePersistentEntity)domainClass).getMappingStrategy();
                 return mappingStrategy.equals(GormProperties.DEFAULT_MAPPING_STRATEGY);
             }
         }

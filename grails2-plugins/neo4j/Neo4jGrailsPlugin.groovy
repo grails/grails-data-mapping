@@ -1,4 +1,6 @@
+import grails.neo4j.bootstrap.Neo4jDataStoreSpringInitializer
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
+import org.codehaus.groovy.grails.commons.GrailsClass
 import org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
@@ -27,7 +29,8 @@ class Neo4jGrailsPlugin {
     ]
 
     def doWithSpring = {
-        def initializer = new grails.neo4j.bootstrap.Neo4jDataStoreSpringInitializer(application.config, application.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { org.codehaus.groovy.grails.commons.GrailsClass cls -> cls.clazz })
+        def domainClasses = application.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz }
+        def initializer = new Neo4jDataStoreSpringInitializer(application.config, domainClasses)
         initializer.registerApplicationIfNotPresent = false
         initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate")  )
 
