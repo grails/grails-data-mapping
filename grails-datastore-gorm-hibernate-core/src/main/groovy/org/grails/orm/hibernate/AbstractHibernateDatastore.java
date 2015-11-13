@@ -16,7 +16,10 @@ package org.grails.orm.hibernate;
 
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.orm.hibernate.cfg.Mapping;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.PropertyResolver;
@@ -33,6 +36,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";
     public static final String CONFIG_PROPERTY_PASS_READONLY_TO_HIBERNATE = "grails.hibernate.pass.readonly";
     public static final String CONFIG_PROPERTY_AUTO_FLUSH = "grails.gorm.autoFlush";
+    public static final String CONFIG_PROPERTY_FLUSH_MODE = "grails.gorm.flushMode";
     public static final String CONFIG_PROPERTY_FAIL_ON_ERROR = "grails.gorm.failOnError";
     public static final String CONFIG_PROPERTY_DEFAULT_MAPPING = "grails.gorm.default.mapping";
     protected final SessionFactory sessionFactory;
@@ -41,14 +45,16 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     private final boolean osivReadOnly;
     private final boolean passReadOnlyToHibernate;
     private final boolean isCacheQueries;
-    private final boolean autoFlush;
+    private final int defaultFlushMode;
     private final boolean failOnError;
+    private final String dataSourceName;
 
 
-    protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext) {
+    protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext, String dataSourceName) {
         super(mappingContext);
         this.sessionFactory = sessionFactory;
         this.config = config;
+        this.dataSourceName = dataSourceName;
         initializeConverters(mappingContext);
         if(applicationContext != null) {
             setApplicationContext(applicationContext);
@@ -57,12 +63,21 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         osivReadOnly = config.getProperty(CONFIG_PROPERTY_OSIV_READONLY, Boolean.class, false);
         passReadOnlyToHibernate = config.getProperty(CONFIG_PROPERTY_PASS_READONLY_TO_HIBERNATE, Boolean.class, false);
         isCacheQueries = config.getProperty(CONFIG_PROPERTY_CACHE_QUERIES, Boolean.class, false);
-        autoFlush = config.getProperty(CONFIG_PROPERTY_AUTO_FLUSH, Boolean.class, false);
+        if( config.getProperty(CONFIG_PROPERTY_AUTO_FLUSH, Boolean.class, false) ) {
+            defaultFlushMode = FlushMode.AUTO.level;
+        }
+        else {
+            defaultFlushMode = config.getProperty(CONFIG_PROPERTY_FLUSH_MODE, Integer.class, FlushMode.COMMIT.level);
+        }
         failOnError = config.getProperty(CONFIG_PROPERTY_FAIL_ON_ERROR, Boolean.class, false);
     }
 
     public boolean isAutoFlush() {
-        return autoFlush;
+        return defaultFlushMode == FlushMode.AUTO.level;
+    }
+
+    public int getDefaultFlushMode() {
+        return defaultFlushMode;
     }
 
     public boolean isFailOnError() {
@@ -82,7 +97,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     }
 
     public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {
-        this(mappingContext, sessionFactory, config, null);
+        this(mappingContext, sessionFactory, config, null, Mapping.DEFAULT_DATA_SOURCE);
     }
 
     /**
@@ -100,5 +115,30 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     // for testing
     public AbstractEventTriggeringInterceptor getEventTriggeringInterceptor() {
         return eventTriggeringInterceptor;
+    }
+
+    /**
+     * @return The data source name being used
+     */
+    public String getDataSourceName() {
+        return this.dataSourceName;
+    }
+
+    /**
+     * We use a separate enum here because the classes differ between Hibernate 3 and 4
+     *
+     * @see org.hibernate.FlushMode
+     */
+    private enum FlushMode {
+        MANUAL(0),
+        COMMIT(5),
+        AUTO(10),
+        ALWAYS(20);
+
+        private final int level;
+
+        FlushMode(int level) {
+            this.level = level;
+        }
     }
 }

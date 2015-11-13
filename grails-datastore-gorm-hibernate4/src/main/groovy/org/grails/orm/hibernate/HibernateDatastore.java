@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.orm.hibernate.cfg.Mapping;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -32,20 +33,18 @@ import org.springframework.core.env.PropertyResolver;
  */
 public class HibernateDatastore extends AbstractHibernateDatastore  {
 
-    private int defaultFlushMode;
-
     public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {
-        super(mappingContext, sessionFactory, config);
+        super(mappingContext, sessionFactory, config, null, Mapping.DEFAULT_DATA_SOURCE);
     }
 
     public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext) {
-        this(mappingContext, sessionFactory, config, applicationContext, GrailsHibernateTemplate.FLUSH_AUTO);
+        super(mappingContext, sessionFactory, config, applicationContext, Mapping.DEFAULT_DATA_SOURCE);
     }
 
-    public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext, int defaultFlushMode) {
-        super(mappingContext, sessionFactory, config, applicationContext);
-        this.defaultFlushMode = defaultFlushMode;
+    public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, String dataSourceName) {
+        super(mappingContext, sessionFactory, config, null,dataSourceName);
     }
+
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
@@ -60,9 +59,5 @@ public class HibernateDatastore extends AbstractHibernateDatastore  {
             eventTriggeringInterceptor = new EventTriggeringInterceptor(this, config);
             ((ConfigurableApplicationContext)applicationContext).addApplicationListener(eventTriggeringInterceptor);
         }
-    }
-
-    public int getDefaultFlushMode() {
-        return defaultFlushMode;
     }
 }

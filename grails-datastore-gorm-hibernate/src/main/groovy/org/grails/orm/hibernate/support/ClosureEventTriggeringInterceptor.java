@@ -42,6 +42,7 @@ import org.springframework.util.ReflectionUtils;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -94,8 +95,12 @@ public class ClosureEventTriggeringInterceptor extends SaveOrUpdateEventListener
         }
     }
 
-    public void setDatastores(Map<SessionFactory, HibernateDatastore> datastores) {
-        this.datastores = datastores;
+    public void setDatastores(HibernateDatastore[] datastores) {
+        Map<SessionFactory, HibernateDatastore> datastoreMap = new HashMap<SessionFactory, HibernateDatastore>();
+        for (HibernateDatastore hibernateDatastore : datastores) {
+            datastoreMap.put(hibernateDatastore.getSessionFactory(), hibernateDatastore);
+        }
+        this.datastores = datastoreMap;
     }
 
     @Override

@@ -106,7 +106,6 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
         }
         ((ProxyObject) proxy).setHandler(instance);
         instance.groovyObjectMethodHandler = new HibernateGroovyObjectMethodHandler(proxyClass, proxy, instance);
-        HibernateUtils.enhanceProxy(proxy);
         instance.constructed = true;
         return proxy;
     }

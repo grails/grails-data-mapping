@@ -1,10 +1,10 @@
 package org.grails.orm.hibernate.support
 
-import grails.validation.ValidationErrors
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.proxy.ProxyHandler
+import org.grails.datastore.mapping.validation.ValidationErrors
 import org.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler
 import org.codehaus.groovy.runtime.StringGroovyMethods
 import org.grails.datastore.mapping.model.PersistentEntity

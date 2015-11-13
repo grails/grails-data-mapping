@@ -166,7 +166,7 @@ class Setup {
         hibernateDatastore = new HibernateDatastore(context, sessionFactory, grailsApplication.config, ctx)
         ctx.beanFactory.registerSingleton 'hibernateDatastore', hibernateDatastore
 
-        eventTriggeringInterceptor.datastores = [(sessionFactory): hibernateDatastore]
+        eventTriggeringInterceptor.setDatastores([hibernateDatastore] as HibernateDatastore[])
         ctx.beanFactory.registerSingleton 'eventTriggeringInterceptor', eventTriggeringInterceptor
 
         def metaClassEnhancer = new MetaClassEnhancer()
@@ -237,7 +237,7 @@ class Setup {
             }
         }
 
-        HibernateUtils.enhanceSessionFactories(ctx, grailsApplication)
+        HibernateUtils.enhanceSessionFactories(ctx)
 
         ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT,
             new PersistentConstraintFactory(ctx, UniqueConstraint))

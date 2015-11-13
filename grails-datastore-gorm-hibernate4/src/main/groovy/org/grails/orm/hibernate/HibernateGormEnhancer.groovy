@@ -20,6 +20,9 @@ import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.cfg.Mapping
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
@@ -35,6 +38,15 @@ class HibernateGormEnhancer extends GormEnhancer {
     HibernateGormEnhancer(HibernateDatastore datastore, PlatformTransactionManager transactionManager) {
         super(datastore, transactionManager)
     }
+
+    @Override
+    protected boolean appliesToDatastore(Datastore datastore, PersistentEntity entity) {
+        if(GrailsHibernateUtil.usesDatasource(entity, ((AbstractHibernateDatastore)datastore).getDataSourceName())) {
+            return super.appliesToDatastore(datastore, entity)
+        }
+        return false;
+    }
+
 
     protected <D> GormValidationApi<D> getValidationApi(Class<D> cls) {
         new HibernateGormValidationApi<D>(cls, (HibernateDatastore)datastore, Thread.currentThread().contextClassLoader)

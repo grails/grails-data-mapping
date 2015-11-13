@@ -79,7 +79,7 @@ class GormEnhancer implements Closeable {
         }
         NAMED_QUERIES.clear()
         for(entity in datastore.mappingContext.persistentEntities) {
-            if(!entity.isExternal()) {
+            if(appliesToDatastore(datastore, entity)) {
                 def cls = entity.javaClass
                 def staticApi = getStaticApi(cls)
                 def name = entity.name
@@ -93,6 +93,9 @@ class GormEnhancer implements Closeable {
         }
     }
 
+    protected boolean appliesToDatastore(Datastore datastore, PersistentEntity entity) {
+        !entity.isExternal()
+    }
 
     /**
      * Finds a named query for the given entity

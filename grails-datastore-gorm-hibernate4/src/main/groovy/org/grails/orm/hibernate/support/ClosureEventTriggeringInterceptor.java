@@ -15,11 +15,10 @@
  */
 package org.grails.orm.hibernate.support;
 
-import grails.util.CollectionUtils;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.grails.orm.hibernate.HibernateDatastore;
 import org.grails.orm.hibernate.SessionFactoryProxy;
@@ -50,6 +49,7 @@ import org.hibernate.event.spi.PreUpdateEvent;
 import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.hibernate.persister.entity.EntityPersister;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -75,7 +75,7 @@ public class ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventL
 //    private final Logger log = LoggerFactory.getLogger(getClass());
     private static final long serialVersionUID = 1;
 
-    public static final Collection<String> IGNORED = CollectionUtils.newSet("version", "id");
+    public static final Collection<String> IGNORED = new HashSet<String>(Arrays.asList(GormProperties.VERSION, GormProperties.IDENTITY));
     public static final String ONLOAD_EVENT = "onLoad";
     public static final String ONLOAD_SAVE = "onSave";
     public static final String BEFORE_LOAD_EVENT = "beforeLoad";
@@ -87,23 +87,17 @@ public class ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventL
     public static final String AFTER_DELETE_EVENT = "afterDelete";
     public static final String AFTER_LOAD_EVENT = "afterLoad";
 
-//    private Method markInterceptorDirtyMethod;
     private ApplicationContext ctx;
     private Map<SessionFactory, HibernateDatastore> datastores;
 
 
-/*    public ClosureEventTriggeringInterceptor() {
-        try {
-            markInterceptorDirtyMethod = ReflectionUtils.findMethod(AbstractSaveEventListener.class, "markInterceptorDirty",
-                    new Class[] { Object.class, EntityPersister.class, EventSource.class });
-            ReflectionUtils.makeAccessible(markInterceptorDirtyMethod);
-        } catch (Exception e) {
-            // ignore
+    @Autowired
+    public void setDatastores(HibernateDatastore[] datastores) {
+        Map<SessionFactory, HibernateDatastore> datastoreMap = new HashMap<SessionFactory, HibernateDatastore>();
+        for (HibernateDatastore hibernateDatastore : datastores) {
+            datastoreMap.put(hibernateDatastore.getSessionFactory(), hibernateDatastore);
         }
-    }
-*/
-    public void setDatastores(Map<SessionFactory, HibernateDatastore> datastores) {
-        this.datastores = datastores;
+        this.datastores = datastoreMap;
     }
 
     @Override

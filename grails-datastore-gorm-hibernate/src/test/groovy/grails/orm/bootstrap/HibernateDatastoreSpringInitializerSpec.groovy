@@ -2,6 +2,7 @@ package grails.orm.bootstrap
 
 import grails.persistence.Entity
 import org.h2.Driver
+import org.hibernate.Session
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.util.Log4jConfigurer
@@ -96,6 +97,33 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
 
 
     }
+
+    void "Test configure multiple data sources"() {
+        given:"An initializer instance"
+
+        def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person, Book)
+        def dataSource = new DriverManagerDataSource("jdbc:h2:mem:people;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+        dataSource.driverClassName = Driver.name
+
+        def booksDs = new DriverManagerDataSource("jdbc:h2:mem:books;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+        dataSource.driverClassName = Driver.name
+
+        when:"the application is configured"
+        datastoreInitializer.configureForDataSources(dataSource: dataSource, books:booksDs)
+
+        then:"Each domain has a separate data source"
+        Person.count() == 0
+        Person.withSession { Session s ->
+            assert s.connection().metaData.getURL() == "jdbc:h2:mem:people"
+            return true
+        }
+        Book.count() == 0
+        Book.withSession { Session s ->
+            assert s.connection().metaData.getURL() == "jdbc:h2:mem:books"
+            return true
+        }
+
+    }
 }
 @Entity
 class Person {
@@ -103,6 +131,20 @@ class Person {
     Long version
     String name
 
+    static constraints = {
+        name blank:false
+    }
+}
+
+@Entity
+class Book {
+    Long id
+    Long version
+    String name
+
+    static mapping = {
+        datasource 'books'
+    }
     static constraints = {
         name blank:false
     }

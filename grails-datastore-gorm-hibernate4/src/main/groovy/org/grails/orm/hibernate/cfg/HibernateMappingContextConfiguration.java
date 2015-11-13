@@ -107,6 +107,7 @@ public class HibernateMappingContextConfiguration extends Configuration {
 
     @Override
     public Settings buildSettings(ServiceRegistry serviceRegistry) {
+        configureNamingStrategy();
         Settings settings = super.buildSettings(serviceRegistry);
         settings.getEntityTuplizerFactory().registerDefaultTuplizerClass(EntityMode.POJO, GroovyAwarePojoEntityTuplizer.class);
         return settings;
@@ -114,6 +115,7 @@ public class HibernateMappingContextConfiguration extends Configuration {
 
     @Override
     public Settings buildSettings(Properties props, ServiceRegistry serviceRegistry) throws HibernateException {
+        configureNamingStrategy();
         Settings settings = super.buildSettings(props, serviceRegistry);
         settings.getEntityTuplizerFactory().registerDefaultTuplizerClass(EntityMode.POJO, GroovyAwarePojoEntityTuplizer.class);
         return settings;
@@ -219,41 +221,18 @@ public class HibernateMappingContextConfiguration extends Configuration {
         subclassForeignKeysCreated = true;
     }
 
+
     /**
      * Sets custom naming strategy specified in configuration or the default {@link ImprovedNamingStrategy}.
      */
-//    protected void configureNamingStrategy() {
-//        NamingStrategy strategy = null;
-//        Object customStrategy = grailsApplication.getFlatConfig().get("hibernate.naming_strategy");
-//        if (customStrategy != null) {
-//            Class<?> namingStrategyClass = null;
-//            if (customStrategy instanceof Class<?>) {
-//                namingStrategyClass = (Class<?>)customStrategy;
-//            } else {
-//                try {
-//                    namingStrategyClass = grailsApplication.getClassLoader().loadClass(customStrategy.toString());
-//                } catch (ClassNotFoundException e) {
-//                    // ignore
-//                }
-//            }
-//
-//            if (namingStrategyClass != null) {
-//                try {
-//                    strategy = (NamingStrategy)namingStrategyClass.newInstance();
-//                } catch (InstantiationException e) {
-//                    // ignore
-//                } catch (IllegalAccessException e) {
-//                    // ignore
-//                }
-//            }
-//        }
-//
-//        if (strategy == null) {
-//            strategy = ImprovedNamingStrategy.INSTANCE;
-//        }
-//
-//        setNamingStrategy(strategy);
-//    }
+    protected void configureNamingStrategy() {
+        NamingStrategy strategy = getNamingStrategy();
+        if (strategy == null) {
+            strategy = ImprovedNamingStrategy.INSTANCE;
+        }
+
+        setNamingStrategy(strategy);
+    }
 
     @Override
     protected void reset() {

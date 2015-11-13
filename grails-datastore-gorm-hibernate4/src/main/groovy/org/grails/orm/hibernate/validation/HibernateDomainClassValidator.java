@@ -22,7 +22,6 @@ import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.datastore.gorm.proxy.ProxyHandlerAdapter;
 import org.grails.datastore.gorm.support.BeforeValidateHelper;
 import org.grails.datastore.gorm.validation.CascadingValidator;
-import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.grails.validation.GrailsDomainClassValidator;
 import org.hibernate.FlushMode;

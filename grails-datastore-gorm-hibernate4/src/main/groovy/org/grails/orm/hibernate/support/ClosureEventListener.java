@@ -15,7 +15,6 @@
  */
 package org.grails.orm.hibernate.support;
 
-import grails.validation.ValidationException;
 import groovy.lang.*;
 
 import java.lang.reflect.Field;
@@ -29,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.gorm.GormValidateable;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.reflect.ClassUtils;
+import org.grails.datastore.mapping.validation.ValidationException;
 import org.grails.orm.hibernate.AbstractHibernateGormValidationApi;
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder;
 import org.grails.orm.hibernate.cfg.Mapping;
