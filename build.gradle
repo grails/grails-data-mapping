@@ -433,8 +433,8 @@ task coreApiDocs(type: Groovydoc) {
    source projs.collect { project -> project.sourceSets.main.allGroovy } + projs.collect { project -> project.sourceSets.main.allJava }
    destinationDir = new File(buildDir, 'docs/api')
    // Might need a classpath
-   classpath = files(projs.collect {project -> project.sourceSets.main.compileClasspath})
-   groovyClasspath = files(projs.collect {project -> project.sourceSets.main.compileClasspath})
+   classpath = files(projs.collect {project -> project.sourceSets.main.compileClasspath + project.configurations.documentation})
+   groovyClasspath = files(projs.collect {project -> project.sourceSets.main.compileClasspath + project.configurations.documentation})
 }
 
 
