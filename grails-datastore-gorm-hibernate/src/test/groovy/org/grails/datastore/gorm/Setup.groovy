@@ -185,7 +185,7 @@ class Setup {
 
             def validator = new HibernateDomainClassValidator()
 
-            validator.sessionFactory = sessionFactory
+            validator.hibernateDatastore = hibernateDatastore
             validator.grailsApplication = grailsApplication
             validator.domainClass = dc
             validator.messageSource = ctx

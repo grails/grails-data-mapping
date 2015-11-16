@@ -14,7 +14,6 @@
  */
 package grails.orm.bootstrap
 
-import grails.validation.ConstrainedProperty
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
@@ -33,6 +32,8 @@ import org.grails.orm.hibernate.support.*
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.grails.orm.hibernate.validation.UniqueConstraint
+import org.grails.orm.hibernate3.support.AggregatePersistenceContextInterceptor
+import org.grails.orm.hibernate3.support.GrailsOpenSessionInViewInterceptor
 import org.hibernate.EmptyInterceptor
 import org.hibernate.cfg.ImprovedNamingStrategy
 import org.springframework.beans.factory.InitializingBean
@@ -44,6 +45,7 @@ import org.springframework.context.ApplicationContextAware
 import org.springframework.context.support.GenericApplicationContext
 
 import javax.sql.DataSource
+
 /**
  * Class that handles the details of initializing GORM for Hibernate
  *
@@ -133,12 +135,6 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
             Object vendorToDialect = getVenderToDialectMappings()
 
-            ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT,
-                    new PersistentConstraintFactory((ApplicationContext)beanDefinitionRegistry,
-                            UniqueConstraint))
-
-
-
             // for unwrapping / inspecting proxies
             hibernateProxyHandler(HibernateProxyHandler)
             proxyHandler(ProxyHandlerAdapter, ref('hibernateProxyHandler'))
@@ -204,8 +200,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                         messageSource = ref("messageSource")
                         domainClass = ref("${cls.name}DomainClass")
                         grailsApplication = ref('grailsApplication')
-                        sessionFactory = ref(sessionFactoryName)
-                        mappingContext = ref('grailsDomainClassMappingContext')
+                        hibernateDatastore = ref("hibernateDatastore$suffix")
                     }
                 }
                 // Used to detect the database dialect to use
@@ -279,8 +274,11 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 }
 
                 boolean osivEnabled = config.getProperty("hibernate${suffix}.osiv.enabled", Boolean, true)
-                if (beanDefinitionRegistry?.containsBeanDefinition("dispatcherServlet") && osivEnabled) {
-                    "flushingRedirectEventListener$suffix"(FlushOnRedirectEventListener, ref(sessionFactoryName))
+                boolean isWebApplication = beanDefinitionRegistry?.containsBeanDefinition("dispatcherServlet") ||
+                                                beanDefinitionRegistry?.containsBeanDefinition("grailsControllerHelper")
+                if (isWebApplication && osivEnabled) {
+                    "flushingRedirectEventListener$suffix"(FlushOnRedirectEventListener, ref("hibernateDatastore$suffix"))
+
                     "openSessionInViewInterceptor$suffix"(GrailsOpenSessionInViewInterceptor) {
                         flushMode = HibernateDatastoreSpringInitializer.resolveDefaultFlushMode(config.getProperty("hibernate${suffix}.flush.mode"),
                                                                                                     config.getProperty("hibernate${suffix}.osiv.readonly", Boolean, false))

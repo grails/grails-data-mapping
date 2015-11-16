@@ -15,11 +15,10 @@
 package org.grails.orm.hibernate.support;
 
 import grails.web.mapping.mvc.RedirectEventListener;
-import org.grails.orm.hibernate.GrailsHibernateTemplate;
+import groovy.lang.Closure;
+import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
  * Flushes the session on a redirect.
@@ -29,15 +28,17 @@ import org.springframework.orm.hibernate3.HibernateCallback;
  */
 public class FlushOnRedirectEventListener implements RedirectEventListener {
 
-    private SessionFactory sessionFactory;
+    private AbstractHibernateDatastore datastore;
 
-    public FlushOnRedirectEventListener(SessionFactory sf) {
-        sessionFactory = sf;
+    public FlushOnRedirectEventListener(AbstractHibernateDatastore datastore) {
+        this.datastore = datastore;
     }
 
     public void responseRedirected(String url) {
-        new GrailsHibernateTemplate(sessionFactory).execute(new HibernateCallback<Void>() {
-            public Void doInHibernate(Session session) {
+        datastore.getHibernateTemplate().execute(new Closure<Object>(this) {
+            @Override
+            public Object call(Object... args) {
+                Session session = (Session)args[0];
                 if (!FlushMode.isManualFlushMode(session.getFlushMode())) {
                     session.flush();
                 }

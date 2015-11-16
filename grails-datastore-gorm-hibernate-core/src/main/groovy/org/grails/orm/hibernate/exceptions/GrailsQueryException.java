@@ -16,20 +16,17 @@
 package org.grails.orm.hibernate.exceptions;
 
 
-import org.grails.core.exceptions.GrailsException;
+import org.grails.datastore.mapping.core.DatastoreException;
 
 /**
  * Base exception class for errors related to Domain class queries in Grails.
  *
  * @author Graeme Rocher
  */
-public class GrailsQueryException extends GrailsException {
+public class GrailsQueryException extends DatastoreException {
 
     private static final long serialVersionUID = 775603608315415077L;
 
-    public GrailsQueryException() {
-        super();
-    }
 
     public GrailsQueryException(String message, Throwable cause) {
         super(message, cause);
@@ -39,7 +36,4 @@ public class GrailsQueryException extends GrailsException {
         super(message);
     }
 
-    public GrailsQueryException(Throwable cause) {
-        super(cause);
-    }
 }

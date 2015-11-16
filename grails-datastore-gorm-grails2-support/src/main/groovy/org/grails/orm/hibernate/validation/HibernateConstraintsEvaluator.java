@@ -16,15 +16,15 @@ package org.grails.orm.hibernate.validation;
 
 import java.util.Map;
 
-import grails.core.GrailsDomainClass;
-import grails.core.GrailsDomainClassProperty;
 import grails.validation.Constrained;
-import grails.validation.ConstrainedProperty;
+import org.codehaus.groovy.grails.commons.GrailsDomainClass;
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.codehaus.groovy.grails.validation.ConstrainedProperty;
+import org.codehaus.groovy.grails.validation.DefaultConstraintEvaluator;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.orm.hibernate.cfg.PropertyConfig;
-import org.grails.validation.DefaultConstraintEvaluator;
 
 /**
  * Extends default implementation to add Hibernate specific exceptions.
@@ -92,7 +92,7 @@ public class HibernateConstraintsEvaluator extends DefaultConstraintEvaluator {
         boolean insertable = propertyConfig == null || propertyConfig.isInsertable();
 
         if (!insertable) {
-           cp.applyConstraint(ConstrainedProperty.NULLABLE_CONSTRAINT,true);
+            cp.applyConstraint(ConstrainedProperty.NULLABLE_CONSTRAINT,true);
         }
         else {
             if(canApplyNullableConstraint(p.getName(), p, cp)) {

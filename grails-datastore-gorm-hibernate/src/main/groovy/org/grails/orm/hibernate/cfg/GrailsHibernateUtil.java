@@ -58,8 +58,6 @@ import java.util.*;
 public class GrailsHibernateUtil {
     protected static final Log LOG = LogFactory.getLog(GrailsHibernateUtil.class);
 
-    private static final String DYNAMIC_FILTER_ENABLER = "dynamicFilterEnabler";
-
     public static final String ARGUMENT_FETCH_SIZE = "fetchSize";
     public static final String ARGUMENT_TIMEOUT = "timeout";
     public static final String ARGUMENT_READ_ONLY = "readOnly";
@@ -81,14 +79,6 @@ public class GrailsHibernateUtil {
 
     private static GrailsDomainBinder binder;
 
-    @SuppressWarnings("rawtypes")
-    public static void enableDynamicFilterEnablerIfPresent(SessionFactory sessionFactory, Session session) {
-        if (sessionFactory != null && session != null) {
-            final Set definedFilterNames = sessionFactory.getDefinedFilterNames();
-            if (definedFilterNames != null && definedFilterNames.contains(DYNAMIC_FILTER_ENABLER))
-                session.enableFilter(DYNAMIC_FILTER_ENABLER); // work around for HHH-2624
-        }
-    }
 
 
 
@@ -431,7 +421,7 @@ public class GrailsHibernateUtil {
         GroovyAwareJavassistProxyFactory proxyFactory = new GroovyAwareJavassistProxyFactory();
 
         @SuppressWarnings("unchecked")
-        Set<Class<HibernateProxy>> proxyInterfaces = new HashSet<>();
+        Set<Class<HibernateProxy>> proxyInterfaces = new HashSet<Class<HibernateProxy>>();
         proxyInterfaces.add(HibernateProxy.class);
 
         final Class<?> javaClass = persistentClass.getMappedClass();

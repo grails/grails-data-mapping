@@ -18,22 +18,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import grails.core.GrailsApplication;
-import grails.core.GrailsDomainClass;
-import grails.core.GrailsDomainClassProperty;
-import grails.util.GrailsClassUtils;
-import grails.validation.ConstrainedProperty;
 import groovy.lang.Closure;
+import org.codehaus.groovy.grails.commons.*;
+import org.codehaus.groovy.grails.exceptions.GrailsRuntimeException;
+import org.codehaus.groovy.grails.lifecycle.ShutdownOperations;
+import org.codehaus.groovy.grails.validation.ConstrainedProperty;
 import org.grails.datastore.gorm.GormEnhancer;
-import org.grails.datastore.gorm.GormInstanceApi;
-import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
-import org.grails.orm.hibernate.GrailsHibernateTemplate;
-import org.grails.orm.hibernate.HibernateDatastore;
-import org.grails.orm.hibernate.IHibernateTemplate;
+import org.grails.orm.hibernate.*;
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.grails.core.artefact.DomainClassArtefactHandler;
-import org.grails.core.exceptions.GrailsRuntimeException;
-import org.grails.core.lifecycle.ShutdownOperations;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.metadata.ClassMetadata;
@@ -91,16 +83,16 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                 constraintParameter instanceof CharSequence ||
                 constraintParameter instanceof List<?>)) {
             throw new IllegalArgumentException("Parameter for constraint [" + UNIQUE_CONSTRAINT +
-                  "] of property [" + constraintPropertyName + "] of class [" +
-                  constraintOwningClass + "] must be a boolean or string value");
+                    "] of property [" + constraintPropertyName + "] of class [" +
+                    constraintOwningClass + "] must be a boolean or string value");
         }
 
         if (constraintParameter instanceof List<?>) {
             for (Object parameter : ((List<?>) constraintParameter)) {
                 if (!(parameter instanceof String || parameter instanceof CharSequence)) {
                     throw new IllegalArgumentException("Parameter for constraint [" + UNIQUE_CONSTRAINT +
-                          "] of property [" + constraintPropertyName + "] of class [" +
-                          constraintOwningClass + "] must be a boolean or string value");
+                            "] of property [" + constraintPropertyName + "] of class [" +
+                            constraintOwningClass + "] must be a boolean or string value");
                 }
                 uniquenessGroup.add(parameter.toString());
             }
@@ -119,8 +111,8 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                 String propertyName = (String) anUniquenessGroup;
                 if (GrailsClassUtils.getPropertyType(constraintOwningClass, propertyName) == null) {
                     throw new IllegalArgumentException("Scope for constraint [" + UNIQUE_CONSTRAINT +
-                          "] of property [" + constraintPropertyName + "] of class [" +
-                          constraintOwningClass + "] must be a valid property name of same class");
+                            "] of property [" + constraintPropertyName + "] of class [" +
+                            constraintOwningClass + "] must be a valid property name of same class");
                 }
             }
         }
@@ -144,8 +136,8 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
         }
         catch (Exception e) {
             throw new GrailsRuntimeException("Target of [unique] constraints [" + target +
-                  "] is not a domain instance. Unique constraint can only be applied to " +
-                  "domain classes and not custom user types or embedded instances");
+                    "] is not a domain instance. Unique constraint can only be applied to " +
+                    "domain classes and not custom user types or embedded instances");
         }
 
         IHibernateTemplate hibernateTemplate = getHibernateTemplate(target);
@@ -215,7 +207,7 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                     return Collections.EMPTY_LIST;
                 }
                 return Collections.EMPTY_LIST;
-           }
+            }
         });
 
         if (results.isEmpty()) {
@@ -249,19 +241,12 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
         return uniquenessGroup;
     }
 
+
     @Override
     public IHibernateTemplate getHibernateTemplate(Object target) {
-        SessionFactory sf = sessionFactory;
-        GormInstanceApi instanceApi = GormEnhancer.findInstanceApi(target.getClass());
-        if(instanceApi instanceof AbstractHibernateGormInstanceApi) {
-            sf = ((AbstractHibernateGormInstanceApi)instanceApi).getSessionFactory();
-        }
-        if (sf == null) {
-            sf = applicationContext.getBean("sessionFactory", SessionFactory.class);
-        }
-        HibernateDatastore app = applicationContext.getBean(HibernateDatastore.class);
-        GrailsHibernateTemplate hibernateTemplate = new GrailsHibernateTemplate(sf, app, GrailsHibernateTemplate.FLUSH_NEVER);
-        hibernateTemplate.setAllowCreate(true);
-        return hibernateTemplate;
+        AbstractHibernateGormInstanceApi instanceApi = (AbstractHibernateGormInstanceApi) GormEnhancer.findInstanceApi(target.getClass());
+        sessionFactory = instanceApi.getSessionFactory();
+        AbstractHibernateDatastore app = (AbstractHibernateDatastore) instanceApi.getDatastore();
+        return app.getHibernateTemplate(AbstractHibernateDatastore.FlushMode.MANUAL.getLevel());
     }
 }

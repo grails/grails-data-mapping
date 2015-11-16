@@ -30,6 +30,7 @@ import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.grails.orm.hibernate.HibernateDatastore;
 import org.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory;
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler;
+import org.grails.orm.hibernate.support.HibernateRuntimeUtils;
 import org.hibernate.*;
 import org.hibernate.criterion.Order;
 import org.hibernate.engine.spi.EntityEntry;
@@ -52,10 +53,8 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 0.4
  */
-public class GrailsHibernateUtil {
+public class GrailsHibernateUtil extends HibernateRuntimeUtils {
     protected static final Log LOG = LogFactory.getLog(GrailsHibernateUtil.class);
-
-    private static final String DYNAMIC_FILTER_ENABLER = "dynamicFilterEnabler";
 
     public static final String ARGUMENT_FETCH_SIZE = "fetchSize";
     public static final String ARGUMENT_TIMEOUT = "timeout";
@@ -77,15 +76,6 @@ public class GrailsHibernateUtil {
     private static HibernateProxyHandler proxyHandler = new HibernateProxyHandler();
 
     private static GrailsDomainBinder binder;
-
-    @SuppressWarnings("rawtypes")
-    public static void enableDynamicFilterEnablerIfPresent(SessionFactory sessionFactory, Session session) {
-        if (sessionFactory != null && session != null) {
-            final Set definedFilterNames = sessionFactory.getDefinedFilterNames();
-            if (definedFilterNames != null && definedFilterNames.contains(DYNAMIC_FILTER_ENABLER))
-                session.enableFilter(DYNAMIC_FILTER_ENABLER); // work around for HHH-2624
-        }
-    }
 
 
 

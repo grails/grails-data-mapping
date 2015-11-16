@@ -15,10 +15,12 @@
 package org.grails.orm.hibernate;
 
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.orm.hibernate.cfg.Mapping;
+import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -59,5 +61,38 @@ public class HibernateDatastore extends AbstractHibernateDatastore  {
             eventTriggeringInterceptor = new EventTriggeringInterceptor(this, config);
             ((ConfigurableApplicationContext)applicationContext).addApplicationListener(eventTriggeringInterceptor);
         }
+    }
+
+    @Override
+    public IHibernateTemplate getHibernateTemplate(int flushMode) {
+        return new GrailsHibernateTemplate(getSessionFactory(), this, flushMode);
+    }
+
+    @Override
+    public void withFlushMode(FlushMode flushMode, Callable<Boolean> callable) {
+        final org.hibernate.Session session = sessionFactory.getCurrentSession();
+        org.hibernate.FlushMode previousMode = null;
+        Boolean reset = true;
+        try {
+            if (session != null) {
+                previousMode = session.getFlushMode();
+                session.setFlushMode(org.hibernate.FlushMode.valueOf(flushMode.name()));
+            }
+            try {
+                reset = callable.call();
+            } catch (Exception e) {
+                reset = false;
+            }
+        }
+        finally {
+            if (session != null && previousMode != null && reset) {
+                session.setFlushMode(previousMode);
+            }
+        }
+    }
+
+    @Override
+    public org.hibernate.Session openSession() {
+        return this.sessionFactory.openSession();
     }
 }

@@ -15,8 +15,6 @@
  */
 package org.grails.orm.hibernate
 
-import org.grails.orm.hibernate.validation.AbstractPersistentConstraint
-import org.grails.core.lifecycle.ShutdownOperations
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormValidateable
@@ -74,13 +72,6 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
      */
     static final ThreadLocal<Boolean> insertActiveThreadLocal = new ThreadLocal<Boolean>()
 
-    static {
-        ShutdownOperations.addOperation(new Runnable() {
-            public void run() {
-                AbstractHibernateGormInstanceApi.insertActiveThreadLocal.remove()
-            }
-        });
-    }
 
 
     protected SessionFactory sessionFactory

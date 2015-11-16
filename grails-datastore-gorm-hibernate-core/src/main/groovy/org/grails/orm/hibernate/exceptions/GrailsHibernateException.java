@@ -16,20 +16,17 @@
 package org.grails.orm.hibernate.exceptions;
 
 
-import org.grails.core.exceptions.GrailsException;
+import org.grails.datastore.mapping.core.DatastoreException;
 
 /**
  * Base exception class for errors related to Hibernate configuration in Grails.
  *
  * @author Steven Devijver
  */
-public abstract class GrailsHibernateException extends GrailsException {
+public abstract class GrailsHibernateException extends DatastoreException {
 
     private static final long serialVersionUID = -6019220941440364736L;
 
-    public GrailsHibernateException() {
-        super();
-    }
 
     public GrailsHibernateException(String message) {
         super(message);
@@ -37,9 +34,5 @@ public abstract class GrailsHibernateException extends GrailsException {
 
     public GrailsHibernateException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public GrailsHibernateException(Throwable cause) {
-        super(cause);
     }
 }

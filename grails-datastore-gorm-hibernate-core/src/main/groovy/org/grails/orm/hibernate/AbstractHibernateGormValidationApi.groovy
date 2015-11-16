@@ -21,7 +21,6 @@ import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.validation.ValidationErrors
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils
-import org.grails.orm.hibernate.validation.AbstractPersistentConstraint
 import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.springframework.validation.Errors

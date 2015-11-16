@@ -14,22 +14,19 @@
  */
 package org.grails.orm.hibernate.validation;
 
-import grails.core.GrailsDomainClass;
-import grails.core.GrailsDomainClassProperty;
-import grails.core.support.proxy.ProxyHandler;
+import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
+import org.codehaus.groovy.grails.commons.GrailsDomainClass;
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
+import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator;
 import org.grails.datastore.gorm.proxy.ProxyHandlerAdapter;
 import org.grails.datastore.gorm.support.BeforeValidateHelper;
 import org.grails.datastore.gorm.validation.CascadingValidator;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.orm.hibernate.proxy.HibernateProxyHandler;
-import org.grails.core.artefact.DomainClassArtefactHandler;
-import org.grails.validation.GrailsDomainClassValidator;
-import org.hibernate.FlushMode;
+import org.grails.orm.hibernate.AbstractHibernateDatastore;
+import org.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler;
 import org.hibernate.Hibernate;
-import org.hibernate.SessionFactory;
-import org.hibernate.classic.Session;
-import org.hibernate.collection.PersistentCollection;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,7 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.validation.Errors;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 /**
  * First checks if the Hibernate PersistentCollection instance has been initialised before bothering
@@ -48,9 +46,8 @@ import java.util.ArrayList;
 public class HibernateDomainClassValidator extends GrailsDomainClassValidator implements MessageSourceAware, CascadingValidator, InitializingBean{
 
     private BeforeValidateHelper beforeValidateHelper = new BeforeValidateHelper();
-    private SessionFactory sessionFactory;
-    private ProxyHandler proxyHandler = new ProxyHandlerAdapter(new HibernateProxyHandler());
-    private MappingContext mappingContext;
+    private ProxyHandler proxyHandler = new ProxyHandlerAdapter(new SimpleHibernateProxyHandler());
+    private AbstractHibernateDatastore hibernateDatastore;
 
     @Override
     protected GrailsDomainClass getAssociatedDomainClassFromApplication(Object associatedObject) {
@@ -64,22 +61,16 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
     }
 
     @Override
-    public void validate(Object obj, Errors errors, boolean cascade) {
-        final Session session = sessionFactory.getCurrentSession();
-        FlushMode previousMode = null;
-        try {
-            if (session != null) {
-                previousMode = session.getFlushMode();
-                session.setFlushMode(FlushMode.MANUAL);
-            }
+    public void validate(final Object obj, final Errors errors, final boolean cascade) {
+        hibernateDatastore.withFlushMode( AbstractHibernateDatastore.FlushMode.MANUAL, new Callable<Boolean>() {
 
-            super.validate(obj, errors, cascade);
-        }
-        finally {
-            if (session != null && previousMode != null && !errors.hasErrors()) {
-                session.setFlushMode(previousMode);
+            @Override
+            public Boolean call() throws Exception {
+                HibernateDomainClassValidator.super.validate(obj, errors, cascade);
+                return !errors.hasErrors();
             }
-        }
+        });
+
     }
 
     /**
@@ -100,9 +91,8 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
             return;
         }
 
-        if (collection instanceof PersistentCollection) {
-            PersistentCollection persistentCollection = (PersistentCollection)collection;
-            if (persistentCollection.wasInitialized()) {
+        if (proxyHandler.isProxy(collection)) {
+            if (proxyHandler.isInitialized(collection)) {
                 super.cascadeValidationToMany(errors, bean, persistentProperty, propertyName);
             }
         }
@@ -129,18 +119,14 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
         }
     }
 
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
-    public void setMappingContext(MappingContext mappingContext) {
-        this.mappingContext = mappingContext;
+    public void setHibernateDatastore(AbstractHibernateDatastore hibernateDatastore) {
+        this.hibernateDatastore = hibernateDatastore;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        if(mappingContext != null) {
-
+        if(hibernateDatastore != null) {
+            MappingContext mappingContext = hibernateDatastore.getMappingContext();
             PersistentEntity mappedEntity = mappingContext.getPersistentEntity(getDomainClass().getFullName());
             if(mappedEntity != null) {
                 mappingContext.addEntityValidator(mappedEntity, this);

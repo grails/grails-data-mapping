@@ -1,5 +1,4 @@
-/*
- * Copyright 2004-2005 Graeme Rocher
+/* Copyright 2004-2005 Graeme Rocher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +17,16 @@ package org.grails.orm.hibernate.validation;
 import grails.core.GrailsDomainClass;
 import grails.core.GrailsDomainClassProperty;
 import grails.core.support.proxy.ProxyHandler;
-import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.datastore.gorm.proxy.ProxyHandlerAdapter;
 import org.grails.datastore.gorm.support.BeforeValidateHelper;
 import org.grails.datastore.gorm.validation.CascadingValidator;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.orm.hibernate.proxy.HibernateProxyHandler;
+import org.grails.core.artefact.DomainClassArtefactHandler;
+import org.grails.orm.hibernate.AbstractHibernateDatastore;
+import org.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler;
 import org.grails.validation.GrailsDomainClassValidator;
-import org.hibernate.FlushMode;
 import org.hibernate.Hibernate;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.collection.spi.PersistentCollection;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +34,7 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.validation.Errors;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 /**
  * First checks if the Hibernate PersistentCollection instance has been initialised before bothering
@@ -46,40 +43,34 @@ import java.util.ArrayList;
  * @author Graeme Rocher
  * @since 0.5
  */
-public class HibernateDomainClassValidator extends GrailsDomainClassValidator implements MessageSourceAware,CascadingValidator, InitializingBean {
+public class HibernateDomainClassValidator extends GrailsDomainClassValidator implements MessageSourceAware, CascadingValidator, InitializingBean{
 
     private BeforeValidateHelper beforeValidateHelper = new BeforeValidateHelper();
-    private SessionFactory sessionFactory;
-    private ProxyHandler proxyHandler = new ProxyHandlerAdapter(new HibernateProxyHandler());
-    private MappingContext mappingContext;
+    private ProxyHandler proxyHandler = new ProxyHandlerAdapter(new SimpleHibernateProxyHandler());
+    private AbstractHibernateDatastore hibernateDatastore;
 
-    @Autowired(required = false)
-    public void setProxyHandler(ProxyHandler proxyHandler) {
-        this.proxyHandler = proxyHandler;
-    }
     @Override
     protected GrailsDomainClass getAssociatedDomainClassFromApplication(Object associatedObject) {
         String associatedObjectType = Hibernate.getClass(associatedObject).getName();
         return (GrailsDomainClass) grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, associatedObjectType);
     }
 
-    @Override
-    public void validate(Object obj, Errors errors, boolean cascade) {
-        final Session session = sessionFactory.getCurrentSession();
-        FlushMode previousMode = null;
-        try {
-            if (session != null) {
-                previousMode = session.getFlushMode();
-                session.setFlushMode(FlushMode.MANUAL);
-            }
+    @Autowired(required = false)
+    public void setProxyHandler(ProxyHandler proxyHandler) {
+        this.proxyHandler = proxyHandler;
+    }
 
-            super.validate(obj, errors, cascade);
-        }
-        finally {
-            if (session != null && previousMode != null && !errors.hasErrors()) {
-                session.setFlushMode(previousMode);
+    @Override
+    public void validate(final Object obj, final Errors errors, final boolean cascade) {
+        hibernateDatastore.withFlushMode( AbstractHibernateDatastore.FlushMode.MANUAL, new Callable<Boolean>() {
+
+            @Override
+            public Boolean call() throws Exception {
+                HibernateDomainClassValidator.super.validate(obj, errors, cascade);
+                return !errors.hasErrors();
             }
-        }
+        });
+
     }
 
     /**
@@ -91,6 +82,7 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
      * @param persistentProperty The GrailsDomainClassProperty instance
      * @param propertyName The name of the property
      *
+     * @see org.hibernate.collection.PersistentCollection#wasInitialized()
      */
     @Override
     protected void cascadeValidationToMany(Errors errors, BeanWrapper bean, GrailsDomainClassProperty persistentProperty, String propertyName) {
@@ -99,9 +91,8 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
             return;
         }
 
-        if (collection instanceof PersistentCollection) {
-            PersistentCollection persistentCollection = (PersistentCollection)collection;
-            if (persistentCollection.wasInitialized()) {
+        if (proxyHandler.isProxy(collection)) {
+            if (proxyHandler.isInitialized(collection)) {
                 super.cascadeValidationToMany(errors, bean, persistentProperty, propertyName);
             }
         }
@@ -128,19 +119,14 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
         }
     }
 
-
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
-    public void setMappingContext(MappingContext mappingContext) {
-        this.mappingContext = mappingContext;
+    public void setHibernateDatastore(AbstractHibernateDatastore hibernateDatastore) {
+        this.hibernateDatastore = hibernateDatastore;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        if(mappingContext != null) {
-
+        if(hibernateDatastore != null) {
+            MappingContext mappingContext = hibernateDatastore.getMappingContext();
             PersistentEntity mappedEntity = mappingContext.getPersistentEntity(getDomainClass().getFullName());
             if(mappedEntity != null) {
                 mappingContext.addEntityValidator(mappedEntity, this);

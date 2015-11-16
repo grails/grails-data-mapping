@@ -1,5 +1,8 @@
 dependencies {
     compile project(':grails-datastore-gorm')
+    compile project(':grails-datastore-gorm-hibernate-core'), optional
+    compile "org.grails:grails-web-url-mappings:$grailsVersion", optional
+
     compile("org.grails:grails-core:$grailsVersion") {
         exclude group:'aopalliance',module:'aopalliance'
         exclude group:'commons-logging',module:'commons-logging'

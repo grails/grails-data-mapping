@@ -24,10 +24,6 @@ public class CouldNotDetermineHibernateDialectException extends GrailsHibernateE
 
     private static final long serialVersionUID = -3385252525996110909L;
 
-    public CouldNotDetermineHibernateDialectException() {
-        super();
-    }
-
     public CouldNotDetermineHibernateDialectException(String message) {
         super(message);
     }
@@ -36,7 +32,4 @@ public class CouldNotDetermineHibernateDialectException extends GrailsHibernateE
         super(message, cause);
     }
 
-    public CouldNotDetermineHibernateDialectException(Throwable cause) {
-        super(cause);
-    }
 }

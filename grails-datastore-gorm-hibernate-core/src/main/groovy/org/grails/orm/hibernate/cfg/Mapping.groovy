@@ -16,7 +16,6 @@
 package org.grails.orm.hibernate.cfg
 
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.grails.datastore.mapping.config.Entity
 
 /**

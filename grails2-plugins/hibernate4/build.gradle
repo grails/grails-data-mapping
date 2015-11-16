@@ -1,0 +1,65 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.grails:grails-gradle-plugin:2.2.0.RC1"
+    }
+}
+
+
+group "org.grails.plugins"
+apply plugin: "grails"
+apply from:'../gradle/publishing.gradle'
+
+grails {
+    grailsVersion = grails2Version
+    groovyVersion = grails2GroovyVersion
+}
+
+configurations.all { Configuration c ->
+    c.exclude(group:'org.grails',module:'grails-datastore-gorm-support')
+
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if(details.requested.group == 'org.grails' && !details.requested.name.startsWith('grails-datastore')) {
+                details.useVersion(grails2Version)
+            }
+        }
+    }
+    resolutionStrategy.dependencySubstitution {
+        // Substitute project and module dependencies
+        substitute project(':grails-datastore-gorm-support') with project(':grails-datastore-gorm-grails2-support')
+    }
+}
+
+dependencies {
+    compile project(':grails-datastore-core')
+    compile project(':grails-datastore-web')
+    compile project(':grails-datastore-gorm')
+    compile project(':grails-datastore-gorm-grails2-support')
+    compile project(':grails-datastore-gorm-hibernate4'), {
+        exclude group:'org.grails',module:'grails-datastore-gorm-support'
+        exclude group:'org.grails',module:'grails-datastore-gorm-plugin-support'
+        exclude group:'org.grails',module:'grails-core'
+        exclude group:'org.grails',module:'grails-bootstrap'
+        exclude group:'org.grails',module:'grails-async'
+    }
+
+    runtime "org.hibernate:hibernate-ehcache:${hibernateVersion}.Final", {
+        exclude group: 'org.hibernate', module: 'hibernate-core'
+        exclude group: 'org.jboss.logging', module:'jboss-logging'
+    }
+    runtime "net.sf.ehcache:ehcache:2.9.0"
+
+    runtime 'org.jboss.logging:jboss-logging:3.1.0.GA', {
+        exclude module:'jboss-logmanager'
+        exclude module:'log4j'
+        exclude module:'slf4j-api'
+    }
+    test "org.spockframework:spock-core:1.0-groovy-2.4"
+    provided 'javax.servlet:javax.servlet-api:3.1.0'
+}
+
+test.jvmOptions.jvmArgs '-Dgrails.full.stacktrace=true'
+packagePlugin.jvmOptions.jvmArgs '-Dgrails.full.stacktrace=true', "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005", "-Xdebug"

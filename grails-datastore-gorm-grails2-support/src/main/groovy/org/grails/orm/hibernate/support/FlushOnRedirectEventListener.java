@@ -1,5 +1,4 @@
-/*
- * Copyright 2004-2005 the original author or authors.
+/* Copyright 2004-2005 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +14,11 @@
  */
 package org.grails.orm.hibernate.support;
 
-import grails.web.mapping.mvc.RedirectEventListener;
+import groovy.lang.Closure;
+import org.codehaus.groovy.grails.web.servlet.mvc.RedirectEventListener;
+import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 
 /**
  * Flushes the session on a redirect.
@@ -28,16 +28,22 @@ import org.hibernate.SessionFactory;
  */
 public class FlushOnRedirectEventListener implements RedirectEventListener {
 
-    private SessionFactory sessionFactory;
+    private AbstractHibernateDatastore datastore;
 
-    public FlushOnRedirectEventListener(SessionFactory sf) {
-        sessionFactory = sf;
+    public FlushOnRedirectEventListener(AbstractHibernateDatastore datastore) {
+        this.datastore = datastore;
     }
 
     public void responseRedirected(String url) {
-        Session session = sessionFactory.getCurrentSession();
-        if (!FlushMode.isManualFlushMode(session.getFlushMode())) {
-            session.flush();
-        }
+        datastore.getHibernateTemplate().execute(new Closure<Object>(this) {
+            @Override
+            public Object call(Object... args) {
+                Session session = (Session)args[0];
+                if (!FlushMode.isManualFlushMode(session.getFlushMode())) {
+                    session.flush();
+                }
+                return null;
+            }
+        });
     }
 }

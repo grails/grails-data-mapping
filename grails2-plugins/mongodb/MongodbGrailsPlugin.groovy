@@ -29,7 +29,6 @@ class MongodbGrailsPlugin {
     def doWithSpring = {
         def domainClasses = application.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz }
 
-        println "DOMAIN CLASSES ARE $domainClasses"
         def initializer = new MongoDbDataStoreSpringInitializer(application.config, domainClasses)
         initializer.registerApplicationIfNotPresent = false
         initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate")  )

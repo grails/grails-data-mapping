@@ -17,11 +17,13 @@ package org.grails.orm.hibernate;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.orm.hibernate.cfg.Mapping;
-import org.grails.orm.hibernate.validation.AbstractPersistentConstraint;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.PropertyResolver;
+
+import java.util.concurrent.Callable;
 
 /**
  * Datastore implementation that uses a Hibernate SessionFactory underneath.
@@ -124,11 +126,19 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     }
 
     /**
+     * Execute the given operation with the given flush mode
+     *
+     * @param flushMode
+     * @param callable The callable
+     */
+    public abstract void withFlushMode(FlushMode flushMode, Callable<Boolean> callable);
+
+    /**
      * We use a separate enum here because the classes differ between Hibernate 3 and 4
      *
      * @see org.hibernate.FlushMode
      */
-    private enum FlushMode {
+    public enum FlushMode {
         MANUAL(0),
         COMMIT(5),
         AUTO(10),
@@ -139,5 +149,33 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         FlushMode(int level) {
             this.level = level;
         }
+
+        public int getLevel() {
+            return level;
+        }
     }
+
+    @Override
+    public void destroy() throws Exception {
+        super.destroy();
+        AbstractHibernateGormInstanceApi.resetInsertActive();
+    }
+
+    /**
+     * Obtains a hibernate template for the given flush mode
+     *
+     * @param flushMode The flush mode
+     * @return The IHibernateTemplate
+     */
+    public abstract IHibernateTemplate getHibernateTemplate(int flushMode);
+
+    public IHibernateTemplate getHibernateTemplate() {
+        return getHibernateTemplate(defaultFlushMode);
+    }
+
+    /**
+     * @return Opens a session
+     */
+    public abstract Session openSession();
+
 }

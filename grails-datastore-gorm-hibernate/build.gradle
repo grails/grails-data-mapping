@@ -1,22 +1,8 @@
 dependencies {
     compile(project(":grails-datastore-gorm-hibernate-core"))
+    compile(project(":grails-datastore-gorm-support"))
 
     // Web dependencies provided
-    provided("org.grails:grails-web:$grailsVersion") {
-        transitive = false
-    }
-    provided("org.grails:grails-web-common:$grailsVersion") {
-        transitive = false
-    }
-    provided("org.grails:grails-web-url-mappings:$grailsVersion") {
-        transitive = false
-    }
-    provided("org.grails:grails-spring:$grailsVersion") {
-        transitive = false
-    }
-    provided("org.springframework:spring-webmvc:$springVersion") {
-        transitive = false
-    }
     provided "javax.servlet:javax.servlet-api:$servletApiVersion"
     provided(project(":grails-datastore-web"))
     provided "org.springframework:spring-expression:$springVersion"

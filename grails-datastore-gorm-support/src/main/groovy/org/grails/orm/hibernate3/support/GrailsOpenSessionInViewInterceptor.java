@@ -12,23 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.orm.hibernate.support;
+package org.grails.orm.hibernate3.support;
 
 
-import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
+import org.grails.orm.hibernate.support.HibernateRuntimeUtils;
 import org.grails.web.servlet.mvc.GrailsWebRequest;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.dao.DataAccessException;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.WebRequest;
 
 /**
@@ -54,7 +51,7 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
             SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(sessionFactory);
             if (sessionHolder != null) {
                 Session session = sessionHolder.getSession();
-                GrailsHibernateUtil.enableDynamicFilterEnablerIfPresent(sessionFactory, session);
+                HibernateRuntimeUtils.enableDynamicFilterEnablerIfPresent(sessionFactory, session);
             }
         }
     }

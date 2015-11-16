@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.orm.hibernate.support;
+package org.grails.orm.hibernate3.support;
+
+import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor;
+import org.grails.orm.hibernate.support.SessionFactoryAwarePersistenceContextInterceptor;
 
 /**
  * Concrete implementation of the {@link org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor} class for Hibernate 3

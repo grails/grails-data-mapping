@@ -19,13 +19,14 @@ import org.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
 import org.grails.orm.hibernate.validation.HibernateConstraintsEvaluator
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.orm.hibernate.validation.PersistentConstraintFactory
-import org.grails.orm.hibernate.validation.UniqueConstraint
+
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.grails.core.metaclass.MetaClassEnhancer
 
 //import org.codehaus.groovy.grails.plugins.web.api.ControllersDomainBindingApi
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
+import org.grails.orm.hibernate.validation.UniqueConstraint
 import org.h2.Driver
 import org.hibernate.SessionFactory
 import org.hibernate.cache.ehcache.EhCacheRegionFactory
@@ -191,7 +192,7 @@ class Setup {
 
             def validator = new HibernateDomainClassValidator()
 
-            validator.sessionFactory = sessionFactory
+            validator.hibernateDatastore = hibernateDatastore
             validator.grailsApplication = grailsApplication
             validator.domainClass = dc
             validator.messageSource = ctx

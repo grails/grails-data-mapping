@@ -14,8 +14,6 @@
  */
 package grails.orm.bootstrap
 
-import grails.util.Environment
-import grails.validation.ConstrainedProperty
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
@@ -34,6 +32,8 @@ import org.grails.orm.hibernate.support.*
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.grails.orm.hibernate.validation.UniqueConstraint
+import org.grails.orm.hibernate4.support.AggregatePersistenceContextInterceptor
+import org.grails.orm.hibernate4.support.GrailsOpenSessionInViewInterceptor
 import org.hibernate.EmptyInterceptor
 import org.hibernate.cfg.ImprovedNamingStrategy
 import org.springframework.beans.factory.InitializingBean
@@ -60,6 +60,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     String defaultSessionFactoryBeanName = SESSION_FACTORY_BEAN_NAME
     String ddlAuto = "update"
     Set<String> dataSources = [defaultDataSourceBeanName]
+    boolean enableReload = false
 
     HibernateDatastoreSpringInitializer() {
     }
@@ -134,14 +135,6 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
             Object vendorToDialect = getVenderToDialectMappings()
 
-
-            if(beanDefinitionRegistry instanceof ApplicationContext) {
-                ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT,
-                        new PersistentConstraintFactory((ApplicationContext)beanDefinitionRegistry,
-                                UniqueConstraint))
-            }
-
-
             // for unwrapping / inspecting proxies
             hibernateProxyHandler(HibernateProxyHandler)
             proxyHandler(ProxyHandlerAdapter, ref('hibernateProxyHandler'))
@@ -150,7 +143,10 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             // for listening to Hibernate events
             hibernateEventListeners(HibernateEventListeners)
             // Useful interceptor for wrapping Hibernate behavior
-            persistenceInterceptor(AggregatePersistenceContextInterceptor)
+            persistenceInterceptor(AggregatePersistenceContextInterceptor) {
+                hibernateDatastore = ref('hibernateDatastore')
+            }
+
             // domain model mapping context, used for configuration
             grailsDomainClassMappingContext(HibernateMappingContextFactoryBean) {
                 delegate.configuration = this.configuration
@@ -238,8 +234,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                         messageSource = ref("messageSource")
                         domainClass = ref("${cls.name}DomainClass")
                         grailsApplication = ref("grailsApplication")
-                        sessionFactory = ref(sessionFactoryName)
-                        mappingContext = ref('grailsDomainClassMappingContext')
+                        hibernateDatastore = ref("hibernateDatastore$suffix")
                     }
                 }
 
@@ -255,7 +250,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 }
 
 
-                if (Environment.current.isReloadEnabled()) {
+                if (enableReload) {
                     "${SessionFactoryHolder.BEAN_ID}$suffix"(SessionFactoryHolder)
                 }
 
@@ -310,8 +305,11 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 }
 
                 boolean osivEnabled = config.getProperty("hibernate${suffix}.osiv.enabled", Boolean, true)
-                if (beanDefinitionRegistry?.containsBeanDefinition("dispatcherServlet") && osivEnabled) {
-                    "flushingRedirectEventListener$suffix"(FlushOnRedirectEventListener, ref(sessionFactoryName))
+                boolean isWebApplication = beanDefinitionRegistry?.containsBeanDefinition("dispatcherServlet") ||
+                        beanDefinitionRegistry?.containsBeanDefinition("grailsControllerHelper")
+
+                if (isWebApplication && osivEnabled) {
+                    "flushingRedirectEventListener$suffix"(FlushOnRedirectEventListener, ref("hibernateDatastore$suffix"))
                     "openSessionInViewInterceptor$suffix"(GrailsOpenSessionInViewInterceptor) {
                         flushMode = HibernateDatastoreSpringInitializer.resolveDefaultFlushMode(config.getProperty("hibernate${suffix}.flush.mode"),
                                                                                                 config.getProperty("hibernate${suffix}.osiv.readonly", Boolean, false))

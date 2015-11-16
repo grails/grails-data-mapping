@@ -1,5 +1,4 @@
-/*
- * Copyright 2004-2005 Graeme Rocher
+/* Copyright 2004-2005 Graeme Rocher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.orm.hibernate.support;
+package org.grails.orm.hibernate3.support;
 
-import org.grails.orm.hibernate.GrailsHibernateTemplate;
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.grails.web.servlet.mvc.GrailsWebRequest;
+
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest;
+import org.grails.orm.hibernate.support.HibernateRuntimeUtils;
 import org.hibernate.FlushMode;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.orm.hibernate4.SessionHolder;
-import org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor;
+import org.springframework.orm.hibernate3.SessionHolder;
+import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.context.request.WebRequest;
@@ -37,9 +36,7 @@ import org.springframework.web.context.request.WebRequest;
  * @since 0.5
  */
 public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
-    protected static final String IS_FLOW_REQUEST_ATTRIBUTE = "org.codehaus.groovy.grails.webflow.flow_request";
-
-    protected int flushMode = GrailsHibernateTemplate.FLUSH_AUTO;
+    private static final String IS_FLOW_REQUEST_ATTRIBUTE = "org.codehaus.groovy.grails.webflow.flow_request";
 
     @Override
     public void preHandle(WebRequest request) throws DataAccessException {
@@ -54,36 +51,9 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
             SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(sessionFactory);
             if (sessionHolder != null) {
                 Session session = sessionHolder.getSession();
-                GrailsHibernateUtil.enableDynamicFilterEnablerIfPresent(sessionFactory, session);
+                HibernateRuntimeUtils.enableDynamicFilterEnablerIfPresent(sessionFactory, session);
             }
         }
-    }
-
-    @Override
-    protected Session openSession() throws DataAccessResourceFailureException {
-        Session session = super.openSession();
-        applyFlushMode(session);
-        return session;
-    }
-
-    protected void applyFlushMode(Session session) {
-        FlushMode hibernateFlushMode = FlushMode.AUTO;
-        switch (getFlushMode()) {
-            case GrailsHibernateTemplate.FLUSH_EAGER:
-            case GrailsHibernateTemplate.FLUSH_AUTO:
-                hibernateFlushMode = FlushMode.AUTO;
-                break;
-            case GrailsHibernateTemplate.FLUSH_NEVER:
-                hibernateFlushMode = FlushMode.MANUAL;
-                break;
-            case GrailsHibernateTemplate.FLUSH_COMMIT:
-                hibernateFlushMode = FlushMode.COMMIT;
-                break;
-            case GrailsHibernateTemplate.FLUSH_ALWAYS:
-                hibernateFlushMode = FlushMode.ALWAYS;
-                break;
-        }
-        session.setFlushMode(hibernateFlushMode);
     }
 
     @Override
@@ -93,17 +63,13 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
             return;
         }
 
-        SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(getSessionFactory());
-        Session session = sessionHolder != null ? sessionHolder.getSession() : null;
         try {
             super.postHandle(request, model);
-            if (session != null && getFlushMode() != GrailsHibernateTemplate.FLUSH_NEVER && !FlushMode.isManualFlushMode(session.getFlushMode())) {
-                logger.debug("Eagerly flushing Hibernate session");
-                session.flush();
-            }
         }
         finally {
-            if (session != null) {
+            SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(getSessionFactory());
+            if (sessionHolder != null) {
+                Session session = sessionHolder.getSession();
                 session.setFlushMode(FlushMode.MANUAL);
             }
         }
@@ -119,11 +85,10 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
         super.afterCompletion(request, ex);
     }
 
-
-    public void setFlushMode(int flushMode) {
-        this.flushMode = flushMode;
-    }
-    public int getFlushMode() {
-        return flushMode;
+    @Override
+    protected void flushIfNecessary(Session session, boolean existingTransaction) throws HibernateException {
+        if (session != null && !FlushMode.isManualFlushMode(session.getFlushMode())) {
+            super.flushIfNecessary(session, existingTransaction);
+        }
     }
 }

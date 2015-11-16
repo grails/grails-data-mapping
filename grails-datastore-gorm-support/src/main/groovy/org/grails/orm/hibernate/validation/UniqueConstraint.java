@@ -1,5 +1,4 @@
-/*
- * Copyright 2004-2005 Graeme Rocher
+/* Copyright 2004-2005 Graeme Rocher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +24,8 @@ import grails.core.GrailsDomainClassProperty;
 import grails.util.GrailsClassUtils;
 import grails.validation.ConstrainedProperty;
 import groovy.lang.Closure;
-
 import org.grails.datastore.gorm.GormEnhancer;
-import org.grails.datastore.gorm.GormInstanceApi;
-import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
-import org.grails.orm.hibernate.GrailsHibernateTemplate;
-import org.grails.orm.hibernate.HibernateDatastore;
-import org.grails.orm.hibernate.IHibernateTemplate;
+import org.grails.orm.hibernate.*;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.core.exceptions.GrailsRuntimeException;
@@ -150,12 +144,10 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                   "domain classes and not custom user types or embedded instances");
         }
 
-        GrailsHibernateTemplate hibernateTemplate = (GrailsHibernateTemplate )getHibernateTemplate(target);
-        hibernateTemplate.setFlushMode(GrailsHibernateTemplate.FLUSH_NEVER);
+        IHibernateTemplate hibernateTemplate = getHibernateTemplate(target);
         List<?> results = hibernateTemplate.execute(new Closure<List<?>>(this) {
-
             public List<?> call(Object... args) {
-                Session session = (Session) args[0];
+                Session session = (Session)args[0];
                 boolean shouldValidate = true;
                 Class<?> constraintClass = constraintOwningClass;
                 if (propertyValue != null && DomainClassArtefactHandler.isDomainClass(propertyValue.getClass())) {
@@ -202,12 +194,8 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                             Object uniquenessGroupPropertyValue = GrailsClassUtils.getPropertyOrStaticPropertyOrFieldValue(target, uniquenessGroupPropertyName);
 
                             if (uniquenessGroupPropertyValue != null && DomainClassArtefactHandler.isDomainClass(uniquenessGroupPropertyValue.getClass())) {
-                                try {
-                                    // We are merely verifying that the object is not transient here
-                                    session.lock(uniquenessGroupPropertyValue, LockMode.NONE);
-                                } catch (TransientObjectException e) {
-                                    shouldValidate = false;
-                                }
+                                // We are merely verifying that the object is not transient here
+                                shouldValidate = session.contains(uniquenessGroupPropertyValue);
                             }
                             if (shouldValidate) {
                                 criteria.add(Restrictions.eq(uniquenessGroupPropertyName, uniquenessGroupPropertyValue));
@@ -223,7 +211,7 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                     return Collections.EMPTY_LIST;
                 }
                 return Collections.EMPTY_LIST;
-            }
+           }
         });
 
         if (results.isEmpty()) {
@@ -260,17 +248,9 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
 
     @Override
     public IHibernateTemplate getHibernateTemplate(Object target) {
-        SessionFactory sf = sessionFactory;
-        GormInstanceApi instanceApi = GormEnhancer.findInstanceApi(target.getClass());
-        if(instanceApi instanceof AbstractHibernateGormInstanceApi) {
-            sf = ((AbstractHibernateGormInstanceApi)instanceApi).getSessionFactory();
-        }
-
-        if (sf == null) {
-            sf = applicationContext.getBean("sessionFactory", SessionFactory.class);
-        }
-        HibernateDatastore app = applicationContext.getBean(HibernateDatastore.class);
-        GrailsHibernateTemplate hibernateTemplate = new GrailsHibernateTemplate(sf, app, GrailsHibernateTemplate.FLUSH_NEVER);
-        return hibernateTemplate;
+        AbstractHibernateGormInstanceApi instanceApi = (AbstractHibernateGormInstanceApi) GormEnhancer.findInstanceApi(target.getClass());
+        sessionFactory = instanceApi.getSessionFactory();
+        AbstractHibernateDatastore app = (AbstractHibernateDatastore) instanceApi.getDatastore();
+        return app.getHibernateTemplate(AbstractHibernateDatastore.FlushMode.MANUAL.getLevel());
     }
 }

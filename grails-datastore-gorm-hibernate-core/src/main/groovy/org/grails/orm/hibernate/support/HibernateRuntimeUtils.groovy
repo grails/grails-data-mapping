@@ -10,6 +10,8 @@ import org.codehaus.groovy.runtime.StringGroovyMethods
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.OneToOne
+import org.hibernate.Session
+import org.hibernate.SessionFactory
 import org.springframework.beans.BeanWrapper
 import org.springframework.beans.BeanWrapperImpl
 import org.springframework.core.convert.ConversionService
@@ -25,6 +27,17 @@ import org.springframework.validation.FieldError
 @CompileStatic
 class HibernateRuntimeUtils {
     private static ProxyHandler proxyHandler = new SimpleHibernateProxyHandler();
+
+    private static final String DYNAMIC_FILTER_ENABLER = "dynamicFilterEnabler";
+
+    @SuppressWarnings("rawtypes")
+    public static void enableDynamicFilterEnablerIfPresent(SessionFactory sessionFactory, Session session) {
+        if (sessionFactory != null && session != null) {
+            final Set definedFilterNames = sessionFactory.getDefinedFilterNames();
+            if (definedFilterNames != null && definedFilterNames.contains(DYNAMIC_FILTER_ENABLER))
+                session.enableFilter(DYNAMIC_FILTER_ENABLER); // work around for HHH-2624
+        }
+    }
 
     /**
      * Initializes the Errors property on target.  The target will be assigned a new

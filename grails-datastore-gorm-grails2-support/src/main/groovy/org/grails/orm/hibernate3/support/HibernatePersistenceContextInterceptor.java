@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.orm.hibernate.support;
+package org.grails.orm.hibernate3.support;
 
-import grails.persistence.support.PersistenceContextInterceptor;
 import grails.validation.DeferredBindingActions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.grails.core.lifecycle.ShutdownOperations;
+import org.codehaus.groovy.grails.lifecycle.ShutdownOperations;
+import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
 import org.grails.orm.hibernate.cfg.Mapping;
+import org.grails.orm.hibernate.support.HibernateRuntimeUtils;
+import org.grails.orm.hibernate.support.SessionFactoryAwarePersistenceContextInterceptor;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -32,13 +32,13 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Graeme Rocher
  * @since 0.4
  */
 public class HibernatePersistenceContextInterceptor implements PersistenceContextInterceptor, SessionFactoryAwarePersistenceContextInterceptor {
-
     private static final Log LOG = LogFactory.getLog(HibernatePersistenceContextInterceptor.class);
 
     private static ThreadLocal<Map<String, Boolean>> participate = new ThreadLocal<Map<String, Boolean>>() {
@@ -124,12 +124,12 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
     }
 
     public void setReadOnly() {
-        if (getSessionFactory() == null) return;        
+        if (getSessionFactory() == null) return;
         getSession().setFlushMode(FlushMode.MANUAL);
     }
 
     public void setReadWrite() {
-        if (getSessionFactory() == null) return;        
+        if (getSessionFactory() == null) return;
         getSession().setFlushMode(FlushMode.AUTO);
     }
 
@@ -160,7 +160,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
             setParticipate(false);
             LOG.debug("Opening single Hibernate session in HibernatePersistenceContextInterceptor");
             Session session = getSession();
-            GrailsHibernateUtil.enableDynamicFilterEnablerIfPresent(sf, session);
+            HibernateRuntimeUtils.enableDynamicFilterEnablerIfPresent(sf, session);
             session.setFlushMode(FlushMode.AUTO);
             TransactionSynchronizationManager.bindResource(sf, new SessionHolder(session));
         }
@@ -217,4 +217,6 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
         Boolean ret = map.get(dataSourceName);
         return (ret != null) ? ret : false;
     }
+
+
 }

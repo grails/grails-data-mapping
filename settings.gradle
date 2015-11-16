@@ -40,6 +40,7 @@ include ("grails-datastore-core",
         // Grails 2 Plugins
         'grails2-plugins/mongodb',
         'grails2-plugins/neo4j',
+        'grails2-plugins/hibernate4',
 
         // Boot Extensions
         'boot-plugins/gorm-hibernate4-spring-boot',

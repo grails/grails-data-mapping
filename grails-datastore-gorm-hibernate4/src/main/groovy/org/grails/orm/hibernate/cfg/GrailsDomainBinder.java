@@ -14,18 +14,10 @@
  */
 package org.grails.orm.hibernate.cfg;
 
-import java.util.Arrays;
-import java.util.List;
-
-import grails.core.GrailsDomainClass;
-import grails.core.GrailsDomainClassProperty;
-import grails.validation.ConstrainedProperty;
-import grails.validation.Constraint;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.orm.hibernate.persister.entity.GroovyAwareJoinedSubclassEntityPersister;
 import org.grails.orm.hibernate.persister.entity.GroovyAwareSingleTableEntityPersister;
-import org.grails.orm.hibernate.validation.UniqueConstraint;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.OneToOne;
 import org.hibernate.mapping.Table;

@@ -15,7 +15,6 @@
  */
 package org.grails.orm.hibernate.cfg;
 
-import grails.persistence.Entity;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import org.grails.datastore.gorm.GormEntity;
@@ -28,6 +27,8 @@ import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.validation.Errors;
+
+import java.lang.annotation.Annotation;
 
 /**
  * A Mapping context for Hibernate
@@ -90,6 +91,10 @@ public class HibernateMappingContext extends AbstractMappingContext {
         return null;
     }
 
+    public static boolean isDomainClass(Class clazz) {
+        return doIsDomainClassCheck(clazz);
+    }
+
     private static boolean doIsDomainClassCheck(Class<?> clazz) {
         // it's not a closure
         if (Closure.class.isAssignableFrom(clazz)) {
@@ -98,8 +103,15 @@ public class HibernateMappingContext extends AbstractMappingContext {
 
         if (clazz.isEnum()) return false;
 
-        if (clazz.getAnnotation(Entity.class) != null) {
-            return true;
+        Annotation[] allAnnotations = clazz.getAnnotations();
+        for (Annotation annotation : allAnnotations) {
+            String annName = annotation.annotationType().getName();
+            if (annName.equals("grails.persistence.Entity")) {
+                return true;
+            }
+            if (annName.equals("grails.gorm.annotation.Entity")) {
+                return true;
+            }
         }
 
         Class<?> testClass = clazz;

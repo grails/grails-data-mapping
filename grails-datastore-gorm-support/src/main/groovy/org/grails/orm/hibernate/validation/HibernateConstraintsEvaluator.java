@@ -23,7 +23,6 @@ import grails.validation.ConstrainedProperty;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.orm.hibernate.cfg.GrailsDomainBinder;
 import org.grails.orm.hibernate.cfg.PropertyConfig;
 import org.grails.validation.DefaultConstraintEvaluator;
 

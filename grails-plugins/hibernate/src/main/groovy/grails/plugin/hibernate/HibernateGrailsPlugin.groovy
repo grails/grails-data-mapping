@@ -10,13 +10,13 @@ import grails.validation.ConstrainedProperty
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
-import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.orm.hibernate.SessionFactoryHolder
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.cfg.HibernateMappingContext
 import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor
-import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
+import org.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.grails.orm.hibernate.validation.UniqueConstraint
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.RootBeanDefinition
@@ -53,6 +53,10 @@ class HibernateGrailsPlugin extends Plugin {
     Set<String> dataSourceNames
 
     Closure doWithSpring() {{->
+        ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT,
+                new PersistentConstraintFactory((ApplicationContext)applicationContext,
+                        UniqueConstraint))
+
         GrailsApplication grailsApplication = grailsApplication
         Config config = grailsApplication.config
         dataSourceNames = AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.calculateDataSourceNames(grailsApplication)
@@ -79,14 +83,14 @@ class HibernateGrailsPlugin extends Plugin {
             Class cls = (Class)event.source
             GrailsDomainClass dc = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, cls.name)
 
-            // if(!dc || !GrailsHibernateUtil.isMappedWithHibernate(dc)) {
-            //     return
-            // }
+//             if(!dc || !GrailsHibernateUtil.isMappedWithHibernate(dc)) {
+//                 return
+//             }
 
             GrailsDomainBinder.clearMappingCache(cls)
 
             ApplicationContext applicationContext = applicationContext
-            applicationContext.getBean(GrailsDomainClassMappingContext).addPersistentEntity(cls, true)
+            applicationContext.getBean(HibernateMappingContext).addPersistentEntity(cls, true)
             for(String dataSourceName in dataSourceNames) {
                 boolean isDefault = dataSourceName == Mapping.DEFAULT_DATA_SOURCE
                 String suffix = isDefault ? '' : '_' + dataSourceName

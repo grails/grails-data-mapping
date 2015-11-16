@@ -15,7 +15,6 @@
  */
 package org.grails.orm.hibernate;
 
-import grails.core.GrailsDomainClass;
 import groovy.lang.GroovySystem;
 
 import java.util.List;
@@ -25,11 +24,11 @@ import java.util.concurrent.ConcurrentMap;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder;
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
+import org.grails.orm.hibernate.cfg.HibernateMappingContext;
 import org.grails.orm.hibernate.support.ClosureEventListener;
 import org.grails.orm.hibernate.support.SoftKey;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
 import org.grails.core.artefact.AnnotationDomainClassArtefactHandler;
-import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.datastore.gorm.timestamp.DefaultTimestampProvider;
 import org.grails.datastore.gorm.timestamp.TimestampProvider;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
@@ -215,7 +214,7 @@ public class EventTriggeringInterceptor extends AbstractEventTriggeringIntercept
                 eventListener = eventListeners.get(key);
                 if (eventListener == null) {
                     shouldTrigger = (GroovySystem.getMetaClassRegistry().getMetaClass(entity.getClass()) != null &&
-                            (DomainClassArtefactHandler.isDomainClass(clazz) || AnnotationDomainClassArtefactHandler.isJPADomainClass(clazz)) &&
+                            (HibernateMappingContext.isDomainClass(clazz) || AnnotationDomainClassArtefactHandler.isJPADomainClass(clazz)) &&
                             isDefinedByCurrentDataStore(entity, domainBinder));
                     if (shouldTrigger) {
                         eventListener = new ClosureEventListener(clazz, failOnError, failOnErrorPackages, timestampProvider);

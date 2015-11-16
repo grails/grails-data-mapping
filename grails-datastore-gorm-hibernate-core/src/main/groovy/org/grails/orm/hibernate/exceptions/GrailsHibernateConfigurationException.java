@@ -24,10 +24,6 @@ public class GrailsHibernateConfigurationException extends GrailsHibernateExcept
 
     private static final long serialVersionUID = 5212907914995954558L;
 
-    public GrailsHibernateConfigurationException() {
-        super();
-    }
-
     public GrailsHibernateConfigurationException(String message) {
         super(message);
     }
@@ -36,7 +32,4 @@ public class GrailsHibernateConfigurationException extends GrailsHibernateExcept
         super(message, cause);
     }
 
-    public GrailsHibernateConfigurationException(Throwable cause) {
-        super(cause);
-    }
 }
