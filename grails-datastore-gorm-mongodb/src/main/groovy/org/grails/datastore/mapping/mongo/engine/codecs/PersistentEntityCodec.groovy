@@ -282,7 +282,7 @@ class PersistentEntityCodec implements Codec {
                 // so we get all properties
                 dirtyProperties = entity.persistentPropertyNames
                 if(!entity.isRoot()) {
-                    sets[MongoCodecEntityPersister.MONGO_CLASS_FIELD] = new BsonString(entity.discriminator)
+                    sets.put(MongoCodecEntityPersister.MONGO_CLASS_FIELD, new BsonString(entity.discriminator))
                 }
 
                 if(isVersioned) {
@@ -308,7 +308,7 @@ class PersistentEntityCodec implements Codec {
                         }
                         else {
                             def propKind = prop.getClass().superclass
-                            ENCODERS[propKind]?.encode(writer, prop, v, access, encoderContext, mongoDatastore)
+                            ENCODERS.get(propKind)?.encode(writer, prop, v, access, encoderContext, mongoDatastore)
                         }
 
                     }
@@ -323,7 +323,7 @@ class PersistentEntityCodec implements Codec {
                 for(name in schemaless.keySet()) {
                     def v = schemaless.get(name)
                     if(v == null) {
-                        unsets[name] = BLANK_STRING
+                        unsets.put(name,BLANK_STRING)
                     }
                     else {
                         writer.writeName(name)
@@ -370,16 +370,16 @@ class PersistentEntityCodec implements Codec {
                 def propKind = version.getClass().superclass
                 MongoCodecEntityPersister.incrementEntityVersion(access)
                 def v = access.getProperty(version.name)
-                ENCODERS[propKind]?.encode(writer, version, v, access, encoderContext, mongoDatastore)
+                ENCODERS.get(propKind)?.encode(writer, version, v, access, encoderContext, mongoDatastore)
             }
 
             writer.writeEndDocument()
 
             if(hasSets) {
-                update[MONGO_SET_OPERATOR] = sets
+                update.put(MONGO_SET_OPERATOR, sets)
             }
             if(hasUnsets) {
-                update[MONGO_UNSET_OPERATOR] = unsets
+                update.put(MONGO_UNSET_OPERATOR,unsets)
             }
         }
         else {
@@ -442,7 +442,7 @@ class PersistentEntityCodec implements Codec {
                     def doc = new BsonDocument()
                     def id = ea.identifier
                     codec.encode( new BsonDocumentWriter(doc), o, DEFAULT_ENCODER_CONTEXT, id != null )
-                    documents << doc
+                    documents.add( doc )
                 }
                 def bsonArray = new BsonArray(documents)
                 sets.put( association.name, bsonArray)
@@ -480,7 +480,7 @@ class PersistentEntityCodec implements Codec {
         if (includeIdentifier) {
 
             def id = access.getIdentifier()
-            ENCODERS[Identity].encode writer, entity.identity, id, access, encoderContext, mongoDatastore
+            ENCODERS.get(Identity).encode writer, entity.identity, id, access, encoderContext, mongoDatastore
         }
 
 
@@ -489,7 +489,7 @@ class PersistentEntityCodec implements Codec {
             def propKind = prop.getClass().superclass
             Object v = access.getProperty(prop.name)
             if (v != null) {
-                ENCODERS[propKind]?.encode(writer, (PersistentProperty) prop, v, access, encoderContext, mongoDatastore)
+                ENCODERS.get(propKind)?.encode(writer, (PersistentProperty) prop, v, access, encoderContext, mongoDatastore)
             }
         }
 
