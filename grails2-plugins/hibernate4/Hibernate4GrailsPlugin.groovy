@@ -83,7 +83,7 @@ class Hibernate4GrailsPlugin {
 
         if(event.source instanceof Class) {
             Class cls = (Class)event.source
-            GrailsDomainClass dc = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, cls.name)
+            GrailsDomainClass dc = (GrailsDomainClass)application.getArtefact(DomainClassArtefactHandler.TYPE, cls.name)
 
 //             if(!dc || !GrailsHibernateUtil.isMappedWithHibernate(dc)) {
 //                 return
@@ -91,7 +91,7 @@ class Hibernate4GrailsPlugin {
 
             GrailsDomainBinder.clearMappingCache(cls)
 
-            ApplicationContext applicationContext = applicationContext
+            ApplicationContext applicationContext = application.mainContext
             applicationContext.getBean(HibernateMappingContext).addPersistentEntity(cls, true)
             for(String dataSourceName in dataSourceNames) {
                 boolean isDefault = dataSourceName == Mapping.DEFAULT_DATA_SOURCE

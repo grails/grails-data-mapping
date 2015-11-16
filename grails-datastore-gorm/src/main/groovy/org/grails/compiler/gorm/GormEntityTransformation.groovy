@@ -230,27 +230,34 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         def mapWith = classNode.getProperty(GormProperties.MAPPING_STRATEGY)
         String mapWithValue = mapWith?.initialExpression?.text
         Class gormEntityTrait = null
-        if(mapWithValue) {
-            gormEntityTrait = findGormEntityTraitForValue(mapWithValue, classLoader)
+        boolean isHibernatePresent = isHibernatePresent(classLoader)
+        if(isHibernatePresent && mapWithValue == null) {
+            gormEntityTrait = GormEntity
         }
-
-        if(gormEntityTrait == null) {
-            boolean isHibernatePresent = isHibernatePresent(classLoader)
-            if(isHibernatePresent) {
+        else {
+            List<GormEntityTraitProvider> allTraitProviders = findTraitProviders(GormEntityTraitProvider, classLoader)
+            if(allTraitProviders.isEmpty()) {
                 gormEntityTrait = GormEntity
             }
             else {
-                def traitProviderInterface = GormEntityTraitProvider
-                List<GormEntityTraitProvider> allTraitProviders = findTraitProviders(traitProviderInterface, classLoader)
-                if(allTraitProviders.isEmpty()) {
-                    gormEntityTrait = GormEntity
-                }
-                else if(allTraitProviders.size() > 1) {
-                    AstUtils.warning(source, classNode, "There are multiple GORM implementations on the classpath. GORM cannot choose automatically which implementation to use. Please use 'mapWith' on your entity to avoid this conflict and warning.")
-                    gormEntityTrait = GormEntity
+                if(mapWithValue == null) {
+                    if( allTraitProviders.size() > 1 ) {
+                        AstUtils.warning(source, classNode, "There are multiple GORM implementations on the classpath. GORM cannot choose automatically which implementation to use. Please use 'mapWith' on your entity to avoid this conflict and warning.")
+                        gormEntityTrait = GormEntity
+                    }
+                    else {
+                        gormEntityTrait =  allTraitProviders.get(0).entityTrait
+                    }
                 }
                 else {
-                    gormEntityTrait = allTraitProviders.get(0).entityTrait
+                    def mapWithDatastore = NameUtils.capitalize(mapWithValue)
+                    def candidate = allTraitProviders.find() { GormEntityTraitProvider provider -> provider.entityTrait?.simpleName?.startsWith(mapWithDatastore) }
+                    if(candidate != null) {
+                        gormEntityTrait = candidate.entityTrait
+                    }
+                    else {
+                        gormEntityTrait = GormEntity
+                    }
                 }
             }
         }

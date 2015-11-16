@@ -31,7 +31,7 @@ class MongodbGrailsPlugin {
 
         def initializer = new MongoDbDataStoreSpringInitializer(application.config, domainClasses)
         initializer.registerApplicationIfNotPresent = false
-        initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate")  )
+        initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")  )
 
         def definitions = initializer.getBeanDefinitions((BeanDefinitionRegistry) springConfig.getUnrefreshedApplicationContext())
         definitions.delegate = delegate

@@ -32,7 +32,7 @@ class Neo4jGrailsPlugin {
         def domainClasses = application.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz }
         def initializer = new Neo4jDataStoreSpringInitializer(application.config, domainClasses)
         initializer.registerApplicationIfNotPresent = false
-        initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate")  )
+        initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")  )
 
         def definitions = initializer.getBeanDefinitions((BeanDefinitionRegistry) springConfig.getUnrefreshedApplicationContext())
         definitions.delegate = delegate
