@@ -1,6 +1,6 @@
 dependencies {
     compile project(':grails-datastore-gorm')
-    compile project(':grails-datastore-gorm-hibernate-core'), optional
+    provided project(':grails-datastore-gorm-hibernate-core')
     compile "org.grails:grails-web-url-mappings:$grailsVersion", optional
 
     compile("org.grails:grails-core:$grailsVersion") {
