@@ -72,8 +72,10 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
             // this is to support Grails 2.x
             def env = new StandardEnvironment()
             def config = new ConfigObject()
-            config.putAll(configuration)
-            config.putAll( config.flatten() )
+            if(configuration != null) {
+                config.putAll(configuration)
+                config.putAll( config.flatten() )
+            }
             env.propertySources.addFirst(new MapPropertySource("datastoreConfig", config) {
                 @Override
                 boolean containsProperty(String name) {

@@ -30,10 +30,8 @@ import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler
 import org.grails.orm.hibernate.support.*
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
-import org.grails.orm.hibernate.validation.PersistentConstraintFactory
-import org.grails.orm.hibernate.validation.UniqueConstraint
-import org.grails.orm.hibernate3.support.AggregatePersistenceContextInterceptor
-import org.grails.orm.hibernate3.support.GrailsOpenSessionInViewInterceptor
+import org.grails.orm.hibernate4.support.AggregatePersistenceContextInterceptor
+import org.grails.orm.hibernate4.support.GrailsOpenSessionInViewInterceptor
 import org.hibernate.EmptyInterceptor
 import org.hibernate.cfg.ImprovedNamingStrategy
 import org.springframework.beans.factory.InitializingBean
@@ -43,9 +41,9 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.support.GenericApplicationContext
+import org.springframework.jdbc.datasource.DriverManagerDataSource
 
 import javax.sql.DataSource
-
 /**
  * Class that handles the details of initializing GORM for Hibernate
  *
@@ -56,11 +54,13 @@ import javax.sql.DataSource
 class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory"
     public static final String DEFAULT_DATA_SOURCE_NAME = 'dataSource'
+    public static final String TEST_DB_URL = "jdbc:h2:mem:grailsDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1"
 
     String defaultDataSourceBeanName = Mapping.DEFAULT_DATA_SOURCE
     String defaultSessionFactoryBeanName = SESSION_FACTORY_BEAN_NAME
     String ddlAuto = "update"
     Set<String> dataSources = [defaultDataSourceBeanName]
+    boolean enableReload = false
 
     HibernateDatastoreSpringInitializer() {
     }
@@ -80,6 +80,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
         super(persistentClasses.toList())
     }
 
+
     HibernateDatastoreSpringInitializer(Map hibernateProperties, Collection<Class> persistentClasses) {
         super(hibernateProperties, persistentClasses)
     }
@@ -91,6 +92,19 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     @Override
     protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {
         DatastorePersistenceContextInterceptor
+    }
+
+    /**
+     * Configures an in-memory test data source, don't use in production
+     */
+    @Override
+    ApplicationContext configure() {
+        def dataSource = new DriverManagerDataSource(getTestDbUrl(), 'sa', '')
+        return configureForDataSource(dataSource)
+    }
+
+    protected String getTestDbUrl() {
+        TEST_DB_URL
     }
 
     @CompileStatic
@@ -126,7 +140,6 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
         return applicationContext
     }
 
-
     public Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         Closure beanDefinitions = {
             def common = getCommonConfiguration(beanDefinitionRegistry)
@@ -138,20 +151,21 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             // for unwrapping / inspecting proxies
             hibernateProxyHandler(HibernateProxyHandler)
             proxyHandler(ProxyHandlerAdapter, ref('hibernateProxyHandler'))
-
             // for handling GORM events
             eventTriggeringInterceptor(ClosureEventTriggeringInterceptor)
             // for listening to Hibernate events
             hibernateEventListeners(HibernateEventListeners)
             // Useful interceptor for wrapping Hibernate behavior
-            persistenceInterceptor(AggregatePersistenceContextInterceptor)
+            persistenceInterceptor(AggregatePersistenceContextInterceptor) {
+                hibernateDatastore = ref('hibernateDatastore')
+            }
+
             // domain model mapping context, used for configuration
             grailsDomainClassMappingContext(HibernateMappingContextFactoryBean) {
                 delegate.configuration = this.configuration
                 proxyFactory = hibernateProxyHandler
                 delegate.persistentClasses = persistentClasses
             }
-
 
             def config = this.configuration
             for(dataSourceName in dataSources) {
@@ -171,6 +185,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                     "$entityInterceptorName"(EmptyInterceptor)
                 }
 
+
                 def hibernateProperties = new Properties()
                 if(hibConfig) {
                     def subProps = hibConfig.respondsTo('toProperties') ? hibConfig.toProperties() : hibConfig
@@ -179,16 +194,48 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                     }
                 }
 
+                String logSql = config.getProperty("${dsConfigPrefix}.logSql", "")
+                String formatSql = config.getProperty("${dsConfigPrefix}.formatSql", "")
+
+                if (logSql) {
+                    hibernateProperties."hibernate.show_sql" = logSql
+                }
+                if (formatSql) {
+                    hibernateProperties."hibernate.format_sql" = formatSql
+                }
+
                 if (!hibernateProperties['hibernate.hbm2ddl.auto']) {
                     hibernateProperties['hibernate.hbm2ddl.auto'] = ddlAutoSetting
                 }
 
-                def noDialect = !hibernateProperties['hibernate.dialect']
+                def dialect = config.getProperty("${dsConfigPrefix}.dialect", (String)hibernateProperties['hibernate.dialect']?.toString())
+                def noDialect = !dialect
+                // Used to detect the database dialect to use
                 def hibConfigClass = config.getProperty("${dsConfigPrefix}.configClass", (String)hibernateProperties['hibernate.config_class']?.toString())
-                Properties noDialectProperties = new Properties(hibernateProperties)
+
+
+                if (dialect) {
+                    if (dialect instanceof Class) {
+                        hibernateProperties."hibernate.dialect" = dialect.name
+                    }
+                    else {
+                        hibernateProperties."hibernate.dialect" = dialect.toString()
+                    }
+                }
+                else if(noDialect) {
+                    Properties noDialectProperties = new Properties(hibernateProperties)
+                    "dialectDetector$suffix"(HibernateDialectDetectorFactoryBean) {
+                        dataSource = ref("dataSource$suffix")
+                        vendorNameDialectMappings = vendorToDialect
+                        delegate.hibernateProperties = noDialectProperties
+                    }
+                }
+
+
                 if (noDialect) {
                     hibernateProperties['hibernate.dialect'] = ref("dialectDetector")
                 }
+
                 "hibernateProperties$suffix"(PropertiesFactoryBean) { bean ->
                     bean.scope = "prototype"
                     properties = hibernateProperties
@@ -199,20 +246,13 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                     "${cls.name}Validator$suffix"(HibernateDomainClassValidator) {
                         messageSource = ref("messageSource")
                         domainClass = ref("${cls.name}DomainClass")
-                        grailsApplication = ref('grailsApplication')
+                        grailsApplication = ref("grailsApplication")
                         hibernateDatastore = ref("hibernateDatastore$suffix")
                     }
                 }
-                // Used to detect the database dialect to use
-                if(noDialect) {
-                    "dialectDetector$suffix"(HibernateDialectDetectorFactoryBean) {
-                        dataSource = ref("dataSource$suffix")
-                        vendorNameDialectMappings = vendorToDialect
-                        delegate.hibernateProperties = noDialectProperties
-                    }
-                }
 
-                def namingStrategy = hibConfig.naming_strategy ?: ImprovedNamingStrategy
+
+                def namingStrategy = config.getProperty("hibernate${suffix}.naming_strategy") ?: ImprovedNamingStrategy
                 try {
                     GrailsDomainBinder.configureNamingStrategy dataSourceName, namingStrategy
                 }
@@ -222,6 +262,10 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                     GrailsDomainBinder.configureNamingStrategy dataSourceName, ImprovedNamingStrategy
                 }
 
+
+                if (enableReload) {
+                    "${SessionFactoryHolder.BEAN_ID}$suffix"(SessionFactoryHolder)
+                }
 
                 // the main SessionFactory bean
                 if(!beanDefinitionRegistry.containsBeanDefinition(sessionFactoryName)) {
@@ -234,7 +278,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                         sessionFactoryBeanName = sessionFactoryName
 
                         List hibConfigLocations = []
-                        def cl = this.classLoader ?: Thread.currentThread().contextClassLoader
+                        def cl = Thread.currentThread().contextClassLoader
                         if (cl.getResource(prefix + 'hibernate.cfg.xml')) {
                             hibConfigLocations << 'classpath:' + prefix + 'hibernate.cfg.xml'
                         }
@@ -269,19 +313,19 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 }
 
                 "org.grails.gorm.hibernate.internal.POST_INIT_BEAN-${dataSourceName}$suffix"(PostInitializationHandling) { bean ->
-                    grailsApplication = ref('grailsApplication')
+                    grailsApplication = ref("grailsApplication")
                     bean.lazyInit = false
                 }
 
                 boolean osivEnabled = config.getProperty("hibernate${suffix}.osiv.enabled", Boolean, true)
                 boolean isWebApplication = beanDefinitionRegistry?.containsBeanDefinition("dispatcherServlet") ||
-                                                beanDefinitionRegistry?.containsBeanDefinition("grailsControllerHelper")
+                        beanDefinitionRegistry?.containsBeanDefinition("grailsControllerHelper")
+
                 if (isWebApplication && osivEnabled) {
                     "flushingRedirectEventListener$suffix"(FlushOnRedirectEventListener, ref("hibernateDatastore$suffix"))
-
                     "openSessionInViewInterceptor$suffix"(GrailsOpenSessionInViewInterceptor) {
                         flushMode = HibernateDatastoreSpringInitializer.resolveDefaultFlushMode(config.getProperty("hibernate${suffix}.flush.mode"),
-                                                                                                    config.getProperty("hibernate${suffix}.osiv.readonly", Boolean, false))
+                                                                                                config.getProperty("hibernate${suffix}.osiv.readonly", Boolean, false))
                         sessionFactory = ref(sessionFactoryName)
                     }
                 }
@@ -291,7 +335,6 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
         }
         beanDefinitions
     }
-
 
     @CompileStatic
     private static int resolveDefaultFlushMode(CharSequence flushModeStr, boolean readOnly) {
@@ -340,7 +383,6 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
     @CompileStatic
     static class PostInitializationHandling implements InitializingBean, ApplicationContextAware {
 
-        @Autowired
         def grailsApplication
 
         // required to force initialisation of validators

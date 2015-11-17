@@ -32,6 +32,7 @@ env:
   - GORM_IMPL=testgrails2
   - GORM_IMPL=hibernate
   - GORM_IMPL=hibernate4
+  - GORM_IMPL=hibernate5
   - GORM_IMPL=mongodb
   - GORM_IMPL=redis
   - GORM_IMPL=cassandra

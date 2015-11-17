@@ -289,7 +289,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 }
 
 
-                "hibernateDatastore$suffix"(HibernateDatastore, ref('grailsDomainClassMappingContext'), ref(sessionFactoryName), configuration, dataSourceName)
+                "hibernateDatastore$suffix"(HibernateDatastoreFactoryBean, HibernateDatastore, ref('grailsDomainClassMappingContext'), ref(sessionFactoryName), configuration, dataSourceName)
 
                 if (!beanDefinitionRegistry.containsBeanDefinition("transactionManager$suffix")) {
                     "transactionManager$suffix"(GrailsHibernateTransactionManager) { bean ->

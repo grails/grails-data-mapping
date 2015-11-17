@@ -12,8 +12,9 @@ dependencies {
     provided "javax.servlet:javax.servlet-api:$servletApiVersion"
     provided(project(":grails-datastore-web"))
 
-    String hibVersion = "${hibernateVersion}.Final"
+    String hibVersion = "${hibernate5Version}.Final"
 
+    compile 'org.springframework:spring-orm:4.2.3.RELEASE'
     compile("org.hibernate:hibernate-core:$hibVersion") {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'dom4j', module:'dom4j'
@@ -24,15 +25,12 @@ dependencies {
         exclude group:'org.slf4j', module:'slf4j-log4j12'
         exclude group:'xml-apis', module:'xml-apis'
     }
-    compile('org.hibernate.common:hibernate-commons-annotations:4.0.5.Final'){
-        exclude group: 'org.slf4j', module:'slf4j-api'
-        exclude group: 'commons-logging', module:'commons-logging'
-    }
-    compile('org.hibernate:hibernate-validator:5.0.3.Final') {
+    compile('org.hibernate:hibernate-validator:5.2.2.Final') {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'org.slf4j', module:'slf4j-api'
     }
+    runtime('javax.el:javax.el-api:2.2.4')
 
     runtime('dom4j:dom4j:1.6.1') {
         exclude group: 'xml-apis', module:'xml-apis'
@@ -75,12 +73,12 @@ eclipse {
     classpath {
         file {
             whenMerged { classpath ->
-                 // move grails-datastore-gorm-hibernate-core reference to end
-                 def hibernateCoreReference = classpath.entries.find { entry -> entry.kind == 'src' && entry.path == "/grails-datastore-gorm-hibernate-core" }
-                 if (hibernateCoreReference) {
-                     classpath.entries.remove hibernateCoreReference
-                     classpath.entries << hibernateCoreReference
-                 }
+                // move grails-datastore-gorm-hibernate-core reference to end
+                def hibernateCoreReference = classpath.entries.find { entry -> entry.kind == 'src' && entry.path == "/grails-datastore-gorm-hibernate-core" }
+                if (hibernateCoreReference) {
+                    classpath.entries.remove hibernateCoreReference
+                    classpath.entries << hibernateCoreReference
+                }
             }
         }
     }
