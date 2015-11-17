@@ -14,30 +14,18 @@
  * limitations under the License.
  */
 package org.grails.orm.hibernate.cfg
-
 import grails.core.DefaultGrailsApplication
 import grails.core.GrailsDomainClass
-import grails.core.GrailsDomainClassProperty
-import grails.plugins.GrailsPlugin
-import grails.plugins.GrailsPluginManager
 import grails.util.Holders
-import grails.validation.ConstrainedProperty
+import org.grails.core.DefaultGrailsDomainClass
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
-import org.grails.validation.TestClass
-import org.grails.core.DefaultGrailsDomainClass
 import org.grails.plugins.MockGrailsPluginManager
-import org.grails.support.MockApplicationContext
+import org.grails.validation.TestClass
 import org.hibernate.cfg.ImprovedNamingStrategy
-import org.hibernate.mapping.Bag
-import org.hibernate.mapping.Column
-import org.hibernate.mapping.ForeignKey
-import org.hibernate.mapping.PersistentClass
-import org.hibernate.mapping.Property
-import org.hibernate.mapping.SimpleValue
-import org.hibernate.mapping.Table
-import org.springframework.beans.BeanWrapper
-import org.springframework.beans.BeanWrapperImpl
+import org.hibernate.mapping.*
+import org.hibernate.mapping.Tablefixfi
+import org.springframework.context.support.GenericApplicationContext
 
 /**
  * @author Jason Rudolph
@@ -1154,8 +1142,9 @@ class CascadeParent {
     }
 
     private DefaultGrailsDomainConfiguration getDomainConfig(grailsApplication, pluginManager) {
-        def mainContext = new MockApplicationContext()
-        mainContext.registerMockBean 'pluginManager', pluginManager
+        def mainContext = new GenericApplicationContext()
+        mainContext.defaultListableBeanFactory.registerSingleton 'pluginManager', pluginManager
+        mainContext.refresh()
         grailsApplication.setMainContext(mainContext)
         grailsApplication.initialise()
         DefaultGrailsDomainConfiguration config = new DefaultGrailsDomainConfiguration(

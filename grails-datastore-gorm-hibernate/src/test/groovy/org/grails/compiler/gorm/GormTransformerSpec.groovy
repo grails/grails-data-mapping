@@ -1,23 +1,10 @@
 package org.grails.compiler.gorm
-
 import grails.compiler.ast.ClassInjector
 import grails.persistence.Entity
-
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
-import org.grails.compiler.gorm.GormTransformer;
 import org.grails.compiler.injection.DefaultGrailsDomainClassInjector
 import org.grails.compiler.injection.GrailsAwareClassLoader
-import org.grails.core.DefaultGrailsDomainClass
-import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.GormStaticApi
-import org.grails.datastore.gorm.GormValidationApi
-import org.grails.datastore.mapping.simple.SimpleMapDatastore
-import org.springframework.validation.Errors
-
 import spock.lang.Specification
-import grails.spring.BeanBuilder
-
-import org.springframework.context.ConfigurableApplicationContext
 
 class GormTransformerSpec extends Specification {
 

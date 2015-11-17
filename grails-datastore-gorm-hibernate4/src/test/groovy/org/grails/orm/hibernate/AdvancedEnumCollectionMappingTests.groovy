@@ -4,7 +4,7 @@ import grails.persistence.Entity
 
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory
-import org.grails.datastore.mapping.simple.SimpleMapDatastore
+//import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -23,7 +23,7 @@ class AdvancedEnumCollectionMappingTests extends AbstractGrailsHibernateTests {
     @Override
     protected void onSetUp() {
         super.onSetUp()
-        ConstrainedProperty.registerNewConstraint("unique", new UniqueConstraintFactory(new SimpleMapDatastore()))
+//        ConstrainedProperty.registerNewConstraint("unique", new UniqueConstraintFactory(new SimpleMapDatastore()))
     }
 
     @Test

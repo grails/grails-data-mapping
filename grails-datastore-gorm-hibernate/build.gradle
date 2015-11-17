@@ -15,6 +15,7 @@ dependencies {
 
     def tomcatVersion = '7.0.50'
     testCompile "org.apache.tomcat:tomcat-jdbc:$tomcatVersion"
+    testCompile "org.codehaus.groovy:groovy-sql:$groovyVersion"
     testRuntime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:$tomcatVersion"
 
 }
