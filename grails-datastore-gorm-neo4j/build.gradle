@@ -13,9 +13,9 @@ repositories {
 }
 
 dependencies {
-    compile "org.neo4j:neo4j-community:$neo4jVersion", {
+    compile "org.neo4j:neo4j:$neo4jVersion", {
         artifact {
-            name = 'neo4j-community' //artifact name different than module name
+            name = 'neo4j' //artifact name different than module name
             type = 'pom'
         }
     }
