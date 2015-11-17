@@ -1,19 +1,18 @@
-package org.grails.datastore.gorm.neo4j
+package org.grails.datastore.gorm.redis
 
 import grails.core.GrailsClass
-import grails.neo4j.bootstrap.Neo4jDataStoreSpringInitializer
 import grails.plugins.Plugin
+import grails.redis.bootstrap.RedisDatastoreSpringInitializer
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
-class Neo4jGrailsPlugin extends Plugin {
+class RedisGrailsPlugin extends Plugin {
 
     def license = "Apache 2.0 License"
     def organization = [ name: "Grails", url: "http://grails.org/" ]
     def developers = [
-        [ name: "Graeme Rocher", email: "graeme@grails.org"],
-        [ name: "Stefan Armbruster", email: "stefan@armbruster-it.de" ] ]
+            [ name: "Graeme Rocher", email: "graeme@grails.org"] ]
     def issueManagement = [ system: "JIRA", url: "https://github.com/grails/grails-data-mapping/issues" ]
     def scm = [ url: "https://github.com/grails/grails-data-mapping" ]
 
@@ -24,10 +23,10 @@ class Neo4jGrailsPlugin extends Plugin {
 
     def author = "Graeme Rocher"
     def authorEmail = "graeme@grails.org"
-    def title = "Neo4j GORM"
-    def description = 'A plugin that integrates the Neo4j graph database into Grails, providing a GORM API onto it'
+    def title = "Redis GORM"
+    def description = 'A plugin that integrates the Redis database into Grails, providing a GORM API onto it'
 
-    def documentation = "http://grails.github.io/grails-data-mapping/latest/neo4j"
+    def documentation = "http://grails.github.io/grails-data-mapping/latest/redis"
 
     def dependsOn = [:]
     // resources that are excluded from plugin packaging
@@ -39,7 +38,7 @@ class Neo4jGrailsPlugin extends Plugin {
     @Override
     @CompileStatic
     Closure doWithSpring() {
-        def initializer = new Neo4jDataStoreSpringInitializer(config, grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
+        def initializer = new RedisDatastoreSpringInitializer(config, grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
         initializer.registerApplicationIfNotPresent = false
         initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")  )
         return initializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)

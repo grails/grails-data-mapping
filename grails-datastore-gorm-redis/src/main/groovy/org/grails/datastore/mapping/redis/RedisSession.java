@@ -146,7 +146,6 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
             for (Object lockedObject : lockedObjects) {
                 unlock(lockedObject);
             }
-            redisTemplate.close();
         }
         finally {
             super.disconnect();

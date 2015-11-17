@@ -64,6 +64,15 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         this.redis = jedis;
     }
 
+    public JedisTemplate(JedisPool pool) {
+        this.pool = pool;
+    }
+
+    public JedisTemplate(JedisPool pool, int timeout) {
+        this.timeout = timeout;
+        this.pool = pool;
+    }
+
     public boolean append(final String key, final Object val) {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -163,19 +172,16 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    public JedisTemplate(JedisPool pool) {
-        this.pool = pool;
-    }
 
-    public JedisTemplate(JedisPool pool, int timeout) {
-        this.timeout = timeout;
-        this.pool = pool;
-    }
 
     public Object execute(RedisCallback<Jedis> jedisRedisCallback) {
+
+        boolean closeConnection = false;
+
         try {
             if (redis == null) {
                 redis = getNewConnection();
+                closeConnection = true;
                 doConnect();
             }
             else {
@@ -193,6 +199,16 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
             return jedisRedisCallback.doInRedis(redis);
         } catch (IOException e) {
             throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        } finally {
+            if(closeConnection && redis != null) {
+                if(pool != null) {
+                    redis.disconnect();
+                }
+                else {
+                    redis.disconnect();
+                    redis.close();
+                }
+            }
         }
     }
 
@@ -946,17 +962,9 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     }
 
     public void close() {
-        execute(new RedisCallback<Jedis>() {
-            public Object doInRedis(Jedis redis) throws IOException {
-                if (pool != null) {
-                    pool.returnResource(redis);
-                }
-                else {
-                    redis.disconnect();
-                }
-                return null;
-            }
-        });
+        if(pool != null) {
+            pool.destroy();
+        }
     }
 
     public Object multi() {
@@ -1238,7 +1246,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     }
 
     public boolean isInMulti() {
-        return getRedisClient().getClient().isInMulti();
+        Jedis redisClient = getRedisClient();
+        return redisClient != null && redisClient.getClient().isInMulti();
     }
 
     private class JedisSortParams extends SortParams<SortingParams> {

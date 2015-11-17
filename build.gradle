@@ -44,6 +44,7 @@ project.ext {
     mongodbPluginVersion = defaultPluginVersion
     neo4jPluginVersion = defaultPluginVersion
     cassandraPluginVersion = defaultPluginVersion
+    redisPluginVersion = defaultPluginVersion
 
 
     isCiBuild = project.hasProperty("isCiBuild")
@@ -458,23 +459,28 @@ task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
         }
         else {
             def storeName = projectName["grails-documentation-".size()..-1]
-            stores << storeName
-            def docsDir = "$allDocsDir/$storeName"
-            mkdir docsDir
-            def groovydocTask = groovydocTasks.find { it.project.name == "grails-datastore-$storeName" }
-            if (groovydocTask == null) groovydocTask = groovydocTasks.find { it.project.name == "grails-datastore-gorm-$storeName" }
-            if (groovydocTask != null) {
-                mkdir "$docsDir/api"
-                groovydocTask.actions.each { it.execute(groovydocTask) }
-                copy {
-                    from groovydocTask.destinationDir
-                    into "$docsDir/api"
+
+            // for the moment skip REST client
+            if(storeName != 'rest-client') {
+
+                stores << storeName
+                def docsDir = "$allDocsDir/$storeName"
+                mkdir docsDir
+                def groovydocTask = groovydocTasks.find { it.project.name == "grails-datastore-$storeName" }
+                if (groovydocTask == null) groovydocTask = groovydocTasks.find { it.project.name == "grails-datastore-gorm-$storeName" }
+                if (groovydocTask != null) {
+                    mkdir "$docsDir/api"
+                    groovydocTask.actions.each { it.execute(groovydocTask) }
+                    copy {
+                        from groovydocTask.destinationDir
+                        into "$docsDir/api"
+                    }
                 }
-            }
-            mkdir "$docsDir/manual"
-            copy {
-                from dir
-                into "$docsDir/manual"
+                mkdir "$docsDir/manual"
+                copy {
+                    from dir
+                    into "$docsDir/manual"
+                }
             }
         }
 

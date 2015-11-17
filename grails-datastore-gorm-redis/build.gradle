@@ -1,8 +1,8 @@
 dependencies {
 
-    compile('redis.clients:jedis:2.5.2')
+    compile('redis.clients:jedis:2.7.3')
     compile project(":grails-datastore-gorm"),
-            project(":grails-datastore-gorm-plugin-support"),
+            project(":grails-datastore-gorm-support"),
             project(":grails-datastore-core")
 
 

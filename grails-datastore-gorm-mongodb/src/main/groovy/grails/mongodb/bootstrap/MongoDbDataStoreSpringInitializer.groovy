@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.GenericApplicationContext
-
+import static org.grails.datastore.mapping.mongo.MongoDatastore.*
 /**
  * Used to initialize GORM for MongoDB outside of Grails
  *
@@ -39,16 +39,7 @@ import org.springframework.context.support.GenericApplicationContext
 class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer {
 
     public static final String DEFAULT_DATABASE_NAME = "test"
-    public static final String SETTING_DATABASE_NAME = 'grails.mongodb.databaseName'
-    public static final String SETTING_CONNECTION_STRING = 'grails.mongodb.connectionString'
-    public static final String SETTING_DEFAULT_MAPPING = 'grails.mongodb.default.mapping'
-    public static final String SETTING_OPTIONS = 'grails.mongodb.options'
-    public static final String SETTING_HOST = 'grails.mongodb.host'
-    public static final String SETTING_PORT = 'grails.mongodb.port'
-    public static final String SETTING_USERNAME = 'grails.mongodb.username'
-    public static final String SETTING_PASSWORD = 'grails.mongodb.password'
-    public static final String SETTING_REPLICA_SET = 'grails.mongodb.replicaSet'
-    public static final String SETTING_REPLICA_PAIR = 'grails.mongodb.replicaPair'
+
 
     protected String mongoBeanName = "mongo"
     protected String mongoOptionsBeanName = "mongoOptions"
@@ -109,7 +100,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer {
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         return {
             final config = configuration
-            String connectionString = config.getProperty(SETTING_CONNECTION_STRING,'') ?: null
+            String connectionString = config.getProperty(SETTING_CONNECTION_STRING,config.getProperty(SETTING_URL,'')) ?: null
             databaseName = config.getProperty(SETTING_DATABASE_NAME, '') ?: DEFAULT_DATABASE_NAME
             Closure defaultMapping = config.getProperty(SETTING_DEFAULT_MAPPING,Closure, this.defaultMapping)
             Map mongoOptions = config.getProperty(SETTING_OPTIONS, Map, null)

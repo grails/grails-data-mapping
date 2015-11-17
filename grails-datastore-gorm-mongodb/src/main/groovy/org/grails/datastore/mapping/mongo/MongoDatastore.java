@@ -15,7 +15,6 @@
 
 package org.grails.datastore.mapping.mongo;
 
-import static org.grails.datastore.mapping.config.utils.ConfigUtils.read;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,7 +37,6 @@ import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext;
-import org.grails.datastore.mapping.reflect.FastClassData;
 import org.grails.datastore.mapping.mongo.engine.codecs.AdditionalCodecs;
 import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec;
 import org.springframework.beans.factory.DisposableBean;
@@ -57,12 +55,19 @@ import org.springframework.core.env.PropertyResolver;
  */
 public class MongoDatastore extends AbstractDatastore implements InitializingBean, MappingContext.Listener, DisposableBean, StatelessDatastore {
 
-    public static final String PASSWORD = "password";
-    public static final String USERNAME = "username";
-    public static final String MONGO_PORT = "port";
-    public static final String MONGO_HOST = "host";
-    public static final String MONGO_STATELESS = "stateless";
-    public static final String MONGO_ENGINE = "engine";
+    public static final String SETTING_DATABASE_NAME = "grails.mongodb.databaseName";
+    public static final String SETTING_CONNECTION_STRING = "grails.mongodb.connectionString";
+    public static final String SETTING_URL = "grails.mongodb.url";
+    public static final String SETTING_DEFAULT_MAPPING = "grails.mongodb.default.mapping";
+    public static final String SETTING_OPTIONS = "grails.mongodb.options";
+    public static final String SETTING_HOST = "grails.mongodb.host";
+    public static final String SETTING_PORT = "grails.mongodb.port";
+    public static final String SETTING_USERNAME = "grails.mongodb.username";
+    public static final String SETTING_PASSWORD = "grails.mongodb.password";
+    public static final String SETTING_REPLICA_SET = "grails.mongodb.replicaSet";
+    public static final String SETTING_REPLICA_PAIR = "grails.mongodb.replicaPair";
+    public static final String SETTING_STATELESS = "grails.mongodb.stateless";
+    public static final String SETTING_ENGINE = "grails.mongodb.engine";
     public static final String INDEX_ATTRIBUTES = "indexAttributes";
     public static final String CODEC_ENGINE = "codec";
 
@@ -72,8 +77,9 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     protected Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
     protected Map<PersistentEntity, String> mongoDatabases = new ConcurrentHashMap<PersistentEntity, String>();
     protected boolean stateless = false;
-    protected boolean codecEngine = false;
+    protected boolean codecEngine = true;
     protected CodecRegistry codecRegistry;
+    protected PropertyResolver configuration;
 
 
 
@@ -81,7 +87,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * Constructs a MongoDatastore using the given MappingContext and connection details map.
      *
      * @param mappingContext    The MongoMappingContext
-     * @param connectionDetails The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings
+     * @param connectionDetails The connection details containing the {@link #SETTING_HOST} and {@link #SETTING_PORT} settings
      */
     public MongoDatastore(MongoMappingContext mappingContext,
                           Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
@@ -135,7 +141,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * Constructs a MongoDatastore using the given MappingContext and connection details map.
      *
      * @param mappingContext    The MongoMappingContext
-     * @param configuration The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings
+     * @param configuration The connection details containing the {@link #SETTING_HOST} and {@link #SETTING_PORT} settings
      */
     public MongoDatastore(MongoMappingContext mappingContext,
                           PropertyResolver configuration, ConfigurableApplicationContext ctx) {
@@ -163,7 +169,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * Constructs a MongoDatastore using the given MappingContext and connection details map.
      *
      * @param mappingContext    The MongoMappingContext
-     * @param connectionDetails The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings
+     * @param connectionDetails The connection details containing the {@link #SETTING_HOST} and {@link #SETTING_PORT} settings
      */
     public MongoDatastore(MongoMappingContext mappingContext,
                           Map<String, String> connectionDetails, MongoClientOptions mongoOptions, ConfigurableApplicationContext ctx) {
@@ -330,22 +336,21 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (mongo == null) {
+        if (mongo == null && configuration != null) {
             ServerAddress defaults = new ServerAddress();
-            String username = read(String.class, USERNAME, connectionDetails, null);
-            String password = read(String.class, PASSWORD, connectionDetails, null);
-            DocumentMappingContext dc = (DocumentMappingContext) getMappingContext();
+            String username = configuration.getProperty(SETTING_USERNAME, (String)null);
+            String password = configuration.getProperty(SETTING_PASSWORD, (String)null);
+            DocumentMappingContext dc = getMappingContext();
             String databaseName = dc.getDefaultDatabaseName();
 
             List<MongoCredential> credentials = new ArrayList<MongoCredential>();
             if (username != null && password != null) {
                 credentials.add(MongoCredential.createCredential(username, databaseName, password.toCharArray()));
             }
-            ServerAddress serverAddress = new ServerAddress(read(String.class, MONGO_HOST, connectionDetails, defaults.getHost()),
-                    read(Integer.class, MONGO_PORT, connectionDetails, defaults.getPort())
-            );
-            this.stateless = read(Boolean.class, MONGO_STATELESS, connectionDetails, false);
-            this.codecEngine = read(String.class, MONGO_ENGINE, connectionDetails, CODEC_ENGINE).equals(CODEC_ENGINE);
+
+            String host = configuration.getProperty(SETTING_HOST, defaults.getHost());
+            int port = configuration.getProperty(SETTING_PORT, Integer.class, defaults.getPort());
+            ServerAddress serverAddress = new ServerAddress(host,port);
             if (mongoOptions != null) {
                 mongo = new MongoClient(serverAddress, credentials, mongoOptions);
             } else {
@@ -357,7 +362,15 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                 mongo = new MongoClient(serverAddress, credentials, mongoOptions);
             }
         }
+        else if(mongo == null) {
+            throw new DatastoreConfigurationException("Cannot initialise datastore for null configuration");
+        }
 
+        if(configuration != null) {
+
+            this.stateless = configuration.getProperty(SETTING_STATELESS, Boolean.class, false);
+            this.codecEngine = configuration.getProperty(SETTING_ENGINE, String.class, CODEC_ENGINE).equals(CODEC_ENGINE);
+        }
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
             // Only create Mongo templates for entities that are mapped with Mongo
             if (!entity.isExternal()) {

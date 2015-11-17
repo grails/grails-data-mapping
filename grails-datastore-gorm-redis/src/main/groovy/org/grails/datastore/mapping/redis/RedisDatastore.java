@@ -16,11 +16,9 @@ package org.grails.datastore.mapping.redis;
 
 import static org.grails.datastore.mapping.config.utils.ConfigUtils.read;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import org.grails.datastore.mapping.config.utils.PropertyResolverMap;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -38,6 +36,10 @@ import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.redis.engine.RedisEntityPersister;
 import org.grails.datastore.mapping.redis.util.JedisTemplate;
 import org.grails.datastore.mapping.redis.util.RedisTemplate;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertyResolver;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.ClassUtils;
 
 import redis.clients.jedis.JedisPool;
@@ -55,13 +57,12 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     private static final boolean jedisClientAvailable =
             ClassUtils.isPresent("redis.clients.jedis.Jedis", RedisSession.class.getClassLoader());
 
-    public static final String CONFIG_HOST = "host";
-    public static final String CONFIG_TIMEOUT = "timeout";
-    private static final String CONFIG_RESOURCE_COUNT = "resources";
-    public static final String CONFIG_PORT = "port";
-    public static final String CONFIG_PASSWORD = "password";
-
-    private static final String CONFIG_POOLED = "pooled";
+    public static final String CONFIG_HOST = "grails.gorm.redis.host";
+    public static final String CONFIG_TIMEOUT = "grails.gorm.redis.timeout";
+    public static final String CONFIG_RESOURCE_COUNT = "grails.gorm.redis.resources";
+    public static final String CONFIG_PORT = "grails.gorm.redis.port";
+    public static final String CONFIG_PASSWORD = "grails.gorm.redis.password";
+    public static final String CONFIG_POOLED = "grails.gorm.redis.pooled";
 
     public static final String DEFAULT_HOST = "localhost";
     public static final int DEFAULT_PORT = 6379;
@@ -79,27 +80,46 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     }
 
     public RedisDatastore(MappingContext mappingContext) {
-        this(mappingContext, null, null);
+        this(mappingContext, Collections.<String,Object>emptyMap(), null);
     }
 
-    public RedisDatastore(MappingContext mappingContext, Map<String, String> connectionDetails,
+    public RedisDatastore(MappingContext mappingContext, Map<String, Object> config) {
+        this(mappingContext, convertToResolver(config), null);
+    }
+
+    public RedisDatastore(MappingContext mappingContext, Map<String, Object> config, ConfigurableApplicationContext applicationContext) {
+        this(mappingContext, convertToResolver(config), applicationContext);
+    }
+
+    public RedisDatastore(MappingContext mappingContext, PropertyResolver configuration,
                 ConfigurableApplicationContext ctx) {
-        super(mappingContext, connectionDetails, ctx);
+        super(mappingContext, new PropertyResolverMap(configuration), ctx);
 
         int resourceCount = 10;
-        if (connectionDetails != null) {
-            host = read(String.class, CONFIG_HOST, connectionDetails, DEFAULT_HOST);
-            port = read(Integer.class, CONFIG_PORT, connectionDetails, DEFAULT_PORT);
-            timeout = read(Integer.class, CONFIG_TIMEOUT, connectionDetails, 2000);
-            pooled = read(Boolean.class, CONFIG_POOLED, connectionDetails, true);
-            password = read(String.class, CONFIG_PASSWORD, connectionDetails, null);
-            resourceCount = read(Integer.class, CONFIG_RESOURCE_COUNT, connectionDetails, resourceCount);
+        if (configuration != null) {
+            host = configuration.getProperty(CONFIG_HOST, DEFAULT_HOST);
+            port = configuration.getProperty(CONFIG_PORT, Integer.class, DEFAULT_PORT);
+            timeout = configuration.getProperty(CONFIG_TIMEOUT, Integer.class, 2000);
+            pooled = configuration.getProperty(CONFIG_POOLED, Boolean.class, true);
+            password = configuration.getProperty(CONFIG_PASSWORD, (String)null);
+            resourceCount = configuration.getProperty(CONFIG_RESOURCE_COUNT, Integer.class, resourceCount);
         }
         if (pooled && useJedis()) {
             this.pool = JedisTemplateFactory.createPool(host, port, timeout, resourceCount, password);
         }
 
         initializeConverters(mappingContext);
+    }
+
+    private static PropertyResolver convertToResolver(Map<String, Object> config) {
+        if(config instanceof PropertyResolver) {
+            return (PropertyResolver) config;
+        }
+        else {
+            StandardEnvironment env = new StandardEnvironment();
+            env.getPropertySources().addFirst(new MapPropertySource("datastoreConfig", config));
+            return env;
+        }
     }
 
     private boolean useJedis() {

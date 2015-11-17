@@ -36,6 +36,7 @@ include ("grails-datastore-core",
         'grails-plugins/mongodb',
         'grails-plugins/neo4j',
         'grails-plugins/cassandra',
+        'grails-plugins/redis-gorm',
 
         // Grails 2 Plugins
         'grails2-plugins/mongodb',
