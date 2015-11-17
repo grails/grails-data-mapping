@@ -15,6 +15,7 @@
  */
 package org.grails.orm.hibernate.cfg;
 
+import grails.gorm.annotation.Entity;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import org.grails.datastore.gorm.GormEntity;
@@ -105,11 +106,12 @@ public class HibernateMappingContext extends AbstractMappingContext {
 
         Annotation[] allAnnotations = clazz.getAnnotations();
         for (Annotation annotation : allAnnotations) {
-            String annName = annotation.annotationType().getName();
+            Class<? extends Annotation> type = annotation.annotationType();
+            String annName = type.getName();
             if (annName.equals("grails.persistence.Entity")) {
                 return true;
             }
-            if (annName.equals("grails.gorm.annotation.Entity")) {
+            if (type.equals(Entity.class)) {
                 return true;
             }
         }

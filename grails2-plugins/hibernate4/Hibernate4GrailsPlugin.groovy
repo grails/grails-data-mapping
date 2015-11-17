@@ -2,6 +2,7 @@ import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsClass
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.grails.orm.hibernate4.support.GrailsOpenSessionInViewInterceptor
 import org.springframework.context.*
@@ -46,7 +47,9 @@ class Hibernate4GrailsPlugin {
                 new PersistentConstraintFactory(springConfig.getUnrefreshedApplicationContext(),
                         UniqueConstraint))
 
-        def domainClasses = application.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz }
+        def domainClasses = application.getArtefacts(DomainClassArtefactHandler.TYPE)
+                            .findAll() { GrailsDomainClass cls -> cls.mappingStrategy != "none" && cls.mappingStrategy == GrailsDomainClass.GORM}
+                            .collect() { GrailsClass cls -> cls.clazz }
 
         def initializer = new HibernateDatastoreSpringInitializer(application.config, domainClasses)
         initializer.registerApplicationIfNotPresent = false

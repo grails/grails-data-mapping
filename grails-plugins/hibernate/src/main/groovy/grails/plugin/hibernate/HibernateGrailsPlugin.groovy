@@ -61,8 +61,14 @@ class HibernateGrailsPlugin extends Plugin {
         Config config = grailsApplication.config
         dataSourceNames = AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.calculateDataSourceNames(grailsApplication)
 
+        def domainClasses = grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE)
+                                                .findAll() { GrailsClass cls ->
+                                                    GrailsDomainClass dc = (GrailsDomainClass)cls
+                                                        dc.mappingStrategy != "none" && dc.mappingStrategy == GrailsDomainClass.GORM
+                                                }
+                                                .collect() { GrailsClass cls -> cls.clazz }
 
-        def springInitializer = new HibernateDatastoreSpringInitializer(config, grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
+        def springInitializer = new HibernateDatastoreSpringInitializer(config, domainClasses)
         springInitializer.registerApplicationIfNotPresent = false
         springInitializer.dataSources = dataSourceNames
         def beans = springInitializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
