@@ -24,7 +24,7 @@ import org.grails.plugins.MockGrailsPluginManager
 import org.grails.validation.TestClass
 import org.hibernate.cfg.ImprovedNamingStrategy
 import org.hibernate.mapping.*
-import org.hibernate.mapping.Tablefixfi
+import org.hibernate.mapping.Table
 import org.springframework.context.support.GenericApplicationContext
 
 /**
