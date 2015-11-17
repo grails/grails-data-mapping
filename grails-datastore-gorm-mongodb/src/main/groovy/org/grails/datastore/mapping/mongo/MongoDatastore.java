@@ -363,7 +363,12 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             }
         }
         else if(mongo == null) {
-            throw new DatastoreConfigurationException("Cannot initialise datastore for null configuration");
+            MongoClientOptions.Builder builder = MongoClientOptions.builder();
+            builder.codecRegistry(
+                    CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(), new MongoClientFactoryBean.DefaultGrailsCodecRegistry())
+            );
+            mongoOptions = builder.build();
+            mongo = new MongoClient(new ServerAddress(), mongoOptions);
         }
 
         if(configuration != null) {
