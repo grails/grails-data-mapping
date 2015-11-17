@@ -1,5 +1,4 @@
 dependencies {
-
     compile(project(":grails-datastore-gorm-hibernate-core")) {
         exclude group:'org.hibernate', module:'hibernate-core'
         exclude group:'org.hibernate', module:'hibernate-validator'
@@ -66,6 +65,9 @@ dependencies {
     def tomcatVersion = '7.0.50'
     testCompile "org.apache.tomcat:tomcat-jdbc:$tomcatVersion"
     testRuntime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:$tomcatVersion"
+
+    // The groovydoc task needs the Hibernate 4.x jars in the classpath
+    documentation("org.hibernate:hibernate-core:${hibernateVersion}.Final")
 
 }
 
