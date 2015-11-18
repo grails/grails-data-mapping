@@ -83,6 +83,8 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
         then:"The count method returns the right results"
             criteria.asBoolean() == true
     }
+
+    @NotYetImplemented
     void "Test updateAll method"() {
         given:"A bunch of people"
         createPeople()
