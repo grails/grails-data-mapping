@@ -49,12 +49,8 @@ class RedisDatastoreSpringInitializer extends AbstractDatastoreInitializer{
                 mappingContext = ref("redisDatastoreMappingContext")
             }
 
-            callable = getAdditionalBeansConfiguration(beanDefinitionRegistry, "redis")
-            callable.delegate = delegate
-            callable.call()
 
-
-            "org.grails.gorm.neo4j.internal.GORM_ENHANCER_BEAN-redis"(GormEnhancer, ref("redisDatastore"), ref("redisTransactionManager")) { bean ->
+            "org.grails.gorm.neo4j.internal.GORM_ENHANCER_BEAN-redis"(GormEnhancer, ref("redisDatastore")) { bean ->
                 bean.initMethod = 'enhance'
                 bean.destroyMethod = 'close'
                 bean.lazyInit = false

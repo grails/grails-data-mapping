@@ -201,13 +201,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
             throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         } finally {
             if(closeConnection && redis != null) {
-                if(pool != null) {
-                    redis.disconnect();
-                }
-                else {
-                    redis.disconnect();
-                    redis.close();
-                }
+                closeNewConnection(redis);
             }
         }
     }
@@ -243,12 +237,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     }
 
     protected void closeNewConnection(Jedis jedis) {
-        if (pool == null) {
-            jedis.disconnect();
-        }
-        else {
-            pool.returnResource(jedis);
-        }
+        jedis.close();
     }
 
     @SuppressWarnings("rawtypes")
