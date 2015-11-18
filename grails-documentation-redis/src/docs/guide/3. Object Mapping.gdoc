@@ -1,4 +1,4 @@
-Object mapping works largely as described in the [documentation on GORM|http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html]. In general you can continue to model your associations using typical GORM notation such as @hasMany@, @belongsTo@ and so on.
+Object mapping works largely as described in the [documentation on GORM|http://grails.github.io/grails-doc/latest/guide/GORM.html]. In general you can continue to model your associations using typical GORM notation such as @hasMany@, @belongsTo@ and so on.
 
 The one notable exception is that the [mapping block|http://grails.org/doc/latest/ref/Database%20Mapping/Usage.html] works differently to GORM for Hibernate. Most of the mapping configuration options available to GORM for Hibernate are specific to SQL databases and hence don't make sense to Redis.
 

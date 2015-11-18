@@ -53,11 +53,11 @@ class PersonSpec extends Specification{
 {code}
 
 
-This library dependency is required in grails-app/conf/BuildConfig.groovy for adding support for @MongoDbTestMixin@.
+This library dependency is required in @build.gradle@ for adding support for @MongoDbTestMixin@.
 
 {code}
     dependencies {
-        test 'org.grails:grails-datastore-test-support:1.0.1-grails-2.4'
+        test 'org.grails:grails-datastore-test-support:5.0.0'
     }
 {code}
 

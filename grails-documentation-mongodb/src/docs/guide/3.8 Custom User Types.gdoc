@@ -24,47 +24,42 @@ Custom types should go in src/groovy not grails-app/domain
 If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with Spring. For example:
 
 {code}
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import org.bson.*
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
 
-class BirthdayType extends AbstractMappingAwareCustomTypeMarshaller<Birthday, DBObject, DBObject> {
-	BirthdayType() {
-		super(Birthday)
-	}
-    @Override
-    protected Object writeInternal(PersistentProperty property, String key, Birthday value, DBObject nativeTarget) {
-        final converted = value.date.time
-        nativeTarget.put(key, converted)
-        return converted
-    }
+class BirthdayType extends AbstractMappingAwareCustomTypeMarshaller<Birthday, Document, Document>(Birthday) {
+   @Override
+   protected Object writeInternal(PersistentProperty property, String key, Birthday value, Document nativeTarget) {
+       final converted = value.date.time
+       nativeTarget.put(key, converted)
+       return converted
+   }
 
-    @Override
-    protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, DBObject nativeQuery) {
-        if(criterion instanceof Between) {
-            def dbo = new BasicDBObject()
-            dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
-            dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time);
-            nativeQuery.put(key, dbo)
-        }
-        else {
-            nativeQuery.put(key, criterion.value.date.time)
-        }
+   @Override
+   protected void queryInternal(PersistentProperty property, String key, PropertyCriterion criterion, Document nativeQuery) {
+       if (criterion instanceof Between) {
+           def dbo = new BasicDBObject()
+           dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time)
+           dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time)
+           nativeQuery.put(key, dbo)
+       }
+       else {
+           nativeQuery.put(key, criterion.value.date.time)
+       }
+   }
 
-    }
-
-    @Override
-    protected Birthday readInternal(PersistentProperty property, String key, DBObject nativeSource) {
-        final num = nativeSource.get(key)
-        if(num instanceof Long) {
-            return new Birthday(new Date(num))
-        }
-        return null
-    }
-}
+   @Override
+   protected Birthday readInternal(PersistentProperty property, String key, Document nativeSource) {
+       final num = nativeSource.get(key)
+       if (num instanceof Long) {
+           return new Birthday(new Date(num))
+       }
+       return null
+   }
+})
 {code}
 
 The above @BirthdayType@ class is a custom user type implementation for MongoDB for the @Birthday@ class. It provides implementations for three methods: @readInternal@, @writeInternal@ and the optional @queryInternal@. If you do not implement @queryInternal@ your custom type can be persisted but not queried.
@@ -84,7 +79,7 @@ You can then read the values of the custom type and register them with the @DBOb
 
 {code}
 @Override
-protected Birthday readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+protected Birthday readInternal(PersistentProperty property, String key, Document nativeSource) {
     final num = nativeSource.get(key)
     if(num instanceof Long) {
         return new Birthday(new Date(num))
@@ -97,7 +92,7 @@ You can then construct the custom type by reading values from the @DBObject@. Fi
 
 {code}
 @Override
-protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, DBObject nativeQuery) {
+protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, Document nativeQuery) {
     if(criterion instanceof Between) {
         def dbo = new BasicDBObject()
         dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);

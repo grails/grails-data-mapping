@@ -1,6 +1,6 @@
 h4. Mongo Database Connection Configuration
 
-As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the @grails-app/conf/DataSource.groovy@ file:
+As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the @grails-app/conf/application.groovy@ file:
 
 {code}
 grails {
@@ -29,7 +29,7 @@ grails {
 }
 {code}
 
-Available options and their descriptions are defined in the [MongoOptions|http://api.mongodb.org/java/current/com/mongodb/MongoOptions.html] javadoc.
+Available options and their descriptions are defined in the [MongoOptions|http://api.mongodb.org/java/current/com/mongodb/MongoClientOptions.html] javadoc.
 
 In production scenarios you will typically use more than one MongoDB server in either [master/slave|http://docs.mongodb.org/manual/core/master-slave/] or [replication|http://docs.mongodb.org/manual/replication/] scenarios. The plugin allows you to configure [replica sets|http://docs.mongodb.org/manual/tutorial/deploy-replica-set/]:
 

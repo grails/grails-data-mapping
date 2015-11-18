@@ -5,37 +5,9 @@ If you want to persist a particular domain class with Cassandra then you must us
 static mapWith = "cassandra"
 {code}
 
-Alternatively you can persist Hibernate entities to Cassandra using the special @cassandra@ scope added to all Hibernate entities.
-
-{code}
-person.cassandra.save()
-{code}
 
 By default the Hibernate plugin transparently adds an implicit @id@ property of type @Long@ to your domain class. The Cassandra plugin adds an @id@ property of type @UUID@. 
 If you install both plugins, the @id@ property will be of type @Long@.
 So if you have a domain class with an auto-generated @id@ (the default behaviour) and you want to save it to both datastores, you should define a @UUID id@ 
 property as a @Long@ won't really work for Cassandra. You also need to set the id's @generator@ attribute so that the Hibernate plugin can auto-generate a @UUID@.
-Here is an example of persisting an entity to both datastores:
-{code}
-class Person {
-    UUID id
-    String firstName
-    String lastName 
-    static mapping = {
-        id generator:'uuid2'        
-    }   
-}	
 
-def hibernatePerson = new Person(firstName: "Fred", lastName: "Flintstone")
-
-hibernatePerson.save()
-
-hibernatePerson = Person.get(uuid)
-
-hibernatePerson.cassandra.insert()
-
-def cassandraPerson = Person.cassandra.get(uuid)
-{code}
-
-Note that as an identifier has been assigned to the entity by the Hibernate plugin, you will need to use the @insert@ method for Cassandra instead of the @save@ method, 
-otherwise GORM can't work out whether you are trying to achieve an insert or an update.

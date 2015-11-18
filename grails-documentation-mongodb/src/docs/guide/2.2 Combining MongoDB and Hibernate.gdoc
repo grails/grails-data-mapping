@@ -4,13 +4,4 @@ If you have both the Hibernate and Mongo plugins installed then by default all c
 static mapWith = "mongo"
 {code}
 
-Alternatively you can persist Hibernate entities to Mongo using the special @mongo@ scope added to all Hibernate entities:
-
-{code}
-def hibernatePerson = Person.get(1)
-
-hibernatePerson.mongo.save()
-
-def mongoPerson = Person.mongo.get(1)
-{code}
 

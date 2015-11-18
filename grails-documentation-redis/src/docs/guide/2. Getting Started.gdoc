@@ -1,7 +1,7 @@
-To get started with GORM for Redis you need to install the plugin into a Grails application:
+To get started with GORM for Redis you need to add the Redis GORM plugin as a dependency in @build.gradle@:
 
 {code}
-grails install-plugin redis-gorm
+compile "org.grails.plugins:redis-gorm:VERSION"
 {code}
 
 With that done you need to set up a running Redis server. GORM for Redis requires Redis 2.0.0 or above which you can download at on the [Redis download page|http://code.google.com/p/redis/downloads/list]. Once downloaded extract the archive and run the following commands from the @redis-2.0.0@ directory:

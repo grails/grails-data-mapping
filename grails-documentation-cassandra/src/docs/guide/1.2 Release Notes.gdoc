@@ -1,5 +1,0 @@
-Below are the details of the changes across releases:
-
-h4. 1.0.0 M1
-
-* First GORM compliant version of the plugin, without support for associations 

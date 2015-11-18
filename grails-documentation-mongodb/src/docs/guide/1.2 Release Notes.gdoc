@@ -1,5 +1,16 @@
 Below are the details of the changes across releases:
 
+h4. 5.0
+
+* MongoDB 3.x driver support
+* New Codec Persistence Engine
+* Removal of GMongo
+* Trait based
+
+h4. 4.0
+
+* Grails 3 compatibility
+
 h4. 3.0
 
 * Support for MongoDB 2.6

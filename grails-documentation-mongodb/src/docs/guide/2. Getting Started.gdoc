@@ -1,13 +1,12 @@
-To get started with GORM for Mongo you need configure it as a dependency in @BuildConfig.groovy@:
+To get started with GORM for Mongo you need configure it as a dependency in @build.gradle@:
 
 {code}
 plugins {
-	compile ':mongodb:3.0.0.RC1'            // or whatever is the latest version; 2.x
-	compile 'org.grails.plugins:mongodb'    // 3.x
+	compile 'org.grails.plugins:mongodb:VERSION'
 }
 {code}
 
-With that done you need to set up a running MongoDB server. Refer to the [MongoDB Quick Start guide|http://www.mongodb.org/display/DOCS/Quickstart] for an explanation on how to startup a Mongo instance. Once installed, starting Mongo is typically a matter of executing the following command:
+With that done you need to set up a running MongoDB server. Refer to the [MongoDB Documentation|https://docs.mongodb.org/manual/] for an explanation on how to startup a Mongo instance. Once installed, starting Mongo is typically a matter of executing the following command:
 
 {code}
 MONGO_HOME/bin/mongod
@@ -16,15 +15,21 @@ MONGO_HOME/bin/mongod
 With the above command executed in a terminal window you should see output like the following appear:
 
 {code}
-Tue Mar 18 14:16:35.267 [initandlisten] db version v2.4.9
-Tue Mar 18 14:16:35.267 [initandlisten] git version: 52fe0d21959e32a5bdbecdc62057db386e4e029c
-Tue Mar 18 14:16:35.267 [initandlisten] build info: Darwin bs-osx-106-x86-64-2.10gen.cc 10.8.0 Darwin Kernel Version 10.8.0: Tue Jun  7 16:32:41 PDT 2011; root:xnu-1504.15.3~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
-Tue Mar 18 14:16:35.267 [initandlisten] allocator: system
-Tue Mar 18 14:16:35.267 [initandlisten] options: {}
-Tue Mar 18 14:16:35.268 [initandlisten] journal dir=/data/db/journal
-Tue Mar 18 14:16:35.268 [initandlisten] recover : no journal files present, no recovery needed
-Tue Mar 18 14:16:35.297 [websvr] admin web console waiting for connections on port 28017
-Tue Mar 18 14:16:35.297 [initandlisten] waiting for connections on port 27017
+2015-11-18T19:38:50.073+0100 I JOURNAL  [initandlisten] journal dir=/data/db/journal
+2015-11-18T19:38:50.073+0100 I JOURNAL  [initandlisten] recover : no journal files present, no recovery needed
+2015-11-18T19:38:50.090+0100 I JOURNAL  [durability] Durability thread started
+2015-11-18T19:38:50.090+0100 I JOURNAL  [journal writer] Journal writer thread started
+2015-11-18T19:38:50.090+0100 I CONTROL  [initandlisten] MongoDB starting : pid=52540 port=27017 dbpath=/data/db 64-bit host=Graemes-iMac.local
+2015-11-18T19:38:50.090+0100 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.
+2015-11-18T19:38:50.090+0100 I CONTROL  [initandlisten]
+2015-11-18T19:38:50.090+0100 I CONTROL  [initandlisten]
+2015-11-18T19:38:50.090+0100 I CONTROL  [initandlisten] ** WARNING: soft rlimits too low. Number of files is 256, should be at least 1000
+2015-11-18T19:38:50.090+0100 I CONTROL  [initandlisten] db version v3.0.4
+2015-11-18T19:38:50.090+0100 I CONTROL  [initandlisten] git version: 0481c958daeb2969800511e7475dc66986fa9ed5
+2015-11-18T19:38:50.090+0100 I CONTROL  [initandlisten] build info: Darwin mci-osx108-11.build.10gen.cc 12.5.0 Darwin Kernel Version 12.5.0: Sun Sep 29 13:33:47 PDT 2013; root:xnu-2050.48.12~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
+2015-11-18T19:38:50.090+0100 I CONTROL  [initandlisten] allocator: system
+2015-11-18T19:38:50.090+0100 I CONTROL  [initandlisten] options: {}
+2015-11-18T19:38:50.176+0100 I NETWORK  [initandlisten] waiting for connections on port 27017
 {code}
 
 As you can see the server is running on port 27017, but don't worry the Mongodb plugin for Grails will automatically configure itself to look for Mongodb on that port by default.
