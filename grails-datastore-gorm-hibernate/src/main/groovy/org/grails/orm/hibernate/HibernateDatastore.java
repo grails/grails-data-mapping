@@ -55,7 +55,7 @@ public class HibernateDatastore extends AbstractHibernateDatastore  {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         super.setApplicationContext(applicationContext);
 
-        if (applicationContext != null) {
+        if (applicationContext != null && eventTriggeringInterceptor == null) {
             // support for callbacks in domain classes
             eventTriggeringInterceptor = new EventTriggeringInterceptor(this, connectionDetails);
             ((ConfigurableApplicationContext)applicationContext).addApplicationListener(eventTriggeringInterceptor);
