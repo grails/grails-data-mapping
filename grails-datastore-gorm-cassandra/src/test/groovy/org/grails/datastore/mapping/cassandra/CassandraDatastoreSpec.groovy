@@ -27,7 +27,7 @@ class CassandraDatastoreSpec extends Specification {
 	}
 
 	private createCassandraDatastoreWithMocks(ConfigObject config) {					
-		def keyspace = config.get(CassandraDatastore.KEYSPACE_CONFIG)?.get(CassandraDatastore.KEYSPACE_NAME)
+		def keyspace = config[CassandraDatastore.KEYSPACE_NAME]
 		CassandraDatastore cassandraDatastore = new CassandraDatastore(new CassandraMappingContext(keyspace), config, null)
 		cassandraDatastore.setCassandraCqlClusterFactoryBean(clusterBean)
 		cassandraDatastore.setKeyspaceActionSpecificationFactoryBean(keyspaceBean)
@@ -48,8 +48,8 @@ class CassandraDatastoreSpec extends Specification {
     		def keyspace = "default"    	
 			config = new ConfigSlurper().parse('''
 				grails.cassandra.keyspace.name="default"
-			''')?.grails.cassandra			    	
-    		CassandraDatastore cassandraDatastore = createCassandraDatastoreWithMocks(config)
+			''')
+    		CassandraDatastore cassandraDatastore = createCassandraDatastoreWithMocks(config.flatten())
 			
 		when:
 			cassandraDatastore.afterPropertiesSet()
@@ -76,8 +76,8 @@ class CassandraDatastoreSpec extends Specification {
 			def keyspace = "newkeyspace"
 			
 		when:
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "create")
+			config.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
+			config.put(CassandraDatastore.KEYSPACE_ACTION, "create")
 			CassandraDatastore cassandraDatastore = createCassandraDatastoreWithMocks(config)
 			cassandraDatastore.afterPropertiesSet()
 		
@@ -86,7 +86,7 @@ class CassandraDatastoreSpec extends Specification {
 			1 * keyspaceBean.setAction(KeyspaceAction.CREATE)
 		
 		when:
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "create-drop")
+			config.put(CassandraDatastore.KEYSPACE_ACTION, "create-drop")
 			cassandraDatastore = createCassandraDatastoreWithMocks(config)
 			cassandraDatastore.afterPropertiesSet()
 		
@@ -98,11 +98,11 @@ class CassandraDatastoreSpec extends Specification {
 	void "Test create keyspace with options"() {
 		given:
 			def keyspace = "newkeyspace"
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "create-drop")
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_DURABLE_WRITES, "false")
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_REPLICATION_STRATEGY, "SimpleStrategy")
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_REPLICATION_FACTOR, 2)
+			config.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
+			config.put(CassandraDatastore.KEYSPACE_ACTION, "create-drop")
+			config.put(CassandraDatastore.KEYSPACE_DURABLE_WRITES, "false")
+			config.put(CassandraDatastore.KEYSPACE_REPLICATION_STRATEGY, "SIMPLE_STRATEGY")
+			config.put(CassandraDatastore.KEYSPACE_REPLICATION_FACTOR, 2)
 			CassandraDatastore cassandraDatastore = createCassandraDatastoreWithMocks(config)
 		
 		when:
@@ -137,7 +137,7 @@ class CassandraDatastoreSpec extends Specification {
                 		}
                 	}
                 }
-			''')?.grails.cassandra			    	
+			''')?.flatten()
 			CassandraDatastore cassandraDatastore = createCassandraDatastoreWithMocks(config)
 			
 		when:
@@ -175,12 +175,12 @@ class CassandraDatastoreSpec extends Specification {
                 			name = "newkeyspace"
                 			action="create"                			
                 			durableWrites = false
-                			replicationStrategy = "NetworkTopologyStrategy"
+                			replicationStrategy = "NETWORK_TOPOLOGY_STRATEGY"
                 			dataCenter = ["us-west":1, "eu-west":2]
                 		}
                 	}
                 }
-			''')?.grails.cassandra
+			''')?.flatten()
     		    		
 			CassandraDatastore cassandraDatastore = createCassandraDatastoreWithMocks(config)
 		
@@ -214,31 +214,31 @@ class CassandraDatastoreSpec extends Specification {
         	config = new ConfigSlurper().parse('''
         				grails.cassandra.keyspace.name="default"
         				grails.cassandra.keyspace.action="Invalid"
-        			''')?.grails.cassandra			    	
+        			''')
         	CassandraDatastore cassandraDatastore = new CassandraDatastore(new CassandraMappingContext(keyspace), config, null)
 			cassandraDatastore.afterPropertiesSet()
 
 		then:
 			def e = thrown(IllegalArgumentException)
-			e.message.startsWith("Invalid option [Invalid] for property [action], allowable values are")
+			e.message.startsWith("Invalid option [Invalid] for property [grails.cassandra.keyspace.action], allowable values are")
 		
 		when:
 			config = new ConfigSlurper().parse('''
 				grails.cassandra.keyspace.name="default"
 				grails.cassandra.keyspace.action=[1]
-			''')?.grails.cassandra			    	
+			''')
 			cassandraDatastore = new CassandraDatastore(new CassandraMappingContext(keyspace), config, null)				
 			cassandraDatastore.afterPropertiesSet()
 
 		then:
 			e = thrown(IllegalArgumentException)
-			e.message.startsWith("Invalid type for property [[1]], expected java.lang.String")
+			e.message.startsWith("Invalid option [1] for property [grails.cassandra.keyspace.action], allowable values are")
 	}
 	
 	
 	void "Test create schema options"() {
 		when:
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_NAME, "newkeyspace")
+			config.put(CassandraDatastore.KEYSPACE_NAME, "newkeyspace")
 			CassandraDatastore cassandraDatastore = createCassandraDatastoreWithMocks(config)
 			cassandraDatastore.afterPropertiesSet()
 		then:
@@ -277,12 +277,12 @@ class CassandraDatastoreSpec extends Specification {
 			1 * sessionBean.setSchemaAction(SchemaAction.RECREATE_DROP_UNUSED)
 		
 		when:
-			config = new ConfigSlurper().parse('''grails.cassandra.dbCreate="recreate-invalid-unused"''')?.grails.cassandra			    	
+			config = new ConfigSlurper().parse('''grails.cassandra.dbCreate="recreate-invalid-unused"''')
 			cassandraDatastore = new CassandraDatastore(new CassandraMappingContext("new"), config, null)    									
 			cassandraDatastore.afterPropertiesSet()
 		
 		then:
 			def e = thrown(IllegalArgumentException)
-			e.message.startsWith("Invalid option [recreate-invalid-unused] for property [dbCreate], allowable values are")
+			e.message.startsWith("Invalid option [recreate-invalid-unused] for property [grails.cassandra.dbCreate], allowable values are")
 	}
 }

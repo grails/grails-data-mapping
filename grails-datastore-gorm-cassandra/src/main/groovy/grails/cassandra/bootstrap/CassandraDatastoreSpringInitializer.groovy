@@ -35,6 +35,9 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
 @InheritConstructors
 class CassandraDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
+    boolean developmentMode = false
+    String defaultKeyspaceName = ''
+
     @Override
     protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {
         DatastorePersistenceContextInterceptor
@@ -44,9 +47,8 @@ class CassandraDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         {->
             def config = configuration
-            def cassandraConfig = config.getProperty('grails.cassandra', Map, new ConfigObject())
-            def keyspaceName = config.getProperty('grails.cassandra.keyspace.name', '')
-            def defaultMapping = config.getProperty('grails.cassandra.default.mapping', Closure, null)
+            def keyspaceName = config.getProperty(CassandraDatastore.KEYSPACE_NAME, defaultKeyspaceName)
+            def defaultMapping = config.getProperty(CassandraDatastore.DEFAULT_MAPPING, Closure, null)
 
             def callable = getCommonConfiguration(beanDefinitionRegistry)
             callable.delegate = delegate
@@ -61,7 +63,8 @@ class CassandraDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             }
             cassandraDatastore(CassandraDatastoreFactoryBean) {
                 mappingContext = cassandraMappingContext
-                delegate.config = cassandraConfig
+                delegate.config = config
+                delegate.developmentMode = developmentMode
             }
 
             cassandraTemplate(cassandraDatastore : "getCassandraTemplate")

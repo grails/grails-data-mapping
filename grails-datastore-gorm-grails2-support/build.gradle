@@ -12,7 +12,7 @@ dependencies {
         exclude group:'org.grails',module:'grails-validation'
         exclude group:'org.grails',module:'grails-async'
     }
-    compile project(':grails-datastore-gorm-hibernate-core'), optional
+    provided project(':grails-datastore-gorm-hibernate-core')
     compile "org.grails:grails-web-url-mappings:$grailsVersion", optional
 
     provided('org.hibernate:hibernate-core:3.6.10.Final') {

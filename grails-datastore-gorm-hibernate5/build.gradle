@@ -55,6 +55,7 @@ dependencies {
         exclude group:'xml-apis', module:'xml-apis'
     }
 
+    testCompile "org.codehaus.groovy:groovy-sql:$groovyVersion"
     testCompile project(":grails-datastore-gorm-tck")
     testCompile "com.h2database:h2:1.3.164"
 

@@ -1,28 +1,35 @@
 package org.grails.datastore.gorm.cassandra.bean.factory
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.mapping.cassandra.CassandraDatastore
-import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
+import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.core.env.PropertyResolver
 
 /**
- * Created by jeff.beck on 2/13/14.
+ * @author jeff.beck on 2/13/14.
+ * @author Graeme Rocher
  */
+@CompileStatic
 class CassandraDatastoreFactoryBean implements FactoryBean<CassandraDatastore>, ApplicationContextAware {
 
-    MappingContext mappingContext
-    ConfigObject config = new ConfigObject()
+    CassandraMappingContext mappingContext
+    PropertyResolver config
     ApplicationContext applicationContext
+    boolean developmentMode = false
 
     @Override
     CassandraDatastore getObject() throws Exception {
-        CassandraDatastore datastore = new CassandraDatastore(mappingContext, config, applicationContext)
-
-        applicationContext.addApplicationListener new DomainEventListener(datastore)
-        applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
+        ConfigurableApplicationContext ctx = (ConfigurableApplicationContext)applicationContext
+        CassandraDatastore datastore = new CassandraDatastore(mappingContext, config, ctx)
+        datastore.developmentMode = developmentMode
+        ctx.addApplicationListener new DomainEventListener(datastore)
+        ctx.addApplicationListener new AutoTimestampEventListener(datastore)
 
         datastore.afterPropertiesSet()
         datastore

@@ -3,6 +3,7 @@ package grails.plugins.cassandra
 import grails.cassandra.bootstrap.CassandraDatastoreSpringInitializer
 import grails.core.GrailsClass
 import grails.plugins.Plugin
+import grails.util.Environment
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
@@ -28,6 +29,8 @@ class CassandraGrailsPlugin extends Plugin {
 	Closure doWithSpring() {
 		def initializer = new CassandraDatastoreSpringInitializer(config, grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
 		initializer.registerApplicationIfNotPresent = false
+		initializer.defaultKeyspaceName = grailsApplication.getMetadata().getApplicationName()
+		initializer.developmentMode = Environment.isDevelopmentMode()
 		return initializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
 	}
 }

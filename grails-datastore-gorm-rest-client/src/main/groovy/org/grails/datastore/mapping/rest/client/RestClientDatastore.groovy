@@ -30,6 +30,7 @@ import org.grails.web.databinding.bindingsource.DataBindingSourceRegistry
 import org.grails.web.databinding.bindingsource.DefaultDataBindingSourceRegistry
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.core.env.PropertyResolver
 import org.springframework.web.client.RestTemplate
 
 import java.util.concurrent.ConcurrentHashMap
@@ -75,17 +76,17 @@ class RestClientDatastore extends AbstractDatastore     {
         this(mappingContext, Collections.emptyMap(), null)
     }
 
-    RestClientDatastore(RestClientMappingContext mappingContext, Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
+    RestClientDatastore(RestClientMappingContext mappingContext, Map<String, Object> connectionDetails, ConfigurableApplicationContext ctx) {
         this(mappingContext, connectionDetails, ctx, null)
     }
 
-    RestClientDatastore(RestClientMappingContext mappingContext, Map<String, String> connectionDetails, ConfigurableApplicationContext ctx, TPCacheAdapterRepository cacheAdapterRepository) {
+    RestClientDatastore(RestClientMappingContext mappingContext, Map<String, Object> connectionDetails, ConfigurableApplicationContext ctx, TPCacheAdapterRepository cacheAdapterRepository) {
         super(mappingContext, connectionDetails, ctx, cacheAdapterRepository)
 
         initialize(connectionDetails)
     }
 
-    protected void initialize(Map<String, String> connectionDetails) {
+    protected void initialize(Map<String, Object> connectionDetails) {
         DefaultRendererRegistry defaultRendererRegistry = new DefaultRendererRegistry()
         defaultRendererRegistry.initialize()
         rendererRegistry = defaultRendererRegistry
@@ -98,7 +99,7 @@ class RestClientDatastore extends AbstractDatastore     {
     }
 
     @Override
-    protected Session createSession(Map<String, String> connectionDetails) {
+    protected Session createSession(PropertyResolver connectionDetails) {
         return new RestClientSession(this, mappingContext, applicationEventPublisher, cacheAdapterRepository)
     }
 }

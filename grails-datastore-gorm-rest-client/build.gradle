@@ -11,8 +11,14 @@ dependencies {
     }
     compile project(":grails-datastore-gorm"),
             project(":grails-datastore-rest-client"),
-            project(":grails-datastore-gorm-plugin-support"),
             project(":grails-datastore-core")
+
+    compile project(":grails-datastore-gorm-plugin-support"), {
+        exclude group:'org.grails', module:'grails-datastore-gorm-support'
+    }
+    compile(project(":grails-datastore-gorm-support")) {
+        exclude group:'org.grails', module:'grails-datastore-gorm-hibernate-core'
+    }
 
     testCompile("org.springframework:spring-test:$springVersion")
 }

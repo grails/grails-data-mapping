@@ -216,8 +216,6 @@ public class Property implements Cloneable {
     }
 
     /**
-     * @see {@link #isLazy()}
-     *
      * @param lazy Set to true if lazy proxies should be used for each element of collection types
      */
     public void setLazy(Boolean lazy) {

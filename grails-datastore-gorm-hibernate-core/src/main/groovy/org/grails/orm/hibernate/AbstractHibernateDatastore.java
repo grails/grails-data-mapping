@@ -21,6 +21,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.PropertyResolver;
 
 import java.util.concurrent.Callable;
@@ -52,7 +53,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
 
 
     protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext, String dataSourceName) {
-        super(mappingContext);
+        super(mappingContext, config, (ConfigurableApplicationContext) applicationContext);
         this.sessionFactory = sessionFactory;
         this.config = config;
         this.dataSourceName = dataSourceName;

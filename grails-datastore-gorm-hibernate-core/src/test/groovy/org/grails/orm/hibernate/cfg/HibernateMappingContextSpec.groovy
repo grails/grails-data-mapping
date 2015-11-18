@@ -1,6 +1,6 @@
 package org.grails.orm.hibernate.cfg
 
-import grails.persistence.Entity
+import grails.gorm.annotation.Entity
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association

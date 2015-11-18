@@ -1,7 +1,9 @@
 dependencies {
     compile project(':grails-datastore-gorm')
-    compile project(':grails-datastore-gorm-hibernate-core'), optional
-    compile 'org.springframework:spring-orm:4.2.3.RELEASE', optional
+
+    provided project(':grails-datastore-gorm-hibernate-core')
+    provided 'org.springframework:spring-orm:4.2.3.RELEASE'
+
     compile "org.grails:grails-web-url-mappings:$grailsVersion", optional
 
     provided('org.hibernate:hibernate-core:3.6.10.Final') {

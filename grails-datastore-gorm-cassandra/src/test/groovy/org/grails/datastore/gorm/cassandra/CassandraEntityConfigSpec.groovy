@@ -27,12 +27,7 @@ class CassandraEntityConfigSpec extends Specification{
 	def keyspace = "configtest"
 	CassandraMappingContext cassandraMappingContext = new CassandraMappingContext(keyspace)
 	ConfigObject config = new ConfigObject()
-	ConfigObject keyspaceConfig = new ConfigObject()
-	
-	def setup() {
-		config.put(CassandraDatastore.KEYSPACE_CONFIG, keyspaceConfig)
-	}
-	
+
 	def "Test entity config simple primary key"() {
 		given:
 			cassandraMappingContext.addPersistentEntity(TestEntity)
@@ -150,8 +145,8 @@ class CassandraEntityConfigSpec extends Specification{
 		given:
 			def keyspace = Setup.randomKeyspaceName()    
 			config.put(CassandraDatastore.SCHEMA_ACTION, "recreate-drop-unused")		
-    		keyspaceConfig.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
-    		keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "create-drop")
+    		config.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
+    		config.put(CassandraDatastore.KEYSPACE_ACTION, "create-drop")
 			cassandraMappingContext = new CassandraMappingContext(keyspace)
 			cassandraMappingContext.addPersistentEntity(TablePropertiesEntity)
     		CassandraDatastore cassandraDatastore = new CassandraDatastore(cassandraMappingContext, config, null)    
@@ -196,8 +191,8 @@ class CassandraEntityConfigSpec extends Specification{
 		given:
 			def keyspace = Setup.randomKeyspaceName()
 			config.put(CassandraDatastore.SCHEMA_ACTION, "recreate-drop-unused")
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "create-drop")
+			config.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
+			config.put(CassandraDatastore.KEYSPACE_ACTION, "create-drop")
 			cassandraMappingContext = new CassandraMappingContext(keyspace)
 			cassandraMappingContext.addPersistentEntity(TablePropertiesEntity)
 			PersistentEntity entity = cassandraMappingContext.getPersistentEntity(TablePropertiesEntity.name)

@@ -44,8 +44,12 @@ dependencies {
     }
 
     compile project(":grails-datastore-gorm"),
-            project(":grails-datastore-gorm-plugin-support"),
             project(":grails-datastore-core")
+
+    compile(project(":grails-datastore-gorm-support")) {
+        exclude group:'org.grails', module:'grails-datastore-gorm-hibernate-core'
+    }
+
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
 

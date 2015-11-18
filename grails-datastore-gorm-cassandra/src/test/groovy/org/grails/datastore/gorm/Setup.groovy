@@ -1,6 +1,6 @@
 package org.grails.datastore.gorm
 
-import org.grails.datastore.gorm.cassandra.plugin.support.CassandraMethodsConfigurer
+import org.grails.datastore.gorm.cassandra.CassandraGormEnhancer
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.mapping.cassandra.CassandraDatastore
@@ -46,11 +46,9 @@ class Setup {
             ctx.refresh()
 
             ConfigObject config = new ConfigObject()
-			ConfigObject keyspaceConfig = new ConfigObject()
 			config.put(CassandraDatastore.SCHEMA_ACTION, "recreate-drop-unused")
-			config.put(CassandraDatastore.KEYSPACE_CONFIG, keyspaceConfig)
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
-			keyspaceConfig.put(CassandraDatastore.KEYSPACE_ACTION, "create")            
+            config.put(CassandraDatastore.KEYSPACE_NAME, keyspace)
+            config.put(CassandraDatastore.KEYSPACE_ACTION, "create")
 			//can change to different host and port
             //config.setProperty(CassandraDatastore.CONTACT_POINTS, "localhost") 
 			//config.setProperty(CassandraDatastore.PORT, 9042)
@@ -93,9 +91,10 @@ class Setup {
 		}
 		
         def txMgr = new DatastoreTransactionManager(datastore: cassandraDatastore)
-        CassandraMethodsConfigurer methodsConfigurer = new CassandraMethodsConfigurer(cassandraDatastore, txMgr)
-        methodsConfigurer.configure()
-        
+
+        CassandraGormEnhancer enhancer = new CassandraGormEnhancer(cassandraDatastore, txMgr)
+        enhancer.enhance()
+
         def cassandraSession = cassandraDatastore.connect()     
         truncateAllEntities()
                

@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.core;
 
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
+import groovy.util.ConfigObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -35,6 +36,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.ConverterRegistry;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertyResolver;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
@@ -57,27 +62,53 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     private static final SoftThreadLocalMap ERRORS_MAP = new SoftThreadLocalMap();
     private static final SoftThreadLocalMap VALIDATE_MAP = new SoftThreadLocalMap();
 
-    protected MappingContext mappingContext;
-    protected Map<String, String> connectionDetails = Collections.emptyMap();
-    protected TPCacheAdapterRepository cacheAdapterRepository;
+    protected final MappingContext mappingContext;
+    protected final PropertyResolver connectionDetails;
+    protected final TPCacheAdapterRepository cacheAdapterRepository;
 
-    public AbstractDatastore() {}
 
     public AbstractDatastore(MappingContext mappingContext) {
-        this(mappingContext, null, null);
+        this(mappingContext,(PropertyResolver) null, null);
     }
 
-    public AbstractDatastore(MappingContext mappingContext, Map<String, String> connectionDetails,
+    public AbstractDatastore(MappingContext mappingContext, Map<String, Object> connectionDetails,
               ConfigurableApplicationContext ctx) {
         this(mappingContext, connectionDetails,  ctx, null);
     }
 
-    public AbstractDatastore(MappingContext mappingContext, Map<String, String> connectionDetails,
-              ConfigurableApplicationContext ctx, TPCacheAdapterRepository cacheAdapterRepository) {
+    public AbstractDatastore(MappingContext mappingContext, PropertyResolver connectionDetails,
+                             ConfigurableApplicationContext ctx) {
+        this(mappingContext, connectionDetails,  ctx, null);
+    }
+
+    public AbstractDatastore(MappingContext mappingContext, PropertyResolver connectionDetails,
+                             ConfigurableApplicationContext ctx, TPCacheAdapterRepository cacheAdapterRepository) {
         this.mappingContext = mappingContext;
-        this.connectionDetails = connectionDetails != null ? connectionDetails : Collections.<String, String>emptyMap();
+        this.connectionDetails = connectionDetails;
         setApplicationContext(ctx);
         this.cacheAdapterRepository = cacheAdapterRepository;
+    }
+
+    public AbstractDatastore(MappingContext mappingContext, Map<String, Object> connectionDetails,
+              ConfigurableApplicationContext ctx, TPCacheAdapterRepository cacheAdapterRepository) {
+        this(mappingContext, mapToPropertyResolver(connectionDetails), ctx, cacheAdapterRepository);
+    }
+
+    protected static PropertyResolver mapToPropertyResolver(Map<String,Object> connectionDetails) {
+        if(connectionDetails instanceof PropertyResolver) {
+            return (PropertyResolver)connectionDetails;
+        }
+        else {
+            StandardEnvironment env = new StandardEnvironment();
+            if(connectionDetails != null) {
+                MutablePropertySources propertySources = env.getPropertySources();
+                propertySources.addFirst(new MapPropertySource("datastoreConfig", connectionDetails));
+                if(connectionDetails instanceof ConfigObject) {
+                    propertySources.addFirst(new MapPropertySource("datastoreConfigFlat", ((ConfigObject)connectionDetails).flatten()));
+                }
+            }
+            return env;
+        }
     }
 
     public void destroy() throws Exception {
@@ -111,15 +142,11 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         return true;
     }
 
-    public void setConnectionDetails(Map<String, String> connectionDetails) {
-        this.connectionDetails = connectionDetails;
-    }
-
     public Session connect() {
         return connect(connectionDetails);
     }
 
-    public final Session connect(Map<String, String> connDetails) {
+    public final Session connect(PropertyResolver connDetails) {
         Session session = createSession(connDetails);
         publishSessionCreationEvent(session);
         return session;
@@ -156,7 +183,7 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
      * @param connectionDetails The session details
      * @return The session object
      */
-    protected abstract Session createSession(Map<String, String> connectionDetails);
+    protected abstract Session createSession(PropertyResolver connectionDetails);
 
     /**
      * Creates the native stateless session
@@ -164,7 +191,7 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
      * @param connectionDetails The session details
      * @return The session object
      */
-    protected Session createStatelessSession(Map<String, String> connectionDetails) {
+    protected Session createStatelessSession(PropertyResolver connectionDetails) {
         return createSession(connectionDetails);
     }
 

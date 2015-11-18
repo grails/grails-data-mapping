@@ -48,7 +48,7 @@ public class HibernateDatastore extends AbstractHibernateDatastore  {
     }
 
     @Override
-    protected Session createSession(Map<String, String> connectionDetails) {
+    protected Session createSession(PropertyResolver connectionDetails) {
         return new HibernateSession(this, sessionFactory);
     }
 

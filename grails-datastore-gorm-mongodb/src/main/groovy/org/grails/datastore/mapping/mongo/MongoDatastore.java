@@ -79,7 +79,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     protected boolean stateless = false;
     protected boolean codecEngine = true;
     protected CodecRegistry codecRegistry;
-    protected PropertyResolver configuration;
 
 
 
@@ -90,9 +89,19 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * @param connectionDetails The connection details containing the {@link #SETTING_HOST} and {@link #SETTING_PORT} settings
      */
     public MongoDatastore(MongoMappingContext mappingContext,
-                          Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
-        super(mappingContext, connectionDetails, ctx);
+                          Map<String, Object> connectionDetails, ConfigurableApplicationContext ctx) {
+        this(mappingContext, mapToPropertyResolver(connectionDetails), ctx);
+    }
 
+    /**
+     * Constructs a MongoDatastore using the given MappingContext and connection details map.
+     *
+     * @param mappingContext    The MongoMappingContext
+     * @param configuration The connection details containing the {@link #SETTING_HOST} and {@link #SETTING_PORT} settings
+     */
+    public MongoDatastore(MongoMappingContext mappingContext,
+                          PropertyResolver configuration, ConfigurableApplicationContext ctx) {
+        super(mappingContext, configuration, ctx);
         if (mappingContext != null) {
             mappingContext.addMappingContextListener(this);
         }
@@ -141,20 +150,9 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * Constructs a MongoDatastore using the given MappingContext and connection details map.
      *
      * @param mappingContext    The MongoMappingContext
-     * @param configuration The connection details containing the {@link #SETTING_HOST} and {@link #SETTING_PORT} settings
-     */
-    public MongoDatastore(MongoMappingContext mappingContext,
-                          PropertyResolver configuration, ConfigurableApplicationContext ctx) {
-        this(mappingContext, (Map<String, String>) new PropertyResolverMap(configuration), ctx);
-    }
-
-    /**
-     * Constructs a MongoDatastore using the given MappingContext and connection details map.
-     *
-     * @param mappingContext    The MongoMappingContext
      */
     public MongoDatastore(MongoMappingContext mappingContext, ConfigurableApplicationContext ctx) {
-        this(mappingContext, (Map<String, String>) new PropertyResolverMap(ctx.getEnvironment()), ctx);
+        this(mappingContext, ctx.getEnvironment(), ctx);
     }
 
     /**
@@ -162,7 +160,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * Typically used during testing.
      */
     public MongoDatastore() {
-        this(new MongoMappingContext("test"), Collections.<String, String>emptyMap(), null);
+        this(new MongoMappingContext("test"), Collections.<String, Object>emptyMap(), null);
     }
 
     /**
@@ -172,7 +170,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * @param connectionDetails The connection details containing the {@link #SETTING_HOST} and {@link #SETTING_PORT} settings
      */
     public MongoDatastore(MongoMappingContext mappingContext,
-                          Map<String, String> connectionDetails, MongoClientOptions mongoOptions, ConfigurableApplicationContext ctx) {
+                          Map<String, Object> connectionDetails, MongoClientOptions mongoOptions, ConfigurableApplicationContext ctx) {
 
         this(mappingContext, connectionDetails, ctx);
         if (mongoOptions != null) {
@@ -183,7 +181,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
 
     public MongoDatastore(MongoMappingContext mappingContext) {
-        this(mappingContext, Collections.<String, String>emptyMap(), null);
+        this(mappingContext, Collections.<String, Object>emptyMap(), null);
     }
 
     /**
@@ -194,7 +192,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      */
     public MongoDatastore(MongoMappingContext mappingContext, MongoClient mongo,
                           ConfigurableApplicationContext ctx) {
-        this(mappingContext, Collections.<String, String>emptyMap(), ctx);
+        this(mappingContext, ctx.getEnvironment(), ctx);
         this.mongo = mongo;
     }
 
@@ -206,7 +204,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * @param mongo          The existing Mongo instance
      */
     public MongoDatastore(MongoMappingContext mappingContext, MongoClient mongo,
-                          Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
+                          Map<String, Object> connectionDetails, ConfigurableApplicationContext ctx) {
         this(mappingContext, connectionDetails, ctx);
         this.mongo = mongo;
     }
@@ -221,7 +219,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     @Deprecated
     public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
                           ConfigurableApplicationContext ctx) {
-        this(mappingContext, Collections.<String, String>emptyMap(), ctx);
+        this(mappingContext, ctx.getEnvironment(), ctx);
         this.mongo = (MongoClient) mongo;
     }
 
@@ -235,7 +233,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      */
     @Deprecated
     public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
-                          Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
+                          Map<String, Object> connectionDetails, ConfigurableApplicationContext ctx) {
         this(mappingContext, connectionDetails, ctx);
         this.mongo = (MongoClient) mongo;
     }
@@ -309,7 +307,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     }
 
     @Override
-    protected Session createSession(Map<String, String> connDetails) {
+    protected Session createSession(PropertyResolver connDetails) {
         if (stateless) {
             return createStatelessSession(connDetails);
         } else {
@@ -322,7 +320,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     }
 
     @Override
-    protected Session createStatelessSession(Map<String, String> connectionDetails) {
+    protected Session createStatelessSession(PropertyResolver connectionDetails) {
         if (codecEngine) {
             return new MongoCodecSession(this, getMappingContext(), getApplicationEventPublisher(), true);
         } else {
@@ -336,10 +334,10 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (mongo == null && configuration != null) {
+        if (mongo == null && connectionDetails != null) {
             ServerAddress defaults = new ServerAddress();
-            String username = configuration.getProperty(SETTING_USERNAME, (String)null);
-            String password = configuration.getProperty(SETTING_PASSWORD, (String)null);
+            String username = connectionDetails.getProperty(SETTING_USERNAME, (String)null);
+            String password = connectionDetails.getProperty(SETTING_PASSWORD, (String)null);
             DocumentMappingContext dc = getMappingContext();
             String databaseName = dc.getDefaultDatabaseName();
 
@@ -348,8 +346,8 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                 credentials.add(MongoCredential.createCredential(username, databaseName, password.toCharArray()));
             }
 
-            String host = configuration.getProperty(SETTING_HOST, defaults.getHost());
-            int port = configuration.getProperty(SETTING_PORT, Integer.class, defaults.getPort());
+            String host = connectionDetails.getProperty(SETTING_HOST, defaults.getHost());
+            int port = connectionDetails.getProperty(SETTING_PORT, Integer.class, defaults.getPort());
             ServerAddress serverAddress = new ServerAddress(host,port);
             if (mongoOptions != null) {
                 mongo = new MongoClient(serverAddress, credentials, mongoOptions);
@@ -371,10 +369,10 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             mongo = new MongoClient(new ServerAddress(), mongoOptions);
         }
 
-        if(configuration != null) {
+        if(connectionDetails != null) {
 
-            this.stateless = configuration.getProperty(SETTING_STATELESS, Boolean.class, false);
-            this.codecEngine = configuration.getProperty(SETTING_ENGINE, String.class, CODEC_ENGINE).equals(CODEC_ENGINE);
+            this.stateless = connectionDetails.getProperty(SETTING_STATELESS, Boolean.class, false);
+            this.codecEngine = connectionDetails.getProperty(SETTING_ENGINE, String.class, CODEC_ENGINE).equals(CODEC_ENGINE);
         }
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
             // Only create Mongo templates for entities that are mapped with Mongo

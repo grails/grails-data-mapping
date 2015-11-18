@@ -1,6 +1,5 @@
 package org.grails.datastore.gorm.cassandra
 
-import org.codehaus.groovy.grails.commons.GrailsMetaClassUtils
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.mapping.core.Datastore
@@ -29,7 +28,7 @@ class CassandraGormEnhancer extends GormEnhancer {
 	 
 	protected void addCollectionMethods(PersistentEntity e) {
 		Class cls = e.javaClass
-		ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
+		MetaClass mc = cls.metaClass
 		final proxyFactory = datastore.mappingContext.proxyFactory
 		for (p in e.persistentProperties) {
 			def prop = p			

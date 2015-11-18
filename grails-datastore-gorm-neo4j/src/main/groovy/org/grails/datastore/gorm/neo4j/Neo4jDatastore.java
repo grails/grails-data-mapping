@@ -84,7 +84,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
      * @param applicationContext The Spring ApplicationContext
      */
     public Neo4jDatastore(MappingContext mappingContext, PropertyResolver configuration, ConfigurableApplicationContext applicationContext) {
-        super(mappingContext, new PropertyResolverMap(configuration), applicationContext);
+        super(mappingContext, configuration, applicationContext);
         this.graphDatabaseService = createGraphDatabaseService(configuration);
     }
 
@@ -96,7 +96,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
      * @param applicationContext The Spring ApplicationContext
      */
     public Neo4jDatastore(MappingContext mappingContext, PropertyResolver configuration, ConfigurableApplicationContext applicationContext, GraphDatabaseService graphDatabaseService) {
-        super(mappingContext, new PropertyResolverMap(configuration), applicationContext);
+        super(mappingContext, configuration, applicationContext);
         this.graphDatabaseService = graphDatabaseService;
     }
 
@@ -195,7 +195,7 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     }
 
     @Override
-    protected Session createSession(Map<String, String> connectionDetails) {
+    protected Session createSession(PropertyResolver connectionDetails) {
         final Neo4jSession neo4jSession = new Neo4jSession(this, mappingContext, getApplicationContext(), false, graphDatabaseService);
         neo4jSession.setFlushMode(defaultFlushMode);
         return neo4jSession;

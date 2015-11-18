@@ -12,7 +12,7 @@ import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.data.convert.EntityInstantiator;
-import org.springframework.data.mapping.model.BeanWrapper;
+import org.springframework.data.mapping.PersistentPropertyAccessor;
 import org.springframework.data.mapping.model.DefaultSpELExpressionEvaluator;
 import org.springframework.data.mapping.model.SpELExpressionEvaluator;
 
@@ -53,11 +53,11 @@ public class MappingCassandraConverter extends org.springframework.data.cassandr
         EntityInstantiator instantiator = instantiators.getInstantiatorFor(entity);
         S instance = instantiator.createInstance(entity, parameterProvider);
 
-        BeanWrapper<S> wrapper = BeanWrapper.create(instance, conversionService);
+        PersistentPropertyAccessor propertyAccessor = entity.getPropertyAccessor(instance);
 
-        readPropertiesFromRow(entity, rowValueProvider, wrapper);
+        readPropertiesFromRow(entity, rowValueProvider, propertyAccessor);
 
-        return wrapper.getBean();
+        return (S) propertyAccessor.getBean();
     }
 
     /**

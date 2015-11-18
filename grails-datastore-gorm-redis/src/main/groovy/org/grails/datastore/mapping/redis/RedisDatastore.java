@@ -93,7 +93,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
 
     public RedisDatastore(MappingContext mappingContext, PropertyResolver configuration,
                 ConfigurableApplicationContext ctx) {
-        super(mappingContext, new PropertyResolverMap(configuration), ctx);
+        super(mappingContext, configuration, ctx);
 
         int resourceCount = 10;
         if (configuration != null) {
@@ -187,7 +187,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     }
 
     @Override
-    protected Session createSession(Map<String, String> connDetails) {
+    protected Session createSession(PropertyResolver connDetails) {
         if (!useJedis()) {
             throw new IllegalStateException(
                     "Cannot create RedisSession. No Redis client library found on classpath. " +

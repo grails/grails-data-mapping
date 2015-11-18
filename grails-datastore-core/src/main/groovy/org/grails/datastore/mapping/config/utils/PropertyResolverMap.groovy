@@ -15,6 +15,7 @@
  */
 package org.grails.datastore.mapping.config.utils
 
+import groovy.transform.CompileStatic
 import org.springframework.core.env.PropertyResolver
 
 
@@ -25,7 +26,8 @@ import org.springframework.core.env.PropertyResolver
  * @author Graeme Rocher
  * @since 5.0
  */
-class PropertyResolverMap implements Map<String, String> {
+@CompileStatic
+class PropertyResolverMap implements Map<String, Object>, PropertyResolver {
     @Delegate final PropertyResolver propertyResolver
 
     PropertyResolverMap(PropertyResolver propertyResolver) {
@@ -58,7 +60,7 @@ class PropertyResolverMap implements Map<String, String> {
     }
 
     @Override
-    String put(String key, String value) {
+    Object put(String key, Object value) {
         throw new UnsupportedOperationException("Map cannot be modified")
     }
 
@@ -68,7 +70,7 @@ class PropertyResolverMap implements Map<String, String> {
     }
 
     @Override
-    void putAll(Map<? extends String, ? extends String> m) {
+    void putAll(Map<? extends String, ? extends Object> m) {
         throw new UnsupportedOperationException("Map cannot be modified")
     }
 

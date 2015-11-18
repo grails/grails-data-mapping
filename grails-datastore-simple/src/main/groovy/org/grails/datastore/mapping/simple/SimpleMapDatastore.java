@@ -22,6 +22,7 @@ import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.PropertyResolver;
 
 /**
  * A simple implementation of the {@link org.grails.datastore.mapping.core.Datastore} interface that backs onto an in-memory map.
@@ -53,7 +54,7 @@ public class SimpleMapDatastore extends AbstractDatastore {
      * @param mappingContext The mapping context
      */
     public SimpleMapDatastore(MappingContext mappingContext, ConfigurableApplicationContext ctx) {
-        super(mappingContext, null, ctx);
+        super(mappingContext, ctx.getEnvironment(), ctx);
         initializeConverters(getMappingContext());
     }
 
@@ -70,7 +71,7 @@ public class SimpleMapDatastore extends AbstractDatastore {
     }
 
     @Override
-    protected Session createSession(Map<String, String> connectionDetails) {
+    protected Session createSession(PropertyResolver connectionDetails) {
         return new SimpleMapSession(this, getMappingContext(), getApplicationEventPublisher());
     }
 
