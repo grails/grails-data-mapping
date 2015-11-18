@@ -147,6 +147,7 @@ class MiscSpec extends GormDatastoreSpec {
         tournament.teams[0].club.name == 'club'
     }
 
+    @IgnoreIf({System.getenv('TRAVIS')})
     void "test concurrent accesses"() {
         when:
         GParsPool.withPool(concurrency) {
