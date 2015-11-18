@@ -18,6 +18,7 @@ package grails.plugin.hibernate.commands
 import grails.dev.commands.ApplicationCommand
 import grails.dev.commands.ExecutionContext
 import grails.util.Environment
+import groovy.transform.CompileStatic
 import org.grails.build.parsing.CommandLine
 import org.grails.orm.hibernate.HibernateMappingContextSessionFactoryBean
 import org.hibernate.tool.hbm2ddl.SchemaExport as HibernateSchemaExport
@@ -28,6 +29,7 @@ import org.hibernate.tool.hbm2ddl.SchemaExport as HibernateSchemaExport
  * @author Graeme Rocher
  * @since 4.0
  */
+@CompileStatic
 class SchemaExportCommand implements ApplicationCommand {
 
     final String description = "Creates a DDL file of the database schema"

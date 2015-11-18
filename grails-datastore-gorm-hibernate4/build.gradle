@@ -6,7 +6,9 @@ dependencies {
         exclude group:'org.hibernate', module:'hibernate-ehcache'
         exclude group:'org.hibernate', module:'hibernate-commons-annotations'
     }
-    compile(project(":grails-datastore-gorm-support"))
+    compile(project(":grails-datastore-gorm-support")) {
+        exclude group:'org.grails', module:'grails-datastore-gorm-hibernate-core'
+    }
 
     // Web dependencies provided
     provided "javax.servlet:javax.servlet-api:$servletApiVersion"

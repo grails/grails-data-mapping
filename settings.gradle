@@ -28,11 +28,9 @@ include ("grails-datastore-core",
         'grails-datastore-test-support',
 
         // Grails 3 Plugins
-/*
-        'grails-plugins:redis',
-        'grails-plugins:riak',
-*/
-        'grails-plugins/hibernate',
+        'grails-plugins/hibernate3',
+        'grails-plugins/hibernate4',
+        'grails-plugins/hibernate5',
         'grails-plugins/mongodb',
         'grails-plugins/neo4j',
         'grails-plugins/cassandra',

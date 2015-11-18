@@ -1,6 +1,8 @@
 dependencies {
     compile(project(":grails-datastore-gorm-hibernate-core"))
-    compile(project(":grails-datastore-gorm-support"))
+    compile(project(":grails-datastore-gorm-support")) {
+        exclude group:'org.grails', module:'grails-datastore-gorm-hibernate-core'
+    }
 
     // Web dependencies provided
     provided "javax.servlet:javax.servlet-api:$servletApiVersion"
@@ -17,6 +19,29 @@ dependencies {
     testCompile "org.apache.tomcat:tomcat-jdbc:$tomcatVersion"
     testCompile "org.codehaus.groovy:groovy-sql:$groovyVersion"
     testRuntime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:$tomcatVersion"
+
+    compile('org.hibernate:hibernate-core:3.6.10.Final') {
+        exclude group:'commons-logging', module:'commons-logging'
+        exclude group:'commons-collections', module:'commons-collections'
+        exclude group:'org.slf4j', module:'slf4j-api'
+        exclude group:'xml-apis', module:'xml-apis'
+        exclude group:'dom4j', module:'dom4j'
+        exclude group:'antlr', module: 'antlr'
+    }
+
+    compile('dom4j:dom4j:1.6.1') {
+        exclude group: 'xml-apis', module:'xml-apis'
+    }
+
+    runtime ('antlr:antlr:2.7.7') {
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
+
+
+    compile('org.hibernate:hibernate-commons-annotations:3.2.0.Final'){
+        exclude group: 'org.slf4j', module:'slf4j-api'
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
 
 }
 

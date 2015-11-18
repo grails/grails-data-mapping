@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 package grails.orm.bootstrap
-
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Commons
@@ -30,8 +29,6 @@ import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler
 import org.grails.orm.hibernate.support.*
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
-import org.grails.orm.hibernate.validation.PersistentConstraintFactory
-import org.grails.orm.hibernate.validation.UniqueConstraint
 import org.grails.orm.hibernate3.support.AggregatePersistenceContextInterceptor
 import org.grails.orm.hibernate3.support.GrailsOpenSessionInViewInterceptor
 import org.hibernate.EmptyInterceptor
@@ -45,7 +42,6 @@ import org.springframework.context.ApplicationContextAware
 import org.springframework.context.support.GenericApplicationContext
 
 import javax.sql.DataSource
-
 /**
  * Class that handles the details of initializing GORM for Hibernate
  *

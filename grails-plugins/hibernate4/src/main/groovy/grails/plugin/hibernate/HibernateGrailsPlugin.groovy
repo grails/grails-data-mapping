@@ -6,16 +6,19 @@ import grails.core.GrailsClass
 import grails.core.GrailsDomainClass
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
 import grails.plugins.Plugin
+import grails.util.Environment
 import grails.validation.ConstrainedProperty
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.SessionFactoryHolder
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.orm.hibernate.cfg.HibernateMappingContext
 import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor
+import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.grails.orm.hibernate.validation.UniqueConstraint
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
@@ -47,7 +50,7 @@ class HibernateGrailsPlugin extends Plugin {
 
     def license = 'APACHE'
     def organization = [name: 'Grails', url: 'http://grails.org']
-    def issueManagement = [system: 'JIRA', url: 'https://github.com/grails/grails-data-mapping/issues']
+    def issueManagement = [system: 'Github', url: 'https://github.com/grails/grails-data-mapping/issues']
     def scm = [url: 'https://github.com/grails/grails-data-mapping']
 
     Set<String> dataSourceNames
@@ -69,6 +72,7 @@ class HibernateGrailsPlugin extends Plugin {
                                                 .collect() { GrailsClass cls -> cls.clazz }
 
         def springInitializer = new HibernateDatastoreSpringInitializer(config, domainClasses)
+        springInitializer.enableReload = Environment.isDevelopmentMode()
         springInitializer.registerApplicationIfNotPresent = false
         springInitializer.dataSources = dataSourceNames
         def beans = springInitializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
@@ -88,10 +92,12 @@ class HibernateGrailsPlugin extends Plugin {
         if(event.source instanceof Class) {
             Class cls = (Class)event.source
             GrailsDomainClass dc = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, cls.name)
+            def mappingContext = applicationContext.getBean(HibernateMappingContext)
+            PersistentEntity entity = dc ? mappingContext.getPersistentEntity(dc.fullName) : null
 
-//             if(!dc || !GrailsHibernateUtil.isMappedWithHibernate(dc)) {
-//                 return
-//             }
+            if(!dc || !GrailsHibernateUtil.isMappedWithHibernate(entity)) {
+                return
+            }
 
             GrailsDomainBinder.clearMappingCache(cls)
 

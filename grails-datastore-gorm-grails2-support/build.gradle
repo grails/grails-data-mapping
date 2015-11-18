@@ -15,6 +15,15 @@ dependencies {
     compile project(':grails-datastore-gorm-hibernate-core'), optional
     compile "org.grails:grails-web-url-mappings:$grailsVersion", optional
 
+    provided('org.hibernate:hibernate-core:3.6.10.Final') {
+        exclude group:'commons-logging', module:'commons-logging'
+        exclude group:'commons-collections', module:'commons-collections'
+        exclude group:'org.slf4j', module:'slf4j-api'
+        exclude group:'xml-apis', module:'xml-apis'
+        exclude group:'dom4j', module:'dom4j'
+        exclude group:'antlr', module: 'antlr'
+    }
+
     compile("org.grails:grails-validation") {
         exclude group:'org.grails',module:'grails-core'
     }

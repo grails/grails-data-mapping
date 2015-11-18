@@ -31,7 +31,7 @@ dependencies {
     compile 'javax.transaction:jta:1.1'
     compile 'org.javassist:javassist:3.17.1-GA'
 
-    compile('org.hibernate:hibernate-core:3.6.10.Final') {
+    provided('org.hibernate:hibernate-core:3.6.10.Final') {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'org.slf4j', module:'slf4j-api'
@@ -49,7 +49,7 @@ dependencies {
     }
 
 
-    compile('org.hibernate:hibernate-commons-annotations:3.2.0.Final'){
+    provided('org.hibernate:hibernate-commons-annotations:3.2.0.Final'){
         exclude group: 'org.slf4j', module:'slf4j-api'
         exclude group: 'commons-logging', module:'commons-logging'
     }

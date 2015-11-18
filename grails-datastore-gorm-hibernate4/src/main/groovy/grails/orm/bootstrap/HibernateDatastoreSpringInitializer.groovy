@@ -30,8 +30,6 @@ import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler
 import org.grails.orm.hibernate.support.*
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
-import org.grails.orm.hibernate.validation.PersistentConstraintFactory
-import org.grails.orm.hibernate.validation.UniqueConstraint
 import org.grails.orm.hibernate4.support.AggregatePersistenceContextInterceptor
 import org.grails.orm.hibernate4.support.GrailsOpenSessionInViewInterceptor
 import org.hibernate.EmptyInterceptor
