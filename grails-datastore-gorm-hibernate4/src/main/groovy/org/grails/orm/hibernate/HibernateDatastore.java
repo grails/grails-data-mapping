@@ -56,7 +56,7 @@ public class HibernateDatastore extends AbstractHibernateDatastore  {
 
         if (applicationContext != null) {
             // support for callbacks in domain classes
-            eventTriggeringInterceptor = new EventTriggeringInterceptor(this, config);
+            eventTriggeringInterceptor = new EventTriggeringInterceptor(this, connectionDetails);
             ((ConfigurableApplicationContext)applicationContext).addApplicationListener(eventTriggeringInterceptor);
         }
     }

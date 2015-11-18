@@ -42,7 +42,6 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     public static final String CONFIG_PROPERTY_FAIL_ON_ERROR = "grails.gorm.failOnError";
     public static final String CONFIG_PROPERTY_DEFAULT_MAPPING = "grails.gorm.default.mapping";
     protected final SessionFactory sessionFactory;
-    protected final PropertyResolver config;
     protected AbstractEventTriggeringInterceptor eventTriggeringInterceptor;
     private final boolean osivReadOnly;
     private final boolean passReadOnlyToHibernate;
@@ -55,7 +54,6 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext, String dataSourceName) {
         super(mappingContext, config, (ConfigurableApplicationContext) applicationContext);
         this.sessionFactory = sessionFactory;
-        this.config = config;
         this.dataSourceName = dataSourceName;
         initializeConverters(mappingContext);
         if(applicationContext != null) {
