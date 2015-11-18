@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.cassandra
 
+import grails.util.GrailsMetaClassUtils
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.mapping.core.Datastore
@@ -19,7 +20,15 @@ class CassandraGormEnhancer extends GormEnhancer {
         super(datastore, transactionManager)
 		DynamicFinder.registerNewMethodExpression(InList.class)
     }
-    
+
+	@Override
+	void enhance(boolean onlyExtendedMethods) {
+		for (PersistentEntity e in datastore.mappingContext.persistentEntities) {
+			if(e.external && !includeExternal) continue
+			enhance e, onlyExtendedMethods
+		}
+	}
+
 	@Override
 	 void enhance(PersistentEntity e, boolean onlyExtendedMethods = false) {
 		super.enhance(e, onlyExtendedMethods)
@@ -28,7 +37,7 @@ class CassandraGormEnhancer extends GormEnhancer {
 	 
 	protected void addCollectionMethods(PersistentEntity e) {
 		Class cls = e.javaClass
-		MetaClass mc = cls.metaClass
+		MetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
 		final proxyFactory = datastore.mappingContext.proxyFactory
 		for (p in e.persistentProperties) {
 			def prop = p			
