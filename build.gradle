@@ -435,6 +435,7 @@ task coreApiDocs(type: Groovydoc) {
    source projs.collect { project -> project.sourceSets.main.allGroovy } + projs.collect { project -> project.sourceSets.main.allJava }
    destinationDir = new File(buildDir, 'docs/api')
    // Might need a classpath
+    docTitle = "GORM ${projectVersion}"
    classpath = files(projs.collect {project -> project.sourceSets.main.compileClasspath + project.configurations.documentation})
    groovyClasspath = files(projs.collect {project -> project.sourceSets.main.compileClasspath + project.configurations.documentation})
 }
@@ -490,7 +491,10 @@ task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
         ]
         def template = engine.createTemplate(new File("src/docs/resources/core.template")).make(binding)
         new File("$allDocsDir/index.html").text = template.toString()
-
+        copy {
+            from "src/docs/resources/assets"
+            into allDocsDir
+        }
         for(store in stores) {
             def index = "$allDocsDir/$store/index.html"
             def storeName = "${store[0].toUpperCase()}${store[1..-1]}".toString()
