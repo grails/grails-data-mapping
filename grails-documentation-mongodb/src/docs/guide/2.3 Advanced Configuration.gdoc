@@ -118,7 +118,7 @@ grails {
 
 h4. Global Mapping Configuration
 
-Using the @grails.mongo.default.mapping@ setting in @Config.groovy@ you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use @DBRefs@ in your association mappings. For example, the following configuration will disable optimistic locking globally and use @DBRefs@ for all properties:
+Using the @grails.mongo.default.mapping@ setting in @grails-app/conf/application.groovy@ you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use @DBRefs@ in your association mappings. For example, the following configuration will disable optimistic locking globally and use @DBRefs@ for all properties:
 
 {code}
 grails.mongo.default.mapping = {

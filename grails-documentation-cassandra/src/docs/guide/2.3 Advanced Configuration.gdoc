@@ -87,7 +87,7 @@ grails {
             
             //keyspace properties to set only if the plugin is to create the keyspace         			
             durableWrites = false //default: false                        
-            replicationStrategy = "SimpleStrategy" OR "NetworkTopologyStrategy" //default: "SimpleStrategy"             
+            replicationStrategy = "SIMPLE_STRATEGY" OR "NETWORK_TOPOLOGY_STRATEGY" //default: "SIMPLE_STRATEGY"
             replicationFactor = 1 //default: 1                        
             dataCenter = ["us-west":1, "eu-west":2] //if replicationStrategy is "NetworkTopologyStrategy",
                                                     //a map of data centre names and replication factors
@@ -99,7 +99,7 @@ grails {
 
 h4. Global Mapping Configuration
 
-Using the @grails.cassandra.default.mapping@ setting in @Config.groovy@ you can configure global mapping options across your domain classes. 
+Using the @grails.cassandra.default.mapping@ setting in @application.groovy@ you can configure global mapping options across your domain classes.
 The following configuration will disable optimistic locking globally:
 
 {code}

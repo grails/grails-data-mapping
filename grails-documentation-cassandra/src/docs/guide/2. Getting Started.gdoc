@@ -2,7 +2,7 @@ To get started with GORM for Cassandra you need configure it as a dependency in 
 
 {code}
 dependencies {
-    compile 'org.grails.plugins:cassandra'
+    compile 'org.grails.plugins:cassandra:VERSION'
 }
 {code}
 
@@ -10,7 +10,7 @@ Note that if you get exceptions during startup or execution for newer versions o
 
 {code}
 dependencies {
-    compile 'org.grails.plugins:cassandra'
+    compile 'org.grails.plugins:cassandra:VERSION'
     compile("com.datastax.cassandra:cassandra-driver-core:2.0.4")
     compile "org.springframework.data:spring-data-commons:1.8.4.RELEASE"
     compile("org.springframework.data:spring-data-cassandra:1.0.4.RELEASE") {
@@ -39,14 +39,15 @@ INFO 00:11:17,042 Listening for thrift clients...
 
 As you can see the server listens for CQL clients on port 9042, but don't worry the Cassandra plugin for Grails will automatically configure itself to look for Cassandra on that port by default.
 
-If you want to configure how Grails connects to Cassandra then you can do so using the following settings in @grails-app/conf/application.groovy@:
+If you want to configure how Grails connects to Cassandra then you can do so using the following settings in @grails-app/conf/application.yml@:
 
 {code}
-grails {
-    cassandra {  
-        contactPoints = "localhost" 
-        port = 9042 
-        keyspace.name = "foo" 		
+grails:
+    cassandra:
+        contactPoints: localhost
+        port: 9042
+        keyspace:
+            name: foo
     }
 }
 {code}
