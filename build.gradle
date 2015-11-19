@@ -8,8 +8,10 @@ buildscript {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2"
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
+        classpath "com.github.adrianbk:gradle-travisci-trigger-plugin:1.0.0"
     }
 }
+
 
 
 project.ext {
@@ -77,6 +79,15 @@ configurations {
 apply plugin: 'idea'
 apply plugin: 'project-report'
 
+apply plugin: "com.github.adrianbk.tcitrigger"
+
+tciTrigger {
+    gitHubRepo 'grails/grails-data-mapping-functional-tests'
+    travisVariable {
+        name = "GORM_VERSION"
+        value = "${projectVersion}.${releaseType}"
+    }
+}
 
 ext {
     isCiBuild = project.hasProperty("isCiBuild")

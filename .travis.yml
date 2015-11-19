@@ -27,6 +27,7 @@ env:
   - secure: FYgiX7uSiQFql2bQsOfHsTypik4/hArAFMaMcm05MoXBHyb5tl3VXwo3jEBp0MYsH9iIIJ8crlLy4ylm+8XMKOq300zZk2feqQME4x2DXxlUgmfZkbnvY+iUpmLa7OoMAqUV8ardbBrXVn/gQjDH9jvVcX+Gv7KnKE2xyzI0lQY=
   - secure: SbEE24W2zMdao0ArFBHTDP7ntDJn3wmaVl/T42ahkzQUSjQiND+TXwJLhaNADJDIyLg0zmFEIKUk7g7HUMOdw5a2foZbz7BESkz4Nnuhw5O7CgJdIYL6lfLNPkOA6pc7H7D0D5J39vLk4PDqpOJxUw+sgaH2gg2F13kWFk8YZVY=
   - secure: D604qHBpW7UuFuxkhu/cqVzpEESkkipWTKyz3j75i2k+ocQXcYXSj3zDMk4Hmo/iTHszwCgXk1w/5aj+mxRVecewmXmpFk3Q63qPvJprAjcvatmxp82aBmmpPd9GHjKbyLmu6Gn3R8QtX6yAT75T9lf4Y1FMi9mVwFPOtLiSEs0=
+  - secure: TNZ8oWsN+E1gkvxhyTHjguyakIWm+T9KxoZVNq+OoHv2kuyWTIbTJUtP3JVyXX+P+B9F9o+8Kkxp5jomgW0cRdjWxQebceeGlrNAzTVvvOm7tVFFxLjzjRnUPsWKfGXkIzSagvFdSgHIpinDqrtERD10pbym2ZDwqRCejCMjz0U=
   matrix:
   - GORM_IMPL=test
   - GORM_IMPL=testgrails2
@@ -39,14 +40,14 @@ env:
   - GORM_IMPL=neo4j
   - GORM_IMPL=restclient
 before_script:
-  - sudo service postgresql stop || true
-  - sudo service mysql stop || true
-  - sudo service memcached stop || true
-  - sudo service bootlogd stop || true
-  - sudo service elasticsearch stop || true
-  - sudo service cassandra stop || true
-  - sudo service rsync stop || true
-  - sudo service x11-common stop || true
+- sudo service postgresql stop || true
+- sudo service mysql stop || true
+- sudo service memcached stop || true
+- sudo service bootlogd stop || true
+- sudo service elasticsearch stop || true
+- sudo service cassandra stop || true
+- sudo service rsync stop || true
+- sudo service x11-common stop || true
 before_install:
 - openssl aes-256-cbc -pass pass:$SIGNING_PASSPHRASE -in secring.gpg.enc -out secring.gpg
   -d
