@@ -41,7 +41,7 @@ public class HibernateMappingContextSessionFactoryBean extends LocalSessionFacto
     protected Class<?> currentSessionContextClass;
     protected HibernateEventListeners hibernateEventListeners;
     protected ApplicationContext applicationContext;
-    protected boolean proxyIfReloadEnabled = true;
+    protected boolean proxyIfReloadEnabled = false;
     protected String sessionFactoryBeanName = "sessionFactory";
     protected String dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
     protected HibernateMappingContext hibernateMappingContext;
