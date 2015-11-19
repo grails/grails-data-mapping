@@ -212,6 +212,8 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
         List<String> schemaStrings = new ArrayList<String>(); // using set to avoid duplicate index creation
 
         for (PersistentEntity persistentEntity:  mappingContext.getPersistentEntities()) {
+            if(persistentEntity.isExternal()) continue;
+
             if(log.isDebugEnabled()) {
                 log.debug("Setting up indexing for entity " + persistentEntity.getName());
             }

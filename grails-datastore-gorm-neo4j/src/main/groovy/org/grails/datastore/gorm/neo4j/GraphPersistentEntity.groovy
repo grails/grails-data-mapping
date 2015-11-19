@@ -32,20 +32,33 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Neo4jEntity>
     protected Collection<Object> labelObjects
     protected final boolean hasDynamicLabels
     protected final boolean hasDynamicAssociations
+    protected final GraphClassMapping classMapping;
     protected IdGenerator idGenerator
 
     public GraphPersistentEntity(Class javaClass, MappingContext context) {
+        this(javaClass, context, false)
+    }
+    public GraphPersistentEntity(Class javaClass, MappingContext context, boolean external) {
         super(javaClass, context);
-        this.mappedForm = (Neo4jEntity) context.getMappingFactory().createMappedForm(this);
+        if(isExternal()) {
+            this.mappedForm = null;
+        }
+        else {
+            this.mappedForm = (Neo4jEntity) context.getMappingFactory().createMappedForm(this);
+        }
         this.hasDynamicAssociations = mappedForm.isDynamicAssociations()
         this.hasDynamicLabels = establishLabels()
+        this.external = external;
+        this.classMapping = new GraphClassMapping(this, context);
     }
 
     @Override
     void initialize() {
         super.initialize()
-        def generatorType = getIdentity().getMapping().getMappedForm().getGenerator()
-        this.idGenerator = createIdGenerator(generatorType)
+        if(!isExternal()) {
+            def generatorType = getIdentity().getMapping().getMappedForm().getGenerator()
+            this.idGenerator = createIdGenerator(generatorType)
+        }
     }
 
     protected IdGenerator createIdGenerator(String generatorType) {
@@ -80,7 +93,7 @@ public class GraphPersistentEntity extends AbstractPersistentEntity<Neo4jEntity>
 
     @Override
     public ClassMapping<Neo4jEntity> getMapping() {
-        new GraphClassMapping(this, context);
+        return this.classMapping
     }
 
     /**

@@ -9,15 +9,20 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 
 public class CassandraPersistentEntity extends AbstractPersistentEntity<Table> {
 
-    private Entity mappedForm;
-    private CassandraClassMapping classMapping;
-    private Boolean version = true; 
+    private final Entity mappedForm;
+    private final CassandraClassMapping classMapping;
+    private Boolean version = true;
+
     public CassandraPersistentEntity(Class<?> javaClass, CassandraMappingContext context) {
+        this(javaClass, context, false);
+    }
+    public CassandraPersistentEntity(Class<?> javaClass, CassandraMappingContext context, boolean external) {
         super(javaClass, context);
-        //need to create the mappedForm first so all the entity properties are read first, 
-        //which then ensures the classMapping.identifierMapping is created correctly for 
+        setExternal(external);
+        //need to create the mappedForm first so all the entity properties are read first,
+        //which then ensures the classMapping.identifierMapping is created correctly for
         //multiple primary key entities
-        this.mappedForm = context.getMappingFactory().createMappedForm(CassandraPersistentEntity.this);
+        this.mappedForm = external ? null : context.getMappingFactory().createMappedForm(CassandraPersistentEntity.this);
         this.classMapping = new CassandraClassMapping(this, context);
     }      
     

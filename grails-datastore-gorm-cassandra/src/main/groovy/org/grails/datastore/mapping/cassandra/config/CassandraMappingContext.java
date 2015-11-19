@@ -91,4 +91,9 @@ public class CassandraMappingContext extends AbstractMappingContext {
     protected PersistentEntity createPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass) {      
         return new CassandraPersistentEntity(javaClass, this);        
     }
+
+    @Override
+    protected PersistentEntity createPersistentEntity(Class javaClass, boolean external) {
+        return new CassandraPersistentEntity(javaClass, this);
+    }
 }

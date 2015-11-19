@@ -220,7 +220,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     }
 
     private PersistentEntity addPersistentEntityInternal(Class javaClass, boolean isExternal, boolean isInitialize) {
-        PersistentEntity entity = createPersistentEntity(javaClass);
+        PersistentEntity entity = createPersistentEntity(javaClass, isExternal);
         if (entity == null) {
             return null;
         }
@@ -332,7 +332,11 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         return null;
     }
 
-    protected abstract PersistentEntity createPersistentEntity(Class javaClass);
+    protected PersistentEntity createPersistentEntity(Class javaClass) {
+        return createPersistentEntity(javaClass, false);
+    }
+
+    protected abstract PersistentEntity createPersistentEntity(Class javaClass, boolean external);
 
     public PersistentEntity createEmbeddedEntity(Class type) {
         EmbeddedPersistentEntity embedded = new EmbeddedPersistentEntity(type, this);

@@ -13,4 +13,9 @@ class TestMappingContext extends AbstractMappingContext {
     protected PersistentEntity createPersistentEntity(Class javaClass) {
         return new TestPersistentEntity(javaClass, this)
     }
+
+    @Override
+    protected PersistentEntity createPersistentEntity(Class javaClass, boolean external) {
+        return new TestPersistentEntity(javaClass, this)
+    }
 }

@@ -50,4 +50,9 @@ class RestClientMappingContext extends AbstractMappingContext {
     protected PersistentEntity createPersistentEntity(Class javaClass) {
         return new RestClientEntity(javaClass, this)
     }
+
+    @Override
+    protected PersistentEntity createPersistentEntity(Class javaClass, boolean external) {
+        return createPersistentEntity(javaClass);
+    }
 }

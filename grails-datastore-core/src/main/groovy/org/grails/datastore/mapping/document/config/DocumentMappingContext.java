@@ -77,4 +77,9 @@ public class DocumentMappingContext extends AbstractMappingContext {
     protected PersistentEntity createPersistentEntity(Class javaClass) {
         return new DocumentPersistentEntity(javaClass, this);
     }
+
+    @Override
+    protected PersistentEntity createPersistentEntity(Class javaClass, boolean external) {
+        return new DocumentPersistentEntity(javaClass, this, external);
+    }
 }

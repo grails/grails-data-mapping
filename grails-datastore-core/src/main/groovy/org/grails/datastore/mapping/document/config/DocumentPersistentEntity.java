@@ -24,11 +24,16 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 
 public class DocumentPersistentEntity extends AbstractPersistentEntity<Collection> {
 
-    private DocumentCollectionMapping classMapping;
+    private final DocumentCollectionMapping classMapping;
+
+    public DocumentPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass, MappingContext context, boolean external) {
+        super(javaClass, context);
+        setExternal(external);
+        this.classMapping = new DocumentCollectionMapping(this, context);
+    }
 
     public DocumentPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass, MappingContext context) {
-        super(javaClass, context);
-        this.classMapping = new DocumentCollectionMapping(this, context);
+        this(javaClass, context, false);
     }
 
     @SuppressWarnings("unchecked")
@@ -38,12 +43,17 @@ public class DocumentPersistentEntity extends AbstractPersistentEntity<Collectio
     }
 
     public class DocumentCollectionMapping extends AbstractClassMapping<Collection> {
-        private Collection mappedForm;
+        private final Collection mappedForm;
 
         private IdentityMapping identityMapping;
         public DocumentCollectionMapping(PersistentEntity entity, MappingContext context) {
             super(entity, context);
-            this.mappedForm = (Collection) context.getMappingFactory().createMappedForm(DocumentPersistentEntity.this);
+            if(entity.isExternal()) {
+                this.mappedForm = null;
+            }
+            else {
+                this.mappedForm = (Collection) context.getMappingFactory().createMappedForm(DocumentPersistentEntity.this);
+            }
         }
         @Override
         public Collection getMappedForm() {

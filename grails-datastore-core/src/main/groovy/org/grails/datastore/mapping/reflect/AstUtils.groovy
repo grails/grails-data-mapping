@@ -94,6 +94,23 @@ class AstUtils {
         return DOMAIN_PATH_PATTERN.matcher(url.getFile()).find();
     }
 
+    /**
+     * Obtains a property from the class hierarchy
+     *
+     * @param cn The class node
+     * @param name The property name
+     * @return The property node or null
+     */
+    static PropertyNode getPropertyFromHierarchy(ClassNode cn, String name) {
+        PropertyNode pn = cn.getProperty(name)
+        ClassNode superClass = cn.getSuperClass()
+        while(pn == null && superClass != null) {
+            pn = superClass.getProperty(name)
+            if(pn != null) return pn
+            superClass = superClass.getSuperClass()
+        }
+        return pn
+    }
     @Memoized
     public static boolean isDomainClass(ClassNode classNode) {
         if (classNode == null) return false;

@@ -92,6 +92,11 @@ public class HibernateMappingContext extends AbstractMappingContext {
         return null;
     }
 
+    @Override
+    protected PersistentEntity createPersistentEntity(Class javaClass, boolean external) {
+        return createPersistentEntity(javaClass);
+    }
+
     public static boolean isDomainClass(Class clazz) {
         return doIsDomainClassCheck(clazz);
     }

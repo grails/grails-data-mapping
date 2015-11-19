@@ -227,7 +227,7 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
 
 
         // first try the `mapWithValue`
-        def mapWith = classNode.getProperty(GormProperties.MAPPING_STRATEGY)
+        def mapWith = AstUtils.getPropertyFromHierarchy(classNode, GormProperties.MAPPING_STRATEGY)
         String mapWithValue = mapWith?.initialExpression?.text
         Class gormEntityTrait = null
         boolean isHibernatePresent = isHibernatePresent(classLoader)

@@ -100,12 +100,16 @@ public class Neo4jMappingContext extends AbstractMappingContext  {
 
     @Override
     protected PersistentEntity createPersistentEntity(Class javaClass) {
-        final GraphPersistentEntity entity = new GraphPersistentEntity(javaClass, this);
+        return createPersistentEntity(javaClass, false);
+    }
+
+    @Override
+    protected PersistentEntity createPersistentEntity(Class javaClass, boolean external) {
+        final GraphPersistentEntity entity = new GraphPersistentEntity(javaClass, this, external);
         final Collection<String> labels = entity.getLabels();
         entitiesByLabel.put(labels, entity);
         return entity;
     }
-
 
     /**
      * Finds an entity for the statically mapped set of labels
