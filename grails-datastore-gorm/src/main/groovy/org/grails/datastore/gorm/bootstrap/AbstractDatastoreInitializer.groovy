@@ -70,12 +70,12 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     AbstractDatastoreInitializer(PropertyResolver configuration, Class...persistentClasses) {
         this.configuration = configuration
-        this.persistentClasses = persistentClasses
+        this.persistentClasses = Arrays.asList(persistentClasses)
     }
 
-    AbstractDatastoreInitializer(PropertyResolver configuration, String...persistentClasses) {
+    AbstractDatastoreInitializer(PropertyResolver configuration, String...packages) {
         this.configuration = configuration
-        this.packages = packages
+        this.packages = Arrays.asList(packages)
     }
 
     AbstractDatastoreInitializer(Map configuration, Collection<Class> persistentClasses) {
