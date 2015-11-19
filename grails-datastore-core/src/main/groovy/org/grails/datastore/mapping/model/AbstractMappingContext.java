@@ -332,11 +332,11 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         return null;
     }
 
-    protected PersistentEntity createPersistentEntity(Class javaClass) {
-        return createPersistentEntity(javaClass, false);
-    }
+    protected abstract PersistentEntity createPersistentEntity(Class javaClass);
 
-    protected abstract PersistentEntity createPersistentEntity(Class javaClass, boolean external);
+    protected PersistentEntity createPersistentEntity(Class javaClass, boolean external) {
+        return createPersistentEntity(javaClass);
+    };
 
     public PersistentEntity createEmbeddedEntity(Class type) {
         EmbeddedPersistentEntity embedded = new EmbeddedPersistentEntity(type, this);
