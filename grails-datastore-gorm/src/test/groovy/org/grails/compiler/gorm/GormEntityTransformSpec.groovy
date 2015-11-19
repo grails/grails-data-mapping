@@ -47,6 +47,23 @@ class GormEntityTransformSpec extends Specification{
         new Book().hasProperty('authorId')
     }
 
+    void "Test property/method missing"() {
+
+        when:
+        Book.foo()
+        then:
+        thrown IllegalStateException
+        when:
+        def var = Book.bar
+        then:
+        Book.getDeclaredMethod('$static_propertyMissing', String)
+        thrown MissingPropertyException
+        when:
+        Book.bar = 'blah'
+        then:
+        Book.getDeclaredMethod('$static_propertyMissing', String, Object)
+        thrown MissingPropertyException
+    }
 
 }
 

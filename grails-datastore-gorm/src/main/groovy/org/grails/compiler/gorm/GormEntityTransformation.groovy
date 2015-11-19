@@ -147,8 +147,6 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
 
         // convert the methodMissing and propertyMissing implementations to $static_methodMissing and $static_propertyMissing for the static versions
         def methodMissingBody = new BlockStatement()
-
-
         def methodNameParam = new Parameter(ClassHelper.make(String), "name")
         def methodArgsParam = new Parameter(AstUtils.OBJECT_CLASS_NODE, "args")
         def methodMissingArgs = new ArgumentListExpression(methodNameParam, methodArgsParam)
@@ -159,6 +157,30 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
 
         def methodMissingParameters = [methodNameParam, methodArgsParam] as Parameter[]
         classNode.addMethod('$static_methodMissing', Modifier.PUBLIC | Modifier.STATIC, AstUtils.OBJECT_CLASS_NODE, methodMissingParameters, null, methodMissingBody)
+
+
+        // $static_propertyMissing setter
+        def propertyMissingSetBody = new BlockStatement()
+        def propertyMissingSetNameParam = new Parameter(ClassHelper.make(String), "name")
+        def propertyMissingSetValueParam = new Parameter(AstUtils.OBJECT_CLASS_NODE, "value")
+        def propertyMissingSetArgs = new ArgumentListExpression(propertyMissingSetNameParam, propertyMissingSetValueParam)
+        def propertyMissingSetMethodCall = new MethodCallExpression(new VariableExpression("this"), "staticPropertyMissing", propertyMissingSetArgs)
+        propertyMissingSetBody.addStatement(
+                new ExpressionStatement(propertyMissingSetMethodCall)
+        )
+        def propertyMissingSetParameters = [propertyMissingSetNameParam, propertyMissingSetValueParam] as Parameter[]
+        classNode.addMethod('$static_propertyMissing', Modifier.PUBLIC | Modifier.STATIC, AstUtils.OBJECT_CLASS_NODE, propertyMissingSetParameters, null, propertyMissingSetBody)
+
+        // $static_propertyMissing getter
+        def propertyMissingGetBody = new BlockStatement()
+        def propertyMissingGetNameParam = new Parameter(ClassHelper.make(String), "name")
+        def propertyMissingGetArgs = new ArgumentListExpression(propertyMissingGetNameParam)
+        def propertyMissingGetMethodCall = new MethodCallExpression(new VariableExpression("this"), "staticPropertyMissing", propertyMissingGetArgs)
+        propertyMissingGetBody.addStatement(
+                new ExpressionStatement(propertyMissingGetMethodCall)
+        )
+        def propertyMissingGetParameters = [propertyMissingGetNameParam] as Parameter[]
+        classNode.addMethod('$static_propertyMissing', Modifier.PUBLIC | Modifier.STATIC, AstUtils.OBJECT_CLASS_NODE, propertyMissingGetParameters, null, propertyMissingGetBody)
 
 
         // now process named query associations

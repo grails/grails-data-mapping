@@ -80,6 +80,24 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     /**
+     * Property missing handler
+     *
+     * @param name The name of the property
+     */
+    def propertyMissing(String name) {
+        throw new MissingPropertyException(name, persistentClass)
+    }
+
+    /**
+     * Property missing handler
+     *
+     * @param name The name of the property
+     */
+    def propertyMissing(String name, value) {
+        throw new MissingPropertyException(name, persistentClass)
+    }
+
+    /**
      * Method missing handler that deals with the invocation of dynamic finders
      *
      * @param methodName The method name

@@ -748,6 +748,35 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable {
     }
 
     /**
+     * Handles property missing, does nothing by default, sub traits to override
+     *
+     * @param property The property
+     * @return The value if an exception if the property doesn't exist
+     */
+    static Object staticPropertyMissing(String property) {
+        try {
+            currentGormStaticApi().propertyMissing(property)
+        } catch (IllegalStateException e) {
+            throw new MissingPropertyException(property, this)
+        }
+    }
+
+    /**
+     * Handles property missing, does nothing by default, sub traits to override
+     *
+     * @param property The property
+     * @param value The value of the property
+     * @return The value if an exception if the property doesn't exist
+     */
+    static void staticPropertyMissing(String property, value) {
+        try {
+            currentGormStaticApi().propertyMissing(property, value)
+        } catch (IllegalStateException e) {
+            throw new MissingPropertyException(property, this)
+        }
+    }
+
+    /**
      * Finds the last object.  If queryParams includes 'sort', that will
      * dictate the sort order, otherwise natural sort order will be used.
      * queryParams may include any of the same parameters that might be passed
