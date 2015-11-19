@@ -76,7 +76,7 @@ class Setup {
         }
 
 
-        def initializer = new HibernateDatastoreSpringInitializer(grailsConfig, classes)
+        def initializer = grailsConfig ?  new HibernateDatastoreSpringInitializer(grailsConfig, classes) : new HibernateDatastoreSpringInitializer(classes)
         applicationContext = initializer.configure()
         hibernateDatastore = applicationContext.getBean(HibernateDatastore)
         transactionManager = applicationContext.getBean(HibernateTransactionManager)

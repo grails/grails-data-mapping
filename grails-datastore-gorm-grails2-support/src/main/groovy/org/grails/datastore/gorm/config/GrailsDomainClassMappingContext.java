@@ -70,6 +70,6 @@ public class GrailsDomainClassMappingContext extends AbstractMappingContext {
 
     @Override
     protected PersistentEntity createPersistentEntity(Class javaClass, boolean external) {
-        createPersistentEntity(javaClass);
+        return createPersistentEntity(javaClass);
     }
 }
