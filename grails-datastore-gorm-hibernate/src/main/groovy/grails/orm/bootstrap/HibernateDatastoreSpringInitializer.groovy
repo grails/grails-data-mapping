@@ -59,6 +59,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     String defaultSessionFactoryBeanName = SESSION_FACTORY_BEAN_NAME
     String ddlAuto = "update"
     Set<String> dataSources = [defaultDataSourceBeanName]
+    boolean enableReload = false
 
     @Override
     protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {
@@ -312,7 +313,6 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
     @CompileStatic
     static class PostInitializationHandling implements InitializingBean, ApplicationContextAware {
 
-        @Autowired
         def grailsApplication
 
         // required to force initialisation of validators
