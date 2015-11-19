@@ -2,16 +2,14 @@ This documentation describes the GORM API mechanics and how a datastore implemen
 
 As of this writing the project has several implementations of GORM against a variety of different datastore implementations. Current implementations include:
 
-* Hibernate (currently part of the Grails source code)
-* JPA
+* Hibernate 3,4 and 5
 * MongoDB
 * Redis
 * Neo4j
-* Riak
-* Amazon SimpleDB
+* Cassandra
 * java.util.ConcurrentHashMap (the fastest datastore in the world)
 
-The remainder of this document describes how to project is structured, how to build a project and how to implement a GORM provider.
+The remainder of this document describes how the project is structured, how to build a project and how to implement a GORM provider.
 
 
 

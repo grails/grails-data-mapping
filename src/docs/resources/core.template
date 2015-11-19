@@ -158,11 +158,12 @@
                                 </article>
                                 <article>
                                     <div class="icon icon-3"></div>
-                                    <h1>ConcurrentHashMap</h1>
+                                    <h1>Developer Guide</h1>
 
                                     <p>
-                                        If you just want to quickly test your GORM data access logic in a unit test, the ConcurrentHashMap implementation is for you.
+                                        Want to develop your own implementation of GORM? Checkout the developer guide
                                     </p>
+                                    <p>- <a href="manual/index.html">Documentation</a> - <a href="api/index.html">API</a></p>
                                 </article>
                             </div>
                         </section>

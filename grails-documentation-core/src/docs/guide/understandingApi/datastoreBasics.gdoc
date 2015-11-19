@@ -51,17 +51,17 @@ The @org.grails.datastore.mapping.core.Datastore@ interface is the equivalent of
 
 {code}
 @Override
-protected Session createSession(Map<String, String> connectionDetails) {
+protected Session createSession(PropertyResolver connDetails) {
     return new SimpleMapSession(this, getMappingContext(), getApplicationEventPublisher());
 }
 {code}
 
-The implementation depends a lot on the underlying datastore. For example for JPA the following implementation is used:
+The implementation depends a lot on the underlying datastore. For example for MongoDB the following implementation is used:
 
 {code}
 @Override
-protected Session createSession(Map<String, String> connDetails) {
-    return new JpaSession(this, new JpaTemplate(entityManagerFactory), transactionManager);
+protected Session createSession(PropertyResolver connDetails) {
+    return new MongoSession(this, getMappingContext(), getApplicationEventPublisher(), false);
 }
 {code}
 

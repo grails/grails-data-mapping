@@ -1,4 +1,4 @@
-Many datastores do not support secondary indices or require you to build your own. In cases like this you will need to implement a @PropertyIndexer@.
+Many datastores do not support secondary indexing or require you to build your own. In cases like this you will need to implement a @PropertyIndexer@.
 
 {note}
 If the underlying datastore supports secondary indexes then it is ok to just return a @null@ PropertyIndexer and let the datastore handle the indexing

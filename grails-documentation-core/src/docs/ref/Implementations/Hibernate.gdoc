@@ -1,9 +1,0 @@
-h1. Hibernate
-
-h2. Purpose
-
-GORM API onto [Hibernate|http://hibernate.org]. Original GORM implementation and most complete.
-
-h2. Description
-
-Implemented in the @grails-hibernate@ subproject of Grails itself. See @HibernateGormEnhancer@

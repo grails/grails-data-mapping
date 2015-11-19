@@ -3,7 +3,7 @@ To get started with your a new GORM implementation the following steps are requi
 h3. Initial Directory Creation
 
 {code}
-$ git clone git@github.com:SpringSource/grails-data-mapping.git 
+$ git clone git@github.com:grails/grails-data-mapping.git
 $ cd grails-data-mapping
 $ mkdir grails-datastore-gorm-xyz
 
@@ -23,13 +23,10 @@ With contents:
 dependencies {
     compile project(':grails-datastore-gorm'),
             project(':grails-datastore-web'),
-            project(':grails-datastore-gorm-plugin-support')
+            project(':grails-datastore-gorm-support')
             
-    testCompile project(':grails-datastore-gorm-test'),
-                project(':grails-datastore-gorm-tck')
+    testCompile project(':grails-datastore-gorm-tck')
     testRuntime "javax.servlet:javax.servlet-api:$servletApiVersion"
-    testRuntime 'org.grails:grails-gorm:$grailsVersion'
-    testRuntime 'org.grails:grails-web:$grailsVersion'
 
 }
 {code}
@@ -44,7 +41,6 @@ Changes shown below:
 
 {code}
 // GORM Implementations
-'grails-datastore-gorm-jpa',
 'grails-datastore-gorm-neo4j',
 'grails-datastore-gorm-xyz',
 ....

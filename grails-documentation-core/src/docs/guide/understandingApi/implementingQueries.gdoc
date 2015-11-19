@@ -3,7 +3,7 @@ h3. Introduction
 The @org.grails.datastore.mapping.query.Query@ abstract class defines the query model and it is the job of the GORM implementor to translate this query model into an underlying database query. This is different depending on the implementation and may involve:
 
 * Generating a String-based query such as SQL or JPA-QL 
-* Creating a query object such as MongoDB's use of a @DBObject@ to define queries
+* Creating a query object such as MongoDB's use of a @Document@ to define queries
 * Generating for use with manually created Secondary indices as is the case with Redis
 
 The @Query@ object defines the following:
@@ -70,7 +70,7 @@ Which simply uses the property indexer to query for all identifiers. Of course h
 
 {code}
 queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
-    public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
+    public void handle(PersistentEntity entity, Equals criterion, Document query) {
         String propertyName = getPropertyName(entity, criterion);
         Object value = criterion.getValue();
         PersistentProperty property = entity.getPropertyByName(criterion.getProperty());
