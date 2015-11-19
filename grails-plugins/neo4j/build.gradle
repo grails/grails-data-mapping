@@ -51,7 +51,8 @@ dependencies {
     provided 'javax.servlet:javax.servlet-api:3.1.0'
 
 
-    compile project(":grails-datastore-gorm-plugin-support"), {
+    compile project(":grails-datastore-simple")
+    compile project(":grails-datastore-gorm-support"), {
         exclude group:'org.springframework', module:'spring-context'
         exclude group:'org.springframework', module:'spring-core'
         exclude group:'org.springframework', module:'spring-beans'

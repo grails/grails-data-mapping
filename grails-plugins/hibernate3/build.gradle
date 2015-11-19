@@ -46,6 +46,7 @@ dependencies {
 
     provided("org.grails:grails-core")
 
+    compile project(":grails-datastore-simple")
     compile project(":grails-datastore-gorm-support")
     compile project(":grails-datastore-gorm-hibernate"), {
         exclude group:'org.springframework', module:'spring-context'

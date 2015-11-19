@@ -47,6 +47,7 @@ dependencies {
     provided("org.grails:grails-core")
     provided("org.grails:grails-bootstrap")
 
+    compile project(":grails-datastore-simple")
     compile project(":grails-datastore-gorm-cassandra"), {
         exclude group:'org.springframework', module:'spring-context'
         exclude group:'org.springframework', module:'spring-core'
