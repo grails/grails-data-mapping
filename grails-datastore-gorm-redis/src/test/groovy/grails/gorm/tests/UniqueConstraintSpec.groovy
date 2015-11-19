@@ -50,7 +50,7 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
         GroupWithin.count() == 2
     }
 
-    @NotYetImplemented
+//    @NotYetImplemented
     void "should update to a existing value fail"() {
         given:"A validator that uses the unique constraint"
         setupValidator()

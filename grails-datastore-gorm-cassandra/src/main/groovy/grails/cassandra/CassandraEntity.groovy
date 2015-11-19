@@ -41,7 +41,7 @@ trait CassandraEntity<D> extends GormEntity<D> {
     @Override
     D save( Map params) {
         (D)withSession ({ Session session ->
-            ((CassandraDatastore)session.datastore).setWriteOptions(this, OptionsUtil.convertToWriteOptions(params))
+            session.setAttribute(this, CassandraDatastore.WRITE_OPTIONS, OptionsUtil.convertToWriteOptions(params))
             doSave params, session
         } )
     }
@@ -49,15 +49,14 @@ trait CassandraEntity<D> extends GormEntity<D> {
     private D doSave(Map params, Session s, boolean isInsert = false) {
         CassandraSession session = (CassandraSession) s
         boolean hasErrors = false
-        boolean validate = params?.containsKey("validate") ? params.validate : true
-        MetaMethod validateMethod = respondsTo('validate', InvokerHelper.EMPTY_ARGS).find { MetaMethod mm -> mm.parameterTypes.length == 0 && !mm.vargsMethod}
-        if (validateMethod && validate) {
-            session.datastore.setSkipValidation(this, false)
-            hasErrors = !validateMethod.invoke(this, InvokerHelper.EMPTY_ARGS)
+        boolean shouldValidate = params?.containsKey("validate") ? params.validate : true
+        if (shouldValidate) {
+            skipValidation(false)
+            hasErrors = !validate()
         }
         else {
-            session.datastore.setSkipValidation(this, true)
-            InvokerHelper.invokeMethod(this, "clearErrors", null)
+            skipValidation(true)
+            clearErrors()
         }
 
         if (hasErrors) {

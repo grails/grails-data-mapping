@@ -16,9 +16,11 @@ package org.grails.datastore.gorm
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.support.BeforeValidateHelper
+import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.gorm.validation.ValidatorProvider
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.event.ValidationEvent
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.validation.ValidationErrors
 import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
@@ -73,7 +75,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
 
         Errors errors = getErrors(instance)
 
-        if (validator instanceof org.grails.datastore.gorm.validation.CascadingValidator) {
+        if (validator instanceof CascadingValidator) {
             validator.validate instance, localErrors, arguments?.deepValidate != false
         } else {
             validator.validate instance, localErrors
@@ -176,7 +178,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
         }
         else {
 
-            def errors = datastore.getObjectErrors(instance)
+            Errors errors = (Errors)datastore.currentSession.getAttribute(instance, GormProperties.ERRORS)
             if (errors == null) {
                 errors = resetErrors(instance)
             }
@@ -201,7 +203,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
             gv.errors = errors
         }
         else {
-            datastore.setObjectErrors instance, errors
+            datastore.currentSession.setAttribute(instance, GormProperties.ERRORS, errors)
         }
     }
 
@@ -224,7 +226,8 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
             return gv.hasErrors()
         }
         else {
-            datastore.getObjectErrors(instance)?.hasErrors()
+            Errors errors = (Errors)datastore.currentSession.getAttribute(instance, GormProperties.ERRORS)
+            errors?.hasErrors()
         }
     }
 }

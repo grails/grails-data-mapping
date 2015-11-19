@@ -975,21 +975,6 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable {
         currentGormStaticApi().withStatelessSession callable
     }
 
-    /**
-     * Get the thread-local map used to store Errors when validating.
-     * @return the map
-     */
-    static Map<D, Errors> getValidationErrorsMap() {
-        currentGormStaticApi().getValidationErrorsMap()
-    }
-
-    /**
-     * Get the thread-local map used to store whether to skip validation.
-     * @return the map
-     */
-    static Map<D, Boolean> getValidationSkipMap() {
-        currentGormStaticApi().getValidationSkipMap()
-    }
 
     /**
      * Executes a query for the given String

@@ -14,13 +14,9 @@
  */
 package org.grails.datastore.mapping.core;
 
-import org.grails.datastore.mapping.engine.EntityAccess;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.reflect.FastEntityAccess;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.springframework.validation.Errors;
 
 /**
  * The <code>Datastore</code> interface is the basic commom denominator all NoSQL databases should support:
@@ -75,33 +71,6 @@ public interface Datastore {
      */
     ConfigurableApplicationContext getApplicationContext();
 
-    /**
-     * Get the validation errors if available.
-     * @param o the entity
-     * @return the errors or null
-     */
-    Errors getObjectErrors(Object o);
-
-    /**
-     * Register validation errors for an instance.
-     * @param object the instance
-     * @param errors the errors
-     */
-    void setObjectErrors(Object object, Errors errors);
-
-    /**
-     * Check if validation should be skipped.
-     * @param o the instance
-     * @return true to skip
-     */
-    boolean skipValidation(Object o);
-
-    /**
-     * Register that validation should be skipped or not.
-     * @param o the instance
-     * @param skip whether to skip or not
-     */
-    void setSkipValidation(Object o, boolean skip);
 
     /**
      * Whether the datastore is schema-less. That is it allows changes to the schema runtime, dynamic attributes etc.

@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.engine.event.PersistenceEventListener;
 import org.grails.datastore.mapping.engine.event.PreInsertEvent;
 import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -36,6 +37,7 @@ import org.springframework.validation.Validator;
  * @author Graeme Rocher
  * @since 1.0
  */
+@Deprecated
 public class ValidatingEventListener extends AbstractPersistenceEventListener {
 
     public ValidatingEventListener(Datastore datastore) {
@@ -71,10 +73,6 @@ public class ValidatingEventListener extends AbstractPersistenceEventListener {
             return true;
         }
 
-        if (datastore.skipValidation(o)) {
-            return true;
-        }
-
         Session currentSession = datastore.getCurrentSession();
         FlushModeType flushMode = currentSession.getFlushMode();
         try {
@@ -100,6 +98,6 @@ public class ValidatingEventListener extends AbstractPersistenceEventListener {
      * @param errors The errors instance
      */
     protected void onErrors(Object object, Errors errors) {
-        datastore.setObjectErrors(object, errors);
+        datastore.getCurrentSession().setAttribute(object, GormProperties.ERRORS, errors);
     }
 }

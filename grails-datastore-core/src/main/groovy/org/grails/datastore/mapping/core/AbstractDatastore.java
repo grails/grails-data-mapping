@@ -30,7 +30,6 @@ import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.FastClassData;
 import org.grails.datastore.mapping.transactions.SessionHolder;
-import org.grails.datastore.mapping.validation.ValidatingEventListener;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
@@ -41,10 +40,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.util.Assert;
-import org.springframework.validation.Errors;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -58,9 +54,6 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     protected static final Log LOG = LogFactory.getLog(AbstractDatastore.class);
 
     private ApplicationContext applicationContext;
-
-    private static final SoftThreadLocalMap ERRORS_MAP = new SoftThreadLocalMap();
-    private static final SoftThreadLocalMap VALIDATE_MAP = new SoftThreadLocalMap();
 
     protected final MappingContext mappingContext;
     protected final PropertyResolver connectionDetails;
@@ -112,9 +105,6 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     }
 
     public void destroy() throws Exception {
-        ERRORS_MAP.remove();
-        VALIDATE_MAP.remove();
-
         final MetaClassRegistry registry = GroovySystem.getMetaClassRegistry();
         for (PersistentEntity persistentEntity : getMappingContext().getPersistentEntities()) {
             final Class cls = persistentEntity.getJavaClass();
@@ -131,15 +121,6 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
 
     public void setApplicationContext(ApplicationContext ctx) {
         applicationContext = ctx;
-        if (ctx != null && registerValidationListener()) {
-            Assert.isInstanceOf(ConfigurableApplicationContext.class, applicationContext,
-                    "ApplicationContext must be an instanceof ConfigurableApplicationContext");
-            ((ConfigurableApplicationContext)ctx).addApplicationListener(new ValidatingEventListener(this));
-        }
-    }
-
-    protected boolean registerValidationListener() {
-        return true;
     }
 
     public Session connect() {
@@ -252,30 +233,7 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         return getApplicationContext();
     }
 
-    public Errors getObjectErrors(final Object o) {
-        return getValidationErrorsMap().get(System.identityHashCode(o));
-    }
 
-    public void setObjectErrors(Object object, Errors errors) {
-        getValidationErrorsMap().put(System.identityHashCode(object), errors);
-    }
-
-    public void setSkipValidation(final Object o, final boolean skip) {
-        VALIDATE_MAP.get().put(System.identityHashCode(o), skip);
-    }
-
-    public boolean skipValidation(final Object o) {
-        final Object skipValidation = VALIDATE_MAP.get().get(System.identityHashCode(o));
-        return skipValidation instanceof Boolean && (Boolean) skipValidation;
-    }
-
-    public static Map<Object, Errors> getValidationErrorsMap() {
-        return ERRORS_MAP.get();
-    }
-
-    public static Map<Object, Boolean> getValidationSkipMap() {
-        return VALIDATE_MAP.get();
-    }
 
     protected void initializeConverters(MappingContext mappingContext) {
         final ConverterRegistry conversionService = mappingContext.getConverterRegistry();

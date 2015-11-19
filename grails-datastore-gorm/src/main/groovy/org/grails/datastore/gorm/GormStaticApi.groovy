@@ -856,22 +856,6 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         }
     }
 
-    /**
-     * Get the thread-local map used to store Errors when validating.
-     * @return the map
-     */
-    Map<D, Errors> getValidationErrorsMap() {
-        (Map<D, Errors>)AbstractDatastore.getValidationErrorsMap()
-    }
-
-    /**
-     * Get the thread-local map used to store whether to skip validation.
-     * @return the map
-     */
-    Map<D, Boolean> getValidationSkipMap() {
-        (Map<D, Boolean>)AbstractDatastore.getValidationSkipMap()
-    }
-
     List<D> executeQuery(String query) {
         executeQuery(query, Collections.emptyMap(), Collections.emptyMap())
     }

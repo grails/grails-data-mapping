@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import org.grails.datastore.mapping.cassandra.CassandraDatastore;
 import org.grails.datastore.mapping.cassandra.CassandraSession;
 import org.grails.datastore.mapping.cassandra.config.Column;
 import org.grails.datastore.mapping.cassandra.config.Table;
@@ -328,7 +329,7 @@ public class CassandraEntityPersister extends NativeEntryEntityPersister<EntityA
 	}
 
 	protected WriteOptions getWriteOptions(Object entity) {		
-		return getCassandraSession().getCassandraDatastore().getWriteOptions(entity);
+		return (WriteOptions) getCassandraSession().getAttribute(entity, CassandraDatastore.WRITE_OPTIONS);
 	}
 
 	protected String getTableName() {

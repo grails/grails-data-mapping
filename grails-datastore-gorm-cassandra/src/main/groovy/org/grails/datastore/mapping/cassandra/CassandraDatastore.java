@@ -15,16 +15,7 @@
 package org.grails.datastore.mapping.cassandra;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import com.datastax.driver.core.Cluster;
 import org.grails.datastore.gorm.cassandra.mapping.BasicCassandraMappingContext;
 import org.grails.datastore.gorm.cassandra.mapping.MappingCassandraConverter;
 import org.grails.datastore.gorm.cassandra.mapping.TimeZoneToStringConverter;
@@ -32,7 +23,6 @@ import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext;
 import org.grails.datastore.mapping.cassandra.utils.EnumUtil;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.core.SoftThreadLocalMap;
 import org.grails.datastore.mapping.model.DatastoreConfigurationException;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -44,7 +34,6 @@ import org.springframework.cassandra.config.CassandraCqlClusterFactoryBean;
 import org.springframework.cassandra.config.KeyspaceAction;
 import org.springframework.cassandra.config.KeyspaceActionSpecificationFactoryBean;
 import org.springframework.cassandra.config.KeyspaceAttributes;
-import org.springframework.cassandra.core.WriteOptions;
 import org.springframework.cassandra.core.keyspace.KeyspaceActionSpecification;
 import org.springframework.cassandra.core.keyspace.KeyspaceOption.ReplicationStrategy;
 import org.springframework.cassandra.support.CassandraExceptionTranslator;
@@ -55,16 +44,18 @@ import org.springframework.data.cassandra.core.CassandraAdminTemplate;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.util.Assert;
 
-import com.datastax.driver.core.Cluster;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * A Datastore implementation for Cassandra. Uses Spring Data Cassandra Factory
  * beans to create and initialise the Cassandra driver cluster and session
- * 
+ *
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class CassandraDatastore extends AbstractDatastore implements InitializingBean, DisposableBean, MappingContext.Listener {
 
+	public static final String WRITE_OPTIONS = "writeOptions";
 	private static Logger log = LoggerFactory.getLogger(CassandraDatastore.class);
 	// TODO make one keyspace for each session somehow, maybe just do a
 	// different datastore instance?
@@ -93,8 +84,6 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 	protected boolean stateless = false;
 	protected String keyspace;
 	protected boolean developmentMode = false;
-	
-	private static final SoftThreadLocalMap PERSISTENCE_OPTIONS_MAP = new SoftThreadLocalMap();
 
 	public CassandraDatastore() {
 		this(new CassandraMappingContext(), Collections.<String, Object> emptyMap(), null);
@@ -303,38 +292,19 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 		cassandraSessionFactoryBean.createTable(cls);
 	}
 
-	public void setWriteOptions(final Object o, WriteOptions writeOptions) {
-		if (o != null && writeOptions != null) {
-			getPersistenceOptionsMap(o).put("writeOptions", writeOptions);
-		}
-	}
-
-	public WriteOptions getWriteOptions(final Object o) {
-		return (WriteOptions) getPersistenceOptionsMap(o).get("writeOptions");
-	}
 
 	@Override
 	public void destroy() throws Exception {
 		super.destroy();
-		PERSISTENCE_OPTIONS_MAP.remove();
 		if (cassandraSessionFactoryBean != null) {
 			cassandraSessionFactoryBean.destroy();
 		}
-		if (cassandraCqlClusterFactoryBean != null) {				
+		if (cassandraCqlClusterFactoryBean != null) {
 			cassandraCqlClusterFactoryBean.destroy();
 		}
 	}
 
 
-	private Map<String, Object> getPersistenceOptionsMap(final Object o) {
-		Map<String, Object> persistenceOptionsMap = (Map<String, Object>) PERSISTENCE_OPTIONS_MAP.get().get(System.identityHashCode(o));
-		if (persistenceOptionsMap == null) {
-			persistenceOptionsMap = new HashMap<String, Object>();
-			PERSISTENCE_OPTIONS_MAP.get().put(System.identityHashCode(o), persistenceOptionsMap);
-		}
-		return persistenceOptionsMap;
-	}
-	
 	private KeyspaceAction readKeyspaceAction() {
 		Map<String, KeyspaceAction> keyspaceActionMap = new HashMap<String, KeyspaceAction>();
 		keyspaceActionMap.put("create", KeyspaceAction.CREATE);

@@ -107,10 +107,6 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         return sessionFactory;
     }
 
-    @Override
-    protected boolean registerValidationListener() {
-        return false;
-    }
 
     // for testing
     public AbstractEventTriggeringInterceptor getEventTriggeringInterceptor() {

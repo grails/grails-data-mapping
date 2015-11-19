@@ -2,7 +2,6 @@ package grails.gorm.tests
 
 import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.validation.ValidatingEventListener
 import org.springframework.validation.Validator
 
 import spock.lang.Ignore
@@ -33,9 +32,6 @@ class ValidationSpec extends GormDatastoreSpec {
     }
 
     void "Test disable validation"() {
-        session.datastore.applicationContext.addApplicationListener(
-           new ValidatingEventListener(session.datastore))
-
         // test assumes name cannot be blank
         given:
             def t
