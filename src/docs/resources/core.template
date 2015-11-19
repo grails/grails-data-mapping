@@ -12,7 +12,7 @@
     <meta charset='utf-8'/>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'/>
     <meta name='viewport' content='width=device-width, initial-scale=1'/>
-    <title>The Grails Framework</title>
+    <title>GORM for Grails</title>
     <link href='img/favicon.ico' type='image/x-ico' rel='icon'/>
     <link rel='stylesheet' type='text/css' href='css/bootstrap.css'/>
     <link rel='stylesheet' type='text/css' href='css/font-awesome.min.css'/>
