@@ -141,9 +141,9 @@ In general you can refer to the <a href="http://grails.org/doc/latest/guide/GORM
 
 <h1 id="2. Getting Started">2 Getting Started</h1>
 To get started with GORM for Cassandra you need configure it as a dependency in <code>build.gradle</code>:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
-    compile 'org.grails.plugins:cassandra'
+    compile 'org.grails.plugins:cassandra:VERSION'
 &#125;</pre></div><p class="paragraph"/>Note that if you get exceptions during startup or execution for newer versions of Grails 3.x (3.1 and above) you may need to enforce the dependencies:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
-    compile 'org.grails.plugins:cassandra'
+    compile 'org.grails.plugins:cassandra:VERSION'
     compile(<span class="java&#45;quote">"com.datastax.cassandra:cassandra&#45;driver&#45;core:2.0.4"</span>)
     compile <span class="java&#45;quote">"org.springframework.data:spring&#45;data&#45;commons:1.8.4.RELEASE"</span>
     compile(<span class="java&#45;quote">"org.springframework.data:spring&#45;data&#45;cassandra:1.0.4.RELEASE"</span>) &#123;
@@ -155,11 +155,12 @@ Once installed, starting Cassandra is typically a matter of executing the follow
 INFO 00:11:17,013 Using TFramedTransport with a max frame size of 15728640 bytes.
 INFO 00:11:17,014 Binding thrift service to localhost/127.0.0.1:9160
 INFO 00:11:17,042 Using synchronous/threadpool thrift server on localhost : 9160
-INFO 00:11:17,042 Listening <span class="java&#45;keyword">for</span> thrift clients...</pre></div><p class="paragraph"/>As you can see the server listens for CQL clients on port 9042, but don't worry the Cassandra plugin for Grails will automatically configure itself to look for Cassandra on that port by default.<p class="paragraph"/>If you want to configure how Grails connects to Cassandra then you can do so using the following settings in <code>grails-app/conf/application.groovy</code>:<p class="paragraph"/><div class="code"><pre>grails &#123;
-    cassandra &#123;  
-        contactPoints = <span class="java&#45;quote">"localhost"</span> 
-        port = 9042 
-        keyspace.name = <span class="java&#45;quote">"foo"</span> 		
+INFO 00:11:17,042 Listening <span class="java&#45;keyword">for</span> thrift clients...</pre></div><p class="paragraph"/>As you can see the server listens for CQL clients on port 9042, but don't worry the Cassandra plugin for Grails will automatically configure itself to look for Cassandra on that port by default.<p class="paragraph"/>If you want to configure how Grails connects to Cassandra then you can do so using the following settings in <code>grails-app/conf/application.yml</code>:<p class="paragraph"/><div class="code"><pre>grails:
+    cassandra:
+        contactPoints: localhost
+        port: 9042
+        keyspace:
+            name: foo
     &#125;
 &#125;</pre></div>
 
@@ -231,14 +232,14 @@ property as a <code>Long</code> won't really work for Cassandra. You also need t
             name = <span class="java&#45;quote">"foo"</span> //the name of the keyspace to use, <span class="java&#45;keyword">default</span>: the name of the application
             action = <span class="java&#45;quote">"create"</span> //whether to create a keyspace, <span class="java&#45;keyword">default</span>: no keyspace created<p class="paragraph"/>            //keyspace properties to set only <span class="java&#45;keyword">if</span> the plugin is to create the keyspace         			
             durableWrites = <span class="java&#45;keyword">false</span> //<span class="java&#45;keyword">default</span>: <span class="java&#45;keyword">false</span>                        
-            replicationStrategy = <span class="java&#45;quote">"SimpleStrategy"</span> OR <span class="java&#45;quote">"NetworkTopologyStrategy"</span> //<span class="java&#45;keyword">default</span>: <span class="java&#45;quote">"SimpleStrategy"</span>             
+            replicationStrategy = <span class="java&#45;quote">"SIMPLE_STRATEGY"</span> OR <span class="java&#45;quote">"NETWORK_TOPOLOGY_STRATEGY"</span> //<span class="java&#45;keyword">default</span>: <span class="java&#45;quote">"SIMPLE_STRATEGY"</span>
             replicationFactor = 1 //<span class="java&#45;keyword">default</span>: 1                        
             dataCenter = &#91;<span class="java&#45;quote">"us&#45;west"</span>:1, <span class="java&#45;quote">"eu&#45;west"</span>:2&#93; //<span class="java&#45;keyword">if</span> replicationStrategy is <span class="java&#45;quote">"NetworkTopologyStrategy"</span>,
                                                     //a map of data centre names and replication factors
         &#125;
     &#125;
 &#125;</pre></div><p class="paragraph"/>
-<h4>Global Mapping Configuration</h4><p class="paragraph"/>Using the <code>grails.cassandra.default.mapping</code> setting in <code>Config.groovy</code> you can configure global mapping options across your domain classes. 
+<h4>Global Mapping Configuration</h4><p class="paragraph"/>Using the <code>grails.cassandra.default.mapping</code> setting in <code>application.groovy</code> you can configure global mapping options across your domain classes.
 The following configuration will disable optimistic locking globally:<p class="paragraph"/><div class="code"><pre>grails.cassandra.<span class="java&#45;keyword">default</span>.mapping = &#123;
     version <span class="java&#45;keyword">false</span>    
 &#125;</pre></div>

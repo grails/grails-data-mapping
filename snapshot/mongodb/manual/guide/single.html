@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>GORM for Mongo 5.0.0.BUILD-SNAPSHOT</title>
+        <title>GORM for MongoDB 5.0.0.BUILD-SNAPSHOT</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
@@ -23,17 +23,21 @@ function addJsClass(el) {
                         <a href="../guide/index.html" class="button">Table of contents</a>
                         <div id="nav-summary-childs" style="display:none;">
                             
-                            <div class="toc-item" style="margin-left:0"><a href="#1.%20Introduction"><strong>1</strong><span>Introduction</span></a></div>
+                            <div class="toc-item" style="margin-left:0"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0"><a href="#2.%20Getting%20Started"><strong>2</strong><span>Getting Started</span></a></div>
+                            <div class="toc-item" style="margin-left:0"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0"><a href="#3.%20Mapping%20Domain%20Classes%20to%20MongoDB%20Collections"><strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span></a></div>
+                            <div class="toc-item" style="margin-left:0"><a href="#objectMapping"><strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0"><a href="#4.%20Low-level%20API"><strong>4</strong><span>Low-level API</span></a></div>
+                            <div class="toc-item" style="margin-left:0"><a href="#databaseSwitching"><strong>4</strong><span>Switching Database or Collection at Runtime</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0"><a href="#5.%20Transactions"><strong>5</strong><span>Transactions</span></a></div>
+                            <div class="toc-item" style="margin-left:0"><a href="#stateless"><strong>5</strong><span>Stateless Mode</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0"><a href="#6.%20Unit%20Testing"><strong>6</strong><span>Unit Testing</span></a></div>
+                            <div class="toc-item" style="margin-left:0"><a href="#lowLevelApi"><strong>6</strong><span>Using the Mongo Driver Directly</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#transactions"><strong>7</strong><span>Transactions</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#testing"><strong>8</strong><span>Unit Testing</span></a></div>
                             
                         </div>
                     </div>
@@ -60,7 +64,7 @@ function addJsClass(el) {
                         <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                         <div class="project">
-                            <h1>GORM for Mongo - Reference Documentation</h1>
+                            <h1>GORM for MongoDB - Reference Documentation</h1>
                             <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
                             <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
                             
@@ -70,60 +74,62 @@ function addJsClass(el) {
                         <div id="table-of-content">
                             <h2>Table of Contents</h2>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#1.%20Introduction"><strong>1</strong><span>Introduction</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#1.1%20Compatibility%20with%20GORM%20for%20Hibernate"><strong>1.1</strong><span>Compatibility with GORM for Hibernate</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#compatibility"><strong>1.1</strong><span>Compatibility with GORM for Hibernate</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#1.2%20Release%20Notes"><strong>1.2</strong><span>Release Notes</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#releaseNotes"><strong>1.2</strong><span>Release Notes</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#2.%20Getting%20Started"><strong>2</strong><span>Getting Started</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#upgradeNotes"><strong>1.3</strong><span>Upgrade Notes</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#2.1%20Using%20MongoDB%20Standalone"><strong>2.1</strong><span>Using MongoDB Standalone</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#2.2%20Combining%20MongoDB%20and%20Hibernate"><strong>2.2</strong><span>Combining MongoDB and Hibernate</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#mongoOnly"><strong>2.1</strong><span>Using MongoDB Standalone</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#2.3%20Advanced%20Configuration"><strong>2.3</strong><span>Advanced Configuration</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#withHibernate"><strong>2.2</strong><span>Combining MongoDB and Hibernate</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#2.4%20GORM%20for%20MongoDB%20without%20Grails"><strong>2.4</strong><span>GORM for MongoDB without Grails</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#advancedConfig"><strong>2.3</strong><span>Advanced Configuration</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#3.%20Mapping%20Domain%20Classes%20to%20MongoDB%20Collections"><strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#outsideGrails"><strong>2.4</strong><span>GORM for MongoDB without Grails</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.1%20Identity%20Generation"><strong>3.1</strong><span>Identity Generation</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#objectMapping"><strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.2%20Indexing%20Queries"><strong>3.2</strong><span>Indexing Queries</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#idGeneration"><strong>3.1</strong><span>Identity Generation</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.3%20Customizing%20the%20WriteConcern"><strong>3.3</strong><span>Customizing the WriteConcern</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#queryIndexes"><strong>3.2</strong><span>Querying Indexing</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.4%20Dynamic%20Attributes"><strong>3.4</strong><span>Dynamic Attributes</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#writeConcern"><strong>3.3</strong><span>Customizing the WriteConcern</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.5%20Dynamic%20Database%20or%20Collection%20Switching"><strong>3.5</strong><span>Dynamic Database or Collection Switching</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#dynamicAttributes"><strong>3.4</strong><span>Dynamic Attributes</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.6%20Geospacial%20Querying"><strong>3.6</strong><span>Geospacial Querying</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#geoSpatial"><strong>3.5</strong><span>Geospacial Querying</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:20px"><a href="#3.6.1%20Geospacial%202d%20Index%20Support"><strong>3.6.1</strong><span>Geospacial 2d Index Support</span></a></div>
+                            <div class="toc-item" style="margin-left:20px"><a href="#2dsphere"><strong>3.5.1</strong><span>Geospacial 2D Sphere Support</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:20px"><a href="#3.6.2%20Geospacial%202dsphere%20Index%20Support"><strong>3.6.2</strong><span>Geospacial 2dsphere Index Support</span></a></div>
+                            <div class="toc-item" style="margin-left:20px"><a href="#2dindex"><strong>3.5.2</strong><span>Geospacial 2D Index Support</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:20px"><a href="#3.6.3%20GeoJSON%20Data%20Models"><strong>3.6.3</strong><span>GeoJSON Data Models</span></a></div>
+                            <div class="toc-item" style="margin-left:20px"><a href="#geoJson"><strong>3.5.3</strong><span>GeoJSON Data Models</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.7%20Full%20Text%20Search"><strong>3.7</strong><span>Full Text Search</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#textSearch"><strong>3.6</strong><span>Full Text Search</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.8%20Custom%20User%20Types"><strong>3.8</strong><span>Custom User Types</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#customTypes"><strong>3.7</strong><span>Custom User Types</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.9%20Stateful%20vs.%20Stateless%20Domain%20Classes"><strong>3.9</strong><span>Stateful vs. Stateless Domain Classes</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#databaseSwitching"><strong>4</strong><span>Switching Database or Collection at Runtime</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#4.%20Low-level%20API"><strong>4</strong><span>Low-level API</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#stateless"><strong>5</strong><span>Stateless Mode</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#5.%20Transactions"><strong>5</strong><span>Transactions</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#lowLevelApi"><strong>6</strong><span>Using the Mongo Driver Directly</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#6.%20Unit%20Testing"><strong>6</strong><span>Unit Testing</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#transactions"><strong>7</strong><span>Transactions</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#testing"><strong>8</strong><span>Unit Testing</span></a></div>
                             
                             <div style="clear:both" ></div>
                         </div>
                         
                         
 
-<h1 id="1. Introduction">1 Introduction</h1>
+<h1 id="introduction">1 Introduction</h1>
 MongoDB bridges the gap between key-value stores (which are fast and highly scalable) and traditional RDBMS systems (which provide rich queries and deep functionality).<p class="paragraph"/>MongoDB (from "humongous") is a scalable, high-performance, open source, document-oriented database.<p class="paragraph"/>This project aims to provide an object-mapping layer on top of Mongo to ease common activities such as:
 <ul class="star">
 <li>Marshalling from Mongo to Groovy/Java types and back again</li>
@@ -133,7 +139,7 @@ MongoDB bridges the gap between key-value stores (which are fast and highly scal
 </ul><p class="paragraph"/>
 
 
-<h2 id="1.1 Compatibility with GORM for Hibernate">1.1 Compatibility with GORM for Hibernate</h2>
+<h2 id="compatibility">1.1 Compatibility with GORM for Hibernate</h2>
 This implementation tries to be as compatible as possible with GORM for Hibernate. In general you can refer to the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html" target="blank">GORM documentation</a> and the "Domain Classes" section of the <a href="http://grails.org/doc/latest/" target="blank">reference guide</a> (see the right nav) for usage information.<p class="paragraph"/>The following key features are supported by GORM for Mongo:
 <ul class="star">
 <li>Simple persistence methods</li>
@@ -154,7 +160,7 @@ This implementation tries to be as compatible as possible with GORM for Hibernat
 
 
 
-<h2 id="1.2 Release Notes">1.2 Release Notes</h2>
+<h2 id="releaseNotes">1.2 Release Notes</h2>
 Below are the details of the changes across releases:<p class="paragraph"/><h4>5.0</h4>
 <ul class="star">
 <li>MongoDB 3.x driver support</li>
@@ -195,7 +201,15 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 </ul><p class="paragraph"/>
 
 
-<h1 id="2. Getting Started">2 Getting Started</h1>
+<h2 id="upgradeNotes">1.3 Upgrade Notes</h2>
+Since GORM for MongoDB 5.0 there is now a choice of persistence engine. The origin GORM for MongoDB converted MongoDB documents to and from Groovy objects. This engine is still present and can be activated with the following configuration in <code>grails-app/conf/application.yml</code>:<p class="paragraph"/><div class="code"><pre>grails:
+    mongodb:
+        engine: mapping</pre></div><p class="paragraph"/>However, 5.0 and above uses a new engine based on MongoDB 3.x driver codecs which means objects are no longer converted first to MongoDB Document objects and then to Groovy objects, instead the driver reads Groovy objects directly from the JSON stream at the driver level, which is far more efficient, however may not exhibit exactly the same behaviour as the previous version. To active this new engine use the following codec (or leave it blank as the codec engine is now the default):<p class="paragraph"/><div class="code"><pre>grails:
+    mongodb:
+        engine: codec</pre></div>
+
+
+<h1 id="gettingStarted">2 Getting Started</h1>
 To get started with GORM for Mongo you need configure it as a dependency in <code>build.gradle</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
 	compile 'org.grails.plugins:mongodb:VERSION'
 &#125;</pre></div><p class="paragraph"/>With that done you need to set up a running MongoDB server. Refer to the <a href="https://docs.mongodb.org/manual/" target="blank">MongoDB Documentation</a> for an explanation on how to startup a Mongo instance. Once installed, starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above command executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>2015&#45;11&#45;18T19:38:50.073+0100 I JOURNAL  &#91;initandlisten&#93; journal dir=/data/db/journal
@@ -222,17 +236,17 @@ To get started with GORM for Mongo you need configure it as a dependency in <cod
 
 
 
-<h2 id="2.1 Using MongoDB Standalone">2.1 Using MongoDB Standalone</h2>
+<h2 id="mongoOnly">2.1 Using MongoDB Standalone</h2>
 If you plan to use MongoDB as your primary datastore then you need to remove the Hibernate plugin from the <code>build.gradle</code> file by commenting out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile 'org.grails.plugins:hibernate'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via MongoDB and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in MongoDB.
 
 
 
-<h2 id="2.2 Combining MongoDB and Hibernate">2.2 Combining MongoDB and Hibernate</h2>
+<h2 id="withHibernate">2.2 Combining MongoDB and Hibernate</h2>
 If you have both the Hibernate and Mongo plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Mongo. If you want to persist a particular domain class with Mongo then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"mongo"</span></pre></div><p class="paragraph"/>
 
 
 
-<h2 id="2.3 Advanced Configuration">2.3 Advanced Configuration</h2>
+<h2 id="advancedConfig">2.3 Advanced Configuration</h2>
 <h4>Mongo Database Connection Configuration</h4><p class="paragraph"/>As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the <code>grails-app/conf/application.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
     mongo &#123;
         host = <span class="java&#45;quote">"localhost"</span>
@@ -293,14 +307,14 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
         &#125;
     &#125;
 &#125;</pre></div><p class="paragraph"/>
-<h4>Global Mapping Configuration</h4><p class="paragraph"/>Using the <code>grails.mongo.default.mapping</code> setting in <code>Config.groovy</code> you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use <code>DBRefs</code> in your association mappings. For example, the following configuration will disable optimistic locking globally and use <code>DBRefs</code> for all properties:<p class="paragraph"/><div class="code"><pre>grails.mongo.<span class="java&#45;keyword">default</span>.mapping = &#123;
+<h4>Global Mapping Configuration</h4><p class="paragraph"/>Using the <code>grails.mongo.default.mapping</code> setting in <code>grails-app/conf/application.groovy</code> you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use <code>DBRefs</code> in your association mappings. For example, the following configuration will disable optimistic locking globally and use <code>DBRefs</code> for all properties:<p class="paragraph"/><div class="code"><pre>grails.mongo.<span class="java&#45;keyword">default</span>.mapping = &#123;
     version <span class="java&#45;keyword">false</span>
     '&#42;'(reference:<span class="java&#45;keyword">true</span>)
 &#125;</pre></div><p class="paragraph"/>The <code>*</code> method is used to indicate that the setting applies to all properties.
 
 
 
-<h2 id="2.4 GORM for MongoDB without Grails">2.4 GORM for MongoDB without Grails</h2>
+<h2 id="outsideGrails">2.4 GORM for MongoDB without Grails</h2>
 If you wish to use GORM for MongoDB outside of a Grails application you should declare the necessary dependencies, for example in Gradle:<p class="paragraph"/><div class="code"><pre>compile <span class="java&#45;quote">"org.grails:grails&#45;datastore&#45;gorm&#45;mongodb:VERSION"</span></pre></div><p class="paragraph"/>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation:<p class="paragraph"/><div class="code"><pre>@Entity
 class Person &#123;
     <span class="java&#45;object">String</span> name
@@ -311,7 +325,7 @@ def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpri
 initializer.configureForBeanDefinitionRegistry(myApplicationContext)<p class="paragraph"/>println Person.count()</pre></div>
 
 
-<h1 id="3. Mapping Domain Classes to MongoDB Collections">3 Mapping Domain Classes to MongoDB Collections</h1>
+<h1 id="objectMapping">3 Mapping Domain Classes to MongoDB Collections</h1>
 <h4>Basic Mapping</h4><p class="paragraph"/>The way GORM for Mongo works is to map each domain class to a Mongo collection. For example given a domain class such as:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     <span class="java&#45;object">String</span> firstName
     <span class="java&#45;object">String</span> lastName
@@ -356,7 +370,7 @@ initializer.configureForBeanDefinitionRegistry(myApplicationContext)<p class="pa
 
 
 
-<h2 id="3.1 Identity Generation">3.1 Identity Generation</h2>
+<h2 id="idGeneration">3.1 Identity Generation</h2>
 By default in GORM entities are supplied with an integer-based identifier. So for example the following entity:<p class="paragraph"/><div class="code"><pre>class Person &#123;&#125;</pre></div><p class="paragraph"/>Has a property called <code>id</code> of type <code>java.lang.Long</code>. In this case GORM for Mongo will generate a sequence based identifier using the technique <a href="http://docs.mongodb.org/manual/tutorial/isolate-sequence-of-operations/" target="blank">described in the Mongo documentation</a> on Atomic operations.<p class="paragraph"/>However, sequence based integer identifiers are not ideal for environments that require <a href="http://docs.mongodb.org/manual/sharding/" target="blank">sharding</a> (one of the nicer features of Mongo). Hence it is generally advised to use either String based ids:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     <span class="java&#45;object">String</span> id
 &#125;</pre></div><p class="paragraph"/>Or a native BSON <a href="http://api.mongodb.org/java/current/org/bson/types/ObjectId.html" target="blank">ObjectId</a>:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> org.bson.types.ObjectId<p class="paragraph"/>class Person &#123;
@@ -372,7 +386,7 @@ p.insert()
 p.save()</pre></div>
 
 
-<h2 id="3.2 Indexing Queries">3.2 Indexing Queries</h2>
+<h2 id="queryIndexes">3.2 Querying Indexing</h2>
 <h4>Basics</h4><p class="paragraph"/>MongoDB doesn't require that you specify indices to query, but like a relational database without specifying indices your queries will be significantly slower.<p class="paragraph"/>With that in mind it is important to specify the properties you plan to query using the mapping block:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> mapping = &#123;
@@ -396,7 +410,7 @@ p.save()</pre></div>
 &#125;</pre></div><p class="paragraph"/>In the above example I define an index on an embedded attribtue of the document. In fact what arguments you pass to the <code>index</code> method get passed to the underlying MongoDB <a href="http://api.mongodb.org/java/2.12/com/mongodb/DBCollection.html#createIndex(com.mongodb.DBObject,%20com.mongodb.DBObject)" target="blank">createIndex</a> method.
 
 
-<h2 id="3.3 Customizing the WriteConcern">3.3 Customizing the WriteConcern</h2>
+<h2 id="writeConcern">3.3 Customizing the WriteConcern</h2>
 A feature of MongoDB is its ability to customize how important a database write is to the user. The Java client models this as a <a href="http://api.mongodb.org/java/current/com/mongodb/WriteConcern.html" target="blank">WriteConcern</a> and there are various options that indicate whether the client cares about server or network errors, or whether the data has been successfully written or not.<p class="paragraph"/>If you wish to customize the <code>WriteConcern</code> for a domain class you can do so in the mapping block:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> com.mongodb.WriteConcern<p class="paragraph"/>class Person &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> mapping = &#123;
@@ -407,7 +421,7 @@ For versioned entities, if a lower level of WriteConcern than WriteConcern.ACKNO
 </blockquote>
 
 
-<h2 id="3.4 Dynamic Attributes">3.4 Dynamic Attributes</h2>
+<h2 id="dynamicAttributes">3.4 Dynamic Attributes</h2>
 Unlike a relational database, MongoDB allows for "schemaless" persistence where there are no limits to the number of attributes a particular document can have. A GORM domain class on the other hand has a schema in that there are a fixed number of properties. For example consider the following domain class:<p class="paragraph"/><div class="code"><pre>class Plant &#123;
     <span class="java&#45;object">boolean</span> goesInPatch
     <span class="java&#45;object">String</span> name
@@ -418,46 +432,11 @@ p.save()<p class="paragraph"/>p = Plant.findByName(<span class="java&#45;quote">
 println p&#91;'hasLeaves'&#93;</pre></div><p class="paragraph"/>Using the subscript operator you can add additional attributes to the underlying <code>DBObject</code> instance that gets persisted to the MongoDB allowing for more dynamic domain models.
 
 
-<h2 id="3.5 Dynamic Database or Collection Switching">3.5 Dynamic Database or Collection Switching</h2>
-In addition to storing dynamic attributes, as of version 1.3.0 of the plugin you can also switch which database and/or collection to persist to at runtime.<p class="paragraph"/>For example:<p class="paragraph"/><div class="code"><pre>Person.withDatabase(<span class="java&#45;quote">"administrators"</span>) &#123;
-    <span class="java&#45;keyword">new</span> Person(name:<span class="java&#45;quote">"Bob"</span>).save()
-&#125;</pre></div><p class="paragraph"/>The above example will save a <code>Person</code> instance to the 'administrators' database. The database is used for the scope of the closure. You can switch database for the scope of the active session:<p class="paragraph"/><div class="code"><pre>Person.useDatabase(<span class="java&#45;quote">"administrators"</span>) 
-<span class="java&#45;keyword">new</span> Person(name:<span class="java&#45;quote">"Bob"</span>).save()</pre></div><p class="paragraph"/>In addition, there are equivalent <code>withCollection</code> and <code>useCollection</code> methods for switching collection at runtime.
-
-
-
-<h2 id="3.6 Geospacial Querying">3.6 Geospacial Querying</h2>
+<h2 id="geoSpatial">3.5 Geospacial Querying</h2>
 MongoDB supports storing <a href="http://docs.mongodb.org/manual/applications/geospatial-indexes/" target="blank">Geospacial data</a> in both flat and spherical surface types.<p class="paragraph"/>To store data in a flat surface you use a "2d" index, whilst a "2dsphere" index used for spherical data. GORM for MongoDB supports both and the following sections describe how to define and query Geospacial data.<p class="paragraph"/>
 
 
-<h2 id="3.6.1 Geospacial 2d Index Support">3.6.1 Geospacial 2d Index Support</h2>
-MongoDB supports <a href="http://docs.mongodb.org/manual/core/2d/" target="blank">2d indexes</a> that store points on a two-dimensional plane.<p class="paragraph"/>It is possible to use a MongoDB 2d index by mapping a list or map property using the <code>geoIndex</code> mapping:<p class="paragraph"/><div class="code"><pre>class Hotel &#123;
-    <span class="java&#45;object">String</span> name
-    List location<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
-        location geoIndex:'2d'
-    &#125;
-&#125;</pre></div><p class="paragraph"/>By default the index creation assumes latitude/longitude and thus is configured for a -180..180 range. If you are indexing something else you can customise this with <code>indexAttributes</code><p class="paragraph"/><div class="code"><pre>class Hotel &#123;
-    <span class="java&#45;object">String</span> name
-    List location<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
-        location geoIndex:'2d', indexAttributes:&#91;min:&#45;500, max:500&#93;
-    &#125;
-&#125;</pre></div><p class="paragraph"/>You can then save Geo locations using a two dimensional list:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">new</span> Hotel(name:<span class="java&#45;quote">"Hilton"</span>, location:&#91;50, 50&#93;).save()</pre></div><p class="paragraph"/>Alternatively you can use a map with keys representing latitude and longitude:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">new</span> Hotel(name:<span class="java&#45;quote">"Hilton"</span>, location:&#91;lat: 40.739037d, <span class="java&#45;object">long</span>: 73.992964d&#93;).save()</pre></div><p class="paragraph"/><blockquote class="note">
-You must specify whether the number of a floating point or double by adding a 'd' or 'f' at the end of the number eg. 40.739037d. Groovy's default type for decimal numbers is <code>BigDecimal</code> which is not supported by MongoDB.
-</blockquote><p class="paragraph"/>Once you have your data indexed you can use Mongo specific dynamic finders to find hotels near a given a location:<p class="paragraph"/><div class="code"><pre>def h = Hotel.findByLocationNear(&#91;50, 60&#93;)
-assert h.name == 'Hilton'</pre></div><p class="paragraph"/>You can also find a location within a box (bound queries). Boxes are defined by specifying the lower-left and upper-right corners:<p class="paragraph"/><div class="code"><pre>def box = &#91;&#91;40.73083d, &#45;73.99756d&#93;, &#91;40.741404d,  &#45;73.988135d&#93;&#93;
-def h = Hotel.findByLocationWithinBox(box)</pre></div><p class="paragraph"/>You can also find a location within a circle. Circles are specified using a center and radius:<p class="paragraph"/><div class="code"><pre>def center = &#91;50, 50&#93;
-def radius = 10
-def h = Hotel.findByLocationWithinCircle(&#91;center, radius&#93;)</pre></div><p class="paragraph"/>If you plan on querying a location and some other value it is recommended to use a compound index:<p class="paragraph"/><div class="code"><pre>class Hotel &#123;
-    <span class="java&#45;object">String</span> name
-    List location
-    <span class="java&#45;object">int</span> stars<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
-        compoundIndex location:<span class="java&#45;quote">"2d"</span>, stars:1
-    &#125;
-&#125;</pre></div><p class="paragraph"/>In the example above you an index is created for both the location and the number of stars a <code>Hotel</code> has.
-
-
-
-<h2 id="3.6.2 Geospacial 2dsphere Index Support">3.6.2 Geospacial 2dsphere Index Support</h2>
+<h2 id="2dsphere">3.5.1 Geospacial 2D Sphere Support</h2>
 <h4>Using a 2dsphere Index</h4><p class="paragraph"/>MongoDB's <a href="http://docs.mongodb.org/manual/core/2dsphere/" target="blank">2dsphere indexes</a> support queries that calculate geometries on an earth-like sphere.<p class="paragraph"/>Although you can use coordinate pairs in a 2dsphere index, they are considered legacy by the MongoDB documentation and it is recommended you store data using <a href="http://geojson.org/geojson-spec.html#id2" target="blank">GeoJSON Point</a> types.<p class="paragraph"/><blockquote class="warning">
 MongoDB legacy coordinate pairs are in latitude / longitude order, whilst GeoJSON points are stored in longitude / latitude order!
 </blockquote><p class="paragraph"/>To support this GORM for MongoDB features a special type, <code>grails.mongodb.geo.Point</code>, that can be use within domain classes to store geospacial data:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.mongodb.geo.&#42;
@@ -484,7 +463,34 @@ There is a special <code>Distance</code> class that can help with radian calcula
 
 
 
-<h2 id="3.6.3 GeoJSON Data Models">3.6.3 GeoJSON Data Models</h2>
+<h2 id="2dindex">3.5.2 Geospacial 2D Index Support</h2>
+MongoDB supports <a href="http://docs.mongodb.org/manual/core/2d/" target="blank">2d indexes</a> that store points on a two-dimensional plane.<p class="paragraph"/>It is possible to use a MongoDB 2d index by mapping a list or map property using the <code>geoIndex</code> mapping:<p class="paragraph"/><div class="code"><pre>class Hotel &#123;
+    <span class="java&#45;object">String</span> name
+    List location<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+        location geoIndex:'2d'
+    &#125;
+&#125;</pre></div><p class="paragraph"/>By default the index creation assumes latitude/longitude and thus is configured for a -180..180 range. If you are indexing something else you can customise this with <code>indexAttributes</code><p class="paragraph"/><div class="code"><pre>class Hotel &#123;
+    <span class="java&#45;object">String</span> name
+    List location<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+        location geoIndex:'2d', indexAttributes:&#91;min:&#45;500, max:500&#93;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>You can then save Geo locations using a two dimensional list:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">new</span> Hotel(name:<span class="java&#45;quote">"Hilton"</span>, location:&#91;50, 50&#93;).save()</pre></div><p class="paragraph"/>Alternatively you can use a map with keys representing latitude and longitude:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">new</span> Hotel(name:<span class="java&#45;quote">"Hilton"</span>, location:&#91;lat: 40.739037d, <span class="java&#45;object">long</span>: 73.992964d&#93;).save()</pre></div><p class="paragraph"/><blockquote class="note">
+You must specify whether the number of a floating point or double by adding a 'd' or 'f' at the end of the number eg. 40.739037d. Groovy's default type for decimal numbers is <code>BigDecimal</code> which is not supported by MongoDB.
+</blockquote><p class="paragraph"/>Once you have your data indexed you can use Mongo specific dynamic finders to find hotels near a given a location:<p class="paragraph"/><div class="code"><pre>def h = Hotel.findByLocationNear(&#91;50, 60&#93;)
+assert h.name == 'Hilton'</pre></div><p class="paragraph"/>You can also find a location within a box (bound queries). Boxes are defined by specifying the lower-left and upper-right corners:<p class="paragraph"/><div class="code"><pre>def box = &#91;&#91;40.73083d, &#45;73.99756d&#93;, &#91;40.741404d,  &#45;73.988135d&#93;&#93;
+def h = Hotel.findByLocationWithinBox(box)</pre></div><p class="paragraph"/>You can also find a location within a circle. Circles are specified using a center and radius:<p class="paragraph"/><div class="code"><pre>def center = &#91;50, 50&#93;
+def radius = 10
+def h = Hotel.findByLocationWithinCircle(&#91;center, radius&#93;)</pre></div><p class="paragraph"/>If you plan on querying a location and some other value it is recommended to use a compound index:<p class="paragraph"/><div class="code"><pre>class Hotel &#123;
+    <span class="java&#45;object">String</span> name
+    List location
+    <span class="java&#45;object">int</span> stars<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+        compoundIndex location:<span class="java&#45;quote">"2d"</span>, stars:1
+    &#125;
+&#125;</pre></div><p class="paragraph"/>In the example above you an index is created for both the location and the number of stars a <code>Hotel</code> has.
+
+
+
+<h2 id="geoJson">3.5.3 GeoJSON Data Models</h2>
 You can also store any GeoJSON shape using the <code>grails.mongodb.geo.Shape</code> super class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.mongodb.geo.&#42;
 &#8230;
 class Entry &#123;
@@ -501,7 +507,7 @@ assert Entry.findByShapeGeoIntersects( LineString.valueOf( &#91;&#91;1,4&#93;, &
 
 
 
-<h2 id="3.7 Full Text Search">3.7 Full Text Search</h2>
+<h2 id="textSearch">3.6 Full Text Search</h2>
 Using MongoDB 2.6 and above you can create <a href="http://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text" target="blank">full text search</a> indices.<p class="paragraph"/>To create a "text" index using the <code>index</code> method inside the <code>mapping</code> block:<p class="paragraph"/><div class="code"><pre>class Product &#123;
     ObjectId id
     <span class="java&#45;object">String</span> title<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
@@ -512,7 +518,7 @@ assert Product.search(<span class="java&#45;quote">"bake coffee &#45;cake"</span
 assert Product.searchTop(<span class="java&#45;quote">"cake"</span>,3).size() == 3</pre></div><p class="paragraph"/>And count the number of hits with the <code>countHits</code> method:<p class="paragraph"/><div class="code"><pre>assert Product.countHits('coffee') == 5</pre></div>
 
 
-<h2 id="3.8 Custom User Types">3.8 Custom User Types</h2>
+<h2 id="customTypes">3.7 Custom User Types</h2>
 GORM for MongoDB will persist all common known Java types like String, Integer, URL etc., however if you want to persist one of your own classes that is not a domain class you can implement a custom user type.<p class="paragraph"/>For example consider the following class:<p class="paragraph"/><div class="code"><pre>class Birthday <span class="java&#45;keyword">implements</span> Comparable&#123;
     Date date<p class="paragraph"/>    Birthday(Date date) &#123;
         <span class="java&#45;keyword">this</span>.date = date
@@ -585,7 +591,15 @@ beans = &#123;
 
 
 
-<h2 id="3.9 Stateful vs. Stateless Domain Classes">3.9 Stateful vs. Stateless Domain Classes</h2>
+<h1 id="databaseSwitching">4 Switching Database or Collection at Runtime</h1>
+In addition to storing dynamic attributes, as of version 1.3.0 of the plugin you can also switch which database and/or collection to persist to at runtime.<p class="paragraph"/>For example:<p class="paragraph"/><div class="code"><pre>Person.withDatabase(<span class="java&#45;quote">"administrators"</span>) &#123;
+    <span class="java&#45;keyword">new</span> Person(name:<span class="java&#45;quote">"Bob"</span>).save()
+&#125;</pre></div><p class="paragraph"/>The above example will save a <code>Person</code> instance to the 'administrators' database. The database is used for the scope of the closure. You can switch database for the scope of the active session:<p class="paragraph"/><div class="code"><pre>Person.useDatabase(<span class="java&#45;quote">"administrators"</span>) 
+<span class="java&#45;keyword">new</span> Person(name:<span class="java&#45;quote">"Bob"</span>).save()</pre></div><p class="paragraph"/>In addition, there are equivalent <code>withCollection</code> and <code>useCollection</code> methods for switching collection at runtime.
+
+
+
+<h1 id="stateless">5 Stateless Mode</h1>
 GORM for MongoDB supports both stateless and stateful modes for mapping domain classes to MongoDB. In general stateful mapping is superior for write heavy applications and stateless mode better for read heavy applications (particularily when large amounts of data is involved).<p class="paragraph"/><h4>Stateful mode</h4><p class="paragraph"/>Domain classes are by default stateful, which means when they are read from a MongoDB document their state is stored in the user session (which is typically bound to the request in Grails). This has several advantages for write heavy applications:
 <ul class="star">
 <li>GORM can automatically detect whether a call to save() is a an update or an insert and act appropriately</li>
@@ -630,7 +644,7 @@ b.insert()</pre></div><p class="paragraph"/>In the above case we use the explici
 
 
 
-<h1 id="4. Low-level API">4 Low-level API</h1>
+<h1 id="lowLevelApi">6 Using the Mongo Driver Directly</h1>
 A lower level API is provided by the plugin via the Mongo driver<p class="paragraph"/><blockquote class="note">
 There is an excellent tutorial on how to use the Mongo Java driver's API directly in the <a href="http://www.mongodb.org/display/DOCS/Java+Tutorial" target="blank">Mongo documentation</a>
 </blockquote><p class="paragraph"/>An example can be seen below:<p class="paragraph"/><div class="code"><pre>// Get a db reference in the old fashion way
@@ -652,7 +666,7 @@ def myAction = &#123;
 Person.collection.findOne(firstName:<span class="java&#45;quote">"Fred"</span>).lastName == <span class="java&#45;quote">"Flintstone"</span></pre></div><p class="paragraph"/>You can easily convert from a native MongoDB <code>DBObject</code> into an entity using a cast:<p class="paragraph"/><div class="code"><pre>def fred = Person.collection.findOne(firstName:<span class="java&#45;quote">"Fred"</span>) as Person</pre></div>
 
 
-<h1 id="5. Transactions">5 Transactions</h1>
+<h1 id="transactions">7 Transactions</h1>
 MongoDB doesn't support transactions directly, however GORM for MongoDB does batch up inserts and updates until the session is flushed. This makes it possible to support some rollback options.<p class="paragraph"/>You can use either transactional services or the static <code>withTransaction</code> method. To mark a service as using the MongoDB transaction manager, use the static <code>transactional</code> property with the value <code>'mongo'</code>:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> transactional = 'mongo'</pre></div><p class="paragraph"/>Alternately you can do ad-hoc transactions using the <code>withTransaction</code> method:<p class="paragraph"/><div class="code"><pre>Person.withTransaction &#123; status &#45;&#62;
     <span class="java&#45;keyword">new</span> Person(name:<span class="java&#45;quote">"Bob"</span>, age:50).save()
     <span class="java&#45;keyword">throw</span> <span class="java&#45;keyword">new</span> RuntimeException(<span class="java&#45;quote">"bad"</span>)
@@ -661,7 +675,7 @@ MongoDB doesn't support transactions directly, however GORM for MongoDB does bat
 
 
 
-<h1 id="6. Unit Testing">6 Unit Testing</h1>
+<h1 id="testing">8 Unit Testing</h1>
 For many simple cases you can use the built in <a href="http://grails.org/doc/latest/guide/testing.html#unitTestingDomains" target="blank">GORM unit testing</a> provided by Grails.<p class="paragraph"/>For more complex cases a <code>grails.test.mixin.mongodb.MongoDbTestMixin</code> class is provided which can run tests against a running MongoDB instance or a mock instance (such as one provided by the <a href="https://github.com/fakemongo/fongo" target="blank">Fongo</a> project).<p class="paragraph"/>Example against a running MongoDB instance:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> org.bson.types.ObjectId<p class="paragraph"/>@Entity
 class Person &#123;
     ObjectId id

@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2.2 Using GORM for Hibernate Outside Grails 5.0.0.BUILD-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/learningMore.html"><strong>3</strong><span>Learning More</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/learningMore.html"><strong>3</strong><span>Learning More</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2.2 Using GORM for Hibernate Outside Grails - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher</p>
+
+                    <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h2 id="outsideGrails">2.2 Using GORM for Hibernate Outside Grails</h2>
+If you wish to use GORM for Hibernate outside of a Grails application you should declare the necessary dependencies, for example in Gradle:<p class="paragraph"/><div class="code"><pre>compile <span class="java&#45;quote">"org.grails:grails&#45;datastore&#45;gorm&#45;hibernate4:VERSION"</span></pre></div><p class="paragraph"/>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation:<p class="paragraph"/><div class="code"><pre>@Entity
+class Person &#123;
+    <span class="java&#45;object">String</span> name
+&#125;</pre></div><p class="paragraph"/>Then you need to place the bootstrap logic somewhere in your application which uses <code>HibernateDatastoreSpringInitializer</code>:<p class="paragraph"/><div class="code"><pre>def initializer = <span class="java&#45;keyword">new</span> HibernateDatastoreSpringInitializer(Person)
+def applicationContext = initializer.configure()<p class="paragraph"/>println Person.count()</pre></div><p class="paragraph"/>For configuration you can either pass a map or an instance of the <code>org.springframework.core.env.PropertyResolver</code> interface:<p class="paragraph"/><div class="code"><pre>def initializer = <span class="java&#45;keyword">new</span> HibernateDatastoreSpringInitializer(&#91;'hibernate.log_sql':'<span class="java&#45;keyword">true</span>'&#93;, Person)
+def applicationContext = initializer.configure()<p class="paragraph"/>println Person.count()</pre></div><p class="paragraph"/>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:<p class="paragraph"/><div class="code"><pre>ApplicationContext myApplicationContext = &#8230;
+def initializer = <span class="java&#45;keyword">new</span> HibernateDatastoreSpringInitializer(myApplicationContext.getEnvironment(), Person)
+initializer.configureForBeanDefinitionRegistry(myApplicationContext)<p class="paragraph"/>println Person.count()</pre></div><p class="paragraph"/>Note in this case GORM expects there to be a bean named <code>dataSource</code> present.
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/learningMore.html"><strong>3</strong><span>Learning More</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

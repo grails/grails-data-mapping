@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>5 Stateless Mode 5.0.0.BUILD-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/objectMapping.html"><strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/databaseSwitching.html"><strong>4</strong><span>Switching Database or Collection at Runtime</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/stateless.html"><strong>5</strong><span>Stateless Mode</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/lowLevelApi.html"><strong>6</strong><span>Using the Mongo Driver Directly</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/transactions.html"><strong>7</strong><span>Transactions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/testing.html"><strong>8</strong><span>Unit Testing</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/databaseSwitching.html">&lt;&lt; <strong>4</strong><span>Switching Database or Collection at Runtime</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/lowLevelApi.html"><strong>6</strong><span>Using the Mongo Driver Directly</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>5 Stateless Mode - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
+
+                    <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h1 id="stateless">5 Stateless Mode</h1>
+GORM for MongoDB supports both stateless and stateful modes for mapping domain classes to MongoDB. In general stateful mapping is superior for write heavy applications and stateless mode better for read heavy applications (particularily when large amounts of data is involved).<p class="paragraph"/><h4>Stateful mode</h4><p class="paragraph"/>Domain classes are by default stateful, which means when they are read from a MongoDB document their state is stored in the user session (which is typically bound to the request in Grails). This has several advantages for write heavy applications:
+<ul class="star">
+<li>GORM can automatically detect whether a call to save() is a an update or an insert and act appropriately</li>
+<li>GORM stores the state of the read MongoDB document and therefore updates to schemaless properties don't require an extra query</li>
+<li>GORM can store the current version and therefore implement optimistic locking</li>
+<li>Repeated reads of the same entity can be retrieved from the cache, thus optimizing reads as well</li>
+</ul><p class="paragraph"/>For an example of when a stateful domain class is better consider the following:<p class="paragraph"/><div class="code"><pre>def b = Book.get(1)
+b&#91;'pages'&#93; = 400
+b&#91;'publisher'&#93; = 'Manning'
+b&#91;'rating'&#93; = 5
+b.save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>With a stateful entity the updates to the three properties can be batched up and executed in the save() call, when there is no state then 3 updates needs to be executed for each schemaless property (ouch!).<p class="paragraph"/>
+<h4>Stateless Domain classes</h4><p class="paragraph"/>However, stateful domain classes can cause problems for read-heavy applications. Take for example the following code:<p class="paragraph"/><div class="code"><pre>def books = Book.list() // read 100,000 books
+<span class="java&#45;keyword">for</span>(b in books) &#123;
+    println b.title
+&#125;</pre></div><p class="paragraph"/>The above example will read 100,000 books and print the title of each. In stateful mode this will almost certainly run out of memory as each MongoDB document is stored in user memory as is each book. Rewriting the code as follows will solve the problem:<p class="paragraph"/><div class="code"><pre>Book.withStatelessSession &#123;
+    def books = Book.list() // read 100,000 books
+    <span class="java&#45;keyword">for</span>(b in books) &#123;
+        println b.title
+    &#125;    
+&#125;</pre></div><p class="paragraph"/>Alternatively you can map the domain class as stateless, in which case its state will never be stored in the session:<p class="paragraph"/><div class="code"><pre>class Book &#123;
+    &#8230;
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        stateless <span class="java&#45;keyword">true</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/><h4>Disadvantages of Stateless Mode</h4><p class="paragraph"/>There are several disadvantages to using stateless domain classes as the default. One disadvantage is that if you are using assigned identifiers GORM cannot detect whether you want to do an insert or an update so you have to be explicit about which one you want:<p class="paragraph"/><div class="code"><pre>def b = <span class="java&#45;keyword">new</span> Book(id:<span class="java&#45;quote">"The Book"</span>)
+b.insert()</pre></div><p class="paragraph"/>In the above case we use the explicit 'insert' method to tell Grails this is an insert not an udpate. Another disadvantage is that reading of schemaless/dynamic properties is more costly. For example:<p class="paragraph"/>
+<div class="code"><pre>def books = Book.list() // read 100,000 books
+<span class="java&#45;keyword">for</span>(b in books) &#123;
+    println b&#91;'pages'&#93;
+    println b&#91;'rating'&#93;
+&#125;</pre></div><p class="paragraph"/>Here GORM has to execute an additional read method for each schemaless property! This is better written as:<p class="paragraph"/><div class="code"><pre>def books = Book.list() // read 100,000 books
+<span class="java&#45;keyword">for</span>(b in books) &#123;
+    def dbo = b.dbo
+    println dbo&#91;'pages'&#93;
+    println dbo&#91;'rating'&#93;
+&#125;</pre></div><p class="paragraph"/>Thus only requiring one query. Or alternatively you can use the native API:<p class="paragraph"/><div class="code"><pre>def books = Book.collection.find() // read 100,000 books
+<span class="java&#45;keyword">for</span>(dbo in books) &#123;
+    Book b = dbo as Book    
+    println dbo&#91;'pages'&#93;
+    println dbo&#91;'rating'&#93;
+&#125;</pre></div><p class="paragraph"/>Which would be more efficient.<p class="paragraph"/>
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/databaseSwitching.html">&lt;&lt; <strong>4</strong><span>Switching Database or Collection at Runtime</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/lowLevelApi.html"><strong>6</strong><span>Using the Mongo Driver Directly</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Beans/mongo.html">mongo</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/DB.html">DB</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/collection.html">collection</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/collectionName.html">collectionName</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/countHits.html">countHits</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/dbo.html">dbo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByGeoIntersects.html">findByGeoIntersects</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByGeoWithin.html">findByGeoWithin</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByNear.html">findByNear</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByNearSphere.html">findByNearSphere</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByWithinBox.html">findByWithinBox</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByWithinCircle.html">findByWithinCircle</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/search.html">search</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/searchTop.html">searchTop</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/useCollection.html">useCollection</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/useDatabase.html">useDatabase</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/withCollection.html">withCollection</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/withDatabase.html">withDatabase</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Testing/MongoDbTestMixin.html">MongoDbTestMixin</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
