@@ -36,16 +36,7 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20Querying.html"><strong>4</strong><span>Querying</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Transactions.html"><strong>5</strong><span>Transactions</span></a>
-                    </div>
-                    
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/6.%20Redis%20Specific%20Extensions.html"><strong>6</strong><span>Redis Specific Extensions</span></a>
-                    </div>
-                    
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/7.%20The%20Low-level%20API.html"><strong>7</strong><span>The Low-level API</span></a>
-                    </div>
-                    
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/8.%20Testing.html"><strong>8</strong><span>Testing</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/6.%20Redis%20Specific%20Extensions.html"><strong>5</strong><span>Redis Specific Extensions</span></a>
                     </div>
                     
                 </div>
@@ -107,7 +98,7 @@ function addJsClass() {
                 
 
 <h1 id="2. Getting Started">2 Getting Started</h1>
-To get started with GORM for Redis you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin redis&#45;gorm</pre></div><p class="paragraph"/>With that done you need to set up a running Redis server. GORM for Redis requires Redis 2.0.0 or above which you can download at on the <a href="http://code.google.com/p/redis/downloads/list" target="blank">Redis download page</a>. Once downloaded extract the archive and run the following commands from the <code>redis-2.0.0</code> directory:<p class="paragraph"/><div class="code"><pre>make
+To get started with GORM for Redis you need to add the Redis GORM plugin as a dependency in <code>build.gradle</code>:<p class="paragraph"/><div class="code"><pre>compile <span class="java&#45;quote">"org.grails.plugins:redis&#45;gorm:VERSION"</span></pre></div><p class="paragraph"/>With that done you need to set up a running Redis server. GORM for Redis requires Redis 2.0.0 or above which you can download at on the <a href="http://code.google.com/p/redis/downloads/list" target="blank">Redis download page</a>. Once downloaded extract the archive and run the following commands from the <code>redis-2.0.0</code> directory:<p class="paragraph"/><div class="code"><pre>make
 ./redis&#45;server</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>&#91;66243&#93; 03 Sep 17:35:12 &#42; Server started, Redis version 2.0.0
 &#91;66243&#93; 03 Sep 17:35:12 &#42; DB loaded from disk: 0 seconds
 &#91;66243&#93; 03 Sep 17:35:12 &#42; The server is now ready to accept connections on port 6379</pre></div><p class="paragraph"/>As you can see the server is running on port 6379, but don't worry the Redis plugin for Grails will automatically configure itself to look for Redis on that port by default.<p class="paragraph"/>If you want to configure how Grails connects to redis then you can do so using the following settings in <code>grails-app/conf/Config.groovy</code>:<p class="paragraph"/><div class="code"><pre>grails.'redis&#45;gorm'.host=<span class="java&#45;quote">"myserver"</span>
@@ -120,12 +111,11 @@ grails.'redis&#45;gorm'.timeout=5000</pre></div>
 
 
 <h2 id="2.1 Using Redis Standalone">2.1 Using Redis Standalone</h2>
-If you plan to use Redis as your primary datastore then you need to uninstall the Hibernate plugin:<p class="paragraph"/><div class="code"><pre>grails uninstall&#45;plugin hibernate</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Redis and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Redis.
+If you plan to use Redis as your primary datastore then you need to remove the Hibernate plugin definition from <code>build.gradle</code>.<p class="paragraph"/><div class="code"><pre>compile <span class="java&#45;quote">"org.grails.plugins:hibernate"</span></pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Redis and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Redis.
 
 
 <h2 id="2.2 Combining Redis and Hibernate">2.2 Combining Redis and Hibernate</h2>
-If you have both the Hibernate and Redis plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Redis. If you want to persist a particular domain class with Redis then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"redis"</span></pre></div><p class="paragraph"/>Alternatively you can persist Hibernate entities to Redis using the special <code>redis</code> scope added to all Hibernate entities:<p class="paragraph"/><div class="code"><pre>def hibernatePerson = Person.get(1)<p class="paragraph"/>hibernatePerson.redis.save()<p class="paragraph"/>def redisPerson = Person.redis.get(1)</pre></div><p class="paragraph"/>This makes it really easy to use Redis as a cache for Hibernate entities and take advantage of some nice Redis features like randomization:<p class="paragraph"/><div class="code"><pre>def people = Person.list()
-people.each &#123; person &#45;&#62; person.redis.save() &#125;<p class="paragraph"/>def randomRedisPerson = Person.redis.random()</pre></div>
+If you have both the Hibernate and Redis plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Redis. If you want to persist a particular domain class with Redis then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"redis"</span></pre></div><p class="paragraph"/>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
@@ -145,15 +135,6 @@ people.each &#123; person &#45;&#62; person.redis.save() &#125;<p class="paragra
                 </div>
                 <div class="menu">
                     
-                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
-                        
-                            
-                            <div class="menu-item"><a href="../ref/Beans/redis.html">redis</a>
-                            </div>
-                            
-                            </div>
-                    </div>
-                    
                     <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
                         
                             
@@ -164,15 +145,6 @@ people.each &#123; person &#45;&#62; person.redis.save() &#125;<p class="paragra
                             </div>
                             
                             <div class="menu-item"><a href="../ref/Domain%20Classes/random.html">random</a>
-                            </div>
-                            
-                            </div>
-                    </div>
-                    
-                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
-                        
-                            
-                            <div class="menu-item"><a href="../ref/Testing/DatastoreUnitTestMixin.html">DatastoreUnitTestMixin</a>
                             </div>
                             
                             </div>

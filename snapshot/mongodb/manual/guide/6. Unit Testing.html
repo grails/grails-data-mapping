@@ -109,8 +109,8 @@ class PersonSpec <span class="java&#45;keyword">extends</span> Specification&#12
             Person.count() == 0
     &#125;
 &#125;</pre></div><p class="paragraph"/>
-This library dependency is required in grails-app/conf/BuildConfig.groovy for adding support for <code>MongoDbTestMixin</code>.<p class="paragraph"/><div class="code"><pre>dependencies &#123;
-        test 'org.grails:grails&#45;datastore&#45;test&#45;support:1.0.1&#45;grails&#45;2.4'
+This library dependency is required in <code>build.gradle</code> for adding support for <code>MongoDbTestMixin</code>.<p class="paragraph"/><div class="code"><pre>dependencies &#123;
+        test 'org.grails:grails&#45;datastore&#45;test&#45;support:5.0.0'
     &#125;</pre></div><p class="paragraph"/>Fongo dependency example
 <div class="code"><pre>dependencies &#123;
         test 'com.github.fakemongo:fongo:1.5.4'

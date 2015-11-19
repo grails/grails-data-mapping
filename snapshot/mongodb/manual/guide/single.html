@@ -84,6 +84,8 @@ function addJsClass(el) {
                             
                             <div class="toc-item" style="margin-left:10px"><a href="#2.3%20Advanced%20Configuration"><strong>2.3</strong><span>Advanced Configuration</span></a></div>
                             
+                            <div class="toc-item" style="margin-left:10px"><a href="#2.4%20GORM%20for%20MongoDB%20without%20Grails"><strong>2.4</strong><span>GORM for MongoDB without Grails</span></a></div>
+                            
                             <div class="toc-item" style="margin-left:0px"><a href="#3.%20Mapping%20Domain%20Classes%20to%20MongoDB%20Collections"><strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span></a></div>
                             
                             <div class="toc-item" style="margin-left:10px"><a href="#3.1%20Identity%20Generation"><strong>3.1</strong><span>Identity Generation</span></a></div>
@@ -153,7 +155,16 @@ This implementation tries to be as compatible as possible with GORM for Hibernat
 
 
 <h2 id="1.2 Release Notes">1.2 Release Notes</h2>
-Below are the details of the changes across releases:<p class="paragraph"/><h4>3.0</h4>
+Below are the details of the changes across releases:<p class="paragraph"/><h4>5.0</h4>
+<ul class="star">
+<li>MongoDB 3.x driver support</li>
+<li>New Codec Persistence Engine</li>
+<li>Removal of GMongo</li>
+<li>Trait based</li>
+</ul><p class="paragraph"/><h4>4.0</h4>
+<ul class="star">
+<li>Grails 3 compatibility</li>
+</ul><p class="paragraph"/><h4>3.0</h4>
 <ul class="star">
 <li>Support for MongoDB 2.6</li>
 <li>MongoDB 2.6 GeoJSON type support (<code>MultiPoint</code>, <code>MultiLineString</code>, <code>MultiPolygon</code> and <code>GeometryCollection</code>)</li>
@@ -185,18 +196,23 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 
 
 <h1 id="2. Getting Started">2 Getting Started</h1>
-To get started with GORM for Mongo you need configure it as a dependency in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
-	compile ':mongodb:3.0.0.RC1'            // or whatever is the latest version; 2.x
-	compile 'org.grails.plugins:mongodb'    // 3.x
-&#125;</pre></div><p class="paragraph"/>With that done you need to set up a running MongoDB server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">MongoDB Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed, starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above command executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Tue Mar 18 14:16:35.267 &#91;initandlisten&#93; db version v2.4.9
-Tue Mar 18 14:16:35.267 &#91;initandlisten&#93; git version: 52fe0d21959e32a5bdbecdc62057db386e4e029c
-Tue Mar 18 14:16:35.267 &#91;initandlisten&#93; build info: Darwin bs&#45;osx&#45;106&#45;x86&#45;64&#45;2.10gen.cc 10.8.0 Darwin Kernel Version 10.8.0: Tue Jun  7 16:32:41 PDT 2011; root:xnu&#45;1504.15.3~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
-Tue Mar 18 14:16:35.267 &#91;initandlisten&#93; allocator: system
-Tue Mar 18 14:16:35.267 &#91;initandlisten&#93; options: &#123;&#125;
-Tue Mar 18 14:16:35.268 &#91;initandlisten&#93; journal dir=/data/db/journal
-Tue Mar 18 14:16:35.268 &#91;initandlisten&#93; recover : no journal files present, no recovery needed
-Tue Mar 18 14:16:35.297 &#91;websvr&#93; admin web console waiting <span class="java&#45;keyword">for</span> connections on port 28017
-Tue Mar 18 14:16:35.297 &#91;initandlisten&#93; waiting <span class="java&#45;keyword">for</span> connections on port 27017</pre></div><p class="paragraph"/>As you can see the server is running on port 27017, but don't worry the Mongodb plugin for Grails will automatically configure itself to look for Mongodb on that port by default.<p class="paragraph"/>If you want to configure how Grails connects to Mongo then you can do so using the following settings in <code>grails-app/conf/application.yml</code>:<p class="paragraph"/><div class="code"><pre>grails:
+To get started with GORM for Mongo you need configure it as a dependency in <code>build.gradle</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
+	compile 'org.grails.plugins:mongodb:VERSION'
+&#125;</pre></div><p class="paragraph"/>With that done you need to set up a running MongoDB server. Refer to the <a href="https://docs.mongodb.org/manual/" target="blank">MongoDB Documentation</a> for an explanation on how to startup a Mongo instance. Once installed, starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above command executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>2015&#45;11&#45;18T19:38:50.073+0100 I JOURNAL  &#91;initandlisten&#93; journal dir=/data/db/journal
+2015&#45;11&#45;18T19:38:50.073+0100 I JOURNAL  &#91;initandlisten&#93; recover : no journal files present, no recovery needed
+2015&#45;11&#45;18T19:38:50.090+0100 I JOURNAL  &#91;durability&#93; Durability thread started
+2015&#45;11&#45;18T19:38:50.090+0100 I JOURNAL  &#91;journal writer&#93; Journal writer thread started
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; MongoDB starting : pid=52540 port=27017 dbpath=/data/db 64&#45;bit host=Graemes&#45;iMac.local
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; &#42;&#42; WARNING: You are running <span class="java&#45;keyword">this</span> process as the root user, which is not recommended.
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93;
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93;
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; &#42;&#42; WARNING: soft rlimits too low. <span class="java&#45;object">Number</span> of files is 256, should be at least 1000
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; db version v3.0.4
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; git version: 0481c958daeb2969800511e7475dc66986fa9ed5
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; build info: Darwin mci&#45;osx108&#45;11.build.10gen.cc 12.5.0 Darwin Kernel Version 12.5.0: Sun Sep 29 13:33:47 PDT 2013; root:xnu&#45;2050.48.12~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; allocator: system
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; options: &#123;&#125;
+2015&#45;11&#45;18T19:38:50.176+0100 I NETWORK  &#91;initandlisten&#93; waiting <span class="java&#45;keyword">for</span> connections on port 27017</pre></div><p class="paragraph"/>As you can see the server is running on port 27017, but don't worry the Mongodb plugin for Grails will automatically configure itself to look for Mongodb on that port by default.<p class="paragraph"/>If you want to configure how Grails connects to Mongo then you can do so using the following settings in <code>grails-app/conf/application.yml</code>:<p class="paragraph"/><div class="code"><pre>grails:
     mongodb:
         host: <span class="java&#45;quote">"localhost"</span>
         port: 27017
@@ -207,16 +223,17 @@ Tue Mar 18 14:16:35.297 &#91;initandlisten&#93; waiting <span class="java&#45;ke
 
 
 <h2 id="2.1 Using MongoDB Standalone">2.1 Using MongoDB Standalone</h2>
-If you plan to use MongoDB as your primary datastore then you need to remove the Hibernate plugin from the <code>grails-app/conf/BuildConfig.groovy</code> file by commenting out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile ':hibernate:3.6.10.12'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via MongoDB and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in MongoDB.
+If you plan to use MongoDB as your primary datastore then you need to remove the Hibernate plugin from the <code>build.gradle</code> file by commenting out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile 'org.grails.plugins:hibernate'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via MongoDB and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in MongoDB.
 
 
 
 <h2 id="2.2 Combining MongoDB and Hibernate">2.2 Combining MongoDB and Hibernate</h2>
-If you have both the Hibernate and Mongo plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Mongo. If you want to persist a particular domain class with Mongo then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"mongo"</span></pre></div><p class="paragraph"/>Alternatively you can persist Hibernate entities to Mongo using the special <code>mongo</code> scope added to all Hibernate entities:<p class="paragraph"/><div class="code"><pre>def hibernatePerson = Person.get(1)<p class="paragraph"/>hibernatePerson.mongo.save()<p class="paragraph"/>def mongoPerson = Person.mongo.get(1)</pre></div><p class="paragraph"/>
+If you have both the Hibernate and Mongo plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Mongo. If you want to persist a particular domain class with Mongo then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"mongo"</span></pre></div><p class="paragraph"/>
+
 
 
 <h2 id="2.3 Advanced Configuration">2.3 Advanced Configuration</h2>
-<h4>Mongo Database Connection Configuration</h4><p class="paragraph"/>As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
+<h4>Mongo Database Connection Configuration</h4><p class="paragraph"/>As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the <code>grails-app/conf/application.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
     mongo &#123;
         host = <span class="java&#45;quote">"localhost"</span>
         port = 27017
@@ -231,7 +248,7 @@ If you have both the Hibernate and Mongo plugins installed then by default all c
             connectTimeout = 300
         &#125;
     &#125;
-&#125;</pre></div><p class="paragraph"/>Available options and their descriptions are defined in the <a href="http://api.mongodb.org/java/current/com/mongodb/MongoOptions.html" target="blank">MongoOptions</a> javadoc.<p class="paragraph"/>In production scenarios you will typically use more than one MongoDB server in either <a href="http://docs.mongodb.org/manual/core/master-slave/" target="blank">master/slave</a> or <a href="http://docs.mongodb.org/manual/replication/" target="blank">replication</a> scenarios. The plugin allows you to configure <a href="http://docs.mongodb.org/manual/tutorial/deploy-replica-set/" target="blank">replica sets</a>:<p class="paragraph"/><div class="code"><pre>grails &#123;
+&#125;</pre></div><p class="paragraph"/>Available options and their descriptions are defined in the <a href="http://api.mongodb.org/java/current/com/mongodb/MongoClientOptions.html" target="blank">MongoOptions</a> javadoc.<p class="paragraph"/>In production scenarios you will typically use more than one MongoDB server in either <a href="http://docs.mongodb.org/manual/core/master-slave/" target="blank">master/slave</a> or <a href="http://docs.mongodb.org/manual/replication/" target="blank">replication</a> scenarios. The plugin allows you to configure <a href="http://docs.mongodb.org/manual/tutorial/deploy-replica-set/" target="blank">replica sets</a>:<p class="paragraph"/><div class="code"><pre>grails &#123;
     mongo &#123;
         replicaSet = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
     &#125;
@@ -281,6 +298,17 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
     '&#42;'(reference:<span class="java&#45;keyword">true</span>)
 &#125;</pre></div><p class="paragraph"/>The <code>*</code> method is used to indicate that the setting applies to all properties.
 
+
+
+<h2 id="2.4 GORM for MongoDB without Grails">2.4 GORM for MongoDB without Grails</h2>
+If you wish to use GORM for MongoDB outside of a Grails application you should declare the necessary dependencies, for example in Gradle:<p class="paragraph"/><div class="code"><pre>compile <span class="java&#45;quote">"org.grails:grails&#45;datastore&#45;gorm&#45;mongodb:VERSION"</span></pre></div><p class="paragraph"/>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation:<p class="paragraph"/><div class="code"><pre>@Entity
+class Person &#123;
+    <span class="java&#45;object">String</span> name
+&#125;</pre></div><p class="paragraph"/>Then you need to place the bootstrap logic somewhere in your application which uses <code>MongoDbDataStoreSpringInitializer</code>:<p class="paragraph"/><div class="code"><pre>def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(Person)
+def applicationContext = initializer.configure()<p class="paragraph"/>println Person.count()</pre></div><p class="paragraph"/>For configuration you can either pass a map or an instance of the <code>org.springframework.core.env.PropertyResolver</code> interface:<p class="paragraph"/><div class="code"><pre>def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(&#91;'grails.mongodb.url':'http://myserver'&#93;, Person)
+def applicationContext = initializer.configure()<p class="paragraph"/>println Person.count()</pre></div><p class="paragraph"/>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:<p class="paragraph"/><div class="code"><pre>ApplicationContext myApplicationContext = &#8230;
+def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(myApplicationContext.getEnvironment(), Person)
+initializer.configureForBeanDefinitionRegistry(myApplicationContext)<p class="paragraph"/>println Person.count()</pre></div>
 
 
 <h1 id="3. Mapping Domain Classes to MongoDB Collections">3 Mapping Domain Classes to MongoDB Collections</h1>
@@ -494,52 +522,49 @@ GORM for MongoDB will persist all common known Java types like String, Integer, 
     &#125;
 &#125;</pre></div><p class="paragraph"/><blockquote class="note">
 Custom types should go in src/groovy not grails-app/domain
-</blockquote><p class="paragraph"/>If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with Spring. For example:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> com.mongodb.BasicDBObject;
-<span class="java&#45;keyword">import</span> com.mongodb.DBObject;
+</blockquote><p class="paragraph"/>If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with Spring. For example:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> org.bson.&#42;
 <span class="java&#45;keyword">import</span> org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller;
 <span class="java&#45;keyword">import</span> org.grails.datastore.mapping.model.PersistentProperty;
 <span class="java&#45;keyword">import</span> org.grails.datastore.mapping.mongo.query.MongoQuery;
-<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.query.Query;<p class="paragraph"/>class BirthdayType <span class="java&#45;keyword">extends</span> AbstractMappingAwareCustomTypeMarshaller&#60;Birthday, DBObject, DBObject&#62; &#123;
-	BirthdayType() &#123;
-		<span class="java&#45;keyword">super</span>(Birthday)
-	&#125;
-    @Override
-    <span class="java&#45;keyword">protected</span> <span class="java&#45;object">Object</span> writeInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Birthday value, DBObject nativeTarget) &#123;
-        <span class="java&#45;keyword">final</span> converted = value.date.time
-        nativeTarget.put(key, converted)
-        <span class="java&#45;keyword">return</span> converted
-    &#125;<p class="paragraph"/>    @Override
-    <span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Query.PropertyCriterion criterion, DBObject nativeQuery) &#123;
-        <span class="java&#45;keyword">if</span>(criterion <span class="java&#45;keyword">instanceof</span> Between) &#123;
-            def dbo = <span class="java&#45;keyword">new</span> BasicDBObject()
-            dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
-            dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time);
-            nativeQuery.put(key, dbo)
-        &#125;
-        <span class="java&#45;keyword">else</span> &#123;
-            nativeQuery.put(key, criterion.value.date.time)
-        &#125;<p class="paragraph"/>    &#125;<p class="paragraph"/>    @Override
-    <span class="java&#45;keyword">protected</span> Birthday readInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, DBObject nativeSource) &#123;
-        <span class="java&#45;keyword">final</span> num = nativeSource.get(key)
-        <span class="java&#45;keyword">if</span>(num <span class="java&#45;keyword">instanceof</span> <span class="java&#45;object">Long</span>) &#123;
-            <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date(num))
-        &#125;
-        <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">null</span>
-    &#125;
-&#125;</pre></div><p class="paragraph"/>The above <code>BirthdayType</code> class is a custom user type implementation for MongoDB for the <code>Birthday</code> class. It provides implementations for three methods: <code>readInternal</code>, <code>writeInternal</code> and the optional <code>queryInternal</code>. If you do not implement <code>queryInternal</code> your custom type can be persisted but not queried.<p class="paragraph"/>The <code>writeInternal</code> method gets passed the property, the key to store it under, the value and the native DBObject where the custom type is to be stored:<p class="paragraph"/><div class="code"><pre>@Override
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.query.Query;<p class="paragraph"/>class BirthdayType <span class="java&#45;keyword">extends</span> AbstractMappingAwareCustomTypeMarshaller&#60;Birthday, Document, Document&#62;(Birthday) &#123;
+   @Override
+   <span class="java&#45;keyword">protected</span> <span class="java&#45;object">Object</span> writeInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Birthday value, Document nativeTarget) &#123;
+       <span class="java&#45;keyword">final</span> converted = value.date.time
+       nativeTarget.put(key, converted)
+       <span class="java&#45;keyword">return</span> converted
+   &#125;<p class="paragraph"/>   @Override
+   <span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, PropertyCriterion criterion, Document nativeQuery) &#123;
+       <span class="java&#45;keyword">if</span> (criterion <span class="java&#45;keyword">instanceof</span> Between) &#123;
+           def dbo = <span class="java&#45;keyword">new</span> BasicDBObject()
+           dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time)
+           dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time)
+           nativeQuery.put(key, dbo)
+       &#125;
+       <span class="java&#45;keyword">else</span> &#123;
+           nativeQuery.put(key, criterion.value.date.time)
+       &#125;
+   &#125;<p class="paragraph"/>   @Override
+   <span class="java&#45;keyword">protected</span> Birthday readInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Document nativeSource) &#123;
+       <span class="java&#45;keyword">final</span> num = nativeSource.get(key)
+       <span class="java&#45;keyword">if</span> (num <span class="java&#45;keyword">instanceof</span> <span class="java&#45;object">Long</span>) &#123;
+           <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date(num))
+       &#125;
+       <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">null</span>
+   &#125;
+&#125;)</pre></div><p class="paragraph"/>The above <code>BirthdayType</code> class is a custom user type implementation for MongoDB for the <code>Birthday</code> class. It provides implementations for three methods: <code>readInternal</code>, <code>writeInternal</code> and the optional <code>queryInternal</code>. If you do not implement <code>queryInternal</code> your custom type can be persisted but not queried.<p class="paragraph"/>The <code>writeInternal</code> method gets passed the property, the key to store it under, the value and the native DBObject where the custom type is to be stored:<p class="paragraph"/><div class="code"><pre>@Override
 <span class="java&#45;keyword">protected</span> <span class="java&#45;object">Object</span> writeInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Birthday value, DBObject nativeTarget) &#123;
     <span class="java&#45;keyword">final</span> converted = value.date.time
     nativeTarget.put(key, converted)
     <span class="java&#45;keyword">return</span> converted
 &#125;</pre></div><p class="paragraph"/>You can then read the values of the custom type and register them with the <code>DBObject</code>. The <code>readInternal</code> method gets passed the <code>PersistentProperty</code>, the key the user type info is stored under (although you may want to use multiple keys) and the <code>DBObject</code>:<p class="paragraph"/><div class="code"><pre>@Override
-<span class="java&#45;keyword">protected</span> Birthday readInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, DBObject nativeSource) &#123;
+<span class="java&#45;keyword">protected</span> Birthday readInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Document nativeSource) &#123;
     <span class="java&#45;keyword">final</span> num = nativeSource.get(key)
     <span class="java&#45;keyword">if</span>(num <span class="java&#45;keyword">instanceof</span> <span class="java&#45;object">Long</span>) &#123;
         <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date(num))
     &#125;
     <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">null</span>
 &#125;</pre></div><p class="paragraph"/>You can then construct the custom type by reading values from the <code>DBObject</code>. Finally the <code>queryInternal</code> method allows you to handle how a custom type is queried:<p class="paragraph"/><div class="code"><pre>@Override
-<span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Query.PropertyCriterion criterion, DBObject nativeQuery) &#123;
+<span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Query.PropertyCriterion criterion, Document nativeQuery) &#123;
     <span class="java&#45;keyword">if</span>(criterion <span class="java&#45;keyword">instanceof</span> Between) &#123;
         def dbo = <span class="java&#45;keyword">new</span> BasicDBObject()
         dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
@@ -606,13 +631,10 @@ b.insert()</pre></div><p class="paragraph"/>In the above case we use the explici
 
 
 <h1 id="4. Low-level API">4 Low-level API</h1>
-A lower level API is provided by the plugin that is based on the <a href="http://github.com/poiati/gmongo" target="blank">GMongo</a> project.<p class="paragraph"/>GMongo is a simple Groovy wrapper around the regular <a href="http://www.mongodb.org/display/DOCS/Java+Language+Center" target="blank">Mongo Java Driver</a>. In general you can refer to the Mongo Java Drivers <a href="http://api.mongodb.org/java/current/index.html" target="blank">Javadoc API</a> when using GMongo.<p class="paragraph"/>GMongo provides some nice enhancements like easy access to collections using the dot operator and support for Groovy operator overloading.<p class="paragraph"/><blockquote class="note">
+A lower level API is provided by the plugin via the Mongo driver<p class="paragraph"/><blockquote class="note">
 There is an excellent tutorial on how to use the Mongo Java driver's API directly in the <a href="http://www.mongodb.org/display/DOCS/Java+Tutorial" target="blank">Mongo documentation</a>
-</blockquote><p class="paragraph"/>An example of GMongo usage can be seen below:<p class="paragraph"/><div class="code"><pre>// Get a db reference in the old fashion way
-def db = mongo.getDB(<span class="java&#45;quote">"gmongo"</span>)<p class="paragraph"/>// Collections can be accessed as a db property (like the javascript API)
-assert db.myCollection <span class="java&#45;keyword">instanceof</span> com.mongodb.DBCollection
-// They also can be accessed with array notation
-assert db&#91;'my.collection'&#93; <span class="java&#45;keyword">instanceof</span> com.mongodb.DBCollection<p class="paragraph"/>// Insert a document
+</blockquote><p class="paragraph"/>An example can be seen below:<p class="paragraph"/><div class="code"><pre>// Get a db reference in the old fashion way
+def db = mongo.getDB(<span class="java&#45;quote">"mydb"</span>)<p class="paragraph"/>// Insert a document
 db.languages.insert(&#91;name: 'Groovy'&#93;)
 // A less verbose way to <span class="java&#45;keyword">do</span> it
 db.languages.insert(name: 'Ruby')
@@ -626,10 +648,8 @@ def myAction = &#123;
 &#125;</pre></div><p class="paragraph"/>A request scoped bean is also available for the default database (typically the name of your application, unless specified by the <code>databaseName</code> config option, plus the suffix "DB").<p class="paragraph"/><div class="code"><pre>def peopleDB
 def myAction = &#123;
     peopleDB.languages.insert(&#91;name: 'Fred'&#93;)
-&#125;</pre></div><p class="paragraph"/>Each domain class you define also has a <code>collection</code> property that allows easy access to the underlying <code>DBCollection</code> instance and hence the GMongo API:<p class="paragraph"/><div class="code"><pre>Person.collection.count() == 1
-Person.collection.findOne(firstName:<span class="java&#45;quote">"Fred"</span>).lastName == <span class="java&#45;quote">"Flintstone"</span></pre></div><p class="paragraph"/><blockquote class="note">
-If you are using Hibernate entities with Mongo then the collection will be scoped in the <code>mongo</code> namespace. Example: Person.mongo.collection.count()
-</blockquote><p class="paragraph"/>You can easily convert from a native MongoDB <code>DBObject</code> into an entity using a cast:<p class="paragraph"/><div class="code"><pre>def fred = Person.collection.findOne(firstName:<span class="java&#45;quote">"Fred"</span>) as Person</pre></div>
+&#125;</pre></div><p class="paragraph"/>Each domain class you define also has a <code>collection</code> property that allows easy access to the underlying <code>Collection</code> instance:<p class="paragraph"/><div class="code"><pre>Person.collection.count() == 1
+Person.collection.findOne(firstName:<span class="java&#45;quote">"Fred"</span>).lastName == <span class="java&#45;quote">"Flintstone"</span></pre></div><p class="paragraph"/>You can easily convert from a native MongoDB <code>DBObject</code> into an entity using a cast:<p class="paragraph"/><div class="code"><pre>def fred = Person.collection.findOne(firstName:<span class="java&#45;quote">"Fred"</span>) as Person</pre></div>
 
 
 <h1 id="5. Transactions">5 Transactions</h1>
@@ -663,8 +683,8 @@ class PersonSpec <span class="java&#45;keyword">extends</span> Specification&#12
             Person.count() == 0
     &#125;
 &#125;</pre></div><p class="paragraph"/>
-This library dependency is required in grails-app/conf/BuildConfig.groovy for adding support for <code>MongoDbTestMixin</code>.<p class="paragraph"/><div class="code"><pre>dependencies &#123;
-        test 'org.grails:grails&#45;datastore&#45;test&#45;support:1.0.1&#45;grails&#45;2.4'
+This library dependency is required in <code>build.gradle</code> for adding support for <code>MongoDbTestMixin</code>.<p class="paragraph"/><div class="code"><pre>dependencies &#123;
+        test 'org.grails:grails&#45;datastore&#45;test&#45;support:5.0.0'
     &#125;</pre></div><p class="paragraph"/>Fongo dependency example
 <div class="code"><pre>dependencies &#123;
         test 'com.github.fakemongo:fongo:1.5.4'

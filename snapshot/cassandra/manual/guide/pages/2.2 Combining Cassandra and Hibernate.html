@@ -88,20 +88,11 @@ function addJsClass() {
 
 <h2 id="2.2 Combining Cassandra and Hibernate">2.2 Combining Cassandra and Hibernate</h2>
 If you have both the Hibernate and Cassandra plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Cassandra. 
-If you want to persist a particular domain class with Cassandra then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"cassandra"</span></pre></div><p class="paragraph"/>Alternatively you can persist Hibernate entities to Cassandra using the special <code>cassandra</code> scope added to all Hibernate entities.<p class="paragraph"/><div class="code"><pre>person.cassandra.save()</pre></div><p class="paragraph"/>By default the Hibernate plugin transparently adds an implicit <code>id</code> property of type <code>Long</code> to your domain class. The Cassandra plugin adds an <code>id</code> property of type <code>UUID</code>. 
+If you want to persist a particular domain class with Cassandra then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"cassandra"</span></pre></div><p class="paragraph"/>
+By default the Hibernate plugin transparently adds an implicit <code>id</code> property of type <code>Long</code> to your domain class. The Cassandra plugin adds an <code>id</code> property of type <code>UUID</code>. 
 If you install both plugins, the <code>id</code> property will be of type <code>Long</code>.
 So if you have a domain class with an auto-generated <code>id</code> (the default behaviour) and you want to save it to both datastores, you should define a <code>UUID id</code> 
-property as a <code>Long</code> won't really work for Cassandra. You also need to set the id's <code>generator</code> attribute so that the Hibernate plugin can auto-generate a <code>UUID</code>.
-Here is an example of persisting an entity to both datastores:
-<div class="code"><pre>class Person &#123;
-    UUID id
-    <span class="java&#45;object">String</span> firstName
-    <span class="java&#45;object">String</span> lastName 
-    <span class="java&#45;keyword">static</span> mapping = &#123;
-        id generator:'uuid2'        
-    &#125;   
-&#125;<p class="paragraph"/>def hibernatePerson = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Fred"</span>, lastName: <span class="java&#45;quote">"Flintstone"</span>)<p class="paragraph"/>hibernatePerson.save()<p class="paragraph"/>hibernatePerson = Person.get(uuid)<p class="paragraph"/>hibernatePerson.cassandra.insert()<p class="paragraph"/>def cassandraPerson = Person.cassandra.get(uuid)</pre></div><p class="paragraph"/>Note that as an identifier has been assigned to the entity by the Hibernate plugin, you will need to use the <code>insert</code> method for Cassandra instead of the <code>save</code> method, 
-otherwise GORM can't work out whether you are trying to achieve an insert or an update.
+property as a <code>Long</code> won't really work for Cassandra. You also need to set the id's <code>generator</code> attribute so that the Hibernate plugin can auto-generate a <code>UUID</code>.<p class="paragraph"/>
 
 
                 <div style="clear:both;margin-top:15px;"></div>

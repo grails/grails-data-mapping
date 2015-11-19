@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.6 Adding to GORM APIs 5.0.0.BUILD-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/understandingApi.html"><strong>3</strong><span>Understanding the GORM API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/testing.html"><strong>4</strong><span>Using the Test Compatibility Kit</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/stepByStep.html"><strong>5</strong><span>Step by Step Guide to Creating and Implementation</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/testing.html"><strong>4</strong><span>Using the Test Compatibility Kit</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3.6 Adding to GORM APIs - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher</p>
+
+                    <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h2 id="gormApis">3.6 Adding to GORM APIs</h2>
+By default the GORM compiler will make all GORM entities implement the <code>GormEntity</code> trait. Which provide all of the default GORM methods. However if you want to extend GORM to provide more methods specific to a given data store you can do so by extending this trait.<p class="paragraph"/>For example Neo4j adds methods for Cypher querying:<p class="paragraph"/><div class="code"><pre>trait Neo4jEntity&#60;D&#62; <span class="java&#45;keyword">extends</span> GormEntity&#60;D&#62; &#123;<p class="paragraph"/>    <span class="java&#45;keyword">static</span> Result cypherStatic(<span class="java&#45;object">String</span> queryString, Map params ) &#123;
+        def session = AbstractDatastore.retrieveSession(Neo4jDatastore)
+        def graphDatabaseService = (GraphDatabaseService)session.nativeInterface
+        graphDatabaseService.execute(queryString, params)
+    &#125;
+&#125;</pre></div><p class="paragraph"/>With this addition then you then need to tell the GORM compiler to make entities implement this trait. To do that implement a <code>TraitProvider</code>:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">package</span> org.grails.datastore.gorm.neo4j<p class="paragraph"/><span class="java&#45;keyword">import</span> grails.neo4j.Neo4jEntity
+<span class="java&#45;keyword">import</span> groovy.transform.CompileStatic
+<span class="java&#45;keyword">import</span> org.grails.compiler.gorm.GormEntityTraitProvider<p class="paragraph"/>@CompileStatic
+class Neo4jEntityTraitProvider <span class="java&#45;keyword">implements</span> GormEntityTraitProvider &#123;
+    <span class="java&#45;keyword">final</span> <span class="java&#45;object">Class</span> entityTrait = Neo4jEntity
+&#125;</pre></div><p class="paragraph"/>And then add a <code>src/main/resources/META-INF/services/org.grails.compiler.gorm.GormEntityTraitProvider</code> file specifying the name of your trait provider:<p class="paragraph"/><div class="code"><pre>org.grails.datastore.gorm.neo4j.Neo4jEntityTraitProvider</pre></div><p class="paragraph"/>GORM will automatically inject to trait into any domain class found in <code>grails-app/domain</code> or annotated with the <code>Entity</code> annotation, unless Hibernate is on the classpath in which case you have to tell GORM to map the domain class with Neo4j:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"neo4j"</span></pre></div><p class="paragraph"/>
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/testing.html"><strong>4</strong><span>Using the Test Compatibility Kit</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

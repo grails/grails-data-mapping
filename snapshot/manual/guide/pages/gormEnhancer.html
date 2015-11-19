@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.5 GORM Enhancer 5.0.0.BUILD-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/understandingApi.html"><strong>3</strong><span>Understanding the GORM API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/testing.html"><strong>4</strong><span>Using the Test Compatibility Kit</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/stepByStep.html"><strong>5</strong><span>Step by Step Guide to Creating and Implementation</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/testing.html"><strong>4</strong><span>Using the Test Compatibility Kit</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3.5 GORM Enhancer - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher</p>
+
+                    <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h2 id="gormEnhancer">3.5 GORM Enhancer</h2>
+Once you have implemented the lower-level APIs you can trivially provide a GORM API to a set of Grails domain classes. For example consider the following simple domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.persistence.&#42;<p class="paragraph"/>@Entity
+class Book &#123;
+    <span class="java&#45;object">String</span> title
+&#125;</pre></div><p class="paragraph"/>
+The following setup code can be written to enable GORM for MongoDB:<p class="paragraph"/><div class="code"><pre>// create context
+def context = <span class="java&#45;keyword">new</span> MongoMappingContext(databaseName)
+context.addPersistentEntity(Book)<p class="paragraph"/>// create datastore
+def mongoDatastore = <span class="java&#45;keyword">new</span> MongoDatastore(context)
+mongoDatastore.afterPropertiesSet()<p class="paragraph"/>// enhance
+def enhancer = <span class="java&#45;keyword">new</span> MongoGormEnhancer(mongoDatastore, <span class="java&#45;keyword">new</span> DatastoreTransactionManager(datastore: mongoDatastore))
+enhancer.enhance()<p class="paragraph"/>// use GORM!
+def books = Book.list()</pre></div><p class="paragraph"/>They key part to enabling the usage of all the GORM methods (<code>list()</code>, dynamic finders etc.) is the usage of the <code>MongoGormEnhancer</code>. This class subclasses <code>org.grails.datastore.gorm.GormEnhancer</code> and provides some extensions to GORM specific to MongoDB. A subclass is not required however and if you don't require any datastore specific extensions you can just as easily use the regular <code>GormEnhancer</code>:<p class="paragraph"/><div class="code"><pre>def enhancer = <span class="java&#45;keyword">new</span> GormEnhancer(mongoDatastore, <span class="java&#45;keyword">new</span> DatastoreTransactionManager(datastore: mongoDatastore))
+enhancer.enhance()</pre></div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/testing.html"><strong>4</strong><span>Using the Test Compatibility Kit</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

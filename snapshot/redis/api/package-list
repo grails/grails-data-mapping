@@ -1,7 +1,8 @@
 grails.datastore
+grails.redis
+grails.redis.bootstrap
 org.grails.datastore.gorm.redis
 org.grails.datastore.gorm.redis.bean.factory
-org.grails.datastore.gorm.redis.plugin.support
 org.grails.datastore.mapping.redis
 org.grails.datastore.mapping.redis.collection
 org.grails.datastore.mapping.redis.engine

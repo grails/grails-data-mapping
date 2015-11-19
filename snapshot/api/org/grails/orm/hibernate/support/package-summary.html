@@ -73,32 +73,6 @@ function windowTitle()
 <div class="contentContainer">
 
 
-    <div class="summary">
-        <ul class="blockList">
-            <li class="blockList">
-                <table border="0" cellpadding="3" cellspacing="0" summary="Interface Summary">
-                    <caption><span>Interface Summary</span><span class="tabEnd">&nbsp;</span></caption>
-                    <tbody>
-                    <tr>
-                        <th class="colFirst" scope="col">Interface</th>
-                        <th class="colLast" scope="col">Description</th>
-                    </tr>
-<tr class="altColor">
-                            <td class="colOne">
-                                <strong><a href="SessionFactoryAwarePersistenceContextInterceptor.html" title="class in org/grails/orm/hibernate/support">
-                                    SessionFactoryAwarePersistenceContextInterceptor
-                                </a></strong>
-                            </td>
-                            <td>Interface for grails.persistence.support.PersistenceContextInterceptor instances that are aware of the org.hibernate.SessionFactory</td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </li>
-            </ul>
-        </div>
-    
-
 
 
     <div class="summary">
@@ -111,30 +85,6 @@ function windowTitle()
                         <th class="colFirst" scope="col">Class</th>
                         <th class="colLast" scope="col">Description</th>
                     </tr>
-<tr class="altColor">
-                            <td class="colOne">
-                                <strong><a href="AbstractAggregatePersistenceContextInterceptor.html" title="class in org/grails/orm/hibernate/support">
-                                    AbstractAggregatePersistenceContextInterceptor
-                                </a></strong>
-                            </td>
-                            <td>@author Burt Beckwith</td>
-                        </tr>
-<tr class="altColor">
-                            <td class="colOne">
-                                <strong><a href="AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.html" title="class in org/grails/orm/hibernate/support">
-                                    AbstractMultipleDataSourceAggregatePersistenceContextInterceptor
-                                </a></strong>
-                            </td>
-                            <td>Abstract implementation of the grails.persistence.support.PersistenceContextInterceptor interface that supports multiple data sources</td>
-                        </tr>
-<tr class="altColor">
-                            <td class="colOne">
-                                <strong><a href="AggregatePersistenceContextInterceptor.html" title="class in org/grails/orm/hibernate/support">
-                                    AggregatePersistenceContextInterceptor
-                                </a></strong>
-                            </td>
-                            <td>Concrete implementation of the <a href='../../../../../org/grails/orm/hibernate/support/AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.html' title='AbstractMultipleDataSourceAggregatePersistenceContextInterceptor'>AbstractMultipleDataSourceAggregatePersistenceContextInterceptor</a> class for Hibernate 4</td>
-                        </tr>
 <tr class="altColor">
                             <td class="colOne">
                                 <strong><a href="ClosureEventListener.html" title="class in org/grails/orm/hibernate/support">
@@ -153,28 +103,11 @@ function windowTitle()
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
-                                <strong><a href="FlushOnRedirectEventListener.html" title="class in org/grails/orm/hibernate/support">
-                                    FlushOnRedirectEventListener
+                                <strong><a href="HibernateDatastoreFactoryBean.html" title="class in org/grails/orm/hibernate/support">
+                                    HibernateDatastoreFactoryBean
                                 </a></strong>
                             </td>
-                            <td>Flushes the session on a redirect.</td>
-                        </tr>
-<tr class="altColor">
-                            <td class="colOne">
-                                <strong><a href="GrailsOpenSessionInViewInterceptor.html" title="class in org/grails/orm/hibernate/support">
-                                    GrailsOpenSessionInViewInterceptor
-                                </a></strong>
-                            </td>
-                            <td>Extends the default spring OSIVI and doesn't flush the session if it has been set
- to MANUAL on the session itself.</td>
-                        </tr>
-<tr class="altColor">
-                            <td class="colOne">
-                                <strong><a href="HibernateBeanWrapper.html" title="class in org/grails/orm/hibernate/support">
-                                    HibernateBeanWrapper
-                                </a></strong>
-                            </td>
-                            <td>BeanWrapper implementaion that will not lazy initialize entity properties.</td>
+                            <td>Helper for constructing the datastore</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -186,11 +119,11 @@ function windowTitle()
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
-                                <strong><a href="HibernatePersistenceContextInterceptor.html" title="class in org/grails/orm/hibernate/support">
-                                    HibernatePersistenceContextInterceptor
+                                <strong><a href="HibernateMappingContextFactoryBean.html" title="class in org/grails/orm/hibernate/support">
+                                    HibernateMappingContextFactoryBean
                                 </a></strong>
                             </td>
-                            <td>@author Graeme Rocher</td>
+                            <td>Builds a HibernateMappingContext</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -199,6 +132,14 @@ function windowTitle()
                                 </a></strong>
                             </td>
                             <td>Utility methods used at runtime by the GORM for Hibernate implementation</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="SessionFactoryUtils.html" title="class in org/grails/orm/hibernate/support">
+                                    SessionFactoryUtils
+                                </a></strong>
+                            </td>
+                            <td>Helper methods for Hibernate 4</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">

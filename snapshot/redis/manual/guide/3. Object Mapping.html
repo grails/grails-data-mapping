@@ -36,16 +36,7 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20Querying.html"><strong>4</strong><span>Querying</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Transactions.html"><strong>5</strong><span>Transactions</span></a>
-                    </div>
-                    
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/6.%20Redis%20Specific%20Extensions.html"><strong>6</strong><span>Redis Specific Extensions</span></a>
-                    </div>
-                    
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/7.%20The%20Low-level%20API.html"><strong>7</strong><span>The Low-level API</span></a>
-                    </div>
-                    
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/8.%20Testing.html"><strong>8</strong><span>Testing</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/6.%20Redis%20Specific%20Extensions.html"><strong>5</strong><span>Redis Specific Extensions</span></a>
                     </div>
                     
                 </div>
@@ -96,7 +87,7 @@ function addJsClass() {
                 
 
 <h1 id="3. Object Mapping">3 Object Mapping</h1>
-Object mapping works largely as described in the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html" target="blank">documentation on GORM</a>. In general you can continue to model your associations using typical GORM notation such as <code>hasMany</code>, <code>belongsTo</code> and so on.<p class="paragraph"/>The one notable exception is that the <a href="http://grails.org/doc/latest/ref/Database%20Mapping/Usage.html" target="blank">mapping block</a> works differently to GORM for Hibernate. Most of the mapping configuration options available to GORM for Hibernate are specific to SQL databases and hence don't make sense to Redis.<p class="paragraph"/>Here is an example of a domain class that can be persisted to Redis:<p class="paragraph"/><div class="code"><pre>class Person &#123;<p class="paragraph"/>    <span class="java&#45;object">String</span> firstName
+Object mapping works largely as described in the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html" target="blank">documentation on GORM</a>. In general you can continue to model your associations using typical GORM notation such as <code>hasMany</code>, <code>belongsTo</code> and so on.<p class="paragraph"/>The one notable exception is that the <a href="http://grails.org/doc/latest/ref/Database%20Mapping/Usage.html" target="blank">mapping block</a> works differently to GORM for Hibernate. Most of the mapping configuration options available to GORM for Hibernate are specific to SQL databases and hence don't make sense to Redis.<p class="paragraph"/>Here is an example of a domain class that can be persisted to Redis:<p class="paragraph"/><div class="code"><pre>class Person &#123;<p class="paragraph"/>    <span class="java&#45;object">String</span> firstName
     <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> constraints = &#123;
         firstName blank:<span class="java&#45;keyword">false</span>
         lastName blank:<span class="java&#45;keyword">false</span>
@@ -124,15 +115,6 @@ Object mapping works largely as described in the <a href="http://grails.org/doc/
                 </div>
                 <div class="menu">
                     
-                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
-                        
-                            
-                            <div class="menu-item"><a href="../ref/Beans/redis.html">redis</a>
-                            </div>
-                            
-                            </div>
-                    </div>
-                    
                     <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
                         
                             
@@ -143,15 +125,6 @@ Object mapping works largely as described in the <a href="http://grails.org/doc/
                             </div>
                             
                             <div class="menu-item"><a href="../ref/Domain%20Classes/random.html">random</a>
-                            </div>
-                            
-                            </div>
-                    </div>
-                    
-                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
-                        
-                            
-                            <div class="menu-item"><a href="../ref/Testing/DatastoreUnitTestMixin.html">DatastoreUnitTestMixin</a>
                             </div>
                             
                             </div>

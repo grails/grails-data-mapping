@@ -23,17 +23,15 @@ function addJsClass(el) {
                         <a href="../guide/index.html" class="button">Table of contents</a>
                         <div id="nav-summary-childs" style="display:none;">
                             
-                            <div class="toc-item" style="margin-left:0"><a href="#1.%20Introduction"><strong>1</strong><span>Introduction</span></a></div>
+                            <div class="toc-item" style="margin-left:0"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0"><a href="#2.%20Getting%20Started"><strong>2</strong><span>Getting Started</span></a></div>
+                            <div class="toc-item" style="margin-left:0"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0"><a href="#3.%20Understanding%20the%20Low-level%20API"><strong>3</strong><span>Understanding the Low-level API</span></a></div>
+                            <div class="toc-item" style="margin-left:0"><a href="#understandingApi"><strong>3</strong><span>Understanding the GORM API</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0"><a href="#4.%20GORM%20Enhancer"><strong>4</strong><span>GORM Enhancer</span></a></div>
+                            <div class="toc-item" style="margin-left:0"><a href="#testing"><strong>4</strong><span>Using the Test Compatibility Kit</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0"><a href="#5.%20Using%20the%20Test%20Compatibility%20Kit"><strong>5</strong><span>Using the Test Compatibility Kit</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:0"><a href="#6.%20Creating%20a%20GORM%20implementation%20Step%20by%20Step"><strong>6</strong><span>Creating a GORM implementation Step by Step</span></a></div>
+                            <div class="toc-item" style="margin-left:0"><a href="#stepByStep"><strong>5</strong><span>Step by Step Guide to Creating and Implementation</span></a></div>
                             
                         </div>
                     </div>
@@ -70,78 +68,73 @@ function addJsClass(el) {
                         <div id="table-of-content">
                             <h2>Table of Contents</h2>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#1.%20Introduction"><strong>1</strong><span>Introduction</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#2.%20Getting%20Started"><strong>2</strong><span>Getting Started</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#gettingStarted"><strong>2</strong><span>Getting Started</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#3.%20Understanding%20the%20Low-level%20API"><strong>3</strong><span>Understanding the Low-level API</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#understandingApi"><strong>3</strong><span>Understanding the GORM API</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.1%20Datastore%20Basics"><strong>3.1</strong><span>Datastore Basics</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#datastoreBasics"><strong>3.1</strong><span>Datastore Basics</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.2%20Implementing%20CRUD"><strong>3.2</strong><span>Implementing CRUD</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#implementingCrud"><strong>3.2</strong><span>Implementing CRUD</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.3%20Secondary%20Indices"><strong>3.3</strong><span>Secondary Indices</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#secondaryIndexes"><strong>3.3</strong><span>Secondary Indexing</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#3.4%20Implementing%20Querying"><strong>3.4</strong><span>Implementing Querying</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#implementingQueries"><strong>3.4</strong><span>Implementing Querying</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#4.%20GORM%20Enhancer"><strong>4</strong><span>GORM Enhancer</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#gormEnhancer"><strong>3.5</strong><span>GORM Enhancer</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#4.1%20GORM%20APIs"><strong>4.1</strong><span>GORM APIs</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#gormApis"><strong>3.6</strong><span>Adding to GORM APIs</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#5.%20Using%20the%20Test%20Compatibility%20Kit"><strong>5</strong><span>Using the Test Compatibility Kit</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#testing"><strong>4</strong><span>Using the Test Compatibility Kit</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#6.%20Creating%20a%20GORM%20implementation%20Step%20by%20Step"><strong>6</strong><span>Creating a GORM implementation Step by Step</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#stepByStep"><strong>5</strong><span>Step by Step Guide to Creating and Implementation</span></a></div>
                             
                             <div style="clear:both" ></div>
                         </div>
                         
                         
 
-<h1 id="1. Introduction">1 Introduction</h1>
+<h1 id="introduction">1 Introduction</h1>
 This documentation describes the GORM API mechanics and how a datastore implementation can be built to interface to any database providing a GORM API onto it. This documentation is mainly targeted at developers interested in creating implementations of GORM ontop of alternative datastores.<p class="paragraph"/>As of this writing the project has several implementations of GORM against a variety of different datastore implementations. Current implementations include:
 <ul class="star">
-<li>Hibernate (currently part of the Grails source code)</li>
-<li>JPA</li>
+<li>Hibernate 3,4 and 5</li>
 <li>MongoDB</li>
 <li>Redis</li>
 <li>Neo4j</li>
-<li>Riak</li>
-<li>Amazon SimpleDB</li>
+<li>Cassandra</li>
 <li>java.util.ConcurrentHashMap (the fastest datastore in the world)</li>
-</ul><p class="paragraph"/>The remainder of this document describes how to project is structured, how to build a project and how to implement a GORM provider.<p class="paragraph"/><p class="paragraph"/><p class="paragraph"/>
+</ul><p class="paragraph"/>The remainder of this document describes how the project is structured, how to build a project and how to implement a GORM provider.<p class="paragraph"/><p class="paragraph"/><p class="paragraph"/>
 
 
-<h1 id="2. Getting Started">2 Getting Started</h1>
-<h3>Checking out and Building </h3><p class="paragraph"/>The project is currently hosted on Github at <a href="https://github.com/SpringSource/grails-data-mapping" target="blank"></a>.<p class="paragraph"/>You are free to fork the project from there or clone it anonymously using git:<p class="paragraph"/><div class="code"><pre>git clone git@github.com:SpringSource/grails&#45;data&#45;mapping.git
-cd grails&#45;data&#45;mapping</pre></div><p class="paragraph"/>The project has a <a href="http://gradle.org" target="blank">Gradle</a> build. You can generate Eclipse or Intellij project files to open the project using:<p class="paragraph"/><div class="code"><pre>./gradlew eclipse</pre></div><p class="paragraph"/>Or<p class="paragraph"/><div class="code"><pre>./gradlew idea</pre></div><p class="paragraph"/>Once this is done your can import the project into Eclipse, or in the case of Intellij open up the generated <code>grails-data-mapping.ipr</code> file.<p class="paragraph"/><blockquote class="note">
-The version of Gradle used has a bug whereby a subproject is generated for the root directory called "grails-data-mapping". You should remove this subproject from your Intellij Modules or delete it it from Eclipse.
-</blockquote><p class="paragraph"/>To build the project you can run the <code>assemble</code> task:<p class="paragraph"/><div class="code"><pre>./gradlew assemble</pre></div><p class="paragraph"/>To install the jar files for the various subprojects into your local Maven repository you can run:<p class="paragraph"/><div class="code"><pre>./gradlew install</pre></div><p class="paragraph"/>To build all of the documentation run the command:<p class="paragraph"/><div class="code"><pre>./gradlew allDocs</pre></div><p class="paragraph"/>Documentation will produced in the <code>build/docs</code> directory.<p class="paragraph"/><blockquote class="note">
+<h1 id="gettingStarted">2 Getting Started</h1>
+<h3>Checking out and Building </h3><p class="paragraph"/>The project is currently hosted on Github at <a href="https://github.com/grails/grails-data-mapping" target="blank"></a>.<p class="paragraph"/>You are free to fork the project from there or clone it anonymously using git:<p class="paragraph"/><div class="code"><pre>git clone git@github.com:grails/grails&#45;data&#45;mapping.git
+cd grails&#45;data&#45;mapping</pre></div><p class="paragraph"/>The project has a <a href="http://gradle.org" target="blank">Gradle</a> build. You will need Intellij 15 or greater to work with the source code.<p class="paragraph"/>Use the Intellij 15 Gradle tooling to import the project.<p class="paragraph"/>
+To build the project you can run the <code>assemble</code> task:<p class="paragraph"/><div class="code"><pre>./gradlew assemble</pre></div><p class="paragraph"/>To install the jar files for the various subprojects into your local Maven repository you can run:<p class="paragraph"/><div class="code"><pre>./gradlew install</pre></div><p class="paragraph"/>To build all of the documentation run the command:<p class="paragraph"/><div class="code"><pre>./gradlew allDocs</pre></div><p class="paragraph"/>Documentation will produced in the <code>build/docs</code> directory.<p class="paragraph"/><blockquote class="note">
 If you experience PermGen errors when building documentation you may need to increase the JVM permgen inside GRADLE_OPTS
 </blockquote><p class="paragraph"/><h3>Project Structure</h3><p class="paragraph"/>The project is essentially a multi-project Gradle build. There is a core API and then subprojects that implement that API. The core API subprojects include:
 <ul class="star">
 <li><code>grails-datastore-core</code> - The core API, this provides core interfaces for implementing a GORM provider</li>
 <li><code>grails-datastore-gorm</code> - The runtime meta-programming and AST transformation infrastructure behind GORM. Also provides end users APIs like <code>grails.gorm.CriteriaBuilder</code> and <code>grails.gorm.DetachedCriteria</code></li>
-<li><code>grails-datastore-gorm-plugin-support</code> - Support classes for easing the writing of a GORM plugin for Grails</li>
+<li><code>grails-datastore-gorm-support</code> - Support classes for easing the writing of a GORM plugin for Grails</li>
 <li><code>grails-datastore-gorm-tck</code> - The TCK that includes hundreds of Spock specifications that a GORM implementation will need to pass</li>
 <li><code>grails-datastore-web</code> - Classes required to integrate GORM into a web tier</li>
 </ul><p class="paragraph"/>Beyond these core subprojects there are implementations for various datastores. For example:
 <ul class="star">
-<li><code>grails-datastore-gemfire/grails-datastore-gorm-gemfire</code> - GORM for Gemfire project <a href="http://grails.org/plugin/gemfire" target="blank"></a></li>
-<li><code>grails-datastore-jpa/grails-datastore-gorm-jpa</code> - GORM for JPA project <a href="http://grails.org/plugin/gorm-jpa" target="blank"></a></li>
-<li><code>grails-datastore-mongo/grails-datastore-gorm-mongo</code> - GORM for MongoDB project <a href="http://grails.org/plugin/mongodb" target="blank"></a></li>
+<li><code>grails-datastore-mongodb/grails-datastore-gorm-hibernate</code> - GORM for Hibernate</li>
+<li><code>grails-datastore-mongodb/grails-datastore-gorm-mongo</code> - GORM for MongoDB project <a href="http://grails.org/plugin/mongodb" target="blank"></a></li>
 <li><code>grails-datastore-neo4j</code> - GORM for Neo4j project <a href="http://grails.org/plugin/neo4j" target="blank"></a></li>
 <li><code>grails-datastore-redis/grails-datastore-gorm-redis</code> - GORM for Redis project <a href="http://grails.org/plugin/redis" target="blank"></a></li>
-<li><code>grails-datastore-riak/grails-datastore-gorm-riak</code> - GORM for Riak project <a href="http://grails.org/plugin/riak" target="blank"></a></li>
-<li><code>grails-datastore-simpledb/grails-datastore-gorm-simpledb</code> - GORM for SimpleDB project <a href="http://grails.org/plugin/simpledb" target="blank"></a></li>
-</ul><p class="paragraph"/>Some implementations are split into 2 subprojects others are not. It depends whether the author chooses to divide the Java parts and the Groovy parts of the project implementation. It is not a requirement to do so.<p class="paragraph"/>The documentation for each implementation is kept in the documentation subprojects that start with <code>grails-documentation</code>. There are documentation projects for the core API, MongoDB, Neo4j, Redis, Riak and Amazon SimpleDB.<p class="paragraph"/>Finally the Grails plugins that are used to distribute the GORM implementations to end users can be found in the <code>grails-plugins</code> directory.<p class="paragraph"/><p class="paragraph"/>
+<li><code>grails-datastore-cassandra/grails-datastore-gorm-cassandra</code> - GORM for Cassandra project <a href="http://grails.org/plugin/cassandra" target="blank"></a></li>
+</ul><p class="paragraph"/>The documentation for each implementation is kept in the documentation subprojects that start with <code>grails-documentation</code>. There are documentation projects for the core API, MongoDB, Neo4j, Redis, and Cassandra.<p class="paragraph"/>Finally the Grails 3 plugins that are used to distribute the GORM implementations to end users can be found in the <code>grails-plugins</code> directory and the <code>grails2-plugins</code> directory for Grails 2.x.<p class="paragraph"/><p class="paragraph"/>
 
 
-<h1 id="3. Understanding the Low-level API">3 Understanding the Low-level API</h1>
+<h1 id="understandingApi">3 Understanding the GORM API</h1>
 <h3>Introduction</h3><p class="paragraph"/>The GORM Datastore API is split into a low-level API that implementors need to implement for each individual datastore and then set of higher level APIs that enhance domain classes with things regular users see such as dynamic finders, criteria queries and so on.<p class="paragraph"/>The low-level API classes are found in the <code>grails-datastore-core</code> subproject, whilst the higher level APIs used to enhance domain classes are found in <code>grails-datastore-gorm</code>. In this section we will discuss the low-level API.<p class="paragraph"/>
 
 
 
-<h2 id="3.1 Datastore Basics">3.1 Datastore Basics</h2>
+<h2 id="datastoreBasics">3.1 Datastore Basics</h2>
 <h3>The MappingContext</h3><p class="paragraph"/>The <code>org.grails.datastore.mapping.model.MappingContext</code> interface is used to obtain metadata about the classes that are configured for persistence. There are <code>org.grails.datastore.mapping.model.PersistentEntity</code> and <code>org.grails.datastore.mapping.model.PersistentProperty</code> interfaces that represent a class and its properties respectively. These can be obtained and introspected via the <code>MappingContext</code>.<p class="paragraph"/>There are various concrete implementations of the <code>MappingContext</code> interface such as:
 <ul class="star">
 <li><code>DocumentMappingContext</code> - Used for document stores, subclassed by <code>MongoMappingContext</code></li>
@@ -167,11 +160,11 @@ If you experience PermGen errors when building documentation you may need to inc
     &#125;
 &#125;</pre></div><p class="paragraph"/>
 Notice how Neo4j provides a custom <code>GraphGormMappingFactory</code> and <code>GraphPersistentEntity</code> to allow the domain class configuration to be changed for a given Neo4j <code>Node</code>.<p class="paragraph"/><h3>The Datastore Interface</h3><p class="paragraph"/>The <code>org.grails.datastore.mapping.core.Datastore</code> interface is the equivalent of a SQL <code>DataSource</code> where by it provides the necessary capability to create a connection. In most cases one can simply subclass the <code>AbstractDatastore</code> super class and implement the <code>createSession</code> method. The following implementation is from the <code>SimpleMapDatastore</code> which implements GORM ontop of a <code>ConcurrentHashMap</code>:<p class="paragraph"/><div class="code"><pre>@Override
-<span class="java&#45;keyword">protected</span> Session createSession(Map&#60;<span class="java&#45;object">String</span>, <span class="java&#45;object">String</span>&#62; connectionDetails) &#123;
+<span class="java&#45;keyword">protected</span> Session createSession(PropertyResolver connDetails) &#123;
     <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> SimpleMapSession(<span class="java&#45;keyword">this</span>, getMappingContext(), getApplicationEventPublisher());
-&#125;</pre></div><p class="paragraph"/>The implementation depends a lot on the underlying datastore. For example for JPA the following implementation is used:<p class="paragraph"/><div class="code"><pre>@Override
-<span class="java&#45;keyword">protected</span> Session createSession(Map&#60;<span class="java&#45;object">String</span>, <span class="java&#45;object">String</span>&#62; connDetails) &#123;
-    <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> JpaSession(<span class="java&#45;keyword">this</span>, <span class="java&#45;keyword">new</span> JpaTemplate(entityManagerFactory), transactionManager);
+&#125;</pre></div><p class="paragraph"/>The implementation depends a lot on the underlying datastore. For example for MongoDB the following implementation is used:<p class="paragraph"/><div class="code"><pre>@Override
+<span class="java&#45;keyword">protected</span> Session createSession(PropertyResolver connDetails) &#123;
+    <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> MongoSession(<span class="java&#45;keyword">this</span>, getMappingContext(), getApplicationEventPublisher(), <span class="java&#45;keyword">false</span>);
 &#125;</pre></div><p class="paragraph"/>Notice that the <code>Datastore</code> also has a reference to the <code>MappingContext</code> discussed in the previous section.<p class="paragraph"/>
 <h3>The Session Interface</h3><p class="paragraph"/>The <code>org.grails.datastore.mapping.core.Session</code> interface represents an active connection. It can be either stateful or stateless, depending on the implementation. For example of embedded databases where there is no network connection, a stateful session is not particularly useful, but a datastore that creates network connections you may want to cache returned instances to reduce load.<p class="paragraph"/>The <code>AbstractSession</code> class provides some support for creating stateful sessions, if you prefer a stateless implementation then simply implement <code>Session</code> or subclass <code>AbstractAttributeStoringSession</code>.<p class="paragraph"/>In general if you subclass <code>AbstractSession</code> the minimum you need to do is implement the <code>createPersister</code> method:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">protected</span> Persister createPersister(<span class="java&#45;object">Class</span> cls, MappingContext mappingContext) &#123;
     PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
@@ -183,7 +176,7 @@ Notice how Neo4j provides a custom <code>GraphGormMappingFactory</code> and <cod
 &#125;</pre></div><p class="paragraph"/>The example above is from the <code>SimpleMapSession</code> implementation, which creates a <code>SimpleMapEntityPersister</code> instance and returns it. Returning null indicates that the class cannot be persisted and an exception will be thrown
 
 
-<h2 id="3.2 Implementing CRUD">3.2 Implementing CRUD</h2>
+<h2 id="implementingCrud">3.2 Implementing CRUD</h2>
 <h4>The EntityPersister Interface</h4><p class="paragraph"/>The <code>EntityPersister</code> interface is used to implement the basic Create, Read, Update and Delete (CRUD) operations. There are individual methods to implement such as <code>persistEntity</code>, <code>updateEntity</code>, <code>deleteEntity</code> and so on.<p class="paragraph"/>In many cases there is a representation of an entity in its "native" form as supplied by the datastore driver. For example in Cassandra this could be a <code>ColumnFamily</code>, or in MongoDB a <code>DBCollection</code>.<p class="paragraph"/>To support implementation such cases there is an abstract <code>NativeEntryEntityPersister&#60;T, K&#62;</code> super class that provides the basis for an implementation that maps a native entry, such as a MongoDB <code>DBObject</code> or a Neo4j <code>Node</code> to a persist entity and back again.<p class="paragraph"/>The 2 generic types of this superclass indicate the native entry type (example <code>DBObject</code> in MongoDB) and the native key type (example <code>ObjectId</code> in MongoDB). The MongoDB implementation looks like this:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">public</span> class MongoEntityPersister <span class="java&#45;keyword">extends</span> NativeEntryEntityPersister&#60;DBObject, <span class="java&#45;object">Object</span>&#62;</pre></div><p class="paragraph"/>Note that <code>Object</code> is used for the key since MongoDB also supports Long and String-based identifiers.<p class="paragraph"/>They key methods that need implementing are defined below:
 <ul class="star">
 <li><code>getEntityFamily()</code> - Defines the the name of the entity group or family. This could be a database table, a Cassandra Column Family or a MongoDB collection.</li>
@@ -263,8 +256,8 @@ Notice how Neo4j provides a custom <code>GraphGormMappingFactory</code> and <cod
 &#125;</pre></div><p class="paragraph"/>You'll notice this implementation uses a <code>MongoQuery</code> instance. Note that implementing an <code>EntityPersister</code> you have enabled basic CRUD operations, but not querying, which is a topic of the following sections. First, however secondary indices need to covered since they are required for querying.
 
 
-<h2 id="3.3 Secondary Indices">3.3 Secondary Indices</h2>
-Many datastores do not support secondary indices or require you to build your own. In cases like this you will need to implement a <code>PropertyIndexer</code>.<p class="paragraph"/><blockquote class="note">
+<h2 id="secondaryIndexes">3.3 Secondary Indexing</h2>
+Many datastores do not support secondary indexing or require you to build your own. In cases like this you will need to implement a <code>PropertyIndexer</code>.<p class="paragraph"/><blockquote class="note">
 If the underlying datastore supports secondary indexes then it is ok to just return a <code>null</code> PropertyIndexer and let the datastore handle the indexing
 </blockquote><p class="paragraph"/>For example the <code>ConcurrentHashMap</code> implementation creates secondary indices by populating another <code>Map</code> containing the indices:<p class="paragraph"/><div class="code"><pre>void index(value, primaryKey) &#123;<p class="paragraph"/>    def index = getIndexName(value)
     def indexed = indices&#91;index&#93;
@@ -296,11 +289,11 @@ If the underlying datastore supports secondary indexes then it is ok to just ret
 &#125;</pre></div><p class="paragraph"/>
 
 
-<h2 id="3.4 Implementing Querying">3.4 Implementing Querying</h2>
+<h2 id="implementingQueries">3.4 Implementing Querying</h2>
 <h3>Introduction</h3><p class="paragraph"/>The <code>org.grails.datastore.mapping.query.Query</code> abstract class defines the query model and it is the job of the GORM implementor to translate this query model into an underlying database query. This is different depending on the implementation and may involve:
 <ul class="star">
 <li>Generating a String-based query such as SQL or JPA-QL</li>
-<li>Creating a query object such as MongoDB's use of a <code>DBObject</code> to define queries</li>
+<li>Creating a query object such as MongoDB's use of a <code>Document</code> to define queries</li>
 <li>Generating for use with manually created Secondary indices as is the case with Redis</li>
 </ul><p class="paragraph"/>The <code>Query</code> object defines the following:
 <ul class="star">
@@ -332,7 +325,7 @@ If the underlying datastore doesn't for example support calculating a <code>sum<
     &#125;
     &#8230;
 &#93;</pre></div><p class="paragraph"/>Which simply uses the property indexer to query for all identifiers. Of course here we are a describing a case of a datastore (in this case <code>ConcurrentHashMap</code>) which doesn't support secondary indices. It may be that instead of manually querying the secondary indices in this way that you simply build a String-based or native query. For example in MongoDB this looks like:<p class="paragraph"/><div class="code"><pre>queryHandlers.put(Equals.class, <span class="java&#45;keyword">new</span> QueryHandler&#60;Equals&#62;() &#123;
-    <span class="java&#45;keyword">public</span> void handle(PersistentEntity entity, Equals criterion, DBObject query) &#123;
+    <span class="java&#45;keyword">public</span> void handle(PersistentEntity entity, Equals criterion, Document query) &#123;
         <span class="java&#45;object">String</span> propertyName = getPropertyName(entity, criterion);
         <span class="java&#45;object">Object</span> value = criterion.getValue();
         PersistentProperty property = entity.getPropertyByName(criterion.getProperty());
@@ -348,7 +341,7 @@ If the underlying datastore doesn't for example support calculating a <code>sum<
 &#125;);</pre></div><p class="paragraph"/>In this case a <code>StringBuilder</code> is used to construct a OQL query from the <code>Query</code> model.
 
 
-<h1 id="4. GORM Enhancer">4 GORM Enhancer</h1>
+<h2 id="gormEnhancer">3.5 GORM Enhancer</h2>
 Once you have implemented the lower-level APIs you can trivially provide a GORM API to a set of Grails domain classes. For example consider the following simple domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.persistence.&#42;<p class="paragraph"/>@Entity
 class Book &#123;
     <span class="java&#45;object">String</span> title
@@ -364,29 +357,22 @@ def books = Book.list()</pre></div><p class="paragraph"/>They key part to enabli
 enhancer.enhance()</pre></div>
 
 
-<h2 id="4.1 GORM APIs">4.1 GORM APIs</h2>
-The <code>GormEnhancer</code> class defines three methods called <code>getStaticApi</code>, <code>getInstanceApi</code> and <code>getValidationApi</code> that return instances of <code>GormStaticApi</code>, <code>GormInstanceApi</code> and <code>GormValidationApi</code> respectively. If you wish to provide custom GORM functionality then you can subclass each of these and override one of the aforementioned methods to provide said functionality.<p class="paragraph"/>For example GORM for MongoDB does this to provide access to the underlying <code>DBCollection</code>:<p class="paragraph"/><div class="code"><pre>class MongoGormStaticApi&#60;D&#62; <span class="java&#45;keyword">extends</span> GormStaticApi&#60;D&#62; &#123;
-    &#8230;
-    /&#42;&#42;
-     &#42; The actual collection that <span class="java&#45;keyword">this</span> entity maps to.
-     &#42;
-     &#42; @<span class="java&#45;keyword">return</span> The actual collection
-     &#42;/
-    DBCollection getCollection() &#123;
-        MongoDatastore ms = datastore
-        def template = ms.getMongoTemplate(persistentEntity)<p class="paragraph"/>        def coll = template.getCollection(ms.getCollectionName(persistentEntity))
-        DBCollectionPatcher.patch(coll)
-        <span class="java&#45;keyword">return</span> coll
-    &#125;    
-&#125;</pre></div><p class="paragraph"/>With this method in place users of GORM for MongoDB can access the underlying MongoDB API directly:<p class="paragraph"/><div class="code"><pre>def dbo = Book.collection.findOne()</pre></div><p class="paragraph"/>The enable usage of this API the <code>MongoGormEnhancer</code> extends and overrides the <code>getStaticApi</code> method:<p class="paragraph"/><div class="code"><pre>class MongoGormEnhancer <span class="java&#45;keyword">extends</span> GormEnhancer &#123;
-    &#8230;
-    <span class="java&#45;keyword">protected</span> &#60;D&#62; GormStaticApi&#60;D&#62; getStaticApi(<span class="java&#45;object">Class</span>&#60;D&#62; cls) &#123;
-        <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> MongoGormStaticApi&#60;D&#62;(cls, datastore, finders)
-    &#125;   
-&#125;</pre></div>
+<h2 id="gormApis">3.6 Adding to GORM APIs</h2>
+By default the GORM compiler will make all GORM entities implement the <code>GormEntity</code> trait. Which provide all of the default GORM methods. However if you want to extend GORM to provide more methods specific to a given data store you can do so by extending this trait.<p class="paragraph"/>For example Neo4j adds methods for Cypher querying:<p class="paragraph"/><div class="code"><pre>trait Neo4jEntity&#60;D&#62; <span class="java&#45;keyword">extends</span> GormEntity&#60;D&#62; &#123;<p class="paragraph"/>    <span class="java&#45;keyword">static</span> Result cypherStatic(<span class="java&#45;object">String</span> queryString, Map params ) &#123;
+        def session = AbstractDatastore.retrieveSession(Neo4jDatastore)
+        def graphDatabaseService = (GraphDatabaseService)session.nativeInterface
+        graphDatabaseService.execute(queryString, params)
+    &#125;
+&#125;</pre></div><p class="paragraph"/>With this addition then you then need to tell the GORM compiler to make entities implement this trait. To do that implement a <code>TraitProvider</code>:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">package</span> org.grails.datastore.gorm.neo4j<p class="paragraph"/><span class="java&#45;keyword">import</span> grails.neo4j.Neo4jEntity
+<span class="java&#45;keyword">import</span> groovy.transform.CompileStatic
+<span class="java&#45;keyword">import</span> org.grails.compiler.gorm.GormEntityTraitProvider<p class="paragraph"/>@CompileStatic
+class Neo4jEntityTraitProvider <span class="java&#45;keyword">implements</span> GormEntityTraitProvider &#123;
+    <span class="java&#45;keyword">final</span> <span class="java&#45;object">Class</span> entityTrait = Neo4jEntity
+&#125;</pre></div><p class="paragraph"/>And then add a <code>src/main/resources/META-INF/services/org.grails.compiler.gorm.GormEntityTraitProvider</code> file specifying the name of your trait provider:<p class="paragraph"/><div class="code"><pre>org.grails.datastore.gorm.neo4j.Neo4jEntityTraitProvider</pre></div><p class="paragraph"/>GORM will automatically inject to trait into any domain class found in <code>grails-app/domain</code> or annotated with the <code>Entity</code> annotation, unless Hibernate is on the classpath in which case you have to tell GORM to map the domain class with Neo4j:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"neo4j"</span></pre></div><p class="paragraph"/>
 
 
-<h1 id="5. Using the Test Compatibility Kit">5 Using the Test Compatibility Kit</h1>
+
+<h1 id="testing">4 Using the Test Compatibility Kit</h1>
 The <code>grails-datastore-gorm-tck</code> project provides a few hundred tests that ensure a particular GORM implementation is compliant. To use the TCK you need to define a dependency on the TCK in the subprojects <code>build.gradle</code> file:<p class="paragraph"/><div class="code"><pre>testCompile project(':grails&#45;datastore&#45;gorm&#45;tck')</pre></div><p class="paragraph"/>Then create a <code>Setup.groovy</code> file that sets up your custom datastore in your implementation.<p class="paragraph"/>For example the <code>ConcurrentHashMap</code> implementation has one defined in <code>grails-datastore-gorm-test/src/test/groovy/org/grails/datastore/gorm/Setup.groovy</code>:<p class="paragraph"/><div class="code"><pre>class Setup &#123;<p class="paragraph"/>    <span class="java&#45;keyword">static</span> destroy() &#123;
         // noop
     &#125;
@@ -409,18 +395,14 @@ class PagedResultSpec <span class="java&#45;keyword">extends</span> GormDatastor
 &#125;</pre></div>
 
 
-<h1 id="6. Creating a GORM implementation Step by Step">6 Creating a GORM implementation Step by Step</h1>
-To get started with your a new GORM implementation the following steps are required:<p class="paragraph"/><h3>Initial Directory Creation</h3><p class="paragraph"/><div class="code"><pre>$ git clone git@github.com:SpringSource/grails&#45;data&#45;mapping.git 
+<h1 id="stepByStep">5 Step by Step Guide to Creating and Implementation</h1>
+To get started with your a new GORM implementation the following steps are required:<p class="paragraph"/><h3>Initial Directory Creation</h3><p class="paragraph"/><div class="code"><pre>$ git clone git@github.com:grails/grails&#45;data&#45;mapping.git
 $ cd grails&#45;data&#45;mapping
 $ mkdir grails&#45;datastore&#45;gorm&#45;xyz</pre></div><p class="paragraph"/><h3>Setup Gradle Build</h3><p class="paragraph"/>Create build.gradle:<p class="paragraph"/><div class="code"><pre>$ vi grails&#45;datastore&#45;gorm&#45;xyz/build.gradle</pre></div><p class="paragraph"/>With contents:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
     compile project(':grails&#45;datastore&#45;gorm'),
             project(':grails&#45;datastore&#45;web'),
-            project(':grails&#45;datastore&#45;gorm&#45;plugin&#45;support')<p class="paragraph"/>    testCompile project(':grails&#45;datastore&#45;gorm&#45;test'),
-                project(':grails&#45;datastore&#45;gorm&#45;tck')
-    testRuntime <span class="java&#45;quote">"javax.servlet:javax.servlet&#45;api:$servletApiVersion"</span>
-    testRuntime 'org.grails:grails&#45;gorm:$grailsVersion'
-    testRuntime 'org.grails:grails&#45;web:$grailsVersion'<p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>Add new project to settings.gradle in root project:<p class="paragraph"/><div class="code"><pre>$ vi settings.gradle</pre></div><p class="paragraph"/>Changes shown below:<p class="paragraph"/><div class="code"><pre>// GORM Implementations
-'grails&#45;datastore&#45;gorm&#45;jpa',
+            project(':grails&#45;datastore&#45;gorm&#45;support')<p class="paragraph"/>    testCompile project(':grails&#45;datastore&#45;gorm&#45;tck')
+    testRuntime <span class="java&#45;quote">"javax.servlet:javax.servlet&#45;api:$servletApiVersion"</span><p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>Add new project to settings.gradle in root project:<p class="paragraph"/><div class="code"><pre>$ vi settings.gradle</pre></div><p class="paragraph"/>Changes shown below:<p class="paragraph"/><div class="code"><pre>// GORM Implementations
 'grails&#45;datastore&#45;gorm&#45;neo4j',
 'grails&#45;datastore&#45;gorm&#45;xyz',
 ....</pre></div><p class="paragraph"/><h3>Create Project Source Directories</h3><p class="paragraph"/><div class="code"><pre>$ mkdir grails&#45;datastore&#45;gorm&#45;xyz/src/main/groovy
@@ -469,36 +451,6 @@ class XyzTestSuite &#123;
                     <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
                 </div>
                 <div class="menu">
-                    
-                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Implementations</h1><div class="menu-sub">
-                        
-                        
-                        <div class="menu-item"><a href="../ref/Implementations/ConcurrentHashMap.html">ConcurrentHashMap</a>
-                        </div>
-                        
-                        <div class="menu-item"><a href="../ref/Implementations/Hibernate.html">Hibernate</a>
-                        </div>
-                        
-                        <div class="menu-item"><a href="../ref/Implementations/JPA.html">JPA</a>
-                        </div>
-                        
-                        <div class="menu-item"><a href="../ref/Implementations/MongoDB.html">MongoDB</a>
-                        </div>
-                        
-                        <div class="menu-item"><a href="../ref/Implementations/Neo4j.html">Neo4j</a>
-                        </div>
-                        
-                        <div class="menu-item"><a href="../ref/Implementations/Redis.html">Redis</a>
-                        </div>
-                        
-                        <div class="menu-item"><a href="../ref/Implementations/Riak.html">Riak</a>
-                        </div>
-                        
-                        <div class="menu-item"><a href="../ref/Implementations/SimpleDB.html">SimpleDB</a>
-                        </div>
-                        
-                        </div>
-                    </div>
                     
                 </div>
             </div>
