@@ -55,10 +55,6 @@ case "$GORM_IMPL"  in
 esac
 
 ./travis-publish.sh || EXIT_STATUS=$?
-if [[ $EXIT_STATUS -eq 0 ]]; then
-    ./gradlew travisciTrigger -i
-fi
-
 
 exit $EXIT_STATUS
 
