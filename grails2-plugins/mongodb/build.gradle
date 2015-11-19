@@ -37,6 +37,7 @@ dependencies {
     compile project(':grails-datastore-core')
     compile project(':grails-datastore-web')
     compile project(':grails-datastore-gorm')
+    compile project(":grails-datastore-simple")
     compile project(':grails-datastore-gorm-grails2-support')
     compile project(':grails-datastore-gorm-mongodb'), {
         exclude group:'org.grails',module:'grails-datastore-gorm-support'
