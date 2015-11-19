@@ -16,6 +16,7 @@ package grails.orm.bootstrap
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import groovy.transform.InheritConstructors
 import groovy.util.logging.Commons
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.proxy.ProxyHandlerAdapter
@@ -50,6 +51,7 @@ import javax.sql.DataSource
  * @since 3.0
  */
 @Commons
+@InheritConstructors
 class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory"
     public static final String DEFAULT_DATA_SOURCE_NAME = 'dataSource'
@@ -60,32 +62,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     Set<String> dataSources = [defaultDataSourceBeanName]
     boolean enableReload = false
 
-    HibernateDatastoreSpringInitializer() {
-    }
 
-    HibernateDatastoreSpringInitializer(ClassLoader classLoader, String... packages) {
-        super(classLoader, packages)
-    }
-    HibernateDatastoreSpringInitializer(String... packages) {
-        super(packages)
-    }
-
-    HibernateDatastoreSpringInitializer(Collection<Class> persistentClasses) {
-        super(persistentClasses)
-    }
-
-    HibernateDatastoreSpringInitializer(Class... persistentClasses) {
-        super(persistentClasses.toList())
-    }
-
-
-    HibernateDatastoreSpringInitializer(Map hibernateProperties, Collection<Class> persistentClasses) {
-        super(hibernateProperties, persistentClasses)
-    }
-
-    HibernateDatastoreSpringInitializer(Map hibernateProperties, Class... persistentClasses) {
-        super(hibernateProperties, persistentClasses.toList())
-    }
 
     @Override
     protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {

@@ -1,5 +1,6 @@
 package grails.redis.bootstrap
 
+import groovy.transform.InheritConstructors
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.redis.bean.factory.RedisDatastoreFactoryBean
@@ -13,23 +14,8 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
  * @author Graeme Rocher
  * @since 5.0
  */
+@InheritConstructors
 class RedisDatastoreSpringInitializer extends AbstractDatastoreInitializer{
-
-    RedisDatastoreSpringInitializer(Collection<Class> persistentClasses) {
-        super(persistentClasses)
-    }
-
-    RedisDatastoreSpringInitializer(Class... persistentClasses) {
-        super(persistentClasses)
-    }
-
-    RedisDatastoreSpringInitializer(Map configuration, Collection<Class> persistentClasses) {
-        super(configuration, persistentClasses)
-    }
-
-    RedisDatastoreSpringInitializer(Map configuration, Class... persistentClasses) {
-        super(configuration, persistentClasses)
-    }
 
     @Override
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {

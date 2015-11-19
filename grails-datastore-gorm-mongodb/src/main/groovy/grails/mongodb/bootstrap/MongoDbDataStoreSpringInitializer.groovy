@@ -19,6 +19,7 @@ import com.mongodb.Mongo
 import com.mongodb.MongoClientOptions
 import com.mongodb.MongoClientURI
 import groovy.transform.CompileStatic
+import groovy.transform.InheritConstructors
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.bootstrap.support.InstanceFactoryBean
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
@@ -36,6 +37,7 @@ import static org.grails.datastore.mapping.mongo.MongoDatastore.*
  * @author Graeme Rocher
  * @since 2.0
  */
+@InheritConstructors
 class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer {
 
     public static final String DEFAULT_DATABASE_NAME = "test"
@@ -47,35 +49,6 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer {
     protected Closure defaultMapping
     protected MongoClientOptions mongoOptions
     protected Mongo mongo
-
-
-
-    MongoDbDataStoreSpringInitializer() {
-    }
-
-    MongoDbDataStoreSpringInitializer(ClassLoader classLoader, String... packages) {
-        super(classLoader, packages)
-    }
-
-    MongoDbDataStoreSpringInitializer(String... packages) {
-        super(packages)
-    }
-
-    MongoDbDataStoreSpringInitializer(Collection<Class> persistentClasses) {
-        super(persistentClasses)
-    }
-
-    MongoDbDataStoreSpringInitializer(Class... persistentClasses) {
-        super(persistentClasses)
-    }
-
-    MongoDbDataStoreSpringInitializer(Map configuration, Collection<Class> persistentClasses) {
-        super(configuration, persistentClasses)
-    }
-
-    MongoDbDataStoreSpringInitializer(Map configuration, Class... persistentClasses) {
-        super(configuration, persistentClasses)
-    }
 
     @Override
     protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {

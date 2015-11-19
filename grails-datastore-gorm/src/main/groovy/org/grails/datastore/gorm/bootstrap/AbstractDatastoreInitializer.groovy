@@ -1,6 +1,6 @@
 package org.grails.datastore.gorm.bootstrap
 
-
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
@@ -27,6 +27,7 @@ import org.springframework.util.ClassUtils
  * @author Graeme Rocher
  * @since 3.0.3
  */
+@CompileStatic
 abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     public static final String TRANSACTION_MANAGER_BEAN = 'transactionManager'
@@ -60,6 +61,21 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     AbstractDatastoreInitializer(Class... persistentClasses) {
         this(persistentClasses.toList())
+    }
+
+    AbstractDatastoreInitializer(PropertyResolver configuration, Collection<Class> persistentClasses) {
+        this.configuration = configuration
+        this.persistentClasses = persistentClasses
+    }
+
+    AbstractDatastoreInitializer(PropertyResolver configuration, Class...persistentClasses) {
+        this.configuration = configuration
+        this.persistentClasses = persistentClasses
+    }
+
+    AbstractDatastoreInitializer(PropertyResolver configuration, String...persistentClasses) {
+        this.configuration = configuration
+        this.packages = packages
     }
 
     AbstractDatastoreInitializer(Map configuration, Collection<Class> persistentClasses) {
@@ -199,6 +215,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         }
     }
 
+    @CompileDynamic
     Closure getCommonConfiguration(BeanDefinitionRegistry registry) {
         return {
             if(!registry.containsBeanDefinition("grailsApplication") && registerApplicationIfNotPresent) {
@@ -238,6 +255,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
      *
      * @return A closure containing bean definitions
      */
+    @CompileDynamic
     Closure getAdditionalBeansConfiguration(BeanDefinitionRegistry registry, String type) {
         {->
             "${type}TransactionManager"(DatastoreTransactionManager) {
@@ -293,6 +311,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         throw new IllegalStateException("No version of Grails found on classpath")
     }
 
+    @CompileDynamic
     static class GroovyBeanReaderInit {
         static boolean isAvailable() {
             try {
@@ -309,6 +328,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         }
     }
 
+    @CompileDynamic
     static class GrailsBeanBuilderInit {
         static boolean isAvailable() {
             try {

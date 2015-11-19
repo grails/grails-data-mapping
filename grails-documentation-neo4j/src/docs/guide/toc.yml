@@ -7,6 +7,7 @@ gettingStarted:
     usingNeo4jStandalone: Using Neo4j Standalone
     combiningNeo4jAndHibernate: Combining Neo4j And Hibernate
     advancedConfiguration: Advanced Configuration
+    standalone: GORM for Neo4j without Grails
 mapping:
   title: Mapping domain classes to Neo4j node space
   idGeneration: Neo4j ID generators
