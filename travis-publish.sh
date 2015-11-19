@@ -34,6 +34,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
   fi
 
   if [[ $EXIT_STATUS -eq 0 ]]; then
+      ./gradlew travisciTrigger -i
       ./gradlew allDocs || EXIT_STATUS=$?
 
       git config --global user.name "$GIT_NAME"

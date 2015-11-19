@@ -1,0 +1,15 @@
+Since GORM for MongoDB 5.0 there is now a choice of persistence engine. The origin GORM for MongoDB converted MongoDB documents to and from Groovy objects. This engine is still present and can be activated with the following configuration in @grails-app/conf/application.yml@:
+
+{code}
+grails:
+    mongodb:
+        engine: mapping
+{code}
+
+However, 5.0 and above uses a new engine based on MongoDB 3.x driver codecs which means objects are no longer converted first to MongoDB Document objects and then to Groovy objects, instead the driver reads Groovy objects directly from the JSON stream at the driver level, which is far more efficient, however may not exhibit exactly the same behaviour as the previous version. To active this new engine use the following codec (or leave it blank as the codec engine is now the default):
+
+{code}
+grails:
+    mongodb:
+        engine: codec
+{code}

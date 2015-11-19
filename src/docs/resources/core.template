@@ -81,7 +81,7 @@
                             </div>
                             <div class='navbar-collapse collapse'>
                                 <ul class='nav navbar-nav navbar-right'>
-                                    <li class=''><a href='http://grails.github.io/grails-doc/latest/guide/GORM.html'>Hibernate</a></li>
+                                    <li class=''><a href='hibernate/manual/index.html'>Hibernate</a></li>
                                     <li class=''><a href='mongodb/manual/index.html'>MongoDB</a></li>
                                     <li class=''><a href='neo4j/manual/index.html'>Neo4j</a></li>
                                     <li class=''><a href='cassandra/manual/index.html'>Cassandra</a></li>
@@ -115,7 +115,7 @@
                                     <p>The original implementation of GORM, GORM for Hibernate provides all the goodness of GORM for SQL databases.
 
                                     </p>
-                                    <p>- <a href="http://grails.org/doc/latest/guide/GORM.html">Documentation</a> - <a href="api/index.html">API</a></p>
+                                    <p>- <a href="hibernate/manual/index.html">Documentation</a> - <a href="api/index.html">API</a></p>
                                 </article>
                                 <article>
                                     <div class="icon icon-2"></div>

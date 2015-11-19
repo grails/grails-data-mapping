@@ -1,0 +1,36 @@
+To use Hibernate 5 in Grails 3.0.x the following configuration is needed:
+
+{code}
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if(details.requested.group == 'org.springframework') {
+                details.useVersion('4.2.3.RELEASE')
+            }
+        }
+    }
+}
+dependencies {
+    compile "org.grails.plugins:hibernate5:$gormVersion"
+    compile "org.hibernate:hibernate-ehcache:5.0.3.Final"
+}
+{code}
+
+The @resolutionStrategy@ is needed to enforce and upgrade to Spring 4.2.x which is required by Hibernate 5 support. This block is not needed if you are using Grails 3.1 or above.
+
+To use Hibernate 3 the following configuration is needed:
+
+{code}
+dependencies {
+    compile "org.grails.plugins:hibernate3:VERSION"
+    compile "org.hibernate:hibernate-ehcache:3.6.10.Final"
+}
+{code}
+
+For Grails 2.x only the Hibernate 4 plugin is supported and can be added with the following configuration in @BuildConfig.groovy@:
+
+{code}
+plugins {
+ compile ':hibernate4:VERSION'
+}
+{code}

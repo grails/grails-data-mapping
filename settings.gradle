@@ -8,6 +8,7 @@ include ("grails-datastore-core",
 
         // Documentation
         'grails-documentation-core',
+        'grails-documentation-hibernate',
         'grails-documentation-mongodb',
         'grails-documentation-redis',
 /*        'grails-documentation-riak',*/

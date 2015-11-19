@@ -1,0 +1,9 @@
+introduction:
+  title: Introduction
+  upgradeNotes: Upgrade Notes
+gettingStarted:
+  title: Getting Started
+  hibernateVersions: Configuring Different Hibernate Versions
+  outsideGrails: Using GORM for Hibernate Outside Grails
+learningMore: Learning More
+

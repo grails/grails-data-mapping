@@ -1,0 +1,10 @@
+Since GORM 5, GORM for Hibernate has been rewritten to support Hibernate 3, 4 and 5 and also to support both Grails 2.x and Grails 3.x.
+
+To make this possible the internals of GORM have been heavily refactored and some common previously used classes replaced.
+
+Below is a list of removed or deprecated classes and appropriate replacements:
+
+* @org.grails.orm.hibernate.ConfigurableLocalSessionFactoryBean@ - Replaced by @org.grails.orm.hibernate.HibernateMappingContextSessionFactoryBean@
+* @org.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration @ - Replaced by @org.grails.orm.hibernate.HibernateMappingContextConfiguration@
+
+In addition GORM used to use meta-programming to enhance classes, now traits and compile time AST transformations are used exclusively. This means that support for Java entities and JPA entities have been removed. If you need those features you can use a version prior to the 5.x release.

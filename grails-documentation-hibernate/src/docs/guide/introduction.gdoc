@@ -1,0 +1,3 @@
+GORM for Hibernate is the original implementation of GORM and has evolved dramatically over the years from a few meta-programming functions into a complete data access framework with multile implementations for different datastores relational and NoSQL.
+
+ The full documentation for GORM for Hibernate can be found in the [Grails User Guide|http://grails.org/doc/latest/guide/GORM.html], this documentation serves to explain how to get started with GORM for Hibernate with or without Grails and to document release notes.
