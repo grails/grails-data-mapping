@@ -150,7 +150,7 @@ public class HibernateMappingContextSessionFactoryBean extends LocalSessionFacto
 
             SessionFactory sf = super.newSessionFactory(configuration);
 
-            if (!grails.util.Environment.getCurrent().isReloadEnabled() || !proxyIfReloadEnabled) {
+            if (!proxyIfReloadEnabled) {
                 return sf;
             }
 

@@ -478,7 +478,7 @@ public class HibernateMappingContextSessionFactoryBean extends HibernateExceptio
 
     protected void buildSessionFactoryProxy() {
         try {
-            if (!grails.util.Environment.getCurrent().isReloadEnabled() || !proxyIfReloadEnabled) {
+            if (!proxyIfReloadEnabled) {
                 return;
             }
 
