@@ -309,7 +309,7 @@ trait Neo4jEntity<D> extends GormEntity<D> {
      * @param args The arguments to the query
      * @return The results
      */
-    static D find(String query, Collection params, Map args) {
+    static D find(String query, Collection params, Map args = Collections.emptyMap()) {
         Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
 
         GraphDatabaseService graphDatabaseService = (GraphDatabaseService)session.nativeInterface

@@ -9,6 +9,9 @@ case "$GORM_IMPL"  in
         ;;
     hibernate4)
         ./gradlew grails-datastore-gorm-hibernate4:test -no-daemon  --stacktrace || EXIT_STATUS=$?
+        if [[ $EXIT_STATUS -eq 0 ]]; then
+            ./gradlew grails2-plugins/hibernate4:test || EXIT_STATUS=$?
+        fi
         ;;
     hibernate5)
         ./gradlew grails-datastore-gorm-hibernate5:test -no-daemon  --stacktrace || EXIT_STATUS=$?

@@ -1,7 +1,6 @@
 package test
 
-import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
-import org.springframework.context.ApplicationContext
+
 
 
 /*
@@ -23,9 +22,9 @@ import org.springframework.context.ApplicationContext
 /**
  * @author graemerocher
  */
-class MongoGrails2PluginSpec extends spock.lang.Specification {
+class HibernateGrails2PluginSpec extends spock.lang.Specification {
 
-    void "Test that mongodb works with Grails 2"() {
+    void "Test that hibernate works with Grails 2"() {
         when:"A new book is created that is invalid"
         def b = new Book(title:"")
 
@@ -38,8 +37,7 @@ class MongoGrails2PluginSpec extends spock.lang.Specification {
 
         then:"It can be saved"
         b.save(flush:true)
-        Book.collection.count() == 1L
         Book.count() == 1
-
     }
 }
+

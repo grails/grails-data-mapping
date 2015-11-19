@@ -21,6 +21,7 @@ class Neo4jGrails2PluginSpec extends spock.lang.Specification {
         then:"It can be saved"
         b.save(flush:true)
         Book.count() == 1
+        Book.find("MATCH (n:Book) WHERE n.title = {1} RETURN n", ["The Stand"])
 
     }
 }
