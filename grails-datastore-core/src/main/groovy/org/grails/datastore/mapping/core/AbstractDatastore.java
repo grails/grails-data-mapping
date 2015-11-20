@@ -19,7 +19,6 @@ import groovy.lang.MetaClassRegistry;
 import groovy.util.ConfigObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.runtime.InvokerHelper;
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -28,7 +27,7 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.PropertyMapping;
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
-import org.grails.datastore.mapping.reflect.FastClassData;
+import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
@@ -105,13 +104,12 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     }
 
     public void destroy() throws Exception {
+        FieldEntityAccess.clearReflectors();
         final MetaClassRegistry registry = GroovySystem.getMetaClassRegistry();
         for (PersistentEntity persistentEntity : getMappingContext().getPersistentEntities()) {
             final Class cls = persistentEntity.getJavaClass();
             try {
                 registry.removeMetaClass(cls);
-                InvokerHelper.invokeStaticMethod(cls, "resetInternalApi", null);
-                InvokerHelper.invokeStaticMethod(cls, "resetInternalValidationApi", null);
             } catch (Exception e) {
                 LOG.warn("There was an error shutting down GORM for entity ["+cls.getName()+"]: " + e.getMessage(), e);
             }
@@ -147,16 +145,6 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         return session;
     }
 
-
-    /**
-     * Obtains a {@link FastClassData} instance for the given entity
-     *
-     * @param entity The entity
-     * @return The class data
-     */
-    public FastClassData getFastClassData(PersistentEntity entity) {
-        return getMappingContext().getFastClassData(entity);
-    }
 
     /**
      * Creates the native session

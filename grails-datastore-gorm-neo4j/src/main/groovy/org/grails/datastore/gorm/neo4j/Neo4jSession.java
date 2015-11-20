@@ -21,6 +21,7 @@ import org.grails.datastore.mapping.model.types.Simple;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
+import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.grails.datastore.mapping.transactions.Transaction;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -469,9 +470,10 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
                     final GraphPersistentEntity associated = (GraphPersistentEntity) mappingContext.getPersistentEntity(o.getClass().getName());
                     if(associated != null) {
-                        final EntityAccess dynamicAccess = associated.getMappingContext().createEntityAccess(associated, o);
+                        final EntityReflector dynamicAccess = associated.getMappingContext().getEntityReflector(entity);
 
-                        cascadingOperations.add(new PendingOperationAdapter<Object, Serializable>(associated, (Serializable) dynamicAccess.getIdentifier(), o) {
+                        final Object identifier = dynamicAccess.getIdentifier(o);
+                        cascadingOperations.add(new PendingOperationAdapter<Object, Serializable>(associated, (Serializable) identifier, o) {
                             @Override
                             public void run() {
                                 final String labelsWithInheritance = associated.getLabelsWithInheritance(o);
@@ -492,7 +494,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                                 }
                                 Map<String,Object> p =  new LinkedHashMap<String, Object>(2);
                                 p.put(GormProperties.IDENTITY, id);
-                                p.put(CypherBuilder.RELATED, dynamicAccess.getIdentifier());
+                                p.put(CypherBuilder.RELATED, identifier);
 
                                 if(log.isDebugEnabled()) {
                                     log.debug("MERGE Cypher [{}] for parameters [{}]", cypher, p);

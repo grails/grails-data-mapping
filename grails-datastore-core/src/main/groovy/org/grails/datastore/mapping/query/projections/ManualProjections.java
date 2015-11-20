@@ -23,6 +23,8 @@ import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.order.ManualEntityOrdering;
+import org.grails.datastore.mapping.reflect.EntityReflector;
+import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 
 /**
  * Implements common projections in-memory given a set of results. Not all
@@ -55,7 +57,7 @@ public class ManualProjections {
         final List sorted = order.applyOrder(new ArrayList(results), Query.Order.asc(property));
         final Object o = sorted.get(0);
         if (entity.isInstance(o)) {
-            return entity.getMappingContext().createEntityAccess(entity, o).getProperty(property);
+            return FieldEntityAccess.getOrIntializeReflector(entity).getProperty(o, property);
         }
         return o;
     }
@@ -93,7 +95,7 @@ public class ManualProjections {
         final List sorted = order.applyOrder(new ArrayList(results), Query.Order.asc(property));
         final Object o = sorted.get(results.size()-1);
         if (entity.isInstance(o)) {
-            return entity.getMappingContext().createEntityAccess(entity, o).getProperty(property);
+            return FieldEntityAccess.getOrIntializeReflector(entity).getProperty(o, property);
         }
         return o;
     }
@@ -112,9 +114,10 @@ public class ManualProjections {
         }
 
         for (Object o : results) {
-            EntityAccess ea = entity.getMappingContext().createEntityAccess(entity, o);
+
+            EntityReflector ea = FieldEntityAccess.getOrIntializeReflector(entity);
             if (entity.isInstance(o)) {
-                projectedResults.add(ea.getProperty(property));
+                projectedResults.add(ea.getProperty(o, property));
             }
             else {
                 projectedResults.add(null);

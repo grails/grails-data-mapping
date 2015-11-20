@@ -155,31 +155,31 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
             }
 
 
-        }
-
-
-        final PersistentProperty idProp = getPropertyByName(GormProperties.IDENTITY);
-        if(idProp != null) {
-            persistentProperties.remove(idProp);
-            persistentPropertyNames.remove(GormProperties.IDENTITY);
-        }
-        IdentityMapping identifier = mapping != null ? mapping.getIdentifier() : null;
-        if(identifier != null) {
-
-            final String[] identifierName = identifier.getIdentifierName();
-            final MappingContext mappingContext = getMappingContext();
-            if(identifierName.length > 1) {
-                compositeIdentity = mappingContext.getMappingSyntaxStrategy().getCompositeIdentity(javaClass, mappingContext);
-
+            final PersistentProperty idProp = getPropertyByName(GormProperties.IDENTITY);
+            if(idProp != null) {
+                persistentProperties.remove(idProp);
+                persistentPropertyNames.remove(GormProperties.IDENTITY);
             }
-            for (String in : identifierName) {
-                final PersistentProperty p = propertiesByName.get(in);
-                if(p != null) {
-                    persistentProperties.remove(p);
+            IdentityMapping identifier = mapping != null ? mapping.getIdentifier() : null;
+            if(identifier != null) {
+
+                final String[] identifierName = identifier.getIdentifierName();
+                final MappingContext mappingContext = getMappingContext();
+                if(identifierName.length > 1) {
+                    compositeIdentity = mappingContext.getMappingSyntaxStrategy().getCompositeIdentity(javaClass, mappingContext);
+
                 }
-                persistentPropertyNames.remove(in);
+                for (String in : identifierName) {
+                    final PersistentProperty p = propertiesByName.get(in);
+                    if(p != null) {
+                        persistentProperties.remove(p);
+                    }
+                    persistentPropertyNames.remove(in);
+                }
             }
         }
+
+
 
         propertiesInitialized = true;
 

@@ -18,14 +18,15 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.lifecycle.Initializable;
 import org.grails.datastore.mapping.model.types.conversion.DefaultConversionService;
 import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
-import org.grails.datastore.mapping.reflect.FastClassData;
-import org.grails.datastore.mapping.reflect.FastEntityAccess;
+import org.grails.datastore.mapping.reflect.EntityReflector;
+import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
@@ -56,7 +57,6 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     protected ProxyFactory proxyFactory;
     private boolean canInitializeEntities = true;
     private boolean initialized;
-    protected Map<String, FastClassData> fastClassData = new ConcurrentHashMap<String, FastClassData>();
 
     public ConversionService getConversionService() {
         return conversionService;
@@ -242,12 +242,13 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         persistentEntities.remove(entity);
         persistentEntities.add(entity);
         persistentEntitiesByName.put(entity.getName(), entity);
-        fastClassData.put(entity.getName(), new FastClassData(entity));
+
     }
 
     public void initialize() {
         for(PersistentEntity entity : persistentEntities) {
             initializePersistentEntity(entity);
+            FieldEntityAccess.getOrIntializeReflector(entity);
         }
         this.initialized = true;
     }
@@ -367,33 +368,39 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     }
 
     /**
-     * Obtains a {@link FastClassData} instance for the given entity
+     * Obtains a {@link EntityReflector} instance for the given entity
      *
      * @param entity The entity
      * @return The class data
      */
     @Override
-    public FastClassData getFastClassData(PersistentEntity entity) {
-        final String entityN = entity.getName();
-        FastClassData data = fastClassData.get(entityN);
-        if (data == null) {
-            data = new FastClassData(entity);
-            fastClassData.put(entityN, data);
-        }
-        return data;
+    public EntityReflector getEntityReflector(PersistentEntity entity) {
+        return FieldEntityAccess.getOrIntializeReflector(entity);
     }
 
     @Override
     public EntityAccess createEntityAccess(PersistentEntity entity, Object instance) {
         final ProxyFactory proxyFactory = getProxyFactory();
         instance = proxyFactory.unwrap(instance);
-        if (entity.getJavaClass() != instance.getClass()) {
-            // try subclass
-            final PersistentEntity subEntity = getPersistentEntity(instance.getClass().getName());
-            if (subEntity != null) {
-                entity = subEntity;
+        if(entity != null) {
+
+            if (entity.getJavaClass() != instance.getClass()) {
+                // try subclass
+                final PersistentEntity subEntity = getPersistentEntity(instance.getClass().getName());
+                if (subEntity != null) {
+                    entity = subEntity;
+                }
+            }
+            return new FieldEntityAccess(entity, instance, getConversionService());
+        }
+        else {
+            EntityReflector reflector = FieldEntityAccess.getReflector(instance.getClass().getName());
+            if(reflector != null) {
+                return new FieldEntityAccess(reflector.getPersitentEntity(), instance, conversionService);
+            }
+            else {
+                return new BeanEntityAccess(null, instance);
             }
         }
-        return new FastEntityAccess(instance, getFastClassData(entity), getConversionService());
     }
 }

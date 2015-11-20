@@ -23,6 +23,7 @@ import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.ToOne
+import org.grails.datastore.mapping.reflect.EntityReflector
 
 
 /**
@@ -59,8 +60,8 @@ class GraphAdapter {
             return;
         }
         if (!reversed) {
-            def childAccess = session.createEntityAccess(association.getAssociatedEntity(), o)
-            session.addPendingRelationshipDelete((Long)parentAccess.getIdentifier(), association, (Long)childAccess.getIdentifier() )
+            def childAccess = session.mappingContext.getEntityReflector(association.getAssociatedEntity())
+            session.addPendingRelationshipDelete((Long)parentAccess.getIdentifier(), association, (Long)childAccess.getIdentifier(o) )
         }
     }
 
@@ -72,8 +73,8 @@ class GraphAdapter {
             if (association.isBidirectional() && !proxyFactory.isProxy(t)) {
                 def inverseSide = association.inverseSide
                 if(inverseSide instanceof ToOne) {
-                    EntityAccess target = session.createEntityAccess(association.getAssociatedEntity(), t)
-                    target.setPropertyNoConversion( inverseSide.name, parentAccess.entity )
+                    EntityReflector target = session.mappingContext.getEntityReflector(association.getAssociatedEntity())
+                    target.setProperty( t, inverseSide.name, parentAccess.entity )
                 }
             }
         }
@@ -83,22 +84,25 @@ class GraphAdapter {
                 if ( !proxyFactory.isInitialized(t) ) return
                 if ( !childType.isInstance(t) ) return
             }
-            EntityAccess target = session.createEntityAccess(association.getAssociatedEntity(), t)
+            EntityReflector target = session.mappingContext.getEntityReflector(association.getAssociatedEntity())
+
             if (association.isBidirectional()) {
                 if (association instanceof ManyToMany) {
-                    Collection coll = (Collection) target.getProperty(association.getReferencedPropertyName());
+                    Collection coll = (Collection) target.getProperty(t, association.getReferencedPropertyName());
                     coll.add(parentAccess.entity);
                 } else {
-                    target.setProperty(association.getReferencedPropertyName(), parentAccess.entity);
+                    target.setProperty(t, association.getReferencedPropertyName(), parentAccess.entity);
                 }
             }
 
-            if (target.getIdentifier() == null) { // non-persistent instance
-                session.persist(t);
+
+            def identifier = target.getIdentifier(t)
+            if (identifier == null) { // non-persistent instance
+                identifier = session.persist(t);
             }
 
-            if (!reversed) { // prevent duplicated rels
-                session.addPendingRelationshipInsert((Long)parentAccess.getIdentifier(), association, (Long)target.getIdentifier())
+            if (!reversed && identifier != null) { // prevent duplicated rels
+                session.addPendingRelationshipInsert((Serializable)parentAccess.getIdentifier(), association, identifier)
             }
         }
 

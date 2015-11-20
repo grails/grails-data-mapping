@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.mapping.model;
 
+import org.grails.datastore.mapping.reflect.FieldEntityAccess;
+
 /**
  * Models an embedded entity
  *
@@ -29,5 +31,11 @@ public class EmbeddedPersistentEntity extends AbstractPersistentEntity{
     @Override
     protected PersistentProperty resolveIdentifier() {
         return null; // no identifiers in embedded entities
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        FieldEntityAccess.getOrIntializeReflector(this);
     }
 }

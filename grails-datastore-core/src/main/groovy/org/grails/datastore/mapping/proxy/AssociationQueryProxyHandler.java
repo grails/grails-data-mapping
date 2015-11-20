@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.proxy;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
+import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -46,7 +47,7 @@ public class AssociationQueryProxyHandler  extends EntityProxyMethodHandler {
         super(executor.getIndexedEntity().getJavaClass());
         this.session = session;
         this.executor = executor;
-        this.fastClass = session.getMappingContext().getFastClassData(executor.getIndexedEntity()).getFastClass();
+        this.fastClass = session.getMappingContext().getEntityReflector(executor.getIndexedEntity()).fastClass();
         this.associationKey = associationKey;
     }
 

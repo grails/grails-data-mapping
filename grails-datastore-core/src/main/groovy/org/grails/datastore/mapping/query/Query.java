@@ -641,12 +641,9 @@ public abstract class Query implements Cloneable{
             return ep.getObjectIdentifier(value);
         }
 
-        SessionImplementor si = (SessionImplementor)session;
-        final PersistentEntity entity = session
-                .getMappingContext()
-                .getPersistentEntity(value.getClass().getName());
-        return (Serializable)si.createEntityAccess(entity, value)
-                                .getIdentifier();
+        MappingContext ctx = entity.getMappingContext();
+        PersistentEntity pe = ctx.getPersistentEntity(value.getClass().getSimpleName());
+        return (Serializable) ctx.getEntityReflector(pe).getIdentifier(value);
     }
 
     private Junction disjunction(Junction currentJunction) {

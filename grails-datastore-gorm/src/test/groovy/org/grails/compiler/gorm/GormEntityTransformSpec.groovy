@@ -1,21 +1,9 @@
 package org.grails.compiler.gorm
-
 import grails.gorm.annotation.Entity
-import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormEntity
-import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormValidateable
-import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
-import org.grails.datastore.mapping.keyvalue.mapping.config.GormKeyValueMappingFactory
-import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValuePersistentEntity
-import org.grails.datastore.mapping.model.MappingContext
-import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
-import org.grails.datastore.mapping.proxy.JavassistProxyFactory
-import org.grails.datastore.mapping.reflect.FastClassData
 import spock.lang.Specification
-
 /*
  * Copyright 2014 original authors
  *

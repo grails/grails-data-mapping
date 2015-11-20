@@ -53,6 +53,7 @@ import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.config.MongoAttribute
 import org.grails.datastore.mapping.mongo.engine.MongoCodecEntityPersister
 import org.grails.datastore.mapping.query.Query
+import org.grails.datastore.mapping.reflect.FieldEntityAccess
 import org.springframework.core.convert.converter.Converter
 
 import javax.persistence.CascadeType
@@ -974,7 +975,7 @@ class PersistentEntityCodec implements Codec {
                         // update existing collection
                         Collection identifiers = (Collection)mongoSession.getAttribute(parentAccess.entity, "${property}.ids")
                         if(identifiers == null) {
-                            def fastClassData = datastore.mappingContext.getFastClassData(associatedEntity)
+                            def fastClassData = FieldEntityAccess.getOrIntializeReflector(associatedEntity)
                             identifiers = ((Collection)value).collect() {
                                 fastClassData.getIdentifier(it)
                             }
@@ -1016,9 +1017,8 @@ class PersistentEntityCodec implements Codec {
                             associationId = proxyFactory.getIdentifier(value)
                         }
                         else {
-                            AbstractMongoSession mongoSession = (AbstractMongoSession)datastore.currentSession
-                            def associationAccess = mongoSession.createEntityAccess(associatedEntity, value)
-                            associationId = associationAccess.identifier
+                            def associationAccess = datastore.mappingContext.getEntityReflector(associatedEntity)
+                            associationId = associationAccess.getIdentifier(value)
                         }
                         if(associationId != null) {
                             writer.writeName MappingUtils.getTargetKey(property)
@@ -1121,12 +1121,11 @@ class PersistentEntityCodec implements Codec {
 
                 writer.writeName MappingUtils.getTargetKey(property)
 
-                AbstractMongoSession mongoSession = (AbstractMongoSession)datastore.currentSession
-                def access = mongoSession.createEntityAccess(associatedEntity, value)
+                def reflector = datastore.mappingContext.getEntityReflector(associatedEntity)
                 PersistentEntityCodec codec = datastore.getPersistentEntityCodec(associatedEntity)
 
 
-                def identifier = access.identifier
+                def identifier = reflector.getIdentifier(value)
 
                 def hasIdentifier = identifier != null
                 codec.encode(writer, value, encoderContext, hasIdentifier)
@@ -1196,12 +1195,11 @@ class PersistentEntityCodec implements Codec {
                             }
                         }
 
-                        def ea = ((AbstractMongoSession)datastore.currentSession)
-                                .createEntityAccess(entity, v)
-                        def id = ea.getIdentifier()
+                        def ea = datastore.mappingContext.getEntityReflector(entity)
+                        def id = ea.getIdentifier(v)
                         if(isBidirectional) {
                             if(isToOne) {
-                                ea.setPropertyNoConversion(inverseProperty, parentAccess.entity)
+                                ea.setProperty(v, inverseProperty, parentAccess.entity)
                             }
                         }
 
@@ -1220,9 +1218,8 @@ class PersistentEntityCodec implements Codec {
 
 
                     def v = entry.value
-                    def ea = ((AbstractMongoSession)datastore.currentSession)
-                            .createEntityAccess(associatedEntity, v)
-                    def id = ea.getIdentifier()
+                    def ea = datastore.mappingContext.getEntityReflector(associatedEntity)
+                    def id = ea.getIdentifier(v)
 
                     associatedCodec.encode(writer, v, encoderContext, id != null)
 

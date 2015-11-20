@@ -47,7 +47,8 @@ import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.proxy.ProxyFactory
 import org.grails.datastore.mapping.query.Query
-import org.grails.datastore.mapping.reflect.FastClassData
+import org.grails.datastore.mapping.reflect.EntityReflector
+import org.grails.datastore.mapping.reflect.FieldEntityAccess
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.CannotAcquireLockException
 import org.springframework.dao.DataIntegrityViolationException
@@ -75,13 +76,13 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
     protected final MongoDatastore mongoDatastore
     protected boolean hasNumericalIdentifier = false
     protected boolean hasStringIdentifier = false
-    protected final FastClassData fastClassData
+    protected final EntityReflector fastClassData
 
     MongoCodecEntityPersister(MappingContext mappingContext, PersistentEntity entity, MongoCodecSession session, ApplicationEventPublisher publisher, TPCacheAdapterRepository<Object> cacheAdapterRepository) {
         super(mappingContext, entity, session, publisher, cacheAdapterRepository)
         this.mongoSession = session
         this.mongoDatastore = session.datastore
-        this.fastClassData = session.mappingContext.getFastClassData(entity)
+        this.fastClassData = FieldEntityAccess.getOrIntializeReflector(entity)
         PersistentProperty identity = entity.identity
         if (identity != null) {
             hasNumericalIdentifier = Long.class.isAssignableFrom(identity.type)

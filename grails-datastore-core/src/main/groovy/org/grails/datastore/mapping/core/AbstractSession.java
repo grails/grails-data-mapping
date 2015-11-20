@@ -879,19 +879,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     @Override
     public EntityAccess createEntityAccess(PersistentEntity entity, Object instance) {
-        if(isStateless()) {
-            return getMappingContext().createEntityAccess(entity, instance);
-        }
-        else {
-            Object access = getAttribute(instance, ENTITY_ACCESS);
-            if (access != null) {
-                return (EntityAccess) access;
-            } else {
-                EntityAccess ea = getMappingContext().createEntityAccess(entity, instance);
-                setAttribute(instance, ENTITY_ACCESS, ea);
-                return ea;
-            }
-        }
+        return getMappingContext().createEntityAccess(entity, instance);
     }
 
     /**

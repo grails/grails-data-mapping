@@ -18,8 +18,7 @@ import java.util.Collection;
 
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
-import org.grails.datastore.mapping.reflect.FastClassData;
-import org.grails.datastore.mapping.reflect.FastEntityAccess;
+import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
@@ -214,19 +213,20 @@ public interface MappingContext {
     PersistentEntity createEmbeddedEntity(Class type);
 
     /**
-     * Obtains a {@link FastClassData} instance for the given entity
+     * Obtains a {@link EntityReflector} instance for the given entity
      *
      * @param entity The entity
      * @return The class data
      */
-    FastClassData getFastClassData(PersistentEntity entity);
+    EntityReflector getEntityReflector(PersistentEntity entity);
+
 
     /**
      * Creates an {@link EntityAccess} instance for the given entity and instance of said entity
      *
      * @param entity The entity
      * @param instance The instance
-     * @return The {@link FastEntityAccess}
+     * @return The {@link EntityAccess}
      */
     EntityAccess createEntityAccess(PersistentEntity entity, Object instance);
 

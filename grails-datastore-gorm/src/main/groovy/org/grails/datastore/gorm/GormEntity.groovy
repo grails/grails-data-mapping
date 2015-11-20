@@ -16,7 +16,6 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.DetachedCriteria
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
@@ -32,10 +31,8 @@ import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.api.BuildableCriteria
 import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
-import org.grails.datastore.mapping.reflect.FastClassData
-import org.springframework.cglib.reflect.FastMethod
+import org.grails.datastore.mapping.reflect.EntityReflector
 import org.springframework.transaction.TransactionDefinition
-import org.springframework.validation.Errors
 
 /**
  *
@@ -262,7 +259,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable {
         final PersistentEntity entity = getGormPersistentEntity()
         def prop = entity.getPropertyByName(associationName)
         final MappingContext mappingContext = lookupMappingContext()
-        final FastClassData fastClassData = mappingContext.getFastClassData(entity)
+        final EntityReflector entityReflector = mappingContext.getEntityReflector(entity)
 
         if(prop instanceof Association) {
             Association association = (Association)prop
@@ -274,24 +271,21 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable {
 
             if (javaClass.isInstance(arg)) {
                 final propertyName = prop.name
-                final FastMethod fastGetter = fastClassData.getFastGetters().get(propertyName)
 
-                Collection currentValue = (Collection)fastGetter.invoke(this, propertyName)
+                Collection currentValue = (Collection)entityReflector.getProperty(this, propertyName)
                 currentValue?.remove(arg)
                 markDirty(propertyName)
 
                 if (association.bidirectional) {
                     def otherSide = association.inverseSide
-                    def associatedFastData = mappingContext.getFastClassData(association.associatedEntity)
+                    def associationReflector = mappingContext.getEntityReflector(association.associatedEntity)
                     if (otherSide instanceof ManyToMany) {
-                        def otherSideGetter = associatedFastData.getFastGetters().get(otherSide.name)
-                        Collection otherSideValue = (Collection) otherSideGetter.invoke(arg)
+                        Collection otherSideValue = (Collection) associationReflector.getProperty(arg, otherSide.name)
                         otherSideValue?.remove(this)
 
                     }
                     else {
-                        def otherSideSetter = associatedFastData.getFastSetters().get(otherSide.name)
-                        otherSideSetter.invoke(arg, null)
+                        associationReflector.setProperty(arg, otherSide.name, null)
                     }
                 }
             }
@@ -316,20 +310,17 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable {
         final D targetObject = (D)this
 
         final MappingContext mappingContext = lookupMappingContext()
-        final FastClassData fastClassData = mappingContext.getFastClassData(entity)
-        if(fastClassData != null && (prop instanceof Association)) {
+        final EntityReflector reflector = mappingContext.getEntityReflector(entity)
+        if(reflector != null && (prop instanceof Association)) {
 
             final Association association = (Association)prop
             final propertyName = association.name
-            final FastMethod fastGetter = fastClassData.getFastGetters().get(propertyName)
 
             def obj
-            def currentValue = fastGetter.invoke(targetObject)
+            def currentValue = reflector.getProperty(targetObject, propertyName)
             if (currentValue == null) {
                 currentValue = [].asType(prop.type)
-                fastClassData.getFastSetters()
-                                    .get(propertyName)
-                                    .invoke(targetObject, currentValue)
+                reflector.setProperty(targetObject, propertyName, currentValue)
             }
 
             final javaClass = association.associatedEntity?.javaClass
@@ -365,13 +356,13 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable {
             if (association.bidirectional && association.inverseSide) {
                 def otherSide = association.inverseSide
                 String name = otherSide.name
-                def associatedFastData = mappingContext.getFastClassData(association.associatedEntity)
+                def associationReflector = mappingContext.getEntityReflector(association.associatedEntity)
                 if (otherSide instanceof OneToMany || otherSide instanceof ManyToMany) {
-                    def otherSideGetter = associatedFastData.getFastGetters().get(name)
-                    Collection otherSideValue = (Collection)otherSideGetter.invoke(obj)
+
+                    Collection otherSideValue = (Collection)associationReflector.getProperty(obj, name)
                     if (otherSideValue == null) {
                         otherSideValue =  (Collection)( [].asType(otherSide.type) )
-                        associatedFastData.getFastSetters().get(name).invoke(obj, otherSideValue)
+                        associationReflector.setProperty(obj, name, otherSideValue)
                     }
                     otherSideValue.add(targetObject)
                     if(obj instanceof DirtyCheckable) {
@@ -380,11 +371,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable {
                 }
 
                 else {
-                    def method = associatedFastData
-                            .getFastSetters()
-                            .get(name)
-
-                    method?.invoke(obj, targetObject)
+                    associationReflector?.setProperty(obj, name, targetObject)
                 }
             }
             targetObject

@@ -48,6 +48,7 @@ import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
 import com.mongodb.DBRef;
+import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 
 /**
  * Models a {@link org.grails.datastore.mapping.model.MappingContext} for Mongo.

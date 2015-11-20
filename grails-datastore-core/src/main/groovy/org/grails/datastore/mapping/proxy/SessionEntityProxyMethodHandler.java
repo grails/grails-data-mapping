@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.proxy;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -47,7 +48,7 @@ public class SessionEntityProxyMethodHandler extends EntityProxyMethodHandler {
         this.cls = cls;
         this.id = id;
         final PersistentEntity entity = session.getMappingContext().getPersistentEntity(proxyClass.getName());
-        this.fastClass = session.getMappingContext().getFastClassData(entity).getFastClass();
+        this.fastClass = FieldEntityAccess.getOrIntializeReflector(entity).fastClass();
     }
 
     @Override

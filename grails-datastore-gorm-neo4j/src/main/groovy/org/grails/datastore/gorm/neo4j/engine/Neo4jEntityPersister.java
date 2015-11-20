@@ -761,11 +761,13 @@ public class Neo4jEntityPersister extends EntityPersister {
                             // Populate other side of bidi
                             for (Object associatedObject: (Iterable)propertyValue) {
                                 EntityAccess assocEntityAccess = createEntityAccess(association.getAssociatedEntity(), associatedObject);
+                                String referencedPropertyName = association.getReferencedPropertyName();
                                 if(association instanceof ManyToMany) {
-                                    ((GormEntity)associatedObject).addTo(association.getReferencedPropertyName(), obj);
+                                    ((GormEntity)associatedObject).addTo(referencedPropertyName, obj);
                                 }
                                 else {
-                                    assocEntityAccess.setPropertyNoConversion(association.getReferencedPropertyName(), obj);
+                                    assocEntityAccess.setPropertyNoConversion(referencedPropertyName, obj);
+                                    ((DirtyCheckable)associatedObject).markDirty(referencedPropertyName);
                                 }
                             }
                         }

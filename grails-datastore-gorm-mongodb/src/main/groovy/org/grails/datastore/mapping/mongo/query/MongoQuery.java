@@ -34,6 +34,7 @@ import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.*;
@@ -50,6 +51,8 @@ import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.grails.datastore.mapping.query.projections.ManualProjections;
+import org.grails.datastore.mapping.reflect.EntityReflector;
+import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -765,13 +768,15 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
      */
     private static List<Object> getInListQueryValues(PersistentEntity entity, In in) {
         List<Object> values = new ArrayList<Object>(in.getValues().size());
+        final MappingContext mappingContext = entity.getMappingContext();
         for (Object value : in.getValues()) {
-            if (entity.getMappingContext().isPersistentEntity(value)) {
-                PersistentEntity pe = entity.getMappingContext().getPersistentEntity(
+            if (mappingContext.isPersistentEntity(value)) {
+                PersistentEntity pe = mappingContext.getPersistentEntity(
                         value.getClass().getName());
-                values.add(entity.getMappingContext().createEntityAccess(pe, value).getIdentifier());
+                EntityReflector reflector = mappingContext.getEntityReflector(pe);
+                values.add(reflector.getIdentifier(value));
             } else {
-                value = MongoEntityPersister.getSimpleNativePropertyValue(value, entity.getMappingContext());
+                value = MongoEntityPersister.getSimpleNativePropertyValue(value, mappingContext);
                 values.add(value);
             }
         }

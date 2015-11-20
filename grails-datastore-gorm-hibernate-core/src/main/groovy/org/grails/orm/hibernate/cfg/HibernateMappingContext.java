@@ -145,7 +145,9 @@ public class HibernateMappingContext extends AbstractMappingContext {
 
     @Override
     public PersistentEntity createEmbeddedEntity(Class type) {
-        return new HibernateEmbeddedPersistentEntity(type, this);
+        HibernateEmbeddedPersistentEntity embedded = new HibernateEmbeddedPersistentEntity(type, this);
+        embedded.initialize();
+        return embedded;
     }
 
     static class HibernateEmbeddedPersistentEntity extends EmbeddedPersistentEntity {
