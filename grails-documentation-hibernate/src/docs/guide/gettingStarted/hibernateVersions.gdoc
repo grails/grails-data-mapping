@@ -12,6 +12,7 @@ configurations.all {
 }
 dependencies {
     compile "org.grails.plugins:hibernate5:$gormVersion"
+    compile "org.hibernate:hibernate-core:5.0.3.Final"
     compile "org.hibernate:hibernate-ehcache:5.0.3.Final"
 }
 {code}
@@ -23,11 +24,12 @@ To use Hibernate 3 the following configuration is needed:
 {code}
 dependencies {
     compile "org.grails.plugins:hibernate3:VERSION"
+    compile "org.hibernate:hibernate-core:3.6.10.Final"
     compile "org.hibernate:hibernate-ehcache:3.6.10.Final"
 }
 {code}
 
-For Grails 2.x only the Hibernate 4 plugin is supported and can be added with the following configuration in @BuildConfig.groovy@:
+Since GORM 5, for Grails 2.x only the Hibernate 4 plugin is supported and can be added with the following configuration in @BuildConfig.groovy@:
 
 {code}
 plugins {
