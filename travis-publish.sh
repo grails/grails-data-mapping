@@ -34,7 +34,12 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
   fi
 
   if [[ $EXIT_STATUS -eq 0 ]]; then
+      ./gradlew --stop
+      echo "Trigger Travis Functional Test build"
       ./gradlew travisciTrigger -i
+      ./gradlew --stop
+
+      echo "Building documentation"
       ./gradlew allDocs || EXIT_STATUS=$?
 
       git config --global user.name "$GIT_NAME"
@@ -80,11 +85,13 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
         rm -rf gh-pages
       fi
-
   else
       echo "Error occured during publishing, skipping docs"
   fi
 
 fi
 
+if [[ $EXIT_STATUS -eq 0 ]]; then
+  echo "Publishing Successful."
+fi
 exit $EXIT_STATUS
