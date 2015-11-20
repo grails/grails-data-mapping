@@ -1,8 +1,13 @@
 To get started with GORM for Neo4j you need to install the plugin into a Grails application.
 
-{note}
-GORM for Neo4j requires Grails 2.5.x or above and Neo4j 2.3.x or above
-{note}
+For Grails 3.x you need to edit your @build.gradle@ file and add the plugin as a dependency:
+
+{code}
+dependencies {
+	compile 'org.grails.plugins:neo4j:VERSION'
+}
+{code}
+
 
 To do so for Grails 2.x edit the @grails-app/conf/BuildConfig.groovy@ file and add the following plugin definition, where @VERSION@ is the version of the plugin you plan to use:
 
@@ -13,15 +18,9 @@ plugins {
 }
 {code}
 
-For Grails 3.x you need to edit your @build.gradle@ file and add the plugin as a dependency:
-
-
-
-{code}
-dependencies {
-	compile 'org.grails.plugins:neo4j:VERSION'
-}
-{code}
+{note}
+GORM for Neo4j requires Grails 2.5.x or above and Neo4j 2.3.x or above
+{note}
 
 By default Neo4j will used as embedded database inside the JVM, the default directory for the Neo4j datastore is @data/neo4j@.
 
