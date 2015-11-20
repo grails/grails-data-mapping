@@ -35,6 +35,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PropertyMapping;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
+import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.springframework.context.ApplicationEventPublisher;
 
 /**
@@ -44,11 +45,12 @@ import org.springframework.context.ApplicationEventPublisher;
  * @since 1.0
  */
 public abstract class EntityPersister implements Persister {
-    private PersistentEntity persistentEntity;
-    private MappingContext mappingContext;
-    protected Session session;
+    private final PersistentEntity persistentEntity;
+    private final MappingContext mappingContext;
+    protected final Session session;
+    protected final ApplicationEventPublisher publisher;
+    protected final EntityReflector reflector;
     protected org.grails.datastore.mapping.proxy.ProxyFactory proxyFactory;
-    protected ApplicationEventPublisher publisher;
 
     public EntityPersister(MappingContext mappingContext, PersistentEntity entity,
               Session session, ApplicationEventPublisher publisher) {
@@ -56,6 +58,7 @@ public abstract class EntityPersister implements Persister {
         this.mappingContext = mappingContext;
         this.session = session;
         this.publisher = publisher;
+        this.reflector = mappingContext.getEntityReflector(entity);
     }
 
     public Session getSession() {
@@ -104,7 +107,13 @@ public abstract class EntityPersister implements Persister {
         if (pf.isProxy(obj)) {
             return pf.getIdentifier(obj);
         }
-        return (Serializable) createEntityAccess(getPersistentEntity(), obj).getIdentifier();
+        if(persistentEntity.isInstance(obj)) {
+            return reflector.getIdentifier(obj);
+        }
+        else {
+            EntityPersister persister = (EntityPersister) getSession().getPersister(obj);
+            return persister.getObjectIdentifier(obj);
+        }
     }
 
     @Override
