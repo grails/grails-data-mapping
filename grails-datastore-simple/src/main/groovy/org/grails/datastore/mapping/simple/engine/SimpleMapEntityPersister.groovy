@@ -141,6 +141,10 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
     }
 
     AssociationIndexer getAssociationIndexer(Map nativeEntry, Association association) {
+        if(association?.associatedEntity == null) {
+            return null
+        }
+
         return new AssociationIndexer() {
 
             private getIndexName(primaryKey) {

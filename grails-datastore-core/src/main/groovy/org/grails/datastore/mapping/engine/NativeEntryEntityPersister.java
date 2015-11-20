@@ -539,26 +539,28 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
                 else {
                     boolean isLazy = isLazyAssociation(associationPropertyMapping);
                     AssociationIndexer indexer = getAssociationIndexer(nativeEntry, association);
-                    nativeKey = convertIdIfNecessary(getPersistentEntity(), nativeKey );
-                    if (isLazy) {
-                        if (List.class.isAssignableFrom(association.getType())) {
-                            ea.setPropertyNoConversion(association.getName(),
-                                    new PersistentList(nativeKey, session, indexer));
+                    if(indexer != null) {
+                        nativeKey = convertIdIfNecessary(getPersistentEntity(), nativeKey );
+                        if (isLazy) {
+                            if (List.class.isAssignableFrom(association.getType())) {
+                                ea.setPropertyNoConversion(association.getName(),
+                                        new PersistentList(nativeKey, session, indexer));
+                            }
+                            else if (SortedSet.class.isAssignableFrom(association.getType())) {
+                                ea.setPropertyNoConversion(association.getName(),
+                                        new PersistentSortedSet(nativeKey, session, indexer));
+                            }
+                            else if (Set.class.isAssignableFrom(association.getType())) {
+                                ea.setPropertyNoConversion(association.getName(),
+                                        new PersistentSet(nativeKey, session, indexer));
+                            }
                         }
-                        else if (SortedSet.class.isAssignableFrom(association.getType())) {
-                            ea.setPropertyNoConversion(association.getName(),
-                                    new PersistentSortedSet(nativeKey, session, indexer));
-                        }
-                        else if (Set.class.isAssignableFrom(association.getType())) {
-                            ea.setPropertyNoConversion(association.getName(),
-                                    new PersistentSet(nativeKey, session, indexer));
-                        }
-                    }
-                    else {
-                        if (indexer != null) {
-                            List keys = indexer.query(nativeKey);
-                            ea.setProperty(association.getName(),
-                                    session.retrieveAll(association.getAssociatedEntity().getJavaClass(), keys));
+                        else {
+                            if (indexer != null) {
+                                List keys = indexer.query(nativeKey);
+                                ea.setProperty(association.getName(),
+                                        session.retrieveAll(association.getAssociatedEntity().getJavaClass(), keys));
+                            }
                         }
                     }
                 }
