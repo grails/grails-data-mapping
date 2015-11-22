@@ -112,7 +112,12 @@ public abstract class EntityPersister implements Persister {
         }
         else {
             EntityPersister persister = (EntityPersister) getSession().getPersister(obj);
-            return persister.getObjectIdentifier(obj);
+            if(persister != null) {
+                return persister.getObjectIdentifier(obj);
+            }
+            else {
+                return null;
+            }
         }
     }
 
