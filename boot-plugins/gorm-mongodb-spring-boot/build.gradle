@@ -27,7 +27,7 @@ task javadocJar(type: Jar, dependsOn:javadoc) {
 }
 
 dependencies {
-    def springBootVersion = '1.2.2.RELEASE'
+    def springBootVersion = '1.3.0.RELEASE'
     compile "org.springframework.boot:spring-boot-cli:$springBootVersion", {
         exclude group:'org.codehaus.groovy', module:'groovy'
     }
@@ -42,7 +42,7 @@ dependencies {
         exclude group:'org.grails', module:'grails-datastore-gorm-plugin-support'
         exclude group:"org.springframework.data", module:"spring-data-mongodb"
     }
-    compile "org.mongodb:mongodb-driver:3.0.2"
+    compile "org.mongodb:mongodb-driver:$mongoVersion"
     compile "org.springframework:spring-tx:4.0.5.RELEASE"
 
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"

@@ -36,6 +36,7 @@ project.ext {
 
     // driver versions
     neo4jVersion = '2.3.1'
+    mongoVersion = '3.1.1'
 
     // plugin versions
     hibernateVersion = "4.3.10"

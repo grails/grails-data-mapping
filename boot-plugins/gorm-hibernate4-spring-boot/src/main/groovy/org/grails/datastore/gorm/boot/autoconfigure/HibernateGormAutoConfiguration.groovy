@@ -19,6 +19,7 @@ import groovy.transform.CompileStatic
 import org.grails.config.PropertySourcesConfig
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
+import org.grails.orm.hibernate.cfg.HibernateMappingContextConfiguration
 import org.hibernate.SessionFactory
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.BeanFactory
@@ -57,7 +58,7 @@ import javax.sql.DataSource
  */
 @CompileStatic
 @Configuration
-@ConditionalOnClass(GrailsAnnotationConfiguration)
+@ConditionalOnClass(HibernateMappingContextConfiguration)
 @ConditionalOnBean(DataSource)
 @ConditionalOnMissingBean(HibernateDatastoreSpringInitializer)
 @AutoConfigureAfter(DataSourceAutoConfiguration)
@@ -78,26 +79,12 @@ class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoader
 
         initializer = new HibernateDatastoreSpringInitializer(classLoader, packages as String[])
         initializer.resourceLoader = resourceLoader
-        def properties = getDatastoreConfiguration()
-
-        def propertySources = new MutablePropertySources()
-        propertySources.addFirst new PropertiesPropertySource("hibernateConfig", properties)
-        initializer.setConfiguration(new PropertySourcesConfig(propertySources))
+        initializer.setConfiguration(environment)
         initializer.configureForBeanDefinitionRegistry(registry)
 
         registry.registerBeanDefinition("org.grails.internal.gorm.hibernate4.EAGER_INIT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))
     }
 
-    protected Properties getDatastoreConfiguration() {
-        if(environment != null) {
-            def config = environment.getSubProperties("hibernate.")
-            def properties = new Properties()
-            for(entry in config.entrySet()) {
-                properties.put("hibernate.${entry.key}".toString(), entry.value)
-            }
-            return properties
-        }
-    }
 
     @Override
     void setEnvironment(Environment environment) {

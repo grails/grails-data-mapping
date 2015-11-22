@@ -72,7 +72,7 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
 
     ResourceLoader resourceLoader
 
-    RelaxedPropertyResolver environment
+    Environment environment
 
     @Override
     void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
@@ -98,18 +98,23 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
             }
         }
         initializer.resourceLoader = resourceLoader
-        def properties = getDatastoreConfiguration()
 
-        def propertySources = new MutablePropertySources()
-        propertySources.addFirst new PropertiesPropertySource("mongoConfig", properties)
-        initializer.setConfiguration(new PropertySourcesConfig(propertySources))
+        initializer.setConfiguration(environment)
         initializer.setMongo(mongo)
         initializer.setMongoOptions(mongoOptions)
+
+
         if(this.properties != null) {
             initializer.setDatabaseName(this.properties.database)
+            if(mongo == null && mongoOptions != null) {
+                initializer.setMongo(
+                        properties.createMongoClient(mongoOptions)
+                )
+            }
         }
         else if(environment != null){
-            def config = environment.getSubProperties("mongodb.")
+            def propertyResolver = new RelaxedPropertyResolver(environment, "spring.")
+            def config = propertyResolver.getSubProperties("mongodb.")
             if(config.containsKey('database')) {
                 initializer.setDatabaseName(config.get("database").toString())
             }
@@ -122,20 +127,10 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
         registry.registerBeanDefinition("org.grails.internal.gorm.mongodb.EAGER_INIT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))
     }
 
-    protected Properties getDatastoreConfiguration() {
-        if(environment != null) {
-            def config = environment.getSubProperties("mongodb.")
-            def properties = new Properties()
-            for(entry in config.entrySet()) {
-                properties.put("grails.mongodb.${entry.key}".toString(), entry.value)
-            }
-            return properties
-        }
-    }
 
     @Override
     void setEnvironment(Environment environment) {
-        this.environment = new RelaxedPropertyResolver(environment, "spring.");
+        this.environment = environment;
     }
 
     static class EagerInitProcessor implements BeanPostProcessor, ApplicationContextAware {

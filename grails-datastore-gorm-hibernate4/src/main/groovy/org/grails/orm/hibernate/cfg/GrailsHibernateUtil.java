@@ -416,7 +416,7 @@ public class GrailsHibernateUtil extends HibernateRuntimeUtils {
         GroovyAwareJavassistProxyFactory proxyFactory = new GroovyAwareJavassistProxyFactory();
 
         @SuppressWarnings("unchecked")
-        Set<Class<HibernateProxy>> proxyInterfaces = new HashSet<>();
+        Set<Class<HibernateProxy>> proxyInterfaces = new HashSet<Class<HibernateProxy>>();
         proxyInterfaces.add(HibernateProxy.class);
 
         final Class<?> javaClass = persistentClass.getMappedClass();
