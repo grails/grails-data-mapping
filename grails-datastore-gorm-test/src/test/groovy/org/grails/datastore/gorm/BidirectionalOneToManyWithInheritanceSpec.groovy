@@ -20,7 +20,7 @@ class BidirectionalOneToManyWithInheritanceSpec extends GormDatastoreSpec {
             doc = Documentation.get(1)
 
         then:
-            2 == doc.configurationItems.size()
+            doc.configurationItems.size() == 2
     }
 
     @Override

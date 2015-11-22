@@ -107,7 +107,7 @@ public abstract class EntityPersister implements Persister {
         if (pf.isProxy(obj)) {
             return pf.getIdentifier(obj);
         }
-        if(persistentEntity.isInstance(obj)) {
+        if(persistentEntity.getJavaClass().equals(obj.getClass())) {
             return reflector.getIdentifier(obj);
         }
         else {
