@@ -1,8 +1,13 @@
 import grails.orm.bootstrap.HibernateDatastoreSpringInitializer
+import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsClass
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor
+import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.grails.orm.hibernate4.support.GrailsOpenSessionInViewInterceptor
 import org.springframework.context.*
@@ -42,6 +47,8 @@ class Hibernate4GrailsPlugin {
             'grails-app/domain/**'
     ]
 
+    Set<String> dataSourceNames = []
+
     def doWithSpring = {
         ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT,
                 new PersistentConstraintFactory(springConfig.getUnrefreshedApplicationContext(),
@@ -50,11 +57,11 @@ class Hibernate4GrailsPlugin {
         def domainClasses = application.getArtefacts(DomainClassArtefactHandler.TYPE)
                             .findAll() { GrailsDomainClass cls -> cls.mappingStrategy != "none" && cls.mappingStrategy == GrailsDomainClass.GORM}
                             .collect() { GrailsClass cls -> cls.clazz }
-
+        dataSourceNames = AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.calculateDataSourceNames(application)
         def initializer = new HibernateDatastoreSpringInitializer(application.config, domainClasses)
         initializer.registerApplicationIfNotPresent = false
         initializer.enableReload = grails.util.Environment.isDevelopmentMode()
-
+        initializer.dataSources = dataSourceNames
         def definitions = initializer.getBeanDefinitions((BeanDefinitionRegistry) springConfig.getUnrefreshedApplicationContext())
         definitions.delegate = delegate
         definitions.call()
@@ -82,20 +89,23 @@ class Hibernate4GrailsPlugin {
         ConstrainedProperty.removeConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
     }
 
+
     def onChange = { event ->
 
         if(event.source instanceof Class) {
             Class cls = (Class)event.source
             GrailsDomainClass dc = (GrailsDomainClass)application.getArtefact(DomainClassArtefactHandler.TYPE, cls.name)
+            def mappingContext = applicationContext.getBean(HibernateMappingContext)
+            PersistentEntity entity = dc ? mappingContext.getPersistentEntity(dc.fullName) : null
 
-//             if(!dc || !GrailsHibernateUtil.isMappedWithHibernate(dc)) {
-//                 return
-//             }
+             if(!dc || !GrailsHibernateUtil.isMappedWithHibernate(entity)) {
+                 return
+             }
 
             GrailsDomainBinder.clearMappingCache(cls)
 
             ApplicationContext applicationContext = application.mainContext
-            applicationContext.getBean(HibernateMappingContext).addPersistentEntity(cls, true)
+            mappingContext.addPersistentEntity(cls, true)
             for(String dataSourceName in dataSourceNames) {
                 boolean isDefault = dataSourceName == Mapping.DEFAULT_DATA_SOURCE
                 String suffix = isDefault ? '' : '_' + dataSourceName
@@ -127,9 +137,9 @@ class Hibernate4GrailsPlugin {
                     )
 
                     beans {
-                        "${cls.fullName}Validator$suffix"(HibernateDomainClassValidator) {
+                        "${cls.name}Validator$suffix"(HibernateDomainClassValidator) {
                             messageSource = ref("messageSource")
-                            domainClass = ref("${cls.fullName}DomainClass")
+                            domainClass = ref("${cls.name}DomainClass")
                             delegate.grailsApplication = ref(GrailsApplication.APPLICATION_ID)
                             sessionFactory = ref(sessionFactoryName)
                         }
@@ -144,7 +154,7 @@ class Hibernate4GrailsPlugin {
 
             def postInit = new HibernateDatastoreSpringInitializer.PostInitializationHandling()
             postInit.applicationContext = applicationContext
-            postInit.grailsApplication = grailsApplication
+            postInit.grailsApplication = application
             postInit.afterPropertiesSet()
         }
     }
