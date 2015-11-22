@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
-import org.grails.datastore.mapping.collection.PersistentCollection;
 import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.core.impl.*;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
@@ -119,6 +118,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     protected ApplicationEventPublisher publisher;
 
     protected boolean stateless = false;
+    protected boolean flushActive = false;
 
 
     public AbstractSession(Datastore datastore, MappingContext mappingContext,
@@ -300,12 +300,16 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public void flush() {
+        if(flushActive) return;
+
         boolean hasInserts;
         try {
             if (exceptionOccurred) {
                 throw new InvalidDataAccessResourceUsageException(
                      "Do not flush() the Session after an exception occurs");
             }
+
+            flushActive = true;
 
             hasInserts = hasUpdates();
             if (hasInserts) {
@@ -320,6 +324,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
         } finally {
             clearPendingOperations();
+            flushActive = false;
         }
         postFlush(hasInserts);
     }
