@@ -1,6 +1,7 @@
 package grails.test.mixin.mongodb
 
 import grails.test.mixin.TestMixin
+import org.junit.Ignore
 import spock.lang.Specification
 
 import com.github.fakemongo.Fongo
@@ -9,6 +10,7 @@ import com.github.fakemongo.Fongo
 @TestMixin(MongoDbTestMixin)
 class FakeMongoSpec extends Specification{
 
+    @Ignore
     void "Test that it is possible to use a Mongo mixin to test MongoDB interaction with Fongo"() {
         given:"A mongo domain model"
             Fongo fongo = new Fongo("mongo server 1")
