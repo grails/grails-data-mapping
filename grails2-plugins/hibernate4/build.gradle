@@ -63,4 +63,4 @@ dependencies {
 }
 
 test.jvmOptions.jvmArgs '-Dgrails.full.stacktrace=true'
-packagePlugin.jvmOptions.jvmArgs '-Dgrails.full.stacktrace=true', "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005", "-Xdebug"
+//packagePlugin.jvmOptions.jvmArgs '-Dgrails.full.stacktrace=true', "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005", "-Xdebug"
