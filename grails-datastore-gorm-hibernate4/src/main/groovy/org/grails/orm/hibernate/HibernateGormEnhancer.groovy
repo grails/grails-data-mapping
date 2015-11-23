@@ -49,13 +49,20 @@ class HibernateGormEnhancer extends GormEnhancer {
     }
 
     @Override
-    String establishQualifier(Datastore datastore, PersistentEntity entity) {
+    Set<String> allQualifiers(Datastore datastore, PersistentEntity entity) {
         def dataSourceName = GrailsHibernateUtil.getDefaultDataSource(entity)
         def datastoreStoreDataSourceName = ((HibernateDatastore) datastore).dataSourceName
+        Set<String> qualifiers = []
+
+        def allMappedDataSources = GrailsHibernateUtil.getDatasourceNames(entity)
         if(datastoreStoreDataSourceName.equals(dataSourceName) ) {
-            return Entity.DEFAULT_DATA_SOURCE
+            qualifiers.add(Entity.DEFAULT_DATA_SOURCE)
         }
-        return datastoreStoreDataSourceName
+        if(allMappedDataSources.contains(datastoreStoreDataSourceName)) {
+            qualifiers.add(datastoreStoreDataSourceName)
+        }
+        return qualifiers
+
     }
 
 
