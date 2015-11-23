@@ -1,6 +1,8 @@
 apply plugin:'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 if(!isGrailsPlugin) {
+
+    project.archivesBaseName = project.name.substring(project.name.indexOf('/')+1, project.name.length())
     apply plugin: 'com.bmuschko.nexus'
 }
 
@@ -32,10 +34,10 @@ ext {
 }
 
 def projectInfo = new PublishingConvention(project)
+
 project.convention.plugins.projectInfo = projectInfo
 
 if(!isGrailsPlugin) {
-
     modifyPom {
         project {
             delegate.name projectInfo.projectName
