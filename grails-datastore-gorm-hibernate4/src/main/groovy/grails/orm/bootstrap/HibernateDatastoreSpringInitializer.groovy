@@ -274,7 +274,11 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                         dataSource = ref("dataSource$suffix")
                     }
                 }
-                "hibernateGormEnhancer$suffix"(HibernateGormEnhancer, ref("hibernateDatastore$suffix"), ref("transactionManager$suffix"))
+                "hibernateGormEnhancer$suffix"(HibernateGormEnhancer, ref("hibernateDatastore$suffix"), ref("transactionManager$suffix")) { bean ->
+                    bean.destroyMethod = 'close'
+                    bean.lazyInit = false
+                }
+
                 "org.grails.gorm.hibernate.internal.POST_INIT_BEAN-${dataSourceName}$suffix"(PostInitializationHandling) { bean ->
                     grailsApplication = ref("grailsApplication")
                     bean.lazyInit = false

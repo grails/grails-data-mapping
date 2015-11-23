@@ -233,7 +233,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 }
 
 
-                "hibernateDatastore$suffix"(HibernateDatastoreFactoryBean, HibernateDatastore, ref('grailsDomainClassMappingContext'), ref(sessionFactoryName), configuration, dataSourceName)
+                "hibernateDatastore$suffix"(HibernateDatastoreFactoryBean, HibernateDatastore, ref('grailsDomainClassMappingContext'), ref(sessionFactoryName), configuration, dataSourceName) {}
 
                 if (!beanDefinitionRegistry.containsBeanDefinition("transactionManager$suffix")) {
                     "transactionManager$suffix"(GrailsHibernateTransactionManager) { bean ->
@@ -243,7 +243,11 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                     }
                 }
 
-                "hibernateGormEnhancer$suffix"(HibernateGormEnhancer, ref("hibernateDatastore$suffix"), ref("transactionManager$suffix"))
+                "hibernateGormEnhancer$suffix"(HibernateGormEnhancer, ref("hibernateDatastore$suffix"), ref("transactionManager$suffix")) { bean ->
+                    bean.destroyMethod = 'close'
+                    bean.lazyInit = false
+                }
+
                 "org.grails.gorm.hibernate.internal.POST_INIT_BEAN-${dataSourceName}$suffix"(PostInitializationHandling) { bean ->
                     grailsApplication = ref('grailsApplication')
                     bean.lazyInit = false
