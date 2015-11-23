@@ -1,6 +1,8 @@
 apply plugin:'maven-publish'
 apply plugin: 'com.jfrog.bintray'
-
+if(!isGrailsPlugin) {
+    apply plugin: 'com.bmuschko.nexus'
+}
 
 class PublishingConvention {
     Project project
