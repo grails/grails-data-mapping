@@ -1,0 +1,39 @@
+To use GORM for Hibernate in Spring Boot add the necessary dependencies to your Boot application:
+
+{code}
+compile("org.grails:gorm-hibernate4-spring-boot:VERSION")
+{code}
+
+Ensure your Boot @Application@ class is annotated with @ComponentScan@, example:
+
+{code}
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.context.annotation.*
+
+@Configuration
+@EnableAutoConfiguration
+@ComponentScan
+class Application {
+    static void main(String[] args) {
+        SpringApplication.run Application, args
+    }
+}
+{code}
+
+{note}
+Using @ComponentScan@ without a value results in Boot scanning for classes in the same package or any package nested within the @Application@ class package.
+If you GORM entities are in a different package specify the package name as the value of the @ComponentScan@ annotation.
+{note}
+
+Finally create your GORM entities and ensure they are annotated with @grails.persistence.Entity@:
+
+{code}
+import grails.persistence.*
+
+@Entity
+class Person {
+    String firstName
+    String lastName
+}
+{code}

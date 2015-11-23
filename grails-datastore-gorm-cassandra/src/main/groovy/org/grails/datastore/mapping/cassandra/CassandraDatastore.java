@@ -93,16 +93,23 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
 		this(new CassandraMappingContext(), connectionDetails, ctx);
 	}
 
-    public CassandraDatastore(CassandraMappingContext mappingContext, PropertyResolver connectionDetails, ConfigurableApplicationContext ctx) {
+	public CassandraDatastore(CassandraMappingContext mappingContext, PropertyResolver connectionDetails, ConfigurableApplicationContext ctx) {
+		this(mappingContext, connectionDetails, null, ctx);
+	}
+
+	public CassandraDatastore(CassandraMappingContext mappingContext, Map<String, Object> connectionDetails, ConfigurableApplicationContext ctx) {
+		this(mappingContext, mapToPropertyResolver(connectionDetails), ctx);
+	}
+
+    public CassandraDatastore(CassandraMappingContext mappingContext, PropertyResolver connectionDetails, Cluster existingCluster, ConfigurableApplicationContext ctx) {
         super(mappingContext, connectionDetails, ctx);
         this.keyspace = mappingContext.getKeyspace();
+		this.nativeCluster = existingCluster;
         Assert.hasText(keyspace, "Keyspace must be set");
         springCassandraMappingContext = new BasicCassandraMappingContext(mappingContext);
 
         mappingContext.setSpringCassandraMappingContext(springCassandraMappingContext);
-        if (mappingContext != null) {
-            mappingContext.addMappingContextListener(this);
-        }
+		mappingContext.addMappingContextListener(this);
 
         initializeConverters(mappingContext);
 
@@ -110,10 +117,6 @@ public class CassandraDatastore extends AbstractDatastore implements Initializin
             log.debug("Initializing Cassandra Datastore for keyspace: " + keyspace);
         }
     }
-
-	public CassandraDatastore(CassandraMappingContext mappingContext, Map<String, Object> connectionDetails, ConfigurableApplicationContext ctx) {
-		this(mappingContext, mapToPropertyResolver(connectionDetails), ctx);
-	}
 
 	/**
 	 * Sets to development mode which enables automatic creation of keyspace and schema

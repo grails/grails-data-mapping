@@ -1,0 +1,46 @@
+ext {
+    isGrailsPlugin = false
+}
+
+apply plugin:'groovy'
+apply from:'../../gradle/maven-central-build.gradle'
+
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+repositories {
+
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-release" }
+    mavenLocal()
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn:javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-cli:$springBootVersion", {
+        exclude group:'org.codehaus.groovy', module:'groovy'
+    }
+
+    compile "org.springframework.boot:spring-boot-autoconfigure:$springBootVersion"
+
+    compile "org.codehaus.groovy:groovy:$groovyVersion"
+    compile project(":grails-datastore-gorm-support"), {
+        exclude group:'org.grails', module:'grails-datastore-gorm-plugin-support'
+    }
+    compile project(":grails-datastore-gorm-cassandra"), {
+        exclude group:'org.grails', module:'grails-datastore-gorm-plugin-support'
+    }
+    compile "org.springframework:spring-tx:$springVersion"
+
+    testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+}

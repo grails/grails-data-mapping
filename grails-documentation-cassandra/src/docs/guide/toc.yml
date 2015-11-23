@@ -1,0 +1,21 @@
+introduction:
+  title: Introduction
+  compatibility: Compatibility with GORM for Hibernate
+gettingStarted:
+  title: Getting Started
+  standalone: Using GORM for Cassandra Standalone
+  combiningCassandraAndHibernate: Combining Cassandra and Hibernate
+  advancedConfig: Advanced Configuration
+  springBoot: Using GORM in Spring Boot
+  outsideGrails: GORM for Cassandra outside Grails
+mapping:
+  title: Mapping to Cassandra Tables
+  idGeneration: Identity Generation
+  compoundPrimaryKeys: Compount Primary Keys
+  queryIndexes: Query Indexes
+  tableProperties: Table Properties
+  stateless: Stateless Mode
+options:
+  title: Querying and Persistence Options
+  queryingOptions: Querying Options
+lowLevelApi: Cassandra Low-level API

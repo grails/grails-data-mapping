@@ -1,11 +1,13 @@
 package org.grails.datastore.gorm.cassandra.bean.factory
 
+import com.datastax.driver.core.Cluster
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.mapping.cassandra.CassandraDatastore
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
 import org.springframework.beans.factory.FactoryBean
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ConfigurableApplicationContext
@@ -23,10 +25,13 @@ class CassandraDatastoreFactoryBean implements FactoryBean<CassandraDatastore>, 
     ApplicationContext applicationContext
     boolean developmentMode = false
 
+    @Autowired(required = false)
+    Cluster cluster
+
     @Override
     CassandraDatastore getObject() throws Exception {
         ConfigurableApplicationContext ctx = (ConfigurableApplicationContext)applicationContext
-        CassandraDatastore datastore = new CassandraDatastore(mappingContext, config, ctx)
+        CassandraDatastore datastore = cluster ? new CassandraDatastore(mappingContext, config, cluster, ctx) : new CassandraDatastore(mappingContext, config, ctx)
         datastore.developmentMode = developmentMode
         ctx.addApplicationListener new DomainEventListener(datastore)
         ctx.addApplicationListener new AutoTimestampEventListener(datastore)

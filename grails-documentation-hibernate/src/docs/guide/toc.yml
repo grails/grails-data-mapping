@@ -4,6 +4,7 @@ introduction:
 gettingStarted:
   title: Getting Started
   hibernateVersions: Configuring Different Hibernate Versions
+  springBoot: Using GORM in Spring Boot
   outsideGrails: Using GORM for Hibernate Outside Grails
 learningMore: Learning More
 

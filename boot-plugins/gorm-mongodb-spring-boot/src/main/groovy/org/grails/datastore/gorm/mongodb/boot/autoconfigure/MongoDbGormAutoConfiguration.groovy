@@ -108,7 +108,7 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
             initializer.setDatabaseName(this.properties.database)
             if(mongo == null && mongoOptions != null) {
                 initializer.setMongo(
-                        properties.createMongoClient(mongoOptions)
+                        properties.createMongoClient(mongoOptions, environment)
                 )
             }
         }
@@ -123,8 +123,6 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
             }
         }
         initializer.configureForBeanDefinitionRegistry(registry)
-
-        registry.registerBeanDefinition("org.grails.internal.gorm.mongodb.EAGER_INIT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))
     }
 
 
@@ -133,27 +131,5 @@ class MongoDbGormAutoConfiguration implements BeanFactoryAware, ResourceLoaderAw
         this.environment = environment;
     }
 
-    static class EagerInitProcessor implements BeanPostProcessor, ApplicationContextAware {
 
-        ApplicationContext applicationContext
-        private Mongo mongo
-        private Map enhancers
-
-        @Override
-        Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-            if(mongo != null && enhancers == null) {
-                // force MongoDB enhancer initialisation
-                enhancers = applicationContext.getBeansOfType(GormEnhancer)
-            }
-            return bean
-        }
-
-        @Override
-        Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-            if(bean instanceof Mongo) {
-                mongo = (Mongo)bean
-            }
-            return bean
-        }
-    }
 }

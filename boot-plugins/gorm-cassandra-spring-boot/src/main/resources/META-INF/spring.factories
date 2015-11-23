@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.grails.datastore.gorm.cassandra.boot.autoconfigure.CassandraAutoConfiguration

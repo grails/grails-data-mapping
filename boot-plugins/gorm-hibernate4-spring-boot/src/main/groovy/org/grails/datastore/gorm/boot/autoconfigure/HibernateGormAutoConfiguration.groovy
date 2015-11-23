@@ -69,7 +69,7 @@ class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoader
 
     ResourceLoader resourceLoader
 
-    RelaxedPropertyResolver environment
+    Environment environment
 
     @Override
     void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
@@ -81,38 +81,12 @@ class HibernateGormAutoConfiguration implements BeanFactoryAware, ResourceLoader
         initializer.resourceLoader = resourceLoader
         initializer.setConfiguration(environment)
         initializer.configureForBeanDefinitionRegistry(registry)
-
-        registry.registerBeanDefinition("org.grails.internal.gorm.hibernate4.EAGER_INIT_PROCESSOR", new RootBeanDefinition(EagerInitProcessor))
     }
 
 
     @Override
     void setEnvironment(Environment environment) {
-        this.environment = new RelaxedPropertyResolver(environment, "spring.");
+        this.environment = environment;
     }
 
-    static class EagerInitProcessor implements BeanPostProcessor, ApplicationContextAware {
-
-        ApplicationContext applicationContext
-        private SessionFactory sessionFactory
-        private Map enhancers
-
-        @Override
-        Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-            if(sessionFactory != null && enhancers == null) {
-                // force GORM enhancer initialisation
-                applicationContext.getBean(HibernateDatastoreSpringInitializer.PostInitializationHandling)
-                enhancers = applicationContext.getBeansOfType(GormEnhancer)
-            }
-            return bean
-        }
-
-        @Override
-        Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-            if(bean instanceof SessionFactory) {
-                sessionFactory = (SessionFactory)bean
-            }
-            return bean
-        }
-    }
 }

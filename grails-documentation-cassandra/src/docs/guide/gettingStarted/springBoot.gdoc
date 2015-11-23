@@ -1,0 +1,52 @@
+To use GORM for Hibernate in Spring Boot add the necessary dependencies to your Boot application:
+
+{code}
+compile("org.grails:gorm-cassandra-spring-boot:VERSION")
+{code}
+
+Note that if you get exceptions during startup or execution for newer versions of Spring Boot  (1.3 and above) you may need to enforce the dependencies:
+
+{code}
+dependencies {
+    compile("org.grails:gorm-cassandra-spring-boot:VERSION")
+    compile("com.datastax.cassandra:cassandra-driver-core:2.0.4")
+    compile "org.springframework.data:spring-data-commons:1.8.4.RELEASE"
+    compile("org.springframework.data:spring-data-cassandra:1.0.4.RELEASE") {
+        exclude group:'org.apache.cassandra',module:'cassandra-all'
+    }
+}
+{code}
+
+Ensure your Boot @Application@ class is annotated with @ComponentScan@, example:
+
+{code}
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.context.annotation.*
+
+@Configuration
+@EnableAutoConfiguration
+@ComponentScan
+class Application {
+    static void main(String[] args) {
+        SpringApplication.run Application, args
+    }
+}
+{code}
+
+{note}
+Using @ComponentScan@ without a value results in Boot scanning for classes in the same package or any package nested within the @Application@ class package.
+If you GORM entities are in a different package specify the package name as the value of the @ComponentScan@ annotation.
+{note}
+
+Finally create your GORM entities and ensure they are annotated with @grails.persistence.Entity@:
+
+{code}
+import grails.persistence.*
+
+@Entity
+class Person {
+    String firstName
+    String lastName
+}
+{code}

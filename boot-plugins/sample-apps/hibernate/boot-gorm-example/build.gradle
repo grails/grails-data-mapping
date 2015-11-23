@@ -1,10 +1,10 @@
 buildscript {
     repositories {
-        maven { url "http://repo.spring.io/libs-snapshot" }
+        maven { url "http://repo.spring.io/libs-release" }
         mavenLocal()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.0.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.0.RELEASE")
     }
 }
 
@@ -24,8 +24,8 @@ repositories {
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:1.0.0.RELEASE")
-    compile("org.grails:gorm-hibernate4-spring-boot:1.0.0.RC2")
+    compile("org.springframework.boot:spring-boot-starter-web:1.3.0.RELEASE")
+    compile("org.grails:gorm-hibernate4-spring-boot:5.0.0.BUILD-SNAPSHOT")
 
     runtime("com.h2database:h2:1.3.173")
     testCompile("junit:junit")

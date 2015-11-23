@@ -1,12 +1,15 @@
 package org.grails.datastore.gorm.boot.autoconfigure
 
 import grails.persistence.Entity
+import org.springframework.beans.factory.support.DefaultListableBeanFactory
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
+import org.springframework.jdbc.datasource.DriverManagerDataSource
 import spock.lang.Specification
 
 /**
@@ -23,7 +26,10 @@ class HibernateGormAutoConfigurationSpec extends Specification{
     void setup() {
 
         AutoConfigurationPackages.register(context, "org.grails.datastore.gorm.boot.autoconfigure")
-        this.context.register( TestConfiguration, EmbeddedDataSourceConfiguration.class,
+
+        def beanFactory = this.context.defaultListableBeanFactory
+        beanFactory.registerSingleton("dataSource", new DriverManagerDataSource("jdbc:h2:mem:grailsDb1;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', ''))
+        this.context.register( TestConfiguration.class,
                 PropertyPlaceholderAutoConfiguration.class);
     }
 

@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.cassandra.bean.factory
 import groovy.transform.Canonical
 
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
+import org.grails.datastore.mapping.cassandra.CassandraDatastore
 import org.grails.datastore.mapping.cassandra.config.CassandraMappingContext
 import org.grails.datastore.mapping.model.MappingContext
 import org.springframework.util.Assert
@@ -31,7 +32,7 @@ class CassandraMappingContextFactoryBean extends AbstractMappingContextFactoryBe
 	
     @Override
     protected MappingContext createMappingContext() {
-		Assert.hasText(keyspace, "Property [keyspace] must be set!")
+		Assert.hasText(keyspace, "Property [keyspace] must be set! Please configure the '${CassandraDatastore.KEYSPACE_NAME}' property for this environment.")
         new CassandraMappingContext(keyspace, defaultMapping?.defaultMapping)        
     }
 }
