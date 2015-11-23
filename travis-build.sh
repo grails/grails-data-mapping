@@ -38,10 +38,10 @@ case "$GORM_IMPL"  in
         # wait for Cassandra to start up
         sleep 5
         ./gradlew grails-datastore-gorm-cassandra:test -no-daemon  || EXIT_STATUS=$?
-        ;;
         if [[ $EXIT_STATUS -eq 0 ]]; then
             ./gradlew boot-plugins/gorm-cassandra-spring-boot:test || EXIT_STATUS=$?
         fi
+        ;;
     neo4j)
         ./gradlew grails-datastore-gorm-neo4j:test -no-daemon  || EXIT_STATUS=$?
         if [[ $EXIT_STATUS -eq 0 ]]; then
