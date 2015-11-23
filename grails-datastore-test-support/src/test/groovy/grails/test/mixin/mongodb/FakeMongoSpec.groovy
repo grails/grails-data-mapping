@@ -1,7 +1,7 @@
 package grails.test.mixin.mongodb
 
 import grails.test.mixin.TestMixin
-import org.junit.Ignore
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import com.github.fakemongo.Fongo
