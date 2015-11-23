@@ -34,6 +34,42 @@ ext {
 def projectInfo = new PublishingConvention(project)
 project.convention.plugins.projectInfo = projectInfo
 
+if(!isGrailsPlugin) {
+
+    modifyPom {
+        project {
+            delegate.name projectInfo.projectName
+            delegate.description projectInfo.projectDescription
+            delegate.url projectInfo.projectURL
+
+            delegate.licenses {
+                delegate.license {
+                    delegate.name 'The Apache Software License, Version 2.0'
+                    delegate.url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    delegate.distribution 'repo'
+                }
+            }
+
+            delegate.scm {
+                delegate.url projectInfo.projectVcsUrl
+                delegate.connection 'scm:git@github.com:grails/grails-data-mapping.git'
+                delegate.developerConnection 'scm:git@github.com:grails/grails-data-mapping.git'
+            }
+
+
+            delegate.developers {
+                delegate.developer {
+                    delegate.id 'graemerocher'
+                    delegate.name 'Graeme Rocher'
+                }
+                delegate.developer {
+                    delegate.id 'jeffscottbrown'
+                    delegate.name 'Jeff Brown'
+                }
+            }
+        }
+    }
+}
 
 publishing {
 
