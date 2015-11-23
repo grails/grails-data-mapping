@@ -91,25 +91,23 @@ class GormEnhancer implements Closeable {
         for(entity in datastore.mappingContext.persistentEntities) {
             if(appliesToDatastore(datastore, entity)) {
                 def cls = entity.javaClass
-                String qualifier = establishQualifier(datastore, entity)
-                def staticApi = getStaticApi(cls)
-                def name = entity.name
-                STATIC_APIS.get(qualifier).put(name, staticApi)
-                def instanceApi = getInstanceApi(cls)
-                INSTANCE_APIS.get(qualifier).put(name, instanceApi)
-                def validationApi = getValidationApi(cls)
-                VALIDATION_APIS.get(qualifier).put(name, validationApi)
-                DATASTORES.get(qualifier).put(name, datastore)
+                Set<String> qualifiers = allQualifiers(datastore, entity)
+                for(qualifier in qualifiers) {
+                    def staticApi = getStaticApi(cls)
+                    def name = entity.name
+                    STATIC_APIS.get(qualifier).put(name, staticApi)
+                    def instanceApi = getInstanceApi(cls)
+                    INSTANCE_APIS.get(qualifier).put(name, instanceApi)
+                    def validationApi = getValidationApi(cls)
+                    VALIDATION_APIS.get(qualifier).put(name, validationApi)
+                    DATASTORES.get(qualifier).put(name, datastore)
+                }
             }
         }
     }
 
-    String establishQualifier(Datastore datastore, PersistentEntity entity) {
-        return Entity.DEFAULT_DATA_SOURCE
-    }
-
-    List<String> allQualifiers(PersistentEntity entity) {
-        return [Entity.DEFAULT_DATA_SOURCE]
+    Set<String> allQualifiers(Datastore datastore, PersistentEntity entity) {
+        return [Entity.DEFAULT_DATA_SOURCE] as Set
     }
 
     protected boolean appliesToDatastore(Datastore datastore, PersistentEntity entity) {
@@ -196,7 +194,7 @@ class GormEnhancer implements Closeable {
         def registry = GroovySystem.metaClassRegistry
         for(entity in datastore.mappingContext.persistentEntities) {
 
-            List<String> qualifiers = allQualifiers(entity)
+            Set<String> qualifiers = allQualifiers(datastore, entity)
             def cls = entity.javaClass
             def className = cls.name
             for(q in qualifiers) {

@@ -125,6 +125,11 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
             assert s.connection().metaData.getURL() == "jdbc:h2:mem:books"
             return true
         }
+        Book.books.count() == 0
+        Book.books.withSession { Session s ->
+            assert s.connection().metaData.getURL() == "jdbc:h2:mem:books"
+            return true
+        }
         Book.moreBooks.count() == 0
         Book.moreBooks.withNewSession { Session s ->
             assert s.connection().metaData.getURL() == "jdbc:h2:mem:moreBooks"
