@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.7 Custom User Types 5.0.0.RC1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/objectMapping.html"><strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/databaseSwitching.html"><strong>4</strong><span>Switching Database or Collection at Runtime</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/stateless.html"><strong>5</strong><span>Stateless Mode</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/lowLevelApi.html"><strong>6</strong><span>Using the Mongo Driver Directly</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/transactions.html"><strong>7</strong><span>Transactions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/testing.html"><strong>8</strong><span>Unit Testing</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/databaseSwitching.html"><strong>4</strong><span>Switching Database or Collection at Runtime</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3.7 Custom User Types - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
+
+                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h2 id="customTypes">3.7 Custom User Types</h2>
+GORM for MongoDB will persist all common known Java types like String, Integer, URL etc., however if you want to persist one of your own classes that is not a domain class you can implement a custom user type.<p class="paragraph"/>For example consider the following class:<p class="paragraph"/><div class="code"><pre>class Birthday <span class="java&#45;keyword">implements</span> Comparable&#123;
+    Date date<p class="paragraph"/>    Birthday(Date date) &#123;
+        <span class="java&#45;keyword">this</span>.date = date
+    &#125;<p class="paragraph"/>    @Override
+    <span class="java&#45;object">int</span> compareTo(<span class="java&#45;object">Object</span> t) &#123;
+        date.compareTo(t.date)
+    &#125;
+&#125;</pre></div><p class="paragraph"/><blockquote class="note">
+Custom types should go in src/groovy not grails-app/domain
+</blockquote><p class="paragraph"/>If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with Spring. For example:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> org.bson.&#42;
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller;
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.model.PersistentProperty;
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.mongo.query.MongoQuery;
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.query.Query;<p class="paragraph"/>class BirthdayType <span class="java&#45;keyword">extends</span> AbstractMappingAwareCustomTypeMarshaller&#60;Birthday, Document, Document&#62;(Birthday) &#123;
+   @Override
+   <span class="java&#45;keyword">protected</span> <span class="java&#45;object">Object</span> writeInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Birthday value, Document nativeTarget) &#123;
+       <span class="java&#45;keyword">final</span> converted = value.date.time
+       nativeTarget.put(key, converted)
+       <span class="java&#45;keyword">return</span> converted
+   &#125;<p class="paragraph"/>   @Override
+   <span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, PropertyCriterion criterion, Document nativeQuery) &#123;
+       <span class="java&#45;keyword">if</span> (criterion <span class="java&#45;keyword">instanceof</span> Between) &#123;
+           def dbo = <span class="java&#45;keyword">new</span> BasicDBObject()
+           dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time)
+           dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time)
+           nativeQuery.put(key, dbo)
+       &#125;
+       <span class="java&#45;keyword">else</span> &#123;
+           nativeQuery.put(key, criterion.value.date.time)
+       &#125;
+   &#125;<p class="paragraph"/>   @Override
+   <span class="java&#45;keyword">protected</span> Birthday readInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Document nativeSource) &#123;
+       <span class="java&#45;keyword">final</span> num = nativeSource.get(key)
+       <span class="java&#45;keyword">if</span> (num <span class="java&#45;keyword">instanceof</span> <span class="java&#45;object">Long</span>) &#123;
+           <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date(num))
+       &#125;
+       <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">null</span>
+   &#125;
+&#125;)</pre></div><p class="paragraph"/>The above <code>BirthdayType</code> class is a custom user type implementation for MongoDB for the <code>Birthday</code> class. It provides implementations for three methods: <code>readInternal</code>, <code>writeInternal</code> and the optional <code>queryInternal</code>. If you do not implement <code>queryInternal</code> your custom type can be persisted but not queried.<p class="paragraph"/>The <code>writeInternal</code> method gets passed the property, the key to store it under, the value and the native DBObject where the custom type is to be stored:<p class="paragraph"/><div class="code"><pre>@Override
+<span class="java&#45;keyword">protected</span> <span class="java&#45;object">Object</span> writeInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Birthday value, DBObject nativeTarget) &#123;
+    <span class="java&#45;keyword">final</span> converted = value.date.time
+    nativeTarget.put(key, converted)
+    <span class="java&#45;keyword">return</span> converted
+&#125;</pre></div><p class="paragraph"/>You can then read the values of the custom type and register them with the <code>DBObject</code>. The <code>readInternal</code> method gets passed the <code>PersistentProperty</code>, the key the user type info is stored under (although you may want to use multiple keys) and the <code>DBObject</code>:<p class="paragraph"/><div class="code"><pre>@Override
+<span class="java&#45;keyword">protected</span> Birthday readInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Document nativeSource) &#123;
+    <span class="java&#45;keyword">final</span> num = nativeSource.get(key)
+    <span class="java&#45;keyword">if</span>(num <span class="java&#45;keyword">instanceof</span> <span class="java&#45;object">Long</span>) &#123;
+        <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date(num))
+    &#125;
+    <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">null</span>
+&#125;</pre></div><p class="paragraph"/>You can then construct the custom type by reading values from the <code>DBObject</code>. Finally the <code>queryInternal</code> method allows you to handle how a custom type is queried:<p class="paragraph"/><div class="code"><pre>@Override
+<span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Query.PropertyCriterion criterion, Document nativeQuery) &#123;
+    <span class="java&#45;keyword">if</span>(criterion <span class="java&#45;keyword">instanceof</span> Between) &#123;
+        def dbo = <span class="java&#45;keyword">new</span> BasicDBObject()
+        dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
+        dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time);
+        nativeQuery.put(key, dbo)
+    &#125;
+    <span class="java&#45;keyword">else</span> <span class="java&#45;keyword">if</span>(criterion <span class="java&#45;keyword">instanceof</span> Equals)&#123;
+        nativeQuery.put(key, criterion.value.date.time)
+    &#125;
+    <span class="java&#45;keyword">else</span> &#123;
+	    <span class="java&#45;keyword">throw</span> <span class="java&#45;keyword">new</span> RuntimeException(<span class="java&#45;quote">"unsupported query type <span class="java&#45;keyword">for</span> property $property"</span>)
+    &#125;
+&#125;</pre></div><p class="paragraph"/>The method gets passed a <code>criterion</code> which is the type of query and depending on the type of query you may handle the query differently. For example the above implementation supports <code>between</code> and <code>equals</code> style queries. So the following 2 queries will work:<p class="paragraph"/><div class="code"><pre>Person.findByBirthday(<span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date()&#45;7)) // find someone who was born 7 days ago
+Person.findByBirthdayBetween(<span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date()&#45;7), <span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date())) // find someone who was born in the last 7 days</pre></div><p class="paragraph"/>However "like" or other query types will not work.<p class="paragraph"/>To register a custom type in a grails application simply register it as Spring bean. For example, to register the above <code>BirthdayType</code> add the following to grails-app/conf/spring/resources.groovy:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> com.example.BirthdayType<p class="paragraph"/>// Place your Spring DSL code here
+beans = &#123;
+  birthdayType(BirthdayType)
+&#125;</pre></div>
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/databaseSwitching.html"><strong>4</strong><span>Switching Database or Collection at Runtime</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Beans/mongo.html">mongo</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/DB.html">DB</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/collection.html">collection</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/collectionName.html">collectionName</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/countHits.html">countHits</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/dbo.html">dbo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/findByGeoIntersects.html">findByGeoIntersects</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/findByGeoWithin.html">findByGeoWithin</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/findByNear.html">findByNear</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/findByNearSphere.html">findByNearSphere</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/findByWithinBox.html">findByWithinBox</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/findByWithinCircle.html">findByWithinCircle</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/search.html">search</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/searchTop.html">searchTop</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/useCollection.html">useCollection</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/useDatabase.html">useDatabase</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/withCollection.html">withCollection</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Domain%20Classes/withDatabase.html">withDatabase</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Testing/MongoDbTestMixin.html">MongoDbTestMixin</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

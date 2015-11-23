@@ -1,0 +1,368 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2 Getting Started 5.0.0.RC1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/objectMapping.html"><strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/databaseSwitching.html"><strong>4</strong><span>Switching Database or Collection at Runtime</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/stateless.html"><strong>5</strong><span>Stateless Mode</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/lowLevelApi.html"><strong>6</strong><span>Using the Mongo Driver Directly</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/transactions.html"><strong>7</strong><span>Transactions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/testing.html"><strong>8</strong><span>Unit Testing</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/objectMapping.html"><strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2 Getting Started - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
+
+                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+
+                    
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#mongoOnly"><strong>2.1</strong><span>Using MongoDB Standalone</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#withHibernate"><strong>2.2</strong><span>Combining MongoDB and Hibernate</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#advancedConfig"><strong>2.3</strong><span>Advanced Configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#springBoot"><strong>2.4</strong><span>Using GORM in Spring Boot</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#outsideGrails"><strong>2.5</strong><span>GORM for MongoDB without Grails</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+To get started with GORM for Mongo you need configure it as a dependency in <code>build.gradle</code>:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
+	compile 'org.grails.plugins:mongodb:VERSION'
+&#125;</pre></div><p class="paragraph"/>Note, in newer versions of Grails it may be require to enforce the necessary dependencies. If you get errors on startup it is likely due to a dependency problem. The following block will ensure the correct dependencies are in place:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
+    compile <span class="java&#45;quote">"org.grails.plugins:mongodb:VERSION"</span>
+    compile <span class="java&#45;quote">"org.mongodb:mongodb&#45;driver:3.0.2"</span>
+    runtime 'org.springframework.data:spring&#45;data&#45;mongodb:1.8.1.RELEASE'
+&#125;</pre></div><p class="paragraph"/><blockquote class="note">
+The <code>spring-data-mongodb</code> is not required by GORM for MongoDB, but there is a bug in Spring Boot 1.3 M2 which means that if you are using the MongoDB driver with Grails 3.1 M2 you will get an exception without this dependency. This bug is resolved in Spring Boot 1.3 RC1.
+</blockquote><p class="paragraph"/>For Grails 2.x you need to modify <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
+ compile ':mongodb:VERSION'
+&#125;</pre></div><p class="paragraph"/>With that done you need to set up a running MongoDB server. Refer to the <a href="https://docs.mongodb.org/manual/" target="blank">MongoDB Documentation</a> for an explanation on how to startup a Mongo instance. Once installed, starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above command executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>2015&#45;11&#45;18T19:38:50.073+0100 I JOURNAL  &#91;initandlisten&#93; journal dir=/data/db/journal
+2015&#45;11&#45;18T19:38:50.073+0100 I JOURNAL  &#91;initandlisten&#93; recover : no journal files present, no recovery needed
+2015&#45;11&#45;18T19:38:50.090+0100 I JOURNAL  &#91;durability&#93; Durability thread started
+2015&#45;11&#45;18T19:38:50.090+0100 I JOURNAL  &#91;journal writer&#93; Journal writer thread started
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; MongoDB starting : pid=52540 port=27017 dbpath=/data/db 64&#45;bit host=Graemes&#45;iMac.local
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; &#42;&#42; WARNING: You are running <span class="java&#45;keyword">this</span> process as the root user, which is not recommended.
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93;
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93;
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; &#42;&#42; WARNING: soft rlimits too low. <span class="java&#45;object">Number</span> of files is 256, should be at least 1000
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; db version v3.0.4
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; git version: 0481c958daeb2969800511e7475dc66986fa9ed5
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; build info: Darwin mci&#45;osx108&#45;11.build.10gen.cc 12.5.0 Darwin Kernel Version 12.5.0: Sun Sep 29 13:33:47 PDT 2013; root:xnu&#45;2050.48.12~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; allocator: system
+2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; options: &#123;&#125;
+2015&#45;11&#45;18T19:38:50.176+0100 I NETWORK  &#91;initandlisten&#93; waiting <span class="java&#45;keyword">for</span> connections on port 27017</pre></div><p class="paragraph"/>As you can see the server is running on port 27017, but don't worry the Mongodb plugin for Grails will automatically configure itself to look for Mongodb on that port by default.<p class="paragraph"/>If you want to configure how Grails connects to Mongo then you can do so using the following settings in <code>grails-app/conf/application.yml</code>:<p class="paragraph"/><div class="code"><pre>grails:
+    mongodb:
+        host: <span class="java&#45;quote">"localhost"</span>
+        port: 27017
+        username: <span class="java&#45;quote">"blah"</span>
+        password: <span class="java&#45;quote">"blah"</span>
+        databaseName: <span class="java&#45;quote">"foo"</span></pre></div>
+
+
+
+<h2 id="mongoOnly">2.1 Using MongoDB Standalone</h2>
+If you plan to use MongoDB as your primary datastore then you need to remove the Hibernate plugin from the <code>build.gradle</code> file by commenting out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile 'org.grails.plugins:hibernate'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via MongoDB and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in MongoDB.
+
+
+
+<h2 id="withHibernate">2.2 Combining MongoDB and Hibernate</h2>
+If you have both the Hibernate and Mongo plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Mongo. If you want to persist a particular domain class with Mongo then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"mongo"</span></pre></div><p class="paragraph"/>
+
+
+
+<h2 id="advancedConfig">2.3 Advanced Configuration</h2>
+<h4>Mongo Database Connection Configuration</h4><p class="paragraph"/>As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the <code>grails-app/conf/application.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    mongo &#123;
+        host = <span class="java&#45;quote">"localhost"</span>
+        port = 27017
+        username = <span class="java&#45;quote">"blah"</span>
+        password = <span class="java&#45;quote">"blah"</span>
+        databaseName = <span class="java&#45;quote">"foo"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>The <code>databaseName</code> setting configures the default database name. If not specified the <code>databaseName</code> will default to the name of your application.<p class="paragraph"/>You can also customize the Mongo connection settings using an <code>options</code> block:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    mongo &#123;
+        options &#123;
+            autoConnectRetry = <span class="java&#45;keyword">true</span>
+            connectTimeout = 300
+        &#125;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Available options and their descriptions are defined in the <a href="http://api.mongodb.org/java/current/com/mongodb/MongoClientOptions.html" target="blank">MongoOptions</a> javadoc.<p class="paragraph"/>In production scenarios you will typically use more than one MongoDB server in either <a href="http://docs.mongodb.org/manual/core/master-slave/" target="blank">master/slave</a> or <a href="http://docs.mongodb.org/manual/replication/" target="blank">replication</a> scenarios. The plugin allows you to configure <a href="http://docs.mongodb.org/manual/tutorial/deploy-replica-set/" target="blank">replica sets</a>:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    mongo &#123;
+        replicaSet = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>The replica sets are defined using a list of strings that conform to the MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DBAddress.html" target="blank">DBAddress</a> specification.<p class="paragraph"/><h4>MongoDB Connection Strings</h4><p class="paragraph"/>Since 2.0, you can also use MongoDB <a href="http://docs.mongodb.org/manual/reference/connection-string/" target="blank">connection strings</a> to configure the connection:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    mongo &#123;
+        connectionString = <span class="java&#45;quote">"mongodb://localhost/mydb"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Using MongoDB connection strings is currently the most flexible and recommended way to configure MongoDB connections.<p class="paragraph"/><h4>SSL Connections</h4><p class="paragraph"/>You can configure SSL connections by setting <code>ssl</code> to true in the <code>options</code> block:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    mongo &#123;
+        &#8230;
+        options &#123;
+            ssl = <span class="java&#45;keyword">true</span>
+            &#8230;
+        &#125;
+    &#125;
+&#125;</pre></div><p class="paragraph"/><blockquote class="note">
+Note you can also configure the <code>SSLSocketFactory</code> manually if necessary. All settings within the <code>options</code> block are propagated to the underlying <a href="http://docs.spring.io/spring-data/mongodb/docs/1.4.0.RELEASE/api/org/springframework/data/mongodb/core/MongoOptionsFactoryBean.html" target="blank">MongoOptionsFactoryBean</a>
+</blockquote><p class="paragraph"/><h4>Configuration Options Guide</h4><p class="paragraph"/>Below is a complete example showing all configuration options:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    mongo &#123;
+        databaseName = <span class="java&#45;quote">"myDb"</span> // the <span class="java&#45;keyword">default</span> database name
+        host <span class="java&#45;quote">"localhost"</span> // the host to connect to
+        port = 27017 // the port to connect to
+        username = <span class="java&#45;quote">".."</span> // the username to connect with
+        password = <span class="java&#45;quote">".."</span> // the password to connect with
+        stateless = <span class="java&#45;keyword">false</span> // whether to use stateless sessions by <span class="java&#45;keyword">default</span><p class="paragraph"/>        // Alternatively, using 'replicaSet' or 'connectionString'
+        // replicaSet = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
+        // connectionString = <span class="java&#45;quote">"mongodb://localhost/mydb"</span><p class="paragraph"/>        options &#123;
+            connectionsPerHost = 10 // The maximum number of connections allowed per host
+            threadsAllowedToBlockForConnectionMultiplier = 5
+            maxWaitTime = 120000 // Max wait time of a blocking thread <span class="java&#45;keyword">for</span> a connection.
+            connectTimeout = 0 // The connect timeout in milliseconds. 0 == infinite
+            socketTimeout = 0 // The socket timeout. 0 == infinite
+            socketKeepAlive = <span class="java&#45;keyword">false</span> // Whether or not to have socket keep alive turned on
+            writeNumber = 0 // This specifies the number of servers to wait <span class="java&#45;keyword">for</span> on the write operation
+            writeTimeout = 0 // The timeout <span class="java&#45;keyword">for</span> write operations in milliseconds
+            writeFsync = <span class="java&#45;keyword">false</span> // Whether or not to fsync
+            autoConnectRetry = <span class="java&#45;keyword">false</span> // Whether or not the system retries automatically on a failed connect
+            maxAutoConnectRetryTime = 0 // The maximum amount of time in millisecons to spend retrying
+            slaveOk = <span class="java&#45;keyword">false</span> // Specifies <span class="java&#45;keyword">if</span> the driver is allowed to read from secondaries or slaves
+            ssl = <span class="java&#45;keyword">false</span> // Specifies <span class="java&#45;keyword">if</span> the driver should use an SSL connection to Mongo
+            sslSocketFactory = &#8230; // Specifies the SSLSocketFactory to use <span class="java&#45;keyword">for</span> creating SSL connections
+        &#125;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>
+<h4>Global Mapping Configuration</h4><p class="paragraph"/>Using the <code>grails.mongo.default.mapping</code> setting in <code>grails-app/conf/application.groovy</code> you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use <code>DBRefs</code> in your association mappings. For example, the following configuration will disable optimistic locking globally and use <code>DBRefs</code> for all properties:<p class="paragraph"/><div class="code"><pre>grails.mongo.<span class="java&#45;keyword">default</span>.mapping = &#123;
+    version <span class="java&#45;keyword">false</span>
+    '&#42;'(reference:<span class="java&#45;keyword">true</span>)
+&#125;</pre></div><p class="paragraph"/>The <code>*</code> method is used to indicate that the setting applies to all properties.
+
+
+
+<h2 id="springBoot">2.4 Using GORM in Spring Boot</h2>
+To use GORM for MongoDB in Spring Boot add the necessary dependencies to your Boot application:<p class="paragraph"/><div class="code"><pre>compile(<span class="java&#45;quote">"org.grails:gorm&#45;mongodb&#45;spring&#45;boot:VERSION"</span>)</pre></div><p class="paragraph"/>Ensure your Boot <code>Application</code> class is annotated with <code>ComponentScan</code>, example:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> org.springframework.boot.SpringApplication
+<span class="java&#45;keyword">import</span> org.springframework.boot.autoconfigure.EnableAutoConfiguration
+<span class="java&#45;keyword">import</span> org.springframework.context.annotation.&#42;<p class="paragraph"/>@Configuration
+@EnableAutoConfiguration
+@ComponentScan
+class Application &#123;
+    <span class="java&#45;keyword">static</span> void main(<span class="java&#45;object">String</span>&#91;&#93; args) &#123;
+        SpringApplication.run Application, args
+    &#125;
+&#125;</pre></div><p class="paragraph"/><blockquote class="note">
+Using <code>ComponentScan</code> without a value results in Boot scanning for classes in the same package or any package nested within the <code>Application</code> class package.
+If you GORM entities are in a different package specify the package name as the value of the <code>ComponentScan</code> annotation.
+</blockquote><p class="paragraph"/>Finally create your GORM entities and ensure they are annotated with <code>grails.persistence.Entity</code>:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.persistence.&#42;<p class="paragraph"/>@Entity
+class Person &#123;
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName
+&#125;</pre></div>
+
+
+<h2 id="outsideGrails">2.5 GORM for MongoDB without Grails</h2>
+If you wish to use GORM for MongoDB outside of a Grails application you should declare the necessary dependencies, for example in Gradle:<p class="paragraph"/><div class="code"><pre>compile <span class="java&#45;quote">"org.grails:grails&#45;datastore&#45;gorm&#45;mongodb:VERSION"</span></pre></div><p class="paragraph"/>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation:<p class="paragraph"/><div class="code"><pre>@Entity
+class Person &#123;
+    <span class="java&#45;object">String</span> name
+&#125;</pre></div><p class="paragraph"/>Then you need to place the bootstrap logic somewhere in your application which uses <code>MongoDbDataStoreSpringInitializer</code>:<p class="paragraph"/><div class="code"><pre>def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(Person)
+def applicationContext = initializer.configure()<p class="paragraph"/>println Person.count()</pre></div><p class="paragraph"/>For configuration you can either pass a map or an instance of the <code>org.springframework.core.env.PropertyResolver</code> interface:<p class="paragraph"/><div class="code"><pre>def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(&#91;'grails.mongodb.url':'http://myserver'&#93;, Person)
+def applicationContext = initializer.configure()<p class="paragraph"/>println Person.count()</pre></div><p class="paragraph"/>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:<p class="paragraph"/><div class="code"><pre>ApplicationContext myApplicationContext = &#8230;
+def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(myApplicationContext.getEnvironment(), Person)
+initializer.configureForBeanDefinitionRegistry(myApplicationContext)<p class="paragraph"/>println Person.count()</pre></div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/objectMapping.html"><strong>3</strong><span>Mapping Domain Classes to MongoDB Collections</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Beans/mongo.html">mongo</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/DB.html">DB</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/collection.html">collection</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/collectionName.html">collectionName</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/countHits.html">countHits</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/dbo.html">dbo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByGeoIntersects.html">findByGeoIntersects</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByGeoWithin.html">findByGeoWithin</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByNear.html">findByNear</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByNearSphere.html">findByNearSphere</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByWithinBox.html">findByWithinBox</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/findByWithinCircle.html">findByWithinCircle</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/search.html">search</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/searchTop.html">searchTop</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/useCollection.html">useCollection</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/useDatabase.html">useDatabase</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/withCollection.html">withCollection</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/withDatabase.html">withDatabase</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Testing/MongoDbTestMixin.html">MongoDbTestMixin</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

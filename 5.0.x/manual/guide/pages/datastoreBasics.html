@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.1 Datastore Basics 5.0.0.RC1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/understandingApi.html"><strong>3</strong><span>Understanding the GORM API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/testing.html"><strong>4</strong><span>Using the Test Compatibility Kit</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/stepByStep.html"><strong>5</strong><span>Step by Step Guide to Creating and Implementation</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/testing.html"><strong>4</strong><span>Using the Test Compatibility Kit</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3.1 Datastore Basics - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher</p>
+
+                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h2 id="datastoreBasics">3.1 Datastore Basics</h2>
+<h3>The MappingContext</h3><p class="paragraph"/>The <code>org.grails.datastore.mapping.model.MappingContext</code> interface is used to obtain metadata about the classes that are configured for persistence. There are <code>org.grails.datastore.mapping.model.PersistentEntity</code> and <code>org.grails.datastore.mapping.model.PersistentProperty</code> interfaces that represent a class and its properties respectively. These can be obtained and introspected via the <code>MappingContext</code>.<p class="paragraph"/>There are various concrete implementations of the <code>MappingContext</code> interface such as:
+<ul class="star">
+<li><code>DocumentMappingContext</code> - Used for document stores, subclassed by <code>MongoMappingContext</code></li>
+<li><code>JpaMappingContext</code> - Used for JPA</li>
+<li><code>KeyValueMappingContext</code> - Used by key/value stores</li>
+</ul><p class="paragraph"/>Creating a new <code>MappingContext</code> may be useful because it allows users to configure how a class is mapped to the underlying datastore using GORM's <code>mapping</code> block as well as allowing registration of custom type converters and so on. The implementation for Neo4j looks like this:<p class="paragraph"/><div class="code"><pre>class Neo4jMappingContext <span class="java&#45;keyword">extends</span> AbstractMappingContext &#123;<p class="paragraph"/>    MappingFactory&#60;Collection, Attribute&#62; mappingFactory
+    MappingConfigurationStrategy syntaxStrategy<p class="paragraph"/>    Neo4jMappingContext() &#123;
+        mappingFactory = <span class="java&#45;keyword">new</span> GraphGormMappingFactory()
+        syntaxStrategy = <span class="java&#45;keyword">new</span> GormMappingConfigurationStrategy(mappingFactory)
+        //addTypeConverter(<span class="java&#45;keyword">new</span> StringToNumberConverterFactory().getConverter(BigDecimal))
+        addTypeConverter(<span class="java&#45;keyword">new</span> StringToShortConverter())
+        addTypeConverter(<span class="java&#45;keyword">new</span> StringToBigIntegerConverter())
+         &#8230;
+    &#125;<p class="paragraph"/>    @Override
+    <span class="java&#45;keyword">protected</span> PersistentEntity createPersistentEntity(<span class="java&#45;object">Class</span> javaClass) &#123;
+        GraphPersistentEntity persistentEntity = <span class="java&#45;keyword">new</span> GraphPersistentEntity(javaClass, <span class="java&#45;keyword">this</span>)
+        mappingFactory.createMappedForm(persistentEntity) // populates mappingFactory.entityToPropertyMap as a side effect
+        persistentEntity
+    &#125;<p class="paragraph"/>    MappingConfigurationStrategy getMappingSyntaxStrategy() &#123;
+        syntaxStrategy
+    &#125;<p class="paragraph"/>    MappingFactory getMappingFactory() &#123;
+        mappingFactory
+    &#125;
+&#125;</pre></div><p class="paragraph"/>
+Notice how Neo4j provides a custom <code>GraphGormMappingFactory</code> and <code>GraphPersistentEntity</code> to allow the domain class configuration to be changed for a given Neo4j <code>Node</code>.<p class="paragraph"/><h3>The Datastore Interface</h3><p class="paragraph"/>The <code>org.grails.datastore.mapping.core.Datastore</code> interface is the equivalent of a SQL <code>DataSource</code> where by it provides the necessary capability to create a connection. In most cases one can simply subclass the <code>AbstractDatastore</code> super class and implement the <code>createSession</code> method. The following implementation is from the <code>SimpleMapDatastore</code> which implements GORM ontop of a <code>ConcurrentHashMap</code>:<p class="paragraph"/><div class="code"><pre>@Override
+<span class="java&#45;keyword">protected</span> Session createSession(PropertyResolver connDetails) &#123;
+    <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> SimpleMapSession(<span class="java&#45;keyword">this</span>, getMappingContext(), getApplicationEventPublisher());
+&#125;</pre></div><p class="paragraph"/>The implementation depends a lot on the underlying datastore. For example for MongoDB the following implementation is used:<p class="paragraph"/><div class="code"><pre>@Override
+<span class="java&#45;keyword">protected</span> Session createSession(PropertyResolver connDetails) &#123;
+    <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> MongoSession(<span class="java&#45;keyword">this</span>, getMappingContext(), getApplicationEventPublisher(), <span class="java&#45;keyword">false</span>);
+&#125;</pre></div><p class="paragraph"/>Notice that the <code>Datastore</code> also has a reference to the <code>MappingContext</code> discussed in the previous section.<p class="paragraph"/>
+<h3>The Session Interface</h3><p class="paragraph"/>The <code>org.grails.datastore.mapping.core.Session</code> interface represents an active connection. It can be either stateful or stateless, depending on the implementation. For example of embedded databases where there is no network connection, a stateful session is not particularly useful, but a datastore that creates network connections you may want to cache returned instances to reduce load.<p class="paragraph"/>The <code>AbstractSession</code> class provides some support for creating stateful sessions, if you prefer a stateless implementation then simply implement <code>Session</code> or subclass <code>AbstractAttributeStoringSession</code>.<p class="paragraph"/>In general if you subclass <code>AbstractSession</code> the minimum you need to do is implement the <code>createPersister</code> method:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">protected</span> Persister createPersister(<span class="java&#45;object">Class</span> cls, MappingContext mappingContext) &#123;
+    PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
+    <span class="java&#45;keyword">if</span> (entity == <span class="java&#45;keyword">null</span>) &#123;
+        <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">null</span>;
+    &#125;
+    <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> SimpleMapEntityPersister(mappingContext, entity, <span class="java&#45;keyword">this</span>,
+        (SimpleMapDatastore) getDatastore(), publisher);
+&#125;</pre></div><p class="paragraph"/>The example above is from the <code>SimpleMapSession</code> implementation, which creates a <code>SimpleMapEntityPersister</code> instance and returns it. Returning null indicates that the class cannot be persisted and an exception will be thrown
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/testing.html"><strong>4</strong><span>Using the Test Compatibility Kit</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

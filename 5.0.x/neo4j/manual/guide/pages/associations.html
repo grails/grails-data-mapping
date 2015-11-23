@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3.2 Understanding Association Mapping 5.0.0.RC1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/querying.html"><strong>4</strong><span>Querying with GORM for Neo4j</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/neo4jEnhancements.html"><strong>5</strong><span>Enhancements to Neo4j core API</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../../guide/querying.html"><strong>4</strong><span>Querying with GORM for Neo4j</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3.2 Understanding Association Mapping - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
+
+                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h2 id="associations">3.2 Understanding Association Mapping</h2>
+GORM for Neo4j will create Neo4j relationships between nodes for you based on the relationship ownership rules defined in your GORM mapping. For example the following mapping:<p class="paragraph"/><div class="code"><pre>class Owner &#123;
+    <span class="java&#45;object">String</span> name
+    <span class="java&#45;keyword">static</span> hasMany = &#91;pets:Pet&#93;
+&#125;
+class Pet &#123;
+    <span class="java&#45;object">String</span> name
+    <span class="java&#45;keyword">static</span> belongsTo = &#91;owner:Owner&#93;
+&#125;</pre></div><p class="paragraph"/>Will generate a Cypher relationship creation query as follows:<p class="paragraph"/><div class="code"><pre>MATCH (from:Owner &#123; <em class="italic">_id_</em> :&#123;start&#125;&#125;), (to:Pet) WHERE to. <em class="italic">_id_</em>  IN &#123;end&#125; CREATE (from)&#45;&#91;r:PETS&#93;&#45;&#62;(to)</pre></div><p class="paragraph"/>As you can see from the query the relationships is defined as <code>(from)-r:PETS-&#62;(to)</code>, with the direction of the association being dedicated by who "owns" the association. Since <code>Pet</code> defines a <code>belongTo</code> association to <code>Owner</code>, this means that <code>Owner</code> owns the association and the relationship is from <code>Owner</code> to <code>Pet</code>.<p class="paragraph"/>For more information on defining relationships with GORM, see the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#gormAssociation" target="blank">corresponding guide in the GORM documentation</a>.
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/querying.html"><strong>4</strong><span>Querying with GORM for Neo4j</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Additional Gorm Methods</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/cypher.html">cypher</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/cypherStatic.html">cypherStatic</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/schemaless%20attributes.html">schemaless attributes</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../../ref/Beans/graphDatabaseService.html">graphDatabaseService</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

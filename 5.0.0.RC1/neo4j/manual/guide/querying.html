@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4 Querying with GORM for Neo4j 5.0.0.RC1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/querying.html"><strong>4</strong><span>Querying with GORM for Neo4j</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/neo4jEnhancements.html"><strong>5</strong><span>Enhancements to Neo4j core API</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/mapping.html">&lt;&lt; <strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/neo4jEnhancements.html"><strong>5</strong><span>Enhancements to Neo4j core API</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>4 Querying with GORM for Neo4j - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
+
+                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+
+                    
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#lazyLoading"><strong>4.1</strong><span>Understanding Lazy Loading</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#cypher"><strong>4.2</strong><span>Querying with Cypher</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#indexing"><strong>4.3</strong><span>Defining the Query Index</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="querying">4 Querying with GORM for Neo4j</h1>
+GORM for Neo4j supports all the different querying methods provided by GORM including:
+<ul class="star">
+<li><a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#finders" target="blank">Dynamic Finders</a></li>
+<li><a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#whereQueries" target="blank">Where Queries</a></li>
+<li><a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#criteria" target="blank">Criteria Queries</a></li>
+</ul><p class="paragraph"/>However, HQL queries are not supported, instead you can use Cypher directly if you so choose.<p class="paragraph"/><blockquote class="note">
+If you want to see what queries GORM for Neo4j generates, enabling logging for the <code>org.grails.datastore.gorm.neo4j</code> package
+</blockquote>
+
+
+
+<h2 id="lazyLoading">4.1 Understanding Lazy Loading</h2>
+When you retrieving a GORM entity and its associations by default single-ended associations will only retrieve the association id, whilst associations to many objects will not retrieve the association at all until it is accessed. This is called lazy loading.<p class="paragraph"/>For example given the following domain model:<p class="paragraph"/><div class="code"><pre>class League &#123;
+    <span class="java&#45;object">String</span> name
+    <span class="java&#45;keyword">static</span> hasMany = &#91;clubs:Club&#93;
+&#125;
+class Club &#123;
+    <span class="java&#45;object">String</span> name
+    <span class="java&#45;keyword">static</span> belongsTo = &#91;league:League&#93;
+    <span class="java&#45;keyword">static</span> hasMany = &#91;teams: Team &#93;
+&#125;
+class Team  &#123;
+    <span class="java&#45;object">String</span> name
+    <span class="java&#45;keyword">static</span> belongsTo = &#91;club:Club&#93;
+&#125;</pre></div><p class="paragraph"/>When you retrieve the <code>Club</code> by name:<p class="paragraph"/><div class="code"><pre>def club = Club.findByName(<span class="java&#45;quote">"Manchester United"</span>)</pre></div><p class="paragraph"/>You will get the following query:<p class="paragraph"/><div class="code"><pre>MATCH (n:Club) WHERE ( n. <em class="italic">_id_</em> =&#123;1&#125; )
+OPTIONAL MATCH(n)&#45;&#91;:LEAGUE&#93;&#45;&#62;(leagueNode)
+RETURN n as data, collect(DISTINCT leagueNode. <em class="italic">_id_</em> ) as leagueIds</pre></div><p class="paragraph"/>As you can see the <code>teams</code> association is not loaded in the query, and only the ID of the <code>league</code> association is retrieved. If you then iterate over the teams you will get a second query to obtain the teams:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">for</span>(team in club.teams) &#123;
+    println team.name
+&#125;</pre></div><p class="paragraph"/>The query generated will be:<p class="paragraph"/><div class="code"><pre>MATCH (from:Club)&#60;&#45;&#91;:CLUB&#93;&#45;(to:Team) WHERE from. <em class="italic">_id_</em>  = &#123;id&#125; RETURN to as data</pre></div><p class="paragraph"/>If you wish to avoid this secondary query to retrieve the data you can do so using an eager query:<p class="paragraph"/><div class="code"><pre>// using a dynamic finder
+def club = Club.findByName(<span class="java&#45;quote">"Manchester United"</span>, &#91;fetch:&#91;teams:'join'&#93;&#93;)<p class="paragraph"/>// using a where queries
+def query = Club.where &#123; name == <span class="java&#45;quote">"Manchester United"</span> &#125;
+                .join('teams')
+def club = query.find()<p class="paragraph"/>// using criteria
+def query = Club.createCriteria()
+def club = query.get &#123;
+    eq 'name', <span class="java&#45;quote">"Manchester United"</span>
+    join 'teams'
+&#125;</pre></div><p class="paragraph"/>
+This will instead generate the following query:<p class="paragraph"/><div class="code"><pre>MATCH (n:Club) WHERE ( n.name=&#123;1&#125; )
+OPTIONAL MATCH(n)&#60;&#45;&#91;:CLUB&#93;&#45;(teamsNode)
+OPTIONAL MATCH(n)&#45;&#91;:LEAGUE&#93;&#45;&#62;(leagueNode)
+RETURN n as data, collect(DISTINCT leagueNode. <em class="italic">_id_</em> ) as leagueIds, collect(DISTINCT teamsNode) as teamsNodes</pre></div><p class="paragraph"/>As you can see the associated team nodes are loaded by the query. If you prefer this to happen for every query, then this can also be configured in the mapping:<p class="paragraph"/><div class="code"><pre>class Club &#123;
+    ...<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+       teams fetch:<span class="java&#45;quote">"eager"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>You can also configure the collection ids to be eagerly loaded, but the instances themselves to be lazy loaded via proxies:<p class="paragraph"/><div class="code"><pre>class Club &#123;
+    ...<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+       teams fetch:<span class="java&#45;quote">"eager"</span>, lazy:<span class="java&#45;keyword">true</span>
+    &#125;
+&#125;</pre></div>
+
+
+<h2 id="cypher">4.2 Querying with Cypher</h2>
+To query with raw Cypher queries you can use the built in <code>find</code> and <code>findAll</code> methods:<p class="paragraph"/> <div class="code"><pre>def club = Club.find(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')
+ def clubs = Club.findAll(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results using <code>cypherStatic</code>:<p class="paragraph"/> <div class="code"><pre>Result result = Club.cypherStatic(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> When working with raw results, you can convert any <code>org.neo4j.graphdb.Node</code> into a domain instance using the <code>as</code> keyword:<p class="paragraph"/> <div class="code"><pre>Node myNode = &#8230;
+ Club club = myNode as Club</pre></div><p class="paragraph"/> You can also convert any <code>org.neo4j.graphdb.Result</code> instance to a list of domain classes:<p class="paragraph"/> <div class="code"><pre>Result result = &#8230;
+  List&#60;Club&#62; clubs = result.toList(Club)</pre></div><p class="paragraph"/>
+
+
+<h2 id="indexing">4.3 Defining the Query Index</h2>
+To define which properties of you domain class should be indexed for querying you can do so in the mapping:<p class="paragraph"/><div class="code"><pre>class Club &#123;
+    <span class="java&#45;object">String</span> name<p class="paragraph"/>    &#8230;
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        name index:<span class="java&#45;keyword">true</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>On startup GORM will use Cypher to create indexes as follows:<p class="paragraph"/><div class="code"><pre>CREATE INDEX ON :Club(name)</pre></div><p class="paragraph"/>To define a unique index using <code>unique</code> instead:<p class="paragraph"/><div class="code"><pre>class Club &#123;
+    <span class="java&#45;object">String</span> name<p class="paragraph"/>    &#8230;
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        name unique:<span class="java&#45;keyword">true</span>
+    &#125;
+&#125;</pre></div>
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/mapping.html">&lt;&lt; <strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/neo4jEnhancements.html"><strong>5</strong><span>Enhancements to Neo4j core API</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Additional Gorm Methods</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/cypher.html">cypher</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/cypherStatic.html">cypherStatic</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Additional%20Gorm%20Methods/schemaless%20attributes.html">schemaless attributes</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Beans/graphDatabaseService.html">graphDatabaseService</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

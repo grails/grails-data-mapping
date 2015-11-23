@@ -1,0 +1,383 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Mapping to Cassandra Tables 5.0.0.RC1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/mapping.html"><strong>3</strong><span>Mapping to Cassandra Tables</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/options.html"><strong>4</strong><span>Querying and Persistence Options</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/lowLevelApi.html"><strong>5</strong><span>Cassandra Low-level API</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/options.html"><strong>4</strong><span>Querying and Persistence Options</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3 Mapping to Cassandra Tables - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Paras Lakhani</p>
+
+                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+
+                    
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#idGeneration"><strong>3.1</strong><span>Identity Generation</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#compoundPrimaryKeys"><strong>3.2</strong><span>Compount Primary Keys</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#queryIndexes"><strong>3.3</strong><span>Query Indexes</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#tableProperties"><strong>3.4</strong><span>Table Properties</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#stateless"><strong>3.5</strong><span>Stateless Mode</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="mapping">3 Mapping to Cassandra Tables</h1>
+<h4>Basic Mapping</h4><p class="paragraph"/>The way the GORM for Cassandra plugin works is to map each domain class to a Cassandra table. For example given a domain class such as:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName    
+&#125;</pre></div><p class="paragraph"/>This will map onto a Cassandra table called "person" and generate the following table if schema creation is on:<p class="paragraph"/><div class="code"><pre>CREATE TABLE person (id uuid, firstname text, lastname text, version bigint, PRIMARY KEY (id));</pre></div><p class="paragraph"/><blockquote class="note"> The plugin transparently adds an implicit <code>id</code> property of type UUID which is auto-generated when an entity is saved.</blockquote><p class="paragraph"/><h4>Data types</h4>
+In general a property's Java type maps onto a CQL3 data type as listed <a href="http://www.datastax.com/documentation/developer/java-driver/2.0/java-driver/reference/javaClass2Cql3Datatypes_r.html" target="blank">here</a>
+Some Java types can map onto more than one CQL3 data type, the default mappings are shown in bold:
+<ul class="star">
+<li><code>java.util.UUID</code> - CQL <strong class="bold">uuid</strong> or <code>timeuuid</code></li>
+<li><code>java.lang.String</code> - CQL <strong class="bold">text</strong> or <code>ascii</code> or <code>varchar</code></li>
+<li><code>long</code> / <code>java.lang.Long</code> - CQL <strong class="bold">bigint</strong> or <code>counter</code></li>
+</ul><p class="paragraph"/>Java <code>byte</code> and <code>short</code> map onto CQL <code>int</code>.<p class="paragraph"/>To map onto a different CQL type specify the <code>type</code> attribute in the mapping. Example:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName
+    UUID timeuuid    
+    <span class="java&#45;object">String</span> ascii
+    <span class="java&#45;object">String</span> varchar
+    <span class="java&#45;object">long</span> counter<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+        timeuuid type:<span class="java&#45;quote">"timeuuid"</span>
+        ascii type:'ascii'
+        varchar type:'varchar'   
+        counter type:'counter'     
+    &#125;       
+&#125;</pre></div><p class="paragraph"/> 
+<h4>Embedded Collections and Maps</h4><p class="paragraph"/>You can map embedded lists, sets and maps of standard CQL data types simply by defining the appropriate collection type:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName    
+    List&#60;<span class="java&#45;object">Integer</span>&#62; scores
+    Set&#60;<span class="java&#45;object">String</span>&#62; friends
+    Map&#60;<span class="java&#45;object">String</span>, <span class="java&#45;object">String</span>&#62; pets	    
+&#125;<p class="paragraph"/>...<p class="paragraph"/><span class="java&#45;keyword">new</span> Person(friends:&#91;'Fred', 'Bob'&#93;, pets:&#91;chuck:<span class="java&#45;quote">"Dog"</span>, eddie:'Parrot'&#93;).save()</pre></div><p class="paragraph"/>There are certain <a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_using/use_collections_c.html" target="blank">limitations</a> on collections and only the standard CQL data types can be stored inside embedded collections and maps.<p class="paragraph"/>When persisting a domain class containing embedded collections or maps using the <code>save</code> method, the entire collection or map is saved or updated to Cassandra. 
+This may not be appropriate if you only want to persist the non-collection properties, in which case you can use the <code>updateSimpleTypes</code> instance method.
+Example:
+<div class="code"><pre>def person = Person.get(uuid)
+person.age = 31
+person.updateSimpleTypes(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>If you want to add or remove an item from a collection or map and only have that change updated to Cassandra you can use the various dynamic methods listed in the "Domain Classes" section of the right nav. 
+Example:
+<div class="code"><pre>person.prependToScores(5)
+Person.appendToFriends(person.id, 'Barney')
+Person.deleteFromPets(person.id, 'eddie', &#91;flush:<span class="java&#45;keyword">true</span>&#93;)</pre></div><p class="paragraph"/>The last <code>flush:true</code> argument causes the session to flush the pending collection updates to the datastore.<p class="paragraph"/><h4>Customized Database Mapping</h4><p class="paragraph"/>You may wish to customize how a domain class maps onto a Cassandra table. This is possible using the <code>mapping</code> block as follows:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    ..
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        table <span class="java&#45;quote">"the_person"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>In this example we see that the <code>Person</code> entity has been mapped to a table called "the_person".<p class="paragraph"/>You can also control how an individual property maps onto a table column (the default is to use the property name itself):<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    ..
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        firstName column:<span class="java&#45;quote">"first_name"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/><p class="paragraph"/>
+
+
+
+<h2 id="idGeneration">3.1 Identity Generation</h2>
+By default in Cassandra GORM domain classes are supplied with a UUID-based identifier. So for example the following entity:<p class="paragraph"/><div class="code"><pre>class Person &#123;&#125;</pre></div><p class="paragraph"/>Has a property called <code>id</code> of type <code>java.util.UUID</code>. In this case GORM for Cassandra will generate a UUID identifier using java.util.UUID.randomUUID(). 
+For a <code>timeuuid</code> it will generate one using the <a href="http://www.datastax.com/drivers/java/2.0/com/datastax/driver/core/utils/UUIDs.html#timeBased%28%29" target="blank">Java driver</a><p class="paragraph"/>You can name the <code>id</code> property something else, in which case you have to set the <code>name</code> attribute in the mapping:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    UUID primary<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+    	id name:<span class="java&#45;quote">"primary"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/><h4>Assigned Identifiers</h4><p class="paragraph"/>If you want to manually assign an identifier, the following mapping should be used:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+        id name:<span class="java&#45;quote">"lastName"</span>, generator:<span class="java&#45;quote">"assigned"</span>
+    &#125;       
+&#125;</pre></div><p class="paragraph"/>Note that it is important to specify generator:"assigned" so GORM can work out whether you are trying to achieve an insert or an update. 
+Example:<p class="paragraph"/><div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Person(lastName:<span class="java&#45;quote">"Wilson"</span>)
+// to insert
+p.save()
+// to update
+p.save()</pre></div><p class="paragraph"/>An existing manually-assigned entity will only be updated with the <code>save</code> method if it is in the current persistence session. 
+Otherwise GORM will try to insert the entity again, which will result in an upsert to Cassandra (with no version checking if versioning is on).
+So if the entity is not in the session and you want to explicitly direct an update to Cassandra then use the <code>update</code> method instead of the <code>save</code> method. 
+Example:<p class="paragraph"/><div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Person(lastName:<span class="java&#45;quote">"Wilson"</span>)
+// to insert
+p.save()
+session.clear() or p.discard()
+// to update
+p.update()</pre></div>
+
+
+<h2 id="compoundPrimaryKeys">3.2 Compount Primary Keys</h2>
+In Cassandra, a compound primary key consists of more than one column and treats only one column as the partition key. The other columns are treated as clustering columns.
+To define a compound primary key on a domain class, each property that is part of the key has to be defined in the mapping block with a <code>primaryKey</code> map. Example:<p class="paragraph"/><div class="code"><pre>class Person  &#123;<p class="paragraph"/>    <span class="java&#45;object">String</span> lastName
+    <span class="java&#45;object">String</span> firstName    
+    <span class="java&#45;object">Integer</span> age = 0
+    <span class="java&#45;object">String</span> location<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+        id name:<span class="java&#45;quote">"lastName"</span>, primaryKey:&#91;ordinal:0, type:<span class="java&#45;quote">"partitioned"</span>&#93;, generator:<span class="java&#45;quote">"assigned"</span>     
+        firstName index:<span class="java&#45;keyword">true</span>, primaryKey:&#91;ordinal:1, type: <span class="java&#45;quote">"clustered"</span>&#93;   
+        age primaryKey:&#91;ordinal:2, type: <span class="java&#45;quote">"clustered"</span>&#93;     
+        version <span class="java&#45;keyword">false</span>  
+    &#125;
+&#125;</pre></div><p class="paragraph"/>The above mapping will generate the following Cassandra table if schema creation is on:<p class="paragraph"/><div class="code"><pre>CREATE TABLE person (lastname text, firstname text, age <span class="java&#45;object">int</span>, location text, PRIMARY KEY (lastname, firstname, age))</pre></div><p class="paragraph"/><h4>Composite Partition Key</h4>
+A composite partition key consists of multiple columns and treats more than one column as the partition key. The other columns are treated as clustering columns.
+To define a composite partition key on a domain class, each property that is a part of the key has to have its <code>primaryKey type</code> attribute set to "partitioned". Example:
+<div class="code"><pre>class Person  &#123;<p class="paragraph"/>    <span class="java&#45;object">String</span> lastName
+    <span class="java&#45;object">String</span> firstName    
+    <span class="java&#45;object">Integer</span> age = 0
+    <span class="java&#45;object">String</span> location<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+        id name:<span class="java&#45;quote">"lastName"</span>, primaryKey:&#91;ordinal:0, type:<span class="java&#45;quote">"partitioned"</span>&#93;, generator:<span class="java&#45;quote">"assigned"</span>     
+        firstName index:<span class="java&#45;keyword">true</span>, primaryKey:&#91;ordinal:1, type: <span class="java&#45;quote">"partitioned"</span>&#93;   
+        age index:<span class="java&#45;keyword">true</span>, primaryKey:&#91;ordinal:0, type: <span class="java&#45;quote">"clustered"</span>&#93;     
+        version <span class="java&#45;keyword">false</span>  
+    &#125;
+&#125;
+&#8230;
+CREATE TABLE person (lastname text, firstname text, age <span class="java&#45;object">int</span>, location text, PRIMARY KEY ((lastname, firstname), age))</pre></div><p class="paragraph"/><h4>The mapping block</h4>
+The first column of the partition key is always mapped using <code>id</code>, and then the name of the actual property.<p class="paragraph"/>
+You should then add the <code>primaryKey</code> map to all columns of the compound/composite primary key. The two attributes are: 
+<ul class="star">
+<li><code>ordinal</code> - specifies the order of the column in the compound/composite primary key.</li>
+<li><code>type</code> - "partitioned" or "clustered". For a compound primary key only one property is type "partitioned" and the rest are type "clustered". For a composite partition key more than one property is type "partitioned".</li>
+</ul><p class="paragraph"/><h4>Persistence and Querying for Compound/Composite Primary Key domain classes</h4>
+Where you need to pass in an id to a persistence or query method, use a map containing the components of the compound/composite primary key instead.<p class="paragraph"/>Example:<p class="paragraph"/><div class="code"><pre>def person = Person.get(&#91;firstName:<span class="java&#45;quote">"Bob"</span>, lastName: <span class="java&#45;quote">"Wilson"</span>, age: 25&#93;)
+Person.updateProperties(&#91;firstName:<span class="java&#45;quote">"Bob"</span>, lastName: <span class="java&#45;quote">"Wilson"</span>, age: 25&#93;, &#91;location: <span class="java&#45;quote">"London"</span>&#93;, &#91;flush:<span class="java&#45;keyword">true</span>&#93;)</pre></div>
+
+
+
+<h2 id="queryIndexes">3.3 Query Indexes</h2>
+<h4>Basics</h4><p class="paragraph"/>Cassandra doesn't require that you specify indices to query. Cassandra supports creating an index on most columns, including a clustering column of a compound primary key or on the partition (primary) key itself.
+Indexing can impact performance greatly. Before creating an index, be aware of when and <a href="http://www.datastax.com/documentation/cql/3.1/cql/ddl/ddl_when_use_index_c.html#concept_ds_sgh_yzz_zj__when-no-index" target="blank">when not to create an index</a>.<p class="paragraph"/>With that in mind it is important to specify the properties you plan to query using the mapping block:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> name
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        name index:<span class="java&#45;keyword">true</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>The above mapping will generate the following Cassandra index if schema creation is on:<p class="paragraph"/><div class="code"><pre>CREATE INDEX IF NOT EXISTS  ON person (name)</pre></div>
+
+
+
+<h2 id="tableProperties">3.4 Table Properties</h2>
+You can configure clustering order, caching, compaction, and a number of other operations that Cassandra performs on a new table.<p class="paragraph"/><h4>Clustering order</h4>
+An explanation is provided in the <a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_reference/refClstrOrdr.html" target="blank">Cassandra docs</a>.
+Clustering order can only be used on a clustered primary key, to use it set its order attribute. Example:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    ..
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        id name:<span class="java&#45;quote">"lastName"</span>, primaryKey:&#91;ordinal:0, type:<span class="java&#45;quote">"partitioned"</span>&#93;, generator:<span class="java&#45;quote">"assigned"</span>
+        firstName index:<span class="java&#45;keyword">true</span>, primaryKey:&#91;ordinal:1, type: <span class="java&#45;quote">"clustered"</span>&#93;, order: <span class="java&#45;quote">"desc"</span> //or order: <span class="java&#45;quote">"asc"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/><h4>Setting a table property</h4>
+Available properties and their descriptions are defined in the <a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_reference/tabProp.html" target="blank">Cassandra docs</a>.
+If you want to set a table property, define a static <code>tableProperties</code> block. 
+Below is an example of the properties you can set with Cassandra GORM:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    ..	
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        id name:<span class="java&#45;quote">"lastName"</span>, primaryKey:&#91;ordinal:0, type:<span class="java&#45;quote">"partitioned"</span>&#93;
+        firstName primaryKey:&#91;ordinal:1, type: <span class="java&#45;quote">"clustered"</span>&#93;, order:<span class="java&#45;quote">"desc"</span>
+    &#125;<p class="paragraph"/>    <span class="java&#45;keyword">static</span> tableProperties = &#123;
+        comment <span class="java&#45;quote">"table comment"</span>
+        <span class="java&#45;quote">"COMPACT STORAGE"</span> <span class="java&#45;keyword">true</span> //OR <span class="java&#45;quote">"compact_storage"</span> <span class="java&#45;keyword">true</span>
+        replicate_on_write <span class="java&#45;keyword">false</span>
+        caching <span class="java&#45;quote">"all"</span>
+        bloom_filter_fp_chance 0.2
+        read_repair_chance 0.1
+        dclocal_read_repair_chance 0.2
+        gc_grace_seconds 900000
+        compaction class: <span class="java&#45;quote">"SizeTieredCompactionStrategy"</span>, bucket_high: 2.5, bucket_low: 0.6, max_threshold: 40, min_threshold: 5, min_sstable_size: 60
+        compression sstable_compression: <span class="java&#45;quote">"LZ4Compressor"</span>, chunk_length_kb: 128,	crc_check_chance: 0.85	
+    &#125;
+&#125;</pre></div>
+The above mapping will generate the following Cassandra table if schema creation is on:<p class="paragraph"/><div class="code"><pre>CREATE TABLE person (lastname text, firstname text, version bigint, PRIMARY KEY (lastname, firstname)) 
+WITH CLUSTERING ORDER BY (firstname DESC) AND comment = 'table comment' AND COMPACT STORAGE AND replicate_on_write = '<span class="java&#45;keyword">false</span>' 
+AND caching = 'all' AND bloom_filter_fp_chance = 0.2 AND read_repair_chance = 0.1 AND dclocal_read_repair_chance = 0.2 
+AND gc_grace_seconds = 900000 
+AND compaction = &#123; 'class' : 'SizeTieredCompactionStrategy', 'bucket_high' : 2.5, 'bucket_low' : 0.6, 'max_threshold' : 40, 'min_threshold' : 5, 
+                   'min_sstable_size' : 60 &#125; 
+AND compression = &#123; 'sstable_compression' : 'LZ4Compressor', 'chunk_length_kb' : 128, 'crc_check_chance' : 0.85 &#125;;</pre></div><p class="paragraph"/><h4><a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_reference/tabProp.html" target="blank">Table property options</a></h4>
+<ul class="star">
+<li>comment : String</li>
+<li>"COMPACT STORAGE" OR "compact_storage" : boolean</li>
+<li>replicate_on_write : boolean</li>
+<li>caching : "all", "keys_only", "rows_only", "none"</li>
+<li>bloom_filter_fp_chance : double</li>
+<li>read_repair_chance : double</li>
+<li>dclocal_read_repair_chance : double</li>
+<li>gc_grace_seconds : long</li>
+<li>compaction : class, tombstone_threshold, tombstone_compaction_interval, min_sstable_size, min_threshold, max_threshold, bucket_low, bucket_high, sstable_size_in_mb</li>
+<li>compression : sstable_compression, chunk_length_kb, crc_check_chance</li>
+</ul><p class="paragraph"/>
+
+
+<h2 id="stateless">3.5 Stateless Mode</h2>
+GORM for Cassandra supports both stateless and stateful modes for mapping domain classes to Cassandra. In general stateful mapping is superior for write heavy applications and stateless mode better for read heavy applications (particularily when large amounts of data is involved).<p class="paragraph"/><h4>Stateful mode</h4><p class="paragraph"/>Domain classes are by default stateful, which means when they are read from Cassandra their state is stored in the user session (which is typically bound to the request in Grails). This has several advantages for write heavy applications:
+<ul class="star">
+<li>GORM can automatically detect whether a call to save() is a an update or an insert and act appropriately</li>
+<li>GORM can store the current version and therefore implement optimistic locking</li>
+<li>Repeated reads of the same entity can be retrieved from the cache, thus optimizing reads as well</li>
+</ul><p class="paragraph"/>An example of when a stateful domain class is better is batching (TO BE IMPLEMENTED)<p class="paragraph"/><h4>Stateless Domain classes</h4><p class="paragraph"/>However, stateful domain classes can cause problems for read-heavy applications. Take for example the following code:<p class="paragraph"/><div class="code"><pre>def books = Book.list() // read 100,000 books
+<span class="java&#45;keyword">for</span>(b in books) &#123;
+    println b.title
+&#125;</pre></div><p class="paragraph"/>The above example will read 100,000 books and print the title of each. In stateful mode this will almost certainly run out of memory as each Cassandra row is stored in user memory as is each book. Rewriting the code as follows will solve the problem:<p class="paragraph"/><div class="code"><pre>Book.withStatelessSession &#123;
+    def books = Book.list() // read 100,000 books
+    <span class="java&#45;keyword">for</span>(b in books) &#123;
+        println b.title
+    &#125;    
+&#125;</pre></div><p class="paragraph"/>Alternatively you can map the domain class as stateless, in which case its state will never be stored in the session:<p class="paragraph"/><div class="code"><pre>class Book &#123;
+    &#8230;
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        stateless <span class="java&#45;keyword">true</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/><h4>Disadvantages of Stateless Mode</h4><p class="paragraph"/>There are several disadvantages to using stateless domain classes as the default. One disadvantage is that if you are using assigned identifiers GORM cannot detect whether you want to do an insert or an update so you have to be explicit about which one you want:<p class="paragraph"/><div class="code"><pre>def b = <span class="java&#45;keyword">new</span> Book(id:<span class="java&#45;quote">"The Book"</span>)
+b.insert()
+b.revenue = 100
+b.update()</pre></div><p class="paragraph"/>In the above case we use the explicit 'insert' or 'update method to tell Cassandra GORM what to do.
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/options.html"><strong>4</strong><span>Querying and Persistence Options</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Beans/cassandraTemplate.html">cassandraTemplate</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/appendTo.html">appendTo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/deleteAtFrom.html">deleteAtFrom</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/deleteFrom.html">deleteFrom</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/prependTo.html">prependTo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/replaceAtIn.html">replaceAtIn</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/updateProperties.html">updateProperties</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/updateProperty.html">updateProperty</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/updateSingleTypes.html">updateSingleTypes</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
