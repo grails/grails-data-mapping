@@ -20,6 +20,7 @@ import grails.orm.PagedResultList
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.orm.hibernate.query.GrailsHibernateQueryUtils
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
@@ -65,6 +66,10 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
         instanceApi = new HibernateGormInstanceApi<>(persistentClass, datastore, classLoader)
     }
 
+    @Override
+    def propertyMissing(String name) {
+        return GormEnhancer.findStaticApi(persistentClass, name)
+    }
 
     @Override
     List<D> list(Map params = Collections.emptyMap()) {

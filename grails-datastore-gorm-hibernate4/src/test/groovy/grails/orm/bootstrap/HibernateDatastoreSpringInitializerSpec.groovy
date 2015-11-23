@@ -108,10 +108,13 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         dataSource.driverClassName = Driver.name
 
         def booksDs = new DriverManagerDataSource("jdbc:h2:mem:books;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
-        dataSource.driverClassName = Driver.name
+        booksDs.driverClassName = Driver.name
+
+        def moreBooksDs = new DriverManagerDataSource("jdbc:h2:mem:moreBooks;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+        moreBooksDs.driverClassName = Driver.name
 
         when:"the application is configured"
-        datastoreInitializer.configureForDataSources(dataSource: dataSource, books:booksDs)
+        datastoreInitializer.configureForDataSources(dataSource: dataSource, books:booksDs, moreBooks:moreBooksDs)
 
         then:"Each domain has a separate data source"
         Person.withNewSession { Person.count() == 0 }
@@ -122,6 +125,10 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         Book.withNewSession { Book.count() == 0 }
         Book.withNewSession { Session s ->
             assert s.connection().metaData.getURL() == "jdbc:h2:mem:books"
+            return true
+        }
+        Book.moreBooks.withNewSession { Session s ->
+            assert s.connection().metaData.getURL() == "jdbc:h2:mem:moreBooks"
             return true
         }
 
@@ -145,7 +152,7 @@ class Book {
     String name
 
     static mapping = {
-        datasource 'books'
+        datasources( ['books', 'moreBooks'] )
     }
     static constraints = {
         name blank:false

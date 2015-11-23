@@ -69,67 +69,6 @@ class HibernateUtils {
         }
     }
 
-    static void enhanceSessionFactories(ApplicationContext ctx, Object source = null) {
-
-        Map<SessionFactory, HibernateDatastore> datastores = [:]
-
-        for (entry in ctx.getBeansOfType(SessionFactory).entrySet()) {
-            SessionFactory sessionFactory = entry.value
-            String beanName = entry.key
-            String suffix = beanName - 'sessionFactory'
-            enhanceSessionFactory sessionFactory, ctx, suffix, datastores, source
-        }
-
-        ctx.getBean(ClosureEventTriggeringInterceptor).setDatastores(datastores.values() as HibernateDatastore[])
-        ctx.publishEvent(new DatastoreInitializedEvent(datastores))
-    }
-
-    private static enhanceSessionFactory(SessionFactory sessionFactory, ApplicationContext ctx, String suffix, Map<SessionFactory, HibernateDatastore> datastores, Object source = null) {
-
-        MappingContext mappingContext = ctx.getBean("grailsDomainClassMappingContext", MappingContext)
-        PlatformTransactionManager transactionManager = ctx.getBean("transactionManager$suffix", PlatformTransactionManager)
-        HibernateDatastore datastore = (HibernateDatastore)ctx.getBean("hibernateDatastore$suffix", Datastore)
-        datastores[sessionFactory] = datastore
-        String datasourceName = suffix ? suffix[1..-1] : Mapping.DEFAULT_DATA_SOURCE
-
-        HibernateGormEnhancer enhancer = new HibernateGormEnhancer(datastore, transactionManager)
-
-        def enhanceEntity = { PersistentEntity entity ->
-            if (!GrailsHibernateUtil.isMappedWithHibernate(entity) || !GrailsHibernateUtil.usesDatasource(entity, datasourceName)) {
-                return
-            }
-
-            if (!datasourceName.equals(Mapping.DEFAULT_DATA_SOURCE)) {
-                LOG.debug "Registering namespace methods for $entity.javaClass.name in DataSource '$datasourceName'"
-                registerNamespaceMethods entity, datastore, datasourceName, transactionManager
-            }
-
-            if (datasourceName.equals(Mapping.DEFAULT_DATA_SOURCE) || datasourceName.equals(GrailsHibernateUtil.getDefaultDataSource(entity))) {
-                LOG.debug "Enhancing GORM entity ${entity.name}"
-                if (entity.javaClass.getAnnotation(Enhanced) == null) {
-                    enhancer.enhance entity
-                }
-                else {
-                    enhancer.enhance entity, false
-                }
-            }
-        }
-
-        // If we are reloading via an onChange event, the source indicates the specific
-        // entity that needs to be reloaded. Otherwise, just reload all of them.
-        if (source) {
-            PersistentEntity entity = getPersistentEntity(mappingContext, InvokerHelper.getPropertySafe(source, 'name')?.toString())
-            if (entity) {
-                enhanceEntity(entity)
-            }
-        }
-        else {
-            for (PersistentEntity entity in mappingContext.getPersistentEntities()) {
-                enhanceEntity(entity)
-            }
-        }
-    }
-
     // workaround CS bug
     @CompileStatic(TypeCheckingMode.SKIP)
     private static PersistentEntity getPersistentEntity(mappingContext, String name) {
@@ -217,25 +156,6 @@ class HibernateUtils {
     @CompileStatic(TypeCheckingMode.SKIP)
     private static final registerMetaMethod(MetaClass mc, String name, Closure c) {
         mc."$name" = c
-    }
-
-    private static void registerNamespaceMethods(PersistentEntity dc, HibernateDatastore datastore, String datasourceName, PlatformTransactionManager  transactionManager) {
-
-        String getter = NameUtils.getGetterName(datasourceName)
-        if (dc.metaClass.methods.any { MetaMethod it -> it.name == getter && it.parameterTypes.size() == 0 }) {
-            LOG.warn "The $dc.javaClass.name domain class has a method '$getter' - unable to add namespaced methods for datasource '$datasourceName'"
-            return
-        }
-
-        def finders = new HibernateGormEnhancer(datastore, transactionManager).getFinders()
-
-        def classLoader = Thread.currentThread().contextClassLoader
-        def staticApi = new HibernateGormStaticApi(dc.javaClass, datastore, finders, classLoader, transactionManager)
-        ((GroovyObject)((GroovyObject)dc.metaClass).getProperty('static')).setProperty(getter, { -> staticApi })
-
-        def validateApi = new HibernateGormValidationApi(dc.javaClass, datastore, classLoader)
-        def instanceApi = new HibernateGormInstanceApi(dc.javaClass, datastore, classLoader)
-        ((GroovyObject)dc.metaClass).setProperty(getter, { -> new InstanceProxy(getDelegate(), instanceApi, validateApi) })
     }
 
 }

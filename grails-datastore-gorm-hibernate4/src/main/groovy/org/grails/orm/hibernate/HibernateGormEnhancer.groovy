@@ -19,6 +19,7 @@ import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormValidationApi
+import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -45,6 +46,16 @@ class HibernateGormEnhancer extends GormEnhancer {
             return super.appliesToDatastore(datastore, entity)
         }
         return false;
+    }
+
+    @Override
+    String establishQualifier(Datastore datastore, PersistentEntity entity) {
+        def dataSourceName = GrailsHibernateUtil.getDefaultDataSource(entity)
+        def datastoreStoreDataSourceName = ((HibernateDatastore) datastore).dataSourceName
+        if(datastoreStoreDataSourceName.equals(dataSourceName) ) {
+            return Entity.DEFAULT_DATA_SOURCE
+        }
+        return datastoreStoreDataSourceName
     }
 
 

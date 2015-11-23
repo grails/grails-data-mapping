@@ -22,6 +22,7 @@ import org.grails.datastore.gorm.proxy.ProxyHandlerAdapter
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.grails.datastore.gorm.validation.CascadingValidator
+import org.grails.datastore.mapping.engine.event.DatastoreInitializedEvent
 import org.grails.datastore.mapping.model.DatastoreConfigurationException
 import org.grails.orm.hibernate.*
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
@@ -33,6 +34,7 @@ import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.orm.hibernate3.support.AggregatePersistenceContextInterceptor
 import org.grails.orm.hibernate3.support.GrailsOpenSessionInViewInterceptor
 import org.hibernate.EmptyInterceptor
+import org.hibernate.SessionFactory
 import org.hibernate.cfg.ImprovedNamingStrategy
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -241,6 +243,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                     }
                 }
 
+                "hibernateGormEnhancer$suffix"(HibernateGormEnhancer, ref("hibernateDatastore$suffix"), ref("transactionManager$suffix"))
                 "org.grails.gorm.hibernate.internal.POST_INIT_BEAN-${dataSourceName}$suffix"(PostInitializationHandling) { bean ->
                     grailsApplication = ref('grailsApplication')
                     bean.lazyInit = false
@@ -319,13 +322,19 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
         @Autowired(required = false)
         CascadingValidator[] validators = []
 
+        @Autowired()
+        HibernateGormEnhancer[] enhancers
+
         ApplicationContext applicationContext
 
         @Override
         @CompileDynamic
         void afterPropertiesSet() throws Exception {
-            grailsApplication.setMainContext(applicationContext)
-            HibernateUtils.enhanceSessionFactories(applicationContext)
+            def ctx = applicationContext
+            grailsApplication.setMainContext(ctx)
+            def datastores = ctx.getBeansOfType(HibernateDatastore).values()
+            ctx.getBean(ClosureEventTriggeringInterceptor).setDatastores(datastores as HibernateDatastore[])
+            ctx.publishEvent(new DatastoreInitializedEvent(datastores))
         }
     }
 

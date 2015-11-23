@@ -27,9 +27,6 @@ import org.grails.datastore.mapping.config.Entity
 @CompileStatic
 class Mapping extends Entity {
 
-    public static final String ALL_DATA_SOURCES = "ALL";
-    public static final String DEFAULT_DATA_SOURCE = "DEFAULT"
-
     /**
      * Custom hibernate user types
      */

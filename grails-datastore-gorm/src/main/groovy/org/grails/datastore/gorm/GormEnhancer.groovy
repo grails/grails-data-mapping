@@ -27,6 +27,7 @@ import org.grails.datastore.gorm.internal.InstanceMethodInvokingClosure
 import org.grails.datastore.gorm.internal.StaticMethodInvokingClosure
 import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
+import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormProperties
@@ -49,10 +50,19 @@ import java.util.concurrent.ConcurrentHashMap
 class GormEnhancer implements Closeable {
 
     private static final Map<String, Map<String, GormQueryOperations>> NAMED_QUERIES = new ConcurrentHashMap<>()
-    private static final Map<String, GormStaticApi> STATIC_APIS = new ConcurrentHashMap<>()
-    private static final Map<String, GormInstanceApi> INSTANCE_APIS = new ConcurrentHashMap<>()
-    private static final Map<String, GormValidationApi> VALIDATION_APIS = new ConcurrentHashMap<>()
-    private static final Map<String, Datastore> DATASTORES = new ConcurrentHashMap<>()
+
+    private static final Map<String, Map<String,GormStaticApi>> STATIC_APIS = new ConcurrentHashMap<String, Map<String,GormStaticApi>>().withDefault { String key ->
+        return new ConcurrentHashMap<String, GormStaticApi>()
+    }
+    private static final Map<String, Map<String, GormInstanceApi>> INSTANCE_APIS = new ConcurrentHashMap<String, Map<String, GormInstanceApi>>().withDefault { String key ->
+        return new ConcurrentHashMap<String, GormInstanceApi>()
+    }
+    private static final Map<String, Map<String, GormValidationApi>> VALIDATION_APIS = new ConcurrentHashMap<String, Map<String, GormValidationApi>>().withDefault { String key ->
+        return new ConcurrentHashMap<String, GormValidationApi>()
+    }
+    private static final Map<String, Map<String, Datastore>> DATASTORES = new ConcurrentHashMap<String, Map<String, Datastore>>().withDefault { String key ->
+        return new ConcurrentHashMap<String, Datastore>()
+    }
 
     final Datastore datastore
     PlatformTransactionManager transactionManager
@@ -81,16 +91,25 @@ class GormEnhancer implements Closeable {
         for(entity in datastore.mappingContext.persistentEntities) {
             if(appliesToDatastore(datastore, entity)) {
                 def cls = entity.javaClass
+                String qualifier = establishQualifier(datastore, entity)
                 def staticApi = getStaticApi(cls)
                 def name = entity.name
-                STATIC_APIS.put(name, staticApi)
+                STATIC_APIS.get(qualifier).put(name, staticApi)
                 def instanceApi = getInstanceApi(cls)
-                INSTANCE_APIS.put(name, instanceApi)
+                INSTANCE_APIS.get(qualifier).put(name, instanceApi)
                 def validationApi = getValidationApi(cls)
-                VALIDATION_APIS.put(name, validationApi)
-                DATASTORES.put(name, datastore)
+                VALIDATION_APIS.get(qualifier).put(name, validationApi)
+                DATASTORES.get(qualifier).put(name, datastore)
             }
         }
+    }
+
+    String establishQualifier(Datastore datastore, PersistentEntity entity) {
+        return Entity.DEFAULT_DATA_SOURCE
+    }
+
+    List<String> allQualifiers(PersistentEntity entity) {
+        return [Entity.DEFAULT_DATA_SOURCE]
     }
 
     protected boolean appliesToDatastore(Datastore datastore, PersistentEntity entity) {
@@ -130,8 +149,8 @@ class GormEnhancer implements Closeable {
     }
 
 
-    static <D> GormStaticApi<D> findStaticApi(Class<D> entity) {
-        def staticApi = STATIC_APIS.get(NameUtils.getClassName(entity))
+    static <D> GormStaticApi<D> findStaticApi(Class<D> entity, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
+        def staticApi = STATIC_APIS.get(qualifier)?.get(NameUtils.getClassName(entity))
         if(staticApi == null) {
             throw stateException(entity)
         }
@@ -142,24 +161,24 @@ class GormEnhancer implements Closeable {
         new IllegalStateException("Either class [$entity.name] is not a domain class or GORM has not been initialized correctly or has already been shutdown. If you are unit testing your entities using the mocking APIs")
     }
 
-    static GormInstanceApi findInstanceApi(Class entity) {
-        def instanceApi = INSTANCE_APIS.get(NameUtils.getClassName(entity))
+    static GormInstanceApi findInstanceApi(Class entity, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
+        def instanceApi = INSTANCE_APIS.get(qualifier)?.get(NameUtils.getClassName(entity))
         if(instanceApi == null) {
             throw stateException(entity)
         }
         return instanceApi
     }
 
-    static  GormValidationApi findValidationApi(Class entity) {
-        def instanceApi = VALIDATION_APIS.get(NameUtils.getClassName(entity))
+    static  GormValidationApi findValidationApi(Class entity, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
+        def instanceApi = VALIDATION_APIS.get(qualifier)?.get(NameUtils.getClassName(entity))
         if(instanceApi == null) {
             throw stateException(entity)
         }
         return instanceApi
     }
 
-    static Datastore findDatastore(Class entity) {
-        def datastore = DATASTORES.get(entity.name)
+    static Datastore findDatastore(Class entity, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
+        def datastore = DATASTORES.get(qualifier)?.get(entity.name)
         if(datastore == null) {
             throw stateException(entity)
         }
@@ -176,12 +195,16 @@ class GormEnhancer implements Closeable {
         removeConstraints()
         def registry = GroovySystem.metaClassRegistry
         for(entity in datastore.mappingContext.persistentEntities) {
+
+            List<String> qualifiers = allQualifiers(entity)
             def cls = entity.javaClass
             def className = cls.name
-            NAMED_QUERIES.remove(className)
-            STATIC_APIS.remove(className)
-            INSTANCE_APIS.remove(className)
-            VALIDATION_APIS.remove(className)
+            for(q in qualifiers) {
+                NAMED_QUERIES.get(q).remove(className)
+                STATIC_APIS.get(q).remove(className)
+                INSTANCE_APIS.get(q).remove(className)
+                VALIDATION_APIS.get(q).remove(className)
+            }
             registry.removeMetaClass(cls)
         }
         DATASTORES.remove(datastore)

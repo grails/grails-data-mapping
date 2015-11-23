@@ -22,6 +22,9 @@ package org.grails.datastore.mapping.config;
  */
 public class Entity {
 
+    public static final String ALL_DATA_SOURCES = "ALL";
+    public static final String DEFAULT_DATA_SOURCE = "DEFAULT";
+
     private boolean stateless = false;
     private boolean autoTimestamp = true;
     private boolean autowire = true;

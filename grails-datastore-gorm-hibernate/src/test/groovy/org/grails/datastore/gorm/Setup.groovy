@@ -237,8 +237,6 @@ class Setup {
             }
         }
 
-        HibernateUtils.enhanceSessionFactories(ctx)
-
         ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT,
             new PersistentConstraintFactory(ctx, UniqueConstraint))
 
