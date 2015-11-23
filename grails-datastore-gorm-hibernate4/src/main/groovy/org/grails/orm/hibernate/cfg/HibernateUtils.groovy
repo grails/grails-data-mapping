@@ -15,26 +15,16 @@
  */
 package org.grails.orm.hibernate.cfg
 
-import grails.artefact.Enhanced
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-import org.codehaus.groovy.runtime.InvokerHelper
-import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.engine.event.DatastoreInitializedEvent
-import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.NameUtils
-import org.grails.orm.hibernate.*
-import org.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
-import org.hibernate.SessionFactory
 import org.hibernate.proxy.HibernateProxy
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.PropertyAccessorFactory
-import org.springframework.context.ApplicationContext
-import org.springframework.transaction.PlatformTransactionManager
 
 @CompileStatic
 class HibernateUtils {

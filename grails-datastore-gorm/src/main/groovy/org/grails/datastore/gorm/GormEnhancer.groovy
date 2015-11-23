@@ -200,10 +200,10 @@ class GormEnhancer implements Closeable {
             def cls = entity.javaClass
             def className = cls.name
             for(q in qualifiers) {
-                NAMED_QUERIES.get(q).remove(className)
-                STATIC_APIS.get(q).remove(className)
-                INSTANCE_APIS.get(q).remove(className)
-                VALIDATION_APIS.get(q).remove(className)
+                NAMED_QUERIES.get(q)?.remove(className)
+                STATIC_APIS.get(q)?.remove(className)
+                INSTANCE_APIS.get(q)?.remove(className)
+                VALIDATION_APIS.get(q)?.remove(className)
             }
             registry.removeMetaClass(cls)
         }
