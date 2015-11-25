@@ -44,7 +44,8 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
   fi
 
   if [[ $EXIT_STATUS -eq 0 ]]; then
-#      echo "Trigger Travis Functional Test build"
+      echo "Trigger Travis Functional Test build"
+      ./trigger-dependent-build.sh
 #      ./gradlew travisciTrigger -i
       ./gradlew --stop
 
