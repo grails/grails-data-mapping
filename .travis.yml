@@ -28,6 +28,7 @@ env:
   - secure: SbEE24W2zMdao0ArFBHTDP7ntDJn3wmaVl/T42ahkzQUSjQiND+TXwJLhaNADJDIyLg0zmFEIKUk7g7HUMOdw5a2foZbz7BESkz4Nnuhw5O7CgJdIYL6lfLNPkOA6pc7H7D0D5J39vLk4PDqpOJxUw+sgaH2gg2F13kWFk8YZVY=
   - secure: D604qHBpW7UuFuxkhu/cqVzpEESkkipWTKyz3j75i2k+ocQXcYXSj3zDMk4Hmo/iTHszwCgXk1w/5aj+mxRVecewmXmpFk3Q63qPvJprAjcvatmxp82aBmmpPd9GHjKbyLmu6Gn3R8QtX6yAT75T9lf4Y1FMi9mVwFPOtLiSEs0=
   - secure: TNZ8oWsN+E1gkvxhyTHjguyakIWm+T9KxoZVNq+OoHv2kuyWTIbTJUtP3JVyXX+P+B9F9o+8Kkxp5jomgW0cRdjWxQebceeGlrNAzTVvvOm7tVFFxLjzjRnUPsWKfGXkIzSagvFdSgHIpinDqrtERD10pbym2ZDwqRCejCMjz0U=
+  - secure: io7oNZbf/aYRn+a73x6B/8yjg27CYVVdwRobQ+vZBNwBzS31bBcC/8pMtIpsBFqSEtE8GrSM4dYtMSFSj5PasiMg6PgYG/frsbtgGmRqTBkmENfv2EIO+Ex0pgycL+hCUVtPqD9j3mwhfPWkim9vPdmpYe2BbQuTYs0spJuu6PQ=
   matrix:
   - GORM_IMPL=test
   - GORM_IMPL=testgrails2
@@ -58,6 +59,7 @@ after_success:
 - python ./travis/travis_after_all.py
 - export $(cat .to_export_back)
 - ./travis-publish.sh
+- ./trigger-dependent-build.sh
 after_failure:
 - python ./travis/travis_after_all.py
 - export $(cat .to_export_back)
