@@ -49,8 +49,7 @@ before_script:
 - sudo service rsync stop || true
 - sudo service x11-common stop || true
 before_install:
-- openssl aes-256-cbc -pass pass:$SIGNING_PASSPHRASE -in secring.gpg.enc -out secring.gpg
-  -d
+- ./openssl-setup.sh
 matrix:
   fast_finish: true
 script: ./travis-build.sh
