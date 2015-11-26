@@ -4,7 +4,7 @@ As mentioned the GORM for Mongo plugin will configure all the defaults for you, 
 
 {code}
 grails {
-    mongo {
+    mongodb {
         host = "localhost"
         port = 27017
         username = "blah"
@@ -20,7 +20,7 @@ You can also customize the Mongo connection settings using an @options@ block:
 
 {code}
 grails {
-    mongo {
+    mongodb {
         options {
             autoConnectRetry = true
             connectTimeout = 300
@@ -35,7 +35,7 @@ In production scenarios you will typically use more than one MongoDB server in e
 
 {code}
 grails {
-    mongo {
+    mongodb {
         replicaSet = [ "localhost:27017", "localhost:27018"]
     }
 }
@@ -49,7 +49,7 @@ Since 2.0, you can also use MongoDB [connection strings|http://docs.mongodb.org/
 
 {code}
 grails {
-    mongo {
+    mongodb {
         connectionString = "mongodb://localhost/mydb"
     }
 }
@@ -63,7 +63,7 @@ You can configure SSL connections by setting @ssl@ to true in the @options@ bloc
 
 {code}
 grails {
-    mongo {
+    mongodb {
         ...
         options {
             ssl = true
@@ -83,7 +83,7 @@ Below is a complete example showing all configuration options:
 
 {code}
 grails {
-    mongo {
+    mongodb {
         databaseName = "myDb" // the default database name
         host "localhost" // the host to connect to
         port = 27017 // the port to connect to
@@ -121,7 +121,7 @@ h4. Global Mapping Configuration
 Using the @grails.mongo.default.mapping@ setting in @grails-app/conf/application.groovy@ you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use @DBRefs@ in your association mappings. For example, the following configuration will disable optimistic locking globally and use @DBRefs@ for all properties:
 
 {code}
-grails.mongo.default.mapping = {
+grails.mongodb.default.mapping = {
     version false
     '*'(reference:true)
 }
