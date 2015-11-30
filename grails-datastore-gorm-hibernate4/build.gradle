@@ -12,6 +12,7 @@ dependencies {
 
     // Web dependencies provided
     provided "javax.servlet:javax.servlet-api:$servletApiVersion"
+    provided "org.grails:grails-web-url-mappings:$grailsVersion"
     provided(project(":grails-datastore-web"))
 
     String hibVersion = "${hibernateVersion}.Final"
