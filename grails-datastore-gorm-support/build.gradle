@@ -4,7 +4,7 @@ dependencies {
     provided project(':grails-datastore-gorm-hibernate-core')
     provided 'org.springframework:spring-orm:4.2.3.RELEASE'
 
-    compile "org.grails:grails-web-url-mappings:$grailsVersion", optional
+    provided "org.grails:grails-web-url-mappings:$grailsVersion"
 
     provided('org.hibernate:hibernate-core:3.6.10.Final') {
         exclude group:'commons-logging', module:'commons-logging'
