@@ -10,7 +10,7 @@ dependencies {
     }
 
     testCompile project(":grails-datastore-gorm-tck")
-    testRuntime compile "org.springframework:spring-aop:$springVersion"
+    testRuntime "org.springframework:spring-aop:$springVersion"
 
     provided "javax.servlet:javax.servlet-api:$servletApiVersion"
 
