@@ -249,7 +249,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
             return this;
         }
         PersistentEntity parent = getParentEntity();
-        while (!parent.isRoot()) {
+        while (!parent.isRoot() && parent.getParentEntity() != null) {
             parent = parent.getParentEntity();
         }
         return parent;
