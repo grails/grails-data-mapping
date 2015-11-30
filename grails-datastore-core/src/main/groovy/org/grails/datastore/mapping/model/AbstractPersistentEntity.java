@@ -136,16 +136,19 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
                 }
             }
 
-            final T mappedForm = mapping.getMappedForm();// initialize mapping
+            if(!isExternal()) {
 
-            if (mappedForm.isVersioned()) {
-                version = propertiesByName.get(GormProperties.VERSION);
-                if(version == null) {
+                final T mappedForm = mapping.getMappedForm();// initialize mapping
+
+                if (mappedForm.isVersioned()) {
+                    version = propertiesByName.get(GormProperties.VERSION);
+                    if(version == null) {
+                        versioned = false;
+                    }
+                }
+                else {
                     versioned = false;
                 }
-            }
-            else {
-                versioned = false;
             }
 
             final PersistentProperty v = getVersion();
