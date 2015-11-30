@@ -158,7 +158,8 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                     hibernateProperties['hibernate.hbm2ddl.auto'] = ddlAutoSetting
                 }
 
-                def noDialect = !hibernateProperties['hibernate.dialect']
+                def dialect = config.getProperty("${dsConfigPrefix}.dialect", (String)hibernateProperties['hibernate.dialect']?.toString())
+                def noDialect = !dialect
                 def hibConfigClass = config.getProperty("${dsConfigPrefix}.configClass", (String)hibernateProperties['hibernate.config_class']?.toString())
                 Properties noDialectProperties = new Properties(hibernateProperties)
                 if (noDialect) {
@@ -179,7 +180,15 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                     }
                 }
                 // Used to detect the database dialect to use
-                if(noDialect) {
+                if (dialect) {
+                    if (dialect instanceof Class) {
+                        hibernateProperties."hibernate.dialect" = dialect.name
+                    }
+                    else {
+                        hibernateProperties."hibernate.dialect" = dialect.toString()
+                    }
+                }
+                else if(noDialect) {
                     "dialectDetector$suffix"(HibernateDialectDetectorFactoryBean) {
                         dataSource = ref("dataSource$suffix")
                         vendorNameDialectMappings = vendorToDialect

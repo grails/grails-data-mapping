@@ -30,6 +30,13 @@ import org.springframework.core.convert.converter.ConverterRegistry;
 public class BasicTypeConverterRegistrar {
 
     public void register(ConverterRegistry registry) {
+        registry.addConverter(new Converter<Class, String>() {
+            @Override
+            public String convert(Class aClass) {
+                return aClass.getName();
+            }
+        });
+
         registry.addConverter(new Converter<Date, String>() {
             public String convert(Date date) {
                 return String.valueOf(date.getTime());

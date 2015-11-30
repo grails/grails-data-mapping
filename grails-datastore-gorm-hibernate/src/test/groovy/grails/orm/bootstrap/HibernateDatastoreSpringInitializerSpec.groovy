@@ -3,6 +3,7 @@ package grails.orm.bootstrap
 import grails.persistence.Entity
 import org.h2.Driver
 import org.hibernate.Session
+import org.hibernate.dialect.H2Dialect
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.util.Log4jConfigurer
@@ -135,6 +136,42 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
             assert s.connection().metaData.getURL() == "jdbc:h2:mem:moreBooks"
             return true
         }
+
+    }
+
+    void "Test configure custom dialect with a Class"() {
+        given:"An initializer instance"
+
+        def datastoreInitializer = new HibernateDatastoreSpringInitializer(['dataSource.dialect': H2Dialect], Person)
+        def dataSource = new DriverManagerDataSource("jdbc:h2:mem:dialectTest;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+        dataSource.driverClassName = Driver.name
+
+
+        when:"The application context is configured"
+        datastoreInitializer.configureForDataSource(dataSource)
+        def conn = dataSource.getConnection()
+
+        then:"The database tables are created correctly"
+        conn.prepareStatement("SELECT * FROM PERSON").execute()
+
+        when:"A GORM method is invoked"
+        def total = Person.withNewSession { Person.count() }
+
+        then:"The correct results are returned"
+        total == 0
+
+        when:"A new domain instance is created"
+        def p = new Person()
+
+        then:"it is initially invalid"
+        !Person.withNewSession { p.validate() }
+
+        when:"it is made valid"
+        p.name = "Bob"
+
+        then:"It can be saved"
+        Person.withNewSession { p.save(flush:true) }
+        Person.withNewSession { Person.count()  } == 1
 
     }
 }

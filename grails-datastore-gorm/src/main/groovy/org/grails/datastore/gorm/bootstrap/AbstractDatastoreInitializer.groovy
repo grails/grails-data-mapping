@@ -4,13 +4,17 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
+import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar
 import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
+import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.support.GenericApplicationContext
+import org.springframework.core.convert.support.ConfigurableConversionService
+import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.MapPropertySource
 import org.springframework.core.env.PropertyResolver
 import org.springframework.core.env.StandardEnvironment
@@ -201,6 +205,16 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
      */
     @CompileStatic
     void configureForBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {
+
+        if(configuration instanceof ConfigurableEnvironment && beanDefinitionRegistry instanceof ConfigurableApplicationContext) {
+            def env = (ConfigurableEnvironment) configuration
+
+            def conversionService = ((ConfigurableApplicationContext) beanDefinitionRegistry).getEnvironment().getConversionService()
+
+            BasicTypeConverterRegistrar registrar = new BasicTypeConverterRegistrar()
+            registrar.register(conversionService)
+            env.setConversionService(conversionService)
+        }
 
         scanForPersistentClasses()
 
