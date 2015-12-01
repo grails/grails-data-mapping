@@ -76,6 +76,21 @@ until travis-api /builds/$last_master_build_id | grep '"state":"started"'; do
   sleep 5
 done
 
+# Get the build ID of the last 3.1.x build.
+#
+last_threeone_build_id=`travis-api /repos/$repo_id/branches/3.1.x |
+                      sed 's/{"branch":{"id":\([0-9]*\),.*/\1/'`
+
+# Restart the last 3.1.x build.
+#
+travis-api /builds/$last_threeone_build_id/restart -X POST
+
+# Wait for the build to start using the new environment variables.
+#
+until travis-api /builds/$last_threeone_build_id | grep '"state":"started"'; do
+  sleep 5
+done
+
 # Remove all of the environment variables set above. This does mean that if this
 # script is terminated for whatever reason, these will need to be cleaned up
 # manually. We can do this either through the API, or by going to Settings ->
