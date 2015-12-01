@@ -230,7 +230,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     }
 
     @CompileDynamic
-    Closure getCommonConfiguration(BeanDefinitionRegistry registry) {
+    Closure getCommonConfiguration(BeanDefinitionRegistry registry, String type) {
         return {
             if(!registry.containsBeanDefinition("grailsApplication") && registerApplicationIfNotPresent) {
                 grailsApplication(getGrailsApplicationClass(), persistentClasses as Class[], Thread.currentThread().contextClassLoader) { bean ->
@@ -251,6 +251,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                 }
                 "${cls.name}Validator"(getGrailsValidatorClass()) {
                     grailsApplication = ref("grailsApplication")
+                    datastoreName = "${type}Datastore"
                     messageSource = ref("messageSource")
                     domainClass = ref("${cls.name}DomainClass")
                 }
@@ -316,11 +317,8 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     @CompileStatic
     protected Class getGrailsValidatorClass() {
         ClassLoader cl = Thread.currentThread().contextClassLoader
-        if(ClassUtils.isPresent("org.grails.validation.GrailsDomainClassValidator", cl)) {
-            return ClassUtils.forName("org.grails.validation.GrailsDomainClassValidator", cl)
-        }
-        if(ClassUtils.isPresent("org.codehaus.groovy.grails.validation.GrailsDomainClassValidator", cl)) {
-            return ClassUtils.forName("org.codehaus.groovy.grails.validation.GrailsDomainClassValidator", cl)
+        if(ClassUtils.isPresent("org.grails.datastore.gorm.validation.DefaultDomainClassValidator", cl)) {
+            return ClassUtils.forName("org.grails.datastore.gorm.validation.DefaultDomainClassValidator", cl)
         }
         throw new IllegalStateException("No version of Grails found on classpath")
     }

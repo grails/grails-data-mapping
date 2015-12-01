@@ -20,7 +20,7 @@ class RedisDatastoreSpringInitializer extends AbstractDatastoreInitializer{
     @Override
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         {->
-            def callable = getCommonConfiguration(beanDefinitionRegistry)
+            def callable = getCommonConfiguration(beanDefinitionRegistry, "redis")
             callable.delegate = delegate
             callable.call()
 

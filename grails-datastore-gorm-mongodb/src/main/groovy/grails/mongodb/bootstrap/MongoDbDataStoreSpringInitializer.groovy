@@ -90,7 +90,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer {
                 databaseName = mongoClientURI.database
             }
 
-            def callable = getCommonConfiguration(beanDefinitionRegistry)
+            def callable = getCommonConfiguration(beanDefinitionRegistry, "mongo")
             callable.delegate = delegate
             callable.call()
 

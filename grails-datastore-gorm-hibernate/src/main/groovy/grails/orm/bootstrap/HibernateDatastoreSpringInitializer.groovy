@@ -104,7 +104,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
     public Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         Closure beanDefinitions = {
-            def common = getCommonConfiguration(beanDefinitionRegistry)
+            def common = getCommonConfiguration(beanDefinitionRegistry, "hibernate")
             common.delegate = delegate
             common.call()
 

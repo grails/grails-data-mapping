@@ -48,7 +48,7 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
     @Override
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         {->
-            def callable = getCommonConfiguration(beanDefinitionRegistry)
+            def callable = getCommonConfiguration(beanDefinitionRegistry, "neo4j")
             callable.delegate = delegate
             callable.call()
 

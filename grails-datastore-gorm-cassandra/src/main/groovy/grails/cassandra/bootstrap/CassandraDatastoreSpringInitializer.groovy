@@ -50,7 +50,7 @@ class CassandraDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             def keyspaceName = config.getProperty(CassandraDatastore.KEYSPACE_NAME, defaultKeyspaceName)
             def defaultMapping = config.getProperty(CassandraDatastore.DEFAULT_MAPPING, Closure, null)
 
-            def callable = getCommonConfiguration(beanDefinitionRegistry)
+            def callable = getCommonConfiguration(beanDefinitionRegistry, "cassandra")
             callable.delegate = delegate
             callable.call()
 

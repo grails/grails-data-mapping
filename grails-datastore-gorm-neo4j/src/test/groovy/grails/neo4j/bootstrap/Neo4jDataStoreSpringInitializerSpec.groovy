@@ -7,6 +7,7 @@ import org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.server.web.WebServer
 import org.neo4j.test.TestGraphDatabaseFactory
+import org.springframework.context.ApplicationContext
 import spock.lang.Specification
 
 /*
@@ -31,13 +32,31 @@ import spock.lang.Specification
 class Neo4jDataStoreSpringInitializerSpec extends Specification {
 
     void "Test Neo4jDataStoreSpringInitializer loads neo4j correctly"() {
-        when:"neo4j is initialised"
-        def init = new Neo4jDataStoreSpringInitializer(Book)
-        init.configure()
+        setup:"neo4j is initialised"
+        def init = new Neo4jDataStoreSpringInitializer(Author, Book)
+        def ctx = init.configure()
+
+        when:"A GORm method is executed"
+        int count = Book.count()
+        then:"GORM for Neo4j is correctly configured"
+        count == 0
+
+        when:
+        Author author
+        Author.withTransaction {
+            author = new Author(name: "Stephen King")
+                    .addToBooks(title: "")
+            author.validate()
+
+        }
 
         then:"GORM for Neo4j is correctly configured"
-        Book.count() == 0
+        author.errors.hasErrors()
+
+        cleanup:
+        ctx.close()
     }
+
 
     void "Test Neo4jDataStoreSpringInitializer loads neo4j for REST"() {
         setup:
@@ -99,9 +118,16 @@ class Neo4jDataStoreSpringInitializerSpec extends Specification {
 class Author {
     String name
     static hasMany = [books:Book]
+
+    static constraints = {
+        name blank:false
+    }
 }
 @Entity
 class Book {
     String title
     static belongsTo = [author:Author]
+    static constraints = {
+        title blank:false
+    }
 }
