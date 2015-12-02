@@ -21,4 +21,5 @@ dependencies {
     }
 
     testCompile("org.springframework:spring-test:$springVersion")
+    testCompile("org.springframework:spring-webmvc:$springVersion")
 }
