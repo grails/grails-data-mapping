@@ -1,4 +1,4 @@
-To use GORM 5.x and above in Grails 3.x to use GORM for Hibernate 4 you can specify the following configuration in @build.gradle@:
+To use GORM 5.x for Hibernate 4 in Grails 3.x you can specify the following configuration in @build.gradle@:
 
 {code}
 dependencies {

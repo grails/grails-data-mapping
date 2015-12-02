@@ -17,7 +17,7 @@ dependencies {
 }
 {code}
 
-The @resolutionStrategy@ is needed to enforce and upgrade to Spring 4.2.x which is required by Hibernate 5 support. This block is not needed if you are using Grails 3.1 or above.
+The @resolutionStrategy@ is needed to enforce an upgrade to Spring 4.2.x which is required by Hibernate 5 support. This block is not needed if you are using Grails 3.1 or above.
 
 To use Hibernate 3 the following configuration is needed:
 
@@ -29,7 +29,7 @@ dependencies {
 }
 {code}
 
-Since GORM 5, for Grails 2.x only the Hibernate 4 plugin is supported and can be added with the following configuration in @BuildConfig.groovy@:
+For Grails 2.x only the Hibernate 4 plugin is supported and can be added with the following configuration in @BuildConfig.groovy@:
 
 {code}
 plugins {
