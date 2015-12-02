@@ -1,3 +1,27 @@
+h4. Configuration Properties
+
+In previous versions of the plugin configuration was specified using the `grails.mongo` prefix. This is now `grails.mongodb` instead. For example, the following configuration in @application.groovy@ or @Config.groovy@:
+
+{code}
+grails {
+    mongo {
+        databaseName = 'foo'
+    }
+}
+{code}
+
+Should now be expressed as:
+
+{code}
+grails {
+    mongodb {
+        databaseName = 'foo'
+    }
+}
+{code}
+
+h4. Persistence Engine
+
 Since GORM for MongoDB 5.0 there is now a choice of persistence engine. The origin GORM for MongoDB converted MongoDB documents to and from Groovy objects. This engine is still present and can be activated with the following configuration in @grails-app/conf/application.yml@:
 
 {code}

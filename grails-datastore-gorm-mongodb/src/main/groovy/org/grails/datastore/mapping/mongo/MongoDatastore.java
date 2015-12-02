@@ -238,6 +238,10 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         this.mongo = (MongoClient) mongo;
     }
 
+    public String getDefaultDatabase() {
+        return defaultDatabase;
+    }
+
     @Autowired(required = false)
     public void setCodecRegistries(List<CodecRegistry> codecRegistries) {
         this.codecRegistry = CodecRegistries.fromRegistries(

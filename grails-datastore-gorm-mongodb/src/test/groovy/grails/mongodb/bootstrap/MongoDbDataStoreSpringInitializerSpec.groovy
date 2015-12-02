@@ -4,6 +4,7 @@ import com.mongodb.DB
 import com.mongodb.Mongo
 import grails.mongodb.geo.Point
 import grails.persistence.Entity
+import org.grails.datastore.mapping.mongo.MongoDatastore
 import spock.lang.Ignore
 import spock.lang.Issue
 import spock.lang.Specification
@@ -22,6 +23,17 @@ class MongoDbDataStoreSpringInitializerSpec extends Specification{
 
         then:"GORM for MongoDB is initialized correctly"
             Person.count() == 0
+
+    }
+
+    void "Test specify mongo database name settings"() {
+        when:"the initializer used to setup GORM for MongoDB"
+        def initializer = new MongoDbDataStoreSpringInitializer(['grails.mongodb.databaseName':'foo'],Person)
+        def applicationContext = initializer.configure()
+        def mongoDatastore = applicationContext.getBean(MongoDatastore)
+
+        then:"GORM for MongoDB is initialized correctly"
+        mongoDatastore.getDefaultDatabase() == 'foo'
 
     }
 
