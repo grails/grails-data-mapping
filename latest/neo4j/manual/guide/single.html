@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>GORM for Neo4j 5.0.0.RC1</title>
+        <title>GORM for Neo4j 5.0.0.RC2</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
@@ -60,7 +60,7 @@ function addJsClass(el) {
                         <div class="project">
                             <h1>GORM for Neo4j - Reference Documentation</h1>
                             <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
-                            <p><strong>Version:</strong> 5.0.0.RC1</p>
+                            <p><strong>Version:</strong> 5.0.0.RC2</p>
                             
                         </div>
 
@@ -188,7 +188,7 @@ As mentioned the GORM for Neo4j plugin will configure all the defaults for you, 
         type = <span class="java&#45;quote">"embedded"</span>
         location = <span class="java&#45;quote">"/<span class="java&#45;keyword">var</span>/neo4j"</span>
     &#125;
-&#125;</pre></div><p class="paragraph"/>The <code>type</code> provides currently the following choices:<p class="paragraph"/><h4>type = "embedded"</h4><p class="paragraph"/>Runs the Neo4j in embedded mode, Neo4j and Tomcat use the same JVM. No seperate setup outside the Grails application is required. <code>location</code> specifies the directory where Neo4j stores its data.<p class="paragraph"/>Example:
+&#125;</pre></div><p class="paragraph"/>The <code>type</code> provides currently the following choices:<p class="paragraph"/><h4>type = "embedded"</h4><p class="paragraph"/>Runs Neo4j in embedded mode, Neo4j and Grails use the same JVM. No seperate setup outside the Grails application is required. <code>location</code> specifies the directory where Neo4j stores its data.<p class="paragraph"/>Example:
 <div class="code"><pre>grails &#123;
     neo4j &#123;
         type = <span class="java&#45;quote">"embedded"</span>
@@ -243,7 +243,7 @@ class Application &#123;
     &#125;
 &#125;</pre></div><p class="paragraph"/><blockquote class="note">
 Using <code>ComponentScan</code> without a value results in Boot scanning for classes in the same package or any package nested within the <code>Application</code> class package.
-If you GORM entities are in a different package specify the package name as the value of the <code>ComponentScan</code> annotation.
+If your GORM entities are in a different package specify the package name as the value of the <code>ComponentScan</code> annotation.
 </blockquote><p class="paragraph"/>Finally create your GORM entities and ensure they are annotated with <code>grails.persistence.Entity</code>:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.persistence.&#42;<p class="paragraph"/>@Entity
 class Person &#123;
     <span class="java&#45;object">String</span> firstName
@@ -277,13 +277,13 @@ If you want to see what queries GORM for Neo4j generates, enabling logging for t
 GORM by default uses a custom identity generator based on the Snowflake algorithm and stores the generated identifier in a property of each Neo4j node called <code> <em class="italic">_id_</em> </code>.<p class="paragraph"/>This has the advantage of enabling GORM to batch insert operations into a single CREATE cypher statement, hence why it is the default.<p class="paragraph"/>However, if you prefer to use native Neo4j node identifiers then you can do so by changing the generator used in the mapping:<p class="paragraph"/><div class="code"><pre>class Club &#123;<p class="paragraph"/>    &#8230;
     <span class="java&#45;keyword">static</span> mapping = &#123;
         id generator:'<span class="java&#45;keyword">native</span>'
-    &#125;<p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>This will instead use the Neo4j node identifier as the object identifier with the downside being that GORM has to execute individual CREATE  statements for each new object saved, similar to the way GORM for Hibernate has to perform a SQL INSERT if the id generation strategy is a auto-increment column.<p class="paragraph"/>This disadvantage can be worked around by using the <code>saveAll</code> method to save multiple domain classes at once:<p class="paragraph"/><div class="code"><pre>Club.saveAll(&#91;
+    &#125;<p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>This will instead use the Neo4j node identifier as the object identifier with the downside being that GORM has to execute individual CREATE  statements for each new object saved, similar to the way GORM for Hibernate has to perform a SQL INSERT if the id generation strategy is an auto-increment column.<p class="paragraph"/>This disadvantage can be worked around by using the <code>saveAll</code> method to save multiple domain classes at once:<p class="paragraph"/><div class="code"><pre>Club.saveAll(&#91;
     <span class="java&#45;keyword">new</span> Club(name:<span class="java&#45;quote">"Manchester United"</span>),
     <span class="java&#45;keyword">new</span> Club(name:<span class="java&#45;quote">"Arsenal"</span>)
-&#93;)</pre></div><p class="paragraph"/>If you wish to globally change id generation then you can do so in <code>grails-app/conf/application.groovy</code> (@Config.groovy in Grails 2.x):<p class="paragraph"/>
+&#93;)</pre></div><p class="paragraph"/>If you wish to globally change id generation then you can do so in <code>grails-app/conf/application.groovy</code> (<code>Config.groovy</code> in Grails 2.x):<p class="paragraph"/>
 <div class="code"><pre>grails.neo4j.<span class="java&#45;keyword">default</span>.mapping = &#123;
     id generator:'<span class="java&#45;keyword">native</span>'
-&#125;</pre></div><p class="paragraph"/>In addition, if you wish to use a custom identity generation strategy you can do specify a class name that implements the <code>IdGenerator</code> interface:<p class="paragraph"/><div class="code"><pre>grails.neo4j.<span class="java&#45;keyword">default</span>.mapping = &#123;
+&#125;</pre></div><p class="paragraph"/>In addition, if you wish to use a custom identity generation strategy you can do so by specifying a class name that implements the <code>IdGenerator</code> interface:<p class="paragraph"/><div class="code"><pre>grails.neo4j.<span class="java&#45;keyword">default</span>.mapping = &#123;
     id generator:'com.foo.MyIdGenerator'
 &#125;</pre></div><p class="paragraph"/>
 
@@ -297,12 +297,12 @@ GORM for Neo4j will create Neo4j relationships between nodes for you based on th
 class Pet &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> belongsTo = &#91;owner:Owner&#93;
-&#125;</pre></div><p class="paragraph"/>Will generate a Cypher relationship creation query as follows:<p class="paragraph"/><div class="code"><pre>MATCH (from:Owner &#123; <em class="italic">_id_</em> :&#123;start&#125;&#125;), (to:Pet) WHERE to. <em class="italic">_id_</em>  IN &#123;end&#125; CREATE (from)&#45;&#91;r:PETS&#93;&#45;&#62;(to)</pre></div><p class="paragraph"/>As you can see from the query the relationships is defined as <code>(from)-r:PETS-&#62;(to)</code>, with the direction of the association being dedicated by who "owns" the association. Since <code>Pet</code> defines a <code>belongTo</code> association to <code>Owner</code>, this means that <code>Owner</code> owns the association and the relationship is from <code>Owner</code> to <code>Pet</code>.<p class="paragraph"/>For more information on defining relationships with GORM, see the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#gormAssociation" target="blank">corresponding guide in the GORM documentation</a>.
+&#125;</pre></div><p class="paragraph"/>Will generate a Cypher relationship creation query as follows:<p class="paragraph"/><div class="code"><pre>MATCH (from:Owner &#123; <em class="italic">_id_</em> :&#123;start&#125;&#125;), (to:Pet) WHERE to. <em class="italic">_id_</em>  IN &#123;end&#125; CREATE (from)&#45;&#91;r:PETS&#93;&#45;&#62;(to)</pre></div><p class="paragraph"/>As you can see from the query the relationship is defined as <code>(from)-r:PETS-&#62;(to)</code>, with the direction of the association defined by who "owns" the association. Since <code>Pet</code> defines a <code>belongTo</code> association to <code>Owner</code>, this means that <code>Owner</code> owns the association and the relationship is from <code>Owner</code> to <code>Pet</code>.<p class="paragraph"/>For more information on defining relationships with GORM, see the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#gormAssociation" target="blank">corresponding guide in the GORM documentation</a>.
 
 
 
 <h2 id="labelStrategy">3.3 Customizing the Label Strategy</h2>
-The default strategy for defining the labels is to use the class name, however the strategy to define labels for a given node is completely configurable. For example you can use static mapping to define you labels:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+The default strategy for defining labels is to use the class name, however the strategy to define labels for a given node is completely configurable. For example you can use static mapping to define you labels:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     <span class="java&#45;keyword">static</span> mapping = &#123;
         labels <span class="java&#45;quote">"Person"</span>, <span class="java&#45;quote">"People"</span>
     &#125;
@@ -324,7 +324,7 @@ Neo4j is a schemaless database. This means that, unlike SQL where you can only h
     <span class="java&#45;object">String</span> name
  &#125;</pre></div><p class="paragraph"/> You can set both the statically defined <code>name</code> property, but also any arbitrary number of dynamic properties using the subscript operator in Groovy:<p class="paragraph"/>  <div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Plant(name:<span class="java&#45;quote">"Carrot"</span>)
   p&#91;'goesInPatch'&#93; = <span class="java&#45;keyword">true</span>
-  p.save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>  Any simply properties can be included, however if you wish have dynamic associations you can as well by modifying the mapping:<p class="paragraph"/> <div class="code"><pre>class Plant &#123;
+  p.save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>  Any simple properties can be included, however if you wish to have dynamic associations you can as well by modifying the mapping:<p class="paragraph"/> <div class="code"><pre>class Plant &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> mapping = &#123;
         dynamicAssociations <span class="java&#45;keyword">true</span>
@@ -348,7 +348,7 @@ If you want to see what queries GORM for Neo4j generates, enabling logging for t
 
 
 <h2 id="lazyLoading">4.1 Understanding Lazy Loading</h2>
-When you retrieving a GORM entity and its associations by default single-ended associations will only retrieve the association id, whilst associations to many objects will not retrieve the association at all until it is accessed. This is called lazy loading.<p class="paragraph"/>For example given the following domain model:<p class="paragraph"/><div class="code"><pre>class League &#123;
+When retrieving a GORM entity and its associations by default single-ended associations will only retrieve the association id, whilst associations to many objects will not retrieve the association at all until it is accessed. This is called lazy loading.<p class="paragraph"/>For example given the following domain model:<p class="paragraph"/><div class="code"><pre>class League &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> hasMany = &#91;clubs:Club&#93;
 &#125;
@@ -360,7 +360,7 @@ class Club &#123;
 class Team  &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> belongsTo = &#91;club:Club&#93;
-&#125;</pre></div><p class="paragraph"/>When you retrieve the <code>Club</code> by name:<p class="paragraph"/><div class="code"><pre>def club = Club.findByName(<span class="java&#45;quote">"Manchester United"</span>)</pre></div><p class="paragraph"/>You will get the following query:<p class="paragraph"/><div class="code"><pre>MATCH (n:Club) WHERE ( n. <em class="italic">_id_</em> =&#123;1&#125; )
+&#125;</pre></div><p class="paragraph"/>When you retrieve the <code>Club</code> by name:<p class="paragraph"/><div class="code"><pre>def club = Club.findByName(<span class="java&#45;quote">"Manchester United"</span>)</pre></div><p class="paragraph"/>You will get the following Cypher query:<p class="paragraph"/><div class="code"><pre>MATCH (n:Club) WHERE ( n. <em class="italic">_id_</em> =&#123;1&#125; )
 OPTIONAL MATCH(n)&#45;&#91;:LEAGUE&#93;&#45;&#62;(leagueNode)
 RETURN n as data, collect(DISTINCT leagueNode. <em class="italic">_id_</em> ) as leagueIds</pre></div><p class="paragraph"/>As you can see the <code>teams</code> association is not loaded in the query, and only the ID of the <code>league</code> association is retrieved. If you then iterate over the teams you will get a second query to obtain the teams:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">for</span>(team in club.teams) &#123;
     println team.name
@@ -390,18 +390,18 @@ RETURN n as data, collect(DISTINCT leagueNode. <em class="italic">_id_</em> ) as
 
 <h2 id="cypher">4.2 Querying with Cypher</h2>
 To query with raw Cypher queries you can use the built in <code>find</code> and <code>findAll</code> methods:<p class="paragraph"/> <div class="code"><pre>def club = Club.find(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')
- def clubs = Club.findAll(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results using <code>cypherStatic</code>:<p class="paragraph"/> <div class="code"><pre>Result result = Club.cypherStatic(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> When working with raw results, you can convert any <code>org.neo4j.graphdb.Node</code> into a domain instance using the <code>as</code> keyword:<p class="paragraph"/> <div class="code"><pre>Node myNode = &#8230;
+ def clubs = Club.findAll(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results use <code>cypherStatic</code>:<p class="paragraph"/> <div class="code"><pre>Result result = Club.cypherStatic(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> When working with raw results, you can convert any <code>org.neo4j.graphdb.Node</code> into a domain instance using the <code>as</code> keyword:<p class="paragraph"/> <div class="code"><pre>Node myNode = &#8230;
  Club club = myNode as Club</pre></div><p class="paragraph"/> You can also convert any <code>org.neo4j.graphdb.Result</code> instance to a list of domain classes:<p class="paragraph"/> <div class="code"><pre>Result result = &#8230;
   List&#60;Club&#62; clubs = result.toList(Club)</pre></div><p class="paragraph"/>
 
 
 <h2 id="indexing">4.3 Defining the Query Index</h2>
-To define which properties of you domain class should be indexed for querying you can do so in the mapping:<p class="paragraph"/><div class="code"><pre>class Club &#123;
+To define which properties of your domain class should be indexed for querying you can do so in the mapping:<p class="paragraph"/><div class="code"><pre>class Club &#123;
     <span class="java&#45;object">String</span> name<p class="paragraph"/>    &#8230;
     <span class="java&#45;keyword">static</span> mapping = &#123;
         name index:<span class="java&#45;keyword">true</span>
     &#125;
-&#125;</pre></div><p class="paragraph"/>On startup GORM will use Cypher to create indexes as follows:<p class="paragraph"/><div class="code"><pre>CREATE INDEX ON :Club(name)</pre></div><p class="paragraph"/>To define a unique index using <code>unique</code> instead:<p class="paragraph"/><div class="code"><pre>class Club &#123;
+&#125;</pre></div><p class="paragraph"/>On startup GORM will use Cypher to create indexes as follows:<p class="paragraph"/><div class="code"><pre>CREATE INDEX ON :Club(name)</pre></div><p class="paragraph"/>To define a unique index use <code>unique</code> instead:<p class="paragraph"/><div class="code"><pre>class Club &#123;
     <span class="java&#45;object">String</span> name<p class="paragraph"/>    &#8230;
     <span class="java&#45;keyword">static</span> mapping = &#123;
         name unique:<span class="java&#45;keyword">true</span>
@@ -411,14 +411,11 @@ To define which properties of you domain class should be indexed for querying yo
 
 
 <h1 id="neo4jEnhancements">5 Enhancements to Neo4j core API</h1>
-Neo4j Grails contains some enhancements to the Neo4j core API.<p class="paragraph"/><h4>setting properties on nodes/relationships</h4><p class="paragraph"/>Assigning an arbitrary property onto a Neo4j node or relationship can be simply done by using Groovy's property
+Neo4j Grails contains some enhancements to the Neo4j core API.<p class="paragraph"/><h4>Setting properties on nodes/relationships</h4><p class="paragraph"/>Assigning an arbitrary property onto a Neo4j node or relationship can be simply done by using Groovy's property
 mechanism:
 <div class="code"><pre>def node = graphDatabaseService.createNode()
-node.myProperty = myValue</pre></div><p class="paragraph"/>The same words for getting properties:<p class="paragraph"/><div class="code"><pre>def node = &#8230;
-def value = node.myProperty</pre></div><p class="paragraph"/><blockquote class="note">
-There is a important convention: when the property ends with "Date" then a date type is assumed. The node property then
-helds respective millis.
-</blockquote><p class="paragraph"/>
+node.myProperty = myValue</pre></div><p class="paragraph"/>The same applies for getting properties:<p class="paragraph"/><div class="code"><pre>def node = &#8230;
+def value = node.myProperty</pre></div><p class="paragraph"/>
 
                     </div>
                 </td>

@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.4 Dynamic Attributes 5.0.0.RC1</title>
+    <title>3.4 Dynamic Attributes 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -39,7 +39,7 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0"><a href="../../guide/stateless.html"><strong>5</strong><span>Stateless Mode</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../../guide/lowLevelApi.html"><strong>6</strong><span>Using the Mongo Driver Directly</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/lowLevelApi.html"><strong>6</strong><span>Using the MongoDB Driver Directly</span></a>
                     </div>
                     
                     <div class="toc-item" style="margin-left:0"><a href="../../guide/transactions.html"><strong>7</strong><span>Transactions</span></a>
@@ -86,7 +86,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -99,11 +99,11 @@ function addJsClass() {
 Unlike a relational database, MongoDB allows for "schemaless" persistence where there are no limits to the number of attributes a particular document can have. A GORM domain class on the other hand has a schema in that there are a fixed number of properties. For example consider the following domain class:<p class="paragraph"/><div class="code"><pre>class Plant &#123;
     <span class="java&#45;object">boolean</span> goesInPatch
     <span class="java&#45;object">String</span> name
-&#125;</pre></div><p class="paragraph"/>Here there are two fixed properties, <code>name</code> and <code>goesInPatch</code>, that will be persisted into the Mongo document. Using GORM for Mongo you can however use dynamic properties via the Groovy subscript operator. For example:<p class="paragraph"/><div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Plant(name:<span class="java&#45;quote">"Pineapple"</span>)
+&#125;</pre></div><p class="paragraph"/>Here there are two fixed properties, <code>name</code> and <code>goesInPatch</code>, that will be persisted into the MongoDB document. Using GORM for MongoDB you can however use dynamic properties via the Groovy subscript operator. For example:<p class="paragraph"/><div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Plant(name:<span class="java&#45;quote">"Pineapple"</span>)
 p&#91;'color'&#93; = 'Yellow'
 p&#91;'hasLeaves'&#93; = <span class="java&#45;keyword">true</span>
 p.save()<p class="paragraph"/>p = Plant.findByName(<span class="java&#45;quote">"Pineapple"</span>)<p class="paragraph"/>println p&#91;'color'&#93;
-println p&#91;'hasLeaves'&#93;</pre></div><p class="paragraph"/>Using the subscript operator you can add additional attributes to the underlying <code>DBObject</code> instance that gets persisted to the MongoDB allowing for more dynamic domain models.
+println p&#91;'hasLeaves'&#93;</pre></div><p class="paragraph"/>Using the subscript operator you can add additional attributes to the underlying <code>Document</code> instance that gets persisted to the MongoDB allowing for more dynamic domain models.
 
 
                 <div style="clear:both;margin-top:15px;"></div>

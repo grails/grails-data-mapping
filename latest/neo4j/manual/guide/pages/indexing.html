@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>4.3 Defining the Query Index 5.0.0.RC1</title>
+    <title>4.3 Defining the Query Index 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -77,7 +77,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -87,12 +87,12 @@ function addJsClass() {
                 
 
 <h2 id="indexing">4.3 Defining the Query Index</h2>
-To define which properties of you domain class should be indexed for querying you can do so in the mapping:<p class="paragraph"/><div class="code"><pre>class Club &#123;
+To define which properties of your domain class should be indexed for querying you can do so in the mapping:<p class="paragraph"/><div class="code"><pre>class Club &#123;
     <span class="java&#45;object">String</span> name<p class="paragraph"/>    &#8230;
     <span class="java&#45;keyword">static</span> mapping = &#123;
         name index:<span class="java&#45;keyword">true</span>
     &#125;
-&#125;</pre></div><p class="paragraph"/>On startup GORM will use Cypher to create indexes as follows:<p class="paragraph"/><div class="code"><pre>CREATE INDEX ON :Club(name)</pre></div><p class="paragraph"/>To define a unique index using <code>unique</code> instead:<p class="paragraph"/><div class="code"><pre>class Club &#123;
+&#125;</pre></div><p class="paragraph"/>On startup GORM will use Cypher to create indexes as follows:<p class="paragraph"/><div class="code"><pre>CREATE INDEX ON :Club(name)</pre></div><p class="paragraph"/>To define a unique index use <code>unique</code> instead:<p class="paragraph"/><div class="code"><pre>class Club &#123;
     <span class="java&#45;object">String</span> name<p class="paragraph"/>    &#8230;
     <span class="java&#45;keyword">static</span> mapping = &#123;
         name unique:<span class="java&#45;keyword">true</span>

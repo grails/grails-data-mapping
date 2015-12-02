@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2.4 Using GORM in Spring Boot 5.0.0.RC1</title>
+    <title>2.4 Using GORM in Spring Boot 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -39,7 +39,7 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0"><a href="../../guide/stateless.html"><strong>5</strong><span>Stateless Mode</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../../guide/lowLevelApi.html"><strong>6</strong><span>Using the Mongo Driver Directly</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/lowLevelApi.html"><strong>6</strong><span>Using the MongoDB Driver Directly</span></a>
                     </div>
                     
                     <div class="toc-item" style="margin-left:0"><a href="../../guide/transactions.html"><strong>7</strong><span>Transactions</span></a>
@@ -86,7 +86,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -107,7 +107,7 @@ class Application &#123;
     &#125;
 &#125;</pre></div><p class="paragraph"/><blockquote class="note">
 Using <code>ComponentScan</code> without a value results in Boot scanning for classes in the same package or any package nested within the <code>Application</code> class package.
-If you GORM entities are in a different package specify the package name as the value of the <code>ComponentScan</code> annotation.
+If your GORM entities are in a different package specify the package name as the value of the <code>ComponentScan</code> annotation.
 </blockquote><p class="paragraph"/>Finally create your GORM entities and ensure they are annotated with <code>grails.persistence.Entity</code>:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.persistence.&#42;<p class="paragraph"/>@Entity
 class Person &#123;
     <span class="java&#45;object">String</span> firstName

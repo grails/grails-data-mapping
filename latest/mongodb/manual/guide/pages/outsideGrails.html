@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2.5 GORM for MongoDB without Grails 5.0.0.RC1</title>
+    <title>2.5 GORM for MongoDB without Grails 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -39,7 +39,7 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0"><a href="../../guide/stateless.html"><strong>5</strong><span>Stateless Mode</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../../guide/lowLevelApi.html"><strong>6</strong><span>Using the Mongo Driver Directly</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/lowLevelApi.html"><strong>6</strong><span>Using the MongoDB Driver Directly</span></a>
                     </div>
                     
                     <div class="toc-item" style="margin-left:0"><a href="../../guide/transactions.html"><strong>7</strong><span>Transactions</span></a>
@@ -86,7 +86,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -99,7 +99,7 @@ function addJsClass() {
 If you wish to use GORM for MongoDB outside of a Grails application you should declare the necessary dependencies, for example in Gradle:<p class="paragraph"/><div class="code"><pre>compile <span class="java&#45;quote">"org.grails:grails&#45;datastore&#45;gorm&#45;mongodb:VERSION"</span></pre></div><p class="paragraph"/>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation:<p class="paragraph"/><div class="code"><pre>@Entity
 class Person &#123;
     <span class="java&#45;object">String</span> name
-&#125;</pre></div><p class="paragraph"/>Then you need to place the bootstrap logic somewhere in your application which uses <code>MongoDbDataStoreSpringInitializer</code>:<p class="paragraph"/><div class="code"><pre>def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(Person)
+&#125;</pre></div><p class="paragraph"/>Then you need to place the bootstrap logic somewhere in the loading sequence of your application which uses <code>MongoDbDataStoreSpringInitializer</code>:<p class="paragraph"/><div class="code"><pre>def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(Person)
 def applicationContext = initializer.configure()<p class="paragraph"/>println Person.count()</pre></div><p class="paragraph"/>For configuration you can either pass a map or an instance of the <code>org.springframework.core.env.PropertyResolver</code> interface:<p class="paragraph"/><div class="code"><pre>def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(&#91;'grails.mongodb.url':'http://myserver'&#93;, Person)
 def applicationContext = initializer.configure()<p class="paragraph"/>println Person.count()</pre></div><p class="paragraph"/>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:<p class="paragraph"/><div class="code"><pre>ApplicationContext myApplicationContext = &#8230;
 def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(myApplicationContext.getEnvironment(), Person)

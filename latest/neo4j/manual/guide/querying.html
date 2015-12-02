@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>4 Querying with GORM for Neo4j 5.0.0.RC1</title>
+    <title>4 Querying with GORM for Neo4j 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -77,7 +77,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -113,7 +113,7 @@ If you want to see what queries GORM for Neo4j generates, enabling logging for t
 
 
 <h2 id="lazyLoading">4.1 Understanding Lazy Loading</h2>
-When you retrieving a GORM entity and its associations by default single-ended associations will only retrieve the association id, whilst associations to many objects will not retrieve the association at all until it is accessed. This is called lazy loading.<p class="paragraph"/>For example given the following domain model:<p class="paragraph"/><div class="code"><pre>class League &#123;
+When retrieving a GORM entity and its associations by default single-ended associations will only retrieve the association id, whilst associations to many objects will not retrieve the association at all until it is accessed. This is called lazy loading.<p class="paragraph"/>For example given the following domain model:<p class="paragraph"/><div class="code"><pre>class League &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> hasMany = &#91;clubs:Club&#93;
 &#125;
@@ -125,7 +125,7 @@ class Club &#123;
 class Team  &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> belongsTo = &#91;club:Club&#93;
-&#125;</pre></div><p class="paragraph"/>When you retrieve the <code>Club</code> by name:<p class="paragraph"/><div class="code"><pre>def club = Club.findByName(<span class="java&#45;quote">"Manchester United"</span>)</pre></div><p class="paragraph"/>You will get the following query:<p class="paragraph"/><div class="code"><pre>MATCH (n:Club) WHERE ( n. <em class="italic">_id_</em> =&#123;1&#125; )
+&#125;</pre></div><p class="paragraph"/>When you retrieve the <code>Club</code> by name:<p class="paragraph"/><div class="code"><pre>def club = Club.findByName(<span class="java&#45;quote">"Manchester United"</span>)</pre></div><p class="paragraph"/>You will get the following Cypher query:<p class="paragraph"/><div class="code"><pre>MATCH (n:Club) WHERE ( n. <em class="italic">_id_</em> =&#123;1&#125; )
 OPTIONAL MATCH(n)&#45;&#91;:LEAGUE&#93;&#45;&#62;(leagueNode)
 RETURN n as data, collect(DISTINCT leagueNode. <em class="italic">_id_</em> ) as leagueIds</pre></div><p class="paragraph"/>As you can see the <code>teams</code> association is not loaded in the query, and only the ID of the <code>league</code> association is retrieved. If you then iterate over the teams you will get a second query to obtain the teams:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">for</span>(team in club.teams) &#123;
     println team.name
@@ -155,18 +155,18 @@ RETURN n as data, collect(DISTINCT leagueNode. <em class="italic">_id_</em> ) as
 
 <h2 id="cypher">4.2 Querying with Cypher</h2>
 To query with raw Cypher queries you can use the built in <code>find</code> and <code>findAll</code> methods:<p class="paragraph"/> <div class="code"><pre>def club = Club.find(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')
- def clubs = Club.findAll(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results using <code>cypherStatic</code>:<p class="paragraph"/> <div class="code"><pre>Result result = Club.cypherStatic(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> When working with raw results, you can convert any <code>org.neo4j.graphdb.Node</code> into a domain instance using the <code>as</code> keyword:<p class="paragraph"/> <div class="code"><pre>Node myNode = &#8230;
+ def clubs = Club.findAll(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results use <code>cypherStatic</code>:<p class="paragraph"/> <div class="code"><pre>Result result = Club.cypherStatic(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> When working with raw results, you can convert any <code>org.neo4j.graphdb.Node</code> into a domain instance using the <code>as</code> keyword:<p class="paragraph"/> <div class="code"><pre>Node myNode = &#8230;
  Club club = myNode as Club</pre></div><p class="paragraph"/> You can also convert any <code>org.neo4j.graphdb.Result</code> instance to a list of domain classes:<p class="paragraph"/> <div class="code"><pre>Result result = &#8230;
   List&#60;Club&#62; clubs = result.toList(Club)</pre></div><p class="paragraph"/>
 
 
 <h2 id="indexing">4.3 Defining the Query Index</h2>
-To define which properties of you domain class should be indexed for querying you can do so in the mapping:<p class="paragraph"/><div class="code"><pre>class Club &#123;
+To define which properties of your domain class should be indexed for querying you can do so in the mapping:<p class="paragraph"/><div class="code"><pre>class Club &#123;
     <span class="java&#45;object">String</span> name<p class="paragraph"/>    &#8230;
     <span class="java&#45;keyword">static</span> mapping = &#123;
         name index:<span class="java&#45;keyword">true</span>
     &#125;
-&#125;</pre></div><p class="paragraph"/>On startup GORM will use Cypher to create indexes as follows:<p class="paragraph"/><div class="code"><pre>CREATE INDEX ON :Club(name)</pre></div><p class="paragraph"/>To define a unique index using <code>unique</code> instead:<p class="paragraph"/><div class="code"><pre>class Club &#123;
+&#125;</pre></div><p class="paragraph"/>On startup GORM will use Cypher to create indexes as follows:<p class="paragraph"/><div class="code"><pre>CREATE INDEX ON :Club(name)</pre></div><p class="paragraph"/>To define a unique index use <code>unique</code> instead:<p class="paragraph"/><div class="code"><pre>class Club &#123;
     <span class="java&#45;object">String</span> name<p class="paragraph"/>    &#8230;
     <span class="java&#45;keyword">static</span> mapping = &#123;
         name unique:<span class="java&#45;keyword">true</span>

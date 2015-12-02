@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2 Getting Started 5.0.0.RC1</title>
+    <title>2 Getting Started 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -39,7 +39,7 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0"><a href="../guide/stateless.html"><strong>5</strong><span>Stateless Mode</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../guide/lowLevelApi.html"><strong>6</strong><span>Using the Mongo Driver Directly</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/lowLevelApi.html"><strong>6</strong><span>Using the MongoDB Driver Directly</span></a>
                     </div>
                     
                     <div class="toc-item" style="margin-left:0"><a href="../guide/transactions.html"><strong>7</strong><span>Transactions</span></a>
@@ -86,7 +86,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -116,7 +116,7 @@ function addJsClass() {
                 
 
 <h1 id="gettingStarted">2 Getting Started</h1>
-To get started with GORM for Mongo you need configure it as a dependency in <code>build.gradle</code>:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
+To get started with GORM for MongoDB you need configure it as a dependency in <code>build.gradle</code>:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
 	compile 'org.grails.plugins:mongodb:VERSION'
 &#125;</pre></div><p class="paragraph"/>Note, in newer versions of Grails it may be require to enforce the necessary dependencies. If you get errors on startup it is likely due to a dependency problem. The following block will ensure the correct dependencies are in place:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
     compile <span class="java&#45;quote">"org.grails.plugins:mongodb:VERSION"</span>
@@ -126,7 +126,7 @@ To get started with GORM for Mongo you need configure it as a dependency in <cod
 The <code>spring-data-mongodb</code> is not required by GORM for MongoDB, but there is a bug in Spring Boot 1.3 M2 which means that if you are using the MongoDB driver with Grails 3.1 M2 you will get an exception without this dependency. This bug is resolved in Spring Boot 1.3 RC1.
 </blockquote><p class="paragraph"/>For Grails 2.x you need to modify <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
  compile ':mongodb:VERSION'
-&#125;</pre></div><p class="paragraph"/>With that done you need to set up a running MongoDB server. Refer to the <a href="https://docs.mongodb.org/manual/" target="blank">MongoDB Documentation</a> for an explanation on how to startup a Mongo instance. Once installed, starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above command executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>2015&#45;11&#45;18T19:38:50.073+0100 I JOURNAL  &#91;initandlisten&#93; journal dir=/data/db/journal
+&#125;</pre></div><p class="paragraph"/>With that done you need to set up a running MongoDB server. Refer to the <a href="https://docs.mongodb.org/manual/" target="blank">MongoDB Documentation</a> for an explanation on how to startup a MongoDB instance. Once installed, starting MongoDB is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above command executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>2015&#45;11&#45;18T19:38:50.073+0100 I JOURNAL  &#91;initandlisten&#93; journal dir=/data/db/journal
 2015&#45;11&#45;18T19:38:50.073+0100 I JOURNAL  &#91;initandlisten&#93; recover : no journal files present, no recovery needed
 2015&#45;11&#45;18T19:38:50.090+0100 I JOURNAL  &#91;durability&#93; Durability thread started
 2015&#45;11&#45;18T19:38:50.090+0100 I JOURNAL  &#91;journal writer&#93; Journal writer thread started
@@ -140,7 +140,7 @@ The <code>spring-data-mongodb</code> is not required by GORM for MongoDB, but th
 2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; build info: Darwin mci&#45;osx108&#45;11.build.10gen.cc 12.5.0 Darwin Kernel Version 12.5.0: Sun Sep 29 13:33:47 PDT 2013; root:xnu&#45;2050.48.12~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
 2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; allocator: system
 2015&#45;11&#45;18T19:38:50.090+0100 I CONTROL  &#91;initandlisten&#93; options: &#123;&#125;
-2015&#45;11&#45;18T19:38:50.176+0100 I NETWORK  &#91;initandlisten&#93; waiting <span class="java&#45;keyword">for</span> connections on port 27017</pre></div><p class="paragraph"/>As you can see the server is running on port 27017, but don't worry the Mongodb plugin for Grails will automatically configure itself to look for Mongodb on that port by default.<p class="paragraph"/>If you want to configure how Grails connects to Mongo then you can do so using the following settings in <code>grails-app/conf/application.yml</code>:<p class="paragraph"/><div class="code"><pre>grails:
+2015&#45;11&#45;18T19:38:50.176+0100 I NETWORK  &#91;initandlisten&#93; waiting <span class="java&#45;keyword">for</span> connections on port 27017</pre></div><p class="paragraph"/>As you can see the server is running on port 27017, but don't worry the MongoDB plugin for Grails will automatically configure itself to look for MongoDB on that port by default.<p class="paragraph"/>If you want to configure how Grails connects to MongoDB then you can do so using the following settings in <code>grails-app/conf/application.yml</code>:<p class="paragraph"/><div class="code"><pre>grails:
     mongodb:
         host: <span class="java&#45;quote">"localhost"</span>
         port: 27017
@@ -161,31 +161,31 @@ If you have both the Hibernate and Mongo plugins installed then by default all c
 
 
 <h2 id="advancedConfig">2.3 Advanced Configuration</h2>
-<h4>Mongo Database Connection Configuration</h4><p class="paragraph"/>As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the <code>grails-app/conf/application.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
-    mongo &#123;
+<h4>Mongo Database Connection Configuration</h4><p class="paragraph"/>As mentioned the GORM for MongoDB plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the <code>grails-app/conf/application.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    mongodb &#123;
         host = <span class="java&#45;quote">"localhost"</span>
         port = 27017
         username = <span class="java&#45;quote">"blah"</span>
         password = <span class="java&#45;quote">"blah"</span>
         databaseName = <span class="java&#45;quote">"foo"</span>
     &#125;
-&#125;</pre></div><p class="paragraph"/>The <code>databaseName</code> setting configures the default database name. If not specified the <code>databaseName</code> will default to the name of your application.<p class="paragraph"/>You can also customize the Mongo connection settings using an <code>options</code> block:<p class="paragraph"/><div class="code"><pre>grails &#123;
-    mongo &#123;
+&#125;</pre></div><p class="paragraph"/>The <code>databaseName</code> setting configures the default database name. If not specified the <code>databaseName</code> will default to the name of your application.<p class="paragraph"/>You can also customize the MongoDB connection settings using an <code>options</code> block:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    mongodb &#123;
         options &#123;
             autoConnectRetry = <span class="java&#45;keyword">true</span>
             connectTimeout = 300
         &#125;
     &#125;
 &#125;</pre></div><p class="paragraph"/>Available options and their descriptions are defined in the <a href="http://api.mongodb.org/java/current/com/mongodb/MongoClientOptions.html" target="blank">MongoOptions</a> javadoc.<p class="paragraph"/>In production scenarios you will typically use more than one MongoDB server in either <a href="http://docs.mongodb.org/manual/core/master-slave/" target="blank">master/slave</a> or <a href="http://docs.mongodb.org/manual/replication/" target="blank">replication</a> scenarios. The plugin allows you to configure <a href="http://docs.mongodb.org/manual/tutorial/deploy-replica-set/" target="blank">replica sets</a>:<p class="paragraph"/><div class="code"><pre>grails &#123;
-    mongo &#123;
+    mongodb &#123;
         replicaSet = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
     &#125;
 &#125;</pre></div><p class="paragraph"/>The replica sets are defined using a list of strings that conform to the MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DBAddress.html" target="blank">DBAddress</a> specification.<p class="paragraph"/><h4>MongoDB Connection Strings</h4><p class="paragraph"/>Since 2.0, you can also use MongoDB <a href="http://docs.mongodb.org/manual/reference/connection-string/" target="blank">connection strings</a> to configure the connection:<p class="paragraph"/><div class="code"><pre>grails &#123;
-    mongo &#123;
+    mongodb &#123;
         connectionString = <span class="java&#45;quote">"mongodb://localhost/mydb"</span>
     &#125;
 &#125;</pre></div><p class="paragraph"/>Using MongoDB connection strings is currently the most flexible and recommended way to configure MongoDB connections.<p class="paragraph"/><h4>SSL Connections</h4><p class="paragraph"/>You can configure SSL connections by setting <code>ssl</code> to true in the <code>options</code> block:<p class="paragraph"/><div class="code"><pre>grails &#123;
-    mongo &#123;
+    mongodb &#123;
         &#8230;
         options &#123;
             ssl = <span class="java&#45;keyword">true</span>
@@ -195,7 +195,7 @@ If you have both the Hibernate and Mongo plugins installed then by default all c
 &#125;</pre></div><p class="paragraph"/><blockquote class="note">
 Note you can also configure the <code>SSLSocketFactory</code> manually if necessary. All settings within the <code>options</code> block are propagated to the underlying <a href="http://docs.spring.io/spring-data/mongodb/docs/1.4.0.RELEASE/api/org/springframework/data/mongodb/core/MongoOptionsFactoryBean.html" target="blank">MongoOptionsFactoryBean</a>
 </blockquote><p class="paragraph"/><h4>Configuration Options Guide</h4><p class="paragraph"/>Below is a complete example showing all configuration options:<p class="paragraph"/><div class="code"><pre>grails &#123;
-    mongo &#123;
+    mongodb &#123;
         databaseName = <span class="java&#45;quote">"myDb"</span> // the <span class="java&#45;keyword">default</span> database name
         host <span class="java&#45;quote">"localhost"</span> // the host to connect to
         port = 27017 // the port to connect to
@@ -221,7 +221,7 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
         &#125;
     &#125;
 &#125;</pre></div><p class="paragraph"/>
-<h4>Global Mapping Configuration</h4><p class="paragraph"/>Using the <code>grails.mongo.default.mapping</code> setting in <code>grails-app/conf/application.groovy</code> you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use <code>DBRefs</code> in your association mappings. For example, the following configuration will disable optimistic locking globally and use <code>DBRefs</code> for all properties:<p class="paragraph"/><div class="code"><pre>grails.mongo.<span class="java&#45;keyword">default</span>.mapping = &#123;
+<h4>Global Mapping Configuration</h4><p class="paragraph"/>Using the <code>grails.mongodb.default.mapping</code> setting in <code>grails-app/conf/application.groovy</code> you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use <code>DBRefs</code> in your association mappings. For example, the following configuration will disable optimistic locking globally and use <code>DBRefs</code> for all properties:<p class="paragraph"/><div class="code"><pre>grails.mongodb.<span class="java&#45;keyword">default</span>.mapping = &#123;
     version <span class="java&#45;keyword">false</span>
     '&#42;'(reference:<span class="java&#45;keyword">true</span>)
 &#125;</pre></div><p class="paragraph"/>The <code>*</code> method is used to indicate that the setting applies to all properties.
@@ -240,7 +240,7 @@ class Application &#123;
     &#125;
 &#125;</pre></div><p class="paragraph"/><blockquote class="note">
 Using <code>ComponentScan</code> without a value results in Boot scanning for classes in the same package or any package nested within the <code>Application</code> class package.
-If you GORM entities are in a different package specify the package name as the value of the <code>ComponentScan</code> annotation.
+If your GORM entities are in a different package specify the package name as the value of the <code>ComponentScan</code> annotation.
 </blockquote><p class="paragraph"/>Finally create your GORM entities and ensure they are annotated with <code>grails.persistence.Entity</code>:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.persistence.&#42;<p class="paragraph"/>@Entity
 class Person &#123;
     <span class="java&#45;object">String</span> firstName
@@ -252,7 +252,7 @@ class Person &#123;
 If you wish to use GORM for MongoDB outside of a Grails application you should declare the necessary dependencies, for example in Gradle:<p class="paragraph"/><div class="code"><pre>compile <span class="java&#45;quote">"org.grails:grails&#45;datastore&#45;gorm&#45;mongodb:VERSION"</span></pre></div><p class="paragraph"/>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation:<p class="paragraph"/><div class="code"><pre>@Entity
 class Person &#123;
     <span class="java&#45;object">String</span> name
-&#125;</pre></div><p class="paragraph"/>Then you need to place the bootstrap logic somewhere in your application which uses <code>MongoDbDataStoreSpringInitializer</code>:<p class="paragraph"/><div class="code"><pre>def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(Person)
+&#125;</pre></div><p class="paragraph"/>Then you need to place the bootstrap logic somewhere in the loading sequence of your application which uses <code>MongoDbDataStoreSpringInitializer</code>:<p class="paragraph"/><div class="code"><pre>def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(Person)
 def applicationContext = initializer.configure()<p class="paragraph"/>println Person.count()</pre></div><p class="paragraph"/>For configuration you can either pass a map or an instance of the <code>org.springframework.core.env.PropertyResolver</code> interface:<p class="paragraph"/><div class="code"><pre>def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(&#91;'grails.mongodb.url':'http://myserver'&#93;, Person)
 def applicationContext = initializer.configure()<p class="paragraph"/>println Person.count()</pre></div><p class="paragraph"/>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:<p class="paragraph"/><div class="code"><pre>ApplicationContext myApplicationContext = &#8230;
 def initializer = <span class="java&#45;keyword">new</span> MongoDbDataStoreSpringInitializer(myApplicationContext.getEnvironment(), Person)

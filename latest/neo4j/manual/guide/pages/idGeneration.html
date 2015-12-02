@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.1 Neo4j ID generators 5.0.0.RC1</title>
+    <title>3.1 Neo4j ID generators 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -77,7 +77,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -90,13 +90,13 @@ function addJsClass() {
 GORM by default uses a custom identity generator based on the Snowflake algorithm and stores the generated identifier in a property of each Neo4j node called <code> <em class="italic">_id_</em> </code>.<p class="paragraph"/>This has the advantage of enabling GORM to batch insert operations into a single CREATE cypher statement, hence why it is the default.<p class="paragraph"/>However, if you prefer to use native Neo4j node identifiers then you can do so by changing the generator used in the mapping:<p class="paragraph"/><div class="code"><pre>class Club &#123;<p class="paragraph"/>    &#8230;
     <span class="java&#45;keyword">static</span> mapping = &#123;
         id generator:'<span class="java&#45;keyword">native</span>'
-    &#125;<p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>This will instead use the Neo4j node identifier as the object identifier with the downside being that GORM has to execute individual CREATE  statements for each new object saved, similar to the way GORM for Hibernate has to perform a SQL INSERT if the id generation strategy is a auto-increment column.<p class="paragraph"/>This disadvantage can be worked around by using the <code>saveAll</code> method to save multiple domain classes at once:<p class="paragraph"/><div class="code"><pre>Club.saveAll(&#91;
+    &#125;<p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>This will instead use the Neo4j node identifier as the object identifier with the downside being that GORM has to execute individual CREATE  statements for each new object saved, similar to the way GORM for Hibernate has to perform a SQL INSERT if the id generation strategy is an auto-increment column.<p class="paragraph"/>This disadvantage can be worked around by using the <code>saveAll</code> method to save multiple domain classes at once:<p class="paragraph"/><div class="code"><pre>Club.saveAll(&#91;
     <span class="java&#45;keyword">new</span> Club(name:<span class="java&#45;quote">"Manchester United"</span>),
     <span class="java&#45;keyword">new</span> Club(name:<span class="java&#45;quote">"Arsenal"</span>)
-&#93;)</pre></div><p class="paragraph"/>If you wish to globally change id generation then you can do so in <code>grails-app/conf/application.groovy</code> (@Config.groovy in Grails 2.x):<p class="paragraph"/>
+&#93;)</pre></div><p class="paragraph"/>If you wish to globally change id generation then you can do so in <code>grails-app/conf/application.groovy</code> (<code>Config.groovy</code> in Grails 2.x):<p class="paragraph"/>
 <div class="code"><pre>grails.neo4j.<span class="java&#45;keyword">default</span>.mapping = &#123;
     id generator:'<span class="java&#45;keyword">native</span>'
-&#125;</pre></div><p class="paragraph"/>In addition, if you wish to use a custom identity generation strategy you can do specify a class name that implements the <code>IdGenerator</code> interface:<p class="paragraph"/><div class="code"><pre>grails.neo4j.<span class="java&#45;keyword">default</span>.mapping = &#123;
+&#125;</pre></div><p class="paragraph"/>In addition, if you wish to use a custom identity generation strategy you can do so by specifying a class name that implements the <code>IdGenerator</code> interface:<p class="paragraph"/><div class="code"><pre>grails.neo4j.<span class="java&#45;keyword">default</span>.mapping = &#123;
     id generator:'com.foo.MyIdGenerator'
 &#125;</pre></div><p class="paragraph"/>
 

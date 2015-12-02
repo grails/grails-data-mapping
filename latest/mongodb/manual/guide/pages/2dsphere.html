@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.5.1 Geospacial 2D Sphere Support 5.0.0.RC1</title>
+    <title>3.5.1 Geospacial 2D Sphere Support 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -39,7 +39,7 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0"><a href="../../guide/stateless.html"><strong>5</strong><span>Stateless Mode</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../../guide/lowLevelApi.html"><strong>6</strong><span>Using the Mongo Driver Directly</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/lowLevelApi.html"><strong>6</strong><span>Using the MongoDB Driver Directly</span></a>
                     </div>
                     
                     <div class="toc-item" style="margin-left:0"><a href="../../guide/transactions.html"><strong>7</strong><span>Transactions</span></a>
@@ -86,7 +86,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -98,14 +98,14 @@ function addJsClass() {
 <h2 id="2dsphere">3.5.1 Geospacial 2D Sphere Support</h2>
 <h4>Using a 2dsphere Index</h4><p class="paragraph"/>MongoDB's <a href="http://docs.mongodb.org/manual/core/2dsphere/" target="blank">2dsphere indexes</a> support queries that calculate geometries on an earth-like sphere.<p class="paragraph"/>Although you can use coordinate pairs in a 2dsphere index, they are considered legacy by the MongoDB documentation and it is recommended you store data using <a href="http://geojson.org/geojson-spec.html#id2" target="blank">GeoJSON Point</a> types.<p class="paragraph"/><blockquote class="warning">
 MongoDB legacy coordinate pairs are in latitude / longitude order, whilst GeoJSON points are stored in longitude / latitude order!
-</blockquote><p class="paragraph"/>To support this GORM for MongoDB features a special type, <code>grails.mongodb.geo.Point</code>, that can be use within domain classes to store geospacial data:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.mongodb.geo.&#42;
+</blockquote><p class="paragraph"/>To support this GORM for MongoDB features a special type, <code>grails.mongodb.geo.Point</code>, that can be used within domain classes to store geospacial data:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.mongodb.geo.&#42;
 &#8230;
 class Restaurant &#123;
     ObjectId id
     Point location<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
         location geoIndex:'2dsphere'
     &#125;
-&#125;</pre></div><p class="paragraph"/>The <code>Point</code> type gets persisted as a <a href="http://geojson.org/geojson-spec.html#id2" target="blank">GeoJSON Point</a>. A <code>Point</code> can be constructed from coordinate represented in longitude and latitude (the inverse of 2d index location coordinates!). Example:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">new</span> Restaurant(id:<span class="java&#45;quote">"Dan's Burgers"</span>, location: <span class="java&#45;keyword">new</span> Point(50, 50)).save(flush:<span class="java&#45;keyword">true</span>)<p class="paragraph"/>Restaurant.findByLocation(<span class="java&#45;keyword">new</span> Point(50,50))</pre></div><p class="paragraph"/><h4>Querying a 2sphere Index</h4><p class="paragraph"/>Once the 2sphere index is in place you can use various MongoDB plugin specific dynamic finders to query, including:
+&#125;</pre></div><p class="paragraph"/>The <code>Point</code> type gets persisted as a <a href="http://geojson.org/geojson-spec.html#id2" target="blank">GeoJSON Point</a>. A <code>Point</code> can be constructed from coordinates represented in longitude and latitude (the inverse of 2d index location coordinates!). Example:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">new</span> Restaurant(id:<span class="java&#45;quote">"Dan's Burgers"</span>, location: <span class="java&#45;keyword">new</span> Point(50, 50)).save(flush:<span class="java&#45;keyword">true</span>)<p class="paragraph"/>Restaurant.findByLocation(<span class="java&#45;keyword">new</span> Point(50,50))</pre></div><p class="paragraph"/><h4>Querying a 2dsphere Index</h4><p class="paragraph"/>Once the 2dsphere index is in place you can use various MongoDB plugin specific dynamic finders to query, including:
 <ul class="star">
 <li><strong class="bold">findBy...GeoWithin</strong> - Find out whether a <code>Point</code> is within a <code>Box</code>, <code>Polygon</code>, <code>Circle</code> or <code>Sphere</code></li>
 <li><strong class="bold">findBy...GeoIntersects</strong> - Find out whether a <code>Point</code> is within a <code>Box</code>, <code>Polygon</code>, <code>Circle</code> or <code>Sphere</code></li>

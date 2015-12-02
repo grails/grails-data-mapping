@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2.3 Advanced Configuration 5.0.0.RC1</title>
+    <title>2.3 Advanced Configuration 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -77,7 +77,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -92,7 +92,7 @@ As mentioned the GORM for Neo4j plugin will configure all the defaults for you, 
         type = <span class="java&#45;quote">"embedded"</span>
         location = <span class="java&#45;quote">"/<span class="java&#45;keyword">var</span>/neo4j"</span>
     &#125;
-&#125;</pre></div><p class="paragraph"/>The <code>type</code> provides currently the following choices:<p class="paragraph"/><h4>type = "embedded"</h4><p class="paragraph"/>Runs the Neo4j in embedded mode, Neo4j and Tomcat use the same JVM. No seperate setup outside the Grails application is required. <code>location</code> specifies the directory where Neo4j stores its data.<p class="paragraph"/>Example:
+&#125;</pre></div><p class="paragraph"/>The <code>type</code> provides currently the following choices:<p class="paragraph"/><h4>type = "embedded"</h4><p class="paragraph"/>Runs Neo4j in embedded mode, Neo4j and Grails use the same JVM. No seperate setup outside the Grails application is required. <code>location</code> specifies the directory where Neo4j stores its data.<p class="paragraph"/>Example:
 <div class="code"><pre>grails &#123;
     neo4j &#123;
         type = <span class="java&#45;quote">"embedded"</span>

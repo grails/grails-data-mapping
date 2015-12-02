@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2 Getting Started 5.0.0.RC1</title>
+    <title>2 Getting Started 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -71,7 +71,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -95,7 +95,7 @@ function addJsClass() {
                 
 
 <h1 id="gettingStarted">2 Getting Started</h1>
-To use GORM 5.x and above in Grails 3.x to use GORM for Hibernate 4 you can specify the following configuration in <code>build.gradle</code>:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
+To use GORM 5.x for Hibernate 4 in Grails 3.x you can specify the following configuration in <code>build.gradle</code>:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
     compile <span class="java&#45;quote">"org.grails.plugins:hibernate4:VERSION"</span>
     compile <span class="java&#45;quote">"org.hibernate:hibernate&#45;ehcache"</span>
 &#125;</pre></div><p class="paragraph"/>Where <code>VERSION</code> is 5.0.0 or above.
@@ -115,17 +115,17 @@ dependencies &#123;
     compile <span class="java&#45;quote">"org.grails.plugins:hibernate5:$gormVersion"</span>
     compile <span class="java&#45;quote">"org.hibernate:hibernate&#45;core:5.0.3.Final"</span>
     compile <span class="java&#45;quote">"org.hibernate:hibernate&#45;ehcache:5.0.3.Final"</span>
-&#125;</pre></div><p class="paragraph"/>The <code>resolutionStrategy</code> is needed to enforce and upgrade to Spring 4.2.x which is required by Hibernate 5 support. This block is not needed if you are using Grails 3.1 or above.<p class="paragraph"/>To use Hibernate 3 the following configuration is needed:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
+&#125;</pre></div><p class="paragraph"/>The <code>resolutionStrategy</code> is needed to enforce an upgrade to Spring 4.2.x which is required by Hibernate 5 support. This block is not needed if you are using Grails 3.1 or above.<p class="paragraph"/>To use Hibernate 3 the following configuration is needed:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
     compile <span class="java&#45;quote">"org.grails.plugins:hibernate3:VERSION"</span>
     compile <span class="java&#45;quote">"org.hibernate:hibernate&#45;core:3.6.10.Final"</span>
     compile <span class="java&#45;quote">"org.hibernate:hibernate&#45;ehcache:3.6.10.Final"</span>
-&#125;</pre></div><p class="paragraph"/>Since GORM 5, for Grails 2.x only the Hibernate 4 plugin is supported and can be added with the following configuration in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
+&#125;</pre></div><p class="paragraph"/>For Grails 2.x only the Hibernate 4 plugin is supported and can be added with the following configuration in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
  compile ':hibernate4:VERSION'
 &#125;</pre></div>
 
 
 <h2 id="springBoot">2.2 Using GORM in Spring Boot</h2>
-To use GORM for Hibernate in Spring Boot add the necessary dependencies to your Boot application:<p class="paragraph"/><div class="code"><pre>compile(<span class="java&#45;quote">"org.grails:gorm&#45;hibernate4&#45;spring&#45;boot:VERSION"</span>)</pre></div><p class="paragraph"/>Ensure your Boot <code>Application</code> class is annotated with <code>ComponentScan</code>, example:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> org.springframework.boot.SpringApplication
+To use GORM for Hibernate in Spring Boot add the necessary dependencies to your Boot application:<p class="paragraph"/><div class="code"><pre>compile(<span class="java&#45;quote">"org.grails:gorm&#45;hibernate4&#45;spring&#45;boot:VERSION"</span>)</pre></div><p class="paragraph"/>Ensure your Boot <code>Application</code> class is annotated with <code>ComponentScan</code>, for example:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> org.springframework.boot.SpringApplication
 <span class="java&#45;keyword">import</span> org.springframework.boot.autoconfigure.EnableAutoConfiguration
 <span class="java&#45;keyword">import</span> org.springframework.context.annotation.&#42;<p class="paragraph"/>@Configuration
 @EnableAutoConfiguration
@@ -136,7 +136,7 @@ class Application &#123;
     &#125;
 &#125;</pre></div><p class="paragraph"/><blockquote class="note">
 Using <code>ComponentScan</code> without a value results in Boot scanning for classes in the same package or any package nested within the <code>Application</code> class package.
-If you GORM entities are in a different package specify the package name as the value of the <code>ComponentScan</code> annotation.
+If your GORM entities are in a different package specify the package name as the value of the <code>ComponentScan</code> annotation.
 </blockquote><p class="paragraph"/>Finally create your GORM entities and ensure they are annotated with <code>grails.persistence.Entity</code>:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.persistence.&#42;<p class="paragraph"/>@Entity
 class Person &#123;
     <span class="java&#45;object">String</span> firstName

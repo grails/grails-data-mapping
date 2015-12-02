@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.2 Understanding Association Mapping 5.0.0.RC1</title>
+    <title>3.2 Understanding Association Mapping 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -77,7 +77,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -94,7 +94,7 @@ GORM for Neo4j will create Neo4j relationships between nodes for you based on th
 class Pet &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> belongsTo = &#91;owner:Owner&#93;
-&#125;</pre></div><p class="paragraph"/>Will generate a Cypher relationship creation query as follows:<p class="paragraph"/><div class="code"><pre>MATCH (from:Owner &#123; <em class="italic">_id_</em> :&#123;start&#125;&#125;), (to:Pet) WHERE to. <em class="italic">_id_</em>  IN &#123;end&#125; CREATE (from)&#45;&#91;r:PETS&#93;&#45;&#62;(to)</pre></div><p class="paragraph"/>As you can see from the query the relationships is defined as <code>(from)-r:PETS-&#62;(to)</code>, with the direction of the association being dedicated by who "owns" the association. Since <code>Pet</code> defines a <code>belongTo</code> association to <code>Owner</code>, this means that <code>Owner</code> owns the association and the relationship is from <code>Owner</code> to <code>Pet</code>.<p class="paragraph"/>For more information on defining relationships with GORM, see the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#gormAssociation" target="blank">corresponding guide in the GORM documentation</a>.
+&#125;</pre></div><p class="paragraph"/>Will generate a Cypher relationship creation query as follows:<p class="paragraph"/><div class="code"><pre>MATCH (from:Owner &#123; <em class="italic">_id_</em> :&#123;start&#125;&#125;), (to:Pet) WHERE to. <em class="italic">_id_</em>  IN &#123;end&#125; CREATE (from)&#45;&#91;r:PETS&#93;&#45;&#62;(to)</pre></div><p class="paragraph"/>As you can see from the query the relationship is defined as <code>(from)-r:PETS-&#62;(to)</code>, with the direction of the association defined by who "owns" the association. Since <code>Pet</code> defines a <code>belongTo</code> association to <code>Owner</code>, this means that <code>Owner</code> owns the association and the relationship is from <code>Owner</code> to <code>Pet</code>.<p class="paragraph"/>For more information on defining relationships with GORM, see the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#gormAssociation" target="blank">corresponding guide in the GORM documentation</a>.
 
 
 

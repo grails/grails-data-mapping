@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>4.2 Querying with Cypher 5.0.0.RC1</title>
+    <title>4.2 Querying with Cypher 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -77,7 +77,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -88,7 +88,7 @@ function addJsClass() {
 
 <h2 id="cypher">4.2 Querying with Cypher</h2>
 To query with raw Cypher queries you can use the built in <code>find</code> and <code>findAll</code> methods:<p class="paragraph"/> <div class="code"><pre>def club = Club.find(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')
- def clubs = Club.findAll(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results using <code>cypherStatic</code>:<p class="paragraph"/> <div class="code"><pre>Result result = Club.cypherStatic(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> When working with raw results, you can convert any <code>org.neo4j.graphdb.Node</code> into a domain instance using the <code>as</code> keyword:<p class="paragraph"/> <div class="code"><pre>Node myNode = &#8230;
+ def clubs = Club.findAll(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results use <code>cypherStatic</code>:<p class="paragraph"/> <div class="code"><pre>Result result = Club.cypherStatic(<span class="java&#45;quote">"MATCH n where n.name = &#123;1&#125; RETURN n"</span>, 'FC Bayern Muenchen')</pre></div><p class="paragraph"/> When working with raw results, you can convert any <code>org.neo4j.graphdb.Node</code> into a domain instance using the <code>as</code> keyword:<p class="paragraph"/> <div class="code"><pre>Node myNode = &#8230;
  Club club = myNode as Club</pre></div><p class="paragraph"/> You can also convert any <code>org.neo4j.graphdb.Result</code> instance to a list of domain classes:<p class="paragraph"/> <div class="code"><pre>Result result = &#8230;
   List&#60;Club&#62; clubs = result.toList(Club)</pre></div><p class="paragraph"/>
 

@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>5 Enhancements to Neo4j core API 5.0.0.RC1</title>
+    <title>5 Enhancements to Neo4j core API 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -75,7 +75,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -85,14 +85,11 @@ function addJsClass() {
                 
 
 <h1 id="neo4jEnhancements">5 Enhancements to Neo4j core API</h1>
-Neo4j Grails contains some enhancements to the Neo4j core API.<p class="paragraph"/><h4>setting properties on nodes/relationships</h4><p class="paragraph"/>Assigning an arbitrary property onto a Neo4j node or relationship can be simply done by using Groovy's property
+Neo4j Grails contains some enhancements to the Neo4j core API.<p class="paragraph"/><h4>Setting properties on nodes/relationships</h4><p class="paragraph"/>Assigning an arbitrary property onto a Neo4j node or relationship can be simply done by using Groovy's property
 mechanism:
 <div class="code"><pre>def node = graphDatabaseService.createNode()
-node.myProperty = myValue</pre></div><p class="paragraph"/>The same words for getting properties:<p class="paragraph"/><div class="code"><pre>def node = &#8230;
-def value = node.myProperty</pre></div><p class="paragraph"/><blockquote class="note">
-There is a important convention: when the property ends with "Date" then a date type is assumed. The node property then
-helds respective millis.
-</blockquote><p class="paragraph"/>
+node.myProperty = myValue</pre></div><p class="paragraph"/>The same applies for getting properties:<p class="paragraph"/><div class="code"><pre>def node = &#8230;
+def value = node.myProperty</pre></div><p class="paragraph"/>
 
 
                 <div style="clear:both;margin-top:15px;"></div>

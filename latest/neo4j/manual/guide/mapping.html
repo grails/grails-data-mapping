@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3 Mapping domain classes to Neo4j node space 5.0.0.RC1</title>
+    <title>3 Mapping domain classes to Neo4j node space 5.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -77,7 +77,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC1</p>
+                    <p><strong>Version:</strong> 5.0.0.RC2</p>
 
                     
                 </div>
@@ -118,13 +118,13 @@ If you want to see what queries GORM for Neo4j generates, enabling logging for t
 GORM by default uses a custom identity generator based on the Snowflake algorithm and stores the generated identifier in a property of each Neo4j node called <code> <em class="italic">_id_</em> </code>.<p class="paragraph"/>This has the advantage of enabling GORM to batch insert operations into a single CREATE cypher statement, hence why it is the default.<p class="paragraph"/>However, if you prefer to use native Neo4j node identifiers then you can do so by changing the generator used in the mapping:<p class="paragraph"/><div class="code"><pre>class Club &#123;<p class="paragraph"/>    &#8230;
     <span class="java&#45;keyword">static</span> mapping = &#123;
         id generator:'<span class="java&#45;keyword">native</span>'
-    &#125;<p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>This will instead use the Neo4j node identifier as the object identifier with the downside being that GORM has to execute individual CREATE  statements for each new object saved, similar to the way GORM for Hibernate has to perform a SQL INSERT if the id generation strategy is a auto-increment column.<p class="paragraph"/>This disadvantage can be worked around by using the <code>saveAll</code> method to save multiple domain classes at once:<p class="paragraph"/><div class="code"><pre>Club.saveAll(&#91;
+    &#125;<p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>This will instead use the Neo4j node identifier as the object identifier with the downside being that GORM has to execute individual CREATE  statements for each new object saved, similar to the way GORM for Hibernate has to perform a SQL INSERT if the id generation strategy is an auto-increment column.<p class="paragraph"/>This disadvantage can be worked around by using the <code>saveAll</code> method to save multiple domain classes at once:<p class="paragraph"/><div class="code"><pre>Club.saveAll(&#91;
     <span class="java&#45;keyword">new</span> Club(name:<span class="java&#45;quote">"Manchester United"</span>),
     <span class="java&#45;keyword">new</span> Club(name:<span class="java&#45;quote">"Arsenal"</span>)
-&#93;)</pre></div><p class="paragraph"/>If you wish to globally change id generation then you can do so in <code>grails-app/conf/application.groovy</code> (@Config.groovy in Grails 2.x):<p class="paragraph"/>
+&#93;)</pre></div><p class="paragraph"/>If you wish to globally change id generation then you can do so in <code>grails-app/conf/application.groovy</code> (<code>Config.groovy</code> in Grails 2.x):<p class="paragraph"/>
 <div class="code"><pre>grails.neo4j.<span class="java&#45;keyword">default</span>.mapping = &#123;
     id generator:'<span class="java&#45;keyword">native</span>'
-&#125;</pre></div><p class="paragraph"/>In addition, if you wish to use a custom identity generation strategy you can do specify a class name that implements the <code>IdGenerator</code> interface:<p class="paragraph"/><div class="code"><pre>grails.neo4j.<span class="java&#45;keyword">default</span>.mapping = &#123;
+&#125;</pre></div><p class="paragraph"/>In addition, if you wish to use a custom identity generation strategy you can do so by specifying a class name that implements the <code>IdGenerator</code> interface:<p class="paragraph"/><div class="code"><pre>grails.neo4j.<span class="java&#45;keyword">default</span>.mapping = &#123;
     id generator:'com.foo.MyIdGenerator'
 &#125;</pre></div><p class="paragraph"/>
 
@@ -138,12 +138,12 @@ GORM for Neo4j will create Neo4j relationships between nodes for you based on th
 class Pet &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> belongsTo = &#91;owner:Owner&#93;
-&#125;</pre></div><p class="paragraph"/>Will generate a Cypher relationship creation query as follows:<p class="paragraph"/><div class="code"><pre>MATCH (from:Owner &#123; <em class="italic">_id_</em> :&#123;start&#125;&#125;), (to:Pet) WHERE to. <em class="italic">_id_</em>  IN &#123;end&#125; CREATE (from)&#45;&#91;r:PETS&#93;&#45;&#62;(to)</pre></div><p class="paragraph"/>As you can see from the query the relationships is defined as <code>(from)-r:PETS-&#62;(to)</code>, with the direction of the association being dedicated by who "owns" the association. Since <code>Pet</code> defines a <code>belongTo</code> association to <code>Owner</code>, this means that <code>Owner</code> owns the association and the relationship is from <code>Owner</code> to <code>Pet</code>.<p class="paragraph"/>For more information on defining relationships with GORM, see the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#gormAssociation" target="blank">corresponding guide in the GORM documentation</a>.
+&#125;</pre></div><p class="paragraph"/>Will generate a Cypher relationship creation query as follows:<p class="paragraph"/><div class="code"><pre>MATCH (from:Owner &#123; <em class="italic">_id_</em> :&#123;start&#125;&#125;), (to:Pet) WHERE to. <em class="italic">_id_</em>  IN &#123;end&#125; CREATE (from)&#45;&#91;r:PETS&#93;&#45;&#62;(to)</pre></div><p class="paragraph"/>As you can see from the query the relationship is defined as <code>(from)-r:PETS-&#62;(to)</code>, with the direction of the association defined by who "owns" the association. Since <code>Pet</code> defines a <code>belongTo</code> association to <code>Owner</code>, this means that <code>Owner</code> owns the association and the relationship is from <code>Owner</code> to <code>Pet</code>.<p class="paragraph"/>For more information on defining relationships with GORM, see the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#gormAssociation" target="blank">corresponding guide in the GORM documentation</a>.
 
 
 
 <h2 id="labelStrategy">3.3 Customizing the Label Strategy</h2>
-The default strategy for defining the labels is to use the class name, however the strategy to define labels for a given node is completely configurable. For example you can use static mapping to define you labels:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+The default strategy for defining labels is to use the class name, however the strategy to define labels for a given node is completely configurable. For example you can use static mapping to define you labels:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     <span class="java&#45;keyword">static</span> mapping = &#123;
         labels <span class="java&#45;quote">"Person"</span>, <span class="java&#45;quote">"People"</span>
     &#125;
@@ -165,7 +165,7 @@ Neo4j is a schemaless database. This means that, unlike SQL where you can only h
     <span class="java&#45;object">String</span> name
  &#125;</pre></div><p class="paragraph"/> You can set both the statically defined <code>name</code> property, but also any arbitrary number of dynamic properties using the subscript operator in Groovy:<p class="paragraph"/>  <div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Plant(name:<span class="java&#45;quote">"Carrot"</span>)
   p&#91;'goesInPatch'&#93; = <span class="java&#45;keyword">true</span>
-  p.save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>  Any simply properties can be included, however if you wish have dynamic associations you can as well by modifying the mapping:<p class="paragraph"/> <div class="code"><pre>class Plant &#123;
+  p.save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>  Any simple properties can be included, however if you wish to have dynamic associations you can as well by modifying the mapping:<p class="paragraph"/> <div class="code"><pre>class Plant &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> mapping = &#123;
         dynamicAssociations <span class="java&#45;keyword">true</span>
