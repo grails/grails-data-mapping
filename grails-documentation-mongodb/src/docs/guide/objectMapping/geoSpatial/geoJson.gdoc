@@ -8,7 +8,7 @@ class Entry {
     Shape shape
 
     static mapping = {
-        location geoIndex:'2dsphere'
+        shape geoIndex:'2dsphere'
     }
 }
 ...
