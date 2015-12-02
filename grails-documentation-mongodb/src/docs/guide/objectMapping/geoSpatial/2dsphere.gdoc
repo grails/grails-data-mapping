@@ -8,7 +8,7 @@ Although you can use coordinate pairs in a 2dsphere index, they are considered l
 MongoDB legacy coordinate pairs are in latitude / longitude order, whilst GeoJSON points are stored in longitude / latitude order!
 {warning}
 
-To support this GORM for MongoDB features a special type, @grails.mongodb.geo.Point@, that can be use within domain classes to store geospacial data:
+To support this GORM for MongoDB features a special type, @grails.mongodb.geo.Point@, that can be used within domain classes to store geospacial data:
 
 {code}
 import grails.mongodb.geo.*
@@ -23,7 +23,7 @@ class Restaurant {
 }
 {code}
 
-The @Point@ type gets persisted as a [GeoJSON Point|http://geojson.org/geojson-spec.html#id2]. A @Point@ can be constructed from coordinate represented in longitude and latitude (the inverse of 2d index location coordinates!). Example:
+The @Point@ type gets persisted as a [GeoJSON Point|http://geojson.org/geojson-spec.html#id2]. A @Point@ can be constructed from coordinates represented in longitude and latitude (the inverse of 2d index location coordinates!). Example:
 
 {code}
 new Restaurant(id:"Dan's Burgers", location: new Point(50, 50)).save(flush:true)
@@ -31,9 +31,9 @@ new Restaurant(id:"Dan's Burgers", location: new Point(50, 50)).save(flush:true)
 Restaurant.findByLocation(new Point(50,50))
 {code}
 
-h4. Querying a 2sphere Index
+h4. Querying a 2dsphere Index
 
-Once the 2sphere index is in place you can use various MongoDB plugin specific dynamic finders to query, including:
+Once the 2dsphere index is in place you can use various MongoDB plugin specific dynamic finders to query, including:
 
 * *findBy...GeoWithin* - Find out whether a @Point@ is within a @Box@, @Polygon@, @Circle@ or @Sphere@
 * *findBy...GeoIntersects* - Find out whether a @Point@ is within a @Box@, @Polygon@, @Circle@ or @Sphere@

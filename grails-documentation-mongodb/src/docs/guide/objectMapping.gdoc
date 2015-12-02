@@ -1,6 +1,6 @@
 h4. Basic Mapping
 
-The way GORM for Mongo works is to map each domain class to a Mongo collection. For example given a domain class such as:
+The way GORM for MongoDB works is to map each domain class to a Mongo collection. For example given a domain class such as:
 
 {code}
 class Person {
@@ -10,11 +10,11 @@ class Person {
 }
 {code}
 
-This will map onto a Mongo [DBCollection|http://api.mongodb.org/java/current/com/mongodb/DBCollection.html] called "person".
+This will map onto a MongoDB [Collection|http://api.mongodb.org/java/current/com/mongodb/client/MongoCollection.html] called "person".
 
 h4. Embedded Documents
 
-It is quite common in Mongo to embed documents within documents (nested documents). This can be done with GORM embedded types:
+It is quite common in MongoDB to embed documents within documents (nested documents). This can be done with GORM embedded types:
 
 {code}
 class Person {
@@ -68,7 +68,7 @@ Basic collection types are stored as native ArrayList and BSON documents within 
 
 h4. Customized Collection and Database Mapping
 
-You may wish to customize how a domain class maps onto a @DBCollection@. This is possible using the @mapping@ block as follows:
+You may wish to customize how a domain class maps onto a @MongoCollection@. This is possible using the @mapping@ block as follows:
 
 {code}
 class Person {
@@ -93,7 +93,7 @@ class Person {
 }
 {code}
 
-For non-embedded associations by default GORM for MongoDB will map links between documents using MongoDB [database references|http://docs.mongodb.org/manual/reference/database-references/] also known as @DBRefs@.
+If you are using the mapping engine, for non-embedded associations by default GORM for MongoDB will map links between documents using MongoDB [database references|http://docs.mongodb.org/manual/reference/database-references/] also known as @DBRefs@.
 
 If you prefer not to use DBRefs then you tell GORM to use direct links by using the @reference:false@ mapping:
 

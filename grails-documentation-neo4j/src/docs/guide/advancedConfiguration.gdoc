@@ -13,7 +13,7 @@ The @type@ provides currently the following choices:
 
 h4. type = "embedded"
 
-Runs the Neo4j in embedded mode, Neo4j and Tomcat use the same JVM. No seperate setup outside the Grails application is required. @location@ specifies the directory where Neo4j stores its data.
+Runs Neo4j in embedded mode, Neo4j and Grails use the same JVM. No seperate setup outside the Grails application is required. @location@ specifies the directory where Neo4j stores its data.
 
 Example:
 {code}

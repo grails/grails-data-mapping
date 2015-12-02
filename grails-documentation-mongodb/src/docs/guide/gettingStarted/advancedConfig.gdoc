@@ -1,6 +1,6 @@
 h4. Mongo Database Connection Configuration
 
-As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the @grails-app/conf/application.groovy@ file:
+As mentioned the GORM for MongoDB plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the @grails-app/conf/application.groovy@ file:
 
 {code}
 grails {
@@ -16,7 +16,7 @@ grails {
 
 The @databaseName@ setting configures the default database name. If not specified the @databaseName@ will default to the name of your application.
 
-You can also customize the Mongo connection settings using an @options@ block:
+You can also customize the MongoDB connection settings using an @options@ block:
 
 {code}
 grails {
@@ -118,7 +118,7 @@ grails {
 
 h4. Global Mapping Configuration
 
-Using the @grails.mongo.default.mapping@ setting in @grails-app/conf/application.groovy@ you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use @DBRefs@ in your association mappings. For example, the following configuration will disable optimistic locking globally and use @DBRefs@ for all properties:
+Using the @grails.mongodb.default.mapping@ setting in @grails-app/conf/application.groovy@ you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use @DBRefs@ in your association mappings. For example, the following configuration will disable optimistic locking globally and use @DBRefs@ for all properties:
 
 {code}
 grails.mongodb.default.mapping = {

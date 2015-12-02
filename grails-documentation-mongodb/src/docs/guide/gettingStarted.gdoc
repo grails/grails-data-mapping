@@ -1,4 +1,4 @@
-To get started with GORM for Mongo you need configure it as a dependency in @build.gradle@:
+To get started with GORM for MongoDB you need configure it as a dependency in @build.gradle@:
 
 {code}
 dependencies {
@@ -28,7 +28,7 @@ plugins {
 }
 {code}
 
-With that done you need to set up a running MongoDB server. Refer to the [MongoDB Documentation|https://docs.mongodb.org/manual/] for an explanation on how to startup a Mongo instance. Once installed, starting Mongo is typically a matter of executing the following command:
+With that done you need to set up a running MongoDB server. Refer to the [MongoDB Documentation|https://docs.mongodb.org/manual/] for an explanation on how to startup a MongoDB instance. Once installed, starting MongoDB is typically a matter of executing the following command:
 
 {code}
 MONGO_HOME/bin/mongod
@@ -54,9 +54,9 @@ With the above command executed in a terminal window you should see output like 
 2015-11-18T19:38:50.176+0100 I NETWORK  [initandlisten] waiting for connections on port 27017
 {code}
 
-As you can see the server is running on port 27017, but don't worry the Mongodb plugin for Grails will automatically configure itself to look for Mongodb on that port by default.
+As you can see the server is running on port 27017, but don't worry the MongoDB plugin for Grails will automatically configure itself to look for MongoDB on that port by default.
 
-If you want to configure how Grails connects to Mongo then you can do so using the following settings in @grails-app/conf/application.yml@:
+If you want to configure how Grails connects to MongoDB then you can do so using the following settings in @grails-app/conf/application.yml@:
 
 {code}
 grails:

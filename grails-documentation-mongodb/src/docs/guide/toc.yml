@@ -25,6 +25,6 @@ objectMapping:
   customTypes: Custom User Types
 databaseSwitching: Switching Database or Collection at Runtime
 stateless: Stateless Mode
-lowLevelApi: Using the Mongo Driver Directly
+lowLevelApi: Using the MongoDB Driver Directly
 transactions: Transactions
 testing: Unit Testing

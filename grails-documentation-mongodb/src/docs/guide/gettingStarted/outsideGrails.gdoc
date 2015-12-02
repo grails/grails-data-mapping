@@ -13,7 +13,7 @@ class Person {
 }
 {code}
 
-Then you need to place the bootstrap logic somewhere in your application which uses @MongoDbDataStoreSpringInitializer@:
+Then you need to place the bootstrap logic somewhere in the loading sequence of your application which uses @MongoDbDataStoreSpringInitializer@:
 
 {code}
 def initializer = new MongoDbDataStoreSpringInitializer(Person)

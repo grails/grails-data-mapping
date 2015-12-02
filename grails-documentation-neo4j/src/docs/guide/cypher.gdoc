@@ -5,7 +5,7 @@ To query with raw Cypher queries you can use the built in @find@ and @findAll@ m
  def clubs = Club.findAll("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')
  {code}
 
- Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results using @cypherStatic@:
+ Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results use @cypherStatic@:
 
  {code}
   Result result = Club.cypherStatic("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')

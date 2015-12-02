@@ -1,14 +1,14 @@
-A lower level API is provided by the plugin via the Mongo driver
+A lower level API is provided by the plugin via the MongoDB driver
 
 {note}
-There is an excellent tutorial on how to use the Mongo Java driver's API directly in the [Mongo documentation|http://www.mongodb.org/display/DOCS/Java+Tutorial]
+There is an excellent tutorial on how to use the MongoDB Java driver's API directly in the [MongoDB documentation|http://mongodb.github.io/mongo-java-driver/3.1/driver/getting-started/quick-tour/]
 {note}
 
 An example can be seen below:
 
 {code}
 // Get a db reference in the old fashion way
-def db = mongo.getDB("mydb")
+def db = mongo.getDatabase("mydb")
 
 // Insert a document
 db.languages.insert([name: 'Groovy'])
@@ -27,7 +27,7 @@ To get hold of the @mongo@ instance (which is an instance of the [com.mongodb.Mo
 {code}
 def mongo
 def myAction = {
-    def db = mongo.getDB("mongo")
+    def db = mongo.getDatabase("mongo")
     db.languages.insert([name: 'Groovy'])
 }
 {code}
@@ -48,7 +48,7 @@ Person.collection.count() == 1
 Person.collection.findOne(firstName:"Fred").lastName == "Flintstone"
 {code}
 
-You can easily convert from a native MongoDB @DBObject@ into an entity using a cast:
+You can easily convert from a native MongoDB @Document@ into an entity using a cast:
 
 {code}
 def fred = Person.collection.findOne(firstName:"Fred") as Person

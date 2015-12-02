@@ -1,4 +1,4 @@
-When you retrieving a GORM entity and its associations by default single-ended associations will only retrieve the association id, whilst associations to many objects will not retrieve the association at all until it is accessed. This is called lazy loading.
+When retrieving a GORM entity and its associations by default single-ended associations will only retrieve the association id, whilst associations to many objects will not retrieve the association at all until it is accessed. This is called lazy loading.
 
 For example given the following domain model:
 
@@ -24,7 +24,7 @@ When you retrieve the @Club@ by name:
 def club = Club.findByName("Manchester United")
 {code}
 
-You will get the following query:
+You will get the following Cypher query:
 
 {code}
 MATCH (n:Club) WHERE ( n.__id__={1} )

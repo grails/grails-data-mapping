@@ -1,4 +1,4 @@
-To define which properties of you domain class should be indexed for querying you can do so in the mapping:
+To define which properties of your domain class should be indexed for querying you can do so in the mapping:
 
 {code}
 class Club {
@@ -17,7 +17,7 @@ On startup GORM will use Cypher to create indexes as follows:
 CREATE INDEX ON :Club(name)
 {code}
 
-To define a unique index using @unique@ instead:
+To define a unique index use @unique@ instead:
 
 {code}
 class Club {

@@ -18,7 +18,7 @@ Neo4j is a schemaless database. This means that, unlike SQL where you can only h
   p.save(flush:true)
   {code}
 
-  Any simply properties can be included, however if you wish have dynamic associations you can as well by modifying the mapping:
+  Any simple properties can be included, however if you wish to have dynamic associations you can as well by modifying the mapping:
 
  {code}
  class Plant {

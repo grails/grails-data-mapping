@@ -7,7 +7,7 @@ class Plant {
 }
 {code}
 
-Here there are two fixed properties, @name@ and @goesInPatch@, that will be persisted into the Mongo document. Using GORM for Mongo you can however use dynamic properties via the Groovy subscript operator. For example:
+Here there are two fixed properties, @name@ and @goesInPatch@, that will be persisted into the MongoDB document. Using GORM for MongoDB you can however use dynamic properties via the Groovy subscript operator. For example:
 
 {code}
 def p = new Plant(name:"Pineapple")
@@ -21,4 +21,4 @@ println p['color']
 println p['hasLeaves']
 {code}
 
-Using the subscript operator you can add additional attributes to the underlying @DBObject@ instance that gets persisted to the MongoDB allowing for more dynamic domain models.
+Using the subscript operator you can add additional attributes to the underlying @Document@ instance that gets persisted to the MongoDB allowing for more dynamic domain models.

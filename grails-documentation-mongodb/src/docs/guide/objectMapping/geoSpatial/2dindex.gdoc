@@ -1,4 +1,4 @@
-MongoDB supports [2d indexes|http://docs.mongodb.org/manual/core/2d/] that store points on a two-dimensional plane.
+MongoDB supports [2d indexes|http://docs.mongodb.org/manual/core/2d/] that store points on a two-dimensional plane. although they are considered legacy and you should use `2dsphere` indexes instead.
 
 It is possible to use a MongoDB 2d index by mapping a list or map property using the @geoIndex@ mapping:
 
@@ -43,7 +43,7 @@ new Hotel(name:"Hilton", location:[lat: 40.739037d, long: 73.992964d]).save()
 You must specify whether the number of a floating point or double by adding a 'd' or 'f' at the end of the number eg. 40.739037d. Groovy's default type for decimal numbers is @BigDecimal@ which is not supported by MongoDB.
 {note}
 
-Once you have your data indexed you can use Mongo specific dynamic finders to find hotels near a given a location:
+Once you have your data indexed you can use MongoDB specific dynamic finders to find hotels near a given a location:
 
 {code}
 def h = Hotel.findByLocationNear([50, 60])

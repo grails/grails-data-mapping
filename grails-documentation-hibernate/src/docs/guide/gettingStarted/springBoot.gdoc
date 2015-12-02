@@ -23,7 +23,7 @@ class Application {
 
 {note}
 Using @ComponentScan@ without a value results in Boot scanning for classes in the same package or any package nested within the @Application@ class package.
-If you GORM entities are in a different package specify the package name as the value of the @ComponentScan@ annotation.
+If your GORM entities are in a different package specify the package name as the value of the @ComponentScan@ annotation.
 {note}
 
 Finally create your GORM entities and ensure they are annotated with @grails.persistence.Entity@:
