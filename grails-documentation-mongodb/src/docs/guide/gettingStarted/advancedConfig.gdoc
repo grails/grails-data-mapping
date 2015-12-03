@@ -102,14 +102,9 @@ grails {
             connectTimeout = 0 // The connect timeout in milliseconds. 0 == infinite
             socketTimeout = 0 // The socket timeout. 0 == infinite
             socketKeepAlive = false // Whether or not to have socket keep alive turned on
-            writeNumber = 0 // This specifies the number of servers to wait for on the write operation
-            writeTimeout = 0 // The timeout for write operations in milliseconds
-            writeFsync = false // Whether or not to fsync
-            autoConnectRetry = false // Whether or not the system retries automatically on a failed connect
-            maxAutoConnectRetryTime = 0 // The maximum amount of time in millisecons to spend retrying
-            slaveOk = false // Specifies if the driver is allowed to read from secondaries or slaves
-            ssl = false // Specifies if the driver should use an SSL connection to Mongo
-            sslSocketFactory = ... // Specifies the SSLSocketFactory to use for creating SSL connections
+            writeConcern = new com.mongodb.WriteConcern(0, 0, false) // Specifies the number of servers to wait for on the write operation, and exception raising behavior
+            sslEnabled = false // Specifies if the driver should use an SSL connection to Mongo
+            socketFactory = ... // Specifies the SocketFactory to use for creating connections
         }
     }
 }
