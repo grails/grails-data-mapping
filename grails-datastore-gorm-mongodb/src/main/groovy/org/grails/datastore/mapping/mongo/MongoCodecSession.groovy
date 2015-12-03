@@ -219,8 +219,15 @@ class MongoCodecSession extends AbstractMongoSession {
 
                 collection = collection.withCodecRegistry( mongoDatastore.codecRegistry )
                 final WriteConcern wc = writeConcern
-                if(wc) {
+                if(wc == null) {
+                    org.grails.datastore.mapping.mongo.config.MongoCollection mapping = (org.grails.datastore.mapping.mongo.config.MongoCollection)persistentEntity.mapping.mappedForm
+                    wc = mapping.writeConcern
+                }
+                if(wc != null) {
                     collection = collection.withWriteConcern(wc)
+                }
+                else {
+                    wc = collection.writeConcern
                 }
                 final List<WriteModel<?>> writes = writeModels[persistentEntity]
                 if(writes) {
@@ -228,11 +235,12 @@ class MongoCodecSession extends AbstractMongoSession {
                     final BulkWriteResult bulkWriteResult = collection
                                                                 .bulkWrite(writes)
 
-                    if( !bulkWriteResult.wasAcknowledged() ) {
+                    final boolean isAcknowledged = wc.isAcknowledged()
+                    if( !bulkWriteResult.wasAcknowledged() && isAcknowledged) {
                         errorOccured = true;
                         throw new DataIntegrityViolationException("Write operation was not acknowledged");
                     }
-                    else {
+                    else if(isAcknowledged) {
                         final int matchedCount = bulkWriteResult.matchedCount
                         final String name = persistentEntity.name
                         final Integer numOptimistic = numberOfOptimisticUpdates[name]
