@@ -74,7 +74,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer {
         return {
             final config = configuration
             String connectionString = config.getProperty(SETTING_CONNECTION_STRING,config.getProperty(SETTING_URL,'')) ?: null
-            databaseName = config.getProperty(SETTING_DATABASE_NAME, '') ?: DEFAULT_DATABASE_NAME
+            databaseName = config.getProperty(SETTING_DATABASE_NAME, databaseName)
             Closure defaultMapping = config.getProperty(SETTING_DEFAULT_MAPPING,Closure, this.defaultMapping)
             Map mongoOptions = config.getProperty(SETTING_OPTIONS, Map, null)
             String hostSetting = config.getProperty(SETTING_HOST, '')

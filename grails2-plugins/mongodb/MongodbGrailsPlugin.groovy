@@ -2,6 +2,7 @@ import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsClass
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import grails.util.Metadata
 
 class MongodbGrailsPlugin {
 	def version = "5.0.0.BUILD-SNAPSHOT" // added by Gradle
@@ -31,6 +32,7 @@ class MongodbGrailsPlugin {
 
         def initializer = new MongoDbDataStoreSpringInitializer(application.config, domainClasses)
         initializer.registerApplicationIfNotPresent = false
+        initializer.databaseName = Metadata.getCurrent().getApplicationName()
         initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")  )
 
         def definitions = initializer.getBeanDefinitions((BeanDefinitionRegistry) springConfig.getUnrefreshedApplicationContext())

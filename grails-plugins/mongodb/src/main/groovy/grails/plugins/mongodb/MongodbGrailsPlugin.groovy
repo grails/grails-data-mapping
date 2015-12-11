@@ -6,6 +6,7 @@ import com.mongodb.DBObject
 import grails.core.GrailsClass
 import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
 import grails.plugins.Plugin
+import grails.util.Metadata
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.datastore.mapping.mongo.MongoDatastore
@@ -37,7 +38,13 @@ class MongodbGrailsPlugin extends Plugin {
     Closure doWithSpring() {
         def initializer = new MongoDbDataStoreSpringInitializer(config, grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
         initializer.registerApplicationIfNotPresent = false
+
+        def applicationName = Metadata.getCurrent().getApplicationName()
+        if(!applicationName.contains('@')) {
+            initializer.databaseName = applicationName
+        }
         initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate")  )
+
         return initializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
     }
 
