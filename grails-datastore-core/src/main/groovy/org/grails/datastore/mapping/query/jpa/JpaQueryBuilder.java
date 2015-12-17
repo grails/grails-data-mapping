@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.grails.datastore.mapping.model.AbstractPersistentEntity;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
@@ -688,7 +689,18 @@ public class JpaQueryBuilder {
     }
 
     private static PersistentProperty validateProperty(PersistentEntity entity, String name, Class criterionType) {
-        if (entity.getIdentity().getName().equals(name)) return entity.getIdentity();
+        PersistentProperty identity = entity.getIdentity();
+        if (identity != null && identity.getName().equals(name)) {
+            return identity;
+        }
+        PersistentProperty[] compositeIdentity = ((AbstractPersistentEntity) entity).getCompositeIdentity();
+        if(compositeIdentity != null) {
+            for (PersistentProperty property : compositeIdentity) {
+                if(property.getName().equals(name)) {
+                    return property;
+                }
+            }
+        }
         PersistentProperty prop = entity.getPropertyByName(name);
         if (prop == null) {
             throw new InvalidDataAccessResourceUsageException("Cannot use [" +
