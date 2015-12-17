@@ -155,8 +155,8 @@ class HibernateGrailsPlugin extends Plugin {
             "${cls.fullName}Validator$suffix"(HibernateDomainClassValidator) {
                 messageSource = ref("messageSource")
                 domainClass = ref("${cls.fullName}DomainClass")
-                delegate.grailsApplication = ref(GrailsApplication.APPLICATION_ID)
-                sessionFactory = ref(sessionFactoryName)
+                delegate.grailsApplication = ref("grailsApplication")
+                hibernateDatastore = ref("hibernateDatastore$suffix")
             }
         }
     }
