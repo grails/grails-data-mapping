@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2 Getting Started 5.0.0.RC2</title>
+    <title>2 Getting Started 5.0.0.RC3</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -86,7 +86,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 5.0.0.RC2</p>
+                    <p><strong>Version:</strong> 5.0.0.RC3</p>
 
                     
                 </div>
@@ -210,14 +210,9 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
             connectTimeout = 0 // The connect timeout in milliseconds. 0 == infinite
             socketTimeout = 0 // The socket timeout. 0 == infinite
             socketKeepAlive = <span class="java&#45;keyword">false</span> // Whether or not to have socket keep alive turned on
-            writeNumber = 0 // This specifies the number of servers to wait <span class="java&#45;keyword">for</span> on the write operation
-            writeTimeout = 0 // The timeout <span class="java&#45;keyword">for</span> write operations in milliseconds
-            writeFsync = <span class="java&#45;keyword">false</span> // Whether or not to fsync
-            autoConnectRetry = <span class="java&#45;keyword">false</span> // Whether or not the system retries automatically on a failed connect
-            maxAutoConnectRetryTime = 0 // The maximum amount of time in millisecons to spend retrying
-            slaveOk = <span class="java&#45;keyword">false</span> // Specifies <span class="java&#45;keyword">if</span> the driver is allowed to read from secondaries or slaves
-            ssl = <span class="java&#45;keyword">false</span> // Specifies <span class="java&#45;keyword">if</span> the driver should use an SSL connection to Mongo
-            sslSocketFactory = &#8230; // Specifies the SSLSocketFactory to use <span class="java&#45;keyword">for</span> creating SSL connections
+            writeConcern = <span class="java&#45;keyword">new</span> com.mongodb.WriteConcern(0, 0, <span class="java&#45;keyword">false</span>) // Specifies the number of servers to wait <span class="java&#45;keyword">for</span> on the write operation, and exception raising behavior
+            sslEnabled = <span class="java&#45;keyword">false</span> // Specifies <span class="java&#45;keyword">if</span> the driver should use an SSL connection to Mongo
+            socketFactory = &#8230; // Specifies the SocketFactory to use <span class="java&#45;keyword">for</span> creating connections
         &#125;
     &#125;
 &#125;</pre></div><p class="paragraph"/>
