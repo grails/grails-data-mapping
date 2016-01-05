@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+import spock.lang.IgnoreIf
 import spock.lang.IgnoreRest
 import spock.lang.Issue
 
@@ -34,10 +35,10 @@ class EmbeddedAssociationSpec extends GormDatastoreSpec {
 
     }
 
+    @IgnoreIf({System.getenv('TRAVIS')})
     void "Test query with projection an embedded instance"() {
 
         given:"A domain with an embedded association"
-
         def address = new Address(postCode: "30483")
         def i = new Individual(name:"Bob", address: address)
 
@@ -54,9 +55,8 @@ class EmbeddedAssociationSpec extends GormDatastoreSpec {
         then:"the result is correct"
         postCodes != null
         postCodes == ['30483']
-
-
     }
+
     void "Test persistence of embedded entities"() {
         given:"A domain with an embedded association"
             def i = new Individual(name:"Bob", address: new Address(postCode:"30483"))
