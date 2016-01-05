@@ -33,9 +33,9 @@ import org.grails.datastore.mapping.model.types.ToMany
 @CompileStatic
 class Neo4jPersistentList extends PersistentList {
 
-    protected final EntityAccess parentAccess
-    protected final Association association
-    protected final @Delegate GraphAdapter graphAdapter
+    protected transient final EntityAccess parentAccess
+    protected transient final Association association
+    protected transient final @Delegate GraphAdapter graphAdapter
 
     Neo4jPersistentList(Collection keys, Neo4jSession session, EntityAccess parentAccess, ToMany association) {
         super(keys, association.associatedEntity.javaClass, session)

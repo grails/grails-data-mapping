@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.dirty.checking;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -7,7 +8,7 @@ import java.util.Collection;
  * @since 4.1
  *
  */
-public interface DirtyCheckableCollection {
+public interface DirtyCheckableCollection extends Serializable {
 
     /**
      * @return True if the collection has changed
