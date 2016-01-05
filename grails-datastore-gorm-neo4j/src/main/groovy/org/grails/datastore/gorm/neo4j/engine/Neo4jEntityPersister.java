@@ -373,15 +373,12 @@ public class Neo4jEntityPersister extends EntityPersister {
 
                 if(initializedAssociations.containsKey(association)) {
                     entityAccess.setPropertyNoConversion(associationName, initializedAssociations.get(association));
+                    removeFromRelationshipMap(association, relationshipsMap);
                     continue;
                 }
 
                 if(hasDynamicAssociations) {
-                    TypeDirectionPair typeDirectionPair = new TypeDirectionPair(
-                            RelationshipUtils.relationshipTypeUsedFor(association),
-                            !RelationshipUtils.useReversedMappingFor(association)
-                    );
-                    relationshipsMap.remove(typeDirectionPair);
+                    removeFromRelationshipMap(association, relationshipsMap);
                 }
                 final String associationNodesKey = associationName + "Nodes";
                 final String associationIdsKey = associationName + "Ids";
@@ -559,6 +556,14 @@ public class Neo4jEntityPersister extends EntityPersister {
 
         firePostLoadEvent(entityAccess.getPersistentEntity(), entityAccess);
         return obj;
+    }
+
+    private void removeFromRelationshipMap(Association association, Map<TypeDirectionPair, Map<String, Collection>> relationshipsMap) {
+        TypeDirectionPair typeDirectionPair = new TypeDirectionPair(
+                RelationshipUtils.relationshipTypeUsedFor(association),
+                !RelationshipUtils.useReversedMappingFor(association)
+        );
+        relationshipsMap.remove(typeDirectionPair);
     }
 
     private Collection createCollection(Association association) {
