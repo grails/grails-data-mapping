@@ -38,6 +38,7 @@ import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.ThirdPartyCacheEntityPersister
 import org.grails.datastore.mapping.engine.internal.MappingUtils
 import org.grails.datastore.mapping.model.*
+import org.grails.datastore.mapping.model.types.Basic
 import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
@@ -471,7 +472,7 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
             def access = createEntityAccess(pe, obj)
             for(association in pe.associations) {
                 if(association.isOwningSide() && association.doesCascade(CascadeType.REMOVE)) {
-                    if(!association.isEmbedded()) {
+                    if(!association.isEmbedded() && !(association instanceof Basic)) {
                         def v = access.getProperty(association.name)
                         if(association instanceof ToOne) {
                             if(v != null) {

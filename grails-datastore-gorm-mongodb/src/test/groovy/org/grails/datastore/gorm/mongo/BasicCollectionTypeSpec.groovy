@@ -61,6 +61,12 @@ class BasicCollectionTypeSpec extends GormDatastoreSpec {
             mc = MyCollections.findByNames("${'Bob'}")
         then:"The correct result is returned"
             mc != null
+
+        when:"An entity with a basic collection type is deleted"
+            mc.delete(flush:true)
+
+        then:'The delete works'
+            MyCollections.count() == 0
     }
 }
 
