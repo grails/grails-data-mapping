@@ -925,11 +925,13 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             projectedProperty.projection = projection;
             if (projection instanceof PropertyProjection) {
                 PropertyProjection propertyProjection = (PropertyProjection) projection;
-                PersistentProperty property = entity.getPropertyByName(propertyProjection.getPropertyName());
+                String propertyName = propertyProjection.getPropertyName();
+
+                PersistentProperty property = entity.getPropertyByName(propertyName);
                 if (property != null) {
                     projectedProperty.property = property;
-                } else {
-                    throw new InvalidDataAccessResourceUsageException("Attempt to project on a non-existent project [" + propertyProjection.getPropertyName() + "]");
+                } else if(!propertyName.contains(".")) {
+                    throw new InvalidDataAccessResourceUsageException("Attempt to project on a non-existent project [" + propertyName + "]");
                 }
             }
             if (projectionHandler != null) {
