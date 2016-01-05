@@ -18,11 +18,11 @@ package org.grails.datastore.gorm.neo4j
 
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
+import org.grails.datastore.gorm.neo4j.mapping.config.DynamicAssociation
+import org.grails.datastore.gorm.neo4j.mapping.config.DynamicToOneAssociation
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
-import org.grails.datastore.mapping.model.types.ToOne
-
 
 /**
  * Utility methods for manipulating relationships
@@ -45,6 +45,12 @@ class RelationshipUtils {
         String name = useReversedMappingFor(association) ?
                 association.getReferencedPropertyName() :
                 association.getName()
-        return name.toUpperCase()
+
+        if(association instanceof DynamicAssociation) {
+            return name
+        }
+        else {
+            return name.toUpperCase()
+        }
     }
 }

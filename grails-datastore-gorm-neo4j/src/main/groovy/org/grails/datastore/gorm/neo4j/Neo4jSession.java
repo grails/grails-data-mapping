@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.neo4j;
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import com.googlecode.concurrentlinkedhashmap.EvictionListener;
 import org.grails.datastore.gorm.neo4j.engine.*;
+import org.grails.datastore.gorm.neo4j.mapping.config.DynamicToOneAssociation;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
@@ -287,12 +288,13 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                 for (Association association : entity.getAssociations()) {
                     processPendingRelationshipUpdates(access, id, association, cascadingOperations);
                 }
-                amendMapWithUndeclaredProperties(simpleProps, object, mappingContext, nulls);
+                Map<String, List<Object>> dynamicAssociations = amendMapWithUndeclaredProperties(simpleProps, object, mappingContext, nulls);
                 final boolean hasNoUpdates = simpleProps.isEmpty();
                 if(hasNoUpdates && nulls.isEmpty()) {
-                    // if there are no simply property updates then only the assocations were dirty
+                    // if there are no simple property updates then only the associations were dirty
                     // reset track changes
                     dirtyCheckable.trackChanges();
+                    processDynamicAssociations(graphPersistentEntity, access, mappingContext, dynamicAssociations, cascadingOperations, true);
                     executePendings(cascadingOperations);
 
                 }
@@ -329,6 +331,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                     else {
                         // reset track changes
                         dirtyCheckable.trackChanges();
+                        processDynamicAssociations(graphPersistentEntity, access, mappingContext, dynamicAssociations, cascadingOperations, true);
                         executePendings(cascadingOperations);
                     }
                 }
@@ -464,46 +467,21 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
             }
         }
 
+        processDynamicAssociations(graphEntity, access, mappingContext, dynamicRelProps, cascadingOperations, false);
+    }
+
+    protected void processDynamicAssociations(GraphPersistentEntity graphEntity, EntityAccess access, Neo4jMappingContext mappingContext, Map<String, List<Object>> dynamicRelProps, List<PendingOperation<Object, Serializable>> cascadingOperations, boolean isUpdate) {
         if(graphEntity.hasDynamicAssociations()) {
             for (final Map.Entry<String, List<Object>> e: dynamicRelProps.entrySet()) {
-                for (final Object o : e.getValue()) {
+                for (final Object o :  e.getValue()) {
 
                     final GraphPersistentEntity associated = (GraphPersistentEntity) mappingContext.getPersistentEntity(o.getClass().getName());
                     if(associated != null) {
-                        final EntityReflector dynamicAccess = associated.getMappingContext().getEntityReflector(entity);
+                        final EntityReflector dynamicAccess = associated.getMappingContext().getEntityReflector(graphEntity);
 
                         final Object identifier = dynamicAccess.getIdentifier(o);
-                        cascadingOperations.add(new PendingOperationAdapter<Object, Serializable>(associated, (Serializable) identifier, o) {
-                            @Override
-                            public void run() {
-                                final String labelsWithInheritance = associated.getLabelsWithInheritance(o);
-                                String cypher;
-                                final boolean isNative = associated.getIdGenerator() == null;
-                                final boolean isAssociatedNative = graphEntity.getIdGenerator() == null;
-                                if(isNative && isAssociatedNative) {
-                                    cypher = String.format(CYPHER_DYNAMIC_RELATIONSHIP_MERGE_NATIVE_TO_NATIVE, labels, labelsWithInheritance, e.getKey());
-                                }
-                                else if(!isNative && isAssociatedNative ) {
-                                    cypher = String.format(CYPHER_DYNAMIC_RELATIONSHIP_MERGE_NON_NATIVE_TO_NATIVE, labels, labelsWithInheritance, e.getKey());
-                                }
-                                else if(isNative && !isAssociatedNative) {
-                                    cypher = String.format(CYPHER_DYNAMIC_RELATIONSHIP_MERGE_NATIVE_TO_NON_NATIVE, labels, labelsWithInheritance, e.getKey());
-                                }
-                                else {
-                                    cypher = String.format(CYPHER_DYNAMIC_RELATIONSHIP_MERGE, labels, labelsWithInheritance, e.getKey());
-                                }
-                                Map<String,Object> p =  new LinkedHashMap<String, Object>(2);
-                                p.put(GormProperties.IDENTITY, id);
-                                p.put(CypherBuilder.RELATED, identifier);
-
-                                if(log.isDebugEnabled()) {
-                                    log.debug("MERGE Cypher [{}] for parameters [{}]", cypher, p);
-                                }
-                                graphDatabaseService.execute(cypher, p);
-                            }
-                        });
+                        cascadingOperations.add(new RelationshipPendingInsert(access, new DynamicToOneAssociation(graphEntity, mappingContext, e.getKey(), associated), Collections.singletonList((Serializable)identifier), graphDatabaseService, isUpdate ));
                     }
-
                 }
             }
         }

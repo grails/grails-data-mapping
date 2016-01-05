@@ -190,6 +190,37 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
         Pet.findByName("Cosima").buddies*.name.sort() == ["Lara", "Samira"]
     }
 
+    def "Test update dynamic single-ended relationships"() {
+        setup:
+        def cosima = new Pet(name: 'Cosima')
+        def lara = new Pet(name: 'Lara')
+        cosima.buddy = lara
+        cosima.buddies = lara  // NB plural version
+
+
+        when:
+        cosima.save()
+        session.flush()
+        session.clear()
+
+        then:
+        Pet.findByName("Cosima").buddy.name == "Lara"
+
+        and: "using plural named properties returns an array"
+        Pet.findByName("Cosima").buddies*.name == ["Lara"]
+
+        when:"The dynamic association is updated"
+        cosima = Pet.findByName("Cosima")
+        cosima.buddy = new Pet(name:"Fred")
+        cosima.save()
+        session.flush()
+        session.clear()
+
+        then:
+        Pet.findByName("Cosima").buddy.name == "Fred"
+
+    }
+
 }
 
 
