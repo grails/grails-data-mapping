@@ -642,8 +642,8 @@ public abstract class Query implements Cloneable{
         }
 
         MappingContext ctx = entity.getMappingContext();
-        PersistentEntity pe = ctx.getPersistentEntity(value.getClass().getSimpleName());
-        return (Serializable) ctx.getEntityReflector(pe).getIdentifier(value);
+        PersistentEntity pe = ctx.getPersistentEntity(value.getClass().getName());
+        return ctx.getEntityReflector(pe).getIdentifier(value);
     }
 
     private Junction disjunction(Junction currentJunction) {

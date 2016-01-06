@@ -99,6 +99,12 @@ public abstract class AbstractHibernateQuery extends Query {
         this.detachedCriteria = criteria;
     }
 
+    @Override
+    protected Object resolveIdIfEntity(Object value) {
+        // for Hibernate queries, the object itself is used in queries, not the id
+        return value;
+    }
+
     private void initializeJoinStatus() {
         Boolean cachedStatus = JOIN_STATUS_CACHE.get(entity.getName());
         if(cachedStatus != null) hasJoins = cachedStatus;
