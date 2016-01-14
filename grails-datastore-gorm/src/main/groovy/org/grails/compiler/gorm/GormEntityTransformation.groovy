@@ -121,10 +121,14 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         AstUtils.addAnnotationIfNecessary(classNode, Entity.class);
 
         try {
-            def cl = Thread.currentThread().contextClassLoader
-            AstUtils.addAnnotationIfNecessary(classNode, (Class<? extends Annotation>)Class.forName('grails.persistence.Entity', true, cl))
+            AstUtils.addAnnotationIfNecessary(classNode, (Class<? extends Annotation>)getClass().classLoader.loadClass('grails.persistence.Entity'))
         } catch (Throwable e) {
-            // Only GORM classes on the classpath continue
+            try {
+                def cl = Thread.currentThread().contextClassLoader
+                AstUtils.addAnnotationIfNecessary(classNode, (Class<? extends Annotation>)Class.forName('grails.persistence.Entity', true, cl))
+            } catch (Throwable e2) {
+                // Only GORM classes on the classpath continue
+            }
         }
 
         // first apply dirty checking behavior
