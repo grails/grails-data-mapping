@@ -2008,9 +2008,13 @@ public abstract class AbstractGrailsDomainBinder {
     protected boolean canBindOneToOneWithSingleColumnAndForeignKey(Association currentGrailsProp) {
         if (currentGrailsProp.isBidirectional()) {
             final Association otherSide = currentGrailsProp.getInverseSide();
-            if (isHasOne(otherSide)) return false;
-            if (!currentGrailsProp.isOwningSide() && (otherSide.isOwningSide())) {
-                return true;
+            if(otherSide != null) {
+                if (isHasOne(otherSide)) {
+                    return false;
+                }
+                if (!currentGrailsProp.isOwningSide() && (otherSide.isOwningSide())) {
+                    return true;
+                }
             }
         }
         return false;
