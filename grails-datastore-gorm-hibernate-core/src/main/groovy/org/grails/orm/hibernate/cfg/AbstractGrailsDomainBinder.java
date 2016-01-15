@@ -2713,7 +2713,9 @@ public abstract class AbstractGrailsDomainBinder {
                     if (cc.getScale() != -1) {
                         column.setScale(cc.getScale());
                     }
-                    column.setUnique(cc.isUnique());
+                    if(!mappedForm.isUniqueWithinGroup()) {
+                        column.setUnique(cc.isUnique());
+                    }
                 }
 
                 bindColumn(grailsProp, parentProperty, column, cc, path, table, sessionFactoryBeanName);
