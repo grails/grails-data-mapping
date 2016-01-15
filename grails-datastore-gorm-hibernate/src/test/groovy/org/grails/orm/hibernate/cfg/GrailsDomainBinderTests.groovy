@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.grails.orm.hibernate.cfg
+
 import grails.core.DefaultGrailsApplication
 import grails.core.GrailsDomainClass
 import grails.util.Holders
@@ -305,6 +306,38 @@ class Widget {
         Column descriptionColumn = tableMapping.getColumn(new Column("description"))
         assertTrue nameColumn.isUnique()
         assertFalse descriptionColumn.isUnique()
+    }
+
+    void testGroupUniqueProperty() {
+        DefaultGrailsDomainConfiguration config = getDomainConfig('''
+class CompositeUnique1 {
+    Long id
+    Long version
+    String name
+    String surname
+    static constraints = {
+        name unique:'surname'
+    }
+}
+class CompositeUnique2 {
+    Long id
+    Long version
+    String name
+    String surname
+    static constraints = {
+        name unique:'surname'
+    }
+}
+''')
+        Table tableMapping = getTableMapping("composite_unique1", config)
+        UniqueKey key = tableMapping.getUniqueKey('unique_composite_unique1_name')
+        assertNotNull(key)
+
+        Table tableMapping2 = getTableMapping("composite_unique2", config)
+        UniqueKey key2 = tableMapping2.getUniqueKey('unique_composite_unique2_name')
+        assertNotNull(key2)
+
+        assertTrue(key.name != key2.name)
     }
 
     void testPrecisionProperty() {
@@ -1123,7 +1156,7 @@ class CascadeParent {
     }
 }"""))
         grailsDomainBinder.evaluateMapping(cascadeParent)
-        return (PropertyConfig)cascadeParent.persistentProperties.find { it.name == 'child' }.mapping.mappedForm
+        return (PropertyConfig) cascadeParent.persistentProperties.find { it.name == 'child' }.mapping.mappedForm
     }
 
     private org.hibernate.mapping.Collection findCollection(DefaultGrailsDomainConfiguration config, String role) {
@@ -1178,13 +1211,13 @@ class CascadeParent {
 
     private void assertColumnNotNullable(String tablename, String columnName, DefaultGrailsDomainConfiguration config) {
         Table table = getTableMapping(tablename, config)
-        assertFalse(table.name + "." + columnName +  " is nullable",
+        assertFalse(table.name + "." + columnName + " is nullable",
                 table.getColumn(new Column(columnName)).isNullable())
     }
 
     private void assertColumnNullable(String tablename, String columnName, DefaultGrailsDomainConfiguration config) {
         Table table = getTableMapping(tablename, config)
-        assertTrue(table.name + "." + columnName +  " is not nullable",
+        assertTrue(table.name + "." + columnName + " is not nullable",
                 table.getColumn(new Column(columnName)).isNullable())
     }
 
