@@ -31,6 +31,7 @@ import org.hibernate.mapping.PersistentClass
 import org.hibernate.mapping.Property
 import org.hibernate.mapping.SimpleValue
 import org.hibernate.mapping.Table
+import org.hibernate.mapping.UniqueKey
 import org.springframework.context.support.GenericApplicationContext
 
 /**
@@ -312,6 +313,39 @@ class Widget {
 		assertTrue nameColumn.isUnique()
 		assertFalse descriptionColumn.isUnique()
 	}
+
+	void testGroupUniqueProperty() {
+		DefaultGrailsDomainConfiguration config = getDomainConfig('''
+class CompositeUnique1 {
+    Long id
+    Long version
+    String name
+    String surname
+    static constraints = {
+        name unique:'surname'
+    }
+}
+class CompositeUnique2 {
+    Long id
+    Long version
+    String name
+    String surname
+    static constraints = {
+        name unique:'surname'
+    }
+}
+''')
+		Table tableMapping = getTableMapping("composite_unique1", config)
+		UniqueKey key = tableMapping.getUniqueKey('unique_composite_unique1_name')
+		assertNotNull(key)
+
+		Table tableMapping2 = getTableMapping("composite_unique2", config)
+		UniqueKey key2 = tableMapping2.getUniqueKey('unique_composite_unique2_name')
+		assertNotNull(key2)
+
+		assertTrue(key.name != key2.name)
+	}
+
 
 	void testPrecisionProperty() {
 		DefaultGrailsDomainConfiguration config = getDomainConfig('''
