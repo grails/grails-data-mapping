@@ -23,4 +23,18 @@ public class DynamicToOneAssociation extends ToOne implements DynamicAssociation
     public PropertyMapping getMapping() {
         return null;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof DynamicToOneAssociation) {
+            DynamicToOneAssociation other = (DynamicToOneAssociation) obj;
+            return other.getName().equals(name) && other.getOwner().getJavaClass().equals(getOwner().getJavaClass());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode() + getOwner().getJavaClass().hashCode();
+    }
 }

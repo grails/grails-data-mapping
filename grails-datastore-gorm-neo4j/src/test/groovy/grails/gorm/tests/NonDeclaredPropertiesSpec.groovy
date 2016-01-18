@@ -195,7 +195,7 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
         def cosima = new Pet(name: 'Cosima')
         def lara = new Pet(name: 'Lara')
         cosima.buddy = lara
-        cosima.buddies = lara  // NB plural version
+        cosima.friends = lara  // NB plural version
 
 
         when:
@@ -207,11 +207,12 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
         Pet.findByName("Cosima").buddy.name == "Lara"
 
         and: "using plural named properties returns an array"
-        Pet.findByName("Cosima").buddies*.name == ["Lara"]
+        Pet.findByName("Cosima").friends*.name == ["Lara"]
 
         when:"The dynamic association is updated"
         cosima = Pet.findByName("Cosima")
         cosima.buddy = new Pet(name:"Fred")
+        cosima.friends << new Pet(name: "Bob").save()
         cosima.save()
         session.flush()
         session.clear()
@@ -219,6 +220,8 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
         then:
         Pet.findByName("Cosima").buddy.name == "Fred"
 
+        and: "using plural named properties returns an array"
+        Pet.findByName("Cosima").friends*.name == ["Lara", "Bob"]
     }
 
 }

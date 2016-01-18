@@ -56,13 +56,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
-    public static final String CYPHER_DYNAMIC_RELATIONSHIP_MERGE = "MATCH (a%s {"+CypherBuilder.IDENTIFIER+":{id}}), (b%s {"+CypherBuilder.IDENTIFIER+":{related}}) MERGE (a)-[:%s]->(b)";
-    public static final String CYPHER_DYNAMIC_RELATIONSHIP_MERGE_NATIVE_TO_NATIVE = "MATCH  (a%s), (b%s) WHERE ID(a) = {id} AND ID(b) = {related} MERGE (a)-[:%s]->(b)";
-    public static final String CYPHER_DYNAMIC_RELATIONSHIP_MERGE_NATIVE_TO_NON_NATIVE = "MATCH  (a%s), (b%s) WHERE ID(a) = {id} AND b."+CypherBuilder.IDENTIFIER+" = {related} MERGE (a)-[:%s]->(b)";
-    public static final String CYPHER_DYNAMIC_RELATIONSHIP_MERGE_NON_NATIVE_TO_NATIVE = "MATCH  (a%s), (b%s) WHERE a."+CypherBuilder.IDENTIFIER+" = {id} AND ID(b) = {related} MERGE (a)-[:%s]->(b)";
-
     private static final String COUNT_RETURN = "count(n) as total";
     private static final String TOTAL_COUNT = "total";
+
     private static Logger log = LoggerFactory.getLogger(Neo4jSession.class);
     private static final EvictionListener<RelationshipUpdateKey, Collection<Serializable>> EXCEPTION_THROWING_INSERT_LISTENER =
             new EvictionListener<RelationshipUpdateKey, Collection<Serializable>>() {
@@ -193,7 +189,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
             // if there is no active synchronization defined by a TransactionManager then close the transaction is if was created
             try {
                 if(transaction != null && !isSynchronizedWithTransaction) {
-                    Neo4jTransaction transaction = (Neo4jTransaction) getTransaction();
+                    Neo4jTransaction transaction = getTransaction();
 
                     transaction.close();
                 }
@@ -285,18 +281,16 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                     }
                 }
 
-                for (Association association : entity.getAssociations()) {
-                    processPendingRelationshipUpdates(access, id, association, cascadingOperations);
-                }
                 Map<String, List<Object>> dynamicAssociations = amendMapWithUndeclaredProperties(simpleProps, object, mappingContext, nulls);
+                processDynamicAssociations(graphPersistentEntity, access, mappingContext, dynamicAssociations, cascadingOperations, true);
+                processPendingRelationshipUpdates(graphPersistentEntity, access, id, cascadingOperations);
+
                 final boolean hasNoUpdates = simpleProps.isEmpty();
                 if(hasNoUpdates && nulls.isEmpty()) {
                     // if there are no simple property updates then only the associations were dirty
                     // reset track changes
                     dirtyCheckable.trackChanges();
-                    processDynamicAssociations(graphPersistentEntity, access, mappingContext, dynamicAssociations, cascadingOperations, true);
                     executePendings(cascadingOperations);
-
                 }
                 else {
                     params.put(CypherBuilder.PROPS, simpleProps);
@@ -331,13 +325,28 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                     else {
                         // reset track changes
                         dirtyCheckable.trackChanges();
-                        processDynamicAssociations(graphPersistentEntity, access, mappingContext, dynamicAssociations, cascadingOperations, true);
                         executePendings(cascadingOperations);
                     }
                 }
             }
         }
 
+    }
+
+    private void processPendingRelationshipUpdates(GraphPersistentEntity entity, EntityAccess access, Serializable id, List<PendingOperation<Object, Serializable>> cascadingOperations) {
+        for (Association association : entity.getAssociations()) {
+            processPendingRelationshipUpdates(access, id, association, cascadingOperations);
+        }
+        if(entity.hasDynamicAssociations()) {
+            if(!pendingRelationshipInserts.isEmpty()) {
+                Set<RelationshipUpdateKey> relationshipUpdates = pendingRelationshipInserts.keySet();
+                for (RelationshipUpdateKey relationshipUpdate : relationshipUpdates) {
+                    if(relationshipUpdate.association instanceof DynamicToOneAssociation) {
+                        cascadingOperations.add(new RelationshipPendingInsert(access, relationshipUpdate.association, pendingRelationshipInserts.get(relationshipUpdate), graphDatabaseService, true));
+                    }
+                }
+            }
+        }
     }
 
     private void processPendingRelationshipUpdates(EntityAccess parent, Serializable parentId, Association association, List<PendingOperation<Object, Serializable>> cascadingOperations) {
@@ -370,11 +379,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
                 if(entityInsert.wasExecuted()) {
 
-
-                    for (Association association : entity.getAssociations()) {
-                        final EntityAccess entityAccess = entityInsert.getEntityAccess();
-                        processPendingRelationshipUpdates(entityAccess, (Serializable) entityAccess.getIdentifier(), association, cascadingOperations);
-                    }
+                    processPendingRelationshipUpdates((GraphPersistentEntity)entity, entityInsert.getEntityAccess(), (Serializable) entityInsert.getNativeKey(), cascadingOperations);
                     cascadingOperations.addAll(entityInsert.getCascadeOperations());
                 }
                 else {
@@ -461,13 +466,10 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                 Object value = access.getProperty(pp.getName());
                 customTypeMarshaller.write(custom, value, simpleProps);
             }
-            else if((pp instanceof Association) && id != null) {
-                Association association = (Association) pp;
-                processPendingRelationshipUpdates(access, id, association, cascadingOperations);
-            }
         }
 
         processDynamicAssociations(graphEntity, access, mappingContext, dynamicRelProps, cascadingOperations, false);
+        processPendingRelationshipUpdates((GraphPersistentEntity)entity, entityInsert.getEntityAccess(), (Serializable) entityInsert.getNativeKey(), cascadingOperations);
     }
 
     protected void processDynamicAssociations(GraphPersistentEntity graphEntity, EntityAccess access, Neo4jMappingContext mappingContext, Map<String, List<Object>> dynamicRelProps, List<PendingOperation<Object, Serializable>> cascadingOperations, boolean isUpdate) {
@@ -477,10 +479,10 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
                     final GraphPersistentEntity associated = (GraphPersistentEntity) mappingContext.getPersistentEntity(o.getClass().getName());
                     if(associated != null) {
-                        final EntityReflector dynamicAccess = associated.getMappingContext().getEntityReflector(graphEntity);
-
-                        final Object identifier = dynamicAccess.getIdentifier(o);
-                        cascadingOperations.add(new RelationshipPendingInsert(access, new DynamicToOneAssociation(graphEntity, mappingContext, e.getKey(), associated), Collections.singletonList((Serializable)identifier), graphDatabaseService, isUpdate ));
+                        final Object identifier = getEntityPersister(o).getObjectIdentifier(o);
+                        if(identifier != null) {
+                            addPendingRelationshipInsert((Serializable)access.getIdentifier(), new DynamicToOneAssociation(graphEntity, mappingContext, e.getKey(), associated), (Serializable) identifier);
+                        }
                     }
                 }
             }
