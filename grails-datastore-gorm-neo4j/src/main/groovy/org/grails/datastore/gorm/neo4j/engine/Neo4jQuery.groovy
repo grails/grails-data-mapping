@@ -477,14 +477,32 @@ class Neo4jQuery extends Query {
         }
     }
 
-    public static String matchForAssociation(Association association, String var = "") {
+    public static String matchForAssociation(Association association, String var = "", Map<String, String> attributes = Collections.emptyMap()) {
         def relationshipType = RelationshipUtils.relationshipTypeUsedFor(association)
         def reversed = RelationshipUtils.useReversedMappingFor(association)
         StringBuilder sb = new StringBuilder();
         if (reversed) {
             sb.append('<')
         }
-        sb.append("-[$var:").append(relationshipType).append("]-")
+        sb.append("-[$var:").append(relationshipType)
+        if(!attributes.isEmpty()) {
+            sb.append('{')
+            def i = attributes.entrySet().iterator()
+            while(i.hasNext()) {
+                def entry = i.next()
+                sb.append(entry.key)
+                  .append(":'")
+                  .append(entry.value)
+                  .append("'")
+
+                if(i.hasNext()) {
+                    sb.append(',')
+                }
+            }
+            sb.append('}')
+        }
+
+        sb.append("]-")
         if (!reversed) {
             sb.append('>')
         }

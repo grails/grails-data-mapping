@@ -18,6 +18,7 @@ package org.grails.datastore.gorm.neo4j.engine;
 import org.grails.datastore.gorm.neo4j.CypherBuilder;
 import org.grails.datastore.gorm.neo4j.GraphPersistentEntity;
 import org.grails.datastore.gorm.neo4j.RelationshipUtils;
+import org.grails.datastore.gorm.neo4j.mapping.config.DynamicToOneAssociation;
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.types.Association;
@@ -40,6 +41,8 @@ public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Seri
 
     public static final String CYPHER_DELETE_RELATIONSHIP = "MATCH (from%s {"+CypherBuilder.IDENTIFIER+": {start}})%s() DELETE r";
     public static final String CYPHER_DELETE_NATIVE_RELATIONSHIP = "MATCH (from%s)%s() WHERE ID(from) = {start} DELETE r";
+    public static final String SOURCE_TYPE = "sourceType";
+    public static final String TARGET_TYPE = "targetType";
 
     private static Logger log = LoggerFactory.getLogger(RelationshipPendingInsert.class);
     private final GraphDatabaseService graphDatabaseService;
@@ -77,7 +80,17 @@ public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Seri
         String labelsFrom = graphParent.getLabelsAsString();
         String labelsTo = graphChild.getLabelsAsString();
 
-        final String relMatch = Neo4jQuery.matchForAssociation(association, "r");
+        final String relMatch;
+
+        if(association instanceof DynamicToOneAssociation) {
+            LinkedHashMap<String, String> attrs = new LinkedHashMap<String, String>();
+            attrs.put(SOURCE_TYPE, graphParent.getJavaClass().getSimpleName());
+            attrs.put(TARGET_TYPE, graphChild.getJavaClass().getSimpleName());
+            relMatch = Neo4jQuery.matchForAssociation(association, "r", attrs);
+        }
+        else {
+            relMatch = Neo4jQuery.matchForAssociation(association, "r");
+        }
 
         boolean reversed = RelationshipUtils.useReversedMappingFor(association);
         if(!reversed && (association instanceof ToOne) && isUpdate) {

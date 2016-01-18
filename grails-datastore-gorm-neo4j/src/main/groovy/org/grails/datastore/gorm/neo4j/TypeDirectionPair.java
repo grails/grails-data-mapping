@@ -1,6 +1,5 @@
 package org.grails.datastore.gorm.neo4j;
 
-import org.grails.datastore.mapping.model.types.Association;
 
 /**
  * combination of relationship type and direction to be used a key in a map
@@ -9,6 +8,7 @@ public class TypeDirectionPair {
 
     private String type;
     private boolean outgoing;
+    private String targetType;
 
     public TypeDirectionPair(String type, boolean outgoing) {
         this.type = type;
@@ -57,5 +57,13 @@ public class TypeDirectionPair {
                 "type='" + type + '\'' +
                 ", outgoing=" + outgoing +
                 '}';
+    }
+
+    public void setTargetType(String targetType) {
+        this.targetType = targetType;
+    }
+
+    public String getTargetType() {
+        return targetType;
     }
 }

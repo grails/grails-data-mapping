@@ -35,6 +35,25 @@ class LabelStrategySpec extends GormDatastoreSpec {
         }
     }
 
+    def "test dynamic associations with dynamic labels"() {
+        when:
+        def s = new DynLabel(name:'dummy')
+        s.test = new Default(name:'dummy')
+        s.save(flush:true)
+
+        then:
+        verifyLabelsForId(s.id, [s.class.name])
+
+        when:
+        def d = DynLabel.findByName("dummy")
+
+        then:
+        d!=null
+        d.id == s.id
+        d.test != null
+
+    }
+
     def "should default label mapping use simple class name"() {
         when:
         def d = new Default(name: 'dummy').save(flush: true)

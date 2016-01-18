@@ -40,7 +40,10 @@ import static org.grails.datastore.mapping.query.Query.*;
  */
 public class Neo4jEntityPersister extends EntityPersister {
 
-    public static final String DYNAMIC_ASSOCIATIONS_QUERY = "MATCH (m%s {"+CypherBuilder.IDENTIFIER+":{id}})-[r]-(o) RETURN type(r) as relType, startNode(r)=m as out, {ids: collect(o."+CypherBuilder.IDENTIFIER+"), labels: collect(labels(o))} as values";
+    public static final String DYNAMIC_ASSOCIATIONS_QUERY = "MATCH (m%s {"+ CypherBuilder.IDENTIFIER+":{id}})-[r]-(o) RETURN type(r) as relType, startNode(r)" +
+                                                                "=m as out, r.sourceType as sourceType, r.targetType as targetType, {ids: collect(o."+CypherBuilder.IDENTIFIER+"), labels: collect" +
+                                                                "(labels(o))} as values";
+
     public static final String RETURN_NODE_ID = " RETURN ID(n) as id";
 
     private static Logger log = LoggerFactory.getLogger(Neo4jEntityPersister.class);
@@ -347,6 +350,12 @@ public class Neo4jEntityPersister extends EntityPersister {
                 Boolean outGoing = (Boolean) row.get("out");
                 Map<String, Collection> values = (Map<String, Collection>) row.get("values");
                 TypeDirectionPair key = new TypeDirectionPair(relType, outGoing);
+                if(row.containsKey(RelationshipPendingInsert.TARGET_TYPE)) {
+                    Object targetType = row.get(RelationshipPendingInsert.TARGET_TYPE);
+                    if(targetType != null) {
+                        key.setTargetType(targetType.toString());
+                    }
+                }
                 relationshipsMap.put(key, values);
             }
         }
@@ -518,14 +527,18 @@ public class Neo4jEntityPersister extends EntityPersister {
         if (!relationshipsMap.isEmpty()) {
             for (Map.Entry<TypeDirectionPair, Map<String,Collection>> entry: relationshipsMap.entrySet()) {
 
-                if (entry.getKey().isOutgoing()) {
-                    Iterator<Serializable> idIter = entry.getValue().get("ids").iterator();
-                    Iterator<Collection<String>> labelIter = entry.getValue().get("labels").iterator();
+                TypeDirectionPair key = entry.getKey();
+                if (key.isOutgoing()) {
+                    Map<String, Collection> relationshipData = entry.getValue();
+                    Iterator<Serializable> idIter = relationshipData.get("ids").iterator();
+                    String targetType = key.getTargetType();
+                    Iterator<Collection<String>> labelIter = relationshipData.get("labels").iterator();
 
                     Collection values = new ArrayList();
                     while (idIter.hasNext() && labelIter.hasNext()) {
                         Serializable targetId = idIter.next();
-                        Collection<String> labels = labelIter.next();
+                        Collection<String> nextLabels = labelIter.next();
+                        Collection<String> labels = targetType != null ? Collections.singletonList(targetType) : nextLabels;
                         Object proxy = getMappingContext().getProxyFactory().createProxy(
                                 this.session,
                                 ((Neo4jMappingContext) getMappingContext()).findPersistentEntityForLabels(labels).getJavaClass(),
@@ -535,8 +548,8 @@ public class Neo4jEntityPersister extends EntityPersister {
                     }
 
                     // for single instances and singular property name do not use an array
-                    Object value = (values.size()==1) && isSingular(entry.getKey().getType()) ? IteratorUtil.single(values): values;
-                    undeclared.put(entry.getKey().getType(), value);
+                    Object value = (values.size()==1) && isSingular(key.getType()) ? IteratorUtil.single(values): values;
+                    undeclared.put(key.getType(), value);
                 }
             }
         }
