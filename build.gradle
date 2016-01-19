@@ -136,7 +136,7 @@ apply from: "gradle/idea.gradle"
 subprojects {
     configurations {
         documentation
-    }    
+    }
    version = "${projectVersion}.${releaseType}"
    group = "org.grails"
 
@@ -345,6 +345,9 @@ subprojects {
                     // If there is a corresponding source file in the particular modules
                     // test source tree. Allows a module to override a test/helper.
 
+                    if (!details.file.isFile()) {
+                        return false
+                    }
                     def candidatePath = details.file.absolutePath
                     def relativePath = toBaseClassRelativePathWithoutExtension(tckClassesDir.absolutePath, candidatePath)
 
@@ -369,7 +372,7 @@ subprojects {
 
         configure([groovydoc]) {
             groovyClasspath += configurations.documentation
-        }        
+        }
 
         modifyPom {
             delegate.project {
