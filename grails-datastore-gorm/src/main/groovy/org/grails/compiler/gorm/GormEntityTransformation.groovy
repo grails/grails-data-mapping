@@ -25,6 +25,7 @@ import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.GenericsType
+import org.codehaus.groovy.ast.InnerClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.PropertyNode
@@ -112,6 +113,11 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
 
     void visit(ClassNode classNode, SourceUnit sourceUnit) {
         if(AstUtils.getKnownEntityNames().contains(classNode.name)) {
+            return
+        }
+
+        if((classNode instanceof InnerClassNode) || classNode.isEnum()) {
+            // do not apply transform to enums or inner classes
             return
         }
 

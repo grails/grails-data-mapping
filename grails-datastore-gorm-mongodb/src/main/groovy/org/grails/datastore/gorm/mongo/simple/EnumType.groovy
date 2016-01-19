@@ -17,32 +17,25 @@ package org.grails.datastore.gorm.mongo.simple
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.bson.Document
+import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
 import org.grails.datastore.mapping.model.MappingContext
-import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.Basic
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
-
-import java.lang.reflect.Array
-
-import javax.persistence.EnumType as JEnumType
-
-import org.grails.datastore.mapping.config.Property
-import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
-import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.PersistentProperty
-import org.grails.datastore.mapping.model.types.Basic
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.Query.Between
 import org.grails.datastore.mapping.query.Query.Equals
 import org.grails.datastore.mapping.query.Query.In
 import org.grails.datastore.mapping.query.Query.NotEquals
-import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 
-import com.mongodb.BasicDBObject
-
+import javax.persistence.EnumType as JEnumType
+import java.lang.reflect.Array
 /**
  * A custom type for persisting Enum which have an id field in domain classes.
  * For example: To save identity instead of string in database for field <b>type</b>.
@@ -147,7 +140,7 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, Document
         if (value instanceof Enum) {
             if (isOrdinalTypeEnum(property)) {
                 value = ((Enum) value).ordinal()
-            } else if (value.hasProperty("id")) {
+            } else if (value.hasProperty(GormProperties.IDENTITY)) {
                 value = getId((Enum)value)
             } else {
                 value = ((Enum)value).name()
@@ -194,7 +187,7 @@ class EnumType extends AbstractMappingAwareCustomTypeMarshaller<Object, Document
      */
     private void putValueToProperPlace(PersistentProperty property, String queryKey, Query.PropertyCriterion criterion, Document nativeQuery) {
         if (!nativeQuery || nativeQuery.isEmpty()) {     // If criteria empty, means we got the place to insert.
-            BasicDBObject criteriaObject = new BasicDBObject()
+            Document criteriaObject = new Document()
 
             if (criterion instanceof Equals) {
                 nativeQuery.put(queryKey, enumValue(property, criterion.value))
