@@ -402,6 +402,16 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         return countDistinct(propertyName, null);
     }
 
+    /**
+     * Adds a projection that allows the criteria to return the distinct property count
+     *
+     * @param propertyName The name of the property
+     */
+    public org.grails.datastore.mapping.query.api.ProjectionList groupProperty(String propertyName) {
+        groupProperty(propertyName, null);
+        return this;
+    }
+
     public org.grails.datastore.mapping.query.api.ProjectionList distinct() {
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return this;
@@ -419,14 +429,6 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         return this;
     }
 
-    /**
-     * Adds a projection that allows the criteria's result to be grouped by a property
-     *
-     * @param propertyName The name of the property
-     */
-    public void groupProperty(String propertyName) {
-        groupProperty(propertyName, null);
-    }
 
     /**
      * Adds a projection that allows the criteria's result to be grouped by a property
@@ -434,9 +436,10 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
      * @param propertyName The name of the property
      * @param alias The alias to use
      */
-    public void groupProperty(String propertyName, String alias) {
+    public org.grails.datastore.mapping.query.api.ProjectionList groupProperty(String propertyName, String alias) {
         final PropertyProjection proj = Projections.groupProperty(calculatePropertyName(propertyName));
         addProjectionToList(proj, alias);
+        return this;
     }
 
     /**

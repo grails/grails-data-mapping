@@ -20,7 +20,7 @@ import grails.async.Promises
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-
+import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.query.api.QueryAliasAwareSession
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware
 
@@ -126,28 +126,44 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     /**
      * If the underlying datastore supports aliases, then an alias is created for the given association
      *
-     * @param association The name of the association
+     * @param associationPath The name of the association
      * @param alias The alias
      * @return This create
      */
-    Criteria createAlias(String association, String alias) {
+    Criteria createAlias(String associationPath, String alias) {
         initialiseIfNecessary(targetClass)
-        final prop = persistentEntity.getPropertyByName(association)
+        PersistentProperty prop
+        if(associationPath.contains('.')) {
+            def tokens = associationPath.split(/\./)
+            def entity = this.persistentEntity
+            for(t in tokens) {
+                prop = entity.getPropertyByName(t)
+                if (!(prop instanceof Association)) {
+                    throw new IllegalArgumentException("Argument [$associationPath] is not an association")
+                }
+                else {
+                    entity = ((Association)prop).associatedEntity
+                }
+            }
+        }
+        else {
+            prop = persistentEntity.getPropertyByName(associationPath)
+        }
         if (!(prop instanceof Association)) {
-            throw new IllegalArgumentException("Argument [$association] is not an association")
+            throw new IllegalArgumentException("Argument [$associationPath] is not an association")
         }
 
         Association a = (Association)prop
-        DetachedAssociationCriteria associationCriteria = associationCriteriaMap[association]
+        DetachedAssociationCriteria associationCriteria = associationCriteriaMap[associationPath]
         if(associationCriteria == null) {
-            associationCriteria = new DetachedAssociationCriteria(a.associatedEntity.javaClass, a, alias)
-            associationCriteriaMap[association] = associationCriteria
+            associationCriteria = new DetachedAssociationCriteria(a.associatedEntity.javaClass, a, associationPath, alias)
+            associationCriteriaMap[associationPath] = associationCriteria
             add associationCriteria
         }
         else {
             associationCriteria.alias = alias
         }
-        return this
+        return associationCriteria
     }
 
     /**
@@ -774,6 +790,12 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
             return this
         }
 
+        @Override
+        ProjectionList groupProperty(String property) {
+            projections << Projections.groupProperty(property)
+            return this
+        }
+
         ProjectionList count() {
             projections << Projections.count()
             return this
@@ -1127,7 +1149,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
             return method.invoke(targetClass, methodName,this, args)
         }
 
-        if (!args || !(args[-1] instanceof Closure)) {
+        if (!args) {
             throw new MissingMethodException(methodName, DetachedCriteria, args)
         }
 
@@ -1136,7 +1158,8 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
             throw new MissingMethodException(methodName, DetachedCriteria, args)
         }
 
-        def alias = args.size() == 2 ? args[0]?.toString() : null
+
+        def alias = args[0] instanceof CharSequence ? args[0].toString() : null
 
         def existing = associationCriteriaMap[methodName]
         alias = !alias && existing ? existing.alias : alias
@@ -1147,10 +1170,14 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         add associationCriteria
 
 
-        Closure callable = args[-1]
-        callable.resolveStrategy = Closure.DELEGATE_FIRST
-        callable.delegate = associationCriteria
-        callable.call()
+
+        def lastArg = args[-1]
+        if(lastArg instanceof Closure) {
+            Closure callable = lastArg
+            callable.resolveStrategy = Closure.DELEGATE_FIRST
+            callable.delegate = associationCriteria
+            callable.call()
+        }
     }
 
     @Override

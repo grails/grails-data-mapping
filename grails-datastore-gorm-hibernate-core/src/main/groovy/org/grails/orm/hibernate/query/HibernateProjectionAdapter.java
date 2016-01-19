@@ -61,10 +61,21 @@ public class HibernateProjectionAdapter {
                 return Projections.property(avg.getPropertyName());
             }
         });
+        adapterMap.put(Query.CountProjection.class, new ProjectionAdapter() {
+            public Projection toHibernateProjection(Query.Projection gormProjection) {
+                return Projections.rowCount();
+            }
+        });
         adapterMap.put(Query.CountDistinctProjection.class, new ProjectionAdapter() {
             public Projection toHibernateProjection(Query.Projection gormProjection) {
                 Query.CountDistinctProjection cd = (Query.CountDistinctProjection) gormProjection;
                 return Projections.countDistinct(cd.getPropertyName());
+            }
+        });
+        adapterMap.put(Query.GroupPropertyProjection.class, new ProjectionAdapter() {
+            public Projection toHibernateProjection(Query.Projection gormProjection) {
+                Query.GroupPropertyProjection cd = (Query.GroupPropertyProjection) gormProjection;
+                return Projections.groupProperty(cd.getPropertyName());
             }
         });
         adapterMap.put(Query.MaxProjection.class, new ProjectionAdapter() {

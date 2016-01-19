@@ -36,6 +36,7 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.Embedded;
 import org.grails.datastore.mapping.query.api.AssociationCriteria;
+import org.grails.datastore.mapping.query.api.ProjectionList;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.query.event.PostQueryEvent;
 import org.grails.datastore.mapping.query.event.PreQueryEvent;
@@ -1419,6 +1420,12 @@ public abstract class Query implements Cloneable{
         }
     }
 
+    public static class GroupPropertyProjection extends PropertyProjection{
+        public GroupPropertyProjection(String property) {
+            super(property);
+        }
+    }
+
     /**
      * Computes the average value of a property
      */
@@ -1484,6 +1491,12 @@ public abstract class Query implements Cloneable{
 
         public org.grails.datastore.mapping.query.api.ProjectionList countDistinct(String property) {
             add(Projections.countDistinct(property));
+            return this;
+        }
+
+        @Override
+        public org.grails.datastore.mapping.query.api.ProjectionList groupProperty(String property) {
+            add(Projections.groupProperty(property));
             return this;
         }
 

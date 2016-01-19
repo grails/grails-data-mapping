@@ -29,15 +29,22 @@ import org.grails.datastore.mapping.query.api.AssociationCriteria
  */
 class DetachedAssociationCriteria<T> extends DetachedCriteria<T> implements Criterion, AssociationCriteria {
 
-    Association association
+    final Association association
+    final String associationPath
 
     DetachedAssociationCriteria(Class<T> targetClass, Association association) {
-        super(targetClass)
-        this.association = association
+        this(targetClass, association, null)
     }
 
     DetachedAssociationCriteria(Class targetClass, Association association, String alias) {
         super(targetClass, alias)
         this.association = association
+        this.associationPath = association.getName()
+    }
+
+    DetachedAssociationCriteria(Class targetClass, Association association, String associationPath, String alias) {
+        super(targetClass, alias)
+        this.association = association
+        this.associationPath = associationPath
     }
 }

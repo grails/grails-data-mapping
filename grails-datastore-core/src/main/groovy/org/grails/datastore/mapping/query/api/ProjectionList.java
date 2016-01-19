@@ -42,6 +42,15 @@ public interface ProjectionList {
     ProjectionList countDistinct(String property);
 
     /**
+     * Defines a group by projection for datastores that support it
+     *
+     * @param property The property name
+     *
+     * @return The projection list
+     */
+    ProjectionList groupProperty(String property);
+
+    /**
      * Projection to return only distinct records
      *
      * @return The projection list

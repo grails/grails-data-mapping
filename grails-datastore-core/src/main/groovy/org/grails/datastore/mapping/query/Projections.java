@@ -119,4 +119,15 @@ public class Projections {
     public static Query.CountDistinctProjection countDistinct(String property) {
         return new Query.CountDistinctProjection(property);
     }
+
+    /**
+     * Defines a group by projection for datastores that support it
+     *
+     * @param property The property name
+     *
+     * @return The projection list
+     */
+    public static Query.GroupPropertyProjection groupProperty(String property) {
+        return new Query.GroupPropertyProjection(property);
+    }
 }

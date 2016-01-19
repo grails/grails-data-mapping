@@ -169,7 +169,7 @@ public abstract class AbstractHibernateQuery extends Query {
 
             Association association = associationCriteria.getAssociation();
 
-            CriteriaAndAlias criteriaAndAlias = getCriteriaAndAlias(association);
+            CriteriaAndAlias criteriaAndAlias = getCriteriaAndAlias(associationCriteria);
 
             if(criteriaAndAlias.criteria != null)
                 aliasInstanceStack.add(criteriaAndAlias.criteria);
@@ -203,6 +203,7 @@ public abstract class AbstractHibernateQuery extends Query {
         }
     }
 
+
     @Override
     public PersistentEntity getEntity() {
         if (!entityStack.isEmpty()) {
@@ -212,14 +213,19 @@ public abstract class AbstractHibernateQuery extends Query {
     }
 
     protected String getAssociationPath(String propertyName) {
-        StringBuilder fullPath = new StringBuilder();
-        for (Iterator<Association> iterator = associationStack.iterator(); iterator.hasNext(); ) {
-            Association association = iterator.next();
-            fullPath.append(association.getName());
-            fullPath.append('.');
+        if(propertyName.indexOf('.') > -1) {
+            return propertyName;
         }
-        fullPath.append(propertyName);
-        return fullPath.toString();
+        else {
+
+            StringBuilder fullPath = new StringBuilder();
+            for (Association association : associationStack) {
+                fullPath.append(association.getName());
+                fullPath.append('.');
+            }
+            fullPath.append(propertyName);
+            return fullPath.toString();
+        }
     }
 
     protected String getCurrentAlias() {
@@ -446,6 +452,16 @@ public abstract class AbstractHibernateQuery extends Query {
         throw new InvalidDataAccessApiUsageException("Cannot query association [" + calculatePropertyName(associationName) + "] of entity [" + entity + "]. Property is not an association!");
     }
 
+    protected CriteriaAndAlias getCriteriaAndAlias(DetachedAssociationCriteria associationCriteria) {
+        String associationPath = associationCriteria.getAssociationPath();
+        String alias = associationCriteria.getAlias();
+
+        if(associationPath == null) {
+            associationPath = associationCriteria.getAssociation().getName();
+        }
+        return getOrCreateAlias(associationPath, alias);
+    }
+
     protected CriteriaAndAlias getOrCreateAlias(String associationName, String alias) {
         CriteriaAndAlias subCriteria = null;
         String associationPath = getAssociationPath(associationName);
@@ -542,27 +558,41 @@ public abstract class AbstractHibernateQuery extends Query {
 
         int i = property.indexOf('.');
         if(i > -1) {
+
             String sortHead = property.substring(0,i);
             String sortTail = property.substring(i + 1);
 
-            PersistentProperty persistentProperty = entity.getPropertyByName(sortHead);
+            if(createdAssociationPaths.containsKey(sortHead)) {
+                CriteriaAndAlias criteriaAndAlias = createdAssociationPaths.get(sortHead);
+                Criteria criteria = criteriaAndAlias.criteria;
+                org.hibernate.criterion.Order hibernateOrder = order.getDirection() == Order.Direction.ASC ?
+                        org.hibernate.criterion.Order.asc(property) :
+                        org.hibernate.criterion.Order.desc(property);
 
-            if(persistentProperty instanceof Association) {
-                Association a = (Association) persistentProperty;
-                if(persistentProperty instanceof Embedded) {
-                    addSimpleOrder(order, property);
-                }
-                else {
-                    if(criteria != null) {
-                        Criteria subCriteria = criteria.createCriteria(sortHead);
-                        addOrderToCriteria(subCriteria, sortTail, order);
+                criteria.addOrder(order.isIgnoreCase() ? hibernateOrder.ignoreCase() : hibernateOrder);
+            }
+            else {
+
+                PersistentProperty persistentProperty = entity.getPropertyByName(sortHead);
+
+                if(persistentProperty instanceof Association) {
+                    Association a = (Association) persistentProperty;
+                    if(persistentProperty instanceof Embedded) {
+                        addSimpleOrder(order, property);
                     }
-                    else if(detachedCriteria != null) {
-                        DetachedCriteria subDetachedCriteria = detachedCriteria.createCriteria(sortHead);
-                        addOrderToDetachedCriteria(subDetachedCriteria, sortTail, order);
+                    else {
+                        if(criteria != null) {
+                            Criteria subCriteria = criteria.createCriteria(sortHead);
+                            addOrderToCriteria(subCriteria, sortTail, order);
+                        }
+                        else if(detachedCriteria != null) {
+                            DetachedCriteria subDetachedCriteria = detachedCriteria.createCriteria(sortHead);
+                            addOrderToDetachedCriteria(subDetachedCriteria, sortTail, order);
+                        }
                     }
                 }
             }
+
 
         }
         else {

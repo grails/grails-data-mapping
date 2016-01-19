@@ -157,6 +157,21 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
     }
 
     /**
+     * Defines a group by projection for datastores that support it
+     *
+     * @param property The property name
+     *
+     * @return The projection list
+     */
+    @Override
+    public ProjectionList groupProperty(String property) {
+        if (projectionList != null) {
+            projectionList.groupProperty(property);
+        }
+        return projectionList;
+    }
+
+    /**
      * Projection that signifies to return only distinct results
      *
      * @return The projection list

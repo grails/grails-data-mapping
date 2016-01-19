@@ -11,6 +11,63 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 class SubquerySpec extends GormDatastoreSpec {
 
+    void "Test use alias in order by clause"() {
+        given:"Some test data"
+        def r1 = new Region(continent: "EMEA").save()
+        def r2 = new Region(continent: "APAC").save()
+        def e1 = new Employee(name:"Bob", region: r1).save()
+        def e2 = new Employee(name:"Fred", region: r2).save()
+        def e3 = new Employee(name:"Joe", region: r2).save()
+        new Sale(employee: e1, total: 50000).save()
+        new Sale(employee: e1, total: 150000).save()
+        new Sale(employee: e2, total: 70000).save()
+        session.clear()
+
+        when:"A correlated subquery references the root query"
+        def saleCriteria = new DetachedCriteria(Sale).build {
+            employee {
+                region('r') {
+                    eq 'continent', 'EMEA'
+                }
+            }
+
+        }.sort('r.continent', 'asc')
+        def results = saleCriteria.list()
+
+        then:"The results are correct"
+        results.size() == 2
+        results[0].employee.region.continent == 'EMEA'
+        results[1].employee.region.continent == 'EMEA'
+    }
+
+    void "Test use alias in group by clause"() {
+        given:"Some test data"
+        def r1 = new Region(continent: "EMEA").save()
+        def r2 = new Region(continent: "APAC").save()
+        def e1 = new Employee(name:"Bob", region: r1).save()
+        def e2 = new Employee(name:"Fred", region: r2).save()
+        def e3 = new Employee(name:"Joe", region: r2).save()
+        new Sale(employee: e1, total: 50000).save()
+        new Sale(employee: e1, total: 150000).save()
+        new Sale(employee: e2, total: 70000).save()
+        session.clear()
+
+        when:"A correlated subquery references the root query"
+        def saleCriteria = new DetachedCriteria(Sale).build {
+            employee {
+                region('r')
+            }
+
+        }.projections {
+            groupProperty('r.continent')
+            rowCount()
+        }
+        def results = saleCriteria.list()
+
+        then:"The results are correct"
+        results.size() == 2
+        results == [['APAC', 1], ['EMEA', 2]]
+    }
     def "Test subquery with projection and criteria with closure"() {
         given:"A bunch of people"
         createPeople()
