@@ -1,0 +1,9 @@
+grails.orm
+grails.orm.bootstrap
+org.grails.orm.hibernate
+org.grails.orm.hibernate.cfg
+org.grails.orm.hibernate.events
+org.grails.orm.hibernate.persister.entity
+org.grails.orm.hibernate.proxy
+org.grails.orm.hibernate.query
+org.grails.orm.hibernate.support
