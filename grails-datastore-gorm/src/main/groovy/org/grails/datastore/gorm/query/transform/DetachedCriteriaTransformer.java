@@ -1297,6 +1297,13 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 arguments.addExpression(new ConstantExpression(pe.getText()));
                 methodToCall = PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
             }
+            else if((leftExpression instanceof VariableExpression) && aliases.containsKey(property)) {
+                aliasExpressions.add(pe);
+                arguments = new ArgumentListExpression();
+                arguments.addExpression(new ConstantExpression(((VariableExpression)leftExpression).getName()));
+                arguments.addExpression(new ConstantExpression(pe.getText()));
+                methodToCall = PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
+            }
             else {
                 arguments = new ArgumentListExpression();
                 arguments.addExpression(new ConstantExpression(propertyName))
