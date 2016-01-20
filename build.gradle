@@ -30,8 +30,8 @@ project.ext {
     projectPatchVersion = "0"
 //    releaseType = "RELEASE"
 //    releaseType = "M4"
-    releaseType = "RC4"
-//    releaseType = "BUILD-SNAPSHOT"
+//    releaseType = "RC4"
+    releaseType = "BUILD-SNAPSHOT"
 
     // overall project version
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
@@ -86,6 +86,10 @@ apply plugin: 'idea'
 apply plugin: 'project-report'
 apply plugin: "com.github.adrianbk.tcitrigger"
 apply plugin: 'io.codearte.nexus-staging'
+
+nexusStaging {
+    delayBetweenRetriesInMillis = 4000
+}
 
 tciTrigger {
     gitHubRepo 'grails/grails-data-mapping-functional-tests'
