@@ -8,6 +8,7 @@ buildscript {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2"
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
         classpath "com.github.adrianbk:gradle-travisci-trigger-plugin:1.0.0"
     }
 }
@@ -77,11 +78,14 @@ configurations {
    all*.exclude group: "commons-logging"
 }
 
+version = "${projectVersion}.${releaseType}"
+group = "org.grails"
+
 
 apply plugin: 'idea'
 apply plugin: 'project-report'
-
 apply plugin: "com.github.adrianbk.tcitrigger"
+apply plugin: 'io.codearte.nexus-staging'
 
 tciTrigger {
     gitHubRepo 'grails/grails-data-mapping-functional-tests'
@@ -93,7 +97,6 @@ tciTrigger {
 
 ext {
     isCiBuild = project.hasProperty("isCiBuild")
-
 }
 allprojects {
     repositories {
