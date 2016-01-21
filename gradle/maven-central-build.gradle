@@ -181,8 +181,7 @@ bintray {
             repo = 'grails-core'
         }
         userOrg = 'grails'
-        def pkgName = "$group:$projectInfo.projectArtifactId"
-        name = pkgName
+        name = projectInfo.projectArtifactId
         desc = projectInfo.projectDescription
         websiteUrl = projectInfo.projectURL
         issueTrackerUrl = projectInfo.projectIssueTrackerUrl
