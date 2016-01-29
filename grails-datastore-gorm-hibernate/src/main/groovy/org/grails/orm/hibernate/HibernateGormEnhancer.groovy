@@ -24,6 +24,7 @@ import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.orm.hibernate.cfg.HibernateUtils
+import org.grails.orm.hibernate.cfg.Mapping
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
@@ -77,7 +78,7 @@ class HibernateGormEnhancer extends GormEnhancer {
         if(datastoreStoreDataSourceName.equals(dataSourceName) ) {
             qualifiers.add(Entity.DEFAULT_DATA_SOURCE)
         }
-        if(allMappedDataSources.contains(datastoreStoreDataSourceName)) {
+        if(allMappedDataSources.contains(datastoreStoreDataSourceName) || allMappedDataSources.contains(Mapping.ALL_DATA_SOURCES)) {
             qualifiers.add(datastoreStoreDataSourceName)
         }
         return qualifiers

@@ -103,7 +103,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
     void "Test configure multiple data sources"() {
         given:"An initializer instance"
 
-        def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person, Book)
+        def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person, Book, Author)
         def dataSource = new DriverManagerDataSource("jdbc:h2:mem:people;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
         dataSource.driverClassName = Driver.name
 
@@ -116,7 +116,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         when:"the application is configured"
         datastoreInitializer.configureForDataSources(dataSource: dataSource, books:booksDs, moreBooks:moreBooksDs)
 
-        then:"Each domain has a separate data source"
+        then:"Each domain has the correct data source(s)"
         Person.withNewSession { Person.count() == 0 }
         Person.withNewSession {  Session s ->
             assert s.connection().metaData.getURL() == "jdbc:h2:mem:people"
@@ -128,6 +128,19 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
             return true
         }
         Book.moreBooks.withNewSession { Session s ->
+            assert s.connection().metaData.getURL() == "jdbc:h2:mem:moreBooks"
+            return true
+        }
+        Author.withNewSession { Author.count() == 0 }
+        Author.withNewSession { Session s ->
+            assert s.connection().metaData.getURL() == "jdbc:h2:mem:people"
+            return true
+        }
+        Author.books.withNewSession { Session s ->
+            assert s.connection().metaData.getURL() == "jdbc:h2:mem:books"
+            return true
+        }
+        Author.moreBooks.withNewSession { Session s ->
             assert s.connection().metaData.getURL() == "jdbc:h2:mem:moreBooks"
             return true
         }
@@ -153,6 +166,20 @@ class Book {
 
     static mapping = {
         datasources( ['books', 'moreBooks'] )
+    }
+    static constraints = {
+        name blank:false
+    }
+}
+
+@Entity
+class Author {
+    Long id
+    Long version
+    String name
+
+    static mapping = {
+        datasource 'ALL'
     }
     static constraints = {
         name blank:false
