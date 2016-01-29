@@ -64,7 +64,7 @@ last_master_build_id=`travis-api /repos/$repo_id/branches/master |
 env_var_ids=(`env-var DEPENDENT_BUILD true`
              `env-var TRIGGER_COMMIT $TRAVIS_COMMIT`
              `env-var TRIGGER_REPO $TRAVIS_REPO_SLUG`
-             `env-var GORM_VERSION "5.0.0.BUILD-SNAPSHOT"`)
+             `env-var GORM_VERSION "5.0.1.BUILD-SNAPSHOT"`)
 
 # Restart the last master build.
 #
