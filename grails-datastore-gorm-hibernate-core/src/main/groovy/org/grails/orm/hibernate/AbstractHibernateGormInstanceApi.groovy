@@ -19,10 +19,12 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.gorm.validation.CascadingValidator
+import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.proxy.ProxyHandler
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.ClassUtils
+import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.mapping.engine.event.ValidationEvent
@@ -138,7 +140,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         // this piece of code will retrieve a persistent instant
         // of a domain class property is only the id is set thus
         // relieving this burden off the developer
-        autoRetrieveAssocations domainClass, target
+        autoRetrieveAssocations datastore, domainClass, target
 
         ((GormValidateable)target).skipValidation(!shouldValidate)
 
@@ -280,13 +282,15 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param target The target object
      */
     @SuppressWarnings("unchecked")
-    private void autoRetrieveAssocations(PersistentEntity entity, Object target) {
-        def cpf = ClassPropertyFetcher.forClass(entity.getJavaClass())
+    private void autoRetrieveAssocations(Datastore datastore, PersistentEntity entity, Object target) {
+        EntityReflector reflector = datastore.mappingContext.getEntityReflector(entity)
         IHibernateTemplate t = this.hibernateTemplate
         for (PersistentProperty prop in entity.associations) {
             if(prop instanceof ToOne) {
                 ToOne toOne = (ToOne)prop
-                def propValue = cpf.getPropertyValue(target, prop.name)
+
+                def propertyName = prop.name
+                def propValue = reflector.getProperty(target, propertyName)
                 if (propValue == null || t.contains(propValue)) {
                     continue
                 }
@@ -301,13 +305,13 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
                     continue
                 }
 
-                def propCpf = ClassPropertyFetcher.forClass(otherSide.javaClass)
+                def otherSideReflector = datastore.mappingContext.getEntityReflector(otherSide)
                 try {
-                    def id = (Serializable)propCpf.getPropertyValue(propValue, identity.name);
+                    def id = (Serializable)otherSideReflector.getProperty(propValue, identity.name);
                     if (id) {
-                        final Object propVal = t.get(prop.type, id)
-                        if (propVal) {
-                            ((GroovyObject)propValue).setProperty(prop.name, propValue)
+                        final Object associatedInstance = t.get(prop.type, id)
+                        if (associatedInstance) {
+                            reflector.setProperty(target, propertyName, associatedInstance)
                         }
                     }
                 }
