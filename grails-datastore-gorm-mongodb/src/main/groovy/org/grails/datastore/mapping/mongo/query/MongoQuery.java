@@ -857,8 +857,10 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         .first();;
             }
             if(isCodecPersister) {
-                final EntityAccess entityAccess = mongoSession.createEntityAccess(entity, dbObject);
-                mongoSession.cacheInstance(dbObject.getClass(), (Serializable) entityAccess.getIdentifier(), dbObject);
+                if(!mongoSession.contains(dbObject)) {
+                    final EntityAccess entityAccess = mongoSession.createEntityAccess(entity, dbObject);
+                    mongoSession.cacheInstance(dbObject.getClass(), (Serializable) entityAccess.getIdentifier(), dbObject);
+                }
                 return wrapObjectResultInList(dbObject);
             }
             else {
@@ -1806,13 +1808,15 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             final Object o = cursor.next();
             if(isCodecPersister) {
                 final AbstractMongoSession session = (AbstractMongoSession) mongoEntityPersister.getSession();
-                final PersistentEntity entity = mongoEntityPersister.getPersistentEntity();
-                final EntityAccess entityAccess = session.createEntityAccess(entity, o);
-                final Object id = entityAccess.getIdentifier();
-                if(id != null) {
-                    session.cacheInstance(entity.getJavaClass(), (Serializable) id, o);
+                if(!session.contains(o)) {
+                    final PersistentEntity entity = mongoEntityPersister.getPersistentEntity();
+                    final EntityAccess entityAccess = session.createEntityAccess(entity, o);
+                    final Object id = entityAccess.getIdentifier();
+                    if(id != null) {
+                        session.cacheInstance(entity.getJavaClass(), (Serializable) id, o);
+                    }
+                    mongoEntityPersister.firePostLoadEvent(entity, entityAccess);
                 }
-                mongoEntityPersister.firePostLoadEvent(entity, entityAccess);
             }
             return o;
         }

@@ -3,10 +3,12 @@ package grails.gorm.tests
 import grails.persistence.Entity
 import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
 import org.grails.datastore.gorm.validation.constraints.UniqueConstraint
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
+import spock.lang.Issue
 
 import javax.persistence.FlushModeType
 
@@ -14,6 +16,31 @@ import javax.persistence.FlushModeType
  * Tests the unique constraint
  */
 class UniqueConstraintSpec extends GormDatastoreSpec {
+
+    @Issue('https://github.com/grails/grails-core/issues/9596')
+    void "Test update secondary property when using unique constraint"() {
+        when:"An object with a unique constraint is saved"
+        UniqueGroup o = new UniqueGroup(name: "foo", desc: "foo description").save(flush: true)
+
+
+        then:"The object is saved"
+        o.id
+        o.name == 'foo'
+        o.desc == 'foo description'
+
+        when:"A secondary property is updated"
+        session.clear()
+        o = UniqueGroup.findByName("foo")
+        o.desc = 'description changed'
+        o.save(flush:true)
+        session.clear()
+        o = UniqueGroup.findByName("foo")
+
+        then:"The object was saved"
+        o != null
+        o.name == 'foo'
+        o.desc == 'description changed'
+    }
 
     void "Test simple unique constraint"() {
         given:"A validator that uses the unique constraint"
@@ -124,12 +151,14 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
 }
 
 @Entity
-class UniqueGroup implements Serializable {
+class UniqueGroup implements Serializable, DirtyCheckable {
     Long id
     Long version
     String name
+    String desc
     static constraints = {
         name unique:true, index:true
+        desc nullable: true
     }
 }
 
