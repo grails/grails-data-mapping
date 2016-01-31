@@ -277,8 +277,10 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                 datastore = ref("${type}Datastore")
             }
 
-            if (!registry.containsBeanDefinition(TRANSACTION_MANAGER_BEAN)) {
-                registry.registerAlias("${type}TransactionManager",TRANSACTION_MANAGER_BEAN)
+
+            def transactionManagerBeanName = TRANSACTION_MANAGER_BEAN
+            if (!containsRegisteredBean(delegate, registry, transactionManagerBeanName)) {
+                registry.registerAlias("${type}TransactionManager", transactionManagerBeanName)
             }
 
             "${type}PersistenceInterceptor"(getPersistenceInterceptorClass(), ref("${type}Datastore"))
@@ -294,6 +296,11 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                 }
             }
         }
+    }
+
+    @CompileDynamic
+    protected boolean containsRegisteredBean(Object builder, BeanDefinitionRegistry registry, String beanName) {
+        registry.containsBeanDefinition(beanName) || (builder.hasProperty('springConfig') && builder.springConfig.containsBean(beanName))
     }
 
     /**
