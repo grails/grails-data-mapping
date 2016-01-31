@@ -58,7 +58,7 @@ class HibernateGormEnhancer extends GormEnhancer {
         if(datastoreStoreDataSourceName.equals(dataSourceName) ) {
             qualifiers.add(Entity.DEFAULT_DATA_SOURCE)
         }
-        if(allMappedDataSources.contains(datastoreStoreDataSourceName)) {
+        if(allMappedDataSources.contains(datastoreStoreDataSourceName) || allMappedDataSources.contains(Mapping.ALL_DATA_SOURCES)) {
             qualifiers.add(datastoreStoreDataSourceName)
         }
         return qualifiers
