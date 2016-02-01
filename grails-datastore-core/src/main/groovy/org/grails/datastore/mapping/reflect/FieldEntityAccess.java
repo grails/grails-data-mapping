@@ -47,10 +47,11 @@ public class FieldEntityAccess implements EntityAccess {
     }
 
     public static EntityReflector getOrIntializeReflector(PersistentEntity persistentEntity) {
-        EntityReflector entityReflector = REFLECTORS.get(persistentEntity.getName());
+        String entityName = persistentEntity.getName();
+        EntityReflector entityReflector = REFLECTORS.get(entityName);
         if(entityReflector == null) {
             entityReflector = new FieldEntityReflector(persistentEntity);
-            REFLECTORS.put(persistentEntity.getName(), entityReflector);
+            REFLECTORS.put(entityName, entityReflector);
         }
         return entityReflector;
     }
@@ -169,19 +170,16 @@ public class FieldEntityAccess implements EntityAccess {
             }
             PersistentProperty[] composite = ((AbstractPersistentEntity) entity).getCompositeIdentity();
             if(composite != null) {
-                for (int i = 0; i < composite.length; i++) {
-                    PersistentProperty property = composite[i];
-
+                for (PersistentProperty property : composite) {
                     String propertyName = property.getName();
                     Field field = ReflectionUtils.findField(javaClass, propertyName);
-                    if(field != null) {
+                    if (field != null) {
                         ReflectionUtils.makeAccessible(field);
                         FieldReader reader = new FieldReader(field);
                         readerMap.put(propertyName, reader);
                         FieldWriter writer = new FieldWriter(field);
                         writerMap.put(propertyName, writer);
-                    }
-                    else {
+                    } else {
 
                         PropertyDescriptor descriptor = cpf.getPropertyDescriptor(propertyName);
                         Method readMethod = descriptor.getReadMethod();

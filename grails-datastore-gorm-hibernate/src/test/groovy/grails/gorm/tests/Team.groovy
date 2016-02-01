@@ -9,4 +9,5 @@ import grails.persistence.Entity
 class Team {
     Club club
     String name
+    static hasMany = [players: Player]
 }

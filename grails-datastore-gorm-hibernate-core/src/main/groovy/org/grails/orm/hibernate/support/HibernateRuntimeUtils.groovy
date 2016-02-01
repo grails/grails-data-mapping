@@ -2,8 +2,10 @@ package org.grails.orm.hibernate.support
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormValidateable
+import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.proxy.ProxyHandler
+import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.mapping.validation.ValidationErrors
 import org.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler
 import org.codehaus.groovy.runtime.StringGroovyMethods
@@ -78,6 +80,7 @@ class HibernateRuntimeUtils {
     }
 
     public static void autoAssociateBidirectionalOneToOnes(PersistentEntity entity, Object target) {
+        def mappingContext = entity.mappingContext
         for (Association association :  entity.associations) {
             if (!(association instanceof OneToOne) || !association.bidirectional || !association.owningSide) {
                 continue
@@ -94,8 +97,9 @@ class HibernateRuntimeUtils {
                 continue
             }
 
-            BeanWrapper bean = new BeanWrapperImpl(target)
-            Object inverseObject = bean.getPropertyValue(propertyName)
+
+            def entityReflector = mappingContext.getEntityReflector(entity)
+            Object inverseObject = entityReflector.getProperty(target, propertyName)
             if (inverseObject == null) {
                 continue
             }
@@ -105,10 +109,10 @@ class HibernateRuntimeUtils {
                 continue
             }
 
-            def inverseBean = new BeanWrapperImpl(inverseObject)
-            def propertyValue = inverseBean.getPropertyValue(otherSidePropertyName)
+            def associationReflector = mappingContext.getEntityReflector(association.associatedEntity)
+            def propertyValue = associationReflector.getProperty(inverseObject, otherSidePropertyName)
             if (propertyValue == null) {
-                inverseBean.setPropertyValue(otherSidePropertyName, target)
+                associationReflector.setProperty(inverseObject, otherSidePropertyName, target)
             }
         }
     }
