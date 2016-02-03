@@ -75,16 +75,6 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
 
         Errors errors = getErrors(instance)
 
-        if (validator instanceof CascadingValidator) {
-            validator.validate instance, localErrors, arguments?.deepValidate != false
-        } else {
-            validator.validate instance, localErrors
-        }
-
-        if (fields) {
-            localErrors = filterErrors(localErrors, fields as Set, instance)
-        }
-
         for (error in errors.allErrors) {
             if (error instanceof FieldError) {
                 if (((FieldError)error).bindingFailure) {
@@ -93,6 +83,16 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
             } else {
                 localErrors.addError error
             }
+        }
+
+        if (validator instanceof CascadingValidator) {
+            validator.validate instance, localErrors, arguments?.deepValidate != false
+        } else {
+            validator.validate instance, localErrors
+        }
+
+        if (fields) {
+            localErrors = filterErrors(localErrors, fields as Set, instance)
         }
 
         setErrors(instance, localErrors)
