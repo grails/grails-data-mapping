@@ -73,12 +73,10 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
       if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
         version="$TRAVIS_TAG"
         version=${version:1}
-        milestone=${version:5}
-        if [[ -n $milestone ]]; then
-          mkdir -p latest
-          cp -r ../build/docs/. ./latest/
-          git add latest/*
-        fi
+
+        mkdir -p latest
+        cp -r ../build/docs/. ./latest/
+        git add latest/*
 
         majorVersion=${version:0:4}
         majorVersion="${majorVersion}x"
