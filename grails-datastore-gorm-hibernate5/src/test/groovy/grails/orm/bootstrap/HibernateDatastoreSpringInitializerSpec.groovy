@@ -3,6 +3,8 @@ package grails.orm.bootstrap
 import grails.persistence.Entity
 import org.h2.Driver
 import org.hibernate.Session
+import org.hibernate.SessionFactory
+import org.springframework.context.ApplicationContext
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.util.Log4jConfigurer
@@ -114,9 +116,21 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         moreBooksDs.driverClassName = Driver.name
 
         when:"the application is configured"
-        datastoreInitializer.configureForDataSources(dataSource: dataSource, books:booksDs, moreBooks:moreBooksDs)
+        def applicationContext = datastoreInitializer.configureForDataSources(dataSource: dataSource, books: booksDs, moreBooks: moreBooksDs)
 
-        then:"Each domain has the correct data source(s)"
+        then:"Each session factory has the correct number of persistent entities"
+        applicationContext.getBean("sessionFactory", SessionFactory).allClassMetadata.values().size() == 2
+        applicationContext.getBean("sessionFactory", SessionFactory).allClassMetadata.containsKey(Person.name)
+        applicationContext.getBean("sessionFactory", SessionFactory).allClassMetadata.containsKey(Author.name)
+        applicationContext.getBean("sessionFactory_books", SessionFactory).allClassMetadata.values().size() == 2
+        applicationContext.getBean("sessionFactory_books", SessionFactory).allClassMetadata.containsKey(Book.name)
+        applicationContext.getBean("sessionFactory_books", SessionFactory).allClassMetadata.containsKey(Author.name)
+
+        applicationContext.getBean("sessionFactory_moreBooks", SessionFactory).allClassMetadata.values().size() == 2
+        applicationContext.getBean("sessionFactory_moreBooks", SessionFactory).allClassMetadata.containsKey(Book.name)
+        applicationContext.getBean("sessionFactory_moreBooks", SessionFactory).allClassMetadata.containsKey(Author.name)
+
+        and:"Each domain has the correct data source(s)"
         Person.withNewSession { Person.count() == 0 }
         Person.withNewSession {  Session s ->
             assert s.connection().metaData.getURL() == "jdbc:h2:mem:people"

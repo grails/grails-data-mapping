@@ -206,7 +206,7 @@ public class HibernateMappingContextConfiguration extends Configuration implemen
         try {
             ConfigurationHelper.resolvePlaceHolders(getProperties());
 
-            final GrailsDomainBinder domainBinder = new GrailsDomainBinder(sessionFactoryBeanName, hibernateMappingContext);
+            final GrailsDomainBinder domainBinder = new GrailsDomainBinder(dataSourceName, sessionFactoryBeanName, hibernateMappingContext);
 
             ClassLoaderService classLoaderService = new ClassLoaderServiceImpl(appClassLoaders) {
                 @Override

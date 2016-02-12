@@ -102,13 +102,15 @@ public class GrailsDomainBinder implements MetadataContributor {
     };
 
     protected final String sessionFactoryName;
+    protected final String dataSourceName;
     protected final HibernateMappingContext hibernateMappingContext;
     protected Closure defaultMapping;
     protected PersistentEntityNamingStrategy namingStrategy;
     protected MetadataBuildingContext metadataBuildingContext;
 
-    public GrailsDomainBinder(String sessionFactoryName, HibernateMappingContext hibernateMappingContext) {
+    public GrailsDomainBinder(String dataSourceName, String sessionFactoryName, HibernateMappingContext hibernateMappingContext) {
         this.sessionFactoryName = sessionFactoryName;
+        this.dataSourceName = dataSourceName;
         this.hibernateMappingContext = hibernateMappingContext;
         // pre-build mappings
         for (PersistentEntity persistentEntity : hibernateMappingContext.getPersistentEntities()) {
@@ -151,7 +153,7 @@ public class GrailsDomainBinder implements MetadataContributor {
 
         java.util.Collection<PersistentEntity> persistentEntities = hibernateMappingContext.getPersistentEntities();
         for (PersistentEntity persistentEntity : persistentEntities) {
-            if(persistentEntity.isRoot()) {
+            if(GrailsHibernateUtil.usesDatasource(persistentEntity, dataSourceName) && persistentEntity.isRoot()) {
                 bindRoot((HibernatePersistentEntity) persistentEntity, metadataCollector, sessionFactoryName);
             }
         }
