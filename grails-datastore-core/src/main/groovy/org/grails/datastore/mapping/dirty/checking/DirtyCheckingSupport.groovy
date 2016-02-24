@@ -84,6 +84,9 @@ class DirtyCheckingSupport {
      * @return The wrapped collection
      */
     static Collection wrap(Collection coll, DirtyCheckable parent, String property) {
+        if(coll instanceof DirtyCheckingCollection) {
+            return coll
+        }
         if(coll instanceof List) {
             return new DirtyCheckingList(coll, parent, property)
         }
