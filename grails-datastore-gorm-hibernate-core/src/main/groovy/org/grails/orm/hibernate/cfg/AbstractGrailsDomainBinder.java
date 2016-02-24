@@ -2319,7 +2319,7 @@ public abstract class AbstractGrailsDomainBinder {
         if ((property instanceof org.grails.datastore.mapping.model.types.OneToOne) && !isComposite) {
             manyToOne.setAlternateUniqueKey(true);
             Column c = getColumnForSimpleValue(manyToOne);
-            §
+            if (config != null && !config.isUniqueWithinGroup()) {
                 c.setUnique(config.isUnique());
             }
             else if (property.isBidirectional() && isHasOne(property.getInverseSide())) {
