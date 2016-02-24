@@ -44,7 +44,7 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
         // First add a local field that will store the change tracking state. The field is a simple list of property names that have changed
         // the field is only added to root clauses that extend from java.lang.Object
         final changeTrackableClassNode = new ClassNode(DirtyCheckable).getPlainNodeReference()
-        final markDirtyMethodNode = changeTrackableClassNode.getMethod(METHOD_NAME_MARK_DIRTY, new Parameter(ClassHelper.STRING_TYPE, "propertyName"))
+        final markDirtyMethodNode = changeTrackableClassNode.getMethod(METHOD_NAME_MARK_DIRTY, new Parameter(ClassHelper.STRING_TYPE, "propertyName"), new Parameter(ClassHelper.OBJECT_TYPE, "newValue"))
 
 
         def superClass = classNode.getSuperClass()
@@ -122,11 +122,11 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
                     }
 
                     // now add the setter that tracks changes. Each setters becomes:
-                    // void setFoo(String foo) { markDirty("foo"); this.foo = foo }
+                    // void setFoo(String foo) { markDirty("foo", foo); this.foo = foo }
                     final setterName = NameUtils.getSetterName(propertyName)
                     final setterParameter = new Parameter(returnType, propertyName)
                     final setterBody = new BlockStatement()
-                    MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName)
+                    MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName, setterParameter)
                     setterBody.addStatement(new ExpressionStatement(markDirtyMethodCall))
                     setterBody.addStatement(  new ExpressionStatement(
                             new BinaryExpression(new PropertyExpression(new VariableExpression("this"), propertyField.name),
@@ -200,15 +200,16 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
 
         final currentBody = setterMethod.code
         final setterParameter = setterMethod.getParameters()[0]
-        MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName)
+        MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName, setterParameter)
         final newBody = new BlockStatement()
         newBody.addStatement(new ExpressionStatement(markDirtyMethodCall))
         newBody.addStatement(currentBody)
         setterMethod.code = newBody
     }
 
-    protected MethodCallExpression createMarkDirtyMethodCall(MethodNode markDirtyMethodNode, String propertyName) {
-        final markDirtyMethodCall = new MethodCallExpression(new VariableExpression("this"), markDirtyMethodNode.name, new ConstantExpression(propertyName))
+    protected MethodCallExpression createMarkDirtyMethodCall(MethodNode markDirtyMethodNode, String propertyName, Variable value) {
+        def args = new ArgumentListExpression(new ConstantExpression(propertyName), new VariableExpression(value))
+        final markDirtyMethodCall = new MethodCallExpression(new VariableExpression("this"), markDirtyMethodNode.name, args)
         markDirtyMethodCall.methodTarget = markDirtyMethodNode
         markDirtyMethodCall
     }

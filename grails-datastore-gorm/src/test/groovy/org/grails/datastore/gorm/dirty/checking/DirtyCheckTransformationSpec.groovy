@@ -95,7 +95,7 @@ class FundProduct {
         when:"A new dirty checking instance is created"
             def b = new Book()
 
-        then:"It implements the ChangeTrackable interface"
+        then:"It implements the DirtyCheckable interface"
             b instanceof DirtyCheckable
             b.hasChanged()
             b.hasChanged("title")
@@ -147,6 +147,48 @@ class FundProduct {
 				book.getOriginalValue('title') == null
     }
 
+    @Issue('https://github.com/grails/grails-data-mapping/issues/629')
+    void "Test that dirty checking does not mark the object of dirty if a setter is called with the same value"() {
+        when: "A new book is created"
+        def book = new Book(title: "The Stand")
+        book.trackChanges()
+
+        then:"The object has no changes"
+        !book.hasChanged()
+
+        when:"A property is set to the same value"
+        book.title = "The Stand"
+
+        then:"The object has no changes"
+        !book.hasChanged()
+
+        when:"A property is set to a different value"
+        book.title = "The Shining"
+
+        then:"The object has changes"
+        book.hasChanged()
+        book.hasChanged('title')
+        book.getOriginalValue('title') == 'The Stand'
+
+        when:"A property is set to null"
+        book.title = null
+
+        then:"The object has changes"
+        book.hasChanged()
+        book.hasChanged('title')
+        book.getOriginalValue('title') == 'The Stand'
+
+        when:"A trackChanges is reset and property is set to null"
+        book.title = "The Stand"
+        book.trackChanges()
+        book.title = null
+
+        then:"The object has changes"
+        book.hasChanged()
+        book.hasChanged('title')
+        book.getOriginalValue('title') == 'The Stand'
+
+    }
     @Ignore // currently fails, TODO: add support for dirty checking collection/map changes
     void "Test that you can dirty check changes to simple collections"() {
         given: "A new book is created"

@@ -57,6 +57,20 @@ public trait DirtyCheckable {
     }
 
     /**
+     * Marks the given property name as dirty
+     * @param propertyName The property name
+     * @param newValue The new value
+     */
+    void markDirty(String propertyName, newValue) {
+        if( $changedProperties != null && !$changedProperties.containsKey(propertyName))  {
+            def oldValue = ((GroovyObject) this).getProperty(propertyName)
+            if(newValue != oldValue) {
+                $changedProperties.put propertyName, oldValue
+            }
+        }
+    }
+
+    /**
      * @return A list of the dirty property names
      */
     List<String> listDirtyPropertyNames() {
