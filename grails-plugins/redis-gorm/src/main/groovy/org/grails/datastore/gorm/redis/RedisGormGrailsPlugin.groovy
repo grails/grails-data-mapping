@@ -1,13 +1,14 @@
 package org.grails.datastore.gorm.redis
 
 import grails.core.GrailsClass
+import grails.plugins.GrailsPlugin
 import grails.plugins.Plugin
 import grails.redis.bootstrap.RedisDatastoreSpringInitializer
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
-class RedisGrailsPlugin extends Plugin {
+class RedisGormGrailsPlugin extends Plugin {
 
     def license = "Apache 2.0 License"
     def organization = [ name: "Grails", url: "http://grails.org/" ]
@@ -40,8 +41,14 @@ class RedisGrailsPlugin extends Plugin {
     Closure doWithSpring() {
         def initializer = new RedisDatastoreSpringInitializer(config, grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
         initializer.registerApplicationIfNotPresent = false
-        initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")  )
+        initializer.setSecondaryDatastore(hasHibernatePlugin())
         return initializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
     }
+
+    @CompileStatic
+    protected boolean hasHibernatePlugin() {
+        manager.allPlugins.any() { GrailsPlugin plugin -> plugin.name ==~ /hibernate\d*/}
+    }
+
 
 }

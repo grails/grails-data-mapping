@@ -5,6 +5,7 @@ import com.mongodb.BasicDBObject
 import com.mongodb.DBObject
 import grails.core.GrailsClass
 import grails.mongodb.bootstrap.MongoDbDataStoreSpringInitializer
+import grails.plugins.GrailsPlugin
 import grails.plugins.Plugin
 import grails.util.Metadata
 import groovy.transform.CompileStatic
@@ -43,9 +44,14 @@ class MongodbGrailsPlugin extends Plugin {
         if(!applicationName.contains('@')) {
             initializer.databaseName = applicationName
         }
-        initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate")  )
+        initializer.setSecondaryDatastore(hasHibernatePlugin())
 
         return initializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
+    }
+
+    @CompileStatic
+    protected boolean hasHibernatePlugin() {
+        manager.allPlugins.any() { GrailsPlugin plugin -> plugin.name ==~ /hibernate\d*/}
     }
 
     @Override

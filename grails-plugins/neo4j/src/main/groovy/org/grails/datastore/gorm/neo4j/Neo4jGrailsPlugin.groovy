@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.neo4j
 
 import grails.core.GrailsClass
 import grails.neo4j.bootstrap.Neo4jDataStoreSpringInitializer
+import grails.plugins.GrailsPlugin
 import grails.plugins.Plugin
 import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
@@ -41,8 +42,13 @@ class Neo4jGrailsPlugin extends Plugin {
     Closure doWithSpring() {
         def initializer = new Neo4jDataStoreSpringInitializer(config, grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE).collect() { GrailsClass cls -> cls.clazz })
         initializer.registerApplicationIfNotPresent = false
-        initializer.setSecondaryDatastore( manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")  )
+        initializer.setSecondaryDatastore(hasHibernatePlugin())
         return initializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
+    }
+
+    @CompileStatic
+    protected boolean hasHibernatePlugin() {
+        manager.allPlugins.any() { GrailsPlugin plugin -> plugin.name ==~ /hibernate\d*/}
     }
 
 }

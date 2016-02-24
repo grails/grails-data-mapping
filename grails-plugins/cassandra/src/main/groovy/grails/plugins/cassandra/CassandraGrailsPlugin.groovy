@@ -2,8 +2,10 @@ package grails.plugins.cassandra
 
 import grails.cassandra.bootstrap.CassandraDatastoreSpringInitializer
 import grails.core.GrailsClass
+import grails.plugins.GrailsPlugin
 import grails.plugins.Plugin
 import grails.util.Environment
+import groovy.transform.CompileStatic
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
@@ -31,6 +33,13 @@ class CassandraGrailsPlugin extends Plugin {
 		initializer.registerApplicationIfNotPresent = false
 		initializer.defaultKeyspaceName = grailsApplication.getMetadata().getApplicationName()
 		initializer.developmentMode = Environment.isDevelopmentMode()
+		initializer.setSecondaryDatastore(hasHibernatePlugin())
 		return initializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
 	}
+
+	@CompileStatic
+	protected boolean hasHibernatePlugin() {
+		manager.allPlugins.any() { GrailsPlugin plugin -> plugin.name ==~ /hibernate\d*/}
+	}
+
 }
