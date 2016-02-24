@@ -134,6 +134,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer {
                 if(registerMongoBean) {
                     "$mongoBeanName"(MongoClientFactoryBean) {
                         delegate.mongoOptions = ref("$mongoOptionsBeanName")
+                        delegate.database = databaseName
                         if(username && password) {
                             delegate.username = username
                             delegate.password = password
@@ -159,7 +160,9 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer {
                         }
                         else if (hostSetting) {
                             host = hostSetting
-                            if (mongoPort) port = mongoPort
+                            if (mongoPort) {
+                                port = mongoPort
+                            }
                         }
                         else {
                             host = "localhost"
