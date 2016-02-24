@@ -18,10 +18,7 @@ import groovy.lang.Closure;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-import org.grails.datastore.mapping.model.DatastoreConfigurationException;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.model.types.ToOne;
@@ -41,7 +38,6 @@ import org.hibernate.type.*;
 import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -272,7 +268,7 @@ public abstract class AbstractGrailsDomainBinder {
                 getIndexColumnName(property, sessionFactoryBeanName), mappings);
         PropertyConfig pc = getPropertyConfig(property);
         if (pc != null && pc.getIndexColumn() != null) {
-            bindColumnConfigToColumn(getColumnForSimpleValue(value), getSingleColumnConfig(pc.getIndexColumn()));
+            bindColumnConfigToColumn(property, getColumnForSimpleValue(value), getSingleColumnConfig(pc.getIndexColumn()));
         }
 
         if (!value.isTypeSpecified()) {
@@ -724,7 +720,7 @@ public abstract class AbstractGrailsDomainBinder {
 
                 bindSimpleValue(typeName, element,true, columnName, mappings);
                 if (hasJoinColumnMapping) {
-                    bindColumnConfigToColumn(getColumnForSimpleValue(element), config.getJoinTable().getColumn());
+                    bindColumnConfigToColumn(property, getColumnForSimpleValue(element), config.getJoinTable().getColumn());
                 }
             }
         } else {
@@ -781,7 +777,10 @@ public abstract class AbstractGrailsDomainBinder {
         return null;
     }
 
-    protected void bindColumnConfigToColumn(Column column, ColumnConfig columnConfig) {
+    protected void bindColumnConfigToColumn(PersistentProperty property, Column column, ColumnConfig columnConfig) {
+        final PropertyConfig mappedForm = property != null ? (PropertyConfig) property.getMapping().getMappedForm() : null;
+        boolean allowUnique = mappedForm != null && !mappedForm.isUniqueWithinGroup();
+
         if (columnConfig == null) {
             return;
         }
@@ -798,7 +797,10 @@ public abstract class AbstractGrailsDomainBinder {
         if (columnConfig.getSqlType() != null && !columnConfig.getSqlType().isEmpty()) {
             column.setSqlType(columnConfig.getSqlType());
         }
-        column.setUnique(columnConfig.getUnique());
+
+        if(allowUnique) {
+            column.setUnique(columnConfig.getUnique());
+        }
     }
 
     protected boolean hasJoinColumnMapping(PropertyConfig config) {
@@ -1673,7 +1675,7 @@ public abstract class AbstractGrailsDomainBinder {
                 if (cc.getName() != null) {
                     c.setName(cc.getName());
                 }
-                bindColumnConfigToColumn(c, cc);
+                bindColumnConfigToColumn(null, c, cc);
             }
         }
 
@@ -1971,12 +1973,12 @@ public abstract class AbstractGrailsDomainBinder {
             uk.addColumns(property.getColumnIterator());
         }
 
-        setUniqueName(uk);
+        setGeneratedUniqueName(uk);
 
         table.addUniqueKey(uk);
     }
 
-    protected void setUniqueName(UniqueKey uk) {
+    protected void setGeneratedUniqueName(UniqueKey uk) {
         StringBuilder sb = new StringBuilder(uk.getTable().getName()).append('_');
         for (Object col : uk.getColumns()) {
             sb.append(((Column) col).getName()).append('_');
@@ -2095,7 +2097,7 @@ public abstract class AbstractGrailsDomainBinder {
         PropertyConfig propertyConfig = getPropertyConfig(property);
         if (propertyConfig != null && !propertyConfig.getColumns().isEmpty()) {
             bindIndex(columnName, column, propertyConfig.getColumns().get(0), t);
-            bindColumnConfigToColumn(column, propertyConfig.getColumns().get(0));
+            bindColumnConfigToColumn(property, column, propertyConfig.getColumns().get(0));
         }
     }
 
@@ -2317,7 +2319,7 @@ public abstract class AbstractGrailsDomainBinder {
         if ((property instanceof org.grails.datastore.mapping.model.types.OneToOne) && !isComposite) {
             manyToOne.setAlternateUniqueKey(true);
             Column c = getColumnForSimpleValue(manyToOne);
-            if (config != null) {
+            §
                 c.setUnique(config.isUnique());
             }
             else if (property.isBidirectional() && isHasOne(property.getInverseSide())) {
@@ -2856,8 +2858,8 @@ public abstract class AbstractGrailsDomainBinder {
             String columnName, List<?> propertyNames, String sessionFactoryBeanName) {
         List<Column> keyList = new ArrayList<Column>();
         keyList.add(new Column(columnName));
-        for (Iterator<?> i = propertyNames.iterator(); i.hasNext();) {
-            String propertyName = (String) i.next();
+        for (Object po : propertyNames) {
+            String propertyName = (String) po;
             PersistentProperty otherProp = grailsProp.getOwner().getPropertyByName(propertyName);
             String otherColumnName = getColumnNameForPropertyAndPath(otherProp, path, null, sessionFactoryBeanName);
             keyList.add(new Column(otherColumnName));
@@ -2865,14 +2867,18 @@ public abstract class AbstractGrailsDomainBinder {
         createUniqueKeyForColumns(table, columnName, keyList);
     }
 
-    protected void createUniqueKeyForColumns(Table table, String columnName, List<Column> keyList) {
-        Collections.reverse(keyList);
-        UniqueKey key = table.getOrCreateUniqueKey("unique_" + table.getName() + '_' + columnName);
-        List<?> columns = key.getColumns();
-        if (columns.isEmpty()) {
-            LOG.debug("create unique key for " + table.getName() + " columns = " + keyList);
-            key.addColumns(keyList.iterator());
+    protected void createUniqueKeyForColumns(Table table, String columnName, List<Column> columns) {
+        Collections.reverse(columns);
+
+        UniqueKey uk = new UniqueKey();
+        uk.setTable(table);
+        uk.addColumns(columns.iterator());
+
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("create unique key for " + table.getName() + " columns = " + columns);
         }
+        setGeneratedUniqueName(uk);
+        table.addUniqueKey(uk);
     }
 
     protected void bindIndex(String columnName, Column column, ColumnConfig cc, Table table) {
