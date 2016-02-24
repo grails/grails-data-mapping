@@ -15,6 +15,35 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
         [Club]
     }
 
+    def "non declared properties should not mark the object as dirty if the value is the same"() {
+        when:'An object is initially saved'
+        def club = new Club(name: 'Cosima')
+        club.buddy = 'Lara'
+        club.save(flush:true)
+        session.clear()
+
+        club = Club.get(club.id)
+        then:"it is not diry"
+        club.buddy == 'Lara'
+        !club.hasChanged()
+
+        when:"A dynamic property is modified with the same value"
+        club.buddy = 'Lara'
+
+        then:"The object has no changes"
+        !club.hasChanged()
+        !club.hasChanged('buddy')
+
+        when:"A dynamic property is modified with a different value"
+        club.buddy = 'Foo'
+
+        then:"The object has changes"
+        club.hasChanged()
+        club.hasChanged('buddy')
+
+    }
+
+
     def "should non declared properties work for transient instances"() {
         setup:
             def club = new Club(name: 'Cosima')

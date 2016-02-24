@@ -88,16 +88,19 @@ trait Neo4jEntity<D> extends GormEntity<D> {
         } else {
 
             Map undeclaredProps = getOrInitializeUndeclared(session, unwrappedInstance)
-            undeclaredProps.put(name, val)
+            def oldValue = undeclaredProps.put(name, val)
 
-            def mappingContext = session.mappingContext
-            if (mappingContext.isPersistentEntity(val)) {
-                session.persist(val)
-            } else if (Neo4jSession.isCollectionWithPersistentEntities(val, mappingContext)) {
-                session.persist((Iterable)val)
-            }
-            if (unwrappedInstance instanceof DirtyCheckable) {
-                ((DirtyCheckable)unwrappedInstance).markDirty(name)
+            if(oldValue != val) {
+                def mappingContext = session.mappingContext
+                if (mappingContext.isPersistentEntity(val)) {
+                    session.persist(val)
+                } else if (Neo4jSession.isCollectionWithPersistentEntities(val, mappingContext)) {
+                    session.persist((Iterable)val)
+                }
+
+                if (unwrappedInstance instanceof DirtyCheckable) {
+                    ((DirtyCheckable)unwrappedInstance).markDirty(name)
+                }
             }
         }
     }
