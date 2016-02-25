@@ -16,12 +16,13 @@ import org.grails.datastore.mapping.model.IllegalMappingException
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query.Order.Direction
 import org.springframework.cassandra.core.Ordering
-
+import spock.lang.IgnoreIf
 import spock.lang.Specification
 
 import com.datastax.driver.core.TableMetadata
 import com.datastax.driver.core.TableMetadata.Options
 
+@IgnoreIf({System.getenv('TRAVIS')})
 class CassandraEntityConfigSpec extends Specification{
 	
 	def keyspace = "configtest"

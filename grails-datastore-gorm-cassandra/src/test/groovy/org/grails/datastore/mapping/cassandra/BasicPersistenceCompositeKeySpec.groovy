@@ -4,7 +4,9 @@ import grails.gorm.tests.Artist
 import grails.gorm.tests.GormDatastoreSpec
 
 import org.springframework.dao.DuplicateKeyException
+import spock.lang.IgnoreIf
 
+@IgnoreIf({System.getenv('TRAVIS')})
 class BasicPersistenceCompositeKeySpec extends GormDatastoreSpec {  
     
     void testBasicPersistenceOperations() {

@@ -4,11 +4,13 @@ import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.tests.TestEntity
 
 import org.grails.datastore.mapping.cassandra.utils.UUIDUtil
+import spock.lang.IgnoreIf
 
 /**
  * @author Graeme Rocher
  * @since 1.1
  */
+@IgnoreIf({System.getenv('TRAVIS')})
 class BasicPersistenceSpec extends GormDatastoreSpec {
 
     void testBasicPersistenceOperations() {

@@ -2,7 +2,9 @@ package org.grails.datastore.gorm.cassandra
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+import spock.lang.IgnoreIf
 
+@IgnoreIf({System.getenv('TRAVIS')})
 class TransientPropertySpec extends GormDatastoreSpec {
 
     void "Test that transient properties are not saved to Cassandra"() {
