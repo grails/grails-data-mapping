@@ -36,6 +36,7 @@ import org.springframework.context.support.GenericApplicationContext
 class GrailsDomainBinderTests extends GroovyTestCase {
 
     private static final String CACHED_MAP = '''
+@grails.persistence.Entity
 class Area {
     Long id
     Long version
@@ -47,11 +48,14 @@ class Area {
 '''
 
     private static final String ONE_TO_ONE_CLASSES_DEFINITION = '''
+@grails.persistence.Entity
 class Species {
     Long id
     Long version
     String name
 }
+
+@grails.persistence.Entity
 class Pet {
     Long id
     Long version
@@ -59,11 +63,13 @@ class Pet {
 }'''
 
     private static final String ONE_TO_MANY_CLASSES_DEFINITION = '''
+@grails.persistence.Entity
 class Visit {
     Long id
     Long version
     String description
 }
+@grails.persistence.Entity
 class Pet {
     Long id
     Long version
@@ -74,6 +80,7 @@ class Pet {
 '''
 
     private static final String BAG_ONE_TO_MANY_CLASSES_DEFINITION = '''
+@grails.persistence.Entity
 class Bagged {
     Long id
     Long version
@@ -87,6 +94,7 @@ class Bagger {
 }'''
 
     private static final String MANY_TO_MANY_CLASSES_DEFINITION = '''
+@grails.persistence.Entity
 class Specialty {
     Long id
     Long version
@@ -95,6 +103,8 @@ class Specialty {
     static hasMany = [vets:Vet]
     static belongsTo = Vet
 }
+
+@grails.persistence.Entity
 class Vet {
     Long id
     Long version
@@ -104,6 +114,7 @@ class Vet {
 '''
 
     private static final String BAG_MANY_TO_MANY_CLASSES_DEFINITION = '''
+@grails.persistence.Entity
 class ManyBagged {
     Long id
     Long version
@@ -112,6 +123,8 @@ class ManyBagged {
     static hasMany = [baggers: ManyBagger]
     static belongsTo = ManyBagger
 }
+
+@grails.persistence.Entity
 class ManyBagger {
     Long id
     Long version
@@ -121,6 +134,7 @@ class ManyBagger {
 
     private static final String MULTI_COLUMN_USER_TYPE_DEFINITION = '''
 import org.grails.orm.hibernate.cfg.*
+@grails.persistence.Entity
 class Item {
     Long id
     Long version
@@ -139,6 +153,7 @@ class Item {
 '''
 
     private static final String UNIQUE_PROPERTIES = '''
+@grails.persistence.Entity
 class UniquePropertiesUser {
     Long id
     Long version
@@ -154,6 +169,7 @@ class UniquePropertiesUser {
 }'''
 
     private static final String TABLE_PER_HIERARCHY = '''
+@grails.persistence.Entity
 class TablePerHierarchySuperclass {
     Long id
     Long version
@@ -169,6 +185,7 @@ class TablePerHierarchySuperclass {
 enum ProductStatus {
     GOOD, BAD
 }
+@grails.persistence.Entity
 class TablePerHierarchySubclass extends TablePerHierarchySuperclass {
     Long id
     Long version
@@ -187,6 +204,7 @@ class TablePerHierarchySubclass extends TablePerHierarchySuperclass {
 '''
 
     private static final String TABLE_PER_SUBCLASS = '''
+@grails.persistence.Entity
 class TablePerSubclassSuperclass {
     Long id
     Long version
@@ -205,6 +223,7 @@ class TablePerSubclassSuperclass {
 enum ProductStatus {
     GOOD, BAD
 }
+@grails.persistence.Entity
 class TablePerSubclassSubclass extends TablePerSubclassSuperclass {
     Long id
     Long version
@@ -251,12 +270,14 @@ class TablePerSubclassSubclass extends TablePerSubclassSuperclass {
      */
     void testEmbeddedComponentMapping() {
         DefaultGrailsDomainConfiguration config = getDomainConfig('''
+@grails.persistence.Entity
 class Widget {
     Long id
     Long version
     EmbeddedWidget ew
     static embedded = ['ew']
 }
+@grails.persistence.Entity
 class EmbeddedWidget {
    String ew
    static mapping = {
@@ -272,6 +293,7 @@ class EmbeddedWidget {
 
     void testLengthProperty() {
         DefaultGrailsDomainConfiguration config = getDomainConfig('''
+@grails.persistence.Entity
 class Widget {
     Long id
     Long version
@@ -291,6 +313,7 @@ class Widget {
 
     void testUniqueProperty() {
         DefaultGrailsDomainConfiguration config = getDomainConfig('''
+@grails.persistence.Entity
 class Widget {
     Long id
     Long version
@@ -310,6 +333,8 @@ class Widget {
 
     void testGroupUniqueProperty() {
         DefaultGrailsDomainConfiguration config = getDomainConfig('''
+
+@grails.persistence.Entity
 class CompositeUnique1 {
     Long id
     Long version
@@ -319,6 +344,8 @@ class CompositeUnique1 {
         name unique:'surname'
     }
 }
+
+@grails.persistence.Entity
 class CompositeUnique2 {
     Long id
     Long version
@@ -342,6 +369,7 @@ class CompositeUnique2 {
 
     void testPrecisionProperty() {
         DefaultGrailsDomainConfiguration config = getDomainConfig('''
+@grails.persistence.Entity
 class Widget {
     Long id
     Long version
@@ -360,6 +388,7 @@ class Widget {
 
     void testScaleProperty() {
         DefaultGrailsDomainConfiguration config = getDomainConfig('''
+@grails.persistence.Entity
 class Widget {
     Long id
     Long version
@@ -480,6 +509,7 @@ class Widget {
     void testUpdateableHibernateMapping() {
         GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
                 cl.parseClass('''
+@grails.persistence.Entity
 class TestInsertableDomain {
     Long id
     Long version
@@ -503,6 +533,7 @@ class TestInsertableDomain {
     void testInsertableUpdateableHibernateMapping() {
         GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
                 cl.parseClass('''
+@grails.persistence.Entity
 class TestInsertableUpdateableDomain {
     Long id
     Long version
@@ -624,6 +655,7 @@ class TestInsertableUpdateableDomain {
     void testDomainClassBinding() {
         GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
                 cl.parseClass('''
+@grails.persistence.Entity
 class BinderTestClass {
     Long id
     Long version
@@ -660,6 +692,7 @@ class BinderTestClass {
     void testForeignKeyColumnBinding() {
         GrailsDomainClass oneClass = new DefaultGrailsDomainClass(
                 cl.parseClass('''
+@grails.persistence.Entity
 class TestOneSide {
     Long id
     Long version
@@ -668,6 +701,7 @@ class TestOneSide {
 }'''))
         GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
                 cl.parseClass('''
+@grails.persistence.Entity
 class TestManySide {
     Long id
     Long version
@@ -798,6 +832,7 @@ class TestManySide {
 
         GrailsDomainClass oneClass = new DefaultGrailsDomainClass(
                 cl.parseClass('''
+@grails.persistence.Entity
 class TestOneSide {
     Long id
     Long version
@@ -806,6 +841,7 @@ class TestOneSide {
 }'''))
         GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
                 cl.parseClass('''
+@grails.persistence.Entity
 class TestManySide {
     Long id
     Long version
@@ -965,6 +1001,7 @@ class TestManySide {
 
         GrailsDomainClass oneClass = new DefaultGrailsDomainClass(
                 cl.parseClass('''
+@grails.persistence.Entity
 class TestOneSide {
     Long id
     Long version
@@ -973,6 +1010,7 @@ class TestOneSide {
 }'''))
         GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
                 cl.parseClass('''
+@grails.persistence.Entity
 class TestManySide {
     Long id
     Long version
@@ -1022,6 +1060,7 @@ class TestManySide {
 
         GrailsDomainClass oneClass = new DefaultGrailsDomainClass(
                 cl.parseClass('''
+@grails.persistence.Entity
 class TestOneSide2 {
     Long id
     Long version
@@ -1031,6 +1070,7 @@ class TestOneSide2 {
 }'''))
         GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
                 cl.parseClass('''
+@grails.persistence.Entity
 class TestManySide2 {
     Long id
     Long version
@@ -1049,6 +1089,7 @@ class TestManySide2 {
 
         GrailsDomainClass oneClass = new DefaultGrailsDomainClass(
                 cl.parseClass('''
+@grails.persistence.Entity
 class TestOneSide {
     Long id
     Long version
@@ -1095,6 +1136,7 @@ class TestOneSide {
 enum AlertType {
     INFO, WARN, ERROR
 }
+@grails.persistence.Entity
 class Alert {
     Long id
     Long version
@@ -1136,6 +1178,7 @@ class Alert {
         def context = new HibernateMappingContext()
         def child = context.addPersistentEntity(
                 cl.parseClass('''
+@grails.persistence.Entity
 class CascadeChild {
     Long id
     Long version
@@ -1147,6 +1190,7 @@ class CascadeChild {
 
         PersistentEntity cascadeParent = context.addPersistentEntity(
                 cl.parseClass("""\
+@grails.persistence.Entity
 class CascadeParent {
     Long id
     Long version

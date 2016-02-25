@@ -1,6 +1,7 @@
 package org.grails.orm.hibernate
 
 import grails.core.GrailsDomainClass
+import grails.persistence.Entity
 
 import static junit.framework.Assert.*
 import org.junit.Test
@@ -60,6 +61,7 @@ class BidirectionalOneToManyAndCircularOneToManyTests extends AbstractGrailsHibe
     }
 }
 
+@Entity
 class BidirectionalOneToManyAndCircularOneToManyUser implements java.io.Serializable {
     Long id
     Long version
@@ -74,6 +76,7 @@ class BidirectionalOneToManyAndCircularOneToManyUser implements java.io.Serializ
     BidirectionalOneToManyAndCircularOneToManyUser manager
 }
 
+@Entity
 class BidirectionalOneToManyAndCircularOneToManyUploadLog implements Serializable {
     Long id
     Long version
@@ -81,6 +84,7 @@ class BidirectionalOneToManyAndCircularOneToManyUploadLog implements Serializabl
     BidirectionalOneToManyAndCircularOneToManyUser sender
 }
 
+@Entity
 class BidirectionalOneToManyAndCircularOneToManyUpload implements Serializable {
     Long id
     Long version

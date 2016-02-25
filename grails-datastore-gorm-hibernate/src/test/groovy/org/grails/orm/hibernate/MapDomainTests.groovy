@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.gorm.annotation.Entity
+
 import static junit.framework.Assert.*
 import org.junit.Test
 
@@ -33,6 +35,7 @@ class MapDomainTests extends AbstractGrailsHibernateTests{
     }
 }
 
+@grails.persistence.Entity
 class MapDomainBook {
     Long id
     Long version
@@ -41,6 +44,7 @@ class MapDomainBook {
     static hasMany = [authors:MapDomainAuthor]
 }
 
+@grails.persistence.Entity
 class MapDomainAuthor {
     Long id
     Long version

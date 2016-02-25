@@ -18,6 +18,7 @@ import groovy.lang.Closure;
 
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
@@ -110,7 +111,10 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
             Class superClass = javaClass.getSuperclass();
             if (superClass != null &&
                     !superClass.equals(Object.class) ) {
-                parentEntity = context.addPersistentEntity(superClass);
+
+                if(mappingSyntaxStrategy.isPersistentEntity(superClass)) {
+                    parentEntity = context.addPersistentEntity(superClass);
+                }
             }
 
             persistentProperties = mappingSyntaxStrategy.getPersistentProperties(this, context, mapping, includeIdentifiers());
@@ -186,6 +190,18 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
 
         propertiesInitialized = true;
 
+    }
+
+    protected boolean isAnnotatedSuperClass(MappingConfigurationStrategy mappingSyntaxStrategy, Class superClass) {
+
+        Annotation[] annotations = superClass.getAnnotations();
+        for (Annotation annotation : annotations) {
+            String name = annotation.annotationType().getName();
+            if(name.equals("grails.persistence.Entity") || name.equals("grails.gorm.annotation.Entity")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected boolean includeIdentifiers() {

@@ -36,6 +36,7 @@ class ManyToManyAndOneToOneTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@grails.persistence.Entity
 class ManyToManyAndOneToOneBook {
     Long version
     Long id
@@ -47,6 +48,7 @@ class ManyToManyAndOneToOneBook {
     String title
 }
 
+@grails.persistence.Entity
 class ManyToManyAndOneToOneAuthor {
     Long version
     Long id

@@ -1,5 +1,6 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity
 import org.junit.Test
 
 import static junit.framework.Assert.*
@@ -26,10 +27,8 @@ class CircularOneToManyTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class CircularOneToManyTask {
-    Long id
-    Long version
-    Set tasks
     CircularOneToManyTask task
     static belongsTo = CircularOneToManyTask
     static hasMany = [tasks:CircularOneToManyTask]

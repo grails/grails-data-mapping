@@ -31,6 +31,7 @@ class OneToOneSelfReferencedViaInheritanceTests extends AbstractGrailsHibernateT
     }
 }
 
+@grails.persistence.Entity
 class OneToOneSelfReferencedViaInheritanceContent implements Serializable {
     Long id
     Long version
@@ -42,11 +43,13 @@ class OneToOneSelfReferencedViaInheritanceContent implements Serializable {
     }
 }
 
+@grails.persistence.Entity
 class OneToOneSelfReferencedViaInheritanceVersion extends OneToOneSelfReferencedViaInheritanceContent {
     Integer number
     OneToOneSelfReferencedViaInheritanceContent current
 }
 
+@grails.persistence.Entity
 class OneToOneSelfReferencedViaInheritanceWikiPage extends OneToOneSelfReferencedViaInheritanceContent {
     Set versions
     static hasMany = [versions:OneToOneSelfReferencedViaInheritanceVersion]

@@ -114,28 +114,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         }
         // this is done so we don't need a statically typed reference to the Grails annotation
         for (Annotation annotation : clazz.getAnnotations()) {
-            if (annotation.toString().equals("@grails.persistence.Entity()")) return true;
+            String annName = annotation.annotationType().getName();
+            if (annName.equals("grails.persistence.Entity")) return true;
+            if (annName.equals("grails.gorm.annotation.Entity")) return true;
         }
-        Class testClass = clazz;
-        boolean result = false;
-        while (testClass != null && !testClass.equals(GroovyObject.class) &&
-                   !testClass.equals(Object.class)) {
-            try {
-                // make sure the identify and version field exist
-                testClass.getDeclaredField(IDENTITY_PROPERTY);
-                testClass.getDeclaredField(VERSION_PROPERTY);
-
-                // passes all conditions return true
-                result = true;
-                break;
-            } catch (SecurityException e) {
-                // ignore
-            } catch (NoSuchFieldException e) {
-                // ignore
-            }
-            testClass = testClass.getSuperclass();
-        }
-        return result;
+        return false;
     }
 
     public List<PersistentProperty> getPersistentProperties(Class javaClass, MappingContext context) {

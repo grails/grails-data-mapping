@@ -1,5 +1,7 @@
 package org.grails.orm.hibernate
 
+import grails.persistence.Entity
+
 import static junit.framework.Assert.*
 import org.junit.Test
 
@@ -20,6 +22,7 @@ class SimpleBelongsToMappingTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class SimpleBelongsToMappingBook {
     Long id
     Long version
@@ -27,6 +30,7 @@ class SimpleBelongsToMappingBook {
     static belongsTo = [author:SimpleBelongsToMappingAuthor]
 }
 
+@Entity
 class SimpleBelongsToMappingAuthor {
     Long id
     Long version

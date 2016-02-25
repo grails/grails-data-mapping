@@ -32,6 +32,7 @@ class WithCriteriaMethodTests extends AbstractGrailsHibernateTests {
     }
 }
 
+@Entity
 class WithCriteriaMethodBook {
     Long id
     Long version
