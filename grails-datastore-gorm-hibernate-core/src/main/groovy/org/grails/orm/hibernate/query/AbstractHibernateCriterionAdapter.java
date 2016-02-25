@@ -49,39 +49,42 @@ public abstract class AbstractHibernateCriterionAdapter {
         initialize();
     }
 
-    protected synchronized void initialize() {
+    protected void initialize() {
         if (initialized) {
             return;
         }
 
-        // add simple property criterions (idEq, eq, ne, gt, lt, ge, le)
-        addSimplePropertyCriterionAdapters();
+        synchronized (criterionAdaptors) {
+            // add simple property criterions (idEq, eq, ne, gt, lt, ge, le)
+            addSimplePropertyCriterionAdapters();
 
-        // add like operators (rlike, like, ilike)
-        addLikeCriterionAdapters();
+            // add like operators (rlike, like, ilike)
+            addLikeCriterionAdapters();
 
-        //add simple size criterions (sizeEq, sizeGt, sizeLt, sizeGe, sizeLe)
-        addSizeComparisonCriterionAdapters();
-
-
-        //add simple criterions (isNull, isNotNull, isEmpty, isNotEmpty)
-        addSimpleCriterionAdapters();
-
-        //add simple property comparison criterions (eqProperty, neProperty, gtProperty, geProperty, ltProperty, leProperty)
-        addPropertyComparisonCriterionAdapters();
-
-        // add range queries (in, between)
-        addRangeQueryCriterionAdapters();
-
-        // add subquery adapters (gtAll, geAll, gtSome, ltAll, leAll)
-        addSubqueryCriterionAdapters();
+            //add simple size criterions (sizeEq, sizeGt, sizeLt, sizeGe, sizeLe)
+            addSizeComparisonCriterionAdapters();
 
 
-        // add junctions (conjunction, disjunction, negation)
-        addJunctionCriterionAdapters();
+            //add simple criterions (isNull, isNotNull, isEmpty, isNotEmpty)
+            addSimpleCriterionAdapters();
 
-        // add association query adapters
-        addAssociationQueryCriterionAdapters();
+            //add simple property comparison criterions (eqProperty, neProperty, gtProperty, geProperty, ltProperty, leProperty)
+            addPropertyComparisonCriterionAdapters();
+
+            // add range queries (in, between)
+            addRangeQueryCriterionAdapters();
+
+            // add subquery adapters (gtAll, geAll, gtSome, ltAll, leAll)
+            addSubqueryCriterionAdapters();
+
+
+            // add junctions (conjunction, disjunction, negation)
+            addJunctionCriterionAdapters();
+
+            // add association query adapters
+            addAssociationQueryCriterionAdapters();
+        }
+
 
         initialized = true;
     }
