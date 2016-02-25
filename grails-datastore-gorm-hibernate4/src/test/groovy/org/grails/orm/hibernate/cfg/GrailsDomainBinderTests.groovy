@@ -336,16 +336,15 @@ class CompositeUnique2 {
 }
 ''')
 		Table tableMapping = getTableMapping("composite_unique1", config)
-		UniqueKey key = tableMapping.getUniqueKey('unique_composite_unique1_name')
+		UniqueKey key = (UniqueKey)tableMapping.getUniqueKeyIterator().next()
 		assertNotNull(key)
 
 		Table tableMapping2 = getTableMapping("composite_unique2", config)
-		UniqueKey key2 = tableMapping2.getUniqueKey('unique_composite_unique2_name')
+		UniqueKey key2 = (UniqueKey)tableMapping2.getUniqueKeyIterator().next()
 		assertNotNull(key2)
 
 		assertTrue(key.name != key2.name)
 	}
-
 
 	void testPrecisionProperty() {
 		DefaultGrailsDomainConfiguration config = getDomainConfig('''

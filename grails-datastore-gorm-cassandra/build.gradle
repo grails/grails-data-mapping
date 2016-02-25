@@ -84,4 +84,5 @@ sourceSets {
 
 test {
     maxParallelForks = 1
+    forkEvery = 20
 }
