@@ -119,9 +119,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             // for listening to Hibernate events
             hibernateEventListeners(HibernateEventListeners)
             // Useful interceptor for wrapping Hibernate behavior
-            persistenceInterceptor(AggregatePersistenceContextInterceptor) {
-                hibernateDatastore = ref('hibernateDatastore')
-            }
+            persistenceInterceptor(AggregatePersistenceContextInterceptor)
 
             // domain model mapping context, used for configuration
             grailsDomainClassMappingContext(HibernateMappingContextFactoryBean) {

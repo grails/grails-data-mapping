@@ -15,10 +15,10 @@
  */
 package org.grails.orm.hibernate4.support;
 
-
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor;
 import org.grails.orm.hibernate.support.SessionFactoryAwarePersistenceContextInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Concrete implementation of the {@link org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor} class for Hibernate 4
@@ -27,18 +27,23 @@ import org.grails.orm.hibernate.support.SessionFactoryAwarePersistenceContextInt
  * @author Burt Beckwith
  */
 public class AggregatePersistenceContextInterceptor extends AbstractMultipleDataSourceAggregatePersistenceContextInterceptor {
-    private AbstractHibernateDatastore hibernateDatastore;
+    private AbstractHibernateDatastore[] hibernateDatastores;
 
     @Override
     protected SessionFactoryAwarePersistenceContextInterceptor createPersistenceContextInterceptor(String dataSourceName) {
         HibernatePersistenceContextInterceptor interceptor = new HibernatePersistenceContextInterceptor(dataSourceName);
-        if(hibernateDatastore != null) {
-            interceptor.setHibernateDatastore(hibernateDatastore);
+        if(hibernateDatastores != null) {
+            for (AbstractHibernateDatastore hibernateDatastore : hibernateDatastores) {
+                if(dataSourceName.equals(hibernateDatastore.getDataSourceName())) {
+                    interceptor.setHibernateDatastore(hibernateDatastore);
+                }
+            }
         }
         return interceptor;
     }
 
-    public void setHibernateDatastore(AbstractHibernateDatastore hibernateDatastore) {
-        this.hibernateDatastore = hibernateDatastore;
+    @Autowired
+    public void setHibernateDatastores(AbstractHibernateDatastore[] hibernateDatastores) {
+        this.hibernateDatastores = hibernateDatastores;
     }
 }
