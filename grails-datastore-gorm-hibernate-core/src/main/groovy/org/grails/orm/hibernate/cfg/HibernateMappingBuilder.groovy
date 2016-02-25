@@ -140,10 +140,11 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
      *
      * @param name The name of the table
      */
+    @CompileStatic
     void discriminator(Map args) {
         mapping.discriminator = args?.remove('value')
         if (args.column instanceof String) {
-            mapping.discriminatorColumn = new ColumnConfig(name:args.column)
+            mapping.discriminatorColumn = new ColumnConfig(name:args.column.toString())
         }
         else if (args.column instanceof Map) {
             ColumnConfig config = new ColumnConfig()
@@ -621,9 +622,13 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
         mapping.comment = comment
     }
 
-    void methodMissing(String name, args) {
-        if ('user-type' == name && args && (args[0] instanceof Map)) {
+    void methodMissing(String name, Object args) {
+        boolean hasArgs = args.asBoolean()
+        if ('user-type' == name && hasArgs && (args[0] instanceof Map)) {
             hibernateCustomUserType(args[0])
+        }
+        else if('importFrom' == name && hasArgs && (args[0] instanceof Class)) {
+            // ignore, handled by constraints
         }
         else if (args && ((args[0] instanceof Map) || (args[0] instanceof Closure))) {
             handleMethodMissing(name, args)
