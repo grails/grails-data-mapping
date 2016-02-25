@@ -2007,7 +2007,8 @@ public class GrailsDomainBinder implements MetadataContributor {
             } else {
                 simpleValue.setTypeName(ENUM_TYPE_CLASS);
                 if (enumType.equals(DEFAULT_ENUM_TYPE) || "string".equalsIgnoreCase(enumType)) {
-                    enumProperties.put(ENUM_TYPE_PROP, String.valueOf(Types.VARCHAR));
+                    enumProperties.put(EnumType.TYPE, String.valueOf(Types.VARCHAR));
+                    enumProperties.put(EnumType.NAMED, Boolean.TRUE.toString());
                 }
                 else if (!"ordinal".equalsIgnoreCase(enumType)) {
                     LOG.warn("Invalid enumType specified when mapping property [" + property.getName() +
