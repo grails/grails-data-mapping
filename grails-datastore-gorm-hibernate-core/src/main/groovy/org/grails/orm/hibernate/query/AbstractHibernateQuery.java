@@ -94,8 +94,8 @@ public abstract class AbstractHibernateQuery extends Query {
         }
     }
 
-    protected AbstractHibernateQuery(DetachedCriteria criteria) {
-        super(null, null);
+    protected AbstractHibernateQuery(DetachedCriteria criteria, PersistentEntity entity) {
+        super(null, entity);
         this.detachedCriteria = criteria;
     }
 

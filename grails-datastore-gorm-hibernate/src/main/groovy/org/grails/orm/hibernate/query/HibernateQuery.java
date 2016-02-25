@@ -53,18 +53,17 @@ public class HibernateQuery extends AbstractHibernateQuery {
         super(criteria, session, entity);
     }
 
-    public HibernateQuery(Criteria criteria) {
-        super(criteria, null, null);
-    }
-
-    public HibernateQuery(DetachedCriteria criteria) {
-        super(criteria);
+    public HibernateQuery(Criteria criteria, PersistentEntity entity) {
+        super(criteria, null, entity);
     }
 
     public HibernateQuery(Criteria subCriteria, AbstractHibernateSession session, PersistentEntity associatedEntity, String newAlias) {
         super(subCriteria, session, associatedEntity, newAlias);
     }
 
+    public HibernateQuery(DetachedCriteria criteria, PersistentEntity entity) {
+        super(criteria, entity);
+    }
     protected AbstractHibernateCriterionAdapter createHibernateCriterionAdapter(PersistentEntity entity, Criterion c, String alias) {
         return new HibernateCriterionAdapter(entity, c, alias);
     }
