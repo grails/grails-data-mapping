@@ -16,6 +16,7 @@
 package grails.orm;
 
 import groovy.lang.GroovySystem;
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.grails.orm.hibernate.HibernateDatastore;
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
@@ -198,12 +199,13 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
 
     @Override
     protected org.hibernate.criterion.DetachedCriteria convertToHibernateCriteria(QueryableCriteria<?> queryableCriteria) {
-        return getHibernateDetachedCriteria(new HibernateQuery(criteria), queryableCriteria);
+        return getHibernateDetachedCriteria(new HibernateQuery(criteria, queryableCriteria.getPersistentEntity()), queryableCriteria);
     }
 
     public static org.hibernate.criterion.DetachedCriteria getHibernateDetachedCriteria(AbstractHibernateQuery query, QueryableCriteria<?> queryableCriteria) {
         String alias = queryableCriteria.getAlias();
-        Class targetClass = queryableCriteria.getPersistentEntity().getJavaClass();
+        PersistentEntity persistentEntity = queryableCriteria.getPersistentEntity();
+        Class targetClass = persistentEntity.getJavaClass();
         org.hibernate.criterion.DetachedCriteria detachedCriteria;
 
         if(alias != null) {
@@ -212,7 +214,7 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
         else {
             detachedCriteria = org.hibernate.criterion.DetachedCriteria.forClass(targetClass);
         }
-        populateHibernateDetachedCriteria(new HibernateQuery(detachedCriteria), detachedCriteria, queryableCriteria);
+        populateHibernateDetachedCriteria(new HibernateQuery(detachedCriteria,persistentEntity), detachedCriteria, queryableCriteria);
         return detachedCriteria;
     }
 
