@@ -128,6 +128,16 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 delegate.persistentClasses = persistentClasses
             }
 
+            // override Validator beans with Hibernate aware instances
+            for(cls in persistentClasses) {
+                "${cls.name}Validator"(HibernateDomainClassValidator) {
+                    messageSource = ref("messageSource")
+                    domainClass = ref("${cls.name}DomainClass")
+                    grailsApplication = ref('grailsApplication')
+                    mappingContext = ref("grailsDomainClassMappingContext")
+                }
+            }
+
             def config = this.configuration
             for(dataSourceName in dataSources) {
 
@@ -201,17 +211,6 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                     bean.scope = "prototype"
                     properties = hibernateProperties
                 }
-
-                // override Validator beans with Hibernate aware instances
-                for(cls in persistentClasses) {
-                    "${cls.name}Validator$suffix"(HibernateDomainClassValidator) {
-                        messageSource = ref("messageSource")
-                        domainClass = ref("${cls.name}DomainClass")
-                        grailsApplication = ref("grailsApplication")
-                        hibernateDatastore = ref("hibernateDatastore$suffix")
-                    }
-                }
-
 
                 def namingStrategy = config.getProperty("hibernate${suffix}.naming_strategy") ?: ImprovedNamingStrategy
                 try {

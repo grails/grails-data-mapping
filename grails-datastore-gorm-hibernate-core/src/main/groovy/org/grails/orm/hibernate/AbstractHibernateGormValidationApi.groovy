@@ -23,6 +23,7 @@ import org.grails.datastore.mapping.validation.ValidationErrors
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.mapping.engine.event.ValidationEvent
+import org.hibernate.Session
 import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
@@ -74,12 +75,26 @@ abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D
 
         fireEvent instance, validatedFieldsList
 
-        if (deepValidate && (validator instanceof CascadingValidator)) {
-            ((CascadingValidator)validator).validate instance, errors, deepValidate
+
+        hibernateTemplate.execute { Session session ->
+
+            def previous = readPreviousFlushMode(session)
+            applyManualFlush(session)
+            try {
+                if (deepValidate && (validator instanceof CascadingValidator)) {
+                    ((CascadingValidator)validator).validate instance, errors, deepValidate
+                }
+                else {
+                    validator.validate instance, errors
+                }
+            } finally {
+                if(!errors.hasErrors()) {
+                    restoreFlushMode(session, previous)
+                }
+            }
+
         }
-        else {
-            validator.validate instance, errors
-        }
+
 
         int oldErrorCount = errors.errorCount
         errors = filterErrors(errors, validatedFields, instance)
@@ -99,12 +114,17 @@ abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D
 
         // If the errors have been filtered, update the 'errors' object attached to the target.
         if (errors.errorCount != oldErrorCount) {
-            MetaClass metaClass = GroovySystem.metaClassRegistry.getMetaClass(instance.getClass())
-            metaClass.setProperty( instance, GormProperties.ERRORS, errors)
+            setErrors(instance, errors)
         }
 
         return valid
     }
+
+    abstract void restoreFlushMode(Session session, Object previousFlushMode)
+
+    abstract Object readPreviousFlushMode(Session session)
+
+    abstract applyManualFlush(Session session)
 
     private void fireEvent(Object target, List<?> validatedFieldsList) {
         ValidationEvent event = new ValidationEvent(datastore, target);

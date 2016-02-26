@@ -192,10 +192,11 @@ class Setup {
 
             def validator = new HibernateDomainClassValidator()
 
-            validator.hibernateDatastore = hibernateDatastore
+            validator.mappingContext = context
             validator.grailsApplication = grailsApplication
             validator.domainClass = dc
             validator.messageSource = ctx
+            validator.proxyHandler = new HibernateProxyHandler()
             dc.validator = validator
             def entity = context.getPersistentEntity(dc.fullName)
             if(entity != null) {

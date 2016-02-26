@@ -17,14 +17,12 @@ package org.grails.orm.hibernate.validation;
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
 import org.codehaus.groovy.grails.commons.GrailsDomainClass;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
+import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator;
-import org.grails.datastore.gorm.proxy.ProxyHandlerAdapter;
 import org.grails.datastore.gorm.support.BeforeValidateHelper;
 import org.grails.datastore.gorm.validation.CascadingValidator;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler;
 import org.hibernate.Hibernate;
 import org.springframework.beans.BeanWrapper;
@@ -46,8 +44,8 @@ import java.util.concurrent.Callable;
 public class HibernateDomainClassValidator extends GrailsDomainClassValidator implements MessageSourceAware, CascadingValidator, InitializingBean{
 
     private BeforeValidateHelper beforeValidateHelper = new BeforeValidateHelper();
-    private ProxyHandler proxyHandler = new ProxyHandlerAdapter(new SimpleHibernateProxyHandler());
-    private AbstractHibernateDatastore hibernateDatastore;
+    private ProxyHandler proxyHandler = new SimpleHibernateProxyHandler();
+    private MappingContext mappingContext;
 
     @Override
     protected GrailsDomainClass getAssociatedDomainClassFromApplication(Object associatedObject) {
@@ -58,19 +56,6 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
     @Autowired(required = false)
     public void setProxyHandler(ProxyHandler proxyHandler) {
         this.proxyHandler = proxyHandler;
-    }
-
-    @Override
-    public void validate(final Object obj, final Errors errors, final boolean cascade) {
-        hibernateDatastore.withFlushMode( AbstractHibernateDatastore.FlushMode.MANUAL, new Callable<Boolean>() {
-
-            @Override
-            public Boolean call() throws Exception {
-                HibernateDomainClassValidator.super.validate(obj, errors, cascade);
-                return !errors.hasErrors();
-            }
-        });
-
     }
 
     /**
@@ -104,7 +89,7 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
     @Override
     protected void cascadeValidationToOne(Errors errors, BeanWrapper bean, Object associatedObject, GrailsDomainClassProperty persistentProperty, String propertyName, Object indexOrKey) {
         if(proxyHandler.isInitialized(associatedObject)) {
-            associatedObject = proxyHandler.isProxy(associatedObject) ? proxyHandler.unwrapIfProxy(associatedObject) : associatedObject;
+            associatedObject = proxyHandler.isProxy(associatedObject) ? proxyHandler.unwrap(associatedObject) : associatedObject;
             if(associatedObject != null) {
                 cascadeBeforeValidate(associatedObject);
                 super.cascadeValidationToOne(errors, bean, associatedObject, persistentProperty, propertyName, indexOrKey);
@@ -119,14 +104,13 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
         }
     }
 
-    public void setHibernateDatastore(AbstractHibernateDatastore hibernateDatastore) {
-        this.hibernateDatastore = hibernateDatastore;
+    public void setMappingContext(MappingContext mappingContext) {
+        this.mappingContext = mappingContext;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        if(hibernateDatastore != null) {
-            MappingContext mappingContext = hibernateDatastore.getMappingContext();
+        if(mappingContext != null) {
             PersistentEntity mappedEntity = mappingContext.getPersistentEntity(getDomainClass().getFullName());
             if(mappedEntity != null) {
                 mappingContext.addEntityValidator(mappedEntity, this);
