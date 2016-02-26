@@ -3,6 +3,7 @@ package org.grails.orm.hibernate.cfg;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.orm.hibernate.datasource.MultipleDataSourceSupport;
 import org.grails.orm.hibernate.proxy.GroovyAwarePojoEntityTuplizer;
 import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
@@ -110,7 +111,7 @@ public class HibernateMappingContextConfiguration extends Configuration {
                 if (loader.getResource(hibernateConfig) != null) continue;
 
                 final Mappings mappings = super.createMappings();
-                if (!GrailsHibernateUtil.usesDatasource(domainClass, dataSourceName)) {
+                if (!MultipleDataSourceSupport.usesDatasource(domainClass, dataSourceName)) {
                     continue;
                 }
 

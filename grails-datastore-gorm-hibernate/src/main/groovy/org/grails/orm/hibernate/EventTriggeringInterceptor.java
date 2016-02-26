@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder;
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.grails.orm.hibernate.cfg.HibernateMappingContext;
+import org.grails.orm.hibernate.datasource.MultipleDataSourceSupport;
 import org.grails.orm.hibernate.support.ClosureEventListener;
 import org.grails.orm.hibernate.support.SoftKey;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
@@ -238,7 +239,7 @@ public class EventTriggeringInterceptor extends AbstractEventTriggeringIntercept
     }
 
     protected List<String> getDatasourceNames(PersistentEntity dc) {
-        return GrailsHibernateUtil.getDatasourceNames(dc);
+        return MultipleDataSourceSupport.getDatasourceNames(dc);
     }
     
     public TimestampProvider getTimestampProvider() {

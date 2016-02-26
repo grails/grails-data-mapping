@@ -18,8 +18,8 @@ import grails.core.*;
 import groovy.lang.Closure;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.orm.hibernate.datasource.MultipleDataSourceSupport;
 import org.grails.orm.hibernate.proxy.GroovyAwarePojoEntityTuplizer;
 import org.grails.core.artefact.AnnotationDomainClassArtefactHandler;
 import org.grails.core.artefact.DomainClassArtefactHandler;
@@ -207,7 +207,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
                     // don't configure Hibernate mapped classes
                     if (originalContextLoader.getResource(hibernateConfig) != null) continue;
 
-                    if (!GrailsHibernateUtil.usesDatasource(domainClass, dataSourceName)) {
+                    if (!MultipleDataSourceSupport.usesDatasource(domainClass, dataSourceName)) {
                         continue;
                     }
 

@@ -17,9 +17,7 @@ package org.grails.orm.hibernate.cfg;
 import grails.core.GrailsApplication;
 import grails.core.GrailsClass;
 import grails.core.GrailsDomainClass;
-import grails.core.GrailsDomainClassProperty;
 import groovy.lang.Closure;
-import groovy.util.Eval;
 
 import java.util.HashSet;
 import java.util.Properties;
@@ -27,6 +25,7 @@ import java.util.Set;
 
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.orm.hibernate.datasource.MultipleDataSourceSupport;
 import org.grails.orm.hibernate.proxy.GroovyAwarePojoEntityTuplizer;
 import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.hibernate.EntityMode;
@@ -119,7 +118,7 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
             }
 
             for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
-                if (!GrailsHibernateUtil.usesDatasource(entity, dataSourceName)) {
+                if (!MultipleDataSourceSupport.usesDatasource(entity, dataSourceName)) {
                     continue;
                 }
                 Mapping m = binder.getMapping(entity);

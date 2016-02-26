@@ -22,9 +22,8 @@ import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.grails.orm.hibernate.cfg.HibernateUtils
 import org.grails.orm.hibernate.cfg.Mapping
+import org.grails.orm.hibernate.datasource.MultipleDataSourceSupport
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
@@ -43,7 +42,7 @@ class HibernateGormEnhancer extends GormEnhancer {
 
     @Override
     protected boolean appliesToDatastore(Datastore datastore, PersistentEntity entity) {
-        if(GrailsHibernateUtil.usesDatasource(entity, ((AbstractHibernateDatastore)datastore).getDataSourceName())) {
+        if(MultipleDataSourceSupport.usesDatasource(entity, ((AbstractHibernateDatastore)datastore).getDataSourceName())) {
             return super.appliesToDatastore(datastore, entity)
         }
         return false;
@@ -70,11 +69,11 @@ class HibernateGormEnhancer extends GormEnhancer {
 
     @Override
     Set<String> allQualifiers(Datastore datastore, PersistentEntity entity) {
-        def dataSourceName = GrailsHibernateUtil.getDefaultDataSource(entity)
+        def dataSourceName = MultipleDataSourceSupport.getDefaultDataSource(entity)
         def datastoreStoreDataSourceName = ((HibernateDatastore) datastore).dataSourceName
         Set<String> qualifiers = []
 
-        def allMappedDataSources = GrailsHibernateUtil.getDatasourceNames(entity)
+        def allMappedDataSources = MultipleDataSourceSupport.getDatasourceNames(entity)
         if(datastoreStoreDataSourceName.equals(dataSourceName) ) {
             qualifiers.add(Entity.DEFAULT_DATA_SOURCE)
         }

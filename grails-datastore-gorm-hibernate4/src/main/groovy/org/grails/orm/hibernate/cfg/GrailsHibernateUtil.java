@@ -28,6 +28,7 @@ import org.grails.datastore.mapping.model.types.Embedded;
 import org.grails.datastore.mapping.reflect.ClassUtils;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.grails.orm.hibernate.HibernateDatastore;
+import org.grails.orm.hibernate.datasource.MultipleDataSourceSupport;
 import org.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory;
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils;
@@ -444,34 +445,28 @@ public class GrailsHibernateUtil extends HibernateRuntimeUtils {
         return proxyHandler.unwrapIfProxy(instance);
     }
 
-    public static boolean usesDatasource(PersistentEntity domainClass, String dataSourceName) {
-        List<String> names = getDatasourceNames(domainClass);
-        return names.contains(dataSourceName) ||
-                names.contains(Mapping.ALL_DATA_SOURCES);
+    /**
+     * @deprecated Use {@link  MultipleDataSourceSupport#getDefaultDataSource(PersistentEntity)} instead
+     */
+    @Deprecated
+    public static String getDefaultDataSource(PersistentEntity domainClass) {
+        return MultipleDataSourceSupport.getDefaultDataSource(domainClass);
     }
 
     /**
-     * If a domain class uses more than one datasource, we need to know which one to use
-     * when calling a method without a namespace qualifier.
-     *
-     * @param domainClass the domain class
-     * @return the default datasource name
+     * @deprecated Use {@link  MultipleDataSourceSupport#getDatasourceNames(PersistentEntity)} instead
      */
-    public static String getDefaultDataSource(PersistentEntity domainClass) {
-        List<String> names = getDatasourceNames(domainClass);
-        if (names.size() == 1 && Mapping.ALL_DATA_SOURCES.equals(names.get(0))) {
-            return Mapping.DEFAULT_DATA_SOURCE;
-        }
-        return names.get(0);
+    @Deprecated
+    public static List<String> getDatasourceNames(PersistentEntity domainClass) {
+        return MultipleDataSourceSupport.getDatasourceNames(domainClass);
     }
 
-    public static List<String> getDatasourceNames(PersistentEntity domainClass) {
-        final Entity mappedForm = domainClass.getMapping().getMappedForm();
-        if(mappedForm instanceof Mapping)  {
-            Mapping mapping = (Mapping) mappedForm;
-            return mapping.getDatasources();
-        }
-        return Collections.singletonList(Mapping.DEFAULT_DATA_SOURCE);
+    /**
+     * @deprecated Use {@link  MultipleDataSourceSupport#getDefaultDataSource(PersistentEntity)} instead
+     */
+    @Deprecated
+    public static boolean usesDatasource(PersistentEntity domainClass, String dataSourceName) {
+        return MultipleDataSourceSupport.usesDatasource(domainClass, dataSourceName);
     }
 
     public static boolean isMappedWithHibernate(PersistentEntity domainClass) {
