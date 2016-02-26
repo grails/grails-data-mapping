@@ -19,6 +19,7 @@ import grails.test.mixin.support.SkipMethod
 import grails.test.runtime.TestPluginRegistrar
 import grails.test.runtime.TestPluginUsage
 import grails.test.runtime.gorm.HibernateTestPlugin
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 
 import javax.sql.DataSource
@@ -73,7 +74,8 @@ class HibernateTestMixin extends GrailsUnitTestMixin implements TestPluginRegist
     public Iterable<TestPluginUsage> getTestPluginUsages() {
         return TestPluginUsage.createForActivating(HibernateTestPlugin)
     }
-    
+
+    @CompileDynamic
     public PlatformTransactionManager getTransactionManager() {
         getMainContext().getBean("transactionManager", PlatformTransactionManager)
     }
@@ -90,6 +92,7 @@ class HibernateTestMixin extends GrailsUnitTestMixin implements TestPluginRegist
         return null
     }
 
+    @CompileDynamic
     public SessionFactory getSessionFactory() {
         getMainContext().getBean("sessionFactory", SessionFactory)
     }
