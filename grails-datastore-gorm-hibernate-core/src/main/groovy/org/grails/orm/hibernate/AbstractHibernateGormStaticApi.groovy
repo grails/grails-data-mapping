@@ -46,7 +46,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     AbstractHibernateGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager, IHibernateTemplate hibernateTemplate) {
         super(persistentClass, datastore, finders, transactionManager)
         this.hibernateTemplate = hibernateTemplate
-        this.queryPattern = ~/(?i)from(?-i)\s+[${persistentEntity.name}|${persistentEntity.javaClass.simpleName}].*/
+        this.queryPattern = ~/(?i)\s*from(?-i)\s+[${persistentEntity.name}|${persistentEntity.javaClass.simpleName}].*/
         this.conversionService = datastore.mappingContext.conversionService
         this.proxyHandler = datastore.mappingContext.proxyHandler
     }

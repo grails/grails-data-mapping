@@ -147,6 +147,15 @@ class FindAllMethodTests extends AbstractGrailsHibernateTests {
     }
 
     @Test
+    void testStartingWithSpaceOnSingleLine() {
+        def theClass = ga.getDomainClass(FindAllTest.name).clazz
+
+        theClass.newInstance(name:"alice").save(flush:true)
+
+        assertEquals 1, theClass.findAll(" from FindAllTest as t where t.name = :name", [name:'alice']).size()
+    }
+
+    @Test
     void testFindAllWithNullNamedParam() {
         def theClass = ga.getDomainClass(FindAllTest.name).clazz
         assertEquals 0, theClass.findAll(max:null).size()
