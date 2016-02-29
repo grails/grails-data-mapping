@@ -20,10 +20,11 @@ class HibernateMappingContextFactoryBean implements FactoryBean<MappingContext>,
     ProxyFactory proxyFactory
     ApplicationContext applicationContext
     Class[] persistentClasses = [] as Class[]
+    Map<String, Object> defaultConstraints
 
     @Override
     MappingContext getObject() throws Exception {
-        def ctx = new HibernateMappingContext(configuration ?: applicationContext.getEnvironment(), applicationContext,persistentClasses)
+        def ctx = new HibernateMappingContext(configuration ?: applicationContext.getEnvironment(), applicationContext, defaultConstraints, persistentClasses)
         if(proxyFactory != null) {
             ctx.setProxyFactory(proxyFactory)
         }

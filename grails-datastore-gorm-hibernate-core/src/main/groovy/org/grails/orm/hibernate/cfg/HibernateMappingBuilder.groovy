@@ -39,6 +39,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
 
     Mapping mapping
     String className
+    Map<String,Object> defaultConstraints
 
     /**
      * Constructor for builder
@@ -49,9 +50,10 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
         this.className = className
     }
 
-    HibernateMappingBuilder(Mapping mapping, String className) {
+    HibernateMappingBuilder(Mapping mapping, String className, Map<String,Object> defaultConstraints = null) {
         this.mapping = mapping
         this.className = className
+        this.defaultConstraints = defaultConstraints
     }
 
     @Override
@@ -433,7 +435,9 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
      */
     private handleMethodMissing = { String name, args ->
         if (args && ((args[0] instanceof Map) || (args[0] instanceof Closure))) {
-            def namedArgs = args[0] instanceof Map ? args[0] : [:]
+            Map namedArgs = args[0] instanceof Map ? args[0] : [:]
+
+
             PropertyConfig property = mapping.columns[name] ?: new PropertyConfig()
             property.formula = namedArgs.formula ?: property.formula
             property.type = namedArgs.type ?: property.type
@@ -575,6 +579,12 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
             }
 
             mapping.columns[name] = property
+            if(defaultConstraints != null && namedArgs.containsKey('shared')) {
+                def sharedConstraints = defaultConstraints.get(namedArgs.shared)
+                if(sharedConstraints != null) {
+                    handleMethodMissing(name, [sharedConstraints] as Object[])
+                }
+            }
         }
     }
 

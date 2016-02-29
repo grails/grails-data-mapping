@@ -30,6 +30,7 @@ import org.springframework.core.env.PropertyResolver;
 import org.springframework.validation.Errors;
 
 import java.lang.annotation.Annotation;
+import java.util.Map;
 
 /**
  * A Mapping context for Hibernate
@@ -45,6 +46,12 @@ public class HibernateMappingContext extends AbstractMappingContext {
 
     public HibernateMappingContext(PropertyResolver configuration, Object contextObject, Class...persistentClasses) {
         this(configuration.getProperty(AbstractHibernateDatastore.CONFIG_PROPERTY_DEFAULT_MAPPING, Closure.class, null), contextObject);
+        addPersistentEntities(persistentClasses);
+    }
+
+    public HibernateMappingContext(PropertyResolver configuration, Object contextObject, Map<String,Object> defaultConstraints, Class...persistentClasses) {
+        this(configuration.getProperty(AbstractHibernateDatastore.CONFIG_PROPERTY_DEFAULT_MAPPING, Closure.class, null), contextObject);
+        setDefaultConstraints(defaultConstraints);
         addPersistentEntities(persistentClasses);
     }
 
@@ -72,7 +79,14 @@ public class HibernateMappingContext extends AbstractMappingContext {
         };
     }
 
-
+    /**
+     * Sets the default constraints to be used
+     *
+     * @param defaultConstraints The default constraints
+     */
+    public void setDefaultConstraints(Map<String,Object> defaultConstraints) {
+        this.mappingFactory.setDefaultConstraints(defaultConstraints);
+    }
 
     @Override
     public MappingConfigurationStrategy getMappingSyntaxStrategy() {
@@ -181,12 +195,18 @@ public class HibernateMappingContext extends AbstractMappingContext {
 
     class HibernateMappingFactory extends AbstractGormMappingFactory<Mapping,PropertyConfig> {
 
+        Map<String, Object> defaultConstraints;
+
         public HibernateMappingFactory() {
+        }
+
+        public void setDefaultConstraints(Map<String, Object> defaultConstraints) {
+            this.defaultConstraints = defaultConstraints;
         }
 
         @Override
         protected MappingConfigurationBuilder createConfigurationBuilder(PersistentEntity entity, Mapping mapping) {
-            return new HibernateMappingBuilder(mapping, entity.getName());
+            return new HibernateMappingBuilder(mapping, entity.getName(), defaultConstraints);
         }
 
         @Override

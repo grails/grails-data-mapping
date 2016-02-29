@@ -21,6 +21,7 @@ import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersi
 import org.grails.orm.hibernate.validation.HibernateDomainClassValidator
 import org.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.grails.orm.hibernate.validation.UniqueConstraint
+import org.grails.validation.ConstraintEvalUtils
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.RootBeanDefinition
 import org.springframework.context.ApplicationContext
@@ -71,10 +72,12 @@ class HibernateGrailsPlugin extends Plugin {
         }
         .collect() { GrailsClass cls -> cls.clazz }
 
+        def defaultConstraints = ConstraintEvalUtils.getDefaultConstraints(config)
         def springInitializer = new HibernateDatastoreSpringInitializer(config, domainClasses)
         springInitializer.enableReload = Environment.isDevelopmentMode()
         springInitializer.registerApplicationIfNotPresent = false
         springInitializer.dataSources = dataSourceNames
+        springInitializer.defaultConstraints = defaultConstraints
         def beans = springInitializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
 
         beans.delegate = delegate

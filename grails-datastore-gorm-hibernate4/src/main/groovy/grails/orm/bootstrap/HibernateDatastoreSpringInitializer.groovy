@@ -62,7 +62,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     String ddlAuto = "update"
     Set<String> dataSources = [defaultDataSourceBeanName]
     boolean enableReload = false
-
+    Map<String, Object> defaultConstraints
 
 
     @Override
@@ -126,6 +126,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 delegate.configuration = this.configuration
                 proxyFactory = hibernateProxyHandler
                 delegate.persistentClasses = persistentClasses
+                delegate.defaultConstraints = defaultConstraints
             }
 
             // override Validator beans with Hibernate aware instances
