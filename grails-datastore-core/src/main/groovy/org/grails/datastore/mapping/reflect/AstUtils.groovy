@@ -46,6 +46,7 @@ import java.util.regex.Pattern
  */
 @CompileStatic
 class AstUtils {
+    public static final Object TRANSFORM_APPLIED_MARKER = new Object();
     public static final String DOMAIN_TYPE = "Domain"
     public static final Parameter[] ZERO_PARAMETERS = new Parameter[0];
     public static final ArgumentListExpression ZERO_ARGUMENTS = new ArgumentListExpression();

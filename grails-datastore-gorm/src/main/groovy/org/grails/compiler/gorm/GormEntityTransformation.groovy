@@ -112,7 +112,7 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
     }
 
     void visit(ClassNode classNode, SourceUnit sourceUnit) {
-        if(AstUtils.getKnownEntityNames().contains(classNode.name)) {
+        if ( classNode.getNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER) != null ) {
             return
         }
 
@@ -121,6 +121,7 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
             return
         }
 
+        classNode.putNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER, Boolean.TRUE)
         AstUtils.addTransformedEntityName(classNode.name)
         // Add the entity annotation and enable generic replacement
         classNode.setUsingGenerics(true);
