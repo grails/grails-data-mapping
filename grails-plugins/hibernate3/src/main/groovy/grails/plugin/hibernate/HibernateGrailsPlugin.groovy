@@ -160,7 +160,7 @@ class HibernateGrailsPlugin extends Plugin {
                 messageSource = ref("messageSource")
                 domainClass = ref("${cls.fullName}DomainClass")
                 delegate.grailsApplication = ref("grailsApplication")
-                hibernateDatastore = ref("hibernateDatastore$suffix")
+                mappingContext = ref("grailsDomainClassMappingContext")
             }
         }
     }
