@@ -95,7 +95,7 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
             Thread.currentThread().setContextClassLoader(grailsApplication.getClassLoader());
         }
 
-        configureDomainBinder(grailsApplication, domainClasses);
+        configureDomainBinder(grailsApplication, domainClasses, this.dataSourceName);
 
         for (GrailsDomainClass domainClass : domainClasses) {
             if (!GrailsHibernateUtil.usesDatasource(domainClass, dataSourceName)) {
@@ -111,8 +111,11 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
         configLocked = true;
     }
 
-    public static void configureDomainBinder(GrailsApplication grailsApplication, Set<GrailsDomainClass> domainClasses) {
-        Object defaultMapping = Eval.x(grailsApplication, "x.config?.grails?.gorm?.default?.mapping");
+    public static void configureDomainBinder(GrailsApplication grailsApplication, Set<GrailsDomainClass> domainClasses, String datasourceName) {
+        Object defaultMapping = Eval.x( grailsApplication, "x.config?.grails?.gorm?." + datasourceName + "?.mapping" );
+        if(defaultMapping == null || !(defaultMapping instanceof Closure)) {
+            defaultMapping = Eval.x( grailsApplication, "x.config?.grails?.gorm?.default?.mapping" );
+        }
         // do Grails class configuration
         for (GrailsDomainClass domainClass : domainClasses) {
             if (defaultMapping instanceof Closure) {
@@ -123,7 +126,7 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
             }
         }
     }
-    
+
     @Override
     protected void reset() {
         super.reset();
