@@ -24,22 +24,17 @@ import grails.test.runtime.TestPlugin
 import grails.test.runtime.TestRuntime
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-import org.grails.config.PropertySourcesConfig
+import org.apache.tomcat.jdbc.pool.DataSource as TomcatDataSource
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.spring.beans.factory.InstanceFactoryBean
 import org.grails.test.support.GrailsTestTransactionInterceptor
-import org.springframework.context.ApplicationContext
-import org.springframework.core.env.MutablePropertySources
-import org.springframework.core.env.PropertiesPropertySource
-
-import javax.sql.DataSource
-
-import org.apache.tomcat.jdbc.pool.DataSource as TomcatDataSource
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.core.env.PropertyResolver
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 
+import javax.sql.DataSource
 /**
  * a TestPlugin for TestRuntime for adding Grails DomainClass (GORM) support
  * 
@@ -212,12 +207,10 @@ class HibernateTestPlugin implements TestPlugin {
         if(!grailsApplication.config.containsKey("dataSource")) {
             grailsApplication.config.getProperty("dataSource")
         }
-        def initializer = new HibernateDatastoreSpringInitializer(persistentClasses)
-
-        Properties mergedConfig = mergeHibernateConfig(grailsApplication, defaultHibernateConfig, initializerConfig)
-        def propertySources = new MutablePropertySources()
-        propertySources.addFirst(new PropertiesPropertySource("hibernate-test-config", mergedConfig))
-        initializer.configuration = new PropertySourcesConfig(propertySources)
+        def config = grailsApplication.config
+        config.merge((Map)defaultHibernateConfig)
+        config.merge((Map)initializerConfig)
+        def initializer = new HibernateDatastoreSpringInitializer((PropertyResolver)config, persistentClasses)
 
         def context = grailsApplication.getMainContext()
         def beansClosure = initializer.getBeanDefinitions((BeanDefinitionRegistry)context)
@@ -225,27 +218,6 @@ class HibernateTestPlugin implements TestPlugin {
         defineBeans(runtime, immediateDelivery, beansClosure)
     }
     
-    protected Properties mergeHibernateConfig(GrailsApplication grailsApplication, Properties defaultConfig, Properties initializerConfig) {
-        Properties mergedConfig = new Properties()
-        if(initializerConfig) {
-            mergedConfig.putAll(initializerConfig)
-        }
-        grailsApplication?.flatConfig?.each { k, v ->
-            String key = k as String
-            if(key.startsWith('hibernate.')) {
-                if(!mergedConfig.containsKey(key)) {
-                    mergedConfig.setProperty(key, v as String)
-                }
-            }
-        }
-        defaultConfig.each { k, v ->
-            if(!mergedConfig.containsKey(k)) {
-                mergedConfig.setProperty(k as String, v as String)
-            }
-        }
-        mergedConfig
-    } 
-
     protected void initTransaction(TestRuntime runtime, Object target) {
         def transactionInterceptor = new GrailsTestTransactionInterceptor(getGrailsApplication(runtime).mainContext)
         if (runtime.containsValueFor("hibernateInterceptor") && transactionInterceptor.isTransactional(target)) {
