@@ -1,8 +1,6 @@
 package org.grails.orm.hibernate.support
 
-import grails.config.Settings
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.proxy.ProxyFactory
 import org.grails.orm.hibernate.cfg.HibernateMappingContext
@@ -17,6 +15,8 @@ import org.springframework.core.env.PropertyResolver
 @CompileStatic
 class HibernateMappingContextFactoryBean implements FactoryBean<MappingContext>, ApplicationContextAware {
 
+    private static final String DEFAULT_CONSTRAINTS = 'grails.gorm.default.constraints'
+
     PropertyResolver configuration
     ProxyFactory proxyFactory
     ApplicationContext applicationContext
@@ -24,7 +24,7 @@ class HibernateMappingContextFactoryBean implements FactoryBean<MappingContext>,
 
     @Override
     MappingContext getObject() throws Exception {
-        def defaultConstraints = configuration.getProperty(Settings.GORM_DEFAULT_CONSTRAINTS, Closure, null)
+        def defaultConstraints = configuration.getProperty(DEFAULT_CONSTRAINTS, Closure, null)
         def ctx = new HibernateMappingContext(configuration ?: applicationContext.getEnvironment(), applicationContext, defaultConstraints, persistentClasses)
         if(proxyFactory != null) {
             ctx.setProxyFactory(proxyFactory)
