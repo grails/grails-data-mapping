@@ -24,7 +24,13 @@ class HibernateMappingContextFactoryBean implements FactoryBean<MappingContext>,
 
     @Override
     MappingContext getObject() throws Exception {
-        def defaultConstraints = configuration.getProperty(DEFAULT_CONSTRAINTS, Closure, null)
+        Closure defaultConstraints = null
+        try {
+            defaultConstraints = configuration.getProperty(DEFAULT_CONSTRAINTS, Closure, null)
+        } catch (IllegalArgumentException e) {
+            // ignore, only happens on Grails 2
+        }
+
         def ctx = new HibernateMappingContext(configuration ?: applicationContext.getEnvironment(), applicationContext, defaultConstraints, persistentClasses)
         if(proxyFactory != null) {
             ctx.setProxyFactory(proxyFactory)
