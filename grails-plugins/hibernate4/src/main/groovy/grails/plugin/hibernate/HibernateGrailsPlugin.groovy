@@ -1,6 +1,7 @@
 package grails.plugin.hibernate
 
 import grails.config.Config
+import grails.config.Settings
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.core.GrailsDomainClass
@@ -25,6 +26,7 @@ import org.grails.validation.ConstraintEvalUtils
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.RootBeanDefinition
 import org.springframework.context.ApplicationContext
+import org.springframework.core.env.PropertyResolver
 import org.springframework.validation.Validator
 /**
  * Plugin that integrates Hibernate into a Grails application
@@ -72,12 +74,10 @@ class HibernateGrailsPlugin extends Plugin {
                                                 }
                                                 .collect() { GrailsClass cls -> cls.clazz }
 
-        def defaultConstraints = ConstraintEvalUtils.getDefaultConstraints(config)
-        def springInitializer = new HibernateDatastoreSpringInitializer(config, domainClasses)
+        def springInitializer = new HibernateDatastoreSpringInitializer((PropertyResolver)config, domainClasses)
         springInitializer.enableReload = Environment.isDevelopmentMode()
         springInitializer.registerApplicationIfNotPresent = false
         springInitializer.dataSources = dataSourceNames
-        springInitializer.defaultConstraints = defaultConstraints
         def beans = springInitializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
 
         beans.delegate = delegate

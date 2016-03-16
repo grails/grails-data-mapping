@@ -38,8 +38,8 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
     static final Logger LOG = LoggerFactory.getLogger(this)
 
     Mapping mapping
-    String className
-    Map<String,Object> defaultConstraints
+    final String className
+    final Closure defaultConstraints
 
     /**
      * Constructor for builder
@@ -50,7 +50,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
         this.className = className
     }
 
-    HibernateMappingBuilder(Mapping mapping, String className, Map<String,Object> defaultConstraints = null) {
+    HibernateMappingBuilder(Mapping mapping, String className, Closure defaultConstraints = null) {
         this.mapping = mapping
         this.className = className
         this.defaultConstraints = defaultConstraints
@@ -437,8 +437,15 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
         if (args && ((args[0] instanceof Map) || (args[0] instanceof Closure))) {
             Map namedArgs = args[0] instanceof Map ? args[0] : [:]
 
+            def newConfig = new PropertyConfig()
+            if(defaultConstraints != null && namedArgs.containsKey('shared')) {
+                def sharedConstraints = mapping.columns.get(namedArgs.shared)
+                if(sharedConstraints != null) {
+                    newConfig = (PropertyConfig)sharedConstraints.clone()
+                }
+            }
 
-            PropertyConfig property = mapping.columns[name] ?: new PropertyConfig()
+            PropertyConfig property = mapping.columns[name] ?: newConfig
             property.formula = namedArgs.formula ?: property.formula
             property.type = namedArgs.type ?: property.type
             property.setLazy( namedArgs.lazy instanceof Boolean ? namedArgs.lazy : property.getLazy() )
@@ -579,12 +586,6 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
             }
 
             mapping.columns[name] = property
-            if(defaultConstraints != null && namedArgs.containsKey('shared')) {
-                def sharedConstraints = defaultConstraints.get(namedArgs.shared)
-                if(sharedConstraints != null) {
-                    handleMethodMissing(name, [sharedConstraints] as Object[])
-                }
-            }
         }
     }
 

@@ -44,6 +44,7 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
     protected Map<PersistentEntity, R> entityToMapping = new HashMap<PersistentEntity, R>();
     private Closure defaultMapping;
     private Object contextObject;
+    protected Closure defaultConstraints;
 
     /**
      * @param contextObject Context object to be passed to mapping blocks
@@ -51,6 +52,11 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
     public void setContextObject(Object contextObject) {
         this.contextObject = contextObject;
     }
+
+    public void setDefaultConstraints(Closure defaultConstraints) {
+        this.defaultConstraints = defaultConstraints;
+    }
+
 
     @Override
     public R createMappedForm(PersistentEntity entity) {
@@ -66,6 +72,9 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
             if (defaultMapping != null) {
                 evaluateWithContext(builder, defaultMapping);
             }
+            if (defaultConstraints != null) {
+                evaluateWithContext(builder, defaultConstraints);
+            }
             List<Closure> values = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.MAPPING, Closure.class);
             for (Closure value : values) {
                 evaluateWithContext(builder, value);
@@ -74,7 +83,10 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
             for (Closure value : values) {
                 evaluateWithContext(builder, value);
             }
-            entityToPropertyMap.put(entity, builder.getProperties());
+            Map properties = builder.getProperties();
+
+
+            entityToPropertyMap.put(entity, properties);
             return family;
         }
     }

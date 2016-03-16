@@ -49,7 +49,7 @@ public class HibernateMappingContext extends AbstractMappingContext {
         addPersistentEntities(persistentClasses);
     }
 
-    public HibernateMappingContext(PropertyResolver configuration, Object contextObject, Map<String,Object> defaultConstraints, Class...persistentClasses) {
+    public HibernateMappingContext(PropertyResolver configuration, Object contextObject, Closure defaultConstraints, Class...persistentClasses) {
         this(configuration.getProperty(AbstractHibernateDatastore.CONFIG_PROPERTY_DEFAULT_MAPPING, Closure.class, null), contextObject);
         setDefaultConstraints(defaultConstraints);
         addPersistentEntities(persistentClasses);
@@ -84,7 +84,7 @@ public class HibernateMappingContext extends AbstractMappingContext {
      *
      * @param defaultConstraints The default constraints
      */
-    public void setDefaultConstraints(Map<String,Object> defaultConstraints) {
+    public void setDefaultConstraints(Closure defaultConstraints) {
         this.mappingFactory.setDefaultConstraints(defaultConstraints);
     }
 
@@ -195,13 +195,7 @@ public class HibernateMappingContext extends AbstractMappingContext {
 
     class HibernateMappingFactory extends AbstractGormMappingFactory<Mapping,PropertyConfig> {
 
-        Map<String, Object> defaultConstraints;
-
         public HibernateMappingFactory() {
-        }
-
-        public void setDefaultConstraints(Map<String, Object> defaultConstraints) {
-            this.defaultConstraints = defaultConstraints;
         }
 
         @Override
