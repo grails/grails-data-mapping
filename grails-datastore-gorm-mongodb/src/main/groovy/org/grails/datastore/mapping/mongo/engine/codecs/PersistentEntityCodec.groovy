@@ -852,7 +852,7 @@ class PersistentEntityCodec implements Codec {
                         decoded
                 ))
                 if (value != null) {
-                    entityAccess.setPropertyNoConversion(property.name, value)
+                    entityAccess.setProperty(property.name, value)
                 }
             }
             else {

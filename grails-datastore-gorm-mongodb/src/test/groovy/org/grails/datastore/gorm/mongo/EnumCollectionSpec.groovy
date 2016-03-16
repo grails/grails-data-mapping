@@ -7,7 +7,7 @@ class EnumCollectionSpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
-        return [Teacher, Teacher2, DerivedTeacher]
+        return [Teacher, Teacher2, Teacher3, DerivedTeacher]
     }
 
     void "Test persistence of enum"() {
@@ -80,6 +80,33 @@ class EnumCollectionSpec extends GormDatastoreSpec {
         i.otherSubjects[1] == Subject.HOME_EC
         i.extra == 'hello'
     }
+
+
+    void "Test persistence of enum  set collections"() {
+        given:
+        def i = new Teacher3(name:"Melvin")
+        i.subjects= [Subject.HISTORY, Subject.HOME_EC]
+
+        when:"The entity is saved and flushed"
+        i.save(flush:true)
+
+        then:"The collection hasn't been broken by saving it"
+        i.subjects.contains Subject.HISTORY
+        i.subjects.contains Subject.HOME_EC
+        i.subjects.size() == 2
+
+        when:"The entity is queried for afresh"
+        session.clear()
+        i = Teacher3.findByName("Melvin")
+
+        then:
+        i != null
+        i.name == 'Melvin'
+        i.subjects != null
+        i.subjects.size() == 2
+        i.subjects.contains Subject.HISTORY
+        i.subjects.contains Subject.HOME_EC
+    }
 }
 
 @Entity
@@ -104,6 +131,18 @@ class Teacher2 {
         name index:true
     }
 }
+
+@Entity
+class Teacher3 {
+    Long id
+    String name
+    Set<Subject> subjects
+
+    static mapping = {
+        name index:true
+    }
+}
+
 
 @Entity
 class DerivedTeacher extends Teacher2 {
