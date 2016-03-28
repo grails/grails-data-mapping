@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.orm.hibernate.cfg.HibernateMappingContext;
 import org.grails.orm.hibernate.cfg.HibernateMappingContextConfiguration;
+import org.grails.orm.hibernate.cfg.HibernateMappingContextConfigurationBuilder;
 import org.grails.orm.hibernate.cfg.Mapping;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
@@ -383,12 +384,7 @@ public class HibernateMappingContextSessionFactoryBean extends HibernateExceptio
 
         configuration = newConfiguration();
 
-        if(hibernateMappingContext == null) {
 
-            throw new IllegalArgumentException("HibernateMappingContext is required.");
-        }
-
-        configuration.setHibernateMappingContext(hibernateMappingContext);
 
         if (configLocations != null) {
             for (Resource resource : configLocations) {
@@ -462,9 +458,7 @@ public class HibernateMappingContextSessionFactoryBean extends HibernateExceptio
             configuration.scanPackages(packagesToScan);
         }
 
-        if (eventListeners != null) {
-            configuration.setEventListeners(eventListeners);
-        }
+
 
         sessionFactory = doBuildSessionFactory();
 
@@ -548,15 +542,34 @@ public class HibernateMappingContextSessionFactoryBean extends HibernateExceptio
         if (configClass == null) {
             configClass = HibernateMappingContextConfiguration.class;
         }
-        HibernateMappingContextConfiguration config = BeanUtils.instantiateClass(configClass);
+
+        HibernateMappingContextConfigurationBuilder config = new HibernateMappingContextConfigurationBuilder(configClass);
+
+        if(hibernateMappingContext == null) {
+
+            throw new IllegalArgumentException("HibernateMappingContext is required.");
+        }
+
+        config.setHibernateMappingContext(hibernateMappingContext);
+
+
+        //HibernateMappingContextConfiguration config = BeanUtils.instantiateClass(configClass);
         config.setDataSourceName(dataSourceName);
         config.setApplicationContext(applicationContext);
         config.setSessionFactoryBeanName(sessionFactoryBeanName);
         config.setHibernateEventListeners(hibernateEventListeners);
+
+        if (eventListeners != null) {
+            config.setEventListeners(eventListeners);
+        }
+
         if (currentSessionContextClass != null) {
             config.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, currentSessionContextClass.getName());
         }
-        return config;
+
+
+
+        return config.build();
     }
 
 //    protected void configureGrailsJdbcTransactionFactory(Configuration config) {
