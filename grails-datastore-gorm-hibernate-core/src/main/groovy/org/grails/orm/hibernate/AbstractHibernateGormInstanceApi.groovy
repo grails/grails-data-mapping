@@ -164,7 +164,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
     D merge(D instance, Map params) {
         Map args = new HashMap(params)
         args[ARGUMENT_MERGE] = true
-        return save(instance, params)
+        return save(instance, args)
     }
 
     @Override
