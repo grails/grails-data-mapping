@@ -2,24 +2,13 @@ package org.grails.orm.hibernate.cfg;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.orm.hibernate.EventListenerIntegrator;
-import org.grails.orm.hibernate.GrailsSessionContext;
-import org.grails.orm.hibernate.HibernateEventListeners;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
 import org.hibernate.SessionFactoryObserver;
-import org.hibernate.boot.registry.BootstrapServiceRegistry;
-import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.boot.registry.classloading.internal.ClassLoaderServiceImpl;
-import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
-import org.hibernate.boot.spi.MetadataContributor;
+import org.hibernate.boot.MetadataSources;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
-import org.hibernate.context.spi.CurrentSessionContext;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.internal.util.config.ConfigurationHelper;
 import org.hibernate.service.ServiceRegistry;
@@ -42,10 +31,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A Configuration that uses a MappingContext to configure Hibernate
@@ -63,26 +49,18 @@ public class HibernateMappingContextConfiguration extends Configuration implemen
             new AnnotationTypeFilter(Embeddable.class, false),
             new AnnotationTypeFilter(MappedSuperclass.class, false)};
 
-    protected String sessionFactoryBeanName = "sessionFactory";
-    protected String dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
-    protected HibernateMappingContext hibernateMappingContext;
-    private Class<? extends CurrentSessionContext> currentSessionContext = GrailsSessionContext.class;
-    private HibernateEventListeners hibernateEventListeners;
-    private Map<String, Object> eventListeners;
+
     private ServiceRegistry serviceRegistry;
     private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 
-    public void setHibernateMappingContext(HibernateMappingContext hibernateMappingContext) {
-        this.hibernateMappingContext = hibernateMappingContext;
+    public HibernateMappingContextConfiguration(MetadataSources metadataSources)
+    {
+        super(metadataSources);
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(applicationContext);
-        String dsName = Mapping.DEFAULT_DATA_SOURCE.equals(dataSourceName) ? "dataSource" : "dataSource_" + dataSourceName;
-        getProperties().put(Environment.DATASOURCE, applicationContext.getBean(dsName));
-        getProperties().put(Environment.CURRENT_SESSION_CONTEXT_CLASS, currentSessionContext.getName());
-        getProperties().put(AvailableSettings.CLASSLOADERS, applicationContext.getClassLoader());
     }
 
     /**
@@ -152,41 +130,21 @@ public class HibernateMappingContextConfiguration extends Configuration implemen
         return false;
     }
 
-    public void setSessionFactoryBeanName(String name) {
-        sessionFactoryBeanName = name;
-    }
 
-    public void setDataSourceName(String name) {
-        dataSourceName = name;
-    }
-
-    /* (non-Javadoc)
-     * @see org.hibernate.cfg.Configuration#buildSessionFactory()
-     */
     @Override
-    public SessionFactory buildSessionFactory() throws HibernateException {
-
+    public SessionFactory buildSessionFactory(ServiceRegistry registry) throws HibernateException
+    {
         // set the class loader to load Groovy classes
 
         // work around for HHH-2624
         SessionFactory sessionFactory = null;
 
-        Object classLoaderObject = getProperties().get(AvailableSettings.CLASSLOADERS);
-        Collection<ClassLoader> appClassLoaders;
 
-        if(classLoaderObject instanceof Collection) {
-            appClassLoaders = (Collection<ClassLoader>) classLoaderObject;
-        }
-        else if(classLoaderObject instanceof ClassLoader) {
-            appClassLoaders = Collections.<ClassLoader>singletonList((ClassLoader) classLoaderObject);
-        }
-        else {
-            appClassLoaders = Collections.emptyList();
-        }
         Thread currentThread = Thread.currentThread();
         ClassLoader threadContextClassLoader = currentThread.getContextClassLoader();
         boolean overrideClassLoader = false;
         ClassLoader appClassLoader = null;
+        Collection<ClassLoader> appClassLoaders = getAppClassLoaders(getProperties(),getClass());
         if(!appClassLoaders.isEmpty()) {
             for (ClassLoader cl : appClassLoaders) {
                 if(!cl.equals(threadContextClassLoader)) {
@@ -196,9 +154,6 @@ public class HibernateMappingContextConfiguration extends Configuration implemen
                 }
             }
         }
-        else {
-            appClassLoaders = Arrays.asList(threadContextClassLoader, getClass().getClassLoader());
-        }
         if (overrideClassLoader) {
             currentThread.setContextClassLoader(appClassLoader);
         }
@@ -206,24 +161,7 @@ public class HibernateMappingContextConfiguration extends Configuration implemen
         try {
             ConfigurationHelper.resolvePlaceHolders(getProperties());
 
-            final GrailsDomainBinder domainBinder = new GrailsDomainBinder(dataSourceName, sessionFactoryBeanName, hibernateMappingContext);
 
-            ClassLoaderService classLoaderService = new ClassLoaderServiceImpl(appClassLoaders) {
-                @Override
-                public <S> Collection<S> loadJavaServices(Class<S> serviceContract) {
-                    if(MetadataContributor.class.isAssignableFrom(serviceContract)) {
-                        return Collections.<S>singletonList((S) domainBinder);
-                    }
-                    else {
-                        return super.loadJavaServices(serviceContract);
-                    }
-                }
-            };
-            EventListenerIntegrator eventListenerIntegrator = new EventListenerIntegrator(hibernateEventListeners, eventListeners);
-            BootstrapServiceRegistry bootstrapServiceRegistry = new BootstrapServiceRegistryBuilder()
-                                                                        .applyIntegrator(eventListenerIntegrator)
-                                                                        .applyClassLoaderService(classLoaderService)
-                                                                        .build();
 
             setSessionFactoryObserver(new SessionFactoryObserver() {
                 private static final long serialVersionUID = 1;
@@ -233,10 +171,9 @@ public class HibernateMappingContextConfiguration extends Configuration implemen
                 }
             });
 
-            StandardServiceRegistryBuilder standardServiceRegistryBuilder = new StandardServiceRegistryBuilder(bootstrapServiceRegistry)
-                                                                                        .applySettings(getProperties());
 
-            sessionFactory = super.buildSessionFactory(standardServiceRegistryBuilder.build());
+
+            sessionFactory = super.buildSessionFactory(registry);
             serviceRegistry = ((SessionFactoryImplementor)sessionFactory).getServiceRegistry();
         }
         finally {
@@ -248,21 +185,9 @@ public class HibernateMappingContextConfiguration extends Configuration implemen
         return sessionFactory;
     }
 
-    /**
-     * Default listeners.
-     * @param listeners the listeners
-     */
-    public void setEventListeners(Map<String, Object> listeners) {
-        eventListeners = listeners;
-    }
 
-    /**
-     * User-specifiable extra listeners.
-     * @param listeners the listeners
-     */
-    public void setHibernateEventListeners(HibernateEventListeners listeners) {
-        hibernateEventListeners = listeners;
-    }
+
+
 
     public ServiceRegistry getServiceRegistry() {
         return serviceRegistry;
@@ -278,5 +203,28 @@ public class HibernateMappingContextConfiguration extends Configuration implemen
         catch (Exception e) {
             // ignore exception
         }
+    }
+
+    public static Collection<ClassLoader> getAppClassLoaders(Properties properties, Class callerClass) {
+        Object classLoaderObject = properties.get(AvailableSettings.CLASSLOADERS);
+        Collection<ClassLoader> appClassLoaders;
+
+        if(classLoaderObject instanceof Collection) {
+            appClassLoaders = (Collection<ClassLoader>) classLoaderObject;
+        }
+        else if(classLoaderObject instanceof ClassLoader) {
+            appClassLoaders = Collections.<ClassLoader>singletonList((ClassLoader) classLoaderObject);
+        }
+        else {
+            appClassLoaders = Collections.emptyList();
+        }
+
+        Thread currentThread = Thread.currentThread();
+        ClassLoader threadContextClassLoader = currentThread.getContextClassLoader();
+
+        if (appClassLoaders.isEmpty())
+            appClassLoaders = Arrays.asList(threadContextClassLoader, callerClass.getClassLoader());
+
+        return appClassLoaders;
     }
 }
