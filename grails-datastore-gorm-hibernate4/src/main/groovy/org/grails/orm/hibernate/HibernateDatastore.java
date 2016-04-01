@@ -14,6 +14,7 @@
  */
 package org.grails.orm.hibernate;
 
+import org.grails.datastore.mapping.core.ConnectionNotFoundException;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.orm.hibernate.cfg.Mapping;
@@ -92,5 +93,11 @@ public class HibernateDatastore extends AbstractHibernateDatastore  {
     @Override
     public org.hibernate.Session openSession() {
         return this.sessionFactory.openSession();
+    }
+
+    @Override
+    public Session getCurrentSession() throws ConnectionNotFoundException {
+        // HibernateSession, just a thin wrapper around default session handling so simply return a new instance here
+        return new HibernateSession(this, sessionFactory, getDefaultFlushMode());
     }
 }
