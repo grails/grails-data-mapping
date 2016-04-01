@@ -958,7 +958,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     /**
-     * Enable the builder syntax for contructing Criteria
+     * Enable the builder syntax for constructing Criteria
      *
      * @param callable The callable closure
      * @return This criteria instance
@@ -971,7 +971,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     /**
-     * Enable the builder syntax for contructing Criteria
+     * Enable the builder syntax for constructing Criteria
      *
      * @param callable The callable closure
      * @return This criteria instance
