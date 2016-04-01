@@ -246,7 +246,6 @@ public class HibernateMappingContextSessionFactoryBean extends HibernateExceptio
     /**
      * Set a Hibernate NamingStrategy for the SessionFactory, determining the
      * physical column and table names given the info in the mapping document.
-     * @see org.hibernate.cfg.Configuration#setNamingStrategy
      */
     public void setNamingStrategy(NamingStrategy namingStrategy) {
         this.namingStrategy = namingStrategy;

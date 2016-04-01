@@ -186,7 +186,6 @@ public class GrailsHibernateUtil extends HibernateRuntimeUtils {
      * @param c The criteria instance
      * @param argMap The arguments map
      *
-     * @deprecated Use {@link #populateArgumentsForCriteria(HibernateDatastore, Class, org.hibernate.Criteria, java.util.Map)} instead
      */
     @Deprecated
     @SuppressWarnings("rawtypes")

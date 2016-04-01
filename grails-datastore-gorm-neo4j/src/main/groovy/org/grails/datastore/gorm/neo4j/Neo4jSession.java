@@ -78,7 +78,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                     .maximumWeightedCapacity(5000).build();
 
 
-    /** map node id -> hashmap of relationship types showing startNode id and endNode id */
+    /** map node id to hashmap of relationship types showing startNode id and endNode id */
     protected final GraphDatabaseService graphDatabaseService;
 
 

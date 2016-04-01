@@ -54,7 +54,7 @@ public class Neo4jEntity extends Entity {
 
     /**
      *
-     * @see {@link #isDynamicAssociations()}
+     * @see #isDynamicAssociations()
      */
     public void setDynamicAssociations(boolean dynamicAssociations) {
         this.dynamicAssociations = dynamicAssociations;

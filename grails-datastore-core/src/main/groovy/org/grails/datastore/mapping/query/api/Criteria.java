@@ -528,7 +528,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria eqAll(String propertyName, QueryableCriteria propertyValue);
 
@@ -538,7 +538,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria gtAll(String propertyName, QueryableCriteria propertyValue);
 
@@ -548,7 +548,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria ltAll(String propertyName, QueryableCriteria propertyValue);
 
@@ -558,7 +558,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria geAll(String propertyName, QueryableCriteria propertyValue);
 
@@ -568,7 +568,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria leAll(String propertyName, QueryableCriteria propertyValue);
 
@@ -579,7 +579,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria gtSome(String propertyName, QueryableCriteria propertyValue);
 
@@ -589,7 +589,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria gtSome(String propertyName, Closure<?> propertyValue);
 
@@ -599,7 +599,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria geSome(String propertyName, QueryableCriteria propertyValue);
 
@@ -609,7 +609,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria geSome(String propertyName, Closure<?> propertyValue);
 
@@ -620,7 +620,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria ltSome(String propertyName, QueryableCriteria propertyValue);
 
@@ -630,7 +630,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria ltSome(String propertyName, Closure<?> propertyValue);
 
@@ -640,7 +640,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria leSome(String propertyName, QueryableCriteria propertyValue);
 
@@ -650,7 +650,7 @@ public interface Criteria  {
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return This Criteria instance
      */
     Criteria leSome(String propertyName, Closure<?> propertyValue);
 
@@ -661,6 +661,8 @@ public interface Criteria  {
      * <code> { cache true } </code>
      *
      * @param shouldCache True if the default cache configuration should be applied
+     *
+     * @return This Criteria instance
      */
     Criteria cache(boolean shouldCache);
 
@@ -670,6 +672,8 @@ public interface Criteria  {
      * <code> { readOnly true } </code>
      *
      * @param readOnly True to disable dirty checking
+     *
+     * @return This Criteria instance          
      */
     Criteria readOnly(boolean readOnly);
 }

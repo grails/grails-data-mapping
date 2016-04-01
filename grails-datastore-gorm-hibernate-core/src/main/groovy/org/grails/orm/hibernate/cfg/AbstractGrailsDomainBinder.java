@@ -95,7 +95,8 @@ public abstract class AbstractGrailsDomainBinder {
 
 
     /**
-     * The default mapping defined by {@link GrailsDomainConfiguration#DEFAULT_MAPPING}
+     * The default ORM mapping
+     *
      * @param defaultMapping The default mapping
      */
     public void setDefaultMapping(Closure defaultMapping) {
