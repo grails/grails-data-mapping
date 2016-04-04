@@ -43,6 +43,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.support.GenericApplicationContext
+import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 
 import javax.sql.DataSource
@@ -85,7 +86,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
     @CompileStatic
     ApplicationContext configureForDataSource(DataSource dataSource) {
-        GenericApplicationContext applicationContext = new GenericApplicationContext()
+        GenericApplicationContext applicationContext = createApplicationContext()
         applicationContext.beanFactory.registerSingleton(DEFAULT_DATA_SOURCE_NAME, dataSource)
         configureForBeanDefinitionRegistry(applicationContext)
         applicationContext.refresh()
@@ -94,7 +95,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
     @CompileStatic
     ApplicationContext configureForDataSources(Map<String, DataSource> dataSources) {
-        GenericApplicationContext applicationContext = new GenericApplicationContext()
+        GenericApplicationContext applicationContext = createApplicationContext()
         boolean hasDefault = false
         for(name in dataSources.keySet()) {
             def ds = dataSources.get(name)
@@ -340,6 +341,14 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
             flushMode = GrailsHibernateTemplate.FLUSH_AUTO
         }
         return flushMode
+    }
+
+    protected GenericApplicationContext createApplicationContext() {
+        GenericApplicationContext applicationContext = new GenericApplicationContext()
+        if (configuration instanceof ConfigurableEnvironment) {
+            applicationContext.environment = (ConfigurableEnvironment) configuration
+        }
+        applicationContext
     }
 
     protected Properties getVenderToDialectMappings() {

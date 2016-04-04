@@ -187,6 +187,38 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         Person.withNewSession { Person.count()  } == 1
 
     }
+
+    void "Test that supplying default constraints works as expected"() {
+
+        given:"an initializer with default constraints supplied"
+
+        def initializer = new HibernateDatastoreSpringInitializer(['grails.gorm.default.constraints': {
+            '*'(nullable: true, blank: true)
+        }], DefaultConstrainedEntity)
+
+        def dataSource = new DriverManagerDataSource("jdbc:h2:mem:dialectTest;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+        dataSource.driverClassName = Driver.name
+        initializer.configureForDataSource(dataSource)
+
+        when:"The entity is saved"
+
+        def obj = new DefaultConstrainedEntity()
+        obj.save(flush:true)
+
+        then:"no constraints are violated"
+        !obj.errors.hasErrors()
+        DefaultConstrainedEntity.count() == 1
+    }
+}
+
+@Entity
+class DefaultConstrainedEntity {
+    String name
+    String otherValue
+
+    static mapping = {
+        otherValue sqlType: "text"
+    }
 }
 @Entity
 class Person {

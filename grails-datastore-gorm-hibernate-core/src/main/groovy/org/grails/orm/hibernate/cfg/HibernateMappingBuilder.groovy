@@ -444,6 +444,14 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
                     newConfig = (PropertyConfig)sharedConstraints.clone()
                 }
             }
+            else if(mapping.columns.containsKey('*')) {
+                // apply global constraints constraints
+                def globalConstraints = mapping.columns.get('*')
+                if(globalConstraints != null) {
+                    newConfig = (PropertyConfig)globalConstraints.clone()
+                }
+            }
+
 
             PropertyConfig property = mapping.columns[name] ?: newConfig
             property.formula = namedArgs.formula ?: property.formula
