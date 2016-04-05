@@ -22,15 +22,19 @@ import grails.persistence.support.PersistenceContextInterceptor
 import grails.test.runtime.TestEvent
 import grails.test.runtime.TestPlugin
 import grails.test.runtime.TestRuntime
+import grails.validation.ConstrainedProperty
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.apache.tomcat.jdbc.pool.DataSource as TomcatDataSource
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor
+import org.grails.orm.hibernate.validation.PersistentConstraintFactory
+import org.grails.orm.hibernate.validation.UniqueConstraint
 import org.grails.spring.beans.factory.InstanceFactoryBean
 import org.grails.test.support.GrailsTestTransactionInterceptor
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
+import org.springframework.context.ApplicationContext
 import org.springframework.core.env.PropertyResolver
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
@@ -229,6 +233,11 @@ class HibernateTestPlugin implements TestPlugin {
         }
 
         def context = grailsApplication.getMainContext()
+
+        ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT,
+                                                    new PersistentConstraintFactory(context,
+                                                            UniqueConstraint))
+
         def beansClosure = initializer.getBeanDefinitions((BeanDefinitionRegistry)context)
         runtime.putValue('initializedHibernatePersistentClasses', Collections.unmodifiableList(new ArrayList(persistentClasses)))
         defineBeans(runtime, immediateDelivery, beansClosure)
@@ -275,6 +284,7 @@ class HibernateTestPlugin implements TestPlugin {
     }
     
     void close(TestRuntime runtime) {
+        ConstrainedProperty.removeConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
         runtime.removeValue('initializedHibernatePersistentClasses')
     }
 }
