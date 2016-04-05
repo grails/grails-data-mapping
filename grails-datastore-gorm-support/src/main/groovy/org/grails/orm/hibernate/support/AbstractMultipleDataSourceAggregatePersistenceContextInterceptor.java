@@ -28,6 +28,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import javax.annotation.PreDestroy;
+
 /**
  * Abstract implementation of the {@link grails.persistence.support.PersistenceContextInterceptor} interface that supports multiple data sources
  *
@@ -179,5 +181,10 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
             }
         }
         return datasourceNames;
+    }
+
+    @PreDestroy
+    public void clearDataSourceNames() {
+        datasourceNames = null;
     }
 }

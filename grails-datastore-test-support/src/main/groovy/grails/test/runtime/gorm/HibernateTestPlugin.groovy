@@ -26,6 +26,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.apache.tomcat.jdbc.pool.DataSource as TomcatDataSource
 import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor
 import org.grails.spring.beans.factory.InstanceFactoryBean
 import org.grails.test.support.GrailsTestTransactionInterceptor
 import org.hibernate.SessionFactory
@@ -59,7 +60,7 @@ class HibernateTestPlugin implements TestPlugin {
             runtime.putValue("hibernateInterceptor", persistenceInterceptor)
         }
         // force init
-        mainContext.getBean(HibernateDatastoreSpringInitializer.PostInitializationHandling)
+        mainContext.getBeansOfType(HibernateDatastoreSpringInitializer.PostInitializationHandling)
     }
 
     void destroyPersistenceInterceptor(TestRuntime runtime) {
@@ -84,33 +85,43 @@ class HibernateTestPlugin implements TestPlugin {
     }
 
     @CompileStatic(TypeCheckingMode.SKIP)
-    protected void configureDefaultDataSource(TestRuntime runtime, boolean immediateDelivery = true) {
+    protected void configureDefaultDataSources(TestRuntime runtime, grails.core.GrailsApplication application, boolean immediateDelivery = true) {
+
+
+        def dataSourceNames = AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.calculateDataSourceNames(application)
+        dataSourceNames = dataSourceNames ?: ['DEFAULT']
+
+
         defineBeans(runtime, immediateDelivery) {
-            dataSourceUnproxied(TomcatDataSource) { bean ->
-                bean.destroyMethod = "close"
-                url = "jdbc:h2:mem:grailsDB;MVCC=TRUE;LOCK_TIMEOUT=10000"
-                driverClassName = "org.h2.Driver"
-                username = "sa"
-                password = ""
-                initialSize = 1
-                minIdle = 1
-                maxIdle = 1
-                maxActive = 10
-                maxWait = 10000
-                maxAge = 10 * 60000
-                timeBetweenEvictionRunsMillis = 5000
-                minEvictableIdleTimeMillis = 60000
-                validationQuery = "SELECT 1"
-                validationQueryTimeout = 3
-                validationInterval = 15000
-                testOnBorrow = true
-                testWhileIdle = true
-                testOnReturn = false
-                jdbcInterceptors = "ConnectionState"
-                defaultTransactionIsolation = java.sql.Connection.TRANSACTION_READ_COMMITTED
+            for(ds in dataSourceNames){
+                def suffix = ds == 'DEFAULT' ? '' : "_$ds"
+                "dataSourceUnproxied${suffix}"(TomcatDataSource) { bean ->
+                    bean.destroyMethod = "close"
+                    url = "jdbc:h2:mem:grailsDB${suffix};MVCC=TRUE;LOCK_TIMEOUT=10000"
+                    driverClassName = "org.h2.Driver"
+                    username = "sa"
+                    password = ""
+                    initialSize = 1
+                    minIdle = 1
+                    maxIdle = 1
+                    maxActive = 10
+                    maxWait = 10000
+                    maxAge = 10 * 60000
+                    timeBetweenEvictionRunsMillis = 5000
+                    minEvictableIdleTimeMillis = 60000
+                    validationQuery = "SELECT 1"
+                    validationQueryTimeout = 3
+                    validationInterval = 15000
+                    testOnBorrow = true
+                    testWhileIdle = true
+                    testOnReturn = false
+                    jdbcInterceptors = "ConnectionState"
+                    defaultTransactionIsolation = java.sql.Connection.TRANSACTION_READ_COMMITTED
+                }
+                "dataSourceLazy${suffix}"(LazyConnectionDataSourceProxy, ref('dataSourceUnproxied'))
+                "dataSource${suffix}"(TransactionAwareDataSourceProxy, ref('dataSourceLazy'))
+
             }
-            dataSourceLazy(LazyConnectionDataSourceProxy, ref('dataSourceUnproxied'))
-            dataSource(TransactionAwareDataSourceProxy, ref('dataSourceLazy'))
         }
     }
 
@@ -133,13 +144,12 @@ class HibernateTestPlugin implements TestPlugin {
         if(dataSource != null) {
             defineDataSourceBean(runtime, immediateDelivery, dataSource)
         }
-        
-        Properties initializerConfig
-        if(parameters.config instanceof Map) {
-            initializerConfig = new Properties()
-            parameters.config.each { k, v ->
-                initializerConfig.setProperty(k.toString(), v?.toString())
-            }
+
+        Map initializerConfig
+
+        def configArgument = parameters.config
+        if(configArgument instanceof Map) {
+            initializerConfig = (Map)configArgument
         }
         
         if(immediateDelivery) {
@@ -192,25 +202,31 @@ class HibernateTestPlugin implements TestPlugin {
     }
     
     void registerBeans(TestRuntime runtime, GrailsApplication grailsApplication) {
-        configureDefaultDataSource(runtime, false)
-        if(runtime.containsValueFor("hibernatePersistentClassesToRegister")) {
-            Collection<Class<?>> persistentClasses = runtime.getValue("hibernatePersistentClassesToRegister", Collection)
-            registerHibernateDomains(runtime, grailsApplication, persistentClasses, runtime.getValueIfExists("hibernateInitializerConfig", Properties), false)
-        }
-    }
-
-    void registerHibernateDomains(TestRuntime runtime, GrailsApplication grailsApplication, Collection<Class<?>> persistentClasses, Properties initializerConfig, boolean immediateDelivery) {
-        for(cls in persistentClasses) {
-            grailsApplication.addArtefact(DomainClassArtefactHandler.TYPE, cls)
-        }
         // workaround for GRAILS-11456
         if(!grailsApplication.config.containsKey("dataSource")) {
             grailsApplication.config.getProperty("dataSource")
         }
         def config = grailsApplication.config
         config.merge((Map)defaultHibernateConfig)
-        config.merge((Map)initializerConfig)
+        config.merge((Map)runtime.getValueIfExists("hibernateInitializerConfig", Map))
+
+        configureDefaultDataSources(runtime, grailsApplication, false)
+        if(runtime.containsValueFor("hibernatePersistentClassesToRegister")) {
+            Collection<Class<?>> persistentClasses = runtime.getValue("hibernatePersistentClassesToRegister", Collection)
+            registerHibernateDomains(runtime, grailsApplication, persistentClasses, runtime.getValueIfExists("hibernateInitializerConfig", Map), false)
+        }
+    }
+
+    void registerHibernateDomains(TestRuntime runtime, GrailsApplication grailsApplication, Collection<Class<?>> persistentClasses, Map initializerConfig, boolean immediateDelivery) {
+        for(cls in persistentClasses) {
+            grailsApplication.addArtefact(DomainClassArtefactHandler.TYPE, cls)
+        }
+        def config = grailsApplication.config
+        def dataSourceNames = AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.calculateDataSourceNames(grailsApplication)
         def initializer = new HibernateDatastoreSpringInitializer((PropertyResolver)config, persistentClasses)
+        if(dataSourceNames) {
+            initializer.dataSources = dataSourceNames
+        }
 
         def context = grailsApplication.getMainContext()
         def beansClosure = initializer.getBeanDefinitions((BeanDefinitionRegistry)context)
