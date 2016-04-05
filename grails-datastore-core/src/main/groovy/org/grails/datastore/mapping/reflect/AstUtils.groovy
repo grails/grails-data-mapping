@@ -95,6 +95,17 @@ class AstUtils {
         return DOMAIN_PATH_PATTERN.matcher(url.getFile()).find();
     }
 
+
+    public static boolean isEnum(ClassNode classNode) {
+        ClassNode parent = classNode.getSuperClass();
+        while (parent != null) {
+            if (parent.getName().equals("java.lang.Enum"))
+                return true;
+            parent = parent.getSuperClass();
+        }
+        return false;
+    }
+
     /**
      * Obtains a property from the class hierarchy
      *

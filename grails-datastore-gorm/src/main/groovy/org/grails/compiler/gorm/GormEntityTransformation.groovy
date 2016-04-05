@@ -19,6 +19,7 @@ import grails.gorm.annotation.Entity
 import groovy.transform.CompilationUnitAware
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
+import groovy.transform.ToString
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotatedNode
 import org.codehaus.groovy.ast.AnnotationNode
@@ -546,8 +547,10 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
 
     private void injectToStringMethod(ClassNode classNode) {
         final boolean hasToString = AstUtils.implementsOrInheritsZeroArgMethod(classNode, "toString")
+        final boolean hasToStringAnnotation = AstUtils.findAnnotation(classNode, ToString.class) != null;
+        final boolean isEnum = AstUtils.isEnum(classNode)
 
-        if (!hasToString) {
+        if (!hasToString && !hasToStringAnnotation && !isEnum) {
             GStringExpression ge = new GStringExpression(classNode.getName() + ' : ${id != null ? id : \'(unsaved)\'}');
             ge.addString(new ConstantExpression(classNode.getName() + " : "));
             VariableExpression idVariable = new VariableExpression("id");
