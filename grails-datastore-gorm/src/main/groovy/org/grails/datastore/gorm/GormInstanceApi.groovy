@@ -49,6 +49,16 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
         }
     }
 
+    protected Object propertyMissing(D instance, String name) {
+        try {
+
+            def instanceApi = GormEnhancer.findInstanceApi(persistentClass, name)
+            return new DelegatingGormEntityApi(instanceApi, instance)
+        } catch (IllegalStateException ise) {
+            throw new MissingPropertyException(name, persistentClass)
+        }
+    }
+
     /**
      * Proxy aware instanceOf implementation.
      */

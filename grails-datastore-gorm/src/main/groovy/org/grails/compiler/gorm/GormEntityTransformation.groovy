@@ -310,16 +310,6 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
     }
 
     @Memoized
-    private Class findGormEntityTraitForValue(String mapWithValue, ClassLoader classLoader) {
-        try {
-            return Class.forName("grails.gorm.${mapWithValue}.${NameUtils.capitalize(mapWithValue)}Entity", true, classLoader)
-        } catch (Throwable e) {
-            // ignore
-        }
-        return null
-    }
-
-    @Memoized
     private boolean isHibernatePresent(ClassLoader classLoader) {
         try {
             return Class.forName("org.hibernate.Hibernate", false, classLoader) != null

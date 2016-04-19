@@ -56,6 +56,7 @@ trait MongoEntity<D> extends GormEntity<D> {
      * @param name The property name
      * @return The property value
      */
+    @Override
     def propertyMissing(String name) {
         getAt(name)
     }
