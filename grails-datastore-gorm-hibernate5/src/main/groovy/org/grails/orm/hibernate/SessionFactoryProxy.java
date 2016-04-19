@@ -218,6 +218,11 @@ public class SessionFactoryProxy extends GroovyObjectSupport implements SessionF
         return getCurrentSessionFactoryImplementor().getProperties();
     }
 
+    @Override
+    public String getUuid() {
+        return getCurrentSessionFactoryImplementor().getUuid();
+    }
+
     public EntityPersister getEntityPersister(String entityName) throws MappingException {
         return getCurrentSessionFactoryImplementor().getEntityPersister(entityName);
     }

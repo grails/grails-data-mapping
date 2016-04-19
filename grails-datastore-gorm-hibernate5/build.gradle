@@ -27,7 +27,7 @@ dependencies {
         exclude group:'org.slf4j', module:'slf4j-log4j12'
         exclude group:'xml-apis', module:'xml-apis'
     }
-    compile('org.hibernate:hibernate-validator:5.2.2.Final') {
+    compile('org.hibernate:hibernate-validator:5.2.4.Final') {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'org.slf4j', module:'slf4j-api'

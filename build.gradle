@@ -42,7 +42,7 @@ project.ext {
 
     // plugin versions
     hibernateVersion = "4.3.10"
-    hibernate5Version = "5.0.7"
+    hibernate5Version = "5.1.0"
 
     def defaultPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
     hibernatePluginVersion = defaultPluginVersion
