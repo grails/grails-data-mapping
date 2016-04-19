@@ -193,12 +193,13 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
 
         given:"an initializer with default constraints supplied"
 
-        def initializer = new HibernateDatastoreSpringInitializer(['grails.gorm.default.constraints': {
+        def initializer = new HibernateDatastoreSpringInitializer(['hibernate.show_sql':true, 'grails.gorm.default.constraints': {
             '*'(nullable: true, blank: true)
-        }], DefaultConstrainedEntity)
+        }], DefaultConstrainedEntity, Text)
 
         def dataSource = new DriverManagerDataSource("jdbc:h2:mem:dialectTest;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
         dataSource.driverClassName = Driver.name
+        def conn = dataSource.getConnection()
         initializer.configureForDataSource(dataSource)
 
         when:"The entity is saved"
@@ -209,6 +210,10 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         then:"no constraints are violated"
         !obj.errors.hasErrors()
         DefaultConstrainedEntity.count() == 1
+        Text.count() == 0
+
+        and:"The database tables are created correctly"
+        conn.prepareStatement("SELECT column_name_differs,ts,ts_update FROM \"tbl_text\"").execute()
     }
 }
 
@@ -257,5 +262,32 @@ class Author {
     }
     static constraints = {
         name blank:false
+    }
+}
+
+@Entity
+class Text {
+
+    static constraints = {
+        url nullable: false, blank: false
+    }
+
+    static mapping = {
+        table '`tbl_text`'
+        text column: 'column_name_differs'
+        dateCreated column: "ts"
+        lastUpdated column: "ts_update"
+    }
+
+    String url
+
+    String text
+    Date   dateCreated
+    Date   lastUpdated
+
+    @Override
+    String toString()
+    {
+        url
     }
 }

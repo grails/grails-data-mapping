@@ -15,6 +15,7 @@
  */
 package org.grails.orm.hibernate.cfg
 
+import groovy.transform.AutoClone
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.config.Property
 import org.hibernate.FetchMode
@@ -220,5 +221,22 @@ class PropertyConfig extends Property {
         if (columns?.size() > 1) {
             throw new RuntimeException("Cannot treat multi-column property as a single-column property")
         }
+    }
+
+    @Override
+    PropertyConfig clone() throws CloneNotSupportedException {
+        PropertyConfig pc = (PropertyConfig)super.clone()
+
+        pc.fetch = fetch
+        pc.indexColumn = indexColumn != null ? (PropertyConfig)indexColumn.clone() : null
+        pc.cache = cache != null ? cache.clone() : cache
+        pc.joinTable = joinTable.clone()
+
+        def newColumns = new ArrayList<>(columns.size())
+        pc.columns = newColumns
+        for(c in columns) {
+            newColumns.add(c.clone())
+        }
+        return pc
     }
 }
