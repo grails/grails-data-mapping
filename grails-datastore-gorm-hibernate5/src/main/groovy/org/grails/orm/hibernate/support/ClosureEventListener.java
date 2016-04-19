@@ -69,23 +69,23 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
     private static final long serialVersionUID = 1;
     protected static final Log LOG = LogFactory.getLog(ClosureEventListener.class);
 
-    EventTriggerCaller saveOrUpdateCaller;
-    EventTriggerCaller beforeInsertCaller;
-    EventTriggerCaller preLoadEventCaller;
-    EventTriggerCaller postLoadEventListener;
-    EventTriggerCaller postInsertEventListener;
-    EventTriggerCaller postUpdateEventListener;
-    EventTriggerCaller postDeleteEventListener;
-    EventTriggerCaller preDeleteEventListener;
-    EventTriggerCaller preUpdateEventListener;
-    BeforeValidateEventTriggerCaller beforeValidateEventListener;
+    final EventTriggerCaller saveOrUpdateCaller;
+    final EventTriggerCaller beforeInsertCaller;
+    final EventTriggerCaller preLoadEventCaller;
+    final EventTriggerCaller postLoadEventListener;
+    final EventTriggerCaller postInsertEventListener;
+    final EventTriggerCaller postUpdateEventListener;
+    final EventTriggerCaller postDeleteEventListener;
+    final EventTriggerCaller preDeleteEventListener;
+    final EventTriggerCaller preUpdateEventListener;
+    final BeforeValidateEventTriggerCaller beforeValidateEventListener;
     boolean shouldTimestamp = false;
     MetaProperty dateCreatedProperty;
     MetaProperty lastUpdatedProperty;
     MetaClass domainMetaClass;
     boolean failOnErrorEnabled = false;
     Map validateParams;
-    TimestampProvider timestampProvider;
+    final TimestampProvider timestampProvider;
 
     public ClosureEventListener(Class<?> domainClazz, boolean failOnError, List failOnErrorPackages) {
         this(domainClazz, failOnError, failOnErrorPackages, new DefaultTimestampProvider());
@@ -98,10 +98,14 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
 
         saveOrUpdateCaller = buildCaller(ClosureEventTriggeringInterceptor.ONLOAD_SAVE, domainClazz);
         beforeInsertCaller = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_INSERT_EVENT, domainClazz);
-        preLoadEventCaller = buildCaller(ClosureEventTriggeringInterceptor.ONLOAD_EVENT, domainClazz);
-        if (preLoadEventCaller == null) {
-            preLoadEventCaller = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_LOAD_EVENT, domainClazz);
+        EventTriggerCaller preLoadEventCaller = buildCaller(ClosureEventTriggeringInterceptor.ONLOAD_EVENT, domainClazz);
+        if (preLoadEventCaller  == null) {
+            this.preLoadEventCaller = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_LOAD_EVENT, domainClazz);
         }
+        else {
+            this.preLoadEventCaller = preLoadEventCaller;
+        }
+
         postLoadEventListener = buildCaller(ClosureEventTriggeringInterceptor.AFTER_LOAD_EVENT, domainClazz);
         postInsertEventListener = buildCaller(ClosureEventTriggeringInterceptor.AFTER_INSERT_EVENT, domainClazz);
         postUpdateEventListener = buildCaller(ClosureEventTriggeringInterceptor.AFTER_UPDATE_EVENT, domainClazz);
@@ -369,7 +373,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
             evict = true;
             if (failOnErrorEnabled) {
                 Errors errors = validateable.getErrors();
-                throw new ValidationException("Validation error whilst flushing entity [" + entity.getClass().getName()
+                throw ValidationException.newInstance("Validation error whilst flushing entity [" + entity.getClass().getName()
                         + "]", errors);
             }
         }

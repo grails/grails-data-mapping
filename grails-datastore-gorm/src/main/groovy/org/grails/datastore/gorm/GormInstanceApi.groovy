@@ -42,11 +42,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
 
     GormInstanceApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
-
-        def cl = Thread.currentThread().contextClassLoader
-        if(ClassUtils.isPresent("grails.validation.ValidationException", cl)) {
-            validationException = (Class<? extends Exception>) ClassUtils.forName("grails.validation.ValidationException", cl)
-        }
+        validationException = ValidationException.VALIDATION_EXCEPTION_TYPE
     }
 
     protected Object propertyMissing(D instance, String name) {
