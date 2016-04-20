@@ -1,6 +1,8 @@
 To use Hibernate 5 in Grails 3.0.x the following configuration is needed:
 
 {code}
+
+// the below is unnecessary in Grails 3.1 and above, but required in Grails 3.0.x
 configurations.all {
     resolutionStrategy {
         eachDependency { DependencyResolveDetails details ->
@@ -10,10 +12,12 @@ configurations.all {
         }
     }
 }
+
+// the following is necessary in all versions of Grails 3
 dependencies {
     compile "org.grails.plugins:hibernate5:$gormVersion"
-    compile "org.hibernate:hibernate-core:5.0.3.Final"
-    compile "org.hibernate:hibernate-ehcache:5.0.3.Final"
+    compile "org.hibernate:hibernate-core:5.1.0.Final"
+    compile "org.hibernate:hibernate-ehcache:5.1.0.Final"
 }
 {code}
 
