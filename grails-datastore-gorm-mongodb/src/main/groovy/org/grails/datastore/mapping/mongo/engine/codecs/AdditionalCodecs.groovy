@@ -87,6 +87,8 @@ class AdditionalCodecs implements CodecProvider{
         ADDITIONAL_CODECS[GString] = new GStringCodec()
         ADDITIONAL_CODECS[List] = new ListCodec()
         ADDITIONAL_CODECS[Map] = new MapCodec()
+        ADDITIONAL_CODECS[LinkedHashMap] = new MapCodec()
+        ADDITIONAL_CODECS[HashMap] = new MapCodec()
         ADDITIONAL_CODECS[ArrayList] = new ListCodec()
         BSON_VALUE_CONVERTERS[BsonBinary] << new Converter<BsonBinary, byte[]>() {
             @Override
