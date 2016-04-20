@@ -185,6 +185,14 @@ public abstract class AbstractMongoSession extends AbstractSession<MongoClient> 
         }
     }
 
+    /**
+     * Decodes the given entity type from the given native object type
+     *
+     * @param type A GORM entity type
+     * @param nativeObject A native MongoDB object type (Document, FinderIterable etc.)
+     * @param <T> The concrete type of the entity
+     * @return An instanceof the type or null if it doesn't exist
+     */
     public abstract <T> T decode(Class<T> type, Object nativeObject);
 
     protected void addPostFlushOperations(List<PendingOperation> cascadeOperations) {

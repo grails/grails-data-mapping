@@ -332,11 +332,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         }
     }
 
-    @Override
-    public AbstractMongoSession getCurrentSession() throws ConnectionNotFoundException {
-        return (AbstractMongoSession) DatastoreUtils.doGetSession(this, true);
-    }
-
     public void afterPropertiesSet() throws Exception {
         if (mongo == null && connectionDetails != null) {
             ServerAddress defaults = new ServerAddress();
