@@ -275,7 +275,7 @@ class PersistentEntityCodec implements Codec {
             DirtyCheckable dirty = (DirtyCheckable)value
             Set<String> processed = []
 
-            def dirtyProperties = dirty.listDirtyPropertyNames()
+            def dirtyProperties = new ArrayList<String>(dirty.listDirtyPropertyNames())
             boolean isNew = dirtyProperties.isEmpty() && dirty.hasChanged()
             def isVersioned = entity.isVersioned()
             if(isNew) {
@@ -290,6 +290,12 @@ class PersistentEntityCodec implements Codec {
                     EntityPersister.incrementEntityVersion(access)
                 }
 
+            }
+            else {
+                // schedule lastUpdated if necessary
+                if( entity.getPropertyByName(GormProperties.LAST_UPDATED) != null) {
+                    dirtyProperties.add(GormProperties.LAST_UPDATED)
+                }
             }
 
 

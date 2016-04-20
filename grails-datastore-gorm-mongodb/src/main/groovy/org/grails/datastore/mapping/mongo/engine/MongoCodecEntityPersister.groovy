@@ -249,7 +249,7 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
                     @Override
                     void run() {
                         if (!cancelUpdate(entity, entityAccess)) {
-                            updateCaches(entity, obj, id)
+                             updateCaches(entity, obj, id)
                             addCascadeOperation(new PendingOperationAdapter(entity, id, obj) {
                                 @Override
                                 void run() {

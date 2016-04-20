@@ -77,7 +77,11 @@ public class FieldEntityAccess implements EntityAccess {
 
     @Override
     public Class getPropertyType(String name) {
-        return persistentEntity.getPropertyByName(name).getType();
+        PersistentProperty property = persistentEntity.getPropertyByName(name);
+        if(property != null) {
+            return property.getType();
+        }
+        return null;
     }
 
     @Override
