@@ -1792,6 +1792,8 @@ public class GrailsDomainBinder implements MetadataContributor {
             table.setComment(gormMapping.getComment());
         }
 
+        List<Embedded> embedded = new ArrayList<>();
+
         for (PersistentProperty currentGrailsProp : persistentProperties) {
 
             // if its inherited skip
@@ -1874,9 +1876,8 @@ public class GrailsDomainBinder implements MetadataContributor {
                     }
                 }
                 else if (currentGrailsProp instanceof Embedded) {
-                    value = new Component(mappings, persistentClass);
-
-                    bindComponent((Component) value, (Embedded) currentGrailsProp, true, mappings, sessionFactoryBeanName);
+                    embedded.add((Embedded)currentGrailsProp);
+                    continue;
                 }
             }
             // work out what type of relationship it is and bind value
@@ -1894,6 +1895,13 @@ public class GrailsDomainBinder implements MetadataContributor {
             }
         }
 
+        for (Embedded association : embedded) {
+            Value value = new Component(mappings, persistentClass);
+
+            bindComponent((Component) value, association, true, mappings, sessionFactoryBeanName);
+            Property property = createProperty(value, persistentClass, association, mappings);
+            persistentClass.addProperty(property);
+        }
         bindNaturalIdentifier(table, gormMapping, persistentClass);
     }
 
