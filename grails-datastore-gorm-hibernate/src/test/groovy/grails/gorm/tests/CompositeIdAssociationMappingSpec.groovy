@@ -3,6 +3,7 @@ package grails.gorm.tests
 import grails.persistence.Entity
 import groovy.transform.NotYetImplemented
 import org.grails.orm.hibernate.GormSpec
+import spock.lang.Ignore
 import spock.lang.Issue
 
 /**
@@ -12,6 +13,7 @@ class CompositeIdAssociationMappingSpec extends GormSpec {
 
     @Issue('https://github.com/grails/grails-data-mapping/issues/660')
     @NotYetImplemented
+    @Ignore
     void "Test composite id usage with associations"() {
         expect:
         AChild.count() == 0
