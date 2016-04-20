@@ -652,9 +652,6 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
         else if (args && ((args[0] instanceof Map) || (args[0] instanceof Closure))) {
             handleMethodMissing(name, args)
         }
-        else {
-            LOG.error "ORM Mapping Invalid: Specified config option [$name] does not exist for class [$className]!"
-        }
     }
 }
 

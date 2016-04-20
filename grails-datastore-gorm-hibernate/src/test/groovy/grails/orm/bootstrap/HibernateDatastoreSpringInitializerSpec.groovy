@@ -223,6 +223,7 @@ class DefaultConstrainedEntity {
     String otherValue
 
     static mapping = {
+        name()
         otherValue sqlType: "text"
     }
 }
