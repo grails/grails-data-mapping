@@ -12,8 +12,8 @@ class PublishingConvention {
     String projectArtifactId
     String projectName = 'Grails GORM'
     String projectDescription = 'GORM - Grails Data Access Framework'
-    String projectURL = 'http://grails.org/'
-    String projectIssueTrackerUrl = 'http://jira.grails.org/browse/GRAILS'
+    String projectURL = 'https://grails.github.io/grails-data-mapping/latest/'
+    String projectIssueTrackerUrl = 'https://github.com/grails/grails-data-mapping/issues'
     String projectVcsUrl = 'https://github.com/grails/grails-data-mapping'
 
     PublishingConvention(Project project) {
