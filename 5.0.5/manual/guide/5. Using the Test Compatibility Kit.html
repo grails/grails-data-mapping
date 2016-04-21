@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>5 Using the Test Compatibility Kit 5.0.0.BUILD-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/3.%20Understanding%20the%20Low-level%20API.html"><strong>3</strong><span>Understanding the Low-level API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20GORM%20Enhancer.html"><strong>4</strong><span>GORM Enhancer</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Using%20the%20Test%20Compatibility%20Kit.html"><strong>5</strong><span>Using the Test Compatibility Kit</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/6.%20Creating%20a%20GORM%20implementation%20Step%20by%20Step.html"><strong>6</strong><span>Creating a GORM implementation Step by Step</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/4.%20GORM%20Enhancer.html">&lt;&lt; <strong>4</strong><span>GORM Enhancer</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/6.%20Creating%20a%20GORM%20implementation%20Step%20by%20Step.html"><strong>6</strong><span>Creating a GORM implementation Step by Step</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>5 Using the Test Compatibility Kit - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher</p>
+
+                    <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h1 id="5. Using the Test Compatibility Kit">5 Using the Test Compatibility Kit</h1>
+The <code>grails-datastore-gorm-tck</code> project provides a few hundred tests that ensure a particular GORM implementation is compliant. To use the TCK you need to define a dependency on the TCK in the subprojects <code>build.gradle</code> file:<p class="paragraph"/><div class="code"><pre>testCompile project(':grails&#45;datastore&#45;gorm&#45;tck')</pre></div><p class="paragraph"/>Then create a <code>Setup.groovy</code> file that sets up your custom datastore in your implementation.<p class="paragraph"/>For example the <code>ConcurrentHashMap</code> implementation has one defined in <code>grails-datastore-gorm-test/src/test/groovy/org/grails/datastore/gorm/Setup.groovy</code>:<p class="paragraph"/><div class="code"><pre>class Setup &#123;<p class="paragraph"/>    <span class="java&#45;keyword">static</span> destroy() &#123;
+        // noop
+    &#125;
+    <span class="java&#45;keyword">static</span> Session setup(classes) &#123;<p class="paragraph"/>        def ctx = <span class="java&#45;keyword">new</span> GenericApplicationContext()
+        ctx.refresh()
+        def simple = <span class="java&#45;keyword">new</span> SimpleMapDatastore(ctx)<p class="paragraph"/>        &#8230;
+        <span class="java&#45;keyword">for</span> (cls in classes) &#123;
+            simple.mappingContext.addPersistentEntity(cls)
+        &#125;<p class="paragraph"/>        &#8230;
+        def enhancer = <span class="java&#45;keyword">new</span> GormEnhancer(simple, <span class="java&#45;keyword">new</span> DatastoreTransactionManager(datastore: simple))
+        enhancer.enhance()<p class="paragraph"/>        simple.mappingContext.addMappingContextListener(&#123; e &#45;&#62; enhancer.enhance e &#125; as MappingContext.Listener)<p class="paragraph"/>        simple.applicationContext.addApplicationListener <span class="java&#45;keyword">new</span> DomainEventListener(simple)
+        simple.applicationContext.addApplicationListener <span class="java&#45;keyword">new</span> AutoTimestampEventListener(simple)<p class="paragraph"/>        <span class="java&#45;keyword">return</span> simple.connect()
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Some setup code has been omitted for clarity but basically the <code>Setup.groovy</code> class should initiase the <code>Datastore</code> and return a <code>Session</code> from the static <code>setup</code> method which gets passed a list of classes that need to be configured.<p class="paragraph"/>With this done all of the TCK tests will run against the subproject. If a particular test cannot be implemented because the underlying datastore doesn't support the feature then you can create a test that matches the name of the test that is failing and it will override said test.<p class="paragraph"/>For example SimpleDB doesn't support pagination so there is a <code>grails.gorm.tests.PagedResultSpec</code> class that overrides the one from the TCK. Each test is a Spock specification and Spock has an <code>Ignore</code> annotation that can be used to ignore a particular test:<p class="paragraph"/><div class="code"><pre>/&#42;&#42;
+ &#42; Ignored <span class="java&#45;keyword">for</span> SimpleDB because SimpleDB doesn't support pagination
+ &#42;/
+@Ignore
+class PagedResultSpec <span class="java&#45;keyword">extends</span> GormDatastoreSpec&#123;
+   &#8230;
+&#125;</pre></div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/4.%20GORM%20Enhancer.html">&lt;&lt; <strong>4</strong><span>GORM Enhancer</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/6.%20Creating%20a%20GORM%20implementation%20Step%20by%20Step.html"><strong>6</strong><span>Creating a GORM implementation Step by Step</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Implementations</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/ConcurrentHashMap.html">ConcurrentHashMap</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/Hibernate.html">Hibernate</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/JPA.html">JPA</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/MongoDB.html">MongoDB</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/Neo4j.html">Neo4j</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/Redis.html">Redis</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/Riak.html">Riak</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/SimpleDB.html">SimpleDB</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

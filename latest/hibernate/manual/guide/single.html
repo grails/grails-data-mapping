@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>GORM for Hibernate 5.0.3.RELEASE</title>
+        <title>GORM for Hibernate 5.0.5.RELEASE</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
@@ -56,7 +56,7 @@ function addJsClass(el) {
                         <div class="project">
                             <h1>GORM for Hibernate - Reference Documentation</h1>
                             <p><strong>Authors:</strong> Graeme Rocher</p>
-                            <p><strong>Version:</strong> 5.0.3.RELEASE</p>
+                            <p><strong>Version:</strong> 5.0.5.RELEASE</p>
                             
                         </div>
 
@@ -103,7 +103,8 @@ To use GORM 5.x for Hibernate 4 in Grails 3.x you can specify the following conf
 
 
 <h2 id="hibernateVersions">2.1 Configuring Different Hibernate Versions</h2>
-To use Hibernate 5 in Grails 3.0.x the following configuration is needed:<p class="paragraph"/><div class="code"><pre>configurations.all &#123;
+To use Hibernate 5 in Grails 3.0.x the following configuration is needed:<p class="paragraph"/><div class="code"><pre>// the below is unnecessary in Grails 3.1 and above, but required in Grails 3.0.x
+configurations.all &#123;
     resolutionStrategy &#123;
         eachDependency &#123; DependencyResolveDetails details &#45;&#62;
             <span class="java&#45;keyword">if</span>(details.requested.group == 'org.springframework') &#123;
@@ -111,11 +112,11 @@ To use Hibernate 5 in Grails 3.0.x the following configuration is needed:<p clas
             &#125;
         &#125;
     &#125;
-&#125;
+&#125;<p class="paragraph"/>// the following is necessary in all versions of Grails 3
 dependencies &#123;
     compile <span class="java&#45;quote">"org.grails.plugins:hibernate5:$gormVersion"</span>
-    compile <span class="java&#45;quote">"org.hibernate:hibernate&#45;core:5.0.3.Final"</span>
-    compile <span class="java&#45;quote">"org.hibernate:hibernate&#45;ehcache:5.0.3.Final"</span>
+    compile <span class="java&#45;quote">"org.hibernate:hibernate&#45;core:5.1.0.Final"</span>
+    compile <span class="java&#45;quote">"org.hibernate:hibernate&#45;ehcache:5.1.0.Final"</span>
 &#125;</pre></div><p class="paragraph"/>The <code>resolutionStrategy</code> is needed to enforce an upgrade to Spring 4.2.x which is required by Hibernate 5 support. This block is not needed if you are using Grails 3.1 or above.<p class="paragraph"/>To use Hibernate 3 the following configuration is needed:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
     compile <span class="java&#45;quote">"org.grails.plugins:hibernate3:VERSION"</span>
     compile <span class="java&#45;quote">"org.hibernate:hibernate&#45;core:3.6.10.Final"</span>
