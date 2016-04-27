@@ -125,9 +125,17 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
 
     @Override
     protected List<Object> retrieveAllEntities(PersistentEntity pe, Iterable<Serializable> keys) {
-        createQuery()
-            .in(pe.identity.name, keys.toList())
-            .list()
+        def idList = keys.toList()
+        if(idList.isEmpty()) {
+            // don't bother with query if list of keys is empty
+            return []
+        }
+        else {
+            createQuery()
+                    .in(pe.identity.name, idList)
+                    .list()
+
+        }
     }
 
     @Override
