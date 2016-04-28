@@ -13,6 +13,7 @@ gettingStarted:
 objectMapping:
   title: Mapping Domain Classes to MongoDB Collections
   idGeneration: Identity Generation
+  dirtyChecking: Understanding Dirty Checking
   queryIndexes: Querying Indexing
   writeConcern: Customizing the WriteConcern
   dynamicAttributes: Dynamic Attributes
