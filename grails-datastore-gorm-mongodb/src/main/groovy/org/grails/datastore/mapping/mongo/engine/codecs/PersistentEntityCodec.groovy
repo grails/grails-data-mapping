@@ -275,7 +275,7 @@ class PersistentEntityCodec implements Codec {
             DirtyCheckable dirty = (DirtyCheckable)value
             Set<String> processed = []
 
-            def dirtyProperties = dirty.listDirtyPropertyNames()
+            def dirtyProperties = new ArrayList<String>(dirty.listDirtyPropertyNames())
             boolean isNew = dirtyProperties.isEmpty() && dirty.hasChanged()
             def isVersioned = entity.isVersioned()
             if(isNew) {
@@ -290,6 +290,12 @@ class PersistentEntityCodec implements Codec {
                     EntityPersister.incrementEntityVersion(access)
                 }
 
+            }
+            else {
+                // schedule lastUpdated if necessary
+                if( entity.getPropertyByName(GormProperties.LAST_UPDATED) != null) {
+                    dirtyProperties.add(GormProperties.LAST_UPDATED)
+                }
             }
 
 
@@ -1304,7 +1310,15 @@ class PersistentEntityCodec implements Codec {
             else {
                 def conversionService = datastore.mappingContext.conversionService
                 def componentType = property.componentType
-                Codec codec = datastore.codecRegistry.get(property.type)
+                def collectionType = property.type
+                Codec codec
+
+                if(Set.isAssignableFrom(collectionType)) {
+                    codec = datastore.codecRegistry.get(List)
+                }
+                else {
+                    codec = datastore.codecRegistry.get(collectionType)
+                }
                 def value = codec.decode(reader, decoderContext)
                 def entity = entityAccess.entity
                 if(value instanceof Collection) {
@@ -1344,8 +1358,19 @@ class PersistentEntityCodec implements Codec {
             }
             else {
                 writer.writeName( MappingUtils.getTargetKey(property) )
-                Codec codec = datastore.codecRegistry.get(property.type)
-                codec.encode(writer, value, encoderContext)
+
+                def collectionType = property.type
+                Codec<Object> codec
+
+                final boolean isSet = Set.isAssignableFrom(collectionType)
+
+                if(isSet) {
+                    codec = (Codec<Object>)datastore.codecRegistry.get(List)
+                }
+                else {
+                    codec = (Codec<Object>)datastore.codecRegistry.get(collectionType)
+                }
+                codec.encode(writer,  isSet ? value as List : value, encoderContext)
                 def parent = parentAccess.entity
                 if(parent instanceof DirtyCheckable) {
                     if(value instanceof Collection) {

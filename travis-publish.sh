@@ -27,7 +27,18 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
   gpg --keyserver keyserver.ubuntu.com --recv-key $SIGNING_KEY
   if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
     # for releases we upload to Bintray and Sonatype OSS
-    ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" publish uploadArchives bintrayUpload -x grails2-plugins/neo4j:publish -x grails2-plugins/hibernate4:publish -x grails2-plugins/mongodb:publish -x grails2-plugins/neo4j:uploadArchives -x grails2-plugins/hibernate4:uploadArchives -x grails2-plugins/mongodb:uploadArchives || EXIT_STATUS=$?
+    ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" publish -x grails2-plugins/neo4j:publish -x grails2-plugins/hibernate4:publish -x grails2-plugins/mongodb:publish -x grails2-plugins/neo4j:uploadArchives -x grails2-plugins/hibernate4:uploadArchives -x grails2-plugins/mongodb:uploadArchives || EXIT_STATUS=$?
+
+    if [[ $EXIT_STATUS -eq 0 ]]; then
+    ./gradlew --stop
+    ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" uploadArchives -x grails2-plugins/neo4j:publish -x grails2-plugins/hibernate4:publish -x grails2-plugins/mongodb:publish -x grails2-plugins/neo4j:uploadArchives -x grails2-plugins/hibernate4:uploadArchives -x grails2-plugins/mongodb:uploadArchives || EXIT_STATUS=$?
+    fi
+
+    if [[ $EXIT_STATUS -eq 0 ]]; then
+    ./gradlew --stop
+    ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" bintrayUpload -x grails2-plugins/neo4j:publish -x grails2-plugins/hibernate4:publish -x grails2-plugins/mongodb:publish -x grails2-plugins/neo4j:uploadArchives -x grails2-plugins/hibernate4:uploadArchives -x grails2-plugins/mongodb:uploadArchives || EXIT_STATUS=$?
+    fi
+
     if [[ $EXIT_STATUS -eq 0 ]]; then
     ./gradlew grails2-plugins/neo4j:publish grails2-plugins/hibernate4:publish grails2-plugins/mongodb:publish || EXIT_STATUS=$?
     ./gradlew --stop
@@ -44,33 +55,33 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
   fi
 
   if [[ $EXIT_STATUS -eq 0 ]]; then
-      ./gradlew closeAndPromoteRepository
       echo "Trigger Travis Functional Test build"
       ./trigger-dependent-build.sh
 #      ./gradlew travisciTrigger -i
-      ./gradlew --stop
 
-      echo "Building documentation"
-      ./gradlew allDocs || EXIT_STATUS=$?
-
-      git config --global user.name "$GIT_NAME"
-      git config --global user.email "$GIT_EMAIL"
-      git config --global credential.helper "store --file=~/.git-credentials"
-      echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
-
-      git clone https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git -b gh-pages gh-pages --single-branch > /dev/null
-      cd gh-pages
-
-      # If this is the master branch then update the snapshot
-#      if [[ $TRAVIS_BRANCH == 'master' ]]; then
-#        mkdir -p snapshot
-#        cp -r ../build/docs/. ./snapshot/
-#
-#        git add snapshot/*
-#      fi
 
       # If there is a tag present then this becomes the latest
       if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
+        ./gradlew closeAndPromoteRepository
+        ./gradlew --stop
+        echo "Building documentation"
+        ./gradlew allDocs || EXIT_STATUS=$?
+
+        git config --global user.name "$GIT_NAME"
+        git config --global user.email "$GIT_EMAIL"
+        git config --global credential.helper "store --file=~/.git-credentials"
+        echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
+
+        git clone https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git -b gh-pages gh-pages --single-branch > /dev/null
+        cd gh-pages
+
+        # If this is the master branch then update the snapshot
+        #      if [[ $TRAVIS_BRANCH == 'master' ]]; then
+        #        mkdir -p snapshot
+        #        cp -r ../build/docs/. ./snapshot/
+        #
+        #        git add snapshot/*
+        #      fi
         version="$TRAVIS_TAG"
         version=${version:1}
 

@@ -43,8 +43,19 @@ import org.springframework.transaction.TransactionDefinition
  * @since 4.0
  */
 @CompileStatic
-trait GormEntity<D> implements GormValidateable, DirtyCheckable {
-    
+trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D> {
+
+
+    /**
+     * Allow access to datasource by name
+     *
+     * @param instance The instance
+     * @param name The property name
+     * @return The property value
+     */
+    def propertyMissing(String name) {
+        GormEnhancer.findInstanceApi(getClass()).propertyMissing(this, name)
+    }
 
     /**
      * Proxy aware instanceOf implementation.

@@ -74,8 +74,10 @@ class MongoDbDataStoreSpringInitializerSpec extends Specification{
             Person.count() == 0
 
         when:"We persist a Geo type"
-            new Person(name: "Bob", home: Point.valueOf(10, 10)).save(flush:true)
-            p = Person.first()
+            Person.withNewSession {
+                new Person(name: "Bob", home: Point.valueOf(10, 10)).save(flush:true)
+                p = Person.first()
+            }
 
         then:"The geo type was persisted"
             p != null

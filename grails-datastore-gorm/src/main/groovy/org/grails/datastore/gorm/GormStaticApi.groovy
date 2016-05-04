@@ -120,10 +120,20 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
             final argumentsForMethod
             if(varArgs == null) {
                 argumentsForMethod = [null] as Object[]
-            } else if(varArgs.length == 1 && varArgs[0].getClass().isArray()) {
-                argumentsForMethod = varArgs[0]
-            } else {
-                argumentsForMethod = varArgs
+            }
+            // if the argument component type is not an Object then we have an array passed that is the actual argument
+            else if(varArgs.getClass().componentType != Object) {
+                // so we wrap it in an object array
+                argumentsForMethod = [varArgs] as Object[]
+            }
+            else {
+
+                if(varArgs.length == 1 && varArgs[0].getClass().isArray()) {
+                    argumentsForMethod = varArgs[0]
+                } else {
+
+                    argumentsForMethod = varArgs
+                }
             }
             method.invoke(delegate, methodName, argumentsForMethod)
         }

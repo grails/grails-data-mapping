@@ -15,6 +15,8 @@
  */
 package org.grails.orm.hibernate.cfg
 
+import groovy.transform.AutoClone
+
 /**
  * Represents a Join table in Grails mapping. It has a name which represents the name of the table, a key
  * for the primary key and a column which is the other side of the join.
@@ -22,6 +24,7 @@ package org.grails.orm.hibernate.cfg
  * @author Graeme Rocher
  * @since 1.0
  */
+@AutoClone
 class JoinTable {
     String catalog
     String schema

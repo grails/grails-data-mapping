@@ -44,6 +44,7 @@ dependencies {
         exclude group: 'commons-logging', module:'commons-logging'
     }
 
+    testRuntime "org.slf4j:slf4j-simple:$slf4jVersion"
 }
 
 test {

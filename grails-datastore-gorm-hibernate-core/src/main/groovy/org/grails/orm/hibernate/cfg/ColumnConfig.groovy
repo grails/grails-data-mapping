@@ -15,12 +15,15 @@
  */
 package org.grails.orm.hibernate.cfg
 
+import groovy.transform.AutoClone
+
 /**
  * Defines a column within the mapping.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@AutoClone
 class ColumnConfig {
     String name
     String sqlType

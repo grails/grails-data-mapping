@@ -190,12 +190,14 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
 
 
     /**
+     * <p>
      * Join an association using the specified join-type, assigning an alias
      * to the joined association.
-     * <p/>
+     * </p>
+     * <p>
      * The joinType is expected to be one of CriteriaSpecification.INNER_JOIN (the default),
      * CriteriaSpecificationFULL_JOIN, or CriteriaSpecificationLEFT_JOIN.
-     *
+     * </p>
      * @param associationPath A dot-seperated property path
      * @param alias The alias to assign to the joined association (for later reference).
      * @param joinType The type of join to use.

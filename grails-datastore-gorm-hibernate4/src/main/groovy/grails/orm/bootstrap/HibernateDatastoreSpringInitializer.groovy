@@ -43,6 +43,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.support.GenericApplicationContext
+import org.springframework.core.env.ConfigurableEnvironment
 
 import javax.sql.DataSource
 /**
@@ -71,7 +72,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
     @CompileStatic
     ApplicationContext configureForDataSource(DataSource dataSource) {
-        GenericApplicationContext applicationContext = new GenericApplicationContext()
+        GenericApplicationContext applicationContext = createApplicationContext()
         applicationContext.beanFactory.registerSingleton(DEFAULT_DATA_SOURCE_NAME, dataSource)
         configureForBeanDefinitionRegistry(applicationContext)
         applicationContext.refresh()
@@ -80,7 +81,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
     @CompileStatic
     ApplicationContext configureForDataSources(Map<String, DataSource> dataSources) {
-        GenericApplicationContext applicationContext = new GenericApplicationContext()
+        GenericApplicationContext applicationContext = createApplicationContext()
         boolean hasDefault = false
         for(name in dataSources.keySet()) {
             def ds = dataSources.get(name)
@@ -145,7 +146,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
                 String prefix = isDefault ? '' : dataSourceName + '_'
                 def sessionFactoryName = isDefault ? defaultSessionFactoryBeanName : "sessionFactory$suffix"
 
-                def hibConfig = config.getProperty("hibernate$suffix", Map, Collections.emptyMap())
+                def hibConfig = config.getProperty("hibernate$suffix", Map, config.getProperty("hibernate", Map, Collections.emptyMap()))
                 def dsConfigPrefix = config.containsProperty('dataSources') ? "dataSources.${isDefault ? DEFAULT_DATA_SOURCE_NAME : dataSourceName}" : DEFAULT_DATA_SOURCE_NAME
                 def ddlAutoSetting = config.getProperty("${dsConfigPrefix}.dbCreate", ddlAuto)
 
@@ -325,6 +326,14 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
             flushMode = GrailsHibernateTemplate.FLUSH_AUTO
         }
         return flushMode
+    }
+
+    protected GenericApplicationContext createApplicationContext() {
+        GenericApplicationContext applicationContext = new GenericApplicationContext()
+        if (configuration instanceof ConfigurableEnvironment) {
+            applicationContext.environment = (ConfigurableEnvironment) configuration
+        }
+        applicationContext
     }
 
     protected Properties getVenderToDialectMappings() {

@@ -15,13 +15,16 @@
  */
 package org.grails.orm.hibernate.cfg
 
+import groovy.transform.AutoClone
+
 /**
  * Defines the cache configuration.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-class CacheConfig {
+@AutoClone
+class CacheConfig implements Cloneable{
     static final List USAGE_OPTIONS = ['read-only', 'read-write','nonstrict-read-write','transactional']
     static final List INCLUDE_OPTIONS = ['all', 'non-lazy']
 

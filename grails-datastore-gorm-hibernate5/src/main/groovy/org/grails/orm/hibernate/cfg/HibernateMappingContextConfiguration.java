@@ -12,6 +12,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.SessionFactoryObserver;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
+import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.boot.registry.classloading.internal.ClassLoaderServiceImpl;
 import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
@@ -236,8 +237,9 @@ public class HibernateMappingContextConfiguration extends Configuration implemen
             StandardServiceRegistryBuilder standardServiceRegistryBuilder = new StandardServiceRegistryBuilder(bootstrapServiceRegistry)
                                                                                         .applySettings(getProperties());
 
-            sessionFactory = super.buildSessionFactory(standardServiceRegistryBuilder.build());
-            serviceRegistry = ((SessionFactoryImplementor)sessionFactory).getServiceRegistry();
+            StandardServiceRegistry serviceRegistry = standardServiceRegistryBuilder.build();
+            sessionFactory = super.buildSessionFactory(serviceRegistry);
+            this.serviceRegistry = serviceRegistry;
         }
         finally {
             if (overrideClassLoader) {

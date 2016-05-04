@@ -35,7 +35,10 @@ import groovy.transform.CompileStatic
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.mapping.core.AbstractDatastore
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.mongo.AbstractMongoSession
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
@@ -59,7 +62,8 @@ class MongoExtensions {
 
 
     static <T> T asType(Document document, Class<T> cls) {
-        AbstractMongoSession session = (AbstractMongoSession)AbstractDatastore.retrieveSession(MongoDatastore)
+        def datastore = GormEnhancer.findDatastore(cls)
+        AbstractMongoSession session = (AbstractMongoSession)datastore.currentSession
         if (session != null) {
             return session.decode(cls, document)
         }
@@ -72,7 +76,9 @@ class MongoExtensions {
     }
 
     static <T> T asType(FindIterable iterable, Class<T> cls) {
-        AbstractMongoSession session = (AbstractMongoSession)AbstractDatastore.retrieveSession(MongoDatastore)
+        def datastore = GormEnhancer.findDatastore(cls)
+        AbstractMongoSession session = (AbstractMongoSession)datastore.currentSession
+
         if (session != null) {
             return session.decode(cls, iterable)
         }
@@ -82,7 +88,9 @@ class MongoExtensions {
     }
 
     static <T> List<T> toList(FindIterable iterable, Class<T> cls) {
-        AbstractMongoSession session = (AbstractMongoSession)AbstractDatastore.retrieveSession(MongoDatastore)
+        def datastore = GormEnhancer.findDatastore(cls)
+        AbstractMongoSession session = (AbstractMongoSession)datastore.currentSession
+
         MongoEntityPersister p = (MongoEntityPersister)session.getPersister(cls)
         if (p)
             return new MongoQuery.MongoResultList(((FindIterable<Document>)iterable).iterator(),0,p)

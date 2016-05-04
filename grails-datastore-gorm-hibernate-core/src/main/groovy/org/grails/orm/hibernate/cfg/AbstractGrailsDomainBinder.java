@@ -95,7 +95,8 @@ public abstract class AbstractGrailsDomainBinder {
 
 
     /**
-     * The default mapping defined by {@link GrailsDomainConfiguration#DEFAULT_MAPPING}
+     * The default ORM mapping
+     *
      * @param defaultMapping The default mapping
      */
     public void setDefaultMapping(Closure defaultMapping) {
@@ -1838,6 +1839,7 @@ public abstract class AbstractGrailsDomainBinder {
             table.setComment(gormMapping.getComment());
         }
 
+        List<Embedded> embedded = new ArrayList<>();
         for (PersistentProperty currentGrailsProp : persistentProperties) {
 
             // if its inherited skip
@@ -1920,9 +1922,8 @@ public abstract class AbstractGrailsDomainBinder {
                     }
                 }
                 else if (currentGrailsProp instanceof Embedded) {
-                    value = new Component(mappings, persistentClass);
-
-                    bindComponent((Component) value, (Embedded) currentGrailsProp, true, mappings, sessionFactoryBeanName);
+                    embedded.add((Embedded)currentGrailsProp);
+                    continue;
                 }
             }
             // work out what type of relationship it is and bind value
@@ -1938,6 +1939,14 @@ public abstract class AbstractGrailsDomainBinder {
                 Property property = createProperty(value, persistentClass, currentGrailsProp, mappings);
                 persistentClass.addProperty(property);
             }
+        }
+
+        for (Embedded association : embedded) {
+            Value value = new Component(mappings, persistentClass);
+
+            bindComponent((Component) value, association, true, mappings, sessionFactoryBeanName);
+            Property property = createProperty(value, persistentClass, association, mappings);
+            persistentClass.addProperty(property);
         }
 
         bindNaturalIdentifier(table, gormMapping, persistentClass);

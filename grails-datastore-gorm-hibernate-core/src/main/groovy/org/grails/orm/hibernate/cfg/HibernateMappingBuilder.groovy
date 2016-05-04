@@ -444,6 +444,14 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
                     newConfig = (PropertyConfig)sharedConstraints.clone()
                 }
             }
+            else if(mapping.columns.containsKey('*')) {
+                // apply global constraints constraints
+                def globalConstraints = mapping.columns.get('*')
+                if(globalConstraints != null) {
+                    newConfig = (PropertyConfig)globalConstraints.clone()
+                }
+            }
+
 
             PropertyConfig property = mapping.columns[name] ?: newConfig
             property.formula = namedArgs.formula ?: property.formula
@@ -643,9 +651,6 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
         }
         else if (args && ((args[0] instanceof Map) || (args[0] instanceof Closure))) {
             handleMethodMissing(name, args)
-        }
-        else {
-            LOG.error "ORM Mapping Invalid: Specified config option [$name] does not exist for class [$className]!"
         }
     }
 }

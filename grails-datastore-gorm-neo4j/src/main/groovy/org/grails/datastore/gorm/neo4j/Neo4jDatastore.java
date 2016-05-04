@@ -101,14 +101,14 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     }
 
     /**
-     * @see {@link #Neo4jDatastore(MappingContext, PropertyResolver, ConfigurableApplicationContext)}
+     * @see #Neo4jDatastore(MappingContext, PropertyResolver, ConfigurableApplicationContext)
      */
     public Neo4jDatastore(MappingContext mappingContext, ConfigurableApplicationContext applicationContext) {
         this(mappingContext, applicationContext.getEnvironment(), applicationContext);
     }
 
     /**
-     * @see {@link #Neo4jDatastore(MappingContext, PropertyResolver, ConfigurableApplicationContext)}
+     * @see #Neo4jDatastore(MappingContext, PropertyResolver, ConfigurableApplicationContext)
      */
     public Neo4jDatastore(MappingContext mappingContext, ConfigurableApplicationContext applicationContext, GraphDatabaseService graphDatabaseService) {
         this(mappingContext, applicationContext.getEnvironment(), applicationContext, graphDatabaseService);

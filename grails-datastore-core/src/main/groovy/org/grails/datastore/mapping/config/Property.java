@@ -179,7 +179,9 @@ public class Property implements Cloneable {
     }
 
     /**
-     * @return The strategy to use to fetch the property (lazy or eager)
+     * Sets the strategy to use to fetch the property (lazy or eager)
+     *
+     * @param fetchStrategy The fetch strategy to use
      */
     public void setFetchStrategy(FetchType fetchStrategy) {
         this.fetchStrategy = fetchStrategy;

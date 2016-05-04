@@ -4,19 +4,19 @@ import java.util.*;
 
 
 /**
+ * <p>
  * This class is part of the Java Tools (see http://mpii.de/yago-naga/javatools).
  * It is licensed under the Creative Commons Attribution License
  * (see http://creativecommons.org/licenses/by/3.0) by
  * the YAGO-NAGA team (see http://mpii.de/yago-naga).
- * <p/>
- * <p/>
- * <p/>
- * <p/>
- * <p/>
+ * </p>
+ * <p>
  * The PlingStemmer stems an English noun (plural or singular) to its singular
  * form. It deals with "firemen"-&gt;"fireman", it knows Greek stuff like
  * "appendices"-&gt;"appendix" and yes, it was a lot of work to compile these exceptions.
  * Examples:
+ *
+ * </p>
  * <PRE>
  * System.out.println(PlingStemmer.stem("boy"));
  * ----&gt; boy
@@ -31,7 +31,7 @@ import java.util.*;
  * System.out.println(PlingStemmer.stem("emus"));
  * ----&gt; emu
  * </PRE><P>
- * <p/>
+ * <p>
  * There are a number of word forms that can either be plural or singular.
  * Examples include "physics" (the science or the plural of "physic" (the
  * medicine)), "quarters" (the housing or the plural of "quarter" (1/4))
@@ -39,12 +39,15 @@ import java.util.*;
  * these cases, the stemmer assumes the word is a plural form and returns
  * the singular form. The methods isPlural, isSingular and isPluralAndSingular
  * can be used to differentiate the cases.<P>
- * <p/>
+ * </p>
+ * <p>
  * It cannot be guaranteed that the stemmer correctly stems a plural word
  * or correctly ignores a singular word -- let alone that it treats an
  * ambiguous word form in the way expected by the user.<P>
- * <p/>
+ * </p>
+ * <p>
  * The PlingStemmer uses material from <A HREF=http://wordnet.princeton.edu/>WordNet</A>.
+ * </p>
  */
 public class PlingStemmer {
 

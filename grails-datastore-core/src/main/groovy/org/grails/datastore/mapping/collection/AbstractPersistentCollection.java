@@ -322,15 +322,17 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
     }
 
     protected void loadInverseChildKeys(Session session, Class childType, Collection keys) {
-        if(proxyEntities) {
-            for (Object key : keys) {
-                add(
-                    session.proxy(childType, (Serializable) key)
-                );
+        if(!keys.isEmpty()) {
+            if(proxyEntities) {
+                for (Object key : keys) {
+                    add(
+                            session.proxy(childType, (Serializable) key)
+                    );
+                }
             }
-        }
-        else {
-            addAll(session.retrieveAll(childType, keys));
+            else {
+                addAll(session.retrieveAll(childType, keys));
+            }
         }
     }
 
