@@ -25,9 +25,9 @@ project.ext {
     groovyVersion = System.getProperty('groovyVersion') ?: '2.4.5'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
-    projectMajorVersion = "5"
+    projectMajorVersion = "6"
     projectMinorVersion = "0"
-    projectPatchVersion = "6"
+    projectPatchVersion = "0"
 //    releaseType = "RELEASE"
 //    releaseType = "M4"
 //    releaseType = "RC4"
