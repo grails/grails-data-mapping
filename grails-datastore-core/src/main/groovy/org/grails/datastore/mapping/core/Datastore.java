@@ -19,7 +19,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * The <code>Datastore</code> interface is the basic commom denominator all NoSQL databases should support:
+ * The <code>Datastore</code> interface is the basic common denominator all NoSQL databases should support:
  * <ul>
  *     <li>Storing data</li>
  *     <li>Retrieving one or more elements at a time, identified by their keys</li>

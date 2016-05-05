@@ -15,5 +15,6 @@ dependencies {
         exclude group:"org.springframework", module:'spring-tx'
         exclude group:"org.springframework", module:'spring-beans'
     }
+    compileOnly "org.springframework:spring-beans:$springVersion"
     compile 'io.reactivex:rxjava:1.1.3'
 }

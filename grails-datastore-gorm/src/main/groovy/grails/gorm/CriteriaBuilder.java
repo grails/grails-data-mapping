@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
@@ -70,6 +71,21 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
     protected  Query.ProjectionList projectionList;
     protected PersistentEntity persistentEntity;
     protected boolean readOnly;
+
+    public CriteriaBuilder(final Class targetClass, final MappingContext mappingContext) {
+        Assert.notNull(targetClass, "Argument [targetClass] cannot be null");
+        Assert.notNull(mappingContext, "Argument [session] cannot be null");
+
+        persistentEntity = mappingContext.getPersistentEntity(
+                targetClass.getName());
+        if (persistentEntity == null) {
+            throw new IllegalArgumentException("Class [" + targetClass.getName() +
+                    "] is not a persistent entity");
+        }
+
+        this.targetClass = targetClass;
+        this.session = null;
+    }
 
     public CriteriaBuilder(final Class targetClass, final Session session) {
         Assert.notNull(targetClass, "Argument [targetClass] cannot be null");

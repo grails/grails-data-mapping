@@ -43,6 +43,7 @@ import org.grails.datastore.gorm.finders.MethodExpression.Like;
 import org.grails.datastore.gorm.finders.MethodExpression.NotEqual;
 import org.grails.datastore.gorm.finders.MethodExpression.Rlike;
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.Basic;
 import org.grails.datastore.mapping.query.Query;
@@ -85,6 +86,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
     private static final String NOT = "Not";
     private static final Map<String, Constructor> methodExpressions = new LinkedHashMap<String, Constructor>();
+    protected final MappingContext mappingContext;
 
     static {
         // populate the default method expressions
@@ -114,9 +116,23 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
     protected DynamicFinder(final Pattern pattern, final String[] operators, final Datastore datastore) {
         super(datastore);
+        this.mappingContext = datastore.getMappingContext();
         this.pattern = pattern;
         this.operators = operators;
         this.operatorPatterns = new Pattern[operators.length];
+        populateOperators(operators);
+    }
+
+    protected DynamicFinder(final Pattern pattern, final String[] operators, final MappingContext mappingContext) {
+        super(null);
+        this.mappingContext = mappingContext;
+        this.pattern = pattern;
+        this.operators = operators;
+        this.operatorPatterns = new Pattern[operators.length];
+        populateOperators(operators);
+    }
+
+    private void populateOperators(String[] operators) {
         for (int i = 0; i < operators.length; i++) {
             operatorPatterns[i] = Pattern.compile("(\\w+)(" + operators[i] + ")(\\p{Upper})(\\w+)");
         }
@@ -233,7 +249,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                             currentArguments[k] = arguments[argumentCursor];
                         }
                         currentExpression = getInitializedExpression(currentExpression, currentArguments);
-                        PersistentEntity persistentEntity = datastore.getMappingContext().getPersistentEntity(clazz.getName());
+                        PersistentEntity persistentEntity = mappingContext.getPersistentEntity(clazz.getName());
 
                         try {
                             currentExpression.convertArguments(persistentEntity);
@@ -262,7 +278,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             Object[] soloArgs = new Object[requiredArguments];
             System.arraycopy(arguments, 0, soloArgs, 0, requiredArguments);
             solo = getInitializedExpression(solo, arguments);
-            PersistentEntity persistentEntity = datastore.getMappingContext().getPersistentEntity(clazz.getName());
+            PersistentEntity persistentEntity = mappingContext.getPersistentEntity(clazz.getName());
             try {
                 solo.convertArguments(persistentEntity);
             } catch (ConversionException e) {
@@ -425,7 +441,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
         Integer maxParam = null;
         Integer offsetParam = null;
-        final ConversionService conversionService = q.getSession().getMappingContext().getConversionService();
+        final ConversionService conversionService = q.getEntity().getMappingContext().getConversionService();
         if (argMap.containsKey(ARGUMENT_MAX)) {
             maxParam = conversionService.convert(argMap.get(ARGUMENT_MAX), Integer.class);
         }

@@ -31,18 +31,29 @@ import org.grails.datastore.mapping.query.Query;
 @SuppressWarnings("rawtypes")
 public abstract class AbstractFinder implements FinderMethod {
 
-    protected Datastore datastore;
+    protected final Datastore datastore;
 
     public AbstractFinder(final Datastore datastore) {
         this.datastore = datastore;
     }
 
     protected <T> T execute(final SessionCallback<T> callback) {
-        return DatastoreUtils.execute(datastore, callback);
+        if(datastore != null) {
+            return DatastoreUtils.execute(datastore, callback);
+        }
+        else {
+            throw new IllegalStateException("Cannot execute session query in stateless mode");
+        }
     }
 
     protected void execute(final VoidSessionCallback callback) {
-        DatastoreUtils.execute(datastore, callback);
+        if(datastore != null) {
+            DatastoreUtils.execute(datastore, callback);
+        }
+        else {
+            throw new IllegalStateException("Cannot execute session query in stateless mode");
+        }
+
     }
 
     protected void applyAdditionalCriteria(Query query, Closure additionalCriteria) {

@@ -23,11 +23,11 @@ class RxGormInstanceApi<D> {
         this.datastoreClient = datastoreClient
     }
 
-    Observable<D> save(Object instance) {
+    Observable<D> save(D instance) {
         save(instance, Collections.<String,Object>emptyMap())
     }
 
-    Observable<D> save(Object instance, Map<String, Object> arguments) {
+    Observable<D> save(D instance, Map<String, Object> arguments) {
         datastoreClient.persist(instance, arguments)
     }
 

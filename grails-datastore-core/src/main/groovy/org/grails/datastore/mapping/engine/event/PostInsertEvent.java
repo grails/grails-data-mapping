@@ -34,6 +34,14 @@ public class PostInsertEvent extends AbstractPersistenceEvent {
         super(source, entity);
     }
 
+    public PostInsertEvent(Object source, PersistentEntity entity, EntityAccess entityAccess) {
+        super(source, entity, entityAccess);
+    }
+
+    public PostInsertEvent(Object source, PersistentEntity entity) {
+        super(source, entity);
+    }
+
     @Override
     public EventType getEventType() {
         return EventType.PostInsert;

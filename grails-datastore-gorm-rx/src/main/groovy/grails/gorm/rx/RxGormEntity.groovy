@@ -48,6 +48,24 @@ trait RxGormEntity<D> implements RxGormOperations<D>, DirtyCheckable {
         currentRxGormStaticApi().get(id)
     }
 
+    /**
+     * List all entities and return an observable
+     *
+     * @return An observable with all results
+     */
+    static Observable<D> list() {
+        currentRxGormStaticApi().list()
+    }
+
+    /**
+     * List all entities and return an observable
+     *
+     * @return An observable with all results
+     */
+    static Observable<D> list(Map args) {
+        currentRxGormStaticApi().list(args)
+    }
+
     static Observable $static_methodMissing() {
 
     }

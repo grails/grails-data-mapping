@@ -24,6 +24,7 @@ import org.bson.BsonDocument;
 import org.bson.BsonDocumentWriter;
 import org.bson.Document;
 import org.bson.codecs.EncoderContext;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.mongo.geo.GeoJSONType;
 import org.grails.datastore.gorm.query.AbstractResultList;
@@ -52,7 +53,6 @@ import org.grails.datastore.mapping.query.Restrictions;
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.grails.datastore.mapping.query.projections.ManualProjections;
 import org.grails.datastore.mapping.reflect.EntityReflector;
-import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -142,24 +142,24 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
-            public void handle(Session session, IdEquals criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, IdEquals criterion, Document query, PersistentEntity entity) {
                 query.put(MongoEntityPersister.MONGO_ID_FIELD, criterion.getValue());
             }
         });
 
         queryHandlers.put(AssociationQuery.class, new QueryHandler<AssociationQuery>() {
-            public void handle(Session session, AssociationQuery criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, AssociationQuery criterion, Document query, PersistentEntity entity) {
                 Association<?> association = criterion.getAssociation();
                 PersistentEntity associatedEntity = association.getAssociatedEntity();
                 if (association instanceof EmbeddedCollection) {
                     Document associationCollectionQuery = new Document();
-                    populateMongoQuery((AbstractMongoSession) session, associationCollectionQuery, criterion.getCriteria(), associatedEntity);
+                    populateMongoQuery(queryEncoder, associationCollectionQuery, criterion.getCriteria(), associatedEntity);
                     Document collectionQuery = new Document("$elemMatch", associationCollectionQuery);
                     String propertyKey = getPropertyName(entity, association.getName());
                     query.put(propertyKey, collectionQuery);
                 } else if (associatedEntity instanceof EmbeddedPersistentEntity || association instanceof Embedded) {
                     Document associatedEntityQuery = new Document();
-                    populateMongoQuery((AbstractMongoSession) session, associatedEntityQuery, criterion.getCriteria(), associatedEntity);
+                    populateMongoQuery(queryEncoder, associatedEntityQuery, criterion.getCriteria(), associatedEntity);
                     for (String property : associatedEntityQuery.keySet()) {
                         String propertyKey = getPropertyName(entity, association.getName());
                         query.put(propertyKey + '.' + property, associatedEntityQuery.get(property));
@@ -171,22 +171,12 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
-            public void handle(Session session, Equals criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, Equals criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 PersistentProperty persistentProperty = entity.getPropertyByName(criterion.getProperty());
                 Object value;
                 if ((persistentProperty instanceof Embedded) && criterion.getValue() != null) {
-                    if(session instanceof MongoCodecSession) {
-                        final MongoDatastore datastore = (MongoDatastore) session.getDatastore();
-                        final PersistentEntityCodec codec = (PersistentEntityCodec)datastore.getCodecRegistry().get(persistentProperty.getType());
-                        final BsonDocument doc = new BsonDocument();
-                        codec.encode(new BsonDocumentWriter(doc), criterion.getValue(), ENCODER_CONTEXT, false);
-                        value = doc;
-                    }
-                    else {
-                        MongoEntityPersister persister = (MongoEntityPersister) session.getPersister(entity.getJavaClass());
-                        value = persister.createNativeObjectForEmbedded((Association) persistentProperty, criterion.getValue());
-                    }
+                    value = queryEncoder.encode((Embedded) persistentProperty, criterion.getValue());
                 } else {
                     value = criterion.getValue();
                 }
@@ -201,53 +191,53 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(IsNull.class, new QueryHandler<IsNull>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, IsNull criterion, Document query, PersistentEntity entity) {
-                queryHandlers.get(Equals.class).handle(session, new Equals(criterion.getProperty(), null), query, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, IsNull criterion, Document query, PersistentEntity entity) {
+                queryHandlers.get(Equals.class).handle(queryEncoder, new Equals(criterion.getProperty(), null), query, entity);
             }
         });
         queryHandlers.put(IsNotNull.class, new QueryHandler<IsNotNull>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, IsNotNull criterion, Document query, PersistentEntity entity) {
-                queryHandlers.get(NotEquals.class).handle(session, new NotEquals(criterion.getProperty(), null), query, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, IsNotNull criterion, Document query, PersistentEntity entity) {
+                queryHandlers.get(NotEquals.class).handle(queryEncoder, new NotEquals(criterion.getProperty(), null), query, entity);
             }
         });
         queryHandlers.put(EqualsProperty.class, new QueryHandler<EqualsProperty>() {
-            public void handle(Session session, EqualsProperty criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, EqualsProperty criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, "==");
             }
         });
         queryHandlers.put(NotEqualsProperty.class, new QueryHandler<NotEqualsProperty>() {
-            public void handle(Session session, NotEqualsProperty criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, NotEqualsProperty criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, "!=");
             }
         });
         queryHandlers.put(GreaterThanProperty.class, new QueryHandler<GreaterThanProperty>() {
-            public void handle(Session session, GreaterThanProperty criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, GreaterThanProperty criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, ">");
             }
         });
         queryHandlers.put(LessThanProperty.class, new QueryHandler<LessThanProperty>() {
-            public void handle(Session session, LessThanProperty criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, LessThanProperty criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, "<");
             }
         });
         queryHandlers.put(GreaterThanEqualsProperty.class, new QueryHandler<GreaterThanEqualsProperty>() {
-            public void handle(Session session, GreaterThanEqualsProperty criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, GreaterThanEqualsProperty criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, ">=");
             }
         });
         queryHandlers.put(LessThanEqualsProperty.class, new QueryHandler<LessThanEqualsProperty>() {
-            public void handle(Session session, LessThanEqualsProperty criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, LessThanEqualsProperty criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
                 addWherePropertyComparison(query, propertyName, otherPropertyName, "<=");
@@ -255,7 +245,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
-            public void handle(Session session, NotEquals criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, NotEquals criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Document notEqualQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(notEqualQuery, MONGO_NE_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -265,19 +255,19 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(Like.class, new QueryHandler<Like>() {
-            public void handle(Session session, Like like, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, Like like, Document query, PersistentEntity entity) {
                 handleLike(entity, like, query, true);
             }
         });
 
         queryHandlers.put(ILike.class, new QueryHandler<ILike>() {
-            public void handle(Session session, ILike like, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, ILike like, Document query, PersistentEntity entity) {
                 handleLike(entity, like, query, false);
             }
         });
 
         queryHandlers.put(RLike.class, new QueryHandler<RLike>() {
-            public void handle(Session session, RLike like, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, RLike like, Document query, PersistentEntity entity) {
                 Object value = like.getValue();
                 if (value == null) value = "null";
                 final String expr = value.toString();
@@ -288,7 +278,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(In.class, new QueryHandler<In>() {
-            public void handle(Session session, In in, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, In in, Document query, PersistentEntity entity) {
                 Document inQuery = new Document();
                 List values = getInListQueryValues(entity, in);
                 inQuery.put(MONGO_IN_OPERATOR, values);
@@ -299,7 +289,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
 
         queryHandlers.put(WithinBox.class, new QueryHandler<WithinBox>() {
-            public void handle(Session session, WithinBox withinBox, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, WithinBox withinBox, Document query, PersistentEntity entity) {
                 Document nearQuery = new Document();
                 Document box = new Document();
                 MongoEntityPersister.setDBObjectValue(box, BOX_OPERATOR, withinBox.getValues(), entity.getMappingContext());
@@ -310,7 +300,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(WithinPolygon.class, new QueryHandler<WithinPolygon>() {
-            public void handle(Session session, WithinPolygon withinPolygon, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, WithinPolygon withinPolygon, Document query, PersistentEntity entity) {
                 Document nearQuery = new Document();
                 Document box = new Document();
                 MongoEntityPersister.setDBObjectValue(box, POLYGON_OPERATOR, withinPolygon.getValues(), entity.getMappingContext());
@@ -321,7 +311,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(WithinCircle.class, new QueryHandler<WithinCircle>() {
-            public void handle(Session session, WithinCircle withinCentre, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, WithinCircle withinCentre, Document query, PersistentEntity entity) {
                 Document nearQuery = new Document();
                 Document center = new Document();
                 MongoEntityPersister.setDBObjectValue(center, CENTER_OPERATOR, withinCentre.getValues(), entity.getMappingContext());
@@ -332,7 +322,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         QueryHandler<Near> nearHandler = new QueryHandler<Near>() {
-            public void handle(Session session, Near near, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, Near near, Document query, PersistentEntity entity) {
                 Document nearQuery = new Document();
                 Object value = near.getValue();
                 String nearOperator = near instanceof NearSphere ? NEAR_SPHERE_OPERATOR : NEAR_OPERATOR;
@@ -356,7 +346,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         queryHandlers.put(NearSphere.class, nearHandler);
 
         queryHandlers.put(GeoWithin.class, new QueryHandler<GeoWithin>() {
-            public void handle(Session session, GeoWithin geoWithin, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, GeoWithin geoWithin, Document query, PersistentEntity entity) {
                 Document queryRoot = new Document();
                 Document queryGeoWithin = new Document();
                 queryRoot.put(GEO_WITHIN_OPERATOR, queryGeoWithin);
@@ -384,7 +374,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(GeoIntersects.class, new QueryHandler<GeoIntersects>() {
-            public void handle(Session session, GeoIntersects geoIntersects, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, GeoIntersects geoIntersects, Document query, PersistentEntity entity) {
                 Document queryRoot = new Document();
                 Document queryGeoWithin = new Document();
                 queryRoot.put(GEO_INTERSECTS_OPERATOR, queryGeoWithin);
@@ -403,7 +393,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(Between.class, new QueryHandler<Between>() {
-            public void handle(Session session, Between between, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, Between between, Document query, PersistentEntity entity) {
                 Document betweenQuery = new Document();
                 MongoEntityPersister.setDBObjectValue(betweenQuery, MONGO_GTE_OPERATOR, between.getFrom(), entity.getMappingContext());
                 MongoEntityPersister.setDBObjectValue(betweenQuery, MONGO_LTE_OPERATOR, between.getTo(), entity.getMappingContext());
@@ -413,7 +403,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
-            public void handle(Session session, GreaterThan criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, GreaterThan criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Document greaterThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(greaterThanQuery, MONGO_GT_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -423,7 +413,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
-            public void handle(Session session, GreaterThanEquals criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, GreaterThanEquals criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Document greaterThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(greaterThanQuery, MONGO_GTE_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -433,7 +423,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
-            public void handle(Session session, LessThan criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, LessThan criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Document lessThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(lessThanQuery, MONGO_LT_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -443,7 +433,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
-            public void handle(Session session, LessThanEquals criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, LessThanEquals criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Document lessThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(lessThanQuery, MONGO_LTE_OPERATOR, criterion.getValue(), entity.getMappingContext());
@@ -453,18 +443,18 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(Conjunction.class, new QueryHandler<Conjunction>() {
-            public void handle(Session session, Conjunction criterion, Document query, PersistentEntity entity) {
-                populateMongoQuery((AbstractMongoSession) session, query, criterion, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, Conjunction criterion, Document query, PersistentEntity entity) {
+                populateMongoQuery(queryEncoder, query, criterion, entity);
             }
         });
 
         queryHandlers.put(Negation.class, new QueryHandler<Negation>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, Negation criteria, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, Negation criteria, Document query, PersistentEntity entity) {
                 for (Criterion criterion : criteria.getCriteria()) {
                     final QueryHandler queryHandler = negatedHandlers.get(criterion.getClass());
                     if (queryHandler != null) {
-                        queryHandler.handle(session, criterion, query, entity);
+                        queryHandler.handle(queryEncoder, criterion, query, entity);
                     } else {
                         throw new UnsupportedOperationException("Query of type " + criterion.getClass().getSimpleName() + " cannot be negated");
                     }
@@ -474,14 +464,14 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(Disjunction.class, new QueryHandler<Disjunction>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, Disjunction criterion, Document query, PersistentEntity entity) {
-                populateMongoQuery((AbstractMongoSession) session, query, criterion, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, Disjunction criterion, Document query, PersistentEntity entity) {
+                populateMongoQuery(queryEncoder, query, criterion, entity);
             }
         });
 
         queryHandlers.put(SizeEquals.class, new QueryHandler<SizeEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, SizeEquals criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, SizeEquals criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Document sizeEqualsQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(sizeEqualsQuery, SIZE_OPERATOR, getNumber(criterion), entity.getMappingContext());
@@ -491,7 +481,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(SizeNotEquals.class, new QueryHandler<SizeNotEquals>() {
-            public void handle(Session session, SizeNotEquals criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, SizeNotEquals criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Document sizeNotEqualsQuery = getOrCreatePropertyQuery(query, propertyName);
                 sizeNotEqualsQuery.put(NOT_OPERATOR, new Document(SIZE_OPERATOR, getNumber(criterion)));
@@ -502,7 +492,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(SizeGreaterThan.class, new QueryHandler<SizeGreaterThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, SizeGreaterThan criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, SizeGreaterThan criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Integer greaterThanValue = getNumber(criterion);
 
@@ -512,7 +502,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(SizeLessThan.class, new QueryHandler<SizeLessThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, SizeLessThan criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, SizeLessThan criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Integer lessThanValue = getNumber(criterion);
 
@@ -522,7 +512,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(SizeLessThanEquals.class, new QueryHandler<SizeLessThanEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, SizeLessThanEquals criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, SizeLessThanEquals criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Integer lessThanValue = getNumber(criterion);
 
@@ -532,7 +522,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(SizeGreaterThanEquals.class, new QueryHandler<SizeGreaterThanEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, SizeGreaterThanEquals criterion, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, SizeGreaterThanEquals criterion, Document query, PersistentEntity entity) {
                 String propertyName = getPropertyName(entity, criterion);
                 Integer greaterThanValue = getNumber(criterion);
 
@@ -543,48 +533,48 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         negatedHandlers.put(SizeEquals.class, new QueryHandler<SizeEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, SizeEquals criterion, Document query, PersistentEntity entity) {
-                queryHandlers.get(SizeNotEquals.class).handle(session, Restrictions.sizeNe(criterion.getProperty(), getNumber(criterion)), query, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, SizeEquals criterion, Document query, PersistentEntity entity) {
+                queryHandlers.get(SizeNotEquals.class).handle(queryEncoder, Restrictions.sizeNe(criterion.getProperty(), getNumber(criterion)), query, entity);
             }
         });
 
         negatedHandlers.put(SizeNotEquals.class, new QueryHandler<SizeNotEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, SizeNotEquals criterion, Document query, PersistentEntity entity) {
-                queryHandlers.get(SizeEquals.class).handle(session, Restrictions.sizeEq(criterion.getProperty(), getNumber(criterion)), query, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, SizeNotEquals criterion, Document query, PersistentEntity entity) {
+                queryHandlers.get(SizeEquals.class).handle(queryEncoder, Restrictions.sizeEq(criterion.getProperty(), getNumber(criterion)), query, entity);
             }
         });
 
         negatedHandlers.put(SizeGreaterThan.class, new QueryHandler<SizeGreaterThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, SizeGreaterThan criterion, Document query, PersistentEntity entity) {
-                queryHandlers.get(SizeLessThan.class).handle(session, Restrictions.sizeLt(criterion.getProperty(), getNumber(criterion)), query, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, SizeGreaterThan criterion, Document query, PersistentEntity entity) {
+                queryHandlers.get(SizeLessThan.class).handle(queryEncoder, Restrictions.sizeLt(criterion.getProperty(), getNumber(criterion)), query, entity);
             }
         });
 
         negatedHandlers.put(SizeLessThan.class, new QueryHandler<SizeLessThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, SizeLessThan criterion, Document query, PersistentEntity entity) {
-                queryHandlers.get(SizeGreaterThan.class).handle(session, Restrictions.sizeGt(criterion.getProperty(), getNumber(criterion)), query, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, SizeLessThan criterion, Document query, PersistentEntity entity) {
+                queryHandlers.get(SizeGreaterThan.class).handle(queryEncoder, Restrictions.sizeGt(criterion.getProperty(), getNumber(criterion)), query, entity);
             }
         });
 
         negatedHandlers.put(Equals.class, new QueryHandler<Equals>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, Equals criterion, Document query, PersistentEntity entity) {
-                queryHandlers.get(NotEquals.class).handle(session, Restrictions.ne(criterion.getProperty(), criterion.getValue()), query, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, Equals criterion, Document query, PersistentEntity entity) {
+                queryHandlers.get(NotEquals.class).handle(queryEncoder, Restrictions.ne(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, NotEquals criterion, Document query, PersistentEntity entity) {
-                queryHandlers.get(Equals.class).handle(session, Restrictions.eq(criterion.getProperty(), criterion.getValue()), query, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, NotEquals criterion, Document query, PersistentEntity entity) {
+                queryHandlers.get(Equals.class).handle(queryEncoder, Restrictions.eq(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(In.class, new QueryHandler<In>() {
-            public void handle(Session session, In in, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, In in, Document query, PersistentEntity entity) {
                 Object nativePropertyValue = getInListQueryValues(entity, in);
                 String property = getPropertyName(entity, in);
                 Document inQuery = getOrCreatePropertyQuery(query, property);
@@ -594,7 +584,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         negatedHandlers.put(Between.class, new QueryHandler<Between>() {
-            public void handle(Session session, Between between, Document query, PersistentEntity entity) {
+            public void handle(EmbeddedQueryEncoder queryEncoder, Between between, Document query, PersistentEntity entity) {
                 String property = getPropertyName(entity, between);
                 Document betweenQuery = getOrCreatePropertyQuery(query, property);
                 betweenQuery.put(MONGO_LTE_OPERATOR, between.getFrom());
@@ -605,29 +595,29 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         negatedHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, GreaterThan criterion, Document query, PersistentEntity entity) {
-                queryHandlers.get(LessThan.class).handle(session, Restrictions.lt(criterion.getProperty(), criterion.getValue()), query, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, GreaterThan criterion, Document query, PersistentEntity entity) {
+                queryHandlers.get(LessThan.class).handle(queryEncoder, Restrictions.lt(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, GreaterThanEquals criterion, Document query, PersistentEntity entity) {
-                queryHandlers.get(LessThanEquals.class).handle(session, Restrictions.lte(criterion.getProperty(), criterion.getValue()), query, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, GreaterThanEquals criterion, Document query, PersistentEntity entity) {
+                queryHandlers.get(LessThanEquals.class).handle(queryEncoder, Restrictions.lte(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, LessThan criterion, Document query, PersistentEntity entity) {
-                queryHandlers.get(GreaterThan.class).handle(session, Restrictions.gt(criterion.getProperty(), criterion.getValue()), query, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, LessThan criterion, Document query, PersistentEntity entity) {
+                queryHandlers.get(GreaterThan.class).handle(queryEncoder, Restrictions.gt(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
         negatedHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
             @SuppressWarnings("unchecked")
-            public void handle(Session session, LessThanEquals criterion, Document query, PersistentEntity entity) {
-                queryHandlers.get(GreaterThanEquals.class).handle(session, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query, entity);
+            public void handle(EmbeddedQueryEncoder queryEncoder, LessThanEquals criterion, Document query, PersistentEntity entity) {
+                queryHandlers.get(GreaterThanEquals.class).handle(queryEncoder, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query, entity);
             }
         });
 
@@ -792,18 +782,24 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         query.put(propertyName, regex);
     }
 
-    private AbstractMongoSession mongoSession;
-    private EntityPersister mongoEntityPersister;
-    private ManualProjections manualProjections;
+    private final AbstractMongoSession mongoSession;
+    private final EntityPersister mongoEntityPersister;
+    private final ManualProjections manualProjections;
     private boolean isCodecPersister = false;
 
     public MongoQuery(AbstractMongoSession session, PersistentEntity entity) {
         super(session, entity);
         this.mongoSession = session;
         this.manualProjections = new ManualProjections(entity);
-        this.mongoEntityPersister = (EntityPersister) session.getPersister(entity);
-        if(this.mongoEntityPersister instanceof MongoCodecEntityPersister) {
-            this.isCodecPersister = true;
+        if(session != null) {
+
+            this.mongoEntityPersister = (EntityPersister) session.getPersister(entity);
+            if(this.mongoEntityPersister instanceof MongoCodecEntityPersister) {
+                this.isCodecPersister = true;
+            }
+        }
+        else {
+            mongoEntityPersister = null;
         }
     }
 
@@ -854,7 +850,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             } else {
                 dbObject = collection.find(getMongoQuery())
                         .limit(1)
-                        .first();;
+                        .first();
             }
             if(isCodecPersister) {
                 if(!mongoSession.contains(dbObject)) {
@@ -884,91 +880,11 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         }
 
         populateMongoQuery((AbstractMongoSession) session, query, criteria, entity);
-        List projectedResults = new ArrayList();
-        List<Document> aggregationPipeline = new ArrayList<Document>();
-
-        if (!query.keySet().isEmpty()) {
-            aggregationPipeline.add(new Document(MATCH_OPERATOR, query));
-        }
-
-        List<Order> orderBy = getOrderBy();
-        if (!orderBy.isEmpty()) {
-            Document sortBy = new Document();
-            Document sort = new Document(SORT_OPERATOR, sortBy);
-            for (Order order : orderBy) {
-                sortBy.put(order.getProperty(), order.getDirection() == Order.Direction.ASC ? 1 : -1);
-            }
-
-            aggregationPipeline.add(sort);
-        }
-
-        if (max > 0) {
-            aggregationPipeline.add(new Document("$limit", max));
-        }
-        if (offset > 0) {
-            aggregationPipeline.add(new Document("$skip", offset));
-        }
-
-
-        List<ProjectedProperty> projectedKeys = new ArrayList<ProjectedProperty>();
-        boolean singleResult = true;
-
-        Document projectObject = new Document();
-
-
-        Document groupByObject = new Document();
-        groupByObject.put(MongoEntityPersister.MONGO_ID_FIELD, 0);
-        Document additionalGroupBy = null;
-
-
-        for (Projection projection : projectionList) {
-            ProjectionHandler projectionHandler = projectProjectionHandlers.get(projection.getClass());
-            ProjectedProperty projectedProperty = new ProjectedProperty();
-            projectedProperty.projection = projection;
-            if (projection instanceof PropertyProjection) {
-                PropertyProjection propertyProjection = (PropertyProjection) projection;
-                String propertyName = propertyProjection.getPropertyName();
-
-                PersistentProperty property = entity.getPropertyByName(propertyName);
-                if (property != null) {
-                    projectedProperty.property = property;
-                } else if(!propertyName.contains(".")) {
-                    throw new InvalidDataAccessResourceUsageException("Attempt to project on a non-existent project [" + propertyName + "]");
-                }
-            }
-            if (projectionHandler != null) {
-                singleResult = false;
-
-                String aggregationKey = projectionHandler.handle(entity, projectObject, groupByObject, projection);
-                aggregationKey = "id." + aggregationKey;
-                projectedProperty.projectionKey = aggregationKey;
-                projectedKeys.add(projectedProperty);
-            } else {
-
-                projectionHandler = groupByProjectionHandlers.get(projection.getClass());
-                if (projectionHandler != null) {
-                    projectedProperty.projectionKey = projectionHandler.handle(entity, projectObject, groupByObject, projection);
-                    projectedKeys.add(projectedProperty);
-
-                    if (projection instanceof CountDistinctProjection) {
-                        Document finalCount = new Document(MongoEntityPersister.MONGO_ID_FIELD, 1);
-                        finalCount.put(projectedProperty.projectionKey, new Document(SUM_OPERATOR, 1));
-                        additionalGroupBy = new Document(GROUP_OPERATOR, finalCount);
-                    }
-                }
-
-            }
-        }
-
-        if (!projectObject.isEmpty()) {
-            aggregationPipeline.add(new Document(PROJECT_OPERATOR, projectObject));
-        }
-
-        aggregationPipeline.add(new Document(GROUP_OPERATOR, groupByObject));
-
-        if (additionalGroupBy != null) {
-            aggregationPipeline.add(additionalGroupBy);
-        }
+        AggregatePipeline aggregatePipeline = buildAggregatePipeline(entity, query, projectionList);
+        List<Document> aggregationPipeline = aggregatePipeline.getAggregationPipeline();
+        boolean singleResult = aggregatePipeline.isSingleResult();
+        List<ProjectedProperty> projectedKeys = aggregatePipeline.getProjectedKeys();
+        List projectedResults = aggregatePipeline.getProjectedResults();
 
 
         AggregateIterable<Document> aggregatedResults = collection.aggregate(aggregationPipeline);
@@ -998,6 +914,10 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         return projectedResults;
 
 
+    }
+
+    private AggregatePipeline buildAggregatePipeline(PersistentEntity entity, Document query, List<Projection> projectionList) {
+        return new AggregatePipeline(this, entity, query, projectionList).build();
     }
 
     protected MongoCursor<Document> executeQuery(final PersistentEntity entity,
@@ -1051,7 +971,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         return iterable;
     }
 
-    private Document createQueryObject(PersistentEntity persistentEntity) {
+    protected Document createQueryObject(PersistentEntity persistentEntity) {
         Document query;
         if (persistentEntity.isRoot()) {
             query = new Document();
@@ -1061,9 +981,37 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         return query;
     }
 
-    @SuppressWarnings("unchecked")
-    public static void populateMongoQuery(AbstractMongoSession session, Document query, Junction criteria, PersistentEntity entity) {
+    public static void populateMongoQuery(final AbstractMongoSession session, Document query, Junction criteria, final PersistentEntity entity) {
+        EmbeddedQueryEncoder queryEncoder;
+        if(session instanceof MongoCodecSession) {
+            final MongoDatastore datastore = (MongoDatastore) session.getDatastore();
+            final CodecRegistry codecRegistry = datastore.getCodecRegistry();
+            queryEncoder = new EmbeddedQueryEncoder() {
+                @Override
+                public Object encode(Embedded embedded, Object instance) {
+                    final PersistentEntityCodec codec = (PersistentEntityCodec) codecRegistry.get(embedded.getType());
+                    final BsonDocument doc = new BsonDocument();
+                    codec.encode(new BsonDocumentWriter(doc), instance, ENCODER_CONTEXT, false);
+                    return doc;
+                }
+            };
+        }
+        else {
+            queryEncoder = new EmbeddedQueryEncoder() {
+                @Override
+                public Object encode(Embedded embedded, Object instance) {
+                    MongoEntityPersister persister = (MongoEntityPersister) session.getPersister(entity.getJavaClass());
+                    return  persister.createNativeObjectForEmbedded(embedded, instance);
 
+                }
+            };
+        }
+
+        populateMongoQuery(queryEncoder, query, criteria, entity);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void populateMongoQuery(final EmbeddedQueryEncoder queryEncoder, Document query, Junction criteria, final PersistentEntity entity) {
         List subList = null;
         // if a query combines more than 1 item, wrap the items in individual $and or $or arguments
         // so that property names can't clash (e.g. for an $and containing two $ors)
@@ -1094,7 +1042,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         continue;
                     }
                 }
-                queryHandler.handle(session, criterion, dbo, entity);
+                queryHandler.handle(queryEncoder, criterion, dbo, entity);
             } else {
                 throw new InvalidDataAccessResourceUsageException("Queries of type " + criterion.getClass().getSimpleName() + " are not supported by this implementation");
             }
@@ -1500,7 +1448,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
     private static interface QueryHandler<T> {
-        public void handle(Session session, T criterion, Document query, PersistentEntity entity);
+        public void handle(EmbeddedQueryEncoder queryEncoder, T criterion, Document query, PersistentEntity entity);
     }
 
     private static interface ProjectionHandler<T extends Projection> {
@@ -1853,5 +1801,130 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         Projection projection;
         String projectionKey;
         PersistentProperty property;
+    }
+
+    protected static class AggregatePipeline {
+        private PersistentEntity entity;
+        private Document query;
+        private List<Projection> projectionList;
+        private List projectedResults;
+        private List<Document> aggregationPipeline;
+        private List<ProjectedProperty> projectedKeys;
+        private boolean singleResult;
+        private final MongoQuery mongoQuery;
+
+        public AggregatePipeline(MongoQuery mongoQuery, PersistentEntity entity, Document queryObject, List<Projection> projectionList) {
+            this.mongoQuery = mongoQuery;
+            this.entity = entity;
+            this.query = queryObject;
+            this.projectionList = projectionList;
+        }
+
+        public List getProjectedResults() {
+            return projectedResults;
+        }
+
+        public List<Document> getAggregationPipeline() {
+            return aggregationPipeline;
+        }
+
+        public List<ProjectedProperty> getProjectedKeys() {
+            return projectedKeys;
+        }
+
+        public boolean isSingleResult() {
+            return singleResult;
+        }
+
+        public AggregatePipeline build() {
+            projectedResults = new ArrayList();
+            aggregationPipeline = new ArrayList<Document>();
+
+            if (!query.keySet().isEmpty()) {
+                aggregationPipeline.add(new Document(MATCH_OPERATOR, query));
+            }
+
+            List<Order> orderBy = mongoQuery.getOrderBy();
+            if (!orderBy.isEmpty()) {
+                Document sortBy = new Document();
+                Document sort = new Document(SORT_OPERATOR, sortBy);
+                for (Order order : orderBy) {
+                    sortBy.put(order.getProperty(), order.getDirection() == Order.Direction.ASC ? 1 : -1);
+                }
+
+                aggregationPipeline.add(sort);
+            }
+
+            int max = mongoQuery.max;
+            if (max > 0) {
+                aggregationPipeline.add(new Document("$limit", max));
+            }
+            int offset = mongoQuery.offset;
+            if (offset > 0) {
+                aggregationPipeline.add(new Document("$skip", offset));
+            }
+
+
+            projectedKeys = new ArrayList<ProjectedProperty>();
+            singleResult = true;
+
+            Document projectObject = new Document();
+
+
+            Document groupByObject = new Document();
+            groupByObject.put(MongoEntityPersister.MONGO_ID_FIELD, 0);
+            Document additionalGroupBy = null;
+
+
+            for (Projection projection : projectionList) {
+                ProjectionHandler projectionHandler = projectProjectionHandlers.get(projection.getClass());
+                ProjectedProperty projectedProperty = new ProjectedProperty();
+                projectedProperty.projection = projection;
+                if (projection instanceof PropertyProjection) {
+                    PropertyProjection propertyProjection = (PropertyProjection) projection;
+                    String propertyName = propertyProjection.getPropertyName();
+
+                    PersistentProperty property = entity.getPropertyByName(propertyName);
+                    if (property != null) {
+                        projectedProperty.property = property;
+                    } else if(!propertyName.contains(".")) {
+                        throw new InvalidDataAccessResourceUsageException("Attempt to project on a non-existent project [" + propertyName + "]");
+                    }
+                }
+                if (projectionHandler != null) {
+                    singleResult = false;
+
+                    String aggregationKey = projectionHandler.handle(entity, projectObject, groupByObject, projection);
+                    aggregationKey = "id." + aggregationKey;
+                    projectedProperty.projectionKey = aggregationKey;
+                    projectedKeys.add(projectedProperty);
+                } else {
+
+                    projectionHandler = groupByProjectionHandlers.get(projection.getClass());
+                    if (projectionHandler != null) {
+                        projectedProperty.projectionKey = projectionHandler.handle(entity, projectObject, groupByObject, projection);
+                        projectedKeys.add(projectedProperty);
+
+                        if (projection instanceof CountDistinctProjection) {
+                            Document finalCount = new Document(MongoEntityPersister.MONGO_ID_FIELD, 1);
+                            finalCount.put(projectedProperty.projectionKey, new Document(SUM_OPERATOR, 1));
+                            additionalGroupBy = new Document(GROUP_OPERATOR, finalCount);
+                        }
+                    }
+
+                }
+            }
+
+            if (!projectObject.isEmpty()) {
+                aggregationPipeline.add(new Document(PROJECT_OPERATOR, projectObject));
+            }
+
+            aggregationPipeline.add(new Document(GROUP_OPERATOR, groupByObject));
+
+            if (additionalGroupBy != null) {
+                aggregationPipeline.add(additionalGroupBy);
+            }
+            return this;
+        }
     }
 }

@@ -1,7 +1,10 @@
 package org.grails.gorm.rx.api
 
+import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.rx.RxDatastoreClient
+import org.grails.datastore.rx.query.RxQuery
 import rx.Observable
 
 /**
@@ -22,5 +25,11 @@ class RxGormStaticApi<D> {
 
     Observable<D> get(Serializable id) {
         datastoreClient.get(entity.javaClass, id)
+    }
+
+    Observable<D> list(Map params = Collections.emptyMap()) {
+        def query = datastoreClient.createQuery(entity.javaClass)
+        DynamicFinder.populateArgumentsForCriteria(entity.javaClass, query, params)
+        return ((RxQuery<D>) query).findAll()
     }
 }

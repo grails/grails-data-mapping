@@ -1,7 +1,10 @@
 package grails.gorm.rx.mongodb
 
+import grails.gorm.annotation.Entity
 import grails.gorm.rx.RxGormEntity
 import org.bson.types.ObjectId
+import org.grails.datastore.gorm.GormEntity
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
 import rx.Observable
@@ -20,6 +23,12 @@ class RxBasicPersistenceSpec extends Specification {
         context.initialize()
         def client = new RxMongoDatastoreClient(context)
         client.mongoClient.getDatabase(client.defaultDatabase).drop().toBlocking().first()
+//
+//        when:"An object is queried that doesn't exist"
+//        def nonExistant = Simple.get(new ObjectId())
+//
+//        then:"The object doesn't exist"
+//        nonExistant.toBlocking().first() == null
 
         when:"An instance is saved"
         def s = new Simple(name: "Fred")
@@ -45,9 +54,23 @@ class RxBasicPersistenceSpec extends Specification {
         result != null
         result.name == 'Bob'
 
+        when:"All results are listed"
+        new Simple(name:"Joe").save().toBlocking().single()
+        def results = Simple.list()
+
+        then:"The results are correct"
+        results.toBlocking().iterator.toList().size() == 2
+    }
+
+    void "Test entity structure"() {
+        expect:
+        RxMongoEntity.isAssignableFrom(Simple)
+        !GormEntity.isAssignableFrom(Simple)
+        DirtyCheckable.isAssignableFrom(Simple)
     }
 }
 
+@Entity
 class Simple implements RxMongoEntity<Simple> {
     String name
 }

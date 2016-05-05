@@ -54,13 +54,14 @@ import org.springframework.util.StringUtils;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class Query implements Cloneable{
 
-    protected PersistentEntity entity;
+    protected final PersistentEntity entity;
+    protected final Session session;
+
     protected Junction criteria = new Conjunction();
     protected ProjectionList projections = new ProjectionList();
     protected int max = -1;
     protected int offset = 0;
     protected List<Order> orderBy = new ArrayList<Order>();
-    protected Session session;
     protected boolean uniqueResult;
     protected Map<String, FetchType> fetchStrategies = new HashMap<String,FetchType>();
     protected Boolean queryCache;
@@ -73,7 +74,9 @@ public abstract class Query implements Cloneable{
 
     @Override
     public Object clone() {
-        Query newQuery = getSession().createQuery(entity.getJavaClass());
+        Session session = getSession();
+        if(session == null) throw new IllegalStateException("Cannot clone a stateless query");
+        Query newQuery = session.createQuery(entity.getJavaClass());
         for (Criterion criterion : criteria.getCriteria()) {
             newQuery.add(criterion);
         }
@@ -629,7 +632,7 @@ public abstract class Query implements Cloneable{
 
     protected Object resolveIdIfEntity(Object value) {
         // use the object id as the value if its a persistent entity
-        MappingContext mappingContext = session.getMappingContext();
+        MappingContext mappingContext = entity.getMappingContext();
         if (mappingContext.getProxyFactory().isProxy(value)) {
             return mappingContext.getProxyFactory().getIdentifier(value);
         }
@@ -637,11 +640,6 @@ public abstract class Query implements Cloneable{
     }
 
     private Serializable findInstanceId(Object value) {
-        EntityPersister ep = (EntityPersister) session.getPersister(value);
-        if (ep != null) {
-            return ep.getObjectIdentifier(value);
-        }
-
         MappingContext ctx = entity.getMappingContext();
         PersistentEntity pe = ctx.getPersistentEntity(value.getClass().getName());
         return ctx.getEntityReflector(pe).getIdentifier(value);
@@ -688,7 +686,7 @@ public abstract class Query implements Cloneable{
      */
     protected void flushBeforeQuery() {
         // flush before query execution in FlushModeType.AUTO
-        if (session.getFlushMode() == FlushModeType.AUTO) {
+        if (session != null && session.getFlushMode() == FlushModeType.AUTO) {
             session.flush();
         }
     }

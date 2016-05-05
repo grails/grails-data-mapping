@@ -34,6 +34,14 @@ public class PreInsertEvent extends AbstractPersistenceEvent {
         super(source, entity);
     }
 
+    public PreInsertEvent(Object source, PersistentEntity entity, EntityAccess entityAccess) {
+        super(source, entity, entityAccess);
+    }
+
+    public PreInsertEvent(Object source, PersistentEntity entity) {
+        super(source, entity);
+    }
+
     @Override
     public EventType getEventType() {
         return EventType.PreInsert;

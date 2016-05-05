@@ -34,6 +34,14 @@ public class PreLoadEvent extends AbstractPersistenceEvent {
         super(source, entity);
     }
 
+    public PreLoadEvent(Object source, PersistentEntity entity, EntityAccess entityAccess) {
+        super(source, entity, entityAccess);
+    }
+
+    public PreLoadEvent(Object source, PersistentEntity entity) {
+        super(source, entity);
+    }
+
     @Override
     public EventType getEventType() {
         return EventType.PreLoad;

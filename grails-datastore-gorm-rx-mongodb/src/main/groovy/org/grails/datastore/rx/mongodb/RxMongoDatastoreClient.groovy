@@ -17,16 +17,17 @@ import org.bson.codecs.configuration.CodecRegistry
 import org.bson.types.ObjectId
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
-import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.mongo.MongoConstants
 import org.grails.datastore.mapping.mongo.config.MongoCollection
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 import org.grails.datastore.mapping.mongo.engine.codecs.AdditionalCodecs
 import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec
+import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.rx.AbstractRxDatastoreClient
 import org.grails.datastore.rx.RxDatastoreClient
+import org.grails.datastore.rx.mongodb.query.RxMongoQuery
 import org.grails.gorm.rx.api.RxGormEnhancer
 import rx.Observable
 import rx.functions.Func1
@@ -44,10 +45,12 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     final CodecRegistry codecRegistry
     final Map<String, Codec> entityCodecs = [:]
     final Map<String, String> mongoCollections= [:]
+    final Map<String, String> mongoDatabases= [:]
     final String defaultDatabase
     final MongoMappingContext mappingContext
 
-    RxMongoDatastoreClient(MongoMappingContext mappingContext, MongoClientSettings clientSettings = MongoClientSettings.builder().build()) {
+    RxMongoDatastoreClient(MongoMappingContext mappingContext,
+                           MongoClientSettings clientSettings = MongoClientSettings.builder().build()) {
         super(mappingContext)
 
         this.mappingContext = mappingContext
@@ -67,85 +70,69 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
         mongoClient = MongoClients.create(finalClientSettings)
     }
 
-    /**
-     * Retrieve and instance of the given type and id
-     * @param type The type
-     * @param id The id
-     * @return An observable
-     */
     @Override
-    def <T> Observable<T> get(Class type, Serializable id) {
-
-        def entity = mappingContext.getPersistentEntity(type.name)
-        if(entity == null) {
-            throw new IllegalArgumentException("Type [$type.name] is not a persistent type")
-        }
-        def collection = mongoClient
-                .getDatabase(defaultDatabase)
-                .getCollection(getCollectionName(entity))
+    def <T1> Observable<T1> getEntity(PersistentEntity entity, Class<T1> type, Serializable id) {
+        com.mongodb.rx.client.MongoCollection<T1> collection = getCollection(entity, type)
 
         Document idQuery = createIdQuery(id)
         collection
-            .withDocumentClass(type)
-            .withCodecRegistry(codecRegistry)
-            .find(idQuery)
-            .limit(1)
-            .first()
+                .find(idQuery)
+                .limit(1)
+                .first()
     }
 
-    /**
-     * Persist an instance
-     * @param instance The instance
-     *
-     * @return An observable
-     */
-    def <T> Observable<T> persist(Object instance, Map<String, Object> arguments = Collections.<String,Object>emptyMap()) {
-        if(instance == null) throw new IllegalArgumentException("Cannot persist null instance")
-
-        Class<T> type = mappingContext.getProxyHandler().getProxiedClass(instance)
-
-        def entity = mappingContext.getPersistentEntity(type.name)
-        if(entity == null) {
-            throw new IllegalArgumentException("Type [$type.name] is not a persistent type")
-        }
-
-        def collection = mongoClient
-                .getDatabase(defaultDatabase)
-                .getCollection(getCollectionName(entity))
-
-        def reflector = mappingContext.getEntityReflector(entity)
-        def identifier = reflector.getIdentifier(instance)
-        if(identifier == null) {
-            generateIdentifier(entity, instance, reflector)
-            collection
-                    .withDocumentClass(type)
-                    .withCodecRegistry(codecRegistry)
-                    .insertOne((T)instance)
-                    .map({ Success success ->
+    @Override
+    def <T1> Observable<T1> updateEntity(PersistentEntity entity, Class<T1> type, Serializable id, T1 instance, Map<String, Object> arguments) {
+        def collection = getCollection(entity, type)
+        Document idQuery = createIdQuery(id)
+        PersistentEntityCodec codec = (PersistentEntityCodec)codecRegistry.get(type)
+        def updateDocument = codec.encodeUpdate(instance)
+        collection
+                .updateOne(idQuery,updateDocument , new UpdateOptions().upsert(false))
+                .map({ UpdateResult result ->
+            if(result.wasAcknowledged()) {
                 return instance
-            } as Func1)
-        }
-        else {
-            // handle update
-            if(instance instanceof DirtyCheckable) {
-                if( !((DirtyCheckable)instance).hasChanged() ) {
-                    return Observable.just((T)instance)
-                }
             }
-            Document idQuery = createIdQuery(identifier)
-            PersistentEntityCodec codec = (PersistentEntityCodec)codecRegistry.get(type)
-            def updateDocument = codec.encodeUpdate(instance)
-            collection
-                    .withDocumentClass(type)
-                    .withCodecRegistry(codecRegistry)
-                    .updateOne(idQuery,updateDocument , new UpdateOptions().upsert(false))
-                    .map({ UpdateResult result ->
-                if(result.wasAcknowledged()) {
-                    return instance
-                }
-            } as Func1)
+        } as Func1)
+    }
 
+    @Override
+    def <T1> Observable<T1> saveEntity(PersistentEntity entity, Class<T1> type, T1 instance, Map<String, Object> arguments) {
+        getCollection(entity, type)
+                .insertOne(instance)
+                .map({ Success success ->
+            return instance
+        } as Func1)
+    }
+
+    public <T1> com.mongodb.rx.client.MongoCollection<T1> getCollection(PersistentEntity entity, Class<T1> type) {
+        com.mongodb.rx.client.MongoCollection<T1> collection = mongoClient
+                .getDatabase(getDatabaseName(entity))
+                .getCollection(getCollectionName(entity))
+                .withCodecRegistry(codecRegistry)
+                .withDocumentClass(type)
+        collection
+    }
+
+    public String getCollectionName(PersistentEntity entity) {
+        final String collectionName = mongoCollections.get(entity.getName())
+        if(collectionName == null) {
+            return entity.getDecapitalizedName()
         }
+        return collectionName
+    }
+
+    public String getDatabaseName(PersistentEntity entity) {
+        final String databaseName = mongoDatabases.get(entity.getName())
+        if(databaseName == null) {
+            return defaultDatabase
+        }
+        return databaseName
+    }
+
+    @Override
+    Query createEntityQuery(PersistentEntity entity) {
+        return new RxMongoQuery(this, entity)
     }
 
     @Override
@@ -163,7 +150,8 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
         return entityCodecs.get(clazz.name)
     }
 
-    protected Serializable generateIdentifier(PersistentEntity entity, Object instance, EntityReflector reflector) {
+    @Override
+    Serializable generateIdentifier(PersistentEntity entity, Object instance, EntityReflector reflector) {
 
         if(!isAssignedId(entity)) {
 
@@ -193,11 +181,11 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
         idQuery
     }
 
+
     protected boolean isAssignedId(PersistentEntity persistentEntity) {
         Property mapping = persistentEntity.identity.mapping.mappedForm
         return MongoConstants.ASSIGNED_IDENTIFIER_MAPPING.equals(mapping?.generator)
     }
-
 
     protected void initializeMongoDatastoreClient(MongoMappingContext mappingContext, CodecRegistry codecRegistry) {
         for (entity in mappingContext.persistentEntities) {
@@ -215,16 +203,11 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
             if(db != null) {
                 databaseName = db
             }
-            entityCodecs.put(entity.getName(), new PersistentEntityCodec(codecRegistry, entity, false))
-            mongoCollections.put(entity.getName(), collectionName)
-        }
-    }
 
-    public String getCollectionName(PersistentEntity entity) {
-        final String collectionName = mongoCollections.get(entity.getName())
-        if(collectionName == null) {
-            return entity.getDecapitalizedName()
+            def entityName = entity.getName()
+            entityCodecs.put(entityName, new PersistentEntityCodec(codecRegistry, entity, false))
+            mongoCollections.put(entityName, collectionName)
+            mongoCollections.put(entityName, databaseName)
         }
-        return collectionName
     }
 }

@@ -153,9 +153,13 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         // inject associations
         injectAssociations(classNode)
 
-        // inject the GORM entity trait
-        def classGormEntityTrait = pickGormEntityTrait(classNode, sourceUnit)
-        AstUtils.injectTrait(classNode, classGormEntityTrait)
+        // inject the GORM entity trait unless it is an RX entity
+        boolean isRxEntity = AstUtils.isSubclassOfOrImplementsInterface(classNode, "grails.gorm.rx.RxGormEntity")
+        if(!isRxEntity) {
+
+            def classGormEntityTrait = pickGormEntityTrait(classNode, sourceUnit)
+            AstUtils.injectTrait(classNode, classGormEntityTrait)
+        }
 
         // convert the methodMissing and propertyMissing implementations to $static_methodMissing and $static_propertyMissing for the static versions
         def methodMissingBody = new BlockStatement()
@@ -250,7 +254,7 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         }
 
 
-        if(compilationUnit != null) {
+        if(compilationUnit != null && !isRxEntity) {
             org.codehaus.groovy.transform.trait.TraitComposer.doExtendTraits(classNode, sourceUnit, compilationUnit);
         }
 

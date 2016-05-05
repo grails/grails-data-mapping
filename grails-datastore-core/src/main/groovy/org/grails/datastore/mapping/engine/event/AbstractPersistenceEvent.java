@@ -38,6 +38,11 @@ public abstract class AbstractPersistenceEvent extends ApplicationEvent {
 
     protected AbstractPersistenceEvent(final Datastore source, final PersistentEntity entity,
             final EntityAccess entityAccess) {
+        this((Object)source, entity, entityAccess);
+    }
+
+    protected AbstractPersistenceEvent(final Object source, final PersistentEntity entity,
+                                       final EntityAccess entityAccess) {
         super(source);
         this.entity = entity;
         this.entityAccess = entityAccess;
@@ -47,6 +52,10 @@ public abstract class AbstractPersistenceEvent extends ApplicationEvent {
         else {
             this.entityObject = null;
         }
+    }
+
+    protected AbstractPersistenceEvent(final Object source, final PersistentEntity entity) {
+        this(source, entity, null);
     }
 
     protected AbstractPersistenceEvent(final Datastore source, final Object entity) {
