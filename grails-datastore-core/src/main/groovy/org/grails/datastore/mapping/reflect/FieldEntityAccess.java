@@ -1,6 +1,7 @@
 package org.grails.datastore.mapping.reflect;
 
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.codehaus.groovy.transform.trait.Traits;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.AbstractPersistentEntity;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -146,21 +147,41 @@ public class FieldEntityAccess implements EntityAccess {
             ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
             fastClass = FastClass.create(entity.getJavaClass());
             if(identity != null) {
-                this.identifierName = identity.getName();
+                String identityName = identity.getName();
+                this.identifierName = identityName;
                 this.identifierType = identity.getType();
-                Field field = ReflectionUtils.findField(javaClass, identity.getName());
+                Field field = ReflectionUtils.findField(javaClass, identityName);
                 if(field != null) {
                     ReflectionUtils.makeAccessible(field);
                     identifierReader = new FieldReader(field);
                     identifierWriter = new FieldWriter(field);
                 }
                 else {
-                    PropertyDescriptor descriptor = cpf.getPropertyDescriptor(entity.getName());
+                    PropertyDescriptor descriptor = cpf.getPropertyDescriptor(identityName);
                     Method readMethod = descriptor.getReadMethod();
-                    Method writeMethod = descriptor.getWriteMethod();
 
-                    identifierReader = new FastMethodReader(fastClass.getMethod(readMethod));
-                    identifierWriter = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
+                    Traits.TraitBridge traitBridge = readMethod.getAnnotation(Traits.TraitBridge.class);
+                    if(traitBridge != null) {
+                        String traitFieldName = traitBridge.traitClass().getName().replace('.','_') + "__" + identityName;
+                        field = ReflectionUtils.findField(javaClass, traitFieldName);
+                        if(field != null) {
+                            ReflectionUtils.makeAccessible(field);
+                            identifierReader = new FieldReader(field);
+                            identifierWriter = new FieldWriter(field);
+                        }
+                        else {
+                            Method writeMethod = descriptor.getWriteMethod();
+
+                            identifierReader = new FastMethodReader(fastClass.getMethod(readMethod));
+                            identifierWriter = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
+                        }
+                    }
+                    else {
+                        Method writeMethod = descriptor.getWriteMethod();
+
+                        identifierReader = new FastMethodReader(fastClass.getMethod(readMethod));
+                        identifierWriter = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
+                    }
                 }
 
                 readerMap.put(identifierName, identifierReader);

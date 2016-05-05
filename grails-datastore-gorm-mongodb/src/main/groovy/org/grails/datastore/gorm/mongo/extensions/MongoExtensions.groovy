@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 package org.grails.datastore.gorm.mongo.extensions
+
 import com.mongodb.*
-import com.mongodb.client.DistinctIterable
-import com.mongodb.client.FindIterable
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.MongoDatabase
-import com.mongodb.client.MongoIterable
-import com.mongodb.client.model.CountOptions
-import com.mongodb.client.model.CreateCollectionOptions
-import com.mongodb.client.model.FindOneAndDeleteOptions
-import com.mongodb.client.model.FindOneAndReplaceOptions
-import com.mongodb.client.model.FindOneAndUpdateOptions
-import com.mongodb.client.model.IndexOptions
-import com.mongodb.client.model.InsertManyOptions
-import com.mongodb.client.model.UpdateOptions
+import com.mongodb.client.*
+import com.mongodb.client.model.*
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.UpdateResult
 import groovy.transform.CompileDynamic
@@ -36,11 +26,7 @@ import org.bson.Document
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.mapping.core.AbstractDatastore
-import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.mongo.AbstractMongoSession
-import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.grails.datastore.mapping.mongo.query.MongoQuery

@@ -1,0 +1,19 @@
+configurations.all {
+    resolutionStrategy {
+        dependencySubstitution {
+            substitute module("org.slf4j:jcl-over-slf4j:$slf4jVersion") with module("org.slf4j:slf4j-api:$slf4jVersion")
+        }
+
+    }
+}
+dependencies {
+    compile project(":grails-datastore-gorm"), {
+        exclude group:"org.grails", module:'grails-async'
+        exclude group:"org.grails", module:'grails-datastore-core'
+    }
+    compile project(":grails-datastore-core"), {
+        exclude group:"org.springframework", module:'spring-tx'
+        exclude group:"org.springframework", module:'spring-beans'
+    }
+    compile 'io.reactivex:rxjava:1.1.3'
+}

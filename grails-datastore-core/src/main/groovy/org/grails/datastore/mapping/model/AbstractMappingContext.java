@@ -75,7 +75,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
 
     @Override
     public ProxyHandler getProxyHandler() {
-        return this.proxyFactory;
+        return getProxyFactory();
     }
 
     public ProxyFactory getProxyFactory() {

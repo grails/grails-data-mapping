@@ -269,7 +269,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
     public PersistentEntityCodec getPersistentEntityCodec(PersistentEntity entity) {
         if (entity instanceof EmbeddedPersistentEntity) {
-            return new PersistentEntityCodec(this, entity);
+            return new PersistentEntityCodec(codecRegistry, entity);
         } else {
             return getPersistentEntityCodec(entity.getJavaClass());
         }
@@ -522,7 +522,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             if (codec == null) {
                 final PersistentEntity entity = getMappingContext().getPersistentEntity(entityName);
                 if (entity != null) {
-                    codec = new PersistentEntityCodec(MongoDatastore.this, entity);
+                    codec = new PersistentEntityCodec(codecRegistry, entity);
                     codecs.put(entityName, codec);
                 }
             }

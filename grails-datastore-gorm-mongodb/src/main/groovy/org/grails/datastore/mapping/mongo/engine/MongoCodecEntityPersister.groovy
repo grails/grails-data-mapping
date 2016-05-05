@@ -15,6 +15,7 @@
  */
 package org.grails.datastore.mapping.mongo.engine
 
+import com.mongodb.Mongo
 import com.mongodb.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.FindOneAndUpdateOptions
@@ -44,6 +45,7 @@ import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.mongo.MongoCodecSession
+import org.grails.datastore.mapping.mongo.MongoConstants
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.proxy.ProxyFactory
@@ -65,12 +67,12 @@ import javax.persistence.CascadeType
 class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
 
     public static final String INSTANCE_PREFIX = "instance:";
-    public static final String MONGO_ID_FIELD = "_id";
-    public static final String MONGO_CLASS_FIELD = "_class";
+    public static final String MONGO_ID_FIELD = MongoConstants.MONGO_ID_FIELD
+    public static final String MONGO_CLASS_FIELD = MongoConstants.MONGO_CLASS_FIELD
     protected static final String NEXT_ID = "next_id";
     protected static final String NEXT_ID_SUFFIX = ".$NEXT_ID";
-    public static final String INC_OPERATOR = '$inc'
-    public static final String ASSIGNED_IDENTIFIER_MAPPING = "assigned"
+    public static final String INC_OPERATOR = MongoConstants.INC_OPERATOR
+    public static final String ASSIGNED_IDENTIFIER_MAPPING = MongoConstants.ASSIGNED_IDENTIFIER_MAPPING
 
 
     protected final MongoCodecSession mongoSession

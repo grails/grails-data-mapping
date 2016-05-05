@@ -47,7 +47,6 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
-import com.mongodb.DBRef;
 import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 
 /**
@@ -64,18 +63,18 @@ public class MongoMappingContext extends DocumentMappingContext {
             Double.class.getName(),
             String.class.getName(),
             Document.class.getName(),
-            com.mongodb.DBObject.class.getName(),
+            "com.mongodb.DBObject",
             org.bson.types.Binary.class.getName(),
             org.bson.types.ObjectId.class.getName(),
-            DBRef.class.getName(),
+            "com.mongodb.DBRef",
             Boolean.class.getName(),
             Date.class.getName(),
             Pattern.class.getName(),
             Symbol.class.getName(),
             Integer.class.getName(),
-            BSONTimestamp.class.getName(),
+            "org.bson.types.BSONTimestamp",
             Code.class.getName(),
-            CodeWScope.class.getName(),
+            "org.bson.types.CodeWScope",
             Long.class.getName(),
             UUID.class.getName(),
             byte[].class.getName(),
@@ -89,7 +88,7 @@ public class MongoMappingContext extends DocumentMappingContext {
      */
     public static boolean isMongoNativeType(Class clazz) {
         return MongoMappingContext.MONGO_NATIVE_TYPES.contains(clazz.getName()) ||
-                Bson.class.isAssignableFrom(clazz.getClass()) || DBObject.class.isAssignableFrom(clazz.getClass());
+                Bson.class.isAssignableFrom(clazz.getClass()) ;
     }
 
     private final class MongoDocumentMappingFactory extends

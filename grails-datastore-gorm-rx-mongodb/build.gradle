@@ -1,0 +1,9 @@
+dependencies {
+    compile project(":grails-datastore-gorm-rx")
+    compile project(":grails-datastore-gorm-mongodb"), {
+        exclude group:'org.mongodb', module:'mongodb-driver'
+        exclude group:'org.grails', module:'grails-datastore-gorm-support'
+    }
+    compileOnly 'org.mongodb:mongodb-driver:3.2.1'
+    compile 'org.mongodb:mongodb-driver-rx:1.2.0'
+}

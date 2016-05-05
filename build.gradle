@@ -217,6 +217,7 @@ subprojects {
                                 !project.name.endsWith("tck") &&
                                 !project.name.endsWith("-support") &&
                                 !project.name.endsWith("-core") &&
+                                !project.name.contains("-rx") &&
             project.name != 'grails-datastore-gorm-rest-client'
 
 

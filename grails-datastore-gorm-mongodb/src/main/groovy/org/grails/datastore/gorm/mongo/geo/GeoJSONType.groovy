@@ -17,8 +17,6 @@ package org.grails.datastore.gorm.mongo.geo
 import grails.mongodb.geo.GeoJSON
 import grails.mongodb.geo.Shape
 import groovy.transform.CompileStatic
-import org.bson.BSONObject
-import org.bson.BasicBSONObject
 import org.bson.Document
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
@@ -61,14 +59,6 @@ abstract class GeoJSONType<T extends Shape> extends AbstractMappingAwareCustomTy
             nativeTarget.put(key, pointData)
             return pointData
         }
-    }
-
-    @Deprecated
-    static BasicBSONObject convertToGeoJSON(Shape value) {
-        def geoJson = new BasicBSONObject()
-        geoJson.put(GEO_TYPE, value.getClass().simpleName)
-        geoJson.put(COORDINATES, value.asList())
-        return geoJson
     }
 
     static Document convertToGeoDocument(Shape value) {
