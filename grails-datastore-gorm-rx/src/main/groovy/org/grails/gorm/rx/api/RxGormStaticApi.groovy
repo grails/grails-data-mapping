@@ -32,4 +32,8 @@ class RxGormStaticApi<D> {
         DynamicFinder.populateArgumentsForCriteria(entity.javaClass, query, params)
         return ((RxQuery<D>) query).findAll()
     }
+
+    Observable<D> methodMissing(String methodName, arg) {
+
+    }
 }

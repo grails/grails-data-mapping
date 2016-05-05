@@ -1032,14 +1032,14 @@ class PersistentEntityCodec implements Codec {
 
         @Override
         void encode(BsonWriter writer, ToOne property, Object value, EntityAccess parentAccess, EncoderContext encoderContext, CodecRegistry codecRegistry) {
-            MongoCodecSession mongoSession = (MongoCodecSession)AbstractDatastore.retrieveSession(MongoDatastore)
+
             if(value) {
                 def associatedEntity = property.associatedEntity
 
                 Object associationId
                 if(property.doesCascade(CascadeType.PERSIST) && associatedEntity != null) {
                     if(!property.isForeignKeyInChild()) {
-                        def mappingContext = mongoSession.mappingContext
+                        def mappingContext = parentAccess.persistentEntity.mappingContext
                         def proxyFactory = mappingContext.proxyFactory
                         if(proxyFactory.isProxy(value)) {
                             associationId = proxyFactory.getIdentifier(value)
@@ -1054,6 +1054,7 @@ class PersistentEntityCodec implements Codec {
                             if(attr?.isReference()) {
                                 def identityEncoder = codecRegistry.get(DBRef)
 
+                                MongoCodecSession mongoSession = (MongoCodecSession)AbstractDatastore.retrieveSession(MongoDatastore)
                                 def ref = new DBRef(mongoSession.getCollectionName( associatedEntity),associationId)
                                 identityEncoder.encode writer, ref, encoderContext
                             }

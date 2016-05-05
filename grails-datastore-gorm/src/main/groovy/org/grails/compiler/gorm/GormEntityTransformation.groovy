@@ -154,7 +154,7 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         injectAssociations(classNode)
 
         // inject the GORM entity trait unless it is an RX entity
-        boolean isRxEntity = AstUtils.isSubclassOfOrImplementsInterface(classNode, "grails.gorm.rx.RxGormEntity")
+        boolean isRxEntity = AstUtils.isSubclassOfOrImplementsInterface(classNode, "grails.gorm.rx.RxEntity")
         if(!isRxEntity) {
 
             def classGormEntityTrait = pickGormEntityTrait(classNode, sourceUnit)

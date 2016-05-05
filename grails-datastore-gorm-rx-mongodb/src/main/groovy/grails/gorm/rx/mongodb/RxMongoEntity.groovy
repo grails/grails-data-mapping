@@ -1,6 +1,6 @@
 package grails.gorm.rx.mongodb
 
-import grails.gorm.rx.RxGormEntity
+import grails.gorm.rx.RxEntity
 import org.bson.types.ObjectId
 
 /**
@@ -9,7 +9,7 @@ import org.bson.types.ObjectId
  * @author Graeme Rocher
  * @since 6.0
  */
-trait RxMongoEntity<D> extends RxGormEntity<D> {
+trait RxMongoEntity<D> extends RxEntity<D> {
 
     /**
      * The id of the document

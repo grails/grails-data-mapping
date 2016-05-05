@@ -2,13 +2,12 @@ package org.grails.gorm.rx.api
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.config.Entity
-import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.rx.RxDatastoreClient
 
 import java.util.concurrent.ConcurrentHashMap
 /**
- * Enhances {@link grails.gorm.rx.RxGormEntity} instances with behaviour necessary at runtime
+ * Enhances {@link grails.gorm.rx.RxEntity} instances with behaviour necessary at runtime
  *
  * @author Graeme Rocher
  * @since 6.0

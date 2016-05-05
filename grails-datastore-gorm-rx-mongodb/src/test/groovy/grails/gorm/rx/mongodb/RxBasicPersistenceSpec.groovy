@@ -1,8 +1,6 @@
 package grails.gorm.rx.mongodb
 
 import grails.gorm.annotation.Entity
-import grails.gorm.rx.RxGormEntity
-import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext

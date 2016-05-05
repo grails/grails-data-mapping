@@ -3,9 +3,11 @@ package grails.gorm.rx
 import grails.gorm.rx.api.RxGormOperations
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.validation.ValidationErrors
 import org.grails.gorm.rx.api.RxGormEnhancer
 import org.grails.gorm.rx.api.RxGormInstanceApi
 import org.grails.gorm.rx.api.RxGormStaticApi
+import org.springframework.validation.Errors
 import rx.Observable
 import rx.Single
 
@@ -18,7 +20,37 @@ import rx.Single
  * @param <D> The entity type
  */
 @CompileStatic
-trait RxGormEntity<D> implements RxGormOperations<D>, DirtyCheckable {
+trait RxEntity<D> implements RxGormOperations<D>, DirtyCheckable {
+
+    /**
+     * The validation errors object
+     */
+    Errors errors
+    /**
+     * Obtains the errors for an instance
+     * @return The {@link Errors} instance
+     */
+    Errors getErrors() {
+        if(errors == null) {
+            errors = new ValidationErrors(this)
+        }
+        errors
+    }
+
+    /**
+     * Clears any errors that exist on an instance
+     */
+    void clearErrors() {
+        errors = new ValidationErrors(this)
+    }
+
+    /**
+     * Tests whether an instance has any errors
+     * @return True if errors exist
+     */
+    Boolean hasErrors() {
+        getErrors().hasErrors()
+    }
 
     /**
      * Save an instance and return an observable
@@ -66,8 +98,34 @@ trait RxGormEntity<D> implements RxGormOperations<D>, DirtyCheckable {
         currentRxGormStaticApi().list(args)
     }
 
-    static Observable $static_methodMissing() {
+    /**
+     * List all entities and return an observable
+     *
+     * @return An observable with all results
+     */
+    static Observable<D> findAll() {
+        list()
+    }
 
+    /**
+     * List all entities and return an observable
+     *
+     * @return An observable with all results
+     */
+    static Observable<D> findAll(Map args) {
+        list(args)
+    }
+
+    /**
+     * Handles dynamic finders
+     *
+     * @param methodName The method name
+     * @param arg The argument to the method
+     *
+     * @return An observable with the result
+     */
+    static Observable<D> staticMethodMissing(String methodName, arg) {
+        currentRxGormStaticApi().methodMissing(methodName, arg)
     }
 
     private RxGormInstanceApi<D> currentRxGormInstanceApi() {
