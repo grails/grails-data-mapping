@@ -71,6 +71,23 @@ trait RxEntity<D> implements RxGormOperations<D>, DirtyCheckable {
     }
 
     /**
+     * Returns the objects identifier
+     */
+    Serializable ident() {
+        currentRxGormInstanceApi().ident this
+    }
+
+    /**
+     * Deletes an entity
+     *
+     * @return An observable that returns a boolean true if successful
+     */
+    Observable<Boolean> delete() {
+        currentRxGormInstanceApi().delete this
+    }
+
+
+    /**
      * Retrieve an instance by id
      *
      * @param id The id of the instance

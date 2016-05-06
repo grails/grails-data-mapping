@@ -71,7 +71,27 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T> {
         return createEntityQuery(entity)
     }
 
-    abstract Query createEntityQuery(PersistentEntity entity)
+    @Override
+    final Observable<Boolean> delete(Object instance) {
+        if(instance == null) throw new IllegalArgumentException("Cannot persist null instance")
+
+        Class type = mappingContext.getProxyHandler().getProxiedClass(instance)
+
+        def entity = mappingContext.getPersistentEntity(type.name)
+        if(entity == null) {
+            throw new IllegalArgumentException("Type [$type.name] is not a persistent type")
+        }
+
+        def reflector = mappingContext.getEntityReflector(entity)
+        def identifier = reflector.getIdentifier(instance)
+        if(identifier == null) {
+            throw new IllegalArgumentException("The passed instance has not yet been persisted (null identifier)")
+        }
+        else {
+            return deleteEntity(entity, identifier, instance)
+        }
+    }
+
 
     /**
      * Persist an instance
@@ -186,4 +206,23 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T> {
      * @return
      */
     abstract <T1> Observable<T1> updateEntity(PersistentEntity entity, Class<T1> type, Serializable id, T1 instance, Map<String, Object> arguments)
+
+    /**
+     * Deletes an instance
+     *
+     * @param entity The entity
+     * @param id The id
+     * @param instance The instance
+     *
+     * @return An observable
+     */
+    abstract Observable<Boolean> deleteEntity(PersistentEntity entity, Serializable id, Object instance)
+    /**
+     * Creates a query for the given entity
+     *
+     * @param entity The entity
+     *
+     * @return The query object
+     */
+    abstract Query createEntityQuery(PersistentEntity entity)
 }

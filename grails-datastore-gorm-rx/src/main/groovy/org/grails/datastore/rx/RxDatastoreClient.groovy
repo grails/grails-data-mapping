@@ -44,6 +44,14 @@ interface RxDatastoreClient<T> extends Closeable {
     def <T1> Observable<T1> persist(T1 instance)
 
     /**
+     * Deletes an instance
+     *
+     * @param instance The object to delete
+     * @return An observable that returns a boolean true if successful
+     */
+    Observable<Boolean> delete(Object instance)
+
+    /**
      * Creates a query for the given type
      *
      * @param type The type

@@ -3,6 +3,7 @@ package org.grails.datastore.rx.mongodb
 import com.mongodb.ServerAddress
 import com.mongodb.async.client.MongoClientSettings
 import com.mongodb.client.model.UpdateOptions
+import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.UpdateResult
 import com.mongodb.connection.ClusterSettings
 import com.mongodb.rx.client.MongoClient
@@ -103,6 +104,16 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
                 .map({ Success success ->
             return instance
         } as Func1)
+    }
+
+    @Override
+    Observable<Boolean> deleteEntity(PersistentEntity entity, Serializable id, Object instance) {
+        def collection = getCollection(entity, entity.javaClass)
+        Document idQuery = createIdQuery(id)
+        collection.deleteOne(idQuery)
+                  .map { DeleteResult result ->
+            return result.wasAcknowledged()
+        }
     }
 
     public <T1> com.mongodb.rx.client.MongoCollection<T1> getCollection(PersistentEntity entity, Class<T1> type) {
