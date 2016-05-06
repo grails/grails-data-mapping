@@ -61,14 +61,17 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
                 CodecRegistries.fromProviders(new AdditionalCodecs(), this)
         )
         initializeMongoDatastoreClient(mappingContext, codecRegistry)
-        def finalClientSettings = MongoClientSettings.builder(clientSettings)
-                                        .clusterSettings(ClusterSettings.builder()
-                                            .hosts(Arrays.asList(new ServerAddress("localhost")))
-                                        .build())
-                                        .codecRegistry(codecRegistry)
 
-                                        .build()
-        mongoClient = MongoClients.create(finalClientSettings)
+        def clientSettingsBuilder = MongoClientSettings.builder(clientSettings)
+                                                        .codecRegistry(codecRegistry)
+
+        if(clientSettings.getClusterSettings() == null) {
+            // default to localhost if no cluster settings specified
+            def clusterSettings = ClusterSettings.builder().hosts(Arrays.asList(new ServerAddress("localhost")))
+            clientSettingsBuilder
+                    .clusterSettings(clusterSettings.build())
+        }
+        mongoClient = MongoClients.create(clientSettingsBuilder.build())
     }
 
     @Override
