@@ -2,7 +2,10 @@ package grails.gorm.rx
 
 import grails.gorm.rx.api.RxGormOperations
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.finders.DynamicFinder
+import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.validation.ValidationErrors
 import org.grails.gorm.rx.api.RxGormEnhancer
 import org.grails.gorm.rx.api.RxGormInstanceApi
@@ -185,6 +188,32 @@ trait RxEntity<D> implements RxGormOperations<D>, DirtyCheckable {
     }
 
     /**
+     *
+     * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance
+     */
+    static DetachedCriteria<D> where(Closure callable) {
+        currentRxGormStaticApi().where callable
+    }
+
+    /**
+     *
+     * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance that is lazily initialized
+     */
+    static DetachedCriteria<D> whereLazy(Closure callable) {
+        currentRxGormStaticApi().whereLazy callable
+    }
+
+    /**
+     *
+     * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance
+     */
+    static DetachedCriteria<D> whereAny(Closure callable) {
+        currentRxGormStaticApi().whereAny callable
+    }
+    /**
      * Handles dynamic finders
      *
      * @param methodName The method name
@@ -198,6 +227,17 @@ trait RxEntity<D> implements RxGormOperations<D>, DirtyCheckable {
 
     static Object staticPropertyMissing(String property) {
         currentRxGormStaticApi().propertyMissing(property)
+    }
+
+    /**
+     * @return The dynamic finders for this domain class
+     */
+    static List<FinderMethod> getGormDynamicFinders() {
+        currentRxGormStaticApi().gormDynamicFinders
+    }
+
+    static PersistentEntity getGormPersistentEntity() {
+        currentRxGormStaticApi().entity
     }
 
     private RxGormInstanceApi<D> currentRxGormInstanceApi() {

@@ -1,5 +1,6 @@
 package org.grails.gorm.rx.api
 
+import grails.gorm.rx.DetachedCriteria
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.finders.DynamicFinder
@@ -30,7 +31,7 @@ class RxGormStaticApi<D> {
     final RxDatastoreClient datastoreClient
     final Class persistentClass
 
-    protected final List<FinderMethod> gormDynamicFinders
+    final List<FinderMethod> gormDynamicFinders
 
     RxGormStaticApi(PersistentEntity entity, RxDatastoreClient datastoreClient) {
         this.entity = entity
@@ -53,6 +54,32 @@ class RxGormStaticApi<D> {
         def query = datastoreClient.createQuery(entity.javaClass)
         DynamicFinder.populateArgumentsForCriteria(entity.javaClass, query, params)
         return ((RxQuery<D>) query).findAll()
+    }
+
+    /**
+     *
+     * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance
+     */
+    DetachedCriteria<D> where(Closure callable) {
+        new DetachedCriteria<D>(persistentClass).build(callable)
+    }
+
+    /**
+     *
+     * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance that is lazily initialized
+     */
+    DetachedCriteria<D> whereLazy(Closure callable) {
+        new DetachedCriteria<D>(persistentClass).buildLazy(callable)
+    }
+    /**
+     *
+     * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance
+     */
+    DetachedCriteria<D> whereAny(Closure callable) {
+        (DetachedCriteria<D>)new DetachedCriteria<D>(persistentClass).or(callable)
     }
 
     @CompileDynamic

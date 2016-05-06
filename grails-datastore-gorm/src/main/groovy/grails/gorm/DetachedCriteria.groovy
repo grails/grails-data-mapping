@@ -15,8 +15,6 @@
 
 package grails.gorm
 
-import grails.async.Promise
-import grails.async.Promises
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
@@ -26,8 +24,6 @@ import org.grails.datastore.mapping.query.api.QueryArgumentsAware
 
 import javax.persistence.FetchType
 
-import org.codehaus.groovy.runtime.typehandling.GroovyCastException
-import org.grails.datastore.gorm.async.AsyncQuery
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.query.GormOperations
@@ -84,22 +80,6 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     DetachedCriteria(Class<T> targetClass, String alias = null) {
         this.targetClass = targetClass
         this.alias = alias
-    }
-
-    /**
-     * Allow casting to a Promise
-     * @param c The type to cast to
-     * @return The cast type
-     */
-    public <N> N asType(Class<N> c) {
-        if (c == Promise) {
-            return (N)Promises.createPromise {
-                list()
-            }
-        }
-        else {
-            throw new GroovyCastException(this, c)
-        }
     }
 
     Map<String, FetchType> getFetchStrategies() {
@@ -1127,13 +1107,6 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     /**
-     * @return The async version of the DetachedCriteria API
-     */
-    AsyncQuery<T> getAsync() {
-        return new AsyncQuery<T>(this)
-    }
-
-    /**
      * Method missing handler that deals with the invocation of dynamic finders
      *
      * @param methodName The method name
@@ -1188,7 +1161,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     @Override
     @CompileStatic(TypeCheckingMode.SKIP)
     protected DetachedCriteria<T> clone() {
-        def criteria = new DetachedCriteria(targetClass, alias)
+        def criteria = newInstance()
         criteria.criteria = new ArrayList(this.criteria)
         final projections = new ArrayList(this.projections)
         criteria.projections = projections
@@ -1197,6 +1170,10 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         criteria.defaultMax = defaultMax
         criteria.defaultOffset = defaultOffset
         return criteria
+    }
+
+    protected DetachedCriteria newInstance() {
+        new DetachedCriteria(targetClass, alias)
     }
 
     protected void handleJunction(Closure callable) {
