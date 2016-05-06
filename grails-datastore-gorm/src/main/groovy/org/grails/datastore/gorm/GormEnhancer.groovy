@@ -75,15 +75,16 @@ class GormEnhancer implements Closeable {
     /**
      * Whether to enhance classes dynamically using meta programming as well, only necessary for Java classes
      */
-    boolean dynamicEnhance = false
+    final boolean dynamicEnhance
 
     GormEnhancer(Datastore datastore) {
         this(datastore, null)
     }
 
-    GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
+    GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager, boolean dynamicEnhance = false) {
         this.datastore = datastore
         this.transactionManager = transactionManager
+        this.dynamicEnhance = dynamicEnhance
         if(datastore != null) {
             registerConstraints(datastore)
         }

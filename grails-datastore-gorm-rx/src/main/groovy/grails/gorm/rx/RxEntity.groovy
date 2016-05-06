@@ -2,19 +2,22 @@ package grails.gorm.rx
 
 import grails.gorm.rx.api.RxGormOperations
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.finders.DynamicFinder
+import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.validation.ValidationErrors
+import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.Basic
+import org.grails.datastore.mapping.model.types.ManyToMany
+import org.grails.datastore.mapping.model.types.OneToMany
+import org.grails.datastore.mapping.reflect.EntityReflector
+import org.grails.datastore.mapping.validation.ValidationException
 import org.grails.gorm.rx.api.RxGormEnhancer
 import org.grails.gorm.rx.api.RxGormInstanceApi
 import org.grails.gorm.rx.api.RxGormStaticApi
-import org.springframework.validation.Errors
 import rx.Observable
-import rx.Single
 import rx.Subscriber
-
 /**
  * Represents a reactive GORM entity
  *
@@ -24,38 +27,21 @@ import rx.Subscriber
  * @param <D> The entity type
  */
 @CompileStatic
-trait RxEntity<D> implements RxGormOperations<D>, DirtyCheckable {
-
-    /**
-     * The validation errors object
-     */
-    Errors errors
-    /**
-     * Obtains the errors for an instance
-     * @return The {@link Errors} instance
-     */
-    Errors getErrors() {
-        if(errors == null) {
-            errors = new ValidationErrors(this)
-        }
-        errors
+trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckable {
+    @Override
+    boolean validate(Map arguments) {
+        return true
     }
 
-    /**
-     * Clears any errors that exist on an instance
-     */
-    void clearErrors() {
-        errors = new ValidationErrors(this)
+    @Override
+    boolean validate(List fields) {
+        return true
     }
 
-    /**
-     * Tests whether an instance has any errors
-     * @return True if errors exist
-     */
-    Boolean hasErrors() {
-        getErrors().hasErrors()
+    @Override
+    boolean validate() {
+        return true
     }
-
     /**
      * Save an instance and return an observable
      *
@@ -71,7 +57,21 @@ trait RxEntity<D> implements RxGormOperations<D>, DirtyCheckable {
      * @return An observable
      */
     Observable<D> save(Map<String, Object> arguments) {
-        currentRxGormInstanceApi().save(this, arguments)
+        boolean shouldValidate = arguments?.containsKey("validate") ? arguments.validate : true
+        if(shouldValidate) {
+            def hasErrors = !validate()
+            if(hasErrors) {
+                throw new ValidationException("Validation error occurred during call to save()", errors)
+            }
+            else {
+                return currentRxGormInstanceApi().save(this, arguments)
+            }
+        }
+        else {
+            skipValidation(true)
+            clearErrors()
+            return currentRxGormInstanceApi().save(this, arguments)
+        }
     }
 
     /**
@@ -111,6 +111,138 @@ trait RxEntity<D> implements RxGormOperations<D>, DirtyCheckable {
      */
     boolean isDirty() {
         hasChanged()
+    }
+
+    /**
+     * Removes the given value to given association ensuring both sides are correctly disassociated
+     *
+     * @param associationName The association name
+     * @param arg The value
+     * @return This domain instance
+     */
+    D removeFrom(String associationName, Object arg) {
+        final PersistentEntity entity = getGormPersistentEntity()
+        def prop = entity.getPropertyByName(associationName)
+        final MappingContext mappingContext = entity.mappingContext
+        final EntityReflector entityReflector = mappingContext.getEntityReflector(entity)
+
+        if(prop instanceof Association) {
+            Association association = (Association)prop
+            final javaClass = association.associatedEntity?.javaClass
+            final boolean isBasic = association instanceof Basic
+            if(isBasic) {
+                javaClass = ((Basic)association).componentType
+            }
+
+            if (javaClass.isInstance(arg)) {
+                final propertyName = prop.name
+
+                Collection currentValue = (Collection)entityReflector.getProperty(this, propertyName)
+                currentValue?.remove(arg)
+                markDirty(propertyName)
+
+                if (association.bidirectional) {
+                    def otherSide = association.inverseSide
+                    def associationReflector = mappingContext.getEntityReflector(association.associatedEntity)
+                    if (otherSide instanceof ManyToMany) {
+                        Collection otherSideValue = (Collection) associationReflector.getProperty(arg, otherSide.name)
+                        otherSideValue?.remove(this)
+
+                    }
+                    else {
+                        associationReflector.setProperty(arg, otherSide.name, null)
+                    }
+                }
+            }
+            else {
+                throw new IllegalArgumentException("")
+            }
+
+        }
+        return (D)this
+    }
+
+    /**
+     * Adds the given value to given association ensuring both sides are correctly associated
+     *
+     * @param associationName The association name
+     * @param arg The value
+     * @return This domain instance
+     */
+    D addTo(String associationName, Object arg) {
+        final PersistentEntity entity = getGormPersistentEntity()
+        final def prop = entity.getPropertyByName(associationName)
+        final D targetObject = (D)this
+
+        final MappingContext mappingContext = entity.mappingContext
+        final EntityReflector reflector = mappingContext.getEntityReflector(entity)
+        if(reflector != null && (prop instanceof Association)) {
+
+            final Association association = (Association)prop
+            final propertyName = association.name
+
+            def obj
+            def currentValue = reflector.getProperty(targetObject, propertyName)
+            if (currentValue == null) {
+                currentValue = [].asType(prop.type)
+                reflector.setProperty(targetObject, propertyName, currentValue)
+            }
+
+            final javaClass = association.associatedEntity?.javaClass
+            final boolean isBasic = association instanceof Basic
+            if(isBasic) {
+                javaClass = ((Basic)association).componentType
+            }
+
+            if (arg instanceof Map) {
+                obj = javaClass.newInstance(arg)
+            }
+            else if (javaClass.isInstance(arg)) {
+                obj = arg
+            }
+            else {
+                def conversionService = mappingContext.conversionService
+                if(conversionService.canConvert(arg.getClass(), javaClass)) {
+                    obj = conversionService.convert(arg, javaClass)
+                }
+                else {
+                    throw new IllegalArgumentException("Cannot add value [$arg] to collection [$propertyName] with type [$javaClass.name]")
+                }
+            }
+
+            def coll = (Collection)currentValue
+            coll.add(obj)
+            markDirty(propertyName)
+
+            if (isBasic) {
+                return targetObject
+            }
+
+            if (association.bidirectional && association.inverseSide) {
+                def otherSide = association.inverseSide
+                String name = otherSide.name
+                def associationReflector = mappingContext.getEntityReflector(association.associatedEntity)
+                if (otherSide instanceof OneToMany || otherSide instanceof ManyToMany) {
+
+                    Collection otherSideValue = (Collection)associationReflector.getProperty(obj, name)
+                    if (otherSideValue == null) {
+                        otherSideValue =  (Collection)( [].asType(otherSide.type) )
+                        associationReflector.setProperty(obj, name, otherSideValue)
+                    }
+                    otherSideValue.add(targetObject)
+                    if(obj instanceof DirtyCheckable) {
+                        ((DirtyCheckable)obj).markDirty(name)
+                    }
+                }
+
+                else {
+                    associationReflector?.setProperty(obj, name, targetObject)
+                }
+            }
+            targetObject
+        }
+
+        return targetObject
     }
 
     /**

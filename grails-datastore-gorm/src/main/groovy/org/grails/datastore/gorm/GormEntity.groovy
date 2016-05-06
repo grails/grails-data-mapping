@@ -269,7 +269,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
     D removeFrom(String associationName, Object arg) {
         final PersistentEntity entity = getGormPersistentEntity()
         def prop = entity.getPropertyByName(associationName)
-        final MappingContext mappingContext = lookupMappingContext()
+        final MappingContext mappingContext = entity.mappingContext
         final EntityReflector entityReflector = mappingContext.getEntityReflector(entity)
 
         if(prop instanceof Association) {
@@ -320,7 +320,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
         final def prop = entity.getPropertyByName(associationName)
         final D targetObject = (D)this
 
-        final MappingContext mappingContext = lookupMappingContext()
+        final MappingContext mappingContext = entity.mappingContext
         final EntityReflector reflector = mappingContext.getEntityReflector(entity)
         if(reflector != null && (prop instanceof Association)) {
 
