@@ -31,7 +31,10 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T> {
         this.mappingContext = mappingContext
     }
 
-
+    @Override
+    boolean isSchemaless() {
+        return false
+    }
 
     /**
      * Retrieve and instance of the given type and id

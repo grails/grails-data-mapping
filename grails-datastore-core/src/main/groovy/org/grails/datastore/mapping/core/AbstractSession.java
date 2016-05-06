@@ -147,6 +147,11 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     @Override
+    public boolean isSchemaless() {
+        return this.datastore.isSchemaless();
+    }
+
+    @Override
     public boolean isStateless() {
         return this.stateless;
     }

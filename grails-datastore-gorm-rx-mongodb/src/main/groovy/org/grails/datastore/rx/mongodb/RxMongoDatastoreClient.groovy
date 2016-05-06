@@ -75,6 +75,11 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     }
 
     @Override
+    boolean isSchemaless() {
+        return true
+    }
+
+    @Override
     def <T1> Observable<T1> getEntity(PersistentEntity entity, Class<T1> type, Serializable id) {
         com.mongodb.rx.client.MongoCollection<T1> collection = getCollection(entity, type)
 

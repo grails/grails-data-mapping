@@ -2,6 +2,7 @@ package org.grails.datastore.rx
 
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.query.Query
+import org.grails.datastore.mapping.query.QueryCreator
 import rx.Observable
 import rx.Single
 
@@ -13,7 +14,7 @@ import rx.Single
  *
  * @param The native client interface
  */
-interface RxDatastoreClient<T> extends Closeable {
+interface RxDatastoreClient<T> extends Closeable, QueryCreator {
 
     /**
      * Obtains a single instance for the given type and id

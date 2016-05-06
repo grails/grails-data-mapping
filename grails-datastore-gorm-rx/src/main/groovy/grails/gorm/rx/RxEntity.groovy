@@ -11,6 +11,8 @@ import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.Basic
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
+import org.grails.datastore.mapping.query.api.BuildableCriteria
+import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.mapping.validation.ValidationException
 import org.grails.gorm.rx.api.RxGormEnhancer
@@ -344,6 +346,27 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      */
     static DetachedCriteria<D> whereAny(Closure callable) {
         currentRxGormStaticApi().whereAny callable
+    }
+
+    /**
+     * Creates a criteria builder instance
+     */
+    static CriteriaBuilder<D> createCriteria() {
+        currentRxGormStaticApi().createCriteria()
+    }
+
+    /**
+     * Creates a criteria builder instance
+     */
+    static Observable withCriteria(@DelegatesTo(CriteriaBuilder) Closure callable) {
+        currentRxGormStaticApi().withCriteria callable
+    }
+
+    /**
+     * Creates a criteria builder instance
+     */
+    static Observable withCriteria(Map builderArgs, @DelegatesTo(CriteriaBuilder) Closure callable) {
+        currentRxGormStaticApi().withCriteria builderArgs, callable
     }
     /**
      * Handles dynamic finders

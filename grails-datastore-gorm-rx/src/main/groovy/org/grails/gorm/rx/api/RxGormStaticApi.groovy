@@ -1,12 +1,18 @@
 package org.grails.gorm.rx.api
 
+import grails.gorm.rx.CriteriaBuilder
 import grails.gorm.rx.DetachedCriteria
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
+import org.grails.datastore.mapping.query.api.BuildableCriteria
+import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.rx.RxDatastoreClient
 import org.grails.datastore.rx.query.RxQuery
 import org.grails.gorm.rx.finders.CountByFinder
@@ -16,6 +22,7 @@ import org.grails.gorm.rx.finders.FindByBooleanFinder
 import org.grails.gorm.rx.finders.FindByFinder
 import org.grails.gorm.rx.finders.FindOrCreateByFinder
 import org.grails.gorm.rx.finders.FindOrSaveByFinder
+import org.springframework.beans.PropertyAccessorFactory
 import rx.Observable
 
 /**
@@ -82,6 +89,44 @@ class RxGormStaticApi<D> {
         (DetachedCriteria<D>)new DetachedCriteria<D>(persistentClass).or(callable)
     }
 
+
+    /**
+     * Creates a criteria builder instance
+     */
+    CriteriaBuilder createCriteria() {
+        new CriteriaBuilder(persistentClass, datastoreClient, datastoreClient.mappingContext)
+    }
+
+    /**
+     * Creates a criteria builder instance
+     */
+
+    Observable withCriteria(@DelegatesTo(Criteria) Closure callable) {
+        (Observable)InvokerHelper.invokeMethod(createCriteria(), 'call', callable)
+    }
+
+    /**
+     * Creates a criteria builder instance
+     */
+    Observable withCriteria(Map builderArgs, @DelegatesTo(Criteria) Closure callable) {
+        def criteriaBuilder = createCriteria()
+        def builderBean = PropertyAccessorFactory.forBeanPropertyAccess(criteriaBuilder)
+        for (entry in builderArgs.entrySet()) {
+            String propertyName = entry.key.toString()
+            if (builderBean.isWritableProperty(propertyName)) {
+                builderBean.setPropertyValue(propertyName, entry.value)
+            }
+        }
+
+        if(builderArgs?.uniqueResult) {
+            return criteriaBuilder.get(callable)
+
+        }
+        else {
+            return criteriaBuilder.findAll(callable)
+        }
+
+    }
     @CompileDynamic
     Observable<D> methodMissing(String methodName, args) {
         FinderMethod method = gormDynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }

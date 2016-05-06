@@ -37,6 +37,7 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.QueryCreator;
 import org.grails.datastore.mapping.query.Restrictions;
 import org.grails.datastore.mapping.query.api.BuildableCriteria;
 import org.grails.datastore.mapping.query.api.Criteria;
@@ -60,8 +61,9 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
     private static final String ROOT_CALL = "call";
     private static final String SCROLL_CALL = "scroll";
 
-    protected Class targetClass;
-    protected Session session;
+    protected final Class targetClass;
+    protected final Session session;
+    protected final QueryCreator queryCreator;
     protected Query query;
     private boolean uniqueResult = false;
     private boolean paginationEnabledList;
@@ -72,7 +74,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
     protected PersistentEntity persistentEntity;
     protected boolean readOnly;
 
-    public CriteriaBuilder(final Class targetClass, final MappingContext mappingContext) {
+    public CriteriaBuilder(final Class targetClass, QueryCreator queryCreator, final MappingContext mappingContext) {
         Assert.notNull(targetClass, "Argument [targetClass] cannot be null");
         Assert.notNull(mappingContext, "Argument [session] cannot be null");
 
@@ -85,6 +87,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
 
         this.targetClass = targetClass;
         this.session = null;
+        this.queryCreator = queryCreator;
     }
 
     public CriteriaBuilder(final Class targetClass, final Session session) {
@@ -100,6 +103,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
 
         this.targetClass = targetClass;
         this.session = session;
+        this.queryCreator = session;
     }
 
     public CriteriaBuilder(final Class targetClass, final Session session, final Query query) {
@@ -373,7 +377,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
 
             Object result;
             if (!uniqueResult) {
-                result = query.list();
+                result = invokeList();
             }
             else {
                 result = query.singleResult();
@@ -423,6 +427,12 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
         }
 
         throw new MissingMethodException(name, getClass(), args);
+    }
+
+    protected Object invokeList() {
+        Object result;
+        result = query.list();
+        return result;
     }
 
     /**
@@ -1144,15 +1154,15 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
         if (property == null && persistentEntity.getIdentity().getName().equals(propertyName)) {
             property = persistentEntity.getIdentity();
         }
-        if (property == null && !session.getDatastore().isSchemaless()) {
+        if (property == null && !queryCreator.isSchemaless()) {
             throw new IllegalArgumentException("Property [" + propertyName +
                     "] is not a valid property of class [" + persistentEntity + "]");
         }
     }
 
-    private void ensureQueryIsInitialized() {
+    protected void ensureQueryIsInitialized() {
     	if(query == null) {
-    		query = session.createQuery(targetClass);
+    		query = queryCreator.createQuery(targetClass);
     	}
     	if(queryMetaClass == null) {
     		queryMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(query.getClass());
@@ -1165,7 +1175,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements BuildableCri
                 name.equals(SCROLL_CALL) && args.length == 1 && args[0] instanceof Closure);
     }
 
-    private void invokeClosureNode(Object args) {
+    protected void invokeClosureNode(Object args) {
         if (args instanceof Closure) {
             Closure callable = (Closure)args;
             callable.setDelegate(this);

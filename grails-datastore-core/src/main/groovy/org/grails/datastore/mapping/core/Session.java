@@ -23,6 +23,7 @@ import javax.persistence.FlushModeType;
 import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.QueryCreator;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.transactions.Transaction;
 import org.springframework.transaction.TransactionDefinition;
@@ -36,7 +37,7 @@ import org.springframework.transaction.TransactionDefinition;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public interface Session {
+public interface Session extends QueryCreator {
 
     /**
      * Associates an attribute with the given persistent entity. Attributes will

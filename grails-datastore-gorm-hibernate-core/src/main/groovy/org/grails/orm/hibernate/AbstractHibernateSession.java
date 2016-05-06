@@ -48,6 +48,11 @@ public abstract class AbstractHibernateSession extends AbstractAttributeStoringS
         datastore = hibernateDatastore;
     }
 
+    @Override
+    public boolean isSchemaless() {
+        return false;
+    }
+
     public Serializable insert(Object o) {
         return persist(o);
     }
