@@ -10,6 +10,7 @@ import org.grails.gorm.rx.api.RxGormStaticApi
 import org.springframework.validation.Errors
 import rx.Observable
 import rx.Single
+import rx.Subscriber
 
 /**
  * Represents a reactive GORM entity
@@ -88,6 +89,35 @@ trait RxEntity<D> implements RxGormOperations<D>, DirtyCheckable {
 
 
     /**
+     * Checks whether a field is dirty
+     *
+     * @param instance The instance
+     * @param fieldName The name of the field
+     *
+     * @return true if the field is dirty
+     */
+    boolean isDirty(String fieldName) {
+        hasChanged(fieldName)
+    }
+
+    /**
+     * Checks whether an entity is dirty
+     *
+     * @param instance The instance
+     * @return true if it is dirty
+     */
+    boolean isDirty() {
+        hasChanged()
+    }
+
+    /**
+     * @return A new instance of this RxEntity
+     */
+    static D create() {
+        (D)this.newInstance()
+    }
+
+    /**
      * Retrieve an instance by id
      *
      * @param id The id of the instance
@@ -102,6 +132,20 @@ trait RxEntity<D> implements RxGormOperations<D>, DirtyCheckable {
      */
     static Observable<Integer> count() {
         currentRxGormStaticApi().count()
+    }
+
+    /**
+     * Check whether an entity exists for the given id
+     *
+     * @param id
+     * @return
+     */
+    static Observable<Boolean> exists(Serializable id) {
+        get(id).map { D o ->
+            o != null
+        }.switchIfEmpty(Observable.create( { Subscriber s ->
+            s.onNext(false)
+        } as Observable.OnSubscribe))
     }
 
     /**
