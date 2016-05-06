@@ -64,6 +64,57 @@ class RxGormStaticApi<D> {
     }
 
     /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
+     *
+     * @param queryMap The map of conditions
+     * @return A single result
+     */
+    Observable<D> findWhere(Map<String, Object> queryMap) {
+        findWhere(queryMap, Collections.emptyMap())
+    }
+
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
+     *
+     * @param queryMap The map of conditions
+     * @param args The Query arguments
+     *
+     * @return A single result
+     */
+    Observable<D> findWhere(Map<String, Object> queryMap, Map args) {
+        def query = datastoreClient.createQuery(entity.javaClass)
+        DynamicFinder.populateArgumentsForCriteria(entity.javaClass, query, args)
+        query.allEq(queryMap)
+        query.max(1)
+        ((RxQuery<D>)query).singleResult()
+    }
+
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
+     *
+     * @param queryMap The map of conditions
+     * @return A single result
+     */
+    Observable<D> findAllWhere(Map<String, Object> queryMap) {
+        findAllWhere(queryMap, Collections.emptyMap())
+    }
+
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
+     *
+     * @param queryMap The map of conditions
+     * @param args The Query arguments
+     *
+     * @return A single result
+     */
+    Observable<D> findAllWhere(Map<String, Object> queryMap, Map args) {
+        def query = datastoreClient.createQuery(entity.javaClass)
+        DynamicFinder.populateArgumentsForCriteria(entity.javaClass, query, args)
+        query.allEq(queryMap)
+        ((RxQuery<D>)query).findAll()
+    }
+
+    /**
      *
      * @param callable Callable closure containing detached criteria definition
      * @return The DetachedCriteria instance

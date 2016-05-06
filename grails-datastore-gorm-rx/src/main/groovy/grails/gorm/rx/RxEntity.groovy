@@ -11,8 +11,6 @@ import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.Basic
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
-import org.grails.datastore.mapping.query.api.BuildableCriteria
-import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.mapping.validation.ValidationException
 import org.grails.gorm.rx.api.RxGormEnhancer
@@ -320,6 +318,51 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     static Observable<D> findAll(Map args) {
         list(args)
     }
+
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
+     *
+     * @param queryMap The map of conditions
+     * @return A single result
+     */
+    static Observable<D> findWhere(Map<String, Object> queryMap) {
+        currentRxGormStaticApi().findWhere queryMap
+    }
+
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
+     *
+     * @param queryMap The map of conditions
+     * @param args The Query arguments
+     *
+     * @return A single result
+     */
+    static Observable<D> findWhere(Map<String, Object> queryMap, Map args) {
+        currentRxGormStaticApi().findWhere queryMap, args
+    }
+
+    /**
+     * Finds all results matching all of the given conditions. Eg. Book.findAllWhere(author:"Stephen King", title:"The Stand")
+     *
+     * @param queryMap The map of conditions
+     * @return A list of results
+     */
+    static Observable<D> findAllWhere(Map queryMap) {
+        currentRxGormStaticApi().findAllWhere queryMap
+    }
+
+    /**
+     * Finds all results matching all of the given conditions. Eg. Book.findAllWhere(author:"Stephen King", title:"The Stand")
+     *
+     * @param queryMap The map of conditions
+     * @param args The Query arguments
+     *
+     * @return A list of results
+     */
+    static Observable<D> findAllWhere(Map queryMap, Map args) {
+        currentRxGormStaticApi().findAllWhere queryMap, args
+    }
+
 
     /**
      *
