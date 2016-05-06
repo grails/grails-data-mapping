@@ -54,9 +54,9 @@ import org.springframework.validation.Errors
 @CompileStatic
 class GormStaticApi<D> extends AbstractGormApi<D> {
 
-    protected List<FinderMethod> gormDynamicFinders
+    protected final List<FinderMethod> gormDynamicFinders
 
-    protected PlatformTransactionManager transactionManager
+    protected final PlatformTransactionManager transactionManager
 
     GormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
         this(persistentClass, datastore, finders, null)

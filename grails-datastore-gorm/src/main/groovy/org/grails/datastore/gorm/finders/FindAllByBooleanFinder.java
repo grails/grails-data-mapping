@@ -16,6 +16,7 @@
 package org.grails.datastore.gorm.finders;
 
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.model.MappingContext;
 
 /**
  * The "findAll&lt;booleanProperty&gt;By*" static persistent method. This method allows querying for
@@ -32,9 +33,14 @@ import org.grails.datastore.mapping.core.Datastore;
  * @author Graeme Rocher
  */
 public class FindAllByBooleanFinder extends FindAllByFinder{
-    private static final String METHOD_PATTERN = "(findAll)((\\w+)(By)([A-Z]\\w*)|(\\w+))";
+    public static final String METHOD_PATTERN = "(findAll)((\\w+)(By)([A-Z]\\w*)|(\\w+))";
     public FindAllByBooleanFinder(Datastore datastore) {
         super(datastore);
+        setPattern(METHOD_PATTERN);
+    }
+
+    public FindAllByBooleanFinder(MappingContext mappingContext) {
+        super(mappingContext);
         setPattern(METHOD_PATTERN);
     }
 

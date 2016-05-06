@@ -92,6 +92,10 @@ public abstract class MethodExpression {
         return Arrays.copyOf(arguments, arguments.length);
     }
 
+    public String getPropertyName() {
+        return propertyName;
+    }
+
     public static class GreaterThan extends MethodExpression {
         public GreaterThan(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);

@@ -23,13 +23,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.model.MappingContext;
 
 public class FindOrSaveByFinder extends FindOrCreateByFinder {
 
-    private static final String METHOD_PATTERN = "(findOrSaveBy)([A-Z]\\w*)";
+    public static final String METHOD_PATTERN = "(findOrSaveBy)([A-Z]\\w*)";
 
     public FindOrSaveByFinder(final Datastore datastore) {
         super(METHOD_PATTERN, datastore);
+    }
+
+    public FindOrSaveByFinder(final MappingContext mappingContext) {
+        super(METHOD_PATTERN, mappingContext);
     }
 
     @Override

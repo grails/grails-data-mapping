@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionCallback;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.query.Query;
 
 /**
@@ -34,6 +35,10 @@ public class CountByFinder extends DynamicFinder implements QueryBuildingFinder 
 
     public CountByFinder(final Datastore datastore) {
         super(METHOD_PATTERN, OPERATORS, datastore);
+    }
+
+    public CountByFinder(MappingContext mappingContext) {
+        super(METHOD_PATTERN, OPERATORS, mappingContext);
     }
 
     @Override
@@ -53,6 +58,10 @@ public class CountByFinder extends DynamicFinder implements QueryBuildingFinder 
     public Query buildQuery(DynamicFinderInvocation invocation, Session session) {
         final Class<?> clazz = invocation.getJavaClass();
         Query q = session.createQuery(clazz);
+        return buildQuery(invocation, clazz, q);
+    }
+
+    protected Query buildQuery(DynamicFinderInvocation invocation, Class<?> clazz, Query q) {
         applyAdditionalCriteria(q, invocation.getCriteria());
         configureQueryWithArguments(clazz, q, invocation.getArguments());
 

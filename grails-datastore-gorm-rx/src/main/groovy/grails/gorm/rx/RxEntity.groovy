@@ -81,6 +81,13 @@ trait RxEntity<D> implements RxGormOperations<D>, DirtyCheckable {
     }
 
     /**
+     * @return Counts the number of instances
+     */
+    static Observable<Integer> count() {
+        currentRxGormStaticApi().count()
+    }
+
+    /**
      * List all entities and return an observable
      *
      * @return An observable with all results
@@ -126,6 +133,10 @@ trait RxEntity<D> implements RxGormOperations<D>, DirtyCheckable {
      */
     static Observable<D> staticMethodMissing(String methodName, arg) {
         currentRxGormStaticApi().methodMissing(methodName, arg)
+    }
+
+    static Object staticPropertyMissing(String property) {
+        currentRxGormStaticApi().propertyMissing(property)
     }
 
     private RxGormInstanceApi<D> currentRxGormInstanceApi() {

@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.finders;
 import java.util.regex.Pattern;
 
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.model.MappingContext;
 
 /**
  * Finder used to return a single result
@@ -27,5 +28,9 @@ public class FindByFinder extends AbstractFindByFinder {
 
     public FindByFinder(final Datastore datastore) {
         super(Pattern.compile(METHOD_PATTERN), datastore);
+    }
+
+    public FindByFinder(MappingContext mappingContext) {
+        super(Pattern.compile(METHOD_PATTERN), mappingContext);
     }
 }

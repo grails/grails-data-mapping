@@ -51,4 +51,5 @@ class RxGormEnhancer {
     private static IllegalStateException stateException(Class entity) {
         new IllegalStateException("Either class [$entity.name] is not a domain class or GORM has not been initialized correctly or has already been shutdown. If you are unit testing your entities using the mocking APIs")
     }
+
 }

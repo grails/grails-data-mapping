@@ -884,7 +884,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         List<Document> aggregationPipeline = aggregatePipeline.getAggregationPipeline();
         boolean singleResult = aggregatePipeline.isSingleResult();
         List<ProjectedProperty> projectedKeys = aggregatePipeline.getProjectedKeys();
-        List projectedResults = aggregatePipeline.getProjectedResults();
+        List projectedResults = new ArrayList();
 
 
         AggregateIterable<Document> aggregatedResults = collection.aggregate(aggregationPipeline);
@@ -916,7 +916,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     }
 
-    private AggregatePipeline buildAggregatePipeline(PersistentEntity entity, Document query, List<Projection> projectionList) {
+    protected AggregatePipeline buildAggregatePipeline(PersistentEntity entity, Document query, List<Projection> projectionList) {
         return new AggregatePipeline(this, entity, query, projectionList).build();
     }
 
@@ -1797,17 +1797,16 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
 
 
-    private static class ProjectedProperty {
-        Projection projection;
-        String projectionKey;
-        PersistentProperty property;
+    protected static class ProjectedProperty {
+        public Projection projection;
+        public String projectionKey;
+        public PersistentProperty property;
     }
 
     protected static class AggregatePipeline {
         private PersistentEntity entity;
         private Document query;
         private List<Projection> projectionList;
-        private List projectedResults;
         private List<Document> aggregationPipeline;
         private List<ProjectedProperty> projectedKeys;
         private boolean singleResult;
@@ -1820,9 +1819,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             this.projectionList = projectionList;
         }
 
-        public List getProjectedResults() {
-            return projectedResults;
-        }
 
         public List<Document> getAggregationPipeline() {
             return aggregationPipeline;
@@ -1837,7 +1833,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         }
 
         public AggregatePipeline build() {
-            projectedResults = new ArrayList();
             aggregationPipeline = new ArrayList<Document>();
 
             if (!query.keySet().isEmpty()) {

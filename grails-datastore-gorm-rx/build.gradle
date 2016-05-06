@@ -12,7 +12,6 @@ dependencies {
         exclude group:"org.grails", module:'grails-datastore-core'
     }
     compile project(":grails-datastore-core"), {
-        exclude group:"org.springframework", module:'spring-tx'
         exclude group:"org.springframework", module:'spring-beans'
     }
     compileOnly "org.springframework:spring-beans:$springVersion"

@@ -15,6 +15,7 @@
 package org.grails.datastore.gorm.finders;
 
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.model.MappingContext;
 
 /**
  * 
@@ -36,10 +37,15 @@ import org.grails.datastore.mapping.core.Datastore;
  * @author Jeff Brown
  */
 public class FindByBooleanFinder extends FindByFinder{
-    private static final String METHOD_PATTERN = "(find)((\\w+)(By)([A-Z]\\w*)|(\\w++))";
+    public static final String METHOD_PATTERN = "(find)((\\w+)(By)([A-Z]\\w*)|(\\w++))";
 
     public FindByBooleanFinder(Datastore datastore) {
         super(datastore);
+        setPattern(METHOD_PATTERN);
+    }
+
+    public FindByBooleanFinder(MappingContext mappingContext) {
+        super(mappingContext);
         setPattern(METHOD_PATTERN);
     }
 

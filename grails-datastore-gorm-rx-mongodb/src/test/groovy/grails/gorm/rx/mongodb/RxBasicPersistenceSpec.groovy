@@ -68,7 +68,3 @@ class RxBasicPersistenceSpec extends Specification {
     }
 }
 
-@Entity
-class Simple implements RxMongoEntity<Simple> {
-    String name
-}

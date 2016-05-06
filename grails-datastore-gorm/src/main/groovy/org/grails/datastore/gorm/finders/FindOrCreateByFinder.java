@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.springframework.core.convert.ConversionException;
 
 /**
@@ -31,7 +32,7 @@ import org.springframework.core.convert.ConversionException;
  */
 public class FindOrCreateByFinder extends AbstractFindByFinder {
 
-    private static final String METHOD_PATTERN = "(findOrCreateBy)([A-Z]\\w*)";
+    public static final String METHOD_PATTERN = "(findOrCreateBy)([A-Z]\\w*)";
 
     public FindOrCreateByFinder(final String methodPattern, final Datastore datastore) {
         super(Pattern.compile(methodPattern), datastore);
@@ -41,6 +42,16 @@ public class FindOrCreateByFinder extends AbstractFindByFinder {
         this(METHOD_PATTERN, datastore);
     }
 
+
+    public FindOrCreateByFinder(MappingContext mappingContext) {
+        super(Pattern.compile(METHOD_PATTERN), mappingContext);
+    }
+
+    public FindOrCreateByFinder(final String methodPattern, MappingContext mappingContext) {
+        super(Pattern.compile(methodPattern), mappingContext);
+    }
+
+
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected Object doInvokeInternal(final DynamicFinderInvocation invocation) {
@@ -49,7 +60,7 @@ public class FindOrCreateByFinder extends AbstractFindByFinder {
             throw new MissingMethodException(invocation.getMethodName(), invocation.getJavaClass(), invocation.getArguments());
         }
 
-        Object result = null;
+        Object result;
         try {
             result = super.doInvokeInternal(invocation);
         } catch (ConversionException e) { // TODO this is not the right place to deal with this...
