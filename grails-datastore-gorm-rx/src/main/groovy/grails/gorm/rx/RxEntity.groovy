@@ -288,7 +288,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return An observable with all results
      */
-    static Observable<D> list() {
+    static Observable<List<D>> list() {
         currentRxGormStaticApi().list()
     }
 
@@ -297,7 +297,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return An observable with all results
      */
-    static Observable<D> list(Map args) {
+    static Observable<List<D>> list(Map args) {
         currentRxGormStaticApi().list(args)
     }
 
@@ -307,7 +307,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return An observable with all results
      */
     static Observable<D> findAll() {
-        list()
+        findAll(Collections.emptyMap())
     }
 
     /**
@@ -316,7 +316,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return An observable with all results
      */
     static Observable<D> findAll(Map args) {
-        list(args)
+        currentRxGormStaticApi().findAll(args)
     }
 
     /**

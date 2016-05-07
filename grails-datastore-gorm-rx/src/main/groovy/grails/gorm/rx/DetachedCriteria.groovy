@@ -3,8 +3,10 @@ package grails.gorm.rx
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 import org.grails.datastore.gorm.finders.DynamicFinder
+import org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware
+import org.grails.datastore.mapping.query.api.QueryableCriteria
 import org.grails.datastore.rx.query.RxQuery
 import org.grails.gorm.rx.api.RxGormEnhancer
 import rx.Observable
@@ -17,7 +19,7 @@ import rx.Observable
  */
 @InheritConstructors
 @CompileStatic
-class DetachedCriteria<T> extends grails.gorm.DetachedCriteria<Observable<T>> {
+class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> {
     /**
      * Finds a single result matching this criteria. Note that the observable returned will emit each result one by one. If you
      * prefer to receive the entire list of results use {@link #toList()} instead
@@ -27,8 +29,7 @@ class DetachedCriteria<T> extends grails.gorm.DetachedCriteria<Observable<T>> {
      *
      * @return An observable
      */
-    @Override
-    Observable<T> find(Map args, @DelegatesTo(grails.gorm.DetachedCriteria) Closure additionalCriteria) {
+    Observable<T> find(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
         query.max(1)
         return ((RxQuery)query).findAll()
@@ -43,7 +44,7 @@ class DetachedCriteria<T> extends grails.gorm.DetachedCriteria<Observable<T>> {
      *
      * @return An observable
      */
-    Observable<T> findAll(Map args = Collections.emptyMap(), @DelegatesTo(grails.gorm.DetachedCriteria) Closure additionalCriteria = null) {
+    Observable<T> findAll(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
         return ((RxQuery)query).findAll()
     }
@@ -53,8 +54,7 @@ class DetachedCriteria<T> extends grails.gorm.DetachedCriteria<Observable<T>> {
      *
      * @see #find(java.util.Map, groovy.lang.Closure)
      */
-    @Override
-    Observable<T> get(Map args, @DelegatesTo(grails.gorm.DetachedCriteria) Closure additionalCriteria) {
+    Observable<T> get(Map args, @DelegatesTo(DetachedCriteria) Closure additionalCriteria) {
         Query query = prepareQuery(args, additionalCriteria)
         query.max(1)
         return ((RxQuery)query).singleResult()
@@ -67,7 +67,19 @@ class DetachedCriteria<T> extends grails.gorm.DetachedCriteria<Observable<T>> {
      * @param additionalCriteria Any additional criteria
      * @return An observable that emits a list
      */
-    Observable<List<T>> toList(Map args = Collections.emptyMap(), @DelegatesTo(grails.gorm.DetachedCriteria) Closure additionalCriteria = null) {
+    Observable<List<T>> toList(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
+        Query query = prepareQuery(args, additionalCriteria)
+        return ((RxQuery)query).findAll().toList()
+    }
+
+    /**
+     * Converts the observable to another observable that outputs the complete list. Not for use with large datasets
+     *
+     * @param args The arguments
+     * @param additionalCriteria Any additional criteria
+     * @return An observable that emits a list
+     */
+    Observable<List<T>> list(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
         return ((RxQuery)query).findAll().toList()
     }
@@ -79,20 +91,51 @@ class DetachedCriteria<T> extends grails.gorm.DetachedCriteria<Observable<T>> {
      * @param additionalCriteria Any additional criteria
      * @return The total results
      */
-    Observable<Number> total(Map args = Collections.emptyMap(), @DelegatesTo(grails.gorm.DetachedCriteria) Closure additionalCriteria = null) {
+    Observable<Number> getCount(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
         query.projections().count()
         return ((RxQuery)query).singleResult()
     }
 
-    @Override
-    List<Observable<T>> list(Map args, @DelegatesTo(grails.gorm.DetachedCriteria) Closure additionalCriteria) {
-        throw new UnsupportedOperationException("Method list() is blocking. Use findAll() or toList() instead")
+    /**
+     * The same as {@link #getCount(java.util.Map, groovy.lang.Closure)}
+     *
+     * @see #getCount(java.util.Map, groovy.lang.Closure)
+     */
+    Observable<Number> count(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
+        getCount(args, additionalCriteria)
+    }
+
+    /**
+     * Updates all entities matching this criteria
+     *
+     * @param propertiesMap The property names and values to update
+     *
+     * @return An observable that returns the total number updated
+     */
+    Observable<Number> updateAll(Map propertiesMap) {
+        Query query = prepareQuery(Collections.emptyMap(), null)
+        return ((RxQuery)query).updateAll(propertiesMap)
+    }
+
+    /**
+     * Deletes all entities matching this criteria
+     *
+     * @return An observable that returns the total number deleted
+     */
+    Observable<Number> deleteAll() {
+        Query query = prepareQuery(Collections.emptyMap(), null)
+        return ((RxQuery)query).deleteAll()
     }
 
     @Override
-    Number count(Map args, @DelegatesTo(grails.gorm.DetachedCriteria) Closure additionalCriteria) {
-        throw new UnsupportedOperationException("Method count() is blocking. Use total() instead")
+    DetachedCriteria<Observable<T>> where(@DelegatesTo(AbstractDetachedCriteria) Closure additionalQuery) {
+        return (DetachedCriteria) super.where(additionalQuery)
+    }
+
+    @Override
+    DetachedCriteria<Observable<T>> whereLazy(@DelegatesTo(AbstractDetachedCriteria) Closure additionalQuery) {
+        return (DetachedCriteria) super.whereLazy(additionalQuery)
     }
 
     @Override
@@ -166,14 +209,20 @@ class DetachedCriteria<T> extends grails.gorm.DetachedCriteria<Observable<T>> {
     }
 
     @Override
-    protected DetachedCriteria<Observable<T>> clone() {
-        return (DetachedCriteria<Observable<T>>)super.clone()
+    protected QueryableCriteria buildQueryableCriteria(Closure queryClosure) {
+        return (QueryableCriteria)new DetachedCriteria(targetClass).build(queryClosure)
     }
 
     @Override
-    protected grails.gorm.DetachedCriteria newInstance() {
+    protected DetachedCriteria<T> clone() {
+        return (DetachedCriteria)super.clone()
+    }
+
+    @Override
+    protected DetachedCriteria newInstance() {
         new DetachedCriteria(targetClass, alias)
     }
+
 
     protected Query prepareQuery(Map args, Closure additionalCriteria) {
         def staticApi = RxGormEnhancer.findStaticApi(targetClass)

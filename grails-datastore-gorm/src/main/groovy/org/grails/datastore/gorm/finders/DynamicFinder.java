@@ -42,6 +42,7 @@ import org.grails.datastore.gorm.finders.MethodExpression.LessThanEquals;
 import org.grails.datastore.gorm.finders.MethodExpression.Like;
 import org.grails.datastore.gorm.finders.MethodExpression.NotEqual;
 import org.grails.datastore.gorm.finders.MethodExpression.Rlike;
+import org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -554,7 +555,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         populateArgumentsForCriteria(clazz, query, argMap);
     }
 
-    public static void applyDetachedCriteria(Query q, DetachedCriteria detachedCriteria) {
+    public static void applyDetachedCriteria(Query q, AbstractDetachedCriteria detachedCriteria) {
         if (detachedCriteria != null) {
             List<Query.Criterion> criteria = detachedCriteria.getCriteria();
             for (Query.Criterion criterion : criteria) {

@@ -17,9 +17,44 @@ class WhereSpec extends RxGormSpec {
         then:"The result is an observable"
         query.find().toBlocking().first().name == 'Fred'
         query.findAll().toBlocking().first().name == 'Fred'
-        query.toList().toBlocking().first().size() == 1
-        query.total().toBlocking().first() == 1
+        query.list().toBlocking().first().size() == 1
+        query.count().toBlocking().first() == 1
 
+    }
+
+    void "Test deleteAll where query"() {
+        when:"An existing instance"
+        new Simple(name: "Fred").save().toBlocking().first()
+
+        then:"The instance exists"
+        Simple.findAll().toList().toBlocking().first()
+
+        when:"A where query is created"
+        def result = Simple.where {
+            name == 'Fred'
+        }.deleteAll().toBlocking().first()
+
+        then:"The result is an observable"
+        result == 1
+        !Simple.list().toBlocking().first()
+    }
+
+    void "Test updateAll where query"() {
+        when:"An existing instance"
+        new Simple(name: "Fred").save().toBlocking().first()
+
+        then:"The instance exists"
+        Simple.findAll().toList().toBlocking().first()
+
+        when:"A where query is created"
+        def result = Simple.where {
+            name == 'Fred'
+        }.updateAll(name:"Bob").toBlocking().first()
+
+        then:"The result is an observable"
+        result == 1
+        !Simple.findByName("Fred").toList().toBlocking().first()
+        Simple.findByName("Bob").toBlocking().first()
     }
 
     @Override

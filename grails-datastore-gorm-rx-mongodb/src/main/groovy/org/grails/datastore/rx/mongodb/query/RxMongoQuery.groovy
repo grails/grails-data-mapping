@@ -1,10 +1,14 @@
 package org.grails.datastore.rx.mongodb.query
 
+import com.mongodb.client.model.UpdateOptions
+import com.mongodb.client.result.DeleteResult
+import com.mongodb.client.result.UpdateResult
 import com.mongodb.rx.client.AggregateObservable
 import com.mongodb.rx.client.FindObservable
 import groovy.transform.CompileStatic
 import org.bson.Document
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.mongo.MongoConstants
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
@@ -67,8 +71,40 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
         }
     }
 
+    @Override
+    Observable<Number> updateAll(Map properties) {
+        Document query = prepareQuery()
+        def mongoCollection = datastoreClient.getCollection(entity, entity.javaClass)
+
+        def options = new UpdateOptions()
+        mongoCollection.updateMany(query, new Document(MongoConstants.SET_OPERATOR, properties), options.upsert(false))
+                .map({ UpdateResult result ->
+            if(result.wasAcknowledged()) {
+                return result.modifiedCount
+            }
+            else {
+                return 0
+            }
+        }).defaultIfEmpty(0L)
+    }
+
+    @Override
+    Observable<Number> deleteAll() {
+        Document query = prepareQuery()
+        def mongoCollection = datastoreClient.getCollection(entity, entity.javaClass)
+        mongoCollection.deleteMany(query)
+                       .map({ DeleteResult result ->
+            if(result.wasAcknowledged()) {
+                return result.deletedCount
+            }
+            else {
+                return 0L
+            }
+        }).defaultIfEmpty(0L)
+    }
+
     protected Observable executeQuery(List<Query.Projection> projectionList) {
-        def query = createQueryObject(entity)
+        Document query = prepareQuery()
         def aggregatePipeline = buildAggregatePipeline(entity, query, projectionList)
         List<Document> aggregationPipeline = aggregatePipeline.getAggregationPipeline()
         boolean singleResult = aggregatePipeline.isSingleResult()
@@ -113,9 +149,14 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
         }
     }
 
-    protected FindObservable executeQuery() {
+    protected Document prepareQuery() {
         def query = createQueryObject(entity)
         populateMongoQuery(new CodecRegistryEmbeddedQueryEncoder(datastoreClient.codecRegistry), query, criteria, entity)
+        query
+    }
+
+    protected FindObservable executeQuery() {
+        Document query = prepareQuery()
 
         def clazz = entity.javaClass
         def mongoCollection = datastoreClient.getCollection(entity, clazz)

@@ -24,4 +24,21 @@ interface RxQuery<T> {
      */
 
     Observable<T> singleResult()
+
+    /**
+     * update all entities matching this query with the given properties
+     *
+     * @param properties The properties
+     *
+     * @return An observable with the number of entities updated
+     */
+    Observable<Number> updateAll(Map properties)
+
+    /**
+     * delete all entities matching this query
+     *
+     *
+     * @return An observable with the number of entities updated
+     */
+    Observable<Number> deleteAll()
 }

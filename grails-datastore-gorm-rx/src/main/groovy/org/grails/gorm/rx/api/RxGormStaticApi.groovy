@@ -57,7 +57,13 @@ class RxGormStaticApi<D> {
         return ((RxQuery)query).singleResult()
     }
 
-    Observable<D> list(Map params = Collections.emptyMap()) {
+    Observable<List<D>> list(Map params = Collections.emptyMap()) {
+        def query = datastoreClient.createQuery(entity.javaClass)
+        DynamicFinder.populateArgumentsForCriteria(entity.javaClass, query, params)
+        return ((RxQuery<D>) query).findAll().toList()
+    }
+
+    Observable<D> findAll(Map params = Collections.emptyMap()) {
         def query = datastoreClient.createQuery(entity.javaClass)
         DynamicFinder.populateArgumentsForCriteria(entity.javaClass, query, params)
         return ((RxQuery<D>) query).findAll()
