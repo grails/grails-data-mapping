@@ -241,6 +241,30 @@ class RxGormStaticApi<D> {
     }
 
     /**
+     * Uses detached criteria to build a query and then execute it returning an observable
+     *
+     * @param callable The callable
+     * @return The observable
+     */
+    Observable<D> findAll(Closure callable) {
+        new DetachedCriteria<D>(persistentClass)
+                .build(callable)
+                .findAll()
+    }
+
+    /**
+     * Uses detached criteria to build a query and then execute it returning an observable
+     *
+     * @param callable The callable
+     * @return The observable
+     */
+    Observable<D> find(Closure callable) {
+        new DetachedCriteria<D>(persistentClass)
+                .build(callable)
+                .find()
+    }
+
+    /**
      *
      * @param callable Callable closure containing detached criteria definition
      * @return The DetachedCriteria instance that is lazily initialized

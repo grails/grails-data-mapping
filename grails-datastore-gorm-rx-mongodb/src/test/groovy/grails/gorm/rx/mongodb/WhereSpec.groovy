@@ -22,6 +22,24 @@ class WhereSpec extends RxGormSpec {
 
     }
 
+    void "Test find and findAll query"() {
+        given:"An existing instance"
+        new Simple(name: "Fred").save().toBlocking().first()
+
+        when:"A where query is created"
+        def observable1 = Simple.findAll {
+            name == 'Fred'
+        }
+        def observable2 = Simple.find {
+            name == 'Fred'
+        }
+
+        then:"The result is an observable"
+        observable1.toBlocking().first().name == 'Fred'
+        observable2.toBlocking().first().name == 'Fred'
+
+    }
+
     void "Test deleteAll where query"() {
         when:"An existing instance"
         new Simple(name: "Fred").save().toBlocking().first()

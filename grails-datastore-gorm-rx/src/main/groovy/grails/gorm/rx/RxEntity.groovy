@@ -454,7 +454,25 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
         currentRxGormStaticApi().findAllWhere queryMap, args
     }
 
+    /**
+     * Uses detached criteria to build a query and then execute it returning an observable
+     *
+     * @param callable The callable
+     * @return The observable
+     */
+    static Observable<D> findAll(Closure callable) {
+        currentRxGormStaticApi().findAll callable
+    }
 
+    /**
+     * Uses detached criteria to build a query and then execute it returning an observable
+     *
+     * @param callable The callable
+     * @return The observable
+     */
+    static Observable<D> find(Closure callable) {
+        currentRxGormStaticApi().find callable
+    }
     /**
      *
      * @param callable Callable closure containing detached criteria definition
