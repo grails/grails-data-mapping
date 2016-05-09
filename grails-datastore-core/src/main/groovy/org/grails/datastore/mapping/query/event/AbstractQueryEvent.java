@@ -17,6 +17,11 @@ public abstract class AbstractQueryEvent extends ApplicationEvent {
         this.query = query;
     }
 
+    public AbstractQueryEvent(Object source, Query query) {
+        super(source);
+        this.query = query;
+    }
+
     /**
      * @return The type of event.
      */

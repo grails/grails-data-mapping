@@ -2,7 +2,12 @@ package org.grails.datastore.rx.mongodb
 
 import com.mongodb.ServerAddress
 import com.mongodb.async.client.MongoClientSettings
+import com.mongodb.bulk.BulkWriteResult
+import com.mongodb.client.model.BulkWriteOptions
+import com.mongodb.client.model.InsertOneModel
+import com.mongodb.client.model.UpdateOneModel
 import com.mongodb.client.model.UpdateOptions
+import com.mongodb.client.model.WriteModel
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.UpdateResult
 import com.mongodb.connection.ClusterSettings
@@ -83,6 +88,56 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     }
 
     @Override
+    Observable<Number> batchWrite(BatchOperation operation) {
+        def inserts = operation.inserts
+        Map<PersistentEntity, List<WriteModel>> writeModels = [:].withDefault { [] }
+
+        for(entry in inserts) {
+
+            PersistentEntity entity = entry.key
+            List<WriteModel> entityWriteModels = writeModels.get(entity)
+            for(op in entry.value) {
+                entityWriteModels.add(new InsertOneModel(op.object))
+            }
+        }
+
+        def updates = operation.updates
+        for(entry in updates) {
+            PersistentEntity entity = entry.key
+            List<WriteModel> entityWriteModels = writeModels.get(entity)
+            final PersistentEntityCodec codec = (PersistentEntityCodec)codecRegistry.get(entity.javaClass)
+            final updateOptions = new UpdateOptions().upsert(false)
+
+            for(op in entry.value) {
+                Document idQuery = createIdQuery(op.identity)
+                Document updateDocument = codec.encodeUpdate(op.object)
+
+                entityWriteModels.add(new UpdateOneModel(idQuery, updateDocument, updateOptions))
+            }
+        }
+
+        List<Observable> observables = []
+        for(entry in writeModels) {
+            PersistentEntity entity = entry.key
+            def mongoCollection = getCollection(entity, entity.javaClass)
+
+            def writeOptions = new BulkWriteOptions()
+
+            observables.add mongoCollection.bulkWrite(entry.value, writeOptions)
+        }
+
+        return Observable.concatEager(observables)
+                            .reduce(0L, { Long count, BulkWriteResult bwr ->
+            if(bwr.wasAcknowledged()) {
+                count += bwr.insertedCount
+                count += bwr.modifiedCount
+                count += bwr.deletedCount
+            }
+            return count
+        })
+    }
+
+    @Override
     Observable<Number> batchDelete(BatchOperation operation) {
         def deletes = operation.deletes
         List<Observable> observables = []
@@ -135,6 +190,8 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
             }
         } as Func1)
     }
+
+
 
     @Override
     def <T1> Observable<T1> saveEntity(PersistentEntity entity, Class<T1> type, T1 instance, Map<String, Object> arguments) {

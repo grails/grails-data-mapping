@@ -5,14 +5,17 @@ import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.event.PostInsertEvent
 import org.grails.datastore.mapping.engine.event.PostLoadEvent
+import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 import org.grails.datastore.mapping.engine.event.PreInsertEvent
 import org.grails.datastore.mapping.engine.event.PreLoadEvent
+import org.grails.datastore.mapping.engine.event.PreUpdateEvent
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.proxy.ProxyHandler
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.rx.batch.BatchOperation
+import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
 import rx.Observable
 import rx.Subscriber
@@ -123,8 +126,6 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T> {
         }
     }
 
-    abstract Observable<Number> batchDelete(BatchOperation operation)
-
     /**
      * Persist an instance
      * @param instance The instance
@@ -136,14 +137,17 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T> {
 
         if(instance == null) throw new IllegalArgumentException("Cannot persist null instance")
 
-        Class<T1> type = mappingContext.getProxyHandler().getProxiedClass(instance)
+
+        def proxyHandler = mappingContext.getProxyHandler()
+        Class<T1> type = proxyHandler.getProxiedClass(instance)
 
         def entity = mappingContext.getPersistentEntity(type.name)
         if(entity == null) {
             throw new IllegalArgumentException("Type [$type.name] is not a persistent type")
         }
 
-        def reflector = mappingContext.getEntityReflector(entity)
+        ApplicationEventPublisher persistenceEventPublisher = this.eventPublisher
+        EntityReflector reflector = mappingContext.getEntityReflector(entity)
         def identifier = reflector.getIdentifier(instance)
         if(identifier == null) {
             generateIdentifier(entity, instance, reflector)
@@ -151,31 +155,19 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T> {
             def ea = mappingContext.createEntityAccess(entity, instance)
             def preInsertEvent = new PreInsertEvent(this, entity, ea)
 
-            eventPublisher?.publishEvent(preInsertEvent)
+
+            persistenceEventPublisher?.publishEvent(preInsertEvent)
 
             if(!preInsertEvent.isCancelled()) {
-                def observable = saveEntity(entity, type, instance, arguments)
-                if(eventPublisher != null) {
-                    def rxClient = this
+                def batchOperation = new BatchOperation()
+                batchOperation.addInsert(entity, instance)
 
-                    observable.subscribe(new Subscriber() {
-                        @Override
-                        void onCompleted() {
-                            eventPublisher.publishEvent(new PostInsertEvent(rxClient, entity, ea))
-                        }
-
-                        @Override
-                        void onError(Throwable e) {
-
-                        }
-
-                        @Override
-                        void onNext(Object o) {
-
-                        }
-                    })
+                return batchWrite(batchOperation).map { Number total ->
+                    if(total > 0) {
+                        persistenceEventPublisher?.publishEvent(new PostInsertEvent(this, entity, ea))
+                    }
+                    return instance
                 }
-                return observable
             }
             else {
                 return Observable.just(null)
@@ -183,12 +175,35 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T> {
         }
         else {
             // handle update
+            if(!proxyHandler.isInitialized(instance)) {
+                return Observable.just(instance)
+            }
+
             if(instance instanceof DirtyCheckable) {
                 if( !((DirtyCheckable)instance).hasChanged() ) {
                     return Observable.just(instance)
                 }
             }
-            return updateEntity(entity, type, identifier, instance, arguments)
+            def ea = mappingContext.createEntityAccess(entity, instance)
+            def preUpdateEvent = new PreUpdateEvent(this, entity, ea)
+
+
+            persistenceEventPublisher?.publishEvent(preUpdateEvent)
+
+            if(!preUpdateEvent.isCancelled()) {
+                def batchOperation = new BatchOperation()
+                batchOperation.addUpdate(entity, identifier, instance)
+
+                return batchWrite(batchOperation).map { Number total ->
+                    if(total > 0) {
+                        persistenceEventPublisher?.publishEvent(new PostUpdateEvent(this, entity, ea))
+                    }
+                    return instance
+                }
+            }
+            else {
+                return Observable.just(null)
+            }
         }
     }
 
@@ -196,6 +211,77 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T> {
     final <T1> Observable<T1> persist(T1 instance) {
         return persist(instance, Collections.<String,Object>emptyMap())
     }
+
+    @Override
+    Observable<List<Serializable>> persistAll(Iterable instances) {
+        MappingContext ctx = this.mappingContext
+        ApplicationEventPublisher eventPublisher = this.eventPublisher
+
+        def proxyHandler = ctx.getProxyHandler()
+        if(instances != null) {
+            def batchOperation = new BatchOperation()
+            List<Serializable> identifiers = []
+            List<ApplicationEvent> postEvents = []
+            for(o in instances) {
+                Class type = proxyHandler.getProxiedClass(o)
+                PersistentEntity entity = ctx.getPersistentEntity(type.name)
+                EntityReflector entityReflector = ctx.getEntityReflector(entity)
+                EntityAccess entityAccess = ctx.createEntityAccess(entity, o)
+                if(entity == null) {
+                    throw new IllegalArgumentException("Type [$type.name] of instance [$o] is not a persistent type")
+                }
+                def id = entityReflector.getIdentifier(o)
+                if(id != null) {
+                    def preUpdateEvent = new PreUpdateEvent(this, entity, entityAccess)
+                    eventPublisher?.publishEvent(preUpdateEvent)
+                    if(!preUpdateEvent.isCancelled()) {
+                        batchOperation.addUpdate(entity, id, o)
+                        postEvents.add(new PostUpdateEvent(this, entity, entityAccess))
+                    }
+                }
+                else {
+                    id = generateIdentifier(entity, o, entityReflector)
+                    def preInsertEvent = new PreInsertEvent(this, entity, entityAccess)
+                    eventPublisher?.publishEvent(preInsertEvent)
+                    if(!preInsertEvent.isCancelled()) {
+                        batchOperation.addInsert(entity, o)
+                        postEvents.add(new PostInsertEvent(this, entity, entityAccess))
+                    }
+                }
+                identifiers.add(id)
+            }
+
+            return batchWrite(batchOperation).map({
+                if(eventPublisher != null) {
+                    for(event in postEvents) {
+                        eventPublisher.publishEvent(event)
+                    }
+                }
+                identifiers
+            })
+        }
+        else {
+            return Observable.just([])
+        }
+    }
+
+    /**
+     * Executes a batch write operation
+     *
+     * @param operation The batch operation
+     *
+     * @return The total number of records updated, deleted or inserted
+     */
+    abstract Observable<Number> batchWrite(BatchOperation operation)
+
+    /**
+     * Executes a batch delete operation
+     *
+     * @param operation The batch operation
+     *
+     * @return The total number of records deleted
+     */
+    abstract Observable<Number> batchDelete(BatchOperation operation)
 
     /**
      * Generates an identifier for the given entity and instance

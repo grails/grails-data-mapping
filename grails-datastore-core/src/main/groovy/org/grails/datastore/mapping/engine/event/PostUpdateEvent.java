@@ -34,6 +34,10 @@ public class PostUpdateEvent extends AbstractPersistenceEvent {
         super(source, entity);
     }
 
+    public PostUpdateEvent(Object source, PersistentEntity entity, EntityAccess entityAccess) {
+        super(source, entity, entityAccess);
+    }
+
     @Override
     public EventType getEventType() {
         return EventType.PostUpdate;

@@ -2,6 +2,7 @@ package grails.gorm.rx.mongodb
 
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
+import spock.lang.Shared
 import spock.lang.Specification
 
 /**
@@ -9,20 +10,27 @@ import spock.lang.Specification
  */
 abstract class RxGormSpec extends Specification {
 
-    RxMongoDatastoreClient client
+    @Shared RxMongoDatastoreClient client
 
-    void setup() {
+    void setupSpec() {
         def context = new MongoMappingContext("test")
 
         def classes = getDomainClasses()
         context.addPersistentEntities(classes as Class[])
+        for(c in classes) {
+            GroovySystem.metaClassRegistry.removeMetaClass(c)
+        }
         context.initialize()
         client = new RxMongoDatastoreClient(context)
-        client.mongoClient.getDatabase(client.defaultDatabase).drop().toBlocking().first()
+
 
     }
 
-    void cleanup() {
+    void setup() {
+        client.mongoClient.getDatabase(client.defaultDatabase).drop().toBlocking().first()
+    }
+
+    void cleanupSpec() {
         client?.close()
     }
 

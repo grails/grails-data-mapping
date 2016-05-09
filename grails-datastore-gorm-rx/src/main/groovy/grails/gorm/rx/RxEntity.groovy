@@ -266,7 +266,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     /**
      * @return Counts the number of instances
      */
-    static Observable<Integer> count() {
+    static Observable<Number> count() {
         currentRxGormStaticApi().count()
     }
 
@@ -276,7 +276,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param objects The objects to delete
      * @return The number of objects actually deleted
      */
-    static Observable<Integer> deleteAll(Object...objects) {
+    static Observable<Number> deleteAll(D...objects) {
         deleteAll( (Iterable<D>)Arrays.asList(objects) )
     }
 
@@ -286,8 +286,28 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param objects The objects to delete
      * @return The number of objects actually deleted
      */
-    static Observable<Integer> deleteAll(Iterable<D> objects) {
+    static Observable<Number> deleteAll(Iterable<D> objects) {
         currentRxGormStaticApi().deleteAll(objects)
+    }
+
+    /**
+     * Batch saves all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    static Observable<List<Serializable>> saveAll(Iterable<D> objects) {
+        currentRxGormStaticApi().saveAll(objects)
+    }
+
+    /**
+     * Batch saves all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    static Observable<List<Serializable>> saveAll(D... objects) {
+        saveAll((Iterable<D>)Arrays.asList(objects))
     }
 
     /**

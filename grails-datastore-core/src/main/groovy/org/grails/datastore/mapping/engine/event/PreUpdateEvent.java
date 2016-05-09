@@ -34,6 +34,10 @@ public class PreUpdateEvent extends AbstractPersistenceEvent {
         super(source, entity);
     }
 
+    public PreUpdateEvent(Object source, PersistentEntity entity, EntityAccess entityAccess) {
+        super(source, entity, entityAccess);
+    }
+
     @Override
     public EventType getEventType() {
         return EventType.PreUpdate;

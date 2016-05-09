@@ -11,9 +11,12 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.mongo.MongoConstants
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query
+import org.grails.datastore.mapping.query.event.PreQueryEvent
 import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
 import org.grails.datastore.rx.mongodb.internal.CodecRegistryEmbeddedQueryEncoder
 import org.grails.datastore.rx.query.RxQuery
+import org.grails.datastore.rx.query.event.PostQueryEvent
+import org.springframework.context.ApplicationEventPublisher
 import rx.Observable
 import rx.Subscriber
 
@@ -41,28 +44,31 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
 
     @Override
     Observable findAll() {
-
+        def event = new PreQueryEvent(datastoreClient, this)
+        def eventPublisher = datastoreClient.eventPublisher
+        eventPublisher?.publishEvent(event)
         final List<Query.Projection> projectionList = projections().getProjectionList()
+        Observable observable
         if(projectionList.isEmpty()) {
             FindObservable findObservable = executeQuery()
-            return findObservable.toObservable()
+
+            observable = findObservable.toObservable()
         }
         else {
-            return executeQuery(projectionList)
+            observable = executeQuery(projectionList)
         }
+
+        def postQueryEvent = new PostQueryEvent(datastoreClient, this, observable)
+        eventPublisher?.publishEvent(postQueryEvent)
+        return postQueryEvent.observable
     }
 
     @Override
     Observable singleResult() {
-        final List<Query.Projection> projectionList = projections().getProjectionList()
-        if(projectionList.isEmpty()) {
-            FindObservable findObservable = executeQuery()
-            findObservable.limit(1)
-            return findObservable.toObservable()
+        if(projections.isEmpty()) {
+            max(1)
         }
-        else {
-            return executeQuery(projectionList).first()
-        }
+        return findAll()
     }
 
     @Override

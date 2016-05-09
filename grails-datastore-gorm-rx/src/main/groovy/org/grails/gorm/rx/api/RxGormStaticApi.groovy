@@ -113,7 +113,7 @@ class RxGormStaticApi<D> {
     /**
      * @return Counts the number of instances
      */
-    Observable<Integer> count() {
+    Observable<Number> count() {
         def query = datastoreClient.createQuery(entity.javaClass)
         query.projections().count()
         return ((RxQuery)query).singleResult()
@@ -126,8 +126,18 @@ class RxGormStaticApi<D> {
      * @param objects The objects to delete
      * @return The number of objects actually deleted
      */
-    Observable<Integer> deleteAll(Iterable objects) {
+    Observable<Number> deleteAll(Iterable objects) {
         datastoreClient.deleteAll(objects)
+    }
+
+    /**
+     * Batch saves all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    Observable<List<Serializable>> saveAll(Iterable<D> objects) {
+        datastoreClient.persistAll(objects)
     }
 
     Observable<List<D>> list(Map params = Collections.emptyMap()) {

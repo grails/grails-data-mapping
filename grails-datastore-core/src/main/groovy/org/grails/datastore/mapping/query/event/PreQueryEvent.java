@@ -10,6 +10,10 @@ public class PreQueryEvent extends AbstractQueryEvent {
         super(query);
     }
 
+    public PreQueryEvent(Object source, Query query) {
+        super(source, query);
+    }
+
     /**
      * @return The type of event.
      */

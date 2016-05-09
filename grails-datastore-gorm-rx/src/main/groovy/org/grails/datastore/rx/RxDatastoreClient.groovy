@@ -61,6 +61,14 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
     Observable<Number> deleteAll(Iterable instances)
 
     /**
+     * Batch saves all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    Observable<List<Serializable>> persistAll(Iterable objects)
+
+    /**
      * Creates a query for the given type
      *
      * @param type The type
