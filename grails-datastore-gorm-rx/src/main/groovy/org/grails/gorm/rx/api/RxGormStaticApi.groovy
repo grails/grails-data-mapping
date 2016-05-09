@@ -2,30 +2,20 @@ package org.grails.gorm.rx.api
 
 import grails.gorm.rx.CriteriaBuilder
 import grails.gorm.rx.DetachedCriteria
+import grails.gorm.rx.RxEntity
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.mapping.core.Session
-import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.query.Query
-import org.grails.datastore.mapping.query.api.BuildableCriteria
 import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.rx.RxDatastoreClient
 import org.grails.datastore.rx.query.RxQuery
-import org.grails.gorm.rx.finders.CountByFinder
-import org.grails.gorm.rx.finders.FindAllByBooleanFinder
-import org.grails.gorm.rx.finders.FindAllByFinder
-import org.grails.gorm.rx.finders.FindByBooleanFinder
-import org.grails.gorm.rx.finders.FindByFinder
-import org.grails.gorm.rx.finders.FindOrCreateByFinder
-import org.grails.gorm.rx.finders.FindOrSaveByFinder
+import org.grails.gorm.rx.finders.*
 import org.springframework.beans.PropertyAccessorFactory
 import rx.Observable
-import rx.Single
-
+import rx.Subscriber
 /**
  * Bridge to the implementation of the static method level operations for RX GORM
  *
@@ -65,7 +55,7 @@ class RxGormStaticApi<D> {
      *
      * @return A single that will emit the first object, if it exists
      */
-    Single<D> first(String property) {
+    Observable<D> first(String property) {
         first(sort:property)
     }
 
@@ -78,13 +68,13 @@ class RxGormStaticApi<D> {
      *
      * @return A single that will emit the first object, if it exists
      */
-    Single<D> first(Map<String,Object> params = Collections.emptyMap()) {
+    Observable<D> first(Map<String,Object> params = Collections.emptyMap()) {
         def q = datastoreClient.createQuery(persistentClass)
         Map<String,Object> newParams = new LinkedHashMap<>(params)
         newParams.remove('order')
         DynamicFinder.populateArgumentsForCriteria(persistentClass, q, newParams)
         q.max(1)
-        ((RxQuery)q).singleResult().toSingle()
+        ((RxQuery)q).singleResult()
     }
 
 
@@ -95,7 +85,7 @@ class RxGormStaticApi<D> {
      *
      * @return A single that will emit the first object, if it exists
      */
-    Single<D> last(String property) {
+    Observable<D> last(String property) {
         last(sort:property)
     }
 
@@ -108,7 +98,7 @@ class RxGormStaticApi<D> {
      *
      * @return A single that will emit the last object, if it exists
      */
-    Single<D> last(Map<String,Object> params = Collections.emptyMap()) {
+    Observable<D> last(Map<String,Object> params = Collections.emptyMap()) {
         def q = datastoreClient.createQuery(persistentClass)
         Map<String,Object> newParams = new LinkedHashMap<>(params)
         newParams.put('order', 'desc')
@@ -117,7 +107,7 @@ class RxGormStaticApi<D> {
         }
         DynamicFinder.populateArgumentsForCriteria(persistentClass, q, newParams)
         q.max(1)
-        ((RxQuery)q).singleResult().toSingle()
+        ((RxQuery)q).singleResult()
     }
 
     /**
@@ -165,6 +155,55 @@ class RxGormStaticApi<D> {
         query.allEq(queryMap)
         query.max(1)
         ((RxQuery<D>)query).singleResult()
+    }
+
+
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
+     * a matching persistent entity is not found a new entity is created and returned.
+     *
+     * @param queryMap The map of conditions
+     * @return A single result
+     */
+    Observable<D> findOrCreateWhere(Map<String, Object> queryMap) {
+        findWhere(queryMap)
+            .switchIfEmpty(Observable.create({ Subscriber s ->
+            s.onNext(entity.javaClass.newInstance(queryMap))
+            s.onCompleted()
+        } as Observable.OnSubscribe))
+    }
+
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
+     * a matching persistent entity is not found a new entity is created, saved and returned.
+     *
+     * @param queryMap The map of conditions
+     * @return A single result
+     */
+
+    Observable<D> findOrSaveWhere(Map<String, Object> queryMap) {
+        findWhere(queryMap)
+                .switchIfEmpty(Observable.create({ Subscriber s ->
+            Thread.start {
+                def instance = entity.javaClass.newInstance(queryMap)
+                ((RxEntity)instance).save().subscribe(new Subscriber() {
+                    @Override
+                    void onCompleted() {
+                        s.onCompleted()
+                    }
+
+                    @Override
+                    void onError(Throwable e) {
+                        s.onError(e)
+                    }
+
+                    @Override
+                    void onNext(Object o) {
+                        s.onNext(o)
+                    }
+                })
+            }
+        } as Observable.OnSubscribe ))
     }
 
     /**

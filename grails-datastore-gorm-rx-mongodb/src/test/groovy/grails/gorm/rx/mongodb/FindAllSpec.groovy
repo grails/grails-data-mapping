@@ -1,6 +1,7 @@
 package grails.gorm.rx.mongodb
 
 import rx.Observable
+import rx.Single
 
 /**
  * Created by graemerocher on 06/05/16.
@@ -27,6 +28,24 @@ class FindAllSpec extends RxGormSpec {
 
         then:"The result is an result"
         result.toBlocking().first().name == 'Fred'
+    }
+
+    void "Test findOrCreateWhere method"() {
+        when:"findOrCreateWhere is used"
+        def s = Simple.findOrCreateWhere(name:"Fred")
+        def simple = s.toBlocking().first()
+        then:"An instance is created"
+        simple.name == "Fred"
+        !simple.id
+    }
+
+    void "Test findOrSaveWhere method"() {
+        when:"findOrSaveWhere is used"
+        def s = Simple.findOrSaveWhere(name:"Fred")
+        def simple = s.toBlocking().first()
+        then:"An instance is created"
+        simple.name == "Fred"
+        simple.id
     }
 
     @Override

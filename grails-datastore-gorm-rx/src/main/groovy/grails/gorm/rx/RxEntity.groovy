@@ -17,8 +17,8 @@ import org.grails.gorm.rx.api.RxGormEnhancer
 import org.grails.gorm.rx.api.RxGormInstanceApi
 import org.grails.gorm.rx.api.RxGormStaticApi
 import rx.Observable
-import rx.Single
 import rx.Subscriber
+
 /**
  * Represents a reactive GORM entity
  *
@@ -289,7 +289,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A single that will emit the first object, if it exists
      */
-    static Single<D> first() {
+    static Observable<D> first() {
         currentRxGormStaticApi().first()
     }
 
@@ -300,7 +300,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A single that will emit the first object, if it exists
      */
-    static Single<D> first(String propertyName) {
+    static Observable<D> first(String propertyName) {
         currentRxGormStaticApi().first propertyName
     }
 
@@ -313,7 +313,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return the first object in the datastore, null if none exist
      */
-    static Single<D> first(Map queryParams) {
+    static Observable<D> first(Map queryParams) {
         currentRxGormStaticApi().first queryParams
     }
 
@@ -322,7 +322,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A single that will emit the last object, if it exists
      */
-    static Single<D> last() {
+    static Observable<D> last() {
         currentRxGormStaticApi().last()
     }
 
@@ -333,7 +333,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A single that will emit the last object, if it exists
      */
-    static Single<D> last(String propertyName) {
+    static Observable<D> last(String propertyName) {
         currentRxGormStaticApi().last propertyName
     }
 
@@ -346,7 +346,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A single that will emit the last object, if it exists
      */
-    static Single<D> last(Map<String,Object> params) {
+    static Observable<D> last(Map<String,Object> params) {
         currentRxGormStaticApi().last params
     }
 
@@ -408,6 +408,28 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      */
     static Observable<D> findWhere(Map<String, Object> queryMap, Map args) {
         currentRxGormStaticApi().findWhere queryMap, args
+    }
+
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
+     * a matching persistent entity is not found a new entity is created and returned.
+     *
+     * @param queryMap The map of conditions
+     * @return A single result
+     */
+    static Observable<D> findOrCreateWhere(Map<String, Object> queryMap) {
+        currentRxGormStaticApi().findOrCreateWhere queryMap
+    }
+
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
+     * a matching persistent entity is not found a new entity is created, saved and returned.
+     *
+     * @param queryMap The map of conditions
+     * @return A single result
+     */
+    static Observable<D> findOrSaveWhere(Map queryMap) {
+        currentRxGormStaticApi().findOrSaveWhere queryMap
     }
 
     /**

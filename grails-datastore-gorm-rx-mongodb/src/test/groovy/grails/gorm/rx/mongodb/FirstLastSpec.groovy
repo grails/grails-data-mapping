@@ -14,12 +14,12 @@ class FirstLastSpec extends RxGormSpec {
         new Simple(name: "Bob").save().toBlocking().first()
 
         when:"A where query is created"
-        Single<Simple> first = Simple.first()
-        Single<Simple> last = Simple.last()
+        Observable<Simple> first = Simple.first()
+        Observable<Simple> last = Simple.last()
 
         then:"The result is an result"
-        first.toBlocking().value().name == 'Fred'
-        last.toBlocking().value().name == 'Bob'
+        first.toBlocking().first().name == 'Fred'
+        last.toBlocking().first().name == 'Bob'
     }
 
 

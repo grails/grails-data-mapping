@@ -129,72 +129,72 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> {
     }
 
     @Override
-    DetachedCriteria<Observable<T>> where(@DelegatesTo(AbstractDetachedCriteria) Closure additionalQuery) {
+    DetachedCriteria<T> where(@DelegatesTo(AbstractDetachedCriteria) Closure additionalQuery) {
         return (DetachedCriteria) super.where(additionalQuery)
     }
 
     @Override
-    DetachedCriteria<Observable<T>> whereLazy(@DelegatesTo(AbstractDetachedCriteria) Closure additionalQuery) {
+    DetachedCriteria<T> whereLazy(@DelegatesTo(AbstractDetachedCriteria) Closure additionalQuery) {
         return (DetachedCriteria) super.whereLazy(additionalQuery)
     }
 
     @Override
-    DetachedCriteria<Observable<T>> build(@DelegatesTo(grails.gorm.DetachedCriteria) Closure callable) {
+    DetachedCriteria<T> build(@DelegatesTo(grails.gorm.DetachedCriteria) Closure callable) {
         return (DetachedCriteria)super.build(callable)
     }
 
     @Override
-    DetachedCriteria<Observable<T>> buildLazy(@DelegatesTo(grails.gorm.DetachedCriteria) Closure callable) {
+    DetachedCriteria<T> buildLazy(@DelegatesTo(grails.gorm.DetachedCriteria) Closure callable) {
         return (DetachedCriteria)super.buildLazy(callable)
     }
 
     @Override
-    DetachedCriteria<Observable<T>> max(int max) {
+    DetachedCriteria<T> max(int max) {
         return (DetachedCriteria)super.max(max)
     }
 
     @Override
-    DetachedCriteria<Observable<T>> offset(int offset) {
+    DetachedCriteria<T> offset(int offset) {
         return (DetachedCriteria)super.offset(offset)
     }
 
     @Override
-    DetachedCriteria<Observable<T>> sort(String property) {
+    DetachedCriteria<T> sort(String property) {
         return (DetachedCriteria)super.sort(property)
     }
 
     @Override
-    DetachedCriteria<Observable<T>> sort(String property, String direction) {
+    DetachedCriteria<T> sort(String property, String direction) {
         return (DetachedCriteria)super.sort(property, direction)
     }
 
     @Override
-    DetachedCriteria<Observable<T>> property(String property) {
+    DetachedCriteria<T> property(String property) {
         return (DetachedCriteria)super.property(property)
     }
 
     @Override
-    DetachedCriteria<Observable<T>> id() {
+    DetachedCriteria<T> id() {
         return (DetachedCriteria)super.id()
     }
 
     @Override
-    DetachedCriteria<Observable<T>> avg(String property) {
+    DetachedCriteria<T> avg(String property) {
         return (DetachedCriteria)super.avg(property)
     }
 
     @Override
-    DetachedCriteria<Observable<T>> sum(String property) {
+    DetachedCriteria<T> sum(String property) {
         return (DetachedCriteria)super.sum(property)
     }
 
     @Override
-    DetachedCriteria<Observable<T>> min(String property) {
+    DetachedCriteria<T> min(String property) {
         return (DetachedCriteria)super.min(property)
     }
 
     @Override
-    DetachedCriteria<Observable<T>> max(String property) {
+    DetachedCriteria<T> max(String property) {
         return (DetachedCriteria)super.max(property)
     }
 

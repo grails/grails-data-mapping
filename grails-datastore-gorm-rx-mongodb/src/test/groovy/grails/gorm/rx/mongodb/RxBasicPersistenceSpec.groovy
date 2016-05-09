@@ -53,11 +53,11 @@ class RxBasicPersistenceSpec extends Specification {
         result.name == 'Bob'
 
         when:"All results are listed"
-        new Simple(name:"Joe").save().toBlocking().single()
+        new Simple(name:"Joe").save().toBlocking().first()
         def results = Simple.list()
 
         then:"The results are correct"
-        results.toBlocking().iterator.toList().size() == 2
+        results.toBlocking().first().size() == 2
     }
 
     void "Test entity structure"() {
