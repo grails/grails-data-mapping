@@ -271,6 +271,26 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     }
 
     /**
+     * Batch deletes a number of objects in one go
+     *
+     * @param objects The objects to delete
+     * @return The number of objects actually deleted
+     */
+    static Observable<Integer> deleteAll(Object...objects) {
+        deleteAll( (Iterable<D>)Arrays.asList(objects) )
+    }
+
+    /**
+     * Batch deletes a number of objects in one go
+     *
+     * @param objects The objects to delete
+     * @return The number of objects actually deleted
+     */
+    static Observable<Integer> deleteAll(Iterable<D> objects) {
+        currentRxGormStaticApi().deleteAll(objects)
+    }
+
+    /**
      * Check whether an entity exists for the given id
      *
      * @param id

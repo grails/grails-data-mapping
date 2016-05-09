@@ -9,8 +9,10 @@ import org.grails.datastore.mapping.engine.event.PreInsertEvent
 import org.grails.datastore.mapping.engine.event.PreLoadEvent
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.proxy.ProxyHandler
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.reflect.EntityReflector
+import org.grails.datastore.rx.batch.BatchOperation
 import org.springframework.context.ApplicationEventPublisher
 import rx.Observable
 import rx.Subscriber
@@ -95,6 +97,33 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T> {
         }
     }
 
+    @Override
+    Observable<Number> deleteAll(Iterable instances) {
+        def ctx = this.mappingContext
+        def proxyHandler = ctx.getProxyHandler()
+        if(instances != null) {
+            def batchOperation = new BatchOperation()
+            for(o in instances) {
+                Class type = proxyHandler.getProxiedClass(o)
+                def entity = ctx.getPersistentEntity(type.name)
+                if(entity == null) {
+                    throw new IllegalArgumentException("Type [$type.name] of instance [$o] is not a persistent type")
+                }
+                def reflector = mappingContext.getEntityReflector(entity)
+                def id = reflector.getIdentifier(o)
+                if(id != null) {
+                    batchOperation.addDelete(entity, id, o)
+                }
+            }
+
+            return batchDelete(batchOperation)
+        }
+        else {
+            return Observable.just(0)
+        }
+    }
+
+    abstract Observable<Number> batchDelete(BatchOperation operation)
 
     /**
      * Persist an instance

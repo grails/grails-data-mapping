@@ -119,6 +119,17 @@ class RxGormStaticApi<D> {
         return ((RxQuery)query).singleResult()
     }
 
+
+    /**
+     * Batch deletes a number of objects in one go
+     *
+     * @param objects The objects to delete
+     * @return The number of objects actually deleted
+     */
+    Observable<Integer> deleteAll(Iterable objects) {
+        datastoreClient.deleteAll(objects)
+    }
+
     Observable<List<D>> list(Map params = Collections.emptyMap()) {
         def query = datastoreClient.createQuery(entity.javaClass)
         DynamicFinder.populateArgumentsForCriteria(entity.javaClass, query, params)

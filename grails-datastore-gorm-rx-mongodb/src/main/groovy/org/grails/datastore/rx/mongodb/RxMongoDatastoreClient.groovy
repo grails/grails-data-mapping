@@ -22,12 +22,15 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.mongo.MongoConstants
 import org.grails.datastore.mapping.mongo.config.MongoCollection
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
+import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.grails.datastore.mapping.mongo.engine.codecs.AdditionalCodecs
 import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec
+import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.rx.AbstractRxDatastoreClient
 import org.grails.datastore.rx.RxDatastoreClient
+import org.grails.datastore.rx.batch.BatchOperation
 import org.grails.datastore.rx.mongodb.query.RxMongoQuery
 import org.grails.gorm.rx.api.RxGormEnhancer
 import rx.Observable
@@ -77,6 +80,34 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     @Override
     boolean isSchemaless() {
         return true
+    }
+
+    @Override
+    Observable<Number> batchDelete(BatchOperation operation) {
+        def deletes = operation.deletes
+        List<Observable> observables = []
+        for(entry in deletes) {
+
+            def entity = entry.key
+            def mongoCollection = getCollection(entity, entity.javaClass)
+
+
+            def inQuery = new Document( MongoConstants.MONGO_ID_FIELD, new Document(MongoQuery.MONGO_IN_OPERATOR, entry.value.collect() { BatchOperation.EntityOperation eo -> eo.identity }) )
+            observables.add mongoCollection.deleteMany(inQuery)
+        }
+
+        if(observables.isEmpty()) {
+            return Observable.just(0L)
+        }
+        else {
+            return Observable.concatEager(observables)
+                             .reduce(0L, { Long count, DeleteResult dr ->
+                if(dr.wasAcknowledged()) {
+                    count += dr.deletedCount
+                }
+                return count
+            })
+        }
     }
 
     @Override

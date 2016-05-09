@@ -53,6 +53,14 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
     Observable<Boolean> delete(Object instance)
 
     /**
+     * Deletes a number of instances
+     *
+     * @param instances The objects to delete
+     * @return An observable that returns the actual number of objects deleted
+     */
+    Observable<Number> deleteAll(Iterable instances)
+
+    /**
      * Creates a query for the given type
      *
      * @param type The type
