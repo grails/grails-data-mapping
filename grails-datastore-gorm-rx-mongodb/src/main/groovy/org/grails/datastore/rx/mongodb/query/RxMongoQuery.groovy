@@ -45,12 +45,6 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
         final List<Query.Projection> projectionList = projections().getProjectionList()
         if(projectionList.isEmpty()) {
             FindObservable findObservable = executeQuery()
-            if(max > -1) {
-                findObservable.limit(max)
-            }
-            if(offset > 0) {
-                findObservable.skip(offset)
-            }
             return findObservable.toObservable()
         }
         else {
@@ -162,6 +156,22 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
         def mongoCollection = datastoreClient.getCollection(entity, clazz)
 
         def findObservable = mongoCollection.find(query, clazz)
+        if(max > -1) {
+            findObservable.limit(max)
+        }
+        if(offset > 0) {
+            findObservable.skip(offset)
+        }
+
+        if (!orderBy.isEmpty()) {
+            def orderObject = new Document()
+            for (Query.Order order in orderBy) {
+                String property = order.property
+                property = getPropertyName(entity, property)
+                orderObject.put(property, order.getDirection() == Query.Order.Direction.DESC ? -1 : 1)
+            }
+            findObservable.sort orderObject
+        }
         return findObservable
     }
 }

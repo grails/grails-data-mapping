@@ -24,6 +24,7 @@ import org.grails.gorm.rx.finders.FindOrCreateByFinder
 import org.grails.gorm.rx.finders.FindOrSaveByFinder
 import org.springframework.beans.PropertyAccessorFactory
 import rx.Observable
+import rx.Single
 
 /**
  * Bridge to the implementation of the static method level operations for RX GORM
@@ -47,10 +48,81 @@ class RxGormStaticApi<D> {
         this.gormDynamicFinders = createDynamicFinders()
     }
 
+    /**
+     * Retrieve an instance by id
+     *
+     * @param id The id of the instance
+     * @return An observable
+     */
     Observable<D> get(Serializable id) {
         datastoreClient.get(entity.javaClass, id)
     }
 
+    /**
+     * Finds the first object sorted by propertyName
+     *
+     * @param propertyName the name of the property to sort by
+     *
+     * @return A single that will emit the first object, if it exists
+     */
+    Single<D> first(String property) {
+        first(sort:property)
+    }
+
+    /**
+     * Finds the first object.  If queryParams includes 'sort', that will
+     * dictate the sort order, otherwise natural sort order will be used.
+     * queryParams may include any of the same parameters that might be passed
+     * to the list(Map) method.  This method will ignore 'order' and 'max' as
+     * those are always 'asc' and 1, respectively.
+     *
+     * @return A single that will emit the first object, if it exists
+     */
+    Single<D> first(Map<String,Object> params = Collections.emptyMap()) {
+        def q = datastoreClient.createQuery(persistentClass)
+        Map<String,Object> newParams = new LinkedHashMap<>(params)
+        newParams.remove('order')
+        DynamicFinder.populateArgumentsForCriteria(persistentClass, q, newParams)
+        q.max(1)
+        ((RxQuery)q).singleResult().toSingle()
+    }
+
+
+    /**
+     * Finds the last object sorted by propertyName
+     *
+     * @param propertyName the name of the property to sort by
+     *
+     * @return A single that will emit the first object, if it exists
+     */
+    Single<D> last(String property) {
+        last(sort:property)
+    }
+
+    /**
+     * Finds the last object.  If queryParams includes 'sort', that will
+     * dictate the sort order, otherwise natural sort order will be used.
+     * queryParams may include any of the same parameters that might be passed
+     * to the list(Map) method.  This method will ignore 'order' and 'max' as
+     * those are always 'desc' and 1, respectively.
+     *
+     * @return A single that will emit the last object, if it exists
+     */
+    Single<D> last(Map<String,Object> params = Collections.emptyMap()) {
+        def q = datastoreClient.createQuery(persistentClass)
+        Map<String,Object> newParams = new LinkedHashMap<>(params)
+        newParams.put('order', 'desc')
+        if(!newParams.containsKey('sort')) {
+            newParams.put('sort', entity.identity.name)
+        }
+        DynamicFinder.populateArgumentsForCriteria(persistentClass, q, newParams)
+        q.max(1)
+        ((RxQuery)q).singleResult().toSingle()
+    }
+
+    /**
+     * @return Counts the number of instances
+     */
     Observable<Integer> count() {
         def query = datastoreClient.createQuery(entity.javaClass)
         query.projections().count()

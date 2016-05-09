@@ -17,6 +17,7 @@ import org.grails.gorm.rx.api.RxGormEnhancer
 import org.grails.gorm.rx.api.RxGormInstanceApi
 import org.grails.gorm.rx.api.RxGormStaticApi
 import rx.Observable
+import rx.Single
 import rx.Subscriber
 /**
  * Represents a reactive GORM entity
@@ -282,6 +283,74 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
             s.onNext(false)
         } as Observable.OnSubscribe))
     }
+
+    /**
+     * Finds the first object using the natural sort order
+     *
+     * @return A single that will emit the first object, if it exists
+     */
+    static Single<D> first() {
+        currentRxGormStaticApi().first()
+    }
+
+    /**
+     * Finds the first object sorted by propertyName
+     *
+     * @param propertyName the name of the property to sort by
+     *
+     * @return A single that will emit the first object, if it exists
+     */
+    static Single<D> first(String propertyName) {
+        currentRxGormStaticApi().first propertyName
+    }
+
+    /**
+     * Finds the first object.  If queryParams includes 'sort', that will
+     * dictate the sort order, otherwise natural sort order will be used.
+     * queryParams may include any of the same parameters that might be passed
+     * to the list(Map) method.  This method will ignore 'order' and 'max' as
+     * those are always 'asc' and 1, respectively.
+     *
+     * @return the first object in the datastore, null if none exist
+     */
+    static Single<D> first(Map queryParams) {
+        currentRxGormStaticApi().first queryParams
+    }
+
+    /**
+     * Finds the last object using the natural sort order
+     *
+     * @return A single that will emit the last object, if it exists
+     */
+    static Single<D> last() {
+        currentRxGormStaticApi().last()
+    }
+
+    /**
+     * Finds the last object sorted by propertyName
+     *
+     * @param propertyName the name of the property to sort by
+     *
+     * @return A single that will emit the last object, if it exists
+     */
+    static Single<D> last(String propertyName) {
+        currentRxGormStaticApi().last propertyName
+    }
+
+    /**
+     * Finds the last object.  If queryParams includes 'sort', that will
+     * dictate the sort order, otherwise natural sort order will be used.
+     * queryParams may include any of the same parameters that might be passed
+     * to the list(Map) method.  This method will ignore 'order' and 'max' as
+     * those are always 'desc' and 1, respectively.
+     *
+     * @return A single that will emit the last object, if it exists
+     */
+    static Single<D> last(Map<String,Object> params) {
+        currentRxGormStaticApi().last params
+    }
+
+
 
     /**
      * List all entities and return an observable

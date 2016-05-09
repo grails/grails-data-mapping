@@ -1055,7 +1055,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         return getPropertyName(entity, propertyName);
     }
 
-    private static String getPropertyName(PersistentEntity entity, String propertyName) {
+    protected static String getPropertyName(PersistentEntity entity, String propertyName) {
         if (entity.isIdentityName(propertyName)) {
             propertyName = MongoEntityPersister.MONGO_ID_FIELD;
         } else {
