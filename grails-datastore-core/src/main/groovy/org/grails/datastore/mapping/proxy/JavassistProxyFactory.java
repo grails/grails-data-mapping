@@ -169,7 +169,7 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
         if (proxyClass == null) {
             javassist.util.proxy.ProxyFactory pf = new ProxyFactory();
             pf.setSuperclass(type);
-            pf.setInterfaces(new Class[]{ EntityProxy.class, GroovyObject.class });
+            pf.setInterfaces(getProxyInterfaces());
             pf.setFilter(new MethodFilter() {
                 public boolean isHandled(Method method) {
                     final String methodName = method.getName();
@@ -195,6 +195,10 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
             }
         }
         return proxyClass;
+    }
+
+    protected Class[] getProxyInterfaces() {
+        return new Class[]{ EntityProxy.class, GroovyObject.class };
     }
 
 }

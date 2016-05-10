@@ -14,9 +14,9 @@ import org.grails.datastore.mapping.model.PersistentEntity
 @CompileStatic
 class BatchOperation {
 
-    final Map<PersistentEntity, List<EntityOperation>> deletes = [:].withDefault { [] }
-    final Map<PersistentEntity, List<EntityOperation>> updates = [:].withDefault { [] }
-    final Map<PersistentEntity, List<EntityOperation>> inserts = [:].withDefault { [] }
+    final Map<PersistentEntity, Map<Serializable, EntityOperation>> deletes = [:].withDefault { [:] }
+    final Map<PersistentEntity, Map<Serializable, EntityOperation>> updates = [:].withDefault { [:] }
+    final Map<PersistentEntity, Map<Serializable, EntityOperation>> inserts = [:].withDefault { [:] }
 
     /**
      * Adds a delete operation for the given entity, id and object
@@ -26,7 +26,7 @@ class BatchOperation {
      * @param object The object
      */
     void addDelete(PersistentEntity entity, Serializable id, Object object) {
-        deletes.get(entity).add(new EntityOperation(id, object))
+        deletes.get(entity).put(id, new EntityOperation(id, object))
     }
 
     /**
@@ -37,7 +37,7 @@ class BatchOperation {
      * @param object The object
      */
     void addUpdate(PersistentEntity entity, Serializable id, Object object) {
-        updates.get(entity).add(new EntityOperation(id, object))
+        updates.get(entity).put(id, new EntityOperation(id, object))
     }
 
     /**
@@ -46,10 +46,13 @@ class BatchOperation {
      * @param entity The entity type
      * @param object The object
      */
-    void addInsert(PersistentEntity entity, Object object) {
-        inserts.get(entity).add(new EntityOperation(null, object))
+    void addInsert(PersistentEntity entity, Serializable id, Object object) {
+        inserts.get(entity).put(id, new EntityOperation(id, object))
     }
 
+    boolean isAlreadyPending(PersistentEntity entity, Serializable id, Object o) {
+        inserts.get(entity).get(id) != null || updates.get(entity).get(id) != null
+    }
 
     @Canonical
     static class EntityOperation {

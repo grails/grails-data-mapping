@@ -20,7 +20,7 @@ import java.io.Serializable;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface EntityProxy {
+public interface EntityProxy<T> {
 
     /**
      * Initializes the proxy if it hasn't been initialized already
@@ -31,7 +31,7 @@ public interface EntityProxy {
      * Obtains the target performing initialization if necessary
      * @return The target
      */
-    Object getTarget();
+    T getTarget();
 
     /**
      * Checks whether the proxy has been initialized

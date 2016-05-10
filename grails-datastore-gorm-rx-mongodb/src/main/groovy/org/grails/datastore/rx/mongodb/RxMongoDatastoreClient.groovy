@@ -27,7 +27,6 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.mongo.MongoConstants
 import org.grails.datastore.mapping.mongo.config.MongoCollection
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
-import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.grails.datastore.mapping.mongo.engine.codecs.AdditionalCodecs
 import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec
 import org.grails.datastore.mapping.mongo.query.MongoQuery
@@ -36,7 +35,10 @@ import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.rx.AbstractRxDatastoreClient
 import org.grails.datastore.rx.RxDatastoreClient
 import org.grails.datastore.rx.batch.BatchOperation
+import org.grails.datastore.rx.mongodb.engine.codecs.QueryStateAwareCodeRegistry
+import org.grails.datastore.rx.mongodb.engine.codecs.RxPersistentEntityCodec
 import org.grails.datastore.rx.mongodb.query.RxMongoQuery
+import org.grails.datastore.rx.query.QueryState
 import org.grails.gorm.rx.api.RxGormEnhancer
 import rx.Observable
 import rx.functions.Func1
@@ -97,7 +99,8 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
             PersistentEntity entity = entry.key
             List<WriteModel> entityWriteModels = writeModels.get(entity)
             for(op in entry.value) {
-                entityWriteModels.add(new InsertOneModel(op.object))
+                BatchOperation.EntityOperation entityOperation = op.value
+                entityWriteModels.add(new InsertOneModel(entityOperation.object))
             }
         }
 
@@ -109,8 +112,9 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
             final updateOptions = new UpdateOptions().upsert(false)
 
             for(op in entry.value) {
-                Document idQuery = createIdQuery(op.identity)
-                Document updateDocument = codec.encodeUpdate(op.object)
+                BatchOperation.EntityOperation entityOperation = op.value
+                Document idQuery = createIdQuery(entityOperation.identity)
+                Document updateDocument = codec.encodeUpdate(entityOperation.object)
 
                 entityWriteModels.add(new UpdateOneModel(idQuery, updateDocument, updateOptions))
             }
@@ -139,15 +143,15 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
 
     @Override
     Observable<Number> batchDelete(BatchOperation operation) {
-        def deletes = operation.deletes
+        Map<PersistentEntity, Map<Serializable, BatchOperation.EntityOperation>> deletes = operation.deletes
         List<Observable> observables = []
         for(entry in deletes) {
 
-            def entity = entry.key
+            PersistentEntity entity = entry.key
             def mongoCollection = getCollection(entity, entity.javaClass)
+            def entityOperations = entry.value.values()
 
-
-            def inQuery = new Document( MongoConstants.MONGO_ID_FIELD, new Document(MongoQuery.MONGO_IN_OPERATOR, entry.value.collect() { BatchOperation.EntityOperation eo -> eo.identity }) )
+            def inQuery = new Document( MongoConstants.MONGO_ID_FIELD, new Document(MongoQuery.MONGO_IN_OPERATOR, entityOperations.collect() { BatchOperation.EntityOperation eo -> eo.identity }) )
             observables.add mongoCollection.deleteMany(inQuery)
         }
 
@@ -166,9 +170,11 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     }
 
     @Override
-    def <T1> Observable<T1> getEntity(PersistentEntity entity, Class<T1> type, Serializable id) {
+    def <T1> Observable<T1> getEntity(PersistentEntity entity, Class<T1> type, Serializable id, QueryState queryState) {
         com.mongodb.rx.client.MongoCollection<T1> collection = getCollection(entity, type)
-
+        collection = collection.withCodecRegistry(
+            new QueryStateAwareCodeRegistry(codecRegistry, queryState, this)
+        )
         Document idQuery = createIdQuery(id)
         collection
                 .find(idQuery)
@@ -238,8 +244,8 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     }
 
     @Override
-    Query createEntityQuery(PersistentEntity entity) {
-        return new RxMongoQuery(this, entity)
+    Query createEntityQuery(PersistentEntity entity, QueryState queryState) {
+        return new RxMongoQuery(this, entity, queryState)
     }
 
     @Override
@@ -312,7 +318,7 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
             }
 
             def entityName = entity.getName()
-            entityCodecs.put(entityName, new PersistentEntityCodec(codecRegistry, entity, false))
+            entityCodecs.put(entityName, new RxPersistentEntityCodec(entity, this))
             mongoCollections.put(entityName, collectionName)
             mongoCollections.put(entityName, databaseName)
         }

@@ -8,6 +8,9 @@ import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec
 import org.grails.datastore.mapping.mongo.query.EmbeddedQueryEncoder
 import org.grails.datastore.mapping.mongo.query.MongoQuery
+import org.grails.datastore.rx.RxDatastoreClient
+import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
+import org.grails.datastore.rx.mongodb.engine.codecs.RxPersistentEntityCodec
 
 /**
  * Used to encode embedded query items using a {@link CodecRegistry}
@@ -18,15 +21,15 @@ import org.grails.datastore.mapping.mongo.query.MongoQuery
 @CompileStatic
 class CodecRegistryEmbeddedQueryEncoder implements EmbeddedQueryEncoder {
 
-    final CodecRegistry codecRegistry
+    final RxMongoDatastoreClient datastoreClient
 
-    CodecRegistryEmbeddedQueryEncoder(CodecRegistry codecRegistry) {
-        this.codecRegistry = codecRegistry
+    CodecRegistryEmbeddedQueryEncoder(RxMongoDatastoreClient datastoreClient) {
+        this.datastoreClient = datastoreClient
     }
 
     @Override
     Object encode(Embedded embedded, Object instance) {
-        def codec = new PersistentEntityCodec(codecRegistry, embedded.associatedEntity, false)
+        def codec = new RxPersistentEntityCodec(embedded.associatedEntity, datastoreClient)
         final BsonDocument doc = new BsonDocument();
         codec.encode(new BsonDocumentWriter(doc), instance, MongoQuery.ENCODER_CONTEXT, false);
         return doc;

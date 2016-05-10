@@ -37,7 +37,7 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
     protected final transient AssociationQueryExecutor indexer;
     protected final transient Class childType;
 
-    private boolean initialized;
+    protected boolean initialized;
     protected Object initializing;
     protected Serializable associationKey;
     protected Collection keys;

@@ -13,7 +13,9 @@ import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.event.PreQueryEvent
 import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
+import org.grails.datastore.rx.mongodb.engine.codecs.QueryStateAwareCodeRegistry
 import org.grails.datastore.rx.mongodb.internal.CodecRegistryEmbeddedQueryEncoder
+import org.grails.datastore.rx.query.QueryState
 import org.grails.datastore.rx.query.RxQuery
 import org.grails.datastore.rx.query.event.PostQueryEvent
 import org.springframework.context.ApplicationEventPublisher
@@ -30,11 +32,13 @@ import rx.Subscriber
 class RxMongoQuery extends MongoQuery implements RxQuery {
 
     final RxMongoDatastoreClient datastoreClient
+    final QueryState queryState
 
-    RxMongoQuery(RxMongoDatastoreClient client, PersistentEntity entity) {
+    RxMongoQuery(RxMongoDatastoreClient client, PersistentEntity entity, QueryState queryState = null) {
         super(null, entity)
 
-        datastoreClient = client
+        this.datastoreClient = client
+        this.queryState = queryState ? queryState : new QueryState()
     }
 
     @Override
@@ -75,7 +79,9 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
     Observable<Number> updateAll(Map properties) {
         Document query = prepareQuery()
         def mongoCollection = datastoreClient.getCollection(entity, entity.javaClass)
-
+        mongoCollection = mongoCollection.withCodecRegistry(
+                new QueryStateAwareCodeRegistry(datastoreClient.codecRegistry, queryState, datastoreClient)
+        )
         def options = new UpdateOptions()
         mongoCollection.updateMany(query, new Document(MongoConstants.SET_OPERATOR, properties), options.upsert(false))
                 .map({ UpdateResult result ->
@@ -151,8 +157,8 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
 
     protected Document prepareQuery() {
         def query = createQueryObject(entity)
-        populateMongoQuery(new CodecRegistryEmbeddedQueryEncoder(datastoreClient.codecRegistry), query, criteria, entity)
-        query
+        populateMongoQuery(new CodecRegistryEmbeddedQueryEncoder(datastoreClient), query, criteria, entity)
+        return query
     }
 
     protected FindObservable executeQuery() {
@@ -160,7 +166,9 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
 
         def clazz = entity.javaClass
         def mongoCollection = datastoreClient.getCollection(entity, clazz)
-
+        mongoCollection = mongoCollection.withCodecRegistry(
+                new QueryStateAwareCodeRegistry(datastoreClient.codecRegistry, queryState, datastoreClient)
+        )
         def findObservable = mongoCollection.find(query, clazz)
         if(max > -1) {
             findObservable.limit(max)

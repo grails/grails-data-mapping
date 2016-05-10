@@ -1,5 +1,6 @@
 package org.grails.datastore.rx
 
+import grails.gorm.rx.proxy.ObservableProxy
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.QueryCreator
@@ -59,6 +60,15 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
      * @return An observable that returns the actual number of objects deleted
      */
     Observable<Number> deleteAll(Iterable instances)
+
+    /**
+     * Obtain an {@link ObservableProxy} for the given type and id
+     *
+     * @param type The type
+     * @param id The id
+     * @return An {@link ObservableProxy}
+     */
+    def <T1> ObservableProxy<T1> proxy(Class<T1> type, Serializable id)
 
     /**
      * Batch saves all of the given objects
