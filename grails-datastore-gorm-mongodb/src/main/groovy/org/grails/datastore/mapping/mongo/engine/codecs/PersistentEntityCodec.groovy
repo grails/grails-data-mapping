@@ -26,6 +26,7 @@ import org.bson.codecs.configuration.CodecRegistry
 import org.bson.conversions.Bson
 import org.bson.types.Binary
 import org.bson.types.ObjectId
+import org.grails.datastore.gorm.schemaless.DynamicAttributes
 import org.grails.datastore.mapping.collection.PersistentList
 import org.grails.datastore.mapping.collection.PersistentSet
 import org.grails.datastore.mapping.collection.PersistentSortedSet
@@ -188,8 +189,14 @@ class PersistentEntityCodec implements Codec {
 
         decodeAssociations(mongoSession, access)
 
-        if(schemalessAttributes != null && mongoSession != null) {
-            mongoSession.setAttribute(instance, SCHEMALESS_ATTRIBUTES, schemalessAttributes)
+
+        if(schemalessAttributes != null ) {
+            if(instance instanceof DynamicAttributes) {
+                ((DynamicAttributes)instance).attributes(schemalessAttributes)
+            }
+            else if( mongoSession != null ) {
+                mongoSession.setAttribute(instance, SCHEMALESS_ATTRIBUTES, schemalessAttributes)
+            }
         }
         return instance
 
@@ -340,20 +347,37 @@ class PersistentEntityCodec implements Codec {
                 }
             }
 
-            def mongoSession = lookupSession()
-            if(mongoSession != null) {
+            if(value instanceof DynamicAttributes) {
+                def attributes = ((DynamicAttributes) value).attributes()
+                for(attr in attributes.keySet()) {
+                    def v = attributes.get(attr)
+                    if(v == null) {
+                        unsets.put(attr,BLANK_STRING)
+                    }
+                    else {
+                        writer.writeName(attr)
+                        def codec = codecRegistry.get(v.getClass())
+                        codec.encode(writer, v, encoderContext)
+                    }
+                }
+            }
+            else {
 
-                Document schemaless = (Document)mongoSession.getAttribute(value, SCHEMALESS_ATTRIBUTES)
-                if(schemaless != null) {
-                    for(name in schemaless.keySet()) {
-                        def v = schemaless.get(name)
-                        if(v == null) {
-                            unsets.put(name,BLANK_STRING)
-                        }
-                        else {
-                            writer.writeName(name)
-                            def codec = codecRegistry.get(v.getClass())
-                            codec.encode(writer, v, encoderContext)
+                def mongoSession = lookupSession()
+                if(mongoSession != null) {
+
+                    Document schemaless = (Document)mongoSession.getAttribute(value, SCHEMALESS_ATTRIBUTES)
+                    if(schemaless != null) {
+                        for(name in schemaless.keySet()) {
+                            def v = schemaless.get(name)
+                            if(v == null) {
+                                unsets.put(name,BLANK_STRING)
+                            }
+                            else {
+                                writer.writeName(name)
+                                def codec = codecRegistry.get(v.getClass())
+                                codec.encode(writer, v, encoderContext)
+                            }
                         }
                     }
                 }
@@ -517,24 +541,33 @@ class PersistentEntityCodec implements Codec {
             }
         }
 
-        AbstractMongoSession mongoSession = lookupSession()
-
-        if(mongoSession != null) {
-
-            Document schemaless = (Document)mongoSession.getAttribute(access.entity, SCHEMALESS_ATTRIBUTES)
-            if(schemaless != null) {
-                for(name in schemaless.keySet()) {
-                    writer.writeName name
-                    Object v = schemaless.get(name)
-                    def codec = codecRegistry.get(v.getClass())
-                    codec.encode(writer, v, encoderContext)
+        if(value instanceof DynamicAttributes) {
+            def attributes = ((DynamicAttributes) value).attributes()
+            writeAttributes(attributes, writer, encoderContext)
+        }
+        else {
+            AbstractMongoSession mongoSession = lookupSession()
+            if(mongoSession != null) {
+                Document schemaless = (Document)mongoSession.getAttribute(value, SCHEMALESS_ATTRIBUTES)
+                if(schemaless != null) {
+                    writeAttributes(schemaless, writer, encoderContext)
                 }
             }
         }
 
 
+
         writer.writeEndDocument()
         writer.flush()
+    }
+
+    protected void writeAttributes(Map<String, Object> attributes, BsonWriter writer, EncoderContext encoderContext) {
+        for (name in attributes.keySet()) {
+            writer.writeName name
+            Object v = attributes.get(name)
+            def codec = codecRegistry.get(v.getClass())
+            codec.encode(writer, v, encoderContext)
+        }
     }
 
     /**
