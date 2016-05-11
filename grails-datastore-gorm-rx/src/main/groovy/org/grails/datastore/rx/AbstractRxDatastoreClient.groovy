@@ -3,12 +3,15 @@ package org.grails.datastore.rx
 import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.collection.PersistentCollection
+import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.event.*
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.PropertyMapping
 import org.grails.datastore.mapping.model.types.ToMany
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.Query
@@ -312,6 +315,12 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
             def dirtyCheckable = (DirtyCheckable) object
             dirtyCheckable.trackChanges()
         }
+    }
+
+    protected boolean isIndexed(PersistentProperty property) {
+        PropertyMapping<Property> pm = property.getMapping();
+        final Property keyValue = pm.getMappedForm();
+        return keyValue != null && keyValue.isIndex();
     }
 
     /**

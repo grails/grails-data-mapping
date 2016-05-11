@@ -28,6 +28,7 @@ abstract class RxGormSpec extends Specification {
 
     void setup() {
         client.mongoClient.getDatabase(client.defaultDatabase).drop().toBlocking().first()
+        client.rebuildIndex()
     }
 
     void cleanupSpec() {

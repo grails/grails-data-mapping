@@ -4,6 +4,7 @@ import com.mongodb.ServerAddress
 import com.mongodb.async.client.MongoClientSettings
 import com.mongodb.bulk.BulkWriteResult
 import com.mongodb.client.model.BulkWriteOptions
+import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.InsertOneModel
 import com.mongodb.client.model.UpdateOneModel
 import com.mongodb.client.model.UpdateOptions
@@ -23,10 +24,14 @@ import org.bson.types.ObjectId
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
+import org.grails.datastore.mapping.model.ClassMapping
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.PropertyMapping
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar
 import org.grails.datastore.mapping.mongo.MongoConstants
+import org.grails.datastore.mapping.mongo.config.MongoAttribute
 import org.grails.datastore.mapping.mongo.config.MongoCollection
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 import org.grails.datastore.mapping.mongo.engine.codecs.AdditionalCodecs
@@ -38,6 +43,7 @@ import org.grails.datastore.rx.AbstractRxDatastoreClient
 import org.grails.datastore.rx.RxDatastoreClient
 import org.grails.datastore.rx.batch.BatchOperation
 import org.grails.datastore.rx.mongodb.engine.codecs.RxPersistentEntityCodec
+import org.grails.datastore.rx.mongodb.extensions.MongoExtensions
 import org.grails.datastore.rx.mongodb.query.RxMongoQuery
 import org.grails.datastore.rx.query.QueryState
 import org.grails.gorm.rx.api.RxGormEnhancer
@@ -53,6 +59,7 @@ import rx.Observable
  */
 @CompileStatic
 class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> implements CodecProvider {
+    private static final String INDEX_ATTRIBUTES = "indexAttributes"
 
     final MongoClient mongoClient
     final CodecRegistry codecRegistry
@@ -101,6 +108,16 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
         }
         mongoClient = MongoClients.create(clientSettingsBuilder.build())
         initialize(mappingContext)
+    }
+
+    /**
+     * Rebuilds the MongoDB index, useful if the database is dropped
+     */
+    void rebuildIndex() {
+        def entities = mappingContext.getPersistentEntities()
+        for(entity in entities) {
+            initializeMongoIndex(entity)
+        }
     }
 
     protected CodecRegistry createCodeRegistry() {
@@ -350,6 +367,83 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
             entityCodecs.put(entityName, new RxPersistentEntityCodec(entity, this))
             mongoCollections.put(entityName, collectionName)
             mongoDatabases.put(entityName, databaseName)
+            initializeMongoIndex(entity)
         }
+    }
+
+    protected void initializeMongoIndex(PersistentEntity entity) {
+
+        def collection = getCollection(entity, entity.getJavaClass())
+        final ClassMapping<MongoCollection> classMapping = entity.getMapping()
+        if (classMapping != null) {
+            final MongoCollection mappedForm = classMapping.mappedForm
+            if (mappedForm != null) {
+                List<MongoCollection.Index> indices = mappedForm.indices
+                for (MongoCollection.Index index in indices) {
+                    final Map<String, Object> options = index.options
+                    final IndexOptions indexOptions = MongoExtensions.mapToObject(IndexOptions, options)
+                    collection.createIndex(new Document(index.getDefinition()), indexOptions).toBlocking().first()
+                }
+
+                for (Map compoundIndex in mappedForm.getCompoundIndices()) {
+
+                    Map indexAttributes = null;
+                    if (compoundIndex.containsKey(INDEX_ATTRIBUTES)) {
+                        Object o = compoundIndex.remove(INDEX_ATTRIBUTES)
+                        if (o instanceof Map) {
+                            indexAttributes = (Map) o
+                        }
+                    }
+                    Document indexDef = new Document(compoundIndex)
+                    if (indexAttributes != null) {
+                        final IndexOptions indexOptions = MongoExtensions.mapToObject(IndexOptions, indexAttributes)
+                        collection.createIndex(indexDef, indexOptions).toBlocking().first()
+                    } else {
+                        collection.createIndex(indexDef).toBlocking().first()
+                    }
+                }
+            }
+        }
+
+        for (PersistentProperty<MongoAttribute> property in entity.getPersistentProperties()) {
+            final boolean indexed = isIndexed(property)
+
+            if (indexed) {
+                final MongoAttribute mongoAttributeMapping = property.mapping.mappedForm
+                def dbObject = new Document()
+                final String fieldName = getMongoFieldNameForProperty(property)
+                dbObject.put(fieldName, 1)
+                def options = new Document()
+                if (mongoAttributeMapping != null) {
+                    Map attributes = mongoAttributeMapping.indexAttributes
+                    if (attributes != null) {
+                        attributes = new HashMap(attributes)
+                        if (attributes.containsKey(MongoAttribute.INDEX_TYPE)) {
+                            dbObject.put(fieldName, attributes.remove(MongoAttribute.INDEX_TYPE))
+                        }
+                        options.putAll(attributes)
+                    }
+                }
+                // continue using deprecated method to support older versions of MongoDB
+                if (options.isEmpty()) {
+                    collection.createIndex(dbObject).toBlocking().first()
+                } else {
+                    final IndexOptions indexOptions = MongoExtensions.mapToObject(IndexOptions, options)
+                    collection.createIndex(dbObject, indexOptions).toBlocking().first()
+                }
+            }
+        }
+    }
+
+    String getMongoFieldNameForProperty(PersistentProperty<MongoAttribute> property) {
+        PropertyMapping<MongoAttribute> pm = property.getMapping();
+        String propKey = null;
+        if (pm.getMappedForm() != null) {
+            propKey = pm.getMappedForm().getField();
+        }
+        if (propKey == null) {
+            propKey = property.getName();
+        }
+        return propKey;
     }
 }
