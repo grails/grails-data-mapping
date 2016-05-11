@@ -1,6 +1,7 @@
 package grails.gorm.rx.mongodb
 
 import grails.gorm.rx.RxEntity
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.bson.Document
 import org.bson.conversions.Bson
@@ -9,7 +10,6 @@ import org.grails.datastore.gorm.schemaless.DynamicAttributes
 import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
 import org.grails.gorm.rx.api.RxGormEnhancer
 import rx.Observable
-import rx.functions.Func2
 /**
  * Represents a reactive MongoDB document
  *
@@ -24,7 +24,45 @@ trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
      */
     ObjectId id
 
+    /**
+     * Creates a criteria builder instance
+     */
+    static MongoCriteriaBuilder<D> createCriteria() {
+        def staticApi = RxGormEnhancer.findStaticApi(this)
+        def client = staticApi.datastoreClient
+        return new MongoCriteriaBuilder<D>(this, client, client.mappingContext)
+    }
 
+    /**
+     * Creates a criteria builder instance
+     */
+    @CompileDynamic
+    static Observable withCriteria(@DelegatesTo(MongoCriteriaBuilder) Closure callable) {
+        createCriteria().call(callable)
+    }
+
+    /**
+     * Creates a criteria builder instance
+     */
+    @CompileDynamic
+    static Observable withCriteria(Map builderArgs, @DelegatesTo(MongoCriteriaBuilder) Closure callable) {
+        def criteriaBuilder = createCriteria()
+        GroovyObject builderBean = (GroovyObject)criteriaBuilder
+        for (entry in builderArgs.entrySet()) {
+            String propertyName = entry.key.toString()
+            if (builderBean.hasProperty(propertyName)) {
+                builderBean.setProperty(propertyName, entry.value)
+            }
+        }
+
+        if(builderArgs?.uniqueResult) {
+            return criteriaBuilder.get(callable)
+
+        }
+        else {
+            return criteriaBuilder.findAll(callable)
+        }
+    }
     /**
      * Counts the number of hits
      * @param query The query

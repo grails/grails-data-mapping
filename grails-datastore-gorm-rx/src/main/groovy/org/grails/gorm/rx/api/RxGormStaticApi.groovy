@@ -306,7 +306,7 @@ class RxGormStaticApi<D> {
     /**
      * Creates a criteria builder instance
      */
-    CriteriaBuilder createCriteria() {
+    CriteriaBuilder<D> createCriteria() {
         new CriteriaBuilder(persistentClass, datastoreClient, datastoreClient.mappingContext)
     }
 
@@ -315,7 +315,7 @@ class RxGormStaticApi<D> {
      */
 
     Observable withCriteria(@DelegatesTo(Criteria) Closure callable) {
-        (Observable)InvokerHelper.invokeMethod(createCriteria(), 'call', callable)
+        createCriteria().findAll(callable)
     }
 
     /**

@@ -98,6 +98,13 @@ public abstract class Association<T extends Property> extends AbstractPersistent
         return this instanceof Embedded || this instanceof EmbeddedCollection;
     }
 
+    /**
+     * @return Whether this association is embedded
+     */
+    public boolean isBasic() {
+        return this instanceof Basic;
+    }
+
     protected List<CascadeType> getCascadeOperations() {
         List<CascadeType> cascades;
         if (cascadeOperations.isEmpty()) {

@@ -243,7 +243,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
             return
         }
         for(association in entity.associations) {
-            if(association.doesCascade(CascadeType.PERSIST) && !association.isEmbedded()) {
+            if(association.doesCascade(CascadeType.PERSIST) && !association.isEmbedded() && !association.isBasic()) {
                 def associatedEntity = association.associatedEntity
 
                 if(association instanceof ToOne) {
