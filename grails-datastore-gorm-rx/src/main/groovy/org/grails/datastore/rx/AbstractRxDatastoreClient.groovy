@@ -248,26 +248,28 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
                 if(association instanceof ToOne) {
                     DirtyCheckable associatedObject = (DirtyCheckable )entityReflector.getProperty(instance, association.name)
-                    if(associatedObject.hasChanged()) {
-
+                    if(associatedObject != null && associatedObject.hasChanged()) {
                         scheduleInsertOrUpdate(associatedEntity, associatedObject, operation, postEvents)
                     }
                 }
                 else if(association instanceof ToMany) {
                     Iterable collection = (Iterable)entityReflector.getProperty(instance, association.name)
-                    if(collection instanceof PersistentCollection) {
-                        if( !((PersistentCollection)collection).isInitialized() ) {
-                            continue
-                        }
-                    }
-                    if(collection instanceof DirtyCheckableCollection) {
-                        if( !((DirtyCheckableCollection)collection).hasChanged() ) {
-                            continue
-                        }
-                    }
+                    if(collection != null) {
 
-                    for(obj in collection) {
-                        scheduleInsertOrUpdate(associatedEntity, (DirtyCheckable)obj, operation, postEvents)
+                        if(collection instanceof PersistentCollection) {
+                            if( !((PersistentCollection)collection).isInitialized() ) {
+                                continue
+                            }
+                        }
+                        if(collection instanceof DirtyCheckableCollection) {
+                            if( !((DirtyCheckableCollection)collection).hasChanged() ) {
+                                continue
+                            }
+                        }
+
+                        for(obj in collection) {
+                            scheduleInsertOrUpdate(associatedEntity, (DirtyCheckable)obj, operation, postEvents)
+                        }
                     }
                 }
             }
@@ -307,6 +309,14 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
             processAssociations(associatedEntity, associatedId, associatedObject, associationReflector, operation, postEvents)
         }
     }
+
+    protected void activeDirtyChecking(object) {
+        if (object instanceof DirtyCheckable) {
+            def dirtyCheckable = (DirtyCheckable) object
+            dirtyCheckable.trackChanges()
+        }
+    }
+
     /**
      * Executes a batch write operation
      *

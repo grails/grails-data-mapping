@@ -3,12 +3,12 @@ package org.grails.datastore.rx.mongodb.query
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.UpdateResult
-import com.mongodb.rx.client.AggregateObservable
 import com.mongodb.rx.client.FindObservable
 import groovy.transform.CompileStatic
 import org.bson.Document
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.mongo.MongoConstants
+import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.event.PreQueryEvent
@@ -18,10 +18,8 @@ import org.grails.datastore.rx.mongodb.internal.CodecRegistryEmbeddedQueryEncode
 import org.grails.datastore.rx.query.QueryState
 import org.grails.datastore.rx.query.RxQuery
 import org.grails.datastore.rx.query.event.PostQueryEvent
-import org.springframework.context.ApplicationEventPublisher
 import rx.Observable
 import rx.Subscriber
-
 /**
  * Reactive query implementation for MongoDB
  *
@@ -120,27 +118,29 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
         def mongoCollection = datastoreClient.getCollection(entity, entity.javaClass)
         def aggregateObservable = mongoCollection.aggregate(aggregationPipeline)
         def observable = aggregateObservable.toObservable()
-        if(singleResult) {
-            return observable.map { Document d ->
-                List projectedResults = []
-                for(def property in projectedKeys) {
-                    Object value = d.get(property.projectionKey);
-                    if(value != null) {
-                        projectedResults.add(value)
-                    }
-                    else {
-                        if (property.projection instanceof Query.CountProjection) {
-                            projectedResults.add(0)
-                        }
-                    }
-                }
-                if(projectedResults.size() == 1) {
-                    return projectedResults[0]
+        observable = observable.map { Document d ->
+            List projectedResults = []
+            for(def property in projectedKeys) {
+                Object value = getProjectedValue(d, property.projectionKey);
+                if(value != null) {
+                    projectedResults.add(value)
                 }
                 else {
-                    return projectedResults
+                    if (property.projection instanceof Query.CountProjection) {
+                        projectedResults.add(0)
+                    }
                 }
-            }.switchIfEmpty(Observable.create({ Subscriber s ->
+            }
+            if(projectedResults.size() == 1) {
+                return projectedResults[0]
+            }
+            else {
+                return projectedResults
+            }
+        }
+
+        if(singleResult) {
+            return observable.switchIfEmpty(Observable.create({ Subscriber s ->
                 for(def property in projectedKeys) {
                     if (property.projection instanceof Query.CountProjection) {
                         s.onNext(0)
@@ -155,6 +155,17 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
         }
     }
 
+    private Object getProjectedValue(Document dbo, String projectionKey) {
+        Object value;
+        if (projectionKey.startsWith("id.")) {
+            projectionKey = projectionKey.substring(3)
+            Document id = (Document) dbo.get(MongoEntityPersister.MONGO_ID_FIELD)
+            value = id.get(projectionKey)
+        } else {
+            value = dbo.get(projectionKey)
+        }
+        return value;
+    }
     protected Document prepareQuery() {
         def query = createQueryObject(entity)
         populateMongoQuery(new CodecRegistryEmbeddedQueryEncoder(datastoreClient), query, criteria, entity)

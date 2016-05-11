@@ -56,7 +56,7 @@ public class ObservableProxyMethodHandler extends EntityProxyMethodHandler {
             return target;
         }
 
-        Object loadedEntity = queryState.getLoadedEntity(type, proxyKey);
+        Object loadedEntity = queryState != null ? queryState.getLoadedEntity(type, proxyKey) : null;
         if(loadedEntity != null) {
             this.target = loadedEntity;
         }

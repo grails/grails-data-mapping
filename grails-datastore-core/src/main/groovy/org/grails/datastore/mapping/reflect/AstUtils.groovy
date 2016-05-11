@@ -428,20 +428,28 @@ class AstUtils {
         return false;
     }
 
-    private static boolean implementsInterface(ClassNode classNode, String interfaceName) {
+    public static boolean implementsInterface(ClassNode classNode, String interfaceName) {
+        return findInterface(classNode, interfaceName) != null
+    }
+
+    public static ClassNode findInterface(ClassNode classNode, String interfaceName) {
         ClassNode currentClassNode = classNode;
         while (currentClassNode != null && !currentClassNode.getName().equals(OBJECT_CLASS_NODE.getName())) {
             ClassNode[] interfaces = currentClassNode.getInterfaces();
-            if (implementsInterfaceInternal(interfaces, interfaceName)) return true;
+
+            def interfaceNode = implementsInterfaceInternal(interfaces, interfaceName)
+            if (interfaceNode != null) {
+                return interfaceNode
+            }
             currentClassNode = currentClassNode.getSuperClass();
         }
-        return false;
+        return null;
     }
 
-    private static boolean implementsInterfaceInternal(ClassNode[] interfaces, String interfaceName) {
+    private static ClassNode implementsInterfaceInternal(ClassNode[] interfaces, String interfaceName) {
         for (ClassNode anInterface : interfaces) {
             if(anInterface.getName().equals(interfaceName)) {
-                return true;
+                return anInterface;
             }
             ClassNode[] childInterfaces = anInterface.getInterfaces();
             if(childInterfaces != null && childInterfaces.length>0) {
@@ -449,7 +457,7 @@ class AstUtils {
             }
 
         }
-        return false;
+        return null;
     }
 
     public static void warning(final SourceUnit sourceUnit, final ASTNode node, final String warningMessage) {

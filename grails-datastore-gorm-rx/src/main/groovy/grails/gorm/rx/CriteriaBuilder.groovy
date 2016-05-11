@@ -1,6 +1,7 @@
 package grails.gorm.rx
 
 import groovy.transform.InheritConstructors
+import org.grails.datastore.gorm.query.criteria.AbstractCriteriaBuilder
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.QueryCreator
@@ -18,7 +19,7 @@ import static org.grails.datastore.gorm.finders.DynamicFinder.populateArgumentsF
  * @author Graeme Rocher
  * @since 6.0
  */
-class CriteriaBuilder<T> extends grails.gorm.CriteriaBuilder {
+class CriteriaBuilder<T> extends AbstractCriteriaBuilder {
 
     CriteriaBuilder(Class<T> targetClass, QueryCreator queryCreator, MappingContext mappingContext) {
         super(targetClass, queryCreator, mappingContext)
@@ -32,9 +33,12 @@ class CriteriaBuilder<T> extends grails.gorm.CriteriaBuilder {
      *
      * @return An observable
      */
-    @Override
-    Observable<T> get(Closure callable) {
-        return (Observable<T>)super.get(callable)
+    Observable<T> get(@DelegatesTo(CriteriaBuilder) Closure callable) {
+        ensureQueryIsInitialized();
+        invokeClosureNode(callable);
+
+        uniqueResult = true;
+        return ((RxQuery)query).singleResult()
     }
 
     /**
@@ -60,7 +64,7 @@ class CriteriaBuilder<T> extends grails.gorm.CriteriaBuilder {
      *
      * @return An observable
      */
-    Observable<T> find(Closure callable = null) {
+    Observable<T> find(@DelegatesTo(CriteriaBuilder) Closure callable = null) {
         return get(callable)
     }
 
@@ -72,7 +76,7 @@ class CriteriaBuilder<T> extends grails.gorm.CriteriaBuilder {
      *
      * @return An observable
      */
-    Observable<T> findAll(@DelegatesTo(grails.gorm.DetachedCriteria) Closure additionalCriteria) {
+    Observable<T> findAll(@DelegatesTo(CriteriaBuilder) Closure additionalCriteria) {
         findAll (Collections.emptyMap(), additionalCriteria)
     }
 
@@ -83,7 +87,7 @@ class CriteriaBuilder<T> extends grails.gorm.CriteriaBuilder {
      * @param additionalCriteria Any additional criteria
      * @return An observable that emits a list
      */
-    Observable<T> findAll(Map args = Collections.emptyMap(), @DelegatesTo(grails.gorm.DetachedCriteria) Closure additionalCriteria = null) {
+    Observable<T> findAll(Map args = Collections.emptyMap(), @DelegatesTo(CriteriaBuilder) Closure additionalCriteria = null) {
         prepareQuery(args, additionalCriteria)
 
         return ((RxQuery) query).findAll()
@@ -96,8 +100,18 @@ class CriteriaBuilder<T> extends grails.gorm.CriteriaBuilder {
      * @param additionalCriteria Any additional criteria
      * @return An observable that emits a list
      */
-    Observable<List<T>> toList(Map args = Collections.emptyMap(), @DelegatesTo(grails.gorm.DetachedCriteria) Closure additionalCriteria = null) {
+    Observable<List<T>> list(Map args = Collections.emptyMap(), @DelegatesTo(CriteriaBuilder) Closure additionalCriteria = null) {
         findAll(args, additionalCriteria).toList()
+    }
+
+    /**
+     * Converts the observable to another observable that outputs the complete list. Not for use with large datasets
+     *
+     * @param additionalCriteria Any additional criteria
+     * @return An observable that emits a list
+     */
+    Observable<List<T>> list(@DelegatesTo(CriteriaBuilder) Closure additionalCriteria ) {
+        findAll(Collections.emptyMap(), additionalCriteria).toList()
     }
 
     /**
@@ -107,36 +121,35 @@ class CriteriaBuilder<T> extends grails.gorm.CriteriaBuilder {
      * @param additionalCriteria Any additional criteria
      * @return The total results
      */
-    Observable<Number> total(Map args = Collections.emptyMap(), @DelegatesTo(grails.gorm.DetachedCriteria) Closure additionalCriteria = null) {
+    Observable<Number> count(Map args, @DelegatesTo(CriteriaBuilder) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
         query.projections().count()
         return ((RxQuery)query).singleResult()
     }
 
-    @Override
-    List list(Closure callable) {
-        throw new UnsupportedOperationException("Method list() is blocking. Use findAll() or toList() instead")
+
+    /**
+     * Calculates the total number of matches for the query
+     *
+     * @param args The arguments
+     * @param additionalCriteria Any additional criteria
+     * @return The total results
+     */
+    Observable<Number> count(@DelegatesTo(CriteriaBuilder) Closure additionalCriteria) {
+        return count(Collections.emptyMap(), additionalCriteria)
     }
 
-    @Override
-    List listDistinct(Closure callable) {
-        throw new UnsupportedOperationException("Method listDistinct() is blocking. Use findAll() or toList() instead")
+    Observable<List<T>> listDistinct(Map args = Collections.emptyMap(), @DelegatesTo(CriteriaBuilder) Closure additionalCriteria = null) {
+        prepareQuery(args, additionalCriteria)
+        query.projections().distinct();
+
+        ((RxQuery)query).findAll().toList()
     }
 
-    @Override
-    List list(Map paginateParams, Closure callable) {
-        throw new UnsupportedOperationException("Method list() is blocking. Use findAll() or toList() instead")
+    Observable<List> listDistinct(@DelegatesTo(CriteriaBuilder) Closure callable) {
+        listDistinct(Collections.emptyMap(), callable)
     }
 
-    @Override
-    Number count(Closure callable) {
-        throw new UnsupportedOperationException("Method count() is blocking. Use total() instead")
-    }
-
-    @Override
-    Object scroll(@DelegatesTo(Criteria.class) Closure c) {
-        throw new UnsupportedOperationException("Method scroll() not implemented")
-    }
 
     protected void prepareQuery(Map args, Closure additionalCriteria) {
         ensureQueryIsInitialized()

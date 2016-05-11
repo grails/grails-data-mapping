@@ -9,4 +9,5 @@ import org.grails.datastore.mapping.collection.PersistentCollection;
  * @since 6.0
  */
 public interface RxPersistentCollection extends PersistentCollection, ObservableCollection {
+
 }

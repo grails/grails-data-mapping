@@ -20,10 +20,14 @@ import org.bson.codecs.Codec
 import org.bson.codecs.configuration.CodecProvider
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
+import org.bson.types.Binary
 import org.bson.types.ObjectId
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar
 import org.grails.datastore.mapping.mongo.MongoConstants
 import org.grails.datastore.mapping.mongo.config.MongoCollection
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
@@ -40,6 +44,8 @@ import org.grails.datastore.rx.mongodb.engine.codecs.RxPersistentEntityCodec
 import org.grails.datastore.rx.mongodb.query.RxMongoQuery
 import org.grails.datastore.rx.query.QueryState
 import org.grails.gorm.rx.api.RxGormEnhancer
+import org.springframework.core.convert.converter.Converter
+import org.springframework.core.convert.converter.ConverterRegistry
 import rx.Observable
 import rx.functions.Func1
 
@@ -71,6 +77,7 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
                 CodecRegistries.fromProviders(new AdditionalCodecs(), this)
         )
         initializeMongoDatastoreClient(mappingContext, codecRegistry)
+        initializeConverters(mappingContext);
 
         def clientSettingsBuilder = MongoClientSettings.builder(clientSettings)
                                                         .codecRegistry(codecRegistry)
@@ -84,6 +91,41 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
         mongoClient = MongoClients.create(clientSettingsBuilder.build())
     }
 
+
+    protected void initializeConverters(MappingContext mappingContext) {
+        final ConverterRegistry conversionService = mappingContext.getConverterRegistry();
+        BasicTypeConverterRegistrar registrar = new BasicTypeConverterRegistrar();
+        registrar.register(conversionService);
+
+        final ConverterRegistry converterRegistry = mappingContext.getConverterRegistry();
+        converterRegistry.addConverter(new Converter<String, ObjectId>() {
+            public ObjectId convert(String source) {
+                return new ObjectId(source);
+            }
+        });
+
+        converterRegistry.addConverter(new Converter<ObjectId, String>() {
+            public String convert(ObjectId source) {
+                return source.toString();
+            }
+        });
+
+        converterRegistry.addConverter(new Converter<byte[], Binary>() {
+            public Binary convert(byte[] source) {
+                return new Binary(source);
+            }
+        });
+
+        converterRegistry.addConverter(new Converter<Binary, byte[]>() {
+            public byte[] convert(Binary source) {
+                return source.getData();
+            }
+        });
+
+        for (Converter converter : AdditionalCodecs.getBsonConverters()) {
+            converterRegistry.addConverter(converter);
+        }
+    }
     @Override
     boolean isSchemaless() {
         return true
@@ -100,7 +142,11 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
             List<WriteModel> entityWriteModels = writeModels.get(entity)
             for(op in entry.value) {
                 BatchOperation.EntityOperation entityOperation = op.value
-                entityWriteModels.add(new InsertOneModel(entityOperation.object))
+
+                def object = entityOperation.object
+                entityWriteModels.add(new InsertOneModel(object))
+
+                activeDirtyChecking(object)
             }
         }
 
@@ -114,9 +160,13 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
             for(op in entry.value) {
                 BatchOperation.EntityOperation entityOperation = op.value
                 Document idQuery = createIdQuery(entityOperation.identity)
-                Document updateDocument = codec.encodeUpdate(entityOperation.object)
+
+                def object = entityOperation.object
+                Document updateDocument = codec.encodeUpdate(object)
 
                 entityWriteModels.add(new UpdateOneModel(idQuery, updateDocument, updateOptions))
+
+                activeDirtyChecking(object)
             }
         }
 
@@ -181,6 +231,8 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
                 .limit(1)
                 .first()
     }
+
+
 
     @Override
     def <T1> Observable<T1> updateEntity(PersistentEntity entity, Class<T1> type, Serializable id, T1 instance, Map<String, Object> arguments) {
@@ -320,7 +372,7 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
             def entityName = entity.getName()
             entityCodecs.put(entityName, new RxPersistentEntityCodec(entity, this))
             mongoCollections.put(entityName, collectionName)
-            mongoCollections.put(entityName, databaseName)
+            mongoDatabases.put(entityName, databaseName)
         }
     }
 }

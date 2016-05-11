@@ -1,6 +1,6 @@
 package grails.gorm.rx.mongodb
 
-import grails.gorm.annotation.Entity
+import grails.gorm.rx.mongodb.domains.Simple
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext

@@ -9,11 +9,13 @@ import org.bson.codecs.EncoderContext
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.types.ObjectId
 import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.internal.MappingUtils
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.model.types.EmbeddedCollection
 import org.grails.datastore.mapping.model.types.Identity
@@ -26,14 +28,19 @@ import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.mongo.AbstractMongoSession
 import org.grails.datastore.mapping.mongo.config.MongoAttribute
 import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec
+import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.reflect.FieldEntityAccess
 import org.grails.datastore.rx.RxDatastoreClient
+import org.grails.datastore.rx.collection.RxPersistentList
 import org.grails.datastore.rx.collection.RxPersistentSet
+import org.grails.datastore.rx.collection.RxPersistentSortedSet
 import org.grails.datastore.rx.internal.RxDatastoreClientImplementor
 import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
 import org.grails.datastore.rx.query.QueryState
 import org.grails.gorm.rx.api.RxGormEnhancer
 import org.grails.gorm.rx.api.RxGormStaticApi
+
+import javax.persistence.FetchType
 
 /**
  * Overrides the default PersistentEntity codecs for associations with reactive implementation for RxGORM
@@ -78,7 +85,9 @@ class RxPersistentEntityCodec extends PersistentEntityCodec {
     @Override
     Object decode(BsonReader bsonReader, DecoderContext decoderContext) {
         def decoded = super.decode(bsonReader, decoderContext)
-
+        if(decoded instanceof DirtyCheckable) {
+            ((DirtyCheckable)decoded).trackChanges()
+        }
         return decoded
     }
 
@@ -91,10 +100,38 @@ class RxPersistentEntityCodec extends PersistentEntityCodec {
             if(association.isBidirectional()) {
                 // create inverse lookup collection
                 if(association instanceof ToMany) {
-                    access.setPropertyNoConversion(association.name, new RxPersistentSet(datastoreClient, association, (Serializable)access.getIdentifier(), queryState))
-                }
+                    def foreignKey = (Serializable) access.getIdentifier()
 
+                    access.setPropertyNoConversion(association.name, createConcreteCollection(association, foreignKey))
+                }
             }
+            else if (association instanceof OneToOne) {
+                if (((ToOne) association).isForeignKeyInChild()) {
+                    def associatedClass = association.associatedEntity.javaClass
+                    Query query = mongoSession.createQuery(associatedClass)
+                    query.eq(association.inverseSide.name, access.identifier)
+                            .projections().id()
+
+                    def id = query.singleResult()
+                    boolean lazy = association.mapping.mappedForm.fetchStrategy == FetchType.LAZY
+                    access.setPropertyNoConversion(
+                            association.name,
+                            lazy ? mongoSession.proxy(associatedClass, (Serializable) id) : mongoSession.retrieve(associatedClass, (Serializable) id)
+                    )
+
+                }
+            }
+        }
+    }
+
+    protected Collection createConcreteCollection(Association association, Serializable foreignKey) {
+        switch(association.type) {
+            case SortedSet:
+                return new RxPersistentSortedSet(datastoreClient, association, foreignKey, queryState)
+            case List:
+                return new RxPersistentList(datastoreClient, association, foreignKey, queryState)
+            default:
+                return new RxPersistentSet(datastoreClient, association, foreignKey, queryState)
         }
     }
 

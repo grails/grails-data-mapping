@@ -3,6 +3,7 @@ package org.grails.datastore.rx.collection
 import grails.gorm.rx.collection.RxPersistentCollection
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.grails.datastore.mapping.collection.PersistentList
 import org.grails.datastore.mapping.collection.PersistentSet
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.rx.RxDatastoreClient
@@ -14,29 +15,22 @@ import rx.Subscriber
 import rx.Subscription
 
 /**
- * Represents a reactive set that can be observed in order to allow non-blocking lazy loading of associations
+ * Represents a reactive list that can be observed in order to allow non-blocking lazy loading of associations
  *
  * @author Graeme Rocher
  * @since 6.0
  */
 @CompileStatic
 @Slf4j
-class RxPersistentSet extends PersistentSet implements RxPersistentCollection {
+class RxPersistentList extends PersistentList implements RxPersistentCollection {
     final RxDatastoreClient datastoreClient
     final Association association
 
     Observable observable
     private QueryState queryState
 
-    RxPersistentSet( RxDatastoreClient datastoreClient, Association association, Serializable associationKey, QueryState queryState = new QueryState()) {
+    RxPersistentList( RxDatastoreClient datastoreClient, Association association, Serializable associationKey, QueryState queryState = null) {
         super(association, associationKey, null)
-        this.datastoreClient = datastoreClient
-        this.association = association
-        this.queryState = queryState
-    }
-
-    RxPersistentSet( RxDatastoreClient datastoreClient, Association association, Serializable associationKey, Set target, QueryState queryState = new QueryState()) {
-        super(association, associationKey, null, target)
         this.datastoreClient = datastoreClient
         this.association = association
         this.queryState = queryState

@@ -14,29 +14,23 @@ import rx.Subscriber
 import rx.Subscription
 
 /**
- * Represents a reactive set that can be observed in order to allow non-blocking lazy loading of associations
+ * Represents a reactive sorted set that can be observed in order to allow non-blocking lazy loading of associations
  *
  * @author Graeme Rocher
  * @since 6.0
  */
+
 @CompileStatic
 @Slf4j
-class RxPersistentSet extends PersistentSet implements RxPersistentCollection {
+class RxPersistentSortedSet extends PersistentSet implements SortedSet,RxPersistentCollection{
     final RxDatastoreClient datastoreClient
     final Association association
 
     Observable observable
     private QueryState queryState
 
-    RxPersistentSet( RxDatastoreClient datastoreClient, Association association, Serializable associationKey, QueryState queryState = new QueryState()) {
-        super(association, associationKey, null)
-        this.datastoreClient = datastoreClient
-        this.association = association
-        this.queryState = queryState
-    }
-
-    RxPersistentSet( RxDatastoreClient datastoreClient, Association association, Serializable associationKey, Set target, QueryState queryState = new QueryState()) {
-        super(association, associationKey, null, target)
+    RxPersistentSortedSet( RxDatastoreClient datastoreClient, Association association, Serializable associationKey, QueryState queryState = null) {
+        super(association, associationKey, null, new TreeSet())
         this.datastoreClient = datastoreClient
         this.association = association
         this.queryState = queryState
@@ -74,5 +68,35 @@ class RxPersistentSet extends PersistentSet implements RxPersistentCollection {
     @Override
     Subscription subscribe(Subscriber subscriber) {
         return toObservable().subscribe(subscriber)
+    }
+
+    @Override
+    Comparator comparator() {
+        return ((SortedSet)collection).comparator()
+    }
+
+    @Override
+    SortedSet subSet(Object fromElement, Object toElement) {
+        return ((SortedSet)collection).subSet(fromElement, toElement)
+    }
+
+    @Override
+    SortedSet headSet(Object toElement) {
+        return ((SortedSet)collection).headSet(toElement)
+    }
+
+    @Override
+    SortedSet tailSet(Object fromElement) {
+        return ((SortedSet)collection).tailSet(fromElement)
+    }
+
+    @Override
+    Object first() {
+        return ((SortedSet)collection).first()
+    }
+
+    @Override
+    Object last() {
+        return ((SortedSet)collection).last()
     }
 }

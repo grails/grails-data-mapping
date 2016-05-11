@@ -37,6 +37,10 @@ public class PersistentSet extends AbstractPersistentCollection implements Set {
         super(association, associationKey, session, createCollection());
     }
 
+    public PersistentSet(Association association, Serializable associationKey, Session session, Set collection) {
+        super(association, associationKey, session, collection);
+    }
+
     public PersistentSet(Class childType, Session session, Collection collection) {
         super(childType, session, collection);
     }

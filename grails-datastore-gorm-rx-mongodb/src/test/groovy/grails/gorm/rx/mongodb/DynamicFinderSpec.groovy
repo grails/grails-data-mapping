@@ -1,5 +1,6 @@
 package grails.gorm.rx.mongodb
 
+import grails.gorm.rx.mongodb.domains.Simple
 import rx.Observable
 
 /**

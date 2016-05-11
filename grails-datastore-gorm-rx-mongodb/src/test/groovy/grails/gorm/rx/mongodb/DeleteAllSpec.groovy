@@ -1,5 +1,7 @@
 package grails.gorm.rx.mongodb
 
+import grails.gorm.rx.mongodb.domains.Simple
+
 /**
  * Created by graemerocher on 09/05/16.
  */

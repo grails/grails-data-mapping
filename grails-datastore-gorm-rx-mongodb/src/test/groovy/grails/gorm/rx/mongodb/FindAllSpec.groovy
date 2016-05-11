@@ -1,7 +1,7 @@
 package grails.gorm.rx.mongodb
 
+import grails.gorm.rx.mongodb.domains.Simple
 import rx.Observable
-import rx.Single
 
 /**
  * Created by graemerocher on 06/05/16.
