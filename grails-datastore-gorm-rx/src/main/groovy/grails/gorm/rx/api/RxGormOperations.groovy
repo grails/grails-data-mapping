@@ -26,4 +26,11 @@ interface RxGormOperations<D> {
      * @return A {@link Single} with the result of the operation
      */
     Observable<D> save(Map<String, Object> arguments)
+
+    /**
+     * Deletes an entity
+     *
+     * @return An observable that returns a boolean true if successful
+     */
+    Observable<Boolean> delete()
 }

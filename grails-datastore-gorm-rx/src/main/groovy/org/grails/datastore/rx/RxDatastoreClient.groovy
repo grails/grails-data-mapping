@@ -71,6 +71,14 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
     def <T1> ObservableProxy<T1> proxy(Class<T1> type, Serializable id)
 
     /**
+     * Obtain an {@link ObservableProxy} that executes the given query to initialize
+     *
+     * @param query The query
+     * @return An {@link ObservableProxy}
+     */
+    def ObservableProxy proxy(Query query)
+
+    /**
      * Batch saves all of the given objects
      *
      * @param objects The objects to save

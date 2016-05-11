@@ -7,6 +7,14 @@ services:
 - redis
 - mongodb
 - cassandra
+addons:
+  apt:
+    sources:
+      - mongodb-upstart
+      - mongodb-3.0-precise
+    packages:
+      - mongodb-org-server
+      - mongodb-org-shell
 jdk:
 - oraclejdk7
 env:

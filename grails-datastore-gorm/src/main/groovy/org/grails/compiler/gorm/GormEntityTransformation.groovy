@@ -166,7 +166,7 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         else {
             addToMethodNode = rxEntityClassNode.getMethods("addTo").get(0)
             removeFromMethodNode = rxEntityClassNode.getMethods("removeFrom").get(0)
-//            getAssociationMethodNode = rxEntityClassNode.getMethods("getAssociationId").get(0)
+            getAssociationMethodNode = rxEntityClassNode.getMethods("getAssociationId").get(0)
         }
 
         // inject associations

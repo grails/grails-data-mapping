@@ -56,6 +56,7 @@ class RxPersistentEntityCodec extends PersistentEntityCodec {
 
     static {
         RX_ENCODERS[OneToMany] = new OneToManyEncoder()
+        RX_ENCODERS[ManyToMany] = new OneToManyEncoder()
         RX_ENCODERS[Embedded] = new EmbeddedEncoder()
         RX_DECODERS[Embedded] = new EmbeddedDecoder()
         RX_ENCODERS[EmbeddedCollection] = new EmbeddedCollectionEncoder()
@@ -104,21 +105,19 @@ class RxPersistentEntityCodec extends PersistentEntityCodec {
 
                     access.setPropertyNoConversion(association.name, createConcreteCollection(association, foreignKey))
                 }
-            }
-            else if (association instanceof OneToOne) {
-                if (((ToOne) association).isForeignKeyInChild()) {
-                    def associatedClass = association.associatedEntity.javaClass
-                    Query query = mongoSession.createQuery(associatedClass)
-                    query.eq(association.inverseSide.name, access.identifier)
-                            .projections().id()
+                else if (association instanceof OneToOne) {
+                    if (((ToOne) association).isForeignKeyInChild()) {
+                        def associatedClass = association.associatedEntity.javaClass
+                        boolean lazy = association.mapping.mappedForm.fetchStrategy == FetchType.LAZY
+                        if(lazy) {
 
-                    def id = query.singleResult()
-                    boolean lazy = association.mapping.mappedForm.fetchStrategy == FetchType.LAZY
-                    access.setPropertyNoConversion(
-                            association.name,
-                            lazy ? mongoSession.proxy(associatedClass, (Serializable) id) : mongoSession.retrieve(associatedClass, (Serializable) id)
-                    )
-
+                            def proxy = datastoreClient.proxy(
+                                    datastoreClient.createQuery(associatedClass)
+                                            .eq(association.inverseSide.name, access.identifier)
+                            )
+                            access.setPropertyNoConversion(association.name, proxy)
+                        }
+                    }
                 }
             }
         }

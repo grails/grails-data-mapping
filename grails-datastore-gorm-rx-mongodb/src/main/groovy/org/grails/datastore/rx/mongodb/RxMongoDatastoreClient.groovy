@@ -9,11 +9,9 @@ import com.mongodb.client.model.UpdateOneModel
 import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.model.WriteModel
 import com.mongodb.client.result.DeleteResult
-import com.mongodb.client.result.UpdateResult
 import com.mongodb.connection.ClusterSettings
 import com.mongodb.rx.client.MongoClient
 import com.mongodb.rx.client.MongoClients
-import com.mongodb.rx.client.Success
 import groovy.transform.CompileStatic
 import org.bson.Document
 import org.bson.codecs.Codec
@@ -22,9 +20,9 @@ import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.types.Binary
 import org.bson.types.ObjectId
+import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
-import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar
@@ -39,7 +37,6 @@ import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.rx.AbstractRxDatastoreClient
 import org.grails.datastore.rx.RxDatastoreClient
 import org.grails.datastore.rx.batch.BatchOperation
-import org.grails.datastore.rx.mongodb.engine.codecs.QueryStateAwareCodeRegistry
 import org.grails.datastore.rx.mongodb.engine.codecs.RxPersistentEntityCodec
 import org.grails.datastore.rx.mongodb.query.RxMongoQuery
 import org.grails.datastore.rx.query.QueryState
@@ -47,7 +44,6 @@ import org.grails.gorm.rx.api.RxGormEnhancer
 import org.springframework.core.convert.converter.Converter
 import org.springframework.core.convert.converter.ConverterRegistry
 import rx.Observable
-import rx.functions.Func1
 
 /**
  * Implementatino of the {@link RxDatastoreClient} inteface for MongoDB that uses the MongoDB RX driver
@@ -66,19 +62,34 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     final String defaultDatabase
     final MongoMappingContext mappingContext
 
+    RxMongoDatastoreClient(MongoMappingContext mappingContext, MongoClient mongoClient) {
+        super(mappingContext)
+        this.mongoClient = mongoClient
+        this.defaultDatabase = mappingContext.defaultDatabaseName
+        this.mappingContext = mappingContext
+        this.codecRegistry = createCodeRegistry()
+
+        initialize(mappingContext)
+    }
+
+    RxMongoDatastoreClient(MongoClient mongoClient, String databaseName, Class...classes) {
+        super(new MongoMappingContext(databaseName))
+        this.mongoClient = mongoClient
+        this.defaultDatabase = mappingContext.defaultDatabaseName
+        this.mappingContext = (MongoMappingContext)super.mappingContext
+        this.mappingContext.addPersistentEntities(classes)
+        this.mappingContext.initialize()
+        this.codecRegistry = createCodeRegistry()
+        initialize(mappingContext)
+    }
+
     RxMongoDatastoreClient(MongoMappingContext mappingContext,
                            MongoClientSettings clientSettings = MongoClientSettings.builder().build()) {
         super(mappingContext)
 
         this.mappingContext = mappingContext
         this.defaultDatabase = mappingContext.defaultDatabaseName
-        codecRegistry = CodecRegistries.fromRegistries(
-                com.mongodb.async.client.MongoClients.getDefaultCodecRegistry(),
-                CodecRegistries.fromProviders(new AdditionalCodecs(), this)
-        )
-        initializeMongoDatastoreClient(mappingContext, codecRegistry)
-        initializeConverters(mappingContext);
-
+        this.codecRegistry = createCodeRegistry()
         def clientSettingsBuilder = MongoClientSettings.builder(clientSettings)
                                                         .codecRegistry(codecRegistry)
 
@@ -89,6 +100,21 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
                     .clusterSettings(clusterSettings.build())
         }
         mongoClient = MongoClients.create(clientSettingsBuilder.build())
+        initialize(mappingContext)
+    }
+
+    protected CodecRegistry createCodeRegistry() {
+        CodecRegistries.fromRegistries(
+                com.mongodb.async.client.MongoClients.getDefaultCodecRegistry(),
+                CodecRegistries.fromProviders(new AdditionalCodecs(), this)
+        )
+    }
+
+    protected void initialize(MongoMappingContext mappingContext) {
+
+        initializeMongoDatastoreClient(mappingContext, codecRegistry)
+        initializeConverters(mappingContext);
+        MongoGormEnhancer.registerMongoMethodExpressions()
     }
 
 
@@ -164,7 +190,9 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
                 def object = entityOperation.object
                 Document updateDocument = codec.encodeUpdate(object)
 
-                entityWriteModels.add(new UpdateOneModel(idQuery, updateDocument, updateOptions))
+                if(!updateDocument.isEmpty()) {
+                    entityWriteModels.add(new UpdateOneModel(idQuery, updateDocument, updateOptions))
+                }
 
                 activeDirtyChecking(object)
             }
@@ -216,57 +244,6 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
                 }
                 return count
             })
-        }
-    }
-
-    @Override
-    def <T1> Observable<T1> getEntity(PersistentEntity entity, Class<T1> type, Serializable id, QueryState queryState) {
-        com.mongodb.rx.client.MongoCollection<T1> collection = getCollection(entity, type)
-        collection = collection.withCodecRegistry(
-            new QueryStateAwareCodeRegistry(codecRegistry, queryState, this)
-        )
-        Document idQuery = createIdQuery(id)
-        collection
-                .find(idQuery)
-                .limit(1)
-                .first()
-    }
-
-
-
-    @Override
-    def <T1> Observable<T1> updateEntity(PersistentEntity entity, Class<T1> type, Serializable id, T1 instance, Map<String, Object> arguments) {
-        def collection = getCollection(entity, type)
-        Document idQuery = createIdQuery(id)
-        PersistentEntityCodec codec = (PersistentEntityCodec)codecRegistry.get(type)
-        def updateDocument = codec.encodeUpdate(instance)
-        collection
-                .updateOne(idQuery,updateDocument , new UpdateOptions().upsert(false))
-                .map({ UpdateResult result ->
-            if(result.wasAcknowledged()) {
-                return instance
-            }
-        } as Func1)
-    }
-
-
-
-    @Override
-    def <T1> Observable<T1> saveEntity(PersistentEntity entity, Class<T1> type, T1 instance, Map<String, Object> arguments) {
-        getCollection(entity, type)
-                .insertOne(instance)
-                .map({ Success success ->
-            return instance
-        } as Func1)
-    }
-
-    @Override
-    Observable<Boolean> deleteEntity(PersistentEntity entity, Serializable id, Object instance) {
-        def collection = getCollection(entity, entity.javaClass)
-        Document idQuery = createIdQuery(id)
-        collection.deleteOne(idQuery)
-                  .map { DeleteResult result ->
-            return result.wasAcknowledged()
         }
     }
 

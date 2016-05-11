@@ -23,6 +23,6 @@ class QueryState {
     }
 
     public <T> T getLoadedEntity(Class<T> type, Serializable id) {
-        (T)loadedEntities.get(type).get(id)
+        (T)loadedEntities.get(type)?.get(id)
     }
 }

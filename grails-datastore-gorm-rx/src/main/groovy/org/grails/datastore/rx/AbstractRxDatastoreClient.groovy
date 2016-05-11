@@ -6,18 +6,11 @@ import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection
 import org.grails.datastore.mapping.engine.EntityAccess
-import org.grails.datastore.mapping.engine.event.PostInsertEvent
-import org.grails.datastore.mapping.engine.event.PostLoadEvent
-import org.grails.datastore.mapping.engine.event.PostUpdateEvent
-import org.grails.datastore.mapping.engine.event.PreInsertEvent
-import org.grails.datastore.mapping.engine.event.PreLoadEvent
-import org.grails.datastore.mapping.engine.event.PreUpdateEvent
+import org.grails.datastore.mapping.engine.event.*
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.model.types.ToMany
 import org.grails.datastore.mapping.model.types.ToOne
-import org.grails.datastore.mapping.proxy.ProxyHandler
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.rx.batch.BatchOperation
@@ -25,13 +18,12 @@ import org.grails.datastore.rx.internal.RxDatastoreClientImplementor
 import org.grails.datastore.rx.proxy.ProxyFactory
 import org.grails.datastore.rx.proxy.RxJavassistProxyFactory
 import org.grails.datastore.rx.query.QueryState
+import org.grails.datastore.rx.query.RxQuery
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
 import rx.Observable
-import rx.Subscriber
 
 import javax.persistence.CascadeType
-
 /**
  * Abstract implementation the {@link RxDatastoreClient} interface
  *
@@ -63,6 +55,11 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
     @Override
     def <T1> ObservableProxy<T1> proxy(Class<T1> type, Serializable id, QueryState queryState = new QueryState()) {
         (ObservableProxy)proxyFactory.createProxy(this, queryState, type, id)
+    }
+
+    @Override
+    ObservableProxy proxy(Query query, QueryState queryState = new QueryState()) {
+        (ObservableProxy)proxyFactory.createProxy(this, queryState, query)
     }
 
     @Override
@@ -98,15 +95,12 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     final Query createQuery(Class type, QueryState queryState) {
-
         def entity = mappingContext.getPersistentEntity(type.name)
         if(entity == null) {
             throw new IllegalArgumentException("Type [$type.name] is not a persistent type")
         }
 
         return createEntityQuery(entity, queryState)
-
-
     }
 
     @Override
@@ -116,22 +110,8 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     final Observable<Boolean> delete(Object instance) {
-        if(instance == null) throw new IllegalArgumentException("Cannot persist null instance")
-
-        Class type = mappingContext.getProxyHandler().getProxiedClass(instance)
-
-        def entity = mappingContext.getPersistentEntity(type.name)
-        if(entity == null) {
-            throw new IllegalArgumentException("Type [$type.name] is not a persistent type")
-        }
-
-        def reflector = mappingContext.getEntityReflector(entity)
-        def identifier = reflector.getIdentifier(instance)
-        if(identifier == null) {
-            throw new IllegalArgumentException("The passed instance has not yet been persisted (null identifier)")
-        }
-        else {
-            return deleteEntity(entity, identifier, instance)
+        deleteAll((Iterable)Arrays.asList(instance)).map { Number deleteCount ->
+            deleteCount > 0
         }
     }
 
@@ -141,6 +121,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
         def proxyHandler = ctx.getProxyHandler()
         if(instances != null) {
             def batchOperation = new BatchOperation()
+            List<ApplicationEvent> postEvents = []
             for(o in instances) {
                 Class type = proxyHandler.getProxiedClass(o)
                 def entity = ctx.getPersistentEntity(type.name)
@@ -150,11 +131,27 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
                 def reflector = mappingContext.getEntityReflector(entity)
                 def id = reflector.getIdentifier(o)
                 if(id != null) {
-                    batchOperation.addDelete(entity, id, o)
+
+                    def ea = ctx.createEntityAccess(entity, o)
+                    def preDeleteEvent = new PreDeleteEvent(this, entity, ea)
+                    eventPublisher?.publishEvent(preDeleteEvent)
+                    if(!preDeleteEvent.isCancelled()) {
+                        batchOperation.addDelete(entity, id, o)
+                        postEvents.add new PostDeleteEvent(this, entity, ea)
+                    }
                 }
             }
 
-            return batchDelete(batchOperation)
+            return batchDelete(batchOperation).map { Number deleteCount ->
+                if(deleteCount > 0) {
+                    if(eventPublisher != null) {
+                        for(event in postEvents) {
+                            eventPublisher.publishEvent(event)
+                        }
+                    }
+                }
+                return deleteCount
+            }.defaultIfEmpty(0)
         }
         else {
             return Observable.just(0)
@@ -352,41 +349,15 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
      * @param id The identifier
      * @return An observable with the result
      */
-    abstract <T1> Observable<T1> getEntity(PersistentEntity entity, Class<T1> type, Serializable id, QueryState queryState)
+    public <T1> Observable<T1> getEntity(PersistentEntity entity, Class<T1> type, Serializable id, QueryState queryState) {
+        def query = createQuery(type, queryState)
+        query.idEq(id)
+                .max(1)
 
-    /**
-     * Saves a new instance of the given entity for the given arguments
-     *
-     * @param entity The entity
-     * @param type The persistent type
-     * @param instance The instance
-     * @param arguments The arguments
-     * @return
-     */
-    abstract <T1> Observable<T1> saveEntity(PersistentEntity entity, Class<T1> type, T1 instance, Map<String, Object> arguments)
+        return ((RxQuery)query).singleResult()
+    }
 
 
-    /**
-     * Updates an existing instance of the given entity for the given arguments
-     *
-     * @param entity The entity
-     * @param type The persistent type
-     * @param instance The instance
-     * @param arguments The arguments
-     * @return
-     */
-    abstract <T1> Observable<T1> updateEntity(PersistentEntity entity, Class<T1> type, Serializable id, T1 instance, Map<String, Object> arguments)
-
-    /**
-     * Deletes an instance
-     *
-     * @param entity The entity
-     * @param id The id
-     * @param instance The instance
-     *
-     * @return An observable
-     */
-    abstract Observable<Boolean> deleteEntity(PersistentEntity entity, Serializable id, Object instance)
     /**
      * Creates a query for the given entity
      *

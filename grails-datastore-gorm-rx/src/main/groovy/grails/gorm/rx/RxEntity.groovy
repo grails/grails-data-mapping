@@ -11,6 +11,8 @@ import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.Basic
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
+import org.grails.datastore.mapping.model.types.ToOne
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.mapping.validation.ValidationException
 import org.grails.gorm.rx.api.RxGormEnhancer
@@ -28,7 +30,7 @@ import rx.Subscriber
  * @param <D> The entity type
  */
 @CompileStatic
-trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckable {
+trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckable, Serializable {
     @Override
     boolean validate(Map arguments) {
         return true
@@ -87,6 +89,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return An observable that returns a boolean true if successful
      */
+    @Override
     Observable<Boolean> delete() {
         currentRxGormInstanceApi().delete this
     }
@@ -163,6 +166,32 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
         return (D)this
     }
 
+    /**
+     * Obtains the id of an association without initialising the association
+     *
+     * @param associationName The association name
+     * @return The id of the association or null if it doesn't have one
+     */
+    Serializable getAssociationId(String associationName) {
+        PersistentEntity entity = getGormPersistentEntity()
+        def association = entity.getPropertyByName(associationName)
+        if(association instanceof ToOne) {
+            MappingContext mappingContext = currentRxGormStaticApi().datastoreClient.mappingContext
+            def proxyHandler = mappingContext.getProxyHandler()
+            def entityReflector = mappingContext.getEntityReflector(entity)
+            def value = entityReflector.getProperty(this, associationName)
+            if(value != null) {
+
+                if(proxyHandler.isProxy(value)) {
+                    return proxyHandler.getIdentifier(value)
+                }
+                else {
+                    return mappingContext.getEntityReflector(association.associatedEntity).getIdentifier(value)
+                }
+            }
+        }
+        return null
+    }
     /**
      * Adds the given value to given association ensuring both sides are correctly associated
      *

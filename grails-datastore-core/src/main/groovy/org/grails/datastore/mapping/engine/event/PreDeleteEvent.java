@@ -34,6 +34,10 @@ public class PreDeleteEvent extends AbstractPersistenceEvent {
         super(source, entity);
     }
 
+    public PreDeleteEvent(Object source, PersistentEntity entity, EntityAccess entityAccess) {
+        super(source, entity, entityAccess);
+    }
+
     @Override
     public EventType getEventType() {
         return EventType.PreDelete;

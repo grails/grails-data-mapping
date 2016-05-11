@@ -7,8 +7,7 @@ import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyObject;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
-import org.grails.datastore.mapping.proxy.EntityProxy;
-import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
+import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.reflect.ReflectionUtils;
 import org.grails.datastore.rx.RxDatastoreClient;
 import org.grails.datastore.rx.query.QueryState;
@@ -41,8 +40,21 @@ public class RxJavassistProxyFactory implements ProxyFactory, org.grails.datasto
         return (T)proxy;
     }
 
+    @Override
+    public ObservableProxy createProxy(RxDatastoreClient client, QueryState queryState, Query query) {
+        Class proxyClass = getProxyClass(query.getEntity().getJavaClass());
+        MethodHandler mi = createMethodHandler(proxyClass, client, query, queryState);
+        Object proxy = ReflectionUtils.instantiate(proxyClass);
+        ((ProxyObject)proxy).setHandler(mi);
+        return (ObservableProxy) proxy;
+    }
+
+    protected MethodHandler createMethodHandler(Class proxyClass, RxDatastoreClient client, Query query, QueryState queryState) {
+        return new QueryObservableProxyMethodHandler(proxyClass, query, queryState, client);
+    }
+
     protected <T> MethodHandler createMethodHandler(RxDatastoreClient client, Class<T> type, Class proxyClass, Serializable key, QueryState queryState) {
-        return new ObservableProxyMethodHandler(proxyClass, type, key, client, queryState);
+        return new IdentifierObservableProxyMethodHandler(proxyClass, type, key, client, queryState);
     }
 
     @Override
