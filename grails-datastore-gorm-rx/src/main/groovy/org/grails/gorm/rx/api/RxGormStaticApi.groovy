@@ -10,6 +10,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.rx.RxDatastoreClient
 import org.grails.datastore.rx.query.RxQuery
@@ -50,8 +51,14 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
         (D)entity.newInstance()
     }
 
-    Observable<D> get(Serializable id) {
-        datastoreClient.get(entity.javaClass, id)
+    @Override
+    Observable<D> get(Serializable id, Map<String, Object> args = Collections.emptyMap()) {
+        def clazz = entity.javaClass
+        def query = datastoreClient.createQuery(clazz)
+        query.idEq(id)
+        query.max(1)
+        DynamicFinder.populateArgumentsForCriteria(clazz, query, args)
+        return ((RxQuery<D>)query).singleResult()
     }
 
     /**

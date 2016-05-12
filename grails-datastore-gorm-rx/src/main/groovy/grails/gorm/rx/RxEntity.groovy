@@ -287,8 +287,8 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param id The id of the instance
      * @return An observable
      */
-    static Observable<D> get(Serializable id) {
-        currentRxGormStaticApi().get(id)
+    static Observable<D> get(Serializable id, Map<String, Object> args = Collections.emptyMap()) {
+        currentRxGormStaticApi().get(id, args)
     }
 
     /**

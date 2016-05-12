@@ -50,8 +50,15 @@ class BatchOperation {
         inserts.get(entity).put(id, new EntityOperation(id, object))
     }
 
+    /**
+     * @return Whether there are any pending operations
+     */
+    boolean hasPendingOperations() {
+        !inserts.isEmpty() || !updates.isEmpty() || !deletes.isEmpty()
+    }
+
     boolean isAlreadyPending(PersistentEntity entity, Serializable id, Object o) {
-        inserts.get(entity).get(id) != null || updates.get(entity).get(id) != null
+        (inserts.containsKey(entity) ? inserts.get(entity).get(id) != null : false) || (updates.containsKey(entity) ? updates.get(entity).get(id) != null : false)
     }
 
     @Canonical

@@ -254,12 +254,17 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
 
         List<Observable> observables = []
         for(entry in writeModels) {
-            PersistentEntity entity = entry.key
-            def mongoCollection = getCollection(entity, entity.javaClass)
+            List<WriteModel> entityWriteModels = entry.value
 
-            def writeOptions = new BulkWriteOptions()
+            if(!entityWriteModels.isEmpty()) {
 
-            observables.add mongoCollection.bulkWrite(entry.value, writeOptions)
+                PersistentEntity entity = entry.key
+                def mongoCollection = getCollection(entity, entity.javaClass)
+
+                def writeOptions = new BulkWriteOptions()
+
+                observables.add mongoCollection.bulkWrite(entityWriteModels, writeOptions)
+            }
         }
 
         return Observable.concatEager(observables)

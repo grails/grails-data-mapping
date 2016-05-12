@@ -67,23 +67,10 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     def <T> Observable get(Class<T> type, Serializable id, QueryState queryState) {
-        def entity = mappingContext.getPersistentEntity(type.name)
-        if(entity == null) {
-            throw new IllegalArgumentException("Type [$type.name] is not a persistent type")
-        }
-
-        def event = new PreLoadEvent(this, entity)
-        eventPublisher?.publishEvent(event)
-        if(event.isCancelled()) {
-            return Observable.just(null)
-        }
-        else {
-            def result = getEntity(entity, type, id, queryState)
-            if(result != null) {
-                eventPublisher?.publishEvent(new PostLoadEvent(this, entity, mappingContext.createEntityAccess(entity, result)))
-            }
-            return result
-        }
+        return (Observable<T>)createQuery(type)
+                .idEq(id)
+                .max(1)
+                .singleResult()
     }
     /**
      * Retrieve and instance of the given type and id
@@ -93,7 +80,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
      */
     @Override
     final <T1> Observable<T1> get(Class<T1> type, Serializable id) {
-        get(type, id, new QueryState())
+        return get(type, id, new QueryState())
     }
 
     @Override
@@ -173,7 +160,9 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
             if(!identifiers.isEmpty()) {
                 return instance
             }
-            return null
+            else {
+                return null
+            }
         }
     }
 
@@ -208,7 +197,6 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
                         processAssociations(entity, id, o, entityReflector, batchOperation, postEvents)
                         batchOperation.addUpdate(entity, id, o)
                         postEvents.add(new PostUpdateEvent(this, entity, entityAccess))
-
                     }
                 }
                 else {
@@ -224,14 +212,20 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
                 identifiers.add(id)
             }
 
-            return batchWrite(batchOperation).map({
-                if(eventPublisher != null) {
-                    for(event in postEvents) {
-                        eventPublisher.publishEvent(event)
+            if(batchOperation.hasPendingOperations()) {
+
+                return batchWrite(batchOperation).map({
+                    if(eventPublisher != null) {
+                        for(event in postEvents) {
+                            eventPublisher.publishEvent(event)
+                        }
                     }
-                }
-                identifiers
-            })
+                    return identifiers
+                })
+            }
+            else {
+                return Observable.just(identifiers)
+            }
         }
         else {
             return Observable.just([])
@@ -285,6 +279,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
         } else {
             scheduleInsert(associatedEntity, associatedObject, associationReflector, associationAccess, operation, postEvents)
         }
+        processAssociations(associatedEntity, associatedId, associatedObject, associationReflector, operation, postEvents)
     }
 
     protected void scheduleInsert(PersistentEntity associatedEntity, DirtyCheckable associatedObject, EntityReflector associationReflector, EntityAccess associationAccess, BatchOperation operation, List<ApplicationEvent> postEvents) {
@@ -350,21 +345,6 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
      * @return The generated identifier
      */
     abstract Serializable generateIdentifier(PersistentEntity entity, Object instance, EntityReflector reflector)
-    /**
-     * Obtain the given entity for the given id
-     *
-     * @param entity The entity object
-     * @param type The persistent type
-     * @param id The identifier
-     * @return An observable with the result
-     */
-    public <T1> Observable<T1> getEntity(PersistentEntity entity, Class<T1> type, Serializable id, QueryState queryState) {
-        def query = createQuery(type, queryState)
-        query.idEq(id)
-                .max(1)
-
-        return ((RxQuery)query).singleResult()
-    }
 
 
     /**

@@ -2,6 +2,7 @@ package org.grails.datastore.rx.proxy;
 
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.rx.RxDatastoreClient;
+import org.grails.datastore.rx.internal.RxDatastoreClientImplementor;
 import org.grails.datastore.rx.query.QueryState;
 import org.grails.datastore.rx.query.RxQuery;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ public class QueryObservableProxyMethodHandler extends AbstractObservableProxyMe
                         return Observable.just(loadedEntity);
                     }
                     else {
-                        return client.get(type, id);
+                        return ((RxDatastoreClientImplementor)client).get(type, id, queryState);
                     }
                 }
                 else {

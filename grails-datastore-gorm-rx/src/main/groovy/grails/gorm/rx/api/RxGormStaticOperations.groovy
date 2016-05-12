@@ -25,6 +25,16 @@ interface RxGormStaticOperations<D> {
     Observable<D> get(Serializable id)
 
     /**
+     * Retrieve an instance by id for the given arguments
+     *
+     * @param id The id
+     * @param queryArgs The query arguments
+     *
+     * @return An observable
+     */
+    Observable<D> get(Serializable id, Map<String, Object> queryArgs)
+
+    /**
      * @return Counts the number of instances
      */
     Observable<Number> count()

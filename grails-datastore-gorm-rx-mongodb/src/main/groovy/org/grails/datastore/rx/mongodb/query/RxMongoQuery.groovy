@@ -4,22 +4,38 @@ import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.UpdateResult
 import com.mongodb.rx.client.FindObservable
+import grails.gorm.rx.collection.RxUnidirectionalCollection
+import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
 import org.bson.Document
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.ManyToMany
+import org.grails.datastore.mapping.model.types.ManyToOne
+import org.grails.datastore.mapping.model.types.ToMany
+import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.mongo.MongoConstants
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.grails.datastore.mapping.mongo.query.MongoQuery
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.event.PreQueryEvent
+import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
 import org.grails.datastore.rx.mongodb.engine.codecs.QueryStateAwareCodeRegistry
 import org.grails.datastore.rx.mongodb.internal.CodecRegistryEmbeddedQueryEncoder
 import org.grails.datastore.rx.query.QueryState
 import org.grails.datastore.rx.query.RxQuery
 import org.grails.datastore.rx.query.event.PostQueryEvent
+import org.grails.gorm.rx.api.RxGormEnhancer
 import rx.Observable
 import rx.Subscriber
+import rx.functions.FuncN
+
+import javax.persistence.FetchType
+
 /**
  * Reactive query implementation for MongoDB
  *
@@ -60,6 +76,100 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
             observable = executeQuery(projectionList)
         }
 
+        if(!fetchStrategies.isEmpty()) {
+
+            EntityReflector entityReflector = entity.mappingContext.getEntityReflector(entity)
+            List<String> joinedProperties = []
+            observable = observable.switchMap { Object o ->
+
+                List<Observable> observables = [Observable.just(o)]
+                if(entity.isInstance(o)) {
+
+                    for(fetch in fetchStrategies) {
+                        PersistentProperty property = entity.getPropertyByName(fetch.key)
+                        FetchType fetchType = fetch.value
+                        if(fetchType == FetchType.EAGER) {
+                            def propertyName = property.name
+                            def currentValue = entityReflector.getProperty(o, propertyName)
+
+                            if(property instanceof ToOne && (currentValue instanceof ObservableProxy)) {
+                                ToOne toOne = (ToOne)property
+                                if(!toOne.isEmbedded()) {
+                                    if(!toOne.isForeignKeyInChild()) {
+                                        joinedProperties.add(propertyName)
+                                        observables.add datastoreClient.get(toOne.associatedEntity.javaClass, ((ObservableProxy)currentValue).getProxyKey(), queryState)
+                                    }
+                                    else {
+                                        joinedProperties.add(propertyName)
+                                        def associationQuery = datastoreClient.createQuery(toOne.associatedEntity.javaClass, queryState)
+                                        RxQuery rxQuery = (RxQuery)associationQuery.eq(toOne.inverseSide.name, o)
+                                                .max(1)
+
+                                        observables.add rxQuery.singleResult()
+                                    }
+                                }
+                            }
+                            else if(property instanceof ToMany) {
+                                ToMany toMany = (ToMany)property
+                                if(toMany.isBidirectional() && !(toMany instanceof ManyToMany)) {
+                                    def inverseSide = toMany.inverseSide
+                                    if(inverseSide instanceof ManyToOne) {
+                                        joinedProperties.add(propertyName)
+
+
+                                        RxQuery rxQuery = (RxQuery)datastoreClient.createQuery(inverseSide.owner.javaClass, queryState)
+                                                                                   .eq(inverseSide.name, o)
+
+                                        observables.add rxQuery.findAll().toList()
+                                    }
+                                }
+                                else if(currentValue instanceof RxUnidirectionalCollection) {
+                                    RxUnidirectionalCollection ruc = (RxUnidirectionalCollection)currentValue
+                                    def associationKeys = ruc.associationKeys
+                                    joinedProperties.add(propertyName)
+                                    if(associationKeys) {
+                                        def inverseEntity = toMany.associatedEntity
+                                        RxQuery rxQuery = (RxQuery)datastoreClient.createQuery(inverseEntity.javaClass, queryState)
+                                                                                   .in(inverseEntity.identity.name, associationKeys)
+
+                                        observables.add rxQuery.findAll().toList()
+                                    }
+                                    else {
+                                        observables.add Observable.just([])
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return Observable.zip(observables, new FuncN() {
+                    @Override
+                    Object call(Object... args) {
+                        return Arrays.asList(args)
+                    }
+                })
+            }.map { List<Object> result ->
+                // first result is the entity
+                def entity = result.get(0)
+                if(result.size() > 1) {
+                    int i = 0
+                    for(o in result[1..-1]) {
+                        String name = joinedProperties.get(i++)
+                        if(o instanceof Collection) {
+                            def propertyWriter = entityReflector.getPropertyWriter(name)
+                            o = o.asType(propertyWriter.propertyType())
+                            propertyWriter.write(entity, DirtyCheckingSupport.wrap((Collection)o, (DirtyCheckable)entity, name))
+                        }
+                        else {
+                            entityReflector.setProperty(entity, name, o)
+                        }
+                    }
+                }
+                return entity
+            }
+
+        }
         def postQueryEvent = new PostQueryEvent(datastoreClient, this, observable)
         eventPublisher?.publishEvent(postQueryEvent)
         return postQueryEvent.observable

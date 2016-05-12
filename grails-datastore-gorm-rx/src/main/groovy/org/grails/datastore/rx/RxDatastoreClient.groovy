@@ -27,6 +27,7 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
      */
     public <T1> Observable<T1> get(Class<T1> type, Serializable id)
 
+
     /**
      * Persist and instance and return the observable
      *

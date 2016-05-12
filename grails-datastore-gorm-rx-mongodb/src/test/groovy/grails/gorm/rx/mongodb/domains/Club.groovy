@@ -10,4 +10,7 @@ import grails.gorm.rx.mongodb.RxMongoEntity
 class Club implements RxMongoEntity<Club> {
     String name
     Sport sport
+    Set<Player> players
+
+    static hasMany = [players:Player]
 }
