@@ -317,6 +317,9 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     }
 
     public String getCollectionName(PersistentEntity entity) {
+        if(!entity.isRoot()) {
+            entity = entity.rootEntity
+        }
         final String collectionName = mongoCollections.get(entity.getName())
         if(collectionName == null) {
             return entity.getDecapitalizedName()
@@ -325,6 +328,10 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     }
 
     public String getDatabaseName(PersistentEntity entity) {
+        if(!entity.isRoot()) {
+            entity = entity.rootEntity
+        }
+
         final String databaseName = mongoDatabases.get(entity.getName())
         if(databaseName == null) {
             return defaultDatabase
