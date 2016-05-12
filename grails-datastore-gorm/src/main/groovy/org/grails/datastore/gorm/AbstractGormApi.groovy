@@ -14,9 +14,11 @@
  */
 package org.grails.datastore.gorm
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
+import org.grails.datastore.mapping.model.MappingContext
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -55,19 +57,22 @@ abstract class AbstractGormApi<D> extends AbstractDatastoreApi {
 
     protected Class<D> persistentClass
     protected PersistentEntity persistentEntity
-    private List<Method> methods = []
-    private List<Method> extendedMethods = []
+    private List<Method> methods
+    private List<Method> extendedMethods
 
     AbstractGormApi(Class<D> persistentClass, Datastore datastore) {
         super(datastore)
         this.persistentClass = persistentClass
         this.persistentEntity = datastore.getMappingContext().getPersistentEntity(persistentClass.name)
-
-        final clazz = getClass()
-        clazz = initializeMethods(clazz)
     }
 
-    @CompileStatic(TypeCheckingMode.SKIP)
+    AbstractGormApi(Class<D> persistentClass, MappingContext mappingContext) {
+        super(null)
+        this.persistentClass = persistentClass
+        this.persistentEntity = mappingContext.getPersistentEntity(persistentClass.name)
+    }
+
+    @CompileDynamic
     protected initializeMethods(clazz) {
         while (clazz != Object) {
             final methodsToAdd = clazz.declaredMethods.findAll { Method m ->
@@ -85,7 +90,17 @@ abstract class AbstractGormApi<D> extends AbstractDatastoreApi {
         return clazz
     }
 
-    List<Method> getMethods() { methods }
+    List<Method> getMethods() {
+        if(methods == null) {
+            initializeMethods(getClass())
+        }
+        return methods
+    }
 
-    List<Method> getExtendedMethods() { extendedMethods }
+    List<Method> getExtendedMethods() {
+        if(extendedMethods == null) {
+            initializeMethods(getClass())
+        }
+        return extendedMethods
+    }
 }

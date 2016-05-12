@@ -21,9 +21,14 @@ import org.grails.datastore.rx.internal.RxDatastoreClientImplementor
 import org.grails.datastore.rx.proxy.ProxyFactory
 import org.grails.datastore.rx.proxy.RxJavassistProxyFactory
 import org.grails.datastore.rx.query.QueryState
-import org.grails.datastore.rx.query.RxQuery
+import org.grails.gorm.rx.api.RxGormEnhancer
+import org.grails.gorm.rx.events.AutoTimestampEventListener
+import org.grails.gorm.rx.events.ConfigurableApplicationEventPublisher
+import org.grails.gorm.rx.events.DefaultApplicationEventPublisher
+import org.grails.gorm.rx.events.DomainEventListener
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.event.ApplicationEventMulticaster
 import rx.Observable
 
 import javax.persistence.CascadeType
@@ -37,13 +42,28 @@ import javax.persistence.CascadeType
 abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxDatastoreClientImplementor {
 
     protected MappingContext mappingContext
-    ApplicationEventPublisher eventPublisher
+    ConfigurableApplicationEventPublisher eventPublisher = new DefaultApplicationEventPublisher()
     final ProxyFactory proxyFactory
 
     AbstractRxDatastoreClient(MappingContext mappingContext) {
         this.mappingContext = mappingContext
         this.proxyFactory = new RxJavassistProxyFactory()
         mappingContext.setProxyFactory(new RxJavassistProxyFactory())
+
+    }
+
+    ConfigurableApplicationEventPublisher getEventPublisher() {
+        return eventPublisher
+    }
+
+    void setEventPublisher(ConfigurableApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher
+        initDefaultEventListeners(eventPublisher)
+    }
+
+    protected void initDefaultEventListeners(ConfigurableApplicationEventPublisher configurableApplicationEventPublisher) {
+        configurableApplicationEventPublisher.addApplicationListener(new AutoTimestampEventListener(this))
+        configurableApplicationEventPublisher.addApplicationListener(new DomainEventListener(this))
     }
 
     MappingContext getMappingContext() {
@@ -318,6 +338,16 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
         return keyValue != null && keyValue.isIndex();
     }
 
+    @Override
+    final void close() throws IOException {
+        try {
+            RxGormEnhancer.close()
+        } finally {
+            doClose()
+        }
+    }
+
+    abstract void doClose()
     /**
      * Executes a batch write operation
      *

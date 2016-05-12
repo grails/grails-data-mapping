@@ -32,17 +32,17 @@ import rx.Subscriber
 trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckable, Serializable {
     @Override
     boolean validate(Map arguments) {
-        return true
+        RxGormEnhancer.findValidationApi(getClass()).validate((D)this, arguments)
     }
 
     @Override
     boolean validate(List fields) {
-        return true
+        RxGormEnhancer.findValidationApi(getClass()).validate((D)this, fields)
     }
 
     @Override
     boolean validate() {
-        return true
+        RxGormEnhancer.findValidationApi(getClass()).validate((D)this)
     }
     /**
      * Save an instance and return an observable

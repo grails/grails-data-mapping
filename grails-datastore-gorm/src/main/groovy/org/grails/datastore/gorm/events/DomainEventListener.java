@@ -68,6 +68,18 @@ public class DomainEventListener extends AbstractPersistenceEventListener
         datastore.getMappingContext().addMappingContextListener(this);
     }
 
+
+    protected DomainEventListener(final MappingContext mappingContext) {
+        super(null);
+
+        for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
+            createEventCaches(entity);
+        }
+
+        mappingContext.addMappingContextListener(this);
+    }
+
+
     @Override
     protected void onPersistenceEvent(final AbstractPersistenceEvent event) {
         switch(event.getEventType()) {

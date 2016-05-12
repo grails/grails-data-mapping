@@ -167,7 +167,8 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     protected void initialize(MongoMappingContext mappingContext) {
 
         initializeMongoDatastoreClient(mappingContext, codecRegistry)
-        initializeConverters(mappingContext);
+        initializeConverters(mappingContext)
+        initDefaultEventListeners(eventPublisher)
         MongoGormEnhancer.registerMongoMethodExpressions()
     }
 
@@ -342,7 +343,7 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     }
 
     @Override
-    void close() throws IOException {
+    void doClose() throws IOException {
         mongoClient?.close()
     }
 

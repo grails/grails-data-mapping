@@ -1,6 +1,7 @@
 package org.grails.gorm.rx.api
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.rx.RxDatastoreClient
@@ -21,14 +22,24 @@ class RxGormEnhancer {
     private static final Map<String, Map<String, RxGormInstanceApi>> INSTANCE_APIS = new ConcurrentHashMap<String, Map<String, RxGormInstanceApi>>().withDefault { String key ->
         return new ConcurrentHashMap<String, RxGormInstanceApi>()
     }
+    private static final Map<String, Map<String, RxGormValidationApi>> VALIDATION_APIS = new ConcurrentHashMap<String, Map<String, RxGormValidationApi>>().withDefault { String key ->
+        return new ConcurrentHashMap<String, RxGormValidationApi>()
+    }
+
 
     private RxGormEnhancer() {
     }
 
+    static void close() {
+        STATIC_APIS.clear()
+        INSTANCE_APIS.clear()
+        VALIDATION_APIS.clear()
+    }
 
     static void registerEntity(PersistentEntity entity, RxDatastoreClient client, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
         STATIC_APIS.get(qualifier).put( entity.getName(), new RxGormStaticApi(entity, client))
         INSTANCE_APIS.get(qualifier).put( entity.getName(), new RxGormInstanceApi(entity, client))
+        VALIDATION_APIS.get(qualifier).put( entity.getName(), new RxGormValidationApi(entity, client))
     }
 
 
@@ -42,6 +53,14 @@ class RxGormEnhancer {
 
     static <T> RxGormInstanceApi<T> findInstanceApi(Class<T> type, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
         def api = INSTANCE_APIS.get(qualifier).get(type.name)
+        if(api == null) {
+            throw stateException(type)
+        }
+        return api
+    }
+
+    static <T> RxGormValidationApi<T> findValidationApi(Class<T> type, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
+        def api = VALIDATION_APIS.get(qualifier).get(type.name)
         if(api == null) {
             throw stateException(type)
         }

@@ -57,11 +57,22 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
     public AutoTimestampEventListener(final Datastore datastore) {
         super(datastore);
 
-        for (PersistentEntity persistentEntity : datastore.getMappingContext().getPersistentEntities()) {
+        MappingContext mappingContext = datastore.getMappingContext();
+        initForMappingContext(mappingContext);
+    }
+
+    protected AutoTimestampEventListener(final MappingContext mappingContext) {
+        super(null);
+
+        initForMappingContext(mappingContext);
+    }
+
+    protected void initForMappingContext(MappingContext mappingContext) {
+        for (PersistentEntity persistentEntity : mappingContext.getPersistentEntities()) {
             storeDateCreatedAndLastUpdatedInfo(persistentEntity);
         }
 
-        datastore.getMappingContext().addMappingContextListener(this);
+        mappingContext.addMappingContextListener(this);
     }
 
     @Override

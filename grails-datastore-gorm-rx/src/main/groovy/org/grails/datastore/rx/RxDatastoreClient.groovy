@@ -4,6 +4,8 @@ import grails.gorm.rx.proxy.ObservableProxy
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.QueryCreator
+import org.grails.gorm.rx.events.ConfigurableApplicationEventPublisher
+import org.springframework.context.ApplicationEventPublisher
 import rx.Observable
 import rx.Single
 
@@ -104,4 +106,9 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
      * @return The mapping context
      */
     MappingContext getMappingContext()
+
+    /**
+     * @return The event publisher
+     */
+    ConfigurableApplicationEventPublisher getEventPublisher()
 }

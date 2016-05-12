@@ -134,9 +134,10 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
 
     @Override
     Observable<Number> deleteAll(D... objects) {
-        return null
+        return deleteAll(Arrays.asList(objects))
     }
-/**
+
+    /**
      * Batch deletes a number of objects in one go
      *
      * @param objects The objects to delete
@@ -158,12 +159,12 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
 
     @Override
     Observable<List<Serializable>> saveAll(D... objects) {
-        return null
+        saveAll(Arrays.asList(objects))
     }
 
     @Override
     Observable<Boolean> exists(Serializable id) {
-        return null
+        get(id).map { it != null }.defaultIfEmpty(false)
     }
 
     Observable<List<D>> list(Map params = Collections.emptyMap()) {
@@ -370,12 +371,12 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
 
     @Override
     Observable<D> staticMethodMissing(String methodName, Object arg) {
-        return null
+        return methodMissing(methodName, arg)
     }
 
     @Override
     Object staticPropertyMissing(String property) {
-        return null
+        return propertyMissing(property)
     }
 
     @CompileDynamic

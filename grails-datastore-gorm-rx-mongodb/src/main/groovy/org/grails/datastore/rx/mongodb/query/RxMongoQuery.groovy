@@ -12,7 +12,6 @@ import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
-import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.ManyToOne
 import org.grails.datastore.mapping.model.types.ToMany
@@ -29,7 +28,6 @@ import org.grails.datastore.rx.mongodb.internal.CodecRegistryEmbeddedQueryEncode
 import org.grails.datastore.rx.query.QueryState
 import org.grails.datastore.rx.query.RxQuery
 import org.grails.datastore.rx.query.event.PostQueryEvent
-import org.grails.gorm.rx.api.RxGormEnhancer
 import rx.Observable
 import rx.Subscriber
 import rx.functions.FuncN
@@ -62,9 +60,7 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
 
     @Override
     Observable findAll() {
-        def event = new PreQueryEvent(datastoreClient, this)
-        def eventPublisher = datastoreClient.eventPublisher
-        eventPublisher?.publishEvent(event)
+        firePreQueryEvent()
         final List<Query.Projection> projectionList = projections().getProjectionList()
         Observable observable
         if(projectionList.isEmpty()) {
@@ -170,9 +166,25 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
             }
 
         }
+        return firePostQueryEvent(observable)
+    }
+
+    protected Observable firePostQueryEvent(Observable observable) {
         def postQueryEvent = new PostQueryEvent(datastoreClient, this, observable)
-        eventPublisher?.publishEvent(postQueryEvent)
+        def eventMulticaster = datastoreClient.eventPublisher
+        if (eventMulticaster != null) {
+            eventMulticaster.publishEvent(postQueryEvent)
+        }
         return postQueryEvent.observable
+    }
+
+    protected boolean firePreQueryEvent() {
+        def eventMulticaster = datastoreClient.eventPublisher
+        if (eventMulticaster != null) {
+            def event = new PreQueryEvent(datastoreClient, this)
+            eventMulticaster.publishEvent(event)
+        }
+        eventMulticaster
     }
 
     @Override

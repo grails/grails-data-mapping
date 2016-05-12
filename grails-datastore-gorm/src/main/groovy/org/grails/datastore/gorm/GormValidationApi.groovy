@@ -20,8 +20,10 @@ import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.gorm.validation.ValidatorProvider
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.event.ValidationEvent
+import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.validation.ValidationErrors
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
@@ -39,12 +41,22 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
 
     private Validator internalValidator
     BeforeValidateHelper beforeValidateHelper
+    protected final MappingContext mappingContext
+    protected final ApplicationEventPublisher eventPublisher
 
     GormValidationApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
         beforeValidateHelper = new BeforeValidateHelper()
+        this.mappingContext = datastore.mappingContext
+        this.eventPublisher = datastore.applicationEventPublisher
     }
 
+    GormValidationApi(Class<D> persistentClass, MappingContext mappingContext, ApplicationEventPublisher eventPublisher) {
+        super(persistentClass, mappingContext)
+        beforeValidateHelper = new BeforeValidateHelper()
+        this.mappingContext = mappingContext
+        this.eventPublisher = eventPublisher
+    }
 
     Validator getValidator() {
         if (!internalValidator) {
@@ -52,7 +64,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
                 internalValidator = ((ValidatorProvider)persistentEntity).validator
             }
             if(!internalValidator) {
-                internalValidator = datastore.mappingContext.getEntityValidator(persistentEntity)
+                internalValidator = mappingContext.getEntityValidator(persistentEntity)
             }
         }
         internalValidator
@@ -146,9 +158,13 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
      * @param fields The list of fields being validated, or null.
      */
     private void fireEvent(target, List fields) {
-        ValidationEvent event = new ValidationEvent(datastore, target)
+        ValidationEvent event = createValidationEvent(target)
         event.validatedFields = fields
-        datastore.applicationEventPublisher?.publishEvent(event)
+        eventPublisher?.publishEvent(event)
+    }
+
+    protected ValidationEvent createValidationEvent(target) {
+        new ValidationEvent(datastore, target)
     }
 
     /**

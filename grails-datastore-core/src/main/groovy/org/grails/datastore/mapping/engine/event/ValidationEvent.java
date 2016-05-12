@@ -24,6 +24,12 @@ public class ValidationEvent extends AbstractPersistenceEvent {
         super(source, entity);
     }
 
+    public ValidationEvent(Object source, PersistentEntity entity, EntityAccess entityAccess) {
+        super(source, entity, entityAccess);
+    }
+
+
+
     public List<?> getValidatedFields() {
         return validatedFields;
     }
