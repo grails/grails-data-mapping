@@ -63,7 +63,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
         if(shouldValidate) {
             def hasErrors = !validate()
             if(hasErrors) {
-                throw new ValidationException("Validation error occurred during call to save()", errors)
+                throw new ValidationException("Validation error occurred during call to save() for entity [$this]", errors)
             }
             else {
                 return currentRxGormInstanceApi().save(this, arguments)
@@ -324,8 +324,8 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param objects The objects to save
      * @return An observable that emits the identifiers of the saved objects
      */
-    static Observable<List<Serializable>> saveAll(Iterable<D> objects) {
-        currentRxGormStaticApi().saveAll(objects)
+    static Observable<List<Serializable>> saveAll(Iterable<D> objects, Map<String,Object> arguments = Collections.emptyMap()) {
+        currentRxGormStaticApi().saveAll(objects, arguments)
     }
 
     /**

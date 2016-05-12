@@ -7,11 +7,13 @@ import grails.gorm.rx.api.RxGormStaticOperations
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.api.Criteria
+import org.grails.datastore.mapping.validation.ValidationException
 import org.grails.datastore.rx.RxDatastoreClient
 import org.grails.datastore.rx.query.RxQuery
 import org.grails.gorm.rx.finders.*
@@ -153,8 +155,23 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
      * @param objects The objects to save
      * @return An observable that emits the identifiers of the saved objects
      */
-    Observable<List<Serializable>> saveAll(Iterable<D> objects) {
-        datastoreClient.persistAll(objects)
+    @Override
+    Observable<List<Serializable>> saveAll(Iterable<D> objects, Map<String,Object> arguments = Collections.emptyMap()) {
+        boolean shouldValidate = arguments?.containsKey("validate") ? arguments.validate : true
+        if(shouldValidate) {
+            def firstInvalid = objects.find() {
+                (it instanceof GormValidateable) && !((GormValidateable)it).validate()
+            }
+            if(firstInvalid != null) {
+                throw new ValidationException("Validation error occurred during call to save() for entity [$firstInvalid]", ((GormValidateable)firstInvalid).errors)
+            }
+            else {
+                return datastoreClient.persistAll(objects)
+            }
+        }
+        else {
+            return datastoreClient.persistAll(objects)
+        }
     }
 
     @Override
