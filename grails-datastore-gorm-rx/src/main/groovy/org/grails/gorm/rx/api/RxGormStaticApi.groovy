@@ -3,6 +3,7 @@ package org.grails.gorm.rx.api
 import grails.gorm.rx.CriteriaBuilder
 import grails.gorm.rx.DetachedCriteria
 import grails.gorm.rx.RxEntity
+import grails.gorm.rx.api.RxGormStaticOperations
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -23,7 +24,7 @@ import rx.Subscriber
  * @since 6.0
  */
 @CompileStatic
-class RxGormStaticApi<D> {
+class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
 
     final PersistentEntity entity
     final RxDatastoreClient datastoreClient
@@ -44,6 +45,11 @@ class RxGormStaticApi<D> {
      * @param id The id of the instance
      * @return An observable
      */
+    @Override
+    D create() {
+        (D)entity.newInstance()
+    }
+
     Observable<D> get(Serializable id) {
         datastoreClient.get(entity.javaClass, id)
     }
@@ -119,8 +125,11 @@ class RxGormStaticApi<D> {
         return ((RxQuery)query).singleResult()
     }
 
-
-    /**
+    @Override
+    Observable<Number> deleteAll(D... objects) {
+        return null
+    }
+/**
      * Batch deletes a number of objects in one go
      *
      * @param objects The objects to delete
@@ -138,6 +147,16 @@ class RxGormStaticApi<D> {
      */
     Observable<List<Serializable>> saveAll(Iterable<D> objects) {
         datastoreClient.persistAll(objects)
+    }
+
+    @Override
+    Observable<List<Serializable>> saveAll(D... objects) {
+        return null
+    }
+
+    @Override
+    Observable<Boolean> exists(Serializable id) {
+        return null
     }
 
     Observable<List<D>> list(Map params = Collections.emptyMap()) {
@@ -193,6 +212,7 @@ class RxGormStaticApi<D> {
             s.onCompleted()
         } as Observable.OnSubscribe))
     }
+
 
     /**
      * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
@@ -340,6 +360,17 @@ class RxGormStaticApi<D> {
         }
 
     }
+
+    @Override
+    Observable<D> staticMethodMissing(String methodName, Object arg) {
+        return null
+    }
+
+    @Override
+    Object staticPropertyMissing(String property) {
+        return null
+    }
+
     @CompileDynamic
     Observable<D> methodMissing(String methodName, args) {
         FinderMethod method = gormDynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }

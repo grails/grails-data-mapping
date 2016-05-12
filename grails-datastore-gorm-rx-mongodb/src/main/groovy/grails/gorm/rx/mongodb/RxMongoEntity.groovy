@@ -3,7 +3,10 @@ package grails.gorm.rx.mongodb
 import grails.gorm.rx.RxEntity
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.bson.BsonDocument
+import org.bson.BsonDocumentWriter
 import org.bson.Document
+import org.bson.codecs.EncoderContext
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
 import org.grails.datastore.gorm.schemaless.DynamicAttributes
@@ -23,6 +26,19 @@ trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
      * The id of the document
      */
     ObjectId id
+
+    /**
+     * Converts this entity into a {@link BsonDocument}
+     *
+     * @return The {@link BsonDocument} instance
+     */
+    BsonDocument toBsonDocument() {
+        def staticApi = RxGormEnhancer.findStaticApi(getClass())
+        RxMongoDatastoreClient client = (RxMongoDatastoreClient)staticApi.datastoreClient
+        def doc = new BsonDocument()
+        client.codecRegistry.get(getClass()).encode(new BsonDocumentWriter(doc), this, EncoderContext.builder().build())
+        return doc
+    }
 
     /**
      * Creates a criteria builder instance

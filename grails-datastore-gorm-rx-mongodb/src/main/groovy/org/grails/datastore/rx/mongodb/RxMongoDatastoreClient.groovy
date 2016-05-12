@@ -69,7 +69,13 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     final String defaultDatabase
     final MongoMappingContext mappingContext
 
-    RxMongoDatastoreClient(MongoMappingContext mappingContext, MongoClient mongoClient) {
+    /**
+     * Creates a new RxMongoDatastoreClient for the given mapping context and {@link MongoClient}
+     *
+     * @param mongoClient The mongo client
+     * @param mappingContext The mapping context
+     */
+    RxMongoDatastoreClient(MongoClient mongoClient, MongoMappingContext mappingContext) {
         super(mappingContext)
         this.mongoClient = mongoClient
         this.defaultDatabase = mappingContext.defaultDatabaseName
@@ -79,35 +85,66 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
         initialize(mappingContext)
     }
 
+    /**
+     * Creates a new RxMongoDatastoreClient for the given database name, classes and {@link MongoClient}
+     *
+     * @param mongoClient The mongo client
+     * @param databaseName The default database name
+     * @param classes The classes which must implement {@link grails.gorm.rx.mongodb.RxMongoEntity}
+     */
     RxMongoDatastoreClient(MongoClient mongoClient, String databaseName, Class...classes) {
         super(new MongoMappingContext(databaseName))
         this.mongoClient = mongoClient
         this.defaultDatabase = mappingContext.defaultDatabaseName
-        this.mappingContext = (MongoMappingContext)super.mappingContext
-        this.mappingContext.addPersistentEntities(classes)
-        this.mappingContext.initialize()
+        this.mappingContext = initializeMappingContext(classes)
         this.codecRegistry = createCodeRegistry()
+        initialize(mappingContext)
+    }
+
+    /**
+     * Creates a new RxMongoDatastoreClient for the given database name and classes using the default Mongo configuration
+     *
+     * @param mongoClient The mongo client
+     * @param databaseName The default database name
+     * @param classes The classes which must implement {@link grails.gorm.rx.mongodb.RxMongoEntity}
+     */
+    RxMongoDatastoreClient(String databaseName, Class...classes) {
+        super(new MongoMappingContext(databaseName))
+        this.defaultDatabase = mappingContext.defaultDatabaseName
+        this.codecRegistry = createCodeRegistry()
+        this.mongoClient = initializeMongoClient(MongoClientSettings.builder().build())
+        this.mappingContext = initializeMappingContext(classes)
         initialize(mappingContext)
     }
 
     RxMongoDatastoreClient(MongoMappingContext mappingContext,
                            MongoClientSettings clientSettings = MongoClientSettings.builder().build()) {
         super(mappingContext)
-
         this.mappingContext = mappingContext
         this.defaultDatabase = mappingContext.defaultDatabaseName
         this.codecRegistry = createCodeRegistry()
-        def clientSettingsBuilder = MongoClientSettings.builder(clientSettings)
-                                                        .codecRegistry(codecRegistry)
+        this.mongoClient = initializeMongoClient(clientSettings)
+        initialize(mappingContext)
+    }
 
-        if(clientSettings.getClusterSettings() == null) {
+    protected MongoMappingContext initializeMappingContext(Class... classes) {
+        MongoMappingContext mongoMappingContext = (MongoMappingContext) super.mappingContext
+        mongoMappingContext.addPersistentEntities(classes)
+        mongoMappingContext.initialize()
+        return mongoMappingContext;
+    }
+
+    protected MongoClient initializeMongoClient(MongoClientSettings clientSettings) {
+        def clientSettingsBuilder = MongoClientSettings.builder(clientSettings)
+                .codecRegistry(codecRegistry)
+
+        if (clientSettings.getClusterSettings() == null) {
             // default to localhost if no cluster settings specified
             def clusterSettings = ClusterSettings.builder().hosts(Arrays.asList(new ServerAddress("localhost")))
             clientSettingsBuilder
                     .clusterSettings(clusterSettings.build())
         }
-        mongoClient = MongoClients.create(clientSettingsBuilder.build())
-        initialize(mappingContext)
+        return MongoClients.create(clientSettingsBuilder.build())
     }
 
     /**
