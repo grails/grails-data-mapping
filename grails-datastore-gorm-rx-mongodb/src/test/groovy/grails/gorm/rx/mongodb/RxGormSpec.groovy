@@ -5,29 +5,17 @@ import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
 import spock.lang.Shared
 import spock.lang.Specification
 
-/**
- * Created by graemerocher on 06/05/16.
- */
 abstract class RxGormSpec extends Specification {
 
     @Shared RxMongoDatastoreClient client
 
     void setupSpec() {
-        def context = new MongoMappingContext("test")
-
         def classes = getDomainClasses()
-        context.addPersistentEntities(classes as Class[])
-        for(c in classes) {
-            GroovySystem.metaClassRegistry.removeMetaClass(c)
-        }
-        context.initialize()
-        client = new RxMongoDatastoreClient(context)
-
-
+        client = new RxMongoDatastoreClient("test", classes as Class[])
     }
 
     void setup() {
-        client.nativeInterface.getDatabase(client.defaultDatabase).drop().toBlocking().first()
+        client.dropDatabase()
         client.rebuildIndex()
     }
 

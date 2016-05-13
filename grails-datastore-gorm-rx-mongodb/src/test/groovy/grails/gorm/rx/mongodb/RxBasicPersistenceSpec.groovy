@@ -16,17 +16,8 @@ class RxBasicPersistenceSpec extends Specification {
     void "Test basic persistence of MongoDB using RX"() {
         given:"An rx datastore client"
 
-        def context = new MongoMappingContext("test")
-        context.addPersistentEntity(Simple)
-        context.initialize()
-        def client = new RxMongoDatastoreClient(context)
-        client.nativeInterface.getDatabase(client.defaultDatabase).drop().toBlocking().first()
-//
-//        when:"An object is queried that doesn't exist"
-//        def nonExistant = Simple.get(new ObjectId())
-//
-//        then:"The object doesn't exist"
-//        nonExistant.toBlocking().first() == null
+        def client = new RxMongoDatastoreClient("test", Simple)
+        client.dropDatabase()
 
         when:"An instance is saved"
         def s = new Simple(name: "Fred")

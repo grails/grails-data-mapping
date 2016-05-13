@@ -367,6 +367,10 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
     final void close() throws IOException {
         try {
             RxGormEnhancer.close()
+            def registry = GroovySystem.metaClassRegistry
+            for(entity in mappingContext.persistentEntities) {
+                registry.removeMetaClass(entity.javaClass)
+            }
         } finally {
             doClose()
         }
