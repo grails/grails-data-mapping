@@ -82,6 +82,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
                     throw new DataAccessResourceFailureException("Maximum number (5000) of delete operations to flush() exceeded. Flush the session periodically to avoid this error for batch operations.");
                 }
             };
+    private static final String NULL = "null";
 
     protected Map<Class, Persister> persisters = new ConcurrentHashMap<Class,Persister>();
     protected boolean isSynchronizedWithTransaction = false;
@@ -606,7 +607,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public Object retrieve(Class type, Serializable key) {
-        if (key == null || type == null) {
+        if (key == null || type == null || NULL.equals(key)) {
             return null;
         }
 

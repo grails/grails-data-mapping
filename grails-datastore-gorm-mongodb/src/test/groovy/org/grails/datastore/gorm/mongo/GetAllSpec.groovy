@@ -10,6 +10,11 @@ import grails.gorm.tests.PetType
  */
 class GetAllSpec extends GormDatastoreSpec {
 
+    void "test that 'null' returns null"() {
+        expect:
+        Pet.get('null') == null
+    }
+
     void "Test the getAll method works with no arguments"() {
         given:"some sample data"
             createPets()
