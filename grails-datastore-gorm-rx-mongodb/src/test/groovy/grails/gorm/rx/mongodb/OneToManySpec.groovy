@@ -1,7 +1,10 @@
 package grails.gorm.rx.mongodb
 
 import grails.gorm.rx.collection.RxPersistentCollection
+import grails.gorm.rx.mongodb.domains.Animal
+import grails.gorm.rx.mongodb.domains.Carrot
 import grails.gorm.rx.mongodb.domains.Club
+import grails.gorm.rx.mongodb.domains.Donkey
 import grails.gorm.rx.mongodb.domains.Player
 import grails.gorm.rx.mongodb.domains.Sport
 import grails.gorm.rx.proxy.ObservableProxy
@@ -13,6 +16,26 @@ import rx.Observable
  * Created by graemerocher on 09/05/16.
  */
 class OneToManySpec extends RxGormSpec {
+
+    void "Test that a one-to-many with inheritances behaves correctly"() {
+        given:"A one-to-many association inherited from a parent"
+        Animal animal = new Animal().save().toBlocking().first()
+        Donkey donkey = new Donkey(name: "Eeyore").save().toBlocking().first()
+        Carrot.saveAll(
+            new Carrot(leaves: 1, animal: animal),
+            new Carrot(leaves: 2, animal: animal),
+            new Carrot(leaves: 3, animal: donkey),
+            new Carrot(leaves: 4, animal: donkey)
+        ).toBlocking().first()
+
+        when:"The association is loaded"
+        animal = Animal.get(animal.id).toBlocking().first()
+        donkey = Donkey.get(donkey.id).toBlocking().first()
+
+        then:"The association is correctly loaded"
+        donkey.carrots.size() == 2
+        animal.carrots.size() == 2
+    }
 
     void "test unidirectioal one-to-many persistence"() {
         when:"A new unidirectional association is created"
@@ -223,6 +246,6 @@ class OneToManySpec extends RxGormSpec {
 
     @Override
     List<Class> getDomainClasses() {
-        [Sport, Club]
+        [Sport, Club, Animal, Carrot, Donkey]
     }
 }
