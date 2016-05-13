@@ -44,6 +44,7 @@ env:
   - GORM_IMPL=hibernate4
   - GORM_IMPL=hibernate5
   - GORM_IMPL=mongodb
+  - GORM_IMPL=rx-mongodb
   - GORM_IMPL=redis
   - GORM_IMPL=cassandra
   - GORM_IMPL=neo4j

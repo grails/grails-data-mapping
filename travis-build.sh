@@ -31,6 +31,9 @@ else
                 ./gradlew boot-plugins/gorm-mongodb-spring-boot:test || EXIT_STATUS=$?
             fi
             ;;
+        rx-mongodb)
+            ./gradlew grails-datastore-gorm-rx-mongodb:test -no-daemon --stacktrace || EXIT_STATUS=$?
+            ;;
         redis)
             ./gradlew grails-datastore-gorm-redis:test -no-daemon  || EXIT_STATUS=$?
             ;;
