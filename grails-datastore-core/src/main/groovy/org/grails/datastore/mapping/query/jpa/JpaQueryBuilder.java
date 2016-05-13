@@ -63,6 +63,8 @@ public class JpaQueryBuilder {
 
     public static final String LOGICAL_OR = " OR ";
     private static final Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
+    public static final String PARAMETER_NAME_PREFIX = "p";
+    private static final String PARAMETER_PREFIX = ":p";
     private PersistentEntity entity;
     private Query.Junction criteria;
     private Query.ProjectionList projectionList = new Query.ProjectionList();
@@ -242,9 +244,8 @@ public class JpaQueryBuilder {
          .append(DOT)
          .append(name)
          .append(operator)
-         .append(QUESTIONMARK);
-        if (!hibernateCompatible)
-          q.append(++position);
+         .append(PARAMETER_PREFIX)
+         .append(++position);
         return position;
     }
 
@@ -543,16 +544,14 @@ public class JpaQueryBuilder {
                 whereClause.append(OPEN_BRACKET)
                            .append(qualifiedName)
                            .append(" >= ")
-                           .append(QUESTIONMARK);
-               if (!hibernateCompatible)
-                    whereClause.append(++position);
+                           .append(PARAMETER_PREFIX)
+                           .append(++position);
                 whereClause.append(" AND ")
                            .append(qualifiedName)
                            .append(" <= ")
-                           .append(QUESTIONMARK);
-                if (!hibernateCompatible)
-                    whereClause.append(++position);
-                           whereClause.append(CLOSE_BRACKET);
+                           .append(PARAMETER_PREFIX)
+                           .append(++position)
+                           .append(CLOSE_BRACKET);
 
                 parameters.add(conversionService.convert( from, propType ));
                 parameters.add(conversionService.convert( to, propType ));
@@ -596,10 +595,9 @@ public class JpaQueryBuilder {
                  .append(name)
                  .append(")")
                  .append(" like lower(")
-                 .append(QUESTIONMARK);
-                if (!hibernateCompatible)
-                 whereClause.append(++position);
-                whereClause.append(")");
+                 .append(PARAMETER_PREFIX)
+                 .append(++position)
+                 .append(")");
                 parameters.add(conversionService.convert( eq.getValue(), propType ));
                 return position;
             }
@@ -617,9 +615,8 @@ public class JpaQueryBuilder {
                            .append(" IN (");
                 for (Iterator i = eq.getValues().iterator(); i.hasNext();) {
                     Object val = i.next();
-                    whereClause.append(QUESTIONMARK);
-                    if (!hibernateCompatible)
-                        whereClause.append(++position);
+                    whereClause.append(PARAMETER_PREFIX);
+                    whereClause.append(++position);
                     if (i.hasNext()) {
                         whereClause.append(COMMA);
                     }
@@ -669,9 +666,8 @@ public class JpaQueryBuilder {
             if (prop == null) throw new InvalidDataAccessResourceUsageException("Property '"+propertyName+"' of class '"+entity.getName()+"' specified in update does not exist");
 
             parameters.add(propertiesToUpdate.get(propertyName));
-            queryString.append(SPACE).append(logicalName).append(DOT).append(propertyName).append('=').append(QUESTIONMARK);
-            if (!hibernateCompatible)
-                queryString.append(parameters.size());
+            queryString.append(SPACE).append(logicalName).append(DOT).append(propertyName).append('=');
+            queryString.append(PARAMETER_PREFIX).append(parameters.size());
             if (iterator.hasNext()) {
                 queryString.append(COMMA);
             }
