@@ -20,23 +20,25 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
 
   echo "Publishing archives"
   echo "org.gradle.jvmargs=-XX\:MaxPermSize\=1024m -Xmx1500m -Dfile.encoding\=UTF-8 -Duser.country\=US -Duser.language\=en -Duser.variant" >> ~/.gradle/gradle.properties
-  echo "org.gradle.daemon=true" >> ~/.gradle/gradle.properties
+  echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
   ./gradlew --stop
 
+  export GRADLE_OPTS="-XX:MaxPermSize=1024m -Xmx1500m -Dfile.encoding=UTF-8"
 
   gpg --keyserver keyserver.ubuntu.com --recv-key $SIGNING_KEY
   if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
     # for releases we upload to Bintray and Sonatype OSS
-    ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" publish -x grails2-plugins/neo4j:publish -x grails2-plugins/hibernate4:publish -x grails2-plugins/mongodb:publish -x grails2-plugins/neo4j:uploadArchives -x grails2-plugins/hibernate4:uploadArchives -x grails2-plugins/mongodb:uploadArchives || EXIT_STATUS=$?
-
-    if [[ $EXIT_STATUS -eq 0 ]]; then
     ./gradlew --stop
     ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" uploadArchives -x grails2-plugins/neo4j:publish -x grails2-plugins/hibernate4:publish -x grails2-plugins/mongodb:publish -x grails2-plugins/neo4j:uploadArchives -x grails2-plugins/hibernate4:uploadArchives -x grails2-plugins/mongodb:uploadArchives || EXIT_STATUS=$?
-    fi
 
     if [[ $EXIT_STATUS -eq 0 ]]; then
     ./gradlew --stop
     ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" bintrayUpload -x grails2-plugins/neo4j:publish -x grails2-plugins/hibernate4:publish -x grails2-plugins/mongodb:publish -x grails2-plugins/neo4j:uploadArchives -x grails2-plugins/hibernate4:uploadArchives -x grails2-plugins/mongodb:uploadArchives || EXIT_STATUS=$?
+    fi
+
+    if [[ $EXIT_STATUS -eq 0 ]]; then
+    ./gradlew --stop
+    ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" publish -x grails2-plugins/neo4j:publish -x grails2-plugins/hibernate4:publish -x grails2-plugins/mongodb:publish -x grails2-plugins/neo4j:uploadArchives -x grails2-plugins/hibernate4:uploadArchives -x grails2-plugins/mongodb:uploadArchives || EXIT_STATUS=$?
     fi
 
     if [[ $EXIT_STATUS -eq 0 ]]; then
