@@ -9,8 +9,13 @@ import grails.gorm.rx.mongodb.api.RxMongoStaticOperations
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.bson.BsonDocument
+import org.bson.BsonDocumentReader
 import org.bson.BsonDocumentWriter
+import org.bson.Document
+import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
+import org.bson.codecs.configuration.CodecRegistry
+import org.bson.conversions.Bson
 import org.grails.datastore.gorm.schemaless.DynamicAttributes
 import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
 import org.grails.datastore.rx.mongodb.api.RxMongoStaticApi
@@ -45,6 +50,20 @@ trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
     static MongoDatabase getDB() {
         RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
         return staticApi.getDB()
+    }
+
+    /**
+     * Convert the given {@link Document} to an instance of this entity
+     * @param bson The document
+     * @return An instance of this entity
+     */
+    static D fromBson(Bson bson) {
+        def staticApi = RxGormEnhancer.findStaticApi(getClass())
+        RxMongoDatastoreClient client = (RxMongoDatastoreClient)staticApi.datastoreClient
+
+        def codecRegistry = client.codecRegistry
+        def bsonDocument = bson.toBsonDocument(Document, codecRegistry)
+        return (D) codecRegistry.get(this).decode(new BsonDocumentReader(bsonDocument), DecoderContext.builder().build())
     }
 
     /**
