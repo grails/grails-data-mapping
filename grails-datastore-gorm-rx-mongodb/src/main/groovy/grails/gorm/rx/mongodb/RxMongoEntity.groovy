@@ -1,18 +1,19 @@
 package grails.gorm.rx.mongodb
 
-import com.mongodb.AggregationOptions
-import com.mongodb.ReadPreference
-import com.mongodb.rx.client.AggregateObservable
+import com.mongodb.rx.client.MongoClient
+import com.mongodb.rx.client.MongoCollection
+import com.mongodb.rx.client.MongoDatabase
 import grails.gorm.rx.RxEntity
+import grails.gorm.rx.api.RxGormStaticOperations
+import grails.gorm.rx.mongodb.api.RxMongoStaticOperations
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.bson.BsonDocument
 import org.bson.BsonDocumentWriter
-import org.bson.Document
 import org.bson.codecs.EncoderContext
-import org.bson.conversions.Bson
 import org.grails.datastore.gorm.schemaless.DynamicAttributes
 import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
+import org.grails.datastore.rx.mongodb.api.RxMongoStaticApi
 import org.grails.gorm.rx.api.RxGormEnhancer
 import rx.Observable
 /**
@@ -39,12 +40,27 @@ trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
     }
 
     /**
+     * @return The {@MongoDatabase} in use
+     */
+    static MongoDatabase getDB() {
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        return staticApi.getDB()
+    }
+
+    /**
+     * @return The {@MongoCollection} in use
+     */
+    static MongoCollection<D> getCollection() {
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        return staticApi.getCollection()
+    }
+
+    /**
      * Creates a criteria builder instance
      */
     static MongoCriteriaBuilder<D> createCriteria() {
-        def staticApi = RxGormEnhancer.findStaticApi(this)
-        def client = staticApi.datastoreClient
-        return new MongoCriteriaBuilder<D>(this, client, client.mappingContext)
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        return staticApi.createCriteria()
     }
 
     /**
@@ -79,17 +95,70 @@ trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
     }
 
     /**
-     * Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set
-     *
-     * @param pipeline The pipeline
-     * @param options The options (optional)
-     * @return A mongodb result list
+     * Switches to given client within the context of the closure
+     * @param name The client
+     * @param callable The closure
+     * @return
      */
-    static Observable<D> aggregate(List pipeline, Map<String,Object> options = Collections.emptyMap()) {
-        aggregate(pipeline, options, (ReadPreference)null)
+    static <T> T withClient(MongoClient client, @DelegatesTo(RxMongoStaticOperations) Closure<T> callable ) {
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        staticApi.withClient(client, callable)
     }
 
+    /**
+     * Switches to the given client for the returned API
+     *
+     * @param name The client
+     * @return The {@link RxMongoStaticOperations} instance
+     */
+    static RxMongoStaticOperations<D> withClient(MongoClient client) {
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        staticApi.withClient(client)
+    }
 
+    /**
+     * Switches to given database within the context of the closure
+     * @param name The name of the database
+     * @param callable The closure
+     * @return
+     */
+    static <T> T withDatabase(String name, @DelegatesTo(RxGormStaticOperations) Closure<T> callable ) {
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        staticApi.withDatabase(name, callable)
+    }
+
+    /**
+     * Switches to the given database for the returned API
+     *
+     * @param name The name of the database
+     * @return The {@link RxMongoStaticOperations} instance
+     */
+    static RxMongoStaticOperations<D> withDatabase(String name) {
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        staticApi.withDatabase(name)
+    }
+
+    /**
+     * Switches to the given collection for the returned API
+     *
+     * @param name The name of the collection
+     * @return The {@link RxMongoStaticOperations} instance
+     */
+    static RxMongoStaticOperations<D> withCollection(String name) {
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        staticApi.withCollection(name)
+    }
+
+    /**
+     * Switches to given collection within the context of the closure
+     * @param name The name of the collection
+     * @param callable The closure
+     * @return
+     */
+    static <T> T withCollection(String name, @DelegatesTo(RxMongoStaticOperations) Closure<T> callable ) {
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        staticApi.withCollection(name, callable)
+    }
 
     /**
      * Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set
@@ -98,25 +167,9 @@ trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
      * @param options The options (optional)
      * @return A mongodb result list
      */
-    static Observable<D> aggregate(List pipeline, Map<String,Object> options, ReadPreference readPreference) {
-        def staticApi = RxGormEnhancer.findStaticApi(this)
-        RxMongoDatastoreClient mongoDatastoreClient = (RxMongoDatastoreClient)staticApi.datastoreClient
-        def entity = staticApi.entity
-        def mongoCollection = mongoDatastoreClient.getCollection(entity, entity.javaClass)
-
-        if(readPreference != null) {
-            mongoCollection = mongoCollection.withReadPreference(readPreference)
-        }
-        List<Document> newPipeline = cleanPipeline(pipeline)
-        AggregateObservable aggregateObservable = mongoCollection.aggregate(newPipeline)
-        for(opt in options.keySet()) {
-            if(aggregateObservable.respondsTo(opt)) {
-                setOption((Object)aggregateObservable, opt, options)
-            }
-        }
-
-        return (Observable<D>)aggregateObservable.toObservable()
-
+    static Observable<D> aggregate(List pipeline, Map<String,Object> options = Collections.emptyMap()) {
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        staticApi.aggregate(pipeline, options)
     }
 
 
@@ -126,9 +179,8 @@ trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
      * @return The hit count
      */
     static Observable<Integer> countHits(String query, Map options = Collections.emptyMap()) {
-        search(query, options).reduce(0, { Integer i, D d ->
-                return ++i
-        })
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        staticApi.countHits(query, options)
     }
     /**
      * Search for entities using the given query
@@ -137,20 +189,8 @@ trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
      * @return The results
      */
     static Observable<D> search(String query, Map options = Collections.emptyMap()) {
-        def staticApi = RxGormEnhancer.findStaticApi(this)
-        RxMongoDatastoreClient client = (RxMongoDatastoreClient)staticApi.datastoreClient
-        def persistentEntity = staticApi.entity
-        def coll = client.getCollection(persistentEntity, persistentEntity.javaClass)
-        def searchArgs = ['$search': query]
-        if(options.language) {
-            searchArgs['$language'] = options.language.toString()
-        }
-        def findObservable = coll.find((Bson)new Document('$text',searchArgs))
-        int offset = options.offset instanceof Number ? ((Number)options.offset).intValue() : 0
-        int max = options.max instanceof Number ? ((Number)options.max).intValue() : -1
-        if(offset > 0) findObservable.skip(offset)
-        if(max > -1) findObservable.limit(max)
-        findObservable.toObservable()
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        staticApi.search(query, options)
     }
 
     /**
@@ -161,40 +201,9 @@ trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
      * @return The results
      */
     static Observable<D> searchTop(String query, int limit = 5, Map options = Collections.emptyMap()) {
-        def staticApi = RxGormEnhancer.findStaticApi(this)
-        RxMongoDatastoreClient client = (RxMongoDatastoreClient)staticApi.datastoreClient
-        def persistentEntity = staticApi.entity
-        def coll = client.getCollection(persistentEntity, persistentEntity.javaClass)
+        RxMongoStaticApi<D> staticApi = (RxMongoStaticApi<D>)RxGormEnhancer.findStaticApi(this)
+        staticApi.searchTop(query,limit, options)
 
-        def searchArgs = ['$search': query]
-        if(options.language) {
-            searchArgs['$language'] = options.language.toString()
-        }
-
-        def score = new Document('score', ['$meta': 'textScore'])
-        def findObservable = coll.find((Bson)new Document('$text', searchArgs))
-                .projection((Bson)score)
-                .sort((Bson)score)
-                .limit(limit)
-
-        findObservable.toObservable()
     }
 
-    @CompileDynamic
-    private static void setOption(Object target, String opt, Map options) {
-        target."$opt"(options.get(opt))
-    }
-
-    @CompileStatic
-    private static List<Document> cleanPipeline(List pipeline) {
-        List<Document> newPipeline = new ArrayList<Document>()
-        for (o in pipeline) {
-            if (o instanceof Document) {
-                newPipeline << (Document)o
-            } else if (o instanceof Map) {
-                newPipeline << new Document((Map) o)
-            }
-        }
-        newPipeline
-    }
 }

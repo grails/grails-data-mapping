@@ -1,8 +1,12 @@
 package org.grails.datastore.rx.internal
 
 import grails.gorm.rx.proxy.ObservableProxy
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.rx.query.QueryState
+import org.grails.gorm.rx.api.RxGormInstanceApi
+import org.grails.gorm.rx.api.RxGormStaticApi
+import org.grails.gorm.rx.api.RxGormValidationApi
 import rx.Observable
 
 /**
@@ -48,5 +52,29 @@ interface RxDatastoreClientImplementor {
      * @return The query
      */
     Query createQuery(Class type, QueryState queryState)
+
+    /**
+     * Creates a static API (used for static methods)
+     *
+     * @param entity The entity
+     * @return The static API
+     */
+    RxGormStaticApi createStaticApi(PersistentEntity entity)
+
+    /**
+     * Creates an instance API (used for instance methods)
+     *
+     * @param entity The entity
+     * @return The instance API
+     */
+    RxGormInstanceApi createInstanceApi(PersistentEntity entity)
+
+    /**
+     * Creates a validation API (used for validation methods)
+     *
+     * @param entity The entity
+     * @return The validation API
+     */
+    RxGormValidationApi createValidationApi(PersistentEntity entity)
 
 }

@@ -21,9 +21,16 @@ import javax.persistence.FetchType
  * @author Graeme Rocher
  * @since 6.0
  */
-@InheritConstructors
 @CompileStatic
 class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> {
+    DetachedCriteria(Class<Observable<T>> targetClass, String alias) {
+        super(targetClass, alias)
+    }
+
+    DetachedCriteria(Class<Observable<T>> targetClass) {
+        super(targetClass)
+    }
+
     /**
      * Finds a single result matching this criteria. Note that the observable returned will emit each result one by one. If you
      * prefer to receive the entire list of results use {@link #toList()} instead
@@ -219,7 +226,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> {
     }
 
     @Override
-    DetachedCriteria<Observable<T>> distinct(String property) {
+    DetachedCriteria<T> distinct(String property) {
         return (DetachedCriteria)super.distinct(property)
     }
 

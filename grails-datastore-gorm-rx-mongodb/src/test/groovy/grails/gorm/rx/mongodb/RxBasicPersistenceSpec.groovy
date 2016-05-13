@@ -20,7 +20,7 @@ class RxBasicPersistenceSpec extends Specification {
         context.addPersistentEntity(Simple)
         context.initialize()
         def client = new RxMongoDatastoreClient(context)
-        client.mongoClient.getDatabase(client.defaultDatabase).drop().toBlocking().first()
+        client.nativeInterface.getDatabase(client.defaultDatabase).drop().toBlocking().first()
 //
 //        when:"An object is queried that doesn't exist"
 //        def nonExistant = Simple.get(new ObjectId())

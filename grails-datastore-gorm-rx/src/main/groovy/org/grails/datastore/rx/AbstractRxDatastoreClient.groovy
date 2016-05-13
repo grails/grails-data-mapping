@@ -22,6 +22,9 @@ import org.grails.datastore.rx.proxy.ProxyFactory
 import org.grails.datastore.rx.proxy.RxJavassistProxyFactory
 import org.grails.datastore.rx.query.QueryState
 import org.grails.gorm.rx.api.RxGormEnhancer
+import org.grails.gorm.rx.api.RxGormInstanceApi
+import org.grails.gorm.rx.api.RxGormStaticApi
+import org.grails.gorm.rx.api.RxGormValidationApi
 import org.grails.gorm.rx.events.AutoTimestampEventListener
 import org.grails.gorm.rx.events.ConfigurableApplicationEventPublisher
 import org.grails.gorm.rx.events.DefaultApplicationEventPublisher
@@ -369,7 +372,26 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
         }
     }
 
+    /**
+     * Close the client
+     */
     abstract void doClose()
+
+    @Override
+    RxGormStaticApi createStaticApi(PersistentEntity entity) {
+        return new RxGormStaticApi(entity, this)
+    }
+
+    @Override
+    RxGormInstanceApi createInstanceApi(PersistentEntity entity) {
+        return new RxGormInstanceApi(entity, this)
+    }
+
+    @Override
+    RxGormValidationApi createValidationApi(PersistentEntity entity) {
+        return new RxGormValidationApi(entity, this)
+    }
+
     /**
      * Executes a batch write operation
      *

@@ -5,6 +5,7 @@ import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.rx.RxDatastoreClient
+import org.grails.datastore.rx.internal.RxDatastoreClientImplementor
 
 import java.util.concurrent.ConcurrentHashMap
 /**
@@ -37,9 +38,9 @@ class RxGormEnhancer {
     }
 
     static void registerEntity(PersistentEntity entity, RxDatastoreClient client, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
-        STATIC_APIS.get(qualifier).put( entity.getName(), new RxGormStaticApi(entity, client))
-        INSTANCE_APIS.get(qualifier).put( entity.getName(), new RxGormInstanceApi(entity, client))
-        VALIDATION_APIS.get(qualifier).put( entity.getName(), new RxGormValidationApi(entity, client))
+        STATIC_APIS.get(qualifier).put( entity.getName(), ((RxDatastoreClientImplementor)client).createStaticApi(entity))
+        INSTANCE_APIS.get(qualifier).put( entity.getName(), ((RxDatastoreClientImplementor)client).createInstanceApi(entity))
+        VALIDATION_APIS.get(qualifier).put( entity.getName(), ((RxDatastoreClientImplementor)client).createValidationApi(entity))
     }
 
 

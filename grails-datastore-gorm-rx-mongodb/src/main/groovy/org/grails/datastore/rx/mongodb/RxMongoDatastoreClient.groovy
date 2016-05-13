@@ -44,11 +44,13 @@ import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.rx.AbstractRxDatastoreClient
 import org.grails.datastore.rx.RxDatastoreClient
 import org.grails.datastore.rx.batch.BatchOperation
+import org.grails.datastore.rx.mongodb.api.RxMongoStaticApi
 import org.grails.datastore.rx.mongodb.engine.codecs.RxPersistentEntityCodec
 import org.grails.datastore.rx.mongodb.extensions.MongoExtensions
 import org.grails.datastore.rx.mongodb.query.RxMongoQuery
 import org.grails.datastore.rx.query.QueryState
 import org.grails.gorm.rx.api.RxGormEnhancer
+import org.grails.gorm.rx.api.RxGormStaticApi
 import org.springframework.core.convert.converter.Converter
 import org.springframework.core.convert.converter.ConverterRegistry
 import rx.Observable
@@ -65,13 +67,13 @@ import javax.persistence.FlushModeType
 class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> implements CodecProvider {
     private static final String INDEX_ATTRIBUTES = "indexAttributes"
 
-    final MongoClient mongoClient
-    final CodecRegistry codecRegistry
-    final Map<String, Codec> entityCodecs = [:]
-    final Map<String, String> mongoCollections= [:]
-    final Map<String, String> mongoDatabases= [:]
-    final String defaultDatabase
-    final MongoMappingContext mappingContext
+    protected MongoClient mongoClient
+    protected final CodecRegistry codecRegistry
+    protected final Map<String, Codec> entityCodecs = [:]
+    protected final Map<String, String> mongoCollections= [:]
+    protected final Map<String, String> mongoDatabases= [:]
+    protected final String defaultDatabase
+    protected final MongoMappingContext mappingContext
 
     /**
      * Creates a new RxMongoDatastoreClient for the given mapping context and {@link MongoClient}
@@ -129,6 +131,18 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
         this.codecRegistry = createCodeRegistry()
         this.mongoClient = initializeMongoClient(clientSettings)
         initialize(mappingContext)
+    }
+
+    CodecRegistry getCodecRegistry() {
+        return codecRegistry
+    }
+
+    MongoMappingContext getMappingContext() {
+        return mappingContext
+    }
+
+    String getDefaultDatabase() {
+        return defaultDatabase
     }
 
     protected MongoMappingContext initializeMappingContext(Class... classes) {
@@ -350,10 +364,10 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
     }
 
     public <T1> com.mongodb.rx.client.MongoCollection<T1> getCollection(PersistentEntity entity, Class<T1> type) {
-        com.mongodb.rx.client.MongoCollection<T1> collection = mongoClient
+        com.mongodb.rx.client.MongoCollection<T1> collection = getNativeInterface()
                 .getDatabase(getDatabaseName(entity))
                 .getCollection(getCollectionName(entity))
-                .withCodecRegistry(codecRegistry)
+                .withCodecRegistry(getCodecRegistry())
                 .withDocumentClass(type)
         collection
     }
@@ -429,9 +443,13 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
 
     protected Document createIdQuery(Serializable id) {
         def idQuery = new Document(MongoConstants.MONGO_ID_FIELD, id)
-        idQuery
+        return idQuery
     }
 
+    @Override
+    RxGormStaticApi createStaticApi(PersistentEntity entity) {
+        return new RxMongoStaticApi(entity, this)
+    }
 
     protected boolean isAssignedId(PersistentEntity persistentEntity) {
         Property mapping = persistentEntity.identity.mapping.mappedForm
