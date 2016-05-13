@@ -1,5 +1,8 @@
 package grails.gorm.rx.mongodb
 
+import com.mongodb.AggregationOptions
+import com.mongodb.ReadPreference
+import com.mongodb.rx.client.AggregateObservable
 import grails.gorm.rx.RxEntity
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
@@ -8,7 +11,6 @@ import org.bson.BsonDocumentWriter
 import org.bson.Document
 import org.bson.codecs.EncoderContext
 import org.bson.conversions.Bson
-import org.bson.types.ObjectId
 import org.grails.datastore.gorm.schemaless.DynamicAttributes
 import org.grails.datastore.rx.mongodb.RxMongoDatastoreClient
 import org.grails.gorm.rx.api.RxGormEnhancer
@@ -75,6 +77,49 @@ trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
             return criteriaBuilder.findAll(callable)
         }
     }
+
+    /**
+     * Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set
+     *
+     * @param pipeline The pipeline
+     * @param options The options (optional)
+     * @return A mongodb result list
+     */
+    static Observable<D> aggregate(List pipeline, Map<String,Object> options = Collections.emptyMap()) {
+        aggregate(pipeline, options, (ReadPreference)null)
+    }
+
+
+
+    /**
+     * Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set
+     *
+     * @param pipeline The pipeline
+     * @param options The options (optional)
+     * @return A mongodb result list
+     */
+    static Observable<D> aggregate(List pipeline, Map<String,Object> options, ReadPreference readPreference) {
+        def staticApi = RxGormEnhancer.findStaticApi(this)
+        RxMongoDatastoreClient mongoDatastoreClient = (RxMongoDatastoreClient)staticApi.datastoreClient
+        def entity = staticApi.entity
+        def mongoCollection = mongoDatastoreClient.getCollection(entity, entity.javaClass)
+
+        if(readPreference != null) {
+            mongoCollection = mongoCollection.withReadPreference(readPreference)
+        }
+        List<Document> newPipeline = cleanPipeline(pipeline)
+        AggregateObservable aggregateObservable = mongoCollection.aggregate(newPipeline)
+        for(opt in options.keySet()) {
+            if(aggregateObservable.respondsTo(opt)) {
+                setOption((Object)aggregateObservable, opt, options)
+            }
+        }
+
+        return (Observable<D>)aggregateObservable.toObservable()
+
+    }
+
+
     /**
      * Counts the number of hits
      * @param query The query
@@ -133,5 +178,23 @@ trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
                 .limit(limit)
 
         findObservable.toObservable()
+    }
+
+    @CompileDynamic
+    private static void setOption(Object target, String opt, Map options) {
+        target."$opt"(options.get(opt))
+    }
+
+    @CompileStatic
+    private static List<Document> cleanPipeline(List pipeline) {
+        List<Document> newPipeline = new ArrayList<Document>()
+        for (o in pipeline) {
+            if (o instanceof Document) {
+                newPipeline << (Document)o
+            } else if (o instanceof Map) {
+                newPipeline << new Document((Map) o)
+            }
+        }
+        newPipeline
     }
 }
