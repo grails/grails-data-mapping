@@ -12,12 +12,14 @@ import grails.mongodb.geo.MultiPolygon
 import grails.mongodb.geo.Point
 import grails.mongodb.geo.Polygon
 import grails.mongodb.geo.Sphere
+import org.bson.types.ObjectId
 
 /**
  * Created by graemerocher on 11/05/16.
  */
 @Entity
 class Place implements RxMongoEntity<Place> {
+    ObjectId id
     String name
     Point point
     Polygon polygon

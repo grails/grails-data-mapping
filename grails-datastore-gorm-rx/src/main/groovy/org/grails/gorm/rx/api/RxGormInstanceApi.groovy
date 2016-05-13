@@ -1,5 +1,6 @@
 package org.grails.gorm.rx.api
 
+import grails.gorm.rx.api.RxGormInstanceOperations
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.reflect.EntityReflector
@@ -14,7 +15,7 @@ import rx.Single
  * @since 6.0
  */
 @CompileStatic
-class RxGormInstanceApi<D> {
+class RxGormInstanceApi<D> implements RxGormInstanceOperations<D> {
 
     final PersistentEntity entity
     final RxDatastoreClient datastoreClient
@@ -26,18 +27,22 @@ class RxGormInstanceApi<D> {
         this.entityReflector = datastoreClient.mappingContext.getEntityReflector(entity)
     }
 
-    Observable<D> save(D instance) {
-        save(instance, Collections.<String,Object>emptyMap())
-    }
-
-    Observable<D> save(D instance, Map<String, Object> arguments) {
+    @Override
+    Observable<D> save(D instance, Map<String, Object> arguments = Collections.<String,Object>emptyMap()) {
         datastoreClient.persist(instance, arguments)
     }
 
+    @Override
+    Observable<D> insert(D instance, Map<String, Object> arguments = Collections.<String,Object>emptyMap()) {
+        datastoreClient.insert(instance, arguments)
+    }
+
+    @Override
     Serializable ident(D instance) {
         entityReflector.getIdentifier(instance)
     }
 
+    @Override
     Observable<Boolean> delete(D instance) {
         datastoreClient.delete(instance)
     }

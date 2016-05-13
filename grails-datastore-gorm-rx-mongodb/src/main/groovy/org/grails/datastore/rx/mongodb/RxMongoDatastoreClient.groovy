@@ -24,11 +24,13 @@ import org.bson.types.ObjectId
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
+import org.grails.datastore.mapping.core.OptimisticLockingException
 import org.grails.datastore.mapping.model.ClassMapping
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.PropertyMapping
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar
 import org.grails.datastore.mapping.mongo.MongoConstants
 import org.grails.datastore.mapping.mongo.config.MongoAttribute
@@ -50,6 +52,8 @@ import org.grails.gorm.rx.api.RxGormEnhancer
 import org.springframework.core.convert.converter.Converter
 import org.springframework.core.convert.converter.ConverterRegistry
 import rx.Observable
+
+import javax.persistence.FlushModeType
 
 /**
  * Implementatino of the {@link RxDatastoreClient} inteface for MongoDB that uses the MongoDB RX driver
@@ -232,8 +236,12 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
         }
 
         def updates = operation.updates
+        Map<String,Integer> numberOfOptimisticUpdates = [:].withDefault { 0 }
+        Map<String,Integer> numberOfPessimisticUpdates = [:].withDefault { 0 }
         for(entry in updates) {
             PersistentEntity entity = entry.key
+            def entityName = entity.name
+            def isVersioned = entity.isVersioned()
             List<WriteModel> entityWriteModels = writeModels.get(entity)
             final PersistentEntityCodec codec = (PersistentEntityCodec)codecRegistry.get(entity.javaClass)
             final updateOptions = new UpdateOptions().upsert(false)
@@ -243,9 +251,24 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
                 Document idQuery = createIdQuery(entityOperation.identity)
 
                 def object = entityOperation.object
+                def currentVersion = null
+                if(isVersioned) {
+                    currentVersion = mappingContext.getEntityReflector(entity).getProperty( object, entity.version.name )
+                }
+
                 Document updateDocument = codec.encodeUpdate(object)
 
                 if(!updateDocument.isEmpty()) {
+                    if(isVersioned) {
+                        // if the entity is versioned we add to the query the current version
+                        // if the query doesn't match a result this means the document has been updated by
+                        // another thread and an optimistic locking exception should be thrown
+                        idQuery.put GormProperties.VERSION, currentVersion
+                        numberOfOptimisticUpdates[entityName]++
+                    }
+                    else {
+                        numberOfPessimisticUpdates[entityName]++
+                    }
                     entityWriteModels.add(new UpdateOneModel(idQuery, updateDocument, updateOptions))
                 }
 
@@ -264,7 +287,26 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
 
                 def writeOptions = new BulkWriteOptions()
 
-                observables.add mongoCollection.bulkWrite(entityWriteModels, writeOptions)
+
+                def bulkWriteObservable = mongoCollection.bulkWrite(entityWriteModels, writeOptions)
+
+                if(numberOfOptimisticUpdates.isEmpty()) {
+                    observables.add bulkWriteObservable
+                }
+                else {
+                    observables.add bulkWriteObservable.map { BulkWriteResult bwr ->
+                        final int matchedCount = bwr.matchedCount
+                        final String entityName = entity.name
+                        final Integer numOptimistic = numberOfOptimisticUpdates.get(entityName)
+                        final Integer numPessimistic = numberOfPessimisticUpdates.get(entityName)
+                        if((matchedCount - numPessimistic) != numOptimistic) {
+                            throw new OptimisticLockingException(entity, null)
+                        }
+                        return bwr
+                    }
+
+                }
+
             }
         }
 
@@ -377,11 +419,11 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
                 return oid
             }
             else {
-                throw new IdentityGenerationException("Only String and ObjectId types are supported for the id")
+                throw new IdentityGenerationException("Only String and ObjectId types are supported for generated identifiers")
             }
         }
         else {
-            throw new IdentityGenerationException("Identifier generation strategy is assigned, but no identifier was supplied")
+            throw new IdentityGenerationException("Identifier generation strategy is assigned for entity [$instance], but no identifier was supplied!")
         }
     }
 

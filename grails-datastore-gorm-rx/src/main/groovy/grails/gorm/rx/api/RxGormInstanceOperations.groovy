@@ -1,22 +1,29 @@
 package grails.gorm.rx.api
 
 import rx.Observable
-import rx.Single
 
 /**
- * Interface for Reactive GORM operations on instances
+ * Methods on instances
  *
  * @author Graeme Rocher
  * @since 6.0
  */
-interface RxGormOperations<D> {
+interface RxGormInstanceOperations<D> {
 
     /**
-     * Saves an entity and returns an {@link Observable}, picking either an insert or an update automatically based on whether the object has an id already.
+     * Obtain the objects identifier
      *
-     * @return An {@link Observable} with the result of the operation
+     * @param instance The instance
+     * @return The id or null if there is none
      */
-    Observable<D> save()
+    Serializable ident(D instance)
+
+    /**
+     * Saves an entity and returns an {@link rx.Observable}, picking either an insert or an update automatically based on whether the object has an id already.
+     *
+     * @return An {@link rx.Observable} with the result of the operation
+     */
+    Observable<D> save(D instance)
 
     /**
      * Saves an entity and returns an {@link Observable}, picking either an insert or an update automatically based on whether the object has an id already.
@@ -25,7 +32,7 @@ interface RxGormOperations<D> {
      *
      * @return An {@link Observable} with the result of the operation
      */
-    Observable<D> save(Map<String, Object> arguments)
+    Observable<D> save(D instance, Map<String, Object> arguments)
 
 
     /**
@@ -33,7 +40,7 @@ interface RxGormOperations<D> {
      *
      * @return An {@link Observable} with the result of the operation
      */
-    Observable<D> insert()
+    Observable<D> insert(D instance)
 
     /**
      * Saves an entity and returns an {@link Observable}, forcing an insert operation regardless whether an identifier is already present or not
@@ -42,12 +49,12 @@ interface RxGormOperations<D> {
      *
      * @return An {@link Observable} with the result of the operation
      */
-    Observable<D> insert(Map<String, Object> arguments)
+    Observable<D> insert(D instance, Map<String, Object> arguments)
 
     /**
      * Deletes an entity
      *
      * @return An observable that returns a boolean true if successful
      */
-    Observable<Boolean> delete()
+    Observable<Boolean> delete(D instance)
 }

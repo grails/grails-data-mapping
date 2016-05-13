@@ -187,67 +187,89 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
     }
 
     @Override
+    final <T1> Observable<T1> insert(T1 instance, Map<String, Object> arguments) {
+        insertAll((Iterable<T1>)Arrays.asList(instance)).map { List<Serializable> identifiers ->
+            if(!identifiers.isEmpty()) {
+                return instance
+            }
+            else {
+                return null
+            }
+        }
+    }
+
+    @Override
     final <T1> Observable<T1> persist(T1 instance) {
         return persist(instance, Collections.<String,Object>emptyMap())
     }
 
     @Override
+    Observable<List<Serializable>> insertAll(Iterable instances) {
+        return persistAllInternal(instances, true)
+    }
+
+    @Override
     Observable<List<Serializable>> persistAll(Iterable instances) {
+        return persistAllInternal(instances, false)
+    }
+
+    private Observable<List<Serializable>> persistAllInternal(Iterable instances, boolean isInsert) {
         MappingContext ctx = this.mappingContext
         ApplicationEventPublisher eventPublisher = this.eventPublisher
 
         def proxyHandler = ctx.getProxyHandler()
-        if(instances != null) {
+        if (instances != null) {
             def batchOperation = new BatchOperation()
             List<Serializable> identifiers = []
             List<ApplicationEvent> postEvents = []
-            for(o in instances) {
+            for (o in instances) {
                 Class type = proxyHandler.getProxiedClass(o)
                 PersistentEntity entity = ctx.getPersistentEntity(type.name)
                 EntityReflector entityReflector = ctx.getEntityReflector(entity)
                 EntityAccess entityAccess = ctx.createEntityAccess(entity, o)
-                if(entity == null) {
+                if (entity == null) {
                     throw new IllegalArgumentException("Type [$type.name] of instance [$o] is not a persistent type")
                 }
                 def id = entityReflector.getIdentifier(o)
-                if(id != null) {
+
+                boolean hasId = id != null
+                if (hasId && !isInsert) {
                     def preUpdateEvent = new PreUpdateEvent(this, entity, entityAccess)
                     eventPublisher?.publishEvent(preUpdateEvent)
-                    if(!preUpdateEvent.isCancelled()) {
+                    if (!preUpdateEvent.isCancelled()) {
                         processAssociations(entity, id, o, entityReflector, batchOperation, postEvents)
                         batchOperation.addUpdate(entity, id, o)
                         postEvents.add(new PostUpdateEvent(this, entity, entityAccess))
                     }
-                }
-                else {
-                    id = generateIdentifier(entity, o, entityReflector)
+                } else {
+                    if(!hasId) {
+                        id = generateIdentifier(entity, o, entityReflector)
+                    }
                     def preInsertEvent = new PreInsertEvent(this, entity, entityAccess)
                     eventPublisher?.publishEvent(preInsertEvent)
-                    if(!preInsertEvent.isCancelled()) {
+                    if (!preInsertEvent.isCancelled()) {
                         processAssociations(entity, id, o, entityReflector, batchOperation, postEvents)
-                        batchOperation.addInsert(entity,id, o)
+                        batchOperation.addInsert(entity, id, o)
                         postEvents.add(new PostInsertEvent(this, entity, entityAccess))
                     }
                 }
                 identifiers.add(id)
             }
 
-            if(batchOperation.hasPendingOperations()) {
+            if (batchOperation.hasPendingOperations()) {
 
                 return batchWrite(batchOperation).map({
-                    if(eventPublisher != null) {
-                        for(event in postEvents) {
+                    if (eventPublisher != null) {
+                        for (event in postEvents) {
                             eventPublisher.publishEvent(event)
                         }
                     }
                     return identifiers
                 })
-            }
-            else {
+            } else {
                 return Observable.just(identifiers)
             }
-        }
-        else {
+        } else {
             return Observable.just([])
         }
     }

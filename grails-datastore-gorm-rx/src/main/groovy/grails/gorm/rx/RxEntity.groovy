@@ -44,6 +44,11 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     boolean validate() {
         RxGormEnhancer.findValidationApi(getClass()).validate((D)this)
     }
+
+    @Override
+    Observable<D> insert(Map<String, Object> arguments = Collections.emptyMap()) {
+        return doSave(arguments, true)
+    }
     /**
      * Save an instance and return an observable
      *
@@ -59,20 +64,31 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return An observable
      */
     Observable<D> save(Map<String, Object> arguments) {
+        return doSave(arguments, false)
+    }
+
+    private Observable<D> doSave(Map<String, Object> arguments, boolean isInsert) {
         boolean shouldValidate = arguments?.containsKey("validate") ? arguments.validate : true
-        if(shouldValidate) {
+        if (shouldValidate) {
             def hasErrors = !validate()
-            if(hasErrors) {
+            if (hasErrors) {
                 throw new ValidationException("Validation error occurred during call to save() for entity [$this]", errors)
+            } else {
+                if (isInsert) {
+                    return currentRxGormInstanceApi().insert(this, arguments)
+                } else {
+                    return currentRxGormInstanceApi().save(this, arguments)
+                }
+
             }
-            else {
-                return currentRxGormInstanceApi().save(this, arguments)
-            }
-        }
-        else {
+        } else {
             skipValidation(true)
             clearErrors()
-            return currentRxGormInstanceApi().save(this, arguments)
+            if (isInsert) {
+                return currentRxGormInstanceApi().insert(this, arguments)
+            } else {
+                return currentRxGormInstanceApi().save(this, arguments)
+            }
         }
     }
 

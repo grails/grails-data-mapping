@@ -22,10 +22,6 @@ import rx.Observable
 @CompileStatic
 trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
 
-    /**
-     * The id of the document
-     */
-    ObjectId id
 
     /**
      * Converts this entity into a {@link BsonDocument}

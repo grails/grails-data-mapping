@@ -40,6 +40,15 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
     def <T1> Observable<T1> persist(T1 instance, Map<String, Object> arguments)
 
     /**
+     * Force an insert of an instance and return the observable
+     *
+     * @param instance The instance
+     * @param arguments The arguments
+     * @return The observable
+     */
+    def <T1> Observable<T1> insert(T1 instance, Map<String, Object> arguments)
+
+    /**
      * Persist and instance and return the observable
      *
      * @param instance The instance
@@ -88,6 +97,14 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
      * @return An observable that emits the identifiers of the saved objects
      */
     Observable<List<Serializable>> persistAll(Iterable objects)
+
+    /**
+     * Batch insert all all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    Observable<List<Serializable>> insertAll(Iterable objects)
 
     /**
      * Creates a query for the given type
