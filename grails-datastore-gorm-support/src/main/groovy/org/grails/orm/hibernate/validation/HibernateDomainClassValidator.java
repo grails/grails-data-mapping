@@ -21,7 +21,10 @@ import org.grails.datastore.gorm.support.BeforeValidateHelper;
 import org.grails.datastore.gorm.validation.CascadingValidator;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.types.Simple;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
+import org.grails.orm.hibernate.cfg.PropertyConfig;
 import org.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler;
 import org.grails.validation.GrailsDomainClassValidator;
 import org.hibernate.Hibernate;
@@ -32,6 +35,7 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.validation.Errors;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * First checks if the Hibernate PersistentCollection instance has been initialised before bothering
@@ -113,6 +117,17 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
         if(mappingContext != null) {
             PersistentEntity mappedEntity = mappingContext.getPersistentEntity(getDomainClass().getFullName());
             if(mappedEntity != null) {
+                List<PersistentProperty> persistentProperties = mappedEntity.getPersistentProperties();
+                for (PersistentProperty property : persistentProperties) {
+                    if(property instanceof Simple) {
+                        PropertyConfig config = (PropertyConfig) property.getMapping().getMappedForm();
+                        boolean derived = config.isDerived() || config.getFormula() != null;
+                        GrailsDomainClassProperty grailsProperty = domainClass.getPersistentProperty(property.getName());
+                        if(grailsProperty != null) {
+                            grailsProperty.setDerived(derived);
+                        }
+                    }
+                }
                 mappingContext.addEntityValidator(mappedEntity, this);
             }
         }
