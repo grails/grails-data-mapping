@@ -130,7 +130,11 @@ class HibernateGormStaticApi<D> extends AbstractHibernateGormStaticApi<D> {
         }
     }
 
+    /**
+     * @deprecated positional parameters are deprecated
+     */
     @Override
+    @Deprecated
     Integer executeUpdate(String query, Collection params, Map args) {
         def template = hibernateTemplate
         SessionFactory sessionFactory = this.sessionFactory

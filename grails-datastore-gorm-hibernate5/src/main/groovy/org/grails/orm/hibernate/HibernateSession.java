@@ -91,7 +91,7 @@ public class HibernateSession extends AbstractHibernateSession {
                 List parameters = jpaQueryInfo.getParameters();
                 if (parameters != null) {
                     for (int i = 0, count = parameters.size(); i < count; i++) {
-                        query.setParameter(i, parameters.get(i));
+                        query.setParameter(JpaQueryBuilder.PARAMETER_NAME_PREFIX + (i+1), parameters.get(i));
                     }
                 }
                 return query.executeUpdate();
@@ -118,7 +118,7 @@ public class HibernateSession extends AbstractHibernateSession {
                 List parameters = jpaQueryInfo.getParameters();
                 if (parameters != null) {
                     for (int i = 0, count = parameters.size(); i < count; i++) {
-                        query.setParameter(i, parameters.get(i));
+                        query.setParameter(JpaQueryBuilder.PARAMETER_NAME_PREFIX + (i+1), parameters.get(i));
                     }
                 }
                 return query.executeUpdate();

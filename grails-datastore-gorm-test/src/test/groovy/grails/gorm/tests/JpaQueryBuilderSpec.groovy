@@ -22,7 +22,7 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
             def queryInfo = builder.buildUpdate(firstName:"Fred")
 
         then:"The query is valid"
-            queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.firstName=?1 WHERE (person.age=?2 AND lower(person.firstName) like lower(?3))'
+            queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.firstName=:p1 WHERE (person.age=:p2 AND lower(person.firstName) like lower(:p3))'
     }
 
     void "Test exception is thrown in join with delete"() {
@@ -57,7 +57,7 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
 
         then:"The query is valid"
             queryInfo.query != null
-            queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.age=?, person.firstName=? WHERE (person.firstName=?)'
+            queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.age=:p1, person.firstName=:p2 WHERE (person.firstName=:p3)'
             queryInfo.parameters == [30,"Bob updated", "Bob"]
     }
 
@@ -73,7 +73,7 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
 
         then:"The query is valid"
             queryInfo.query != null
-            queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.age=?1, person.firstName=?2 WHERE (person.firstName=?3)'
+            queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.age=:p1, person.firstName=:p2 WHERE (person.firstName=:p3)'
             queryInfo.parameters == [30,"Bob updated", "Bob"]
     }
 
@@ -89,7 +89,7 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
 
         then:"The query is valid"
             queryInfo.query != null
-            queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.age=?1 WHERE (person.firstName=?2)'
+            queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.age=:p1 WHERE (person.firstName=:p2)'
             queryInfo.parameters == [30, "Bob"]
     }
 
@@ -105,7 +105,7 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
 
         then:"The query is valid"
             queryInfo.query != null
-            queryInfo.query == 'DELETE grails.gorm.tests.Person person WHERE (person.firstName=?1)'
+            queryInfo.query == 'DELETE grails.gorm.tests.Person person WHERE (person.firstName=:p1)'
             queryInfo.parameters == ["Bob"]
     }
 
@@ -122,7 +122,7 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
 
         then:"The query is valid"
             query != null
-            query == 'SELECT DISTINCT person FROM grails.gorm.tests.Person AS person WHERE (person.firstName=?)'
+            query == 'SELECT DISTINCT person FROM grails.gorm.tests.Person AS person WHERE (person.firstName=:p1)'
     }
 
     void "Test build simple select"() {
@@ -137,7 +137,7 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
 
         then:"The query is valid"
             query != null
-            query == 'SELECT DISTINCT person FROM grails.gorm.tests.Person AS person WHERE (person.firstName=?1)'
+            query == 'SELECT DISTINCT person FROM grails.gorm.tests.Person AS person WHERE (person.firstName=:p1)'
     }
 
     void "Test build select with or"() {
@@ -155,7 +155,7 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
 
         then:"The query is valid"
             queryInfo.query!= null
-            queryInfo.query == 'SELECT DISTINCT person FROM grails.gorm.tests.Person AS person WHERE ((person.firstName=?1 OR person.firstName=?2))'
+            queryInfo.query == 'SELECT DISTINCT person FROM grails.gorm.tests.Person AS person WHERE ((person.firstName=:p1 OR person.firstName=:p2))'
             queryInfo.parameters == ['Bob', 'Fred']
 
     }

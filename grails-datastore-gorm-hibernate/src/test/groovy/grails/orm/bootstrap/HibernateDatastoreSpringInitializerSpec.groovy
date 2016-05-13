@@ -238,6 +238,26 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         CachePerson.count() == 0
         CachePet.count() == 0
     }
+
+    def "test that formula properties are not constrained"() {
+        given:
+        def initializer = new HibernateDatastoreSpringInitializer(['hibernate.show_sql':true, 'grails.gorm.default.constraints': {
+            '*'(nullable: false, blank: true)
+        }], MyDate)
+
+        def dataSource = new DriverManagerDataSource("jdbc:h2:mem:formulaDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+        dataSource.driverClassName = Driver.name
+
+        initializer.configureForDataSource(dataSource)
+
+        when:"An object with a formula is saved"
+
+        def date = new MyDate()
+        date.save()
+
+        then:"There are not errors"
+        !date.errors.hasErrors()
+    }
 }
 
 @Entity
@@ -334,5 +354,14 @@ class CachePet {
     static mapping = {
         datasource 'reportingDB'
         cache 'read-only'
+    }
+}
+
+@Entity
+class MyDate {
+    String dateDay
+    Date dateCreated
+    static mapping = {
+        dateDay formula: 'DATE_FORMAT(date_created,\'%Y-%m-%d\')'
     }
 }

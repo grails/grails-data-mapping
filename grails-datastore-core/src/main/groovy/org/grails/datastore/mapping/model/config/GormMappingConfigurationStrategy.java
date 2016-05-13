@@ -400,12 +400,21 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 if (relatedClassPropertyType == null || Collection.class.isAssignableFrom(relatedClassPropertyType)) {
                     List<PropertyDescriptor> descriptors = getPropertiesAssignableFromType(entity.getJavaClass(), referencedCpf);
                     Map relatedMappedBy = referencedCpf.getStaticPropertyValue(GormProperties.MAPPED_BY, Map.class);
+                    List referencedTransients = referencedCpf.getStaticPropertyValue(GormProperties.TRANSIENT, List.class);
+                    List referencedEmbedded = referencedCpf.getStaticPropertyValue(GormProperties.EMBEDDED, List.class);
+                    if(referencedTransients == null) {
+                        referencedTransients = Collections.emptyList();
+                    }
+                    if(referencedEmbedded == null) {
+                        referencedEmbedded = Collections.emptyList();
+                    }
                     if(relatedMappedBy == null) {
                         relatedMappedBy = Collections.emptyMap();
                     }
                     if (descriptors.size() == 1) {
                         final PropertyDescriptor pd = descriptors.get(0);
-                        if(isNotMappedToDifferentProperty(property, pd.getName(), relatedMappedBy)) {
+
+                        if(!referencedTransients.contains(pd.getName()) && !referencedEmbedded.contains(pd.getName()) && isNotMappedToDifferentProperty(property, pd.getName(), relatedMappedBy)) {
                             relatedClassPropertyType = pd.getPropertyType();
                             referencedPropertyName = pd.getName();
                         }
