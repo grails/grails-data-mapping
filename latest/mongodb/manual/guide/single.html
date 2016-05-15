@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>GORM for MongoDB 5.0.5.RELEASE</title>
+        <title>GORM for MongoDB 5.0.6.RELEASE</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
@@ -66,7 +66,7 @@ function addJsClass(el) {
                         <div class="project">
                             <h1>GORM for MongoDB - Reference Documentation</h1>
                             <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
-                            <p><strong>Version:</strong> 5.0.5.RELEASE</p>
+                            <p><strong>Version:</strong> 5.0.6.RELEASE</p>
                             
                         </div>
 
@@ -98,23 +98,25 @@ function addJsClass(el) {
                             
                             <div class="toc-item" style="margin-left:10px"><a href="#idGeneration"><strong>3.1</strong><span>Identity Generation</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#queryIndexes"><strong>3.2</strong><span>Querying Indexing</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#dirtyChecking"><strong>3.2</strong><span>Understanding Dirty Checking</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#writeConcern"><strong>3.3</strong><span>Customizing the WriteConcern</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#queryIndexes"><strong>3.3</strong><span>Querying Indexing</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#dynamicAttributes"><strong>3.4</strong><span>Dynamic Attributes</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#writeConcern"><strong>3.4</strong><span>Customizing the WriteConcern</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#geoSpatial"><strong>3.5</strong><span>Geospacial Querying</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#dynamicAttributes"><strong>3.5</strong><span>Dynamic Attributes</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:20px"><a href="#2dsphere"><strong>3.5.1</strong><span>Geospacial 2D Sphere Support</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#geoSpatial"><strong>3.6</strong><span>Geospacial Querying</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:20px"><a href="#2dindex"><strong>3.5.2</strong><span>Geospacial 2D Index Support</span></a></div>
+                            <div class="toc-item" style="margin-left:20px"><a href="#2dsphere"><strong>3.6.1</strong><span>Geospacial 2D Sphere Support</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:20px"><a href="#geoJson"><strong>3.5.3</strong><span>GeoJSON Data Models</span></a></div>
+                            <div class="toc-item" style="margin-left:20px"><a href="#2dindex"><strong>3.6.2</strong><span>Geospacial 2D Index Support</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#textSearch"><strong>3.6</strong><span>Full Text Search</span></a></div>
+                            <div class="toc-item" style="margin-left:20px"><a href="#geoJson"><strong>3.6.3</strong><span>GeoJSON Data Models</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:10px"><a href="#customTypes"><strong>3.7</strong><span>Custom User Types</span></a></div>
+                            <div class="toc-item" style="margin-left:10px"><a href="#textSearch"><strong>3.7</strong><span>Full Text Search</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:10px"><a href="#customTypes"><strong>3.8</strong><span>Custom User Types</span></a></div>
                             
                             <div class="toc-item" style="margin-left:0px"><a href="#databaseSwitching"><strong>4</strong><span>Switching Database or Collection at Runtime</span></a></div>
                             
@@ -419,7 +421,15 @@ p.insert()
 p.save()</pre></div>
 
 
-<h2 id="queryIndexes">3.2 Querying Indexing</h2>
+<h2 id="dirtyChecking">3.2 Understanding Dirty Checking</h2>
+In order to be as efficient as possible when it comes to generating updates GORM for MongoDb will track changes you make to persistent instances.<p class="paragraph"/>When an object is updated only the properties or associations that have changed will be updated.<p class="paragraph"/>You can check whether a given property has changed by using the `hasChanged` method:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">if</span>( person.hasChanged('firstName') ) &#123;
+   // <span class="java&#45;keyword">do</span> something
+&#125;</pre></div><p class="paragraph"/>This method is defined by the <code>org.grails.datastore.mapping.dirty.checking.DirtyCheckable</code> trait.<p class="paragraph"/>In the case of collections and association types GORM for MongoDB will wrap each collection in a dirty checking aware
+collection type.<p class="paragraph"/>One of the implications of this is if you override the collection with a non-dirty checking aware type it can disable
+dirty checking and prevent the property from being updated.<p class="paragraph"/>If any of your updates are not updating the properties that you anticipate you can force an update using the `markDirty` method:<p class="paragraph"/><div class="code"><pre>person.markDirty('firstName')</pre></div><p class="paragraph"/>This will force GORM for MongoDB to issue an update for the given property name.
+
+
+<h2 id="queryIndexes">3.3 Querying Indexing</h2>
 <h4>Basics</h4><p class="paragraph"/>MongoDB doesn't require that you specify indices to query, but like a relational database without specifying indices your queries will be significantly slower.<p class="paragraph"/>With that in mind it is important to specify the properties you plan to query using the mapping block:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> mapping = &#123;
@@ -443,7 +453,7 @@ p.save()</pre></div>
 &#125;</pre></div><p class="paragraph"/>In the above example I define an index on an embedded attribtue of the document. In fact what arguments you pass to the <code>index</code> method get passed to the underlying MongoDB <a href="http://api.mongodb.org/java/2.12/com/mongodb/DBCollection.html#createIndex(com.mongodb.DBObject,%20com.mongodb.DBObject)" target="blank">createIndex</a> method.
 
 
-<h2 id="writeConcern">3.3 Customizing the WriteConcern</h2>
+<h2 id="writeConcern">3.4 Customizing the WriteConcern</h2>
 A feature of MongoDB is its ability to customize how important a database write is to the user. The Java client models this as a <a href="http://api.mongodb.org/java/current/com/mongodb/WriteConcern.html" target="blank">WriteConcern</a> and there are various options that indicate whether the client cares about server or network errors, or whether the data has been successfully written or not.<p class="paragraph"/>If you wish to customize the <code>WriteConcern</code> for a domain class you can do so in the mapping block:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> com.mongodb.WriteConcern<p class="paragraph"/>class Person &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> mapping = &#123;
@@ -454,7 +464,7 @@ For versioned entities, if a lower level of WriteConcern than WriteConcern.ACKNO
 </blockquote>
 
 
-<h2 id="dynamicAttributes">3.4 Dynamic Attributes</h2>
+<h2 id="dynamicAttributes">3.5 Dynamic Attributes</h2>
 Unlike a relational database, MongoDB allows for "schemaless" persistence where there are no limits to the number of attributes a particular document can have. A GORM domain class on the other hand has a schema in that there are a fixed number of properties. For example consider the following domain class:<p class="paragraph"/><div class="code"><pre>class Plant &#123;
     <span class="java&#45;object">boolean</span> goesInPatch
     <span class="java&#45;object">String</span> name
@@ -465,11 +475,11 @@ p.save()<p class="paragraph"/>p = Plant.findByName(<span class="java&#45;quote">
 println p&#91;'hasLeaves'&#93;</pre></div><p class="paragraph"/>Using the subscript operator you can add additional attributes to the underlying <code>Document</code> instance that gets persisted to the MongoDB allowing for more dynamic domain models.
 
 
-<h2 id="geoSpatial">3.5 Geospacial Querying</h2>
+<h2 id="geoSpatial">3.6 Geospacial Querying</h2>
 MongoDB supports storing <a href="http://docs.mongodb.org/manual/applications/geospatial-indexes/" target="blank">Geospacial data</a> in both flat and spherical surface types.<p class="paragraph"/>To store data in a flat surface you use a "2d" index, whilst a "2dsphere" index used for spherical data. GORM for MongoDB supports both and the following sections describe how to define and query Geospacial data.<p class="paragraph"/>
 
 
-<h2 id="2dsphere">3.5.1 Geospacial 2D Sphere Support</h2>
+<h2 id="2dsphere">3.6.1 Geospacial 2D Sphere Support</h2>
 <h4>Using a 2dsphere Index</h4><p class="paragraph"/>MongoDB's <a href="http://docs.mongodb.org/manual/core/2dsphere/" target="blank">2dsphere indexes</a> support queries that calculate geometries on an earth-like sphere.<p class="paragraph"/>Although you can use coordinate pairs in a 2dsphere index, they are considered legacy by the MongoDB documentation and it is recommended you store data using <a href="http://geojson.org/geojson-spec.html#id2" target="blank">GeoJSON Point</a> types.<p class="paragraph"/><blockquote class="warning">
 MongoDB legacy coordinate pairs are in latitude / longitude order, whilst GeoJSON points are stored in longitude / latitude order!
 </blockquote><p class="paragraph"/>To support this GORM for MongoDB features a special type, <code>grails.mongodb.geo.Point</code>, that can be used within domain classes to store geospacial data:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.mongodb.geo.&#42;
@@ -496,7 +506,7 @@ There is a special <code>Distance</code> class that can help with radian calcula
 
 
 
-<h2 id="2dindex">3.5.2 Geospacial 2D Index Support</h2>
+<h2 id="2dindex">3.6.2 Geospacial 2D Index Support</h2>
 MongoDB supports <a href="http://docs.mongodb.org/manual/core/2d/" target="blank">2d indexes</a> that store points on a two-dimensional plane. although they are considered legacy and you should use `2dsphere` indexes instead.<p class="paragraph"/>It is possible to use a MongoDB 2d index by mapping a list or map property using the <code>geoIndex</code> mapping:<p class="paragraph"/><div class="code"><pre>class Hotel &#123;
     <span class="java&#45;object">String</span> name
     List location<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
@@ -523,7 +533,7 @@ def h = Hotel.findByLocationWithinCircle(&#91;center, radius&#93;)</pre></div><p
 
 
 
-<h2 id="geoJson">3.5.3 GeoJSON Data Models</h2>
+<h2 id="geoJson">3.6.3 GeoJSON Data Models</h2>
 You can also store any GeoJSON shape using the <code>grails.mongodb.geo.Shape</code> super class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.mongodb.geo.&#42;
 &#8230;
 class Entry &#123;
@@ -540,7 +550,7 @@ assert Entry.findByShapeGeoIntersects( LineString.valueOf( &#91;&#91;1,4&#93;, &
 
 
 
-<h2 id="textSearch">3.6 Full Text Search</h2>
+<h2 id="textSearch">3.7 Full Text Search</h2>
 Using MongoDB 2.6 and above you can create <a href="http://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text" target="blank">full text search</a> indices.<p class="paragraph"/>To create a "text" index using the <code>index</code> method inside the <code>mapping</code> block:<p class="paragraph"/><div class="code"><pre>class Product &#123;
     ObjectId id
     <span class="java&#45;object">String</span> title<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
@@ -551,7 +561,7 @@ assert Product.search(<span class="java&#45;quote">"bake coffee &#45;cake"</span
 assert Product.searchTop(<span class="java&#45;quote">"cake"</span>,3).size() == 3</pre></div><p class="paragraph"/>And count the number of hits with the <code>countHits</code> method:<p class="paragraph"/><div class="code"><pre>assert Product.countHits('coffee') == 5</pre></div>
 
 
-<h2 id="customTypes">3.7 Custom User Types</h2>
+<h2 id="customTypes">3.8 Custom User Types</h2>
 GORM for MongoDB will persist all common known Java types like String, Integer, URL etc., however if you want to persist one of your own classes that is not a domain class you can implement a custom user type.<p class="paragraph"/>For example consider the following class:<p class="paragraph"/><div class="code"><pre>class Birthday <span class="java&#45;keyword">implements</span> Comparable&#123;
     Date date<p class="paragraph"/>    Birthday(Date date) &#123;
         <span class="java&#45;keyword">this</span>.date = date

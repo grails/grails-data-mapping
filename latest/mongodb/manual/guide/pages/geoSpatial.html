@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.5 Geospacial Querying 5.0.5.RELEASE</title>
+    <title>3.6 Geospacial Querying 5.0.6.RELEASE</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -82,11 +82,11 @@ function addJsClass() {
 
 
                 <div class="project">
-                    <h1>3.5 Geospacial Querying - Reference Documentation</h1>
+                    <h1>3.6 Geospacial Querying - Reference Documentation</h1>
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 5.0.5.RELEASE</p>
+                    <p><strong>Version:</strong> 5.0.6.RELEASE</p>
 
                     
                 </div>
@@ -109,11 +109,11 @@ function addJsClass() {
 
                 
 
-<h2 id="geoSpatial">3.5 Geospacial Querying</h2>
+<h2 id="geoSpatial">3.6 Geospacial Querying</h2>
 MongoDB supports storing <a href="http://docs.mongodb.org/manual/applications/geospatial-indexes/" target="blank">Geospacial data</a> in both flat and spherical surface types.<p class="paragraph"/>To store data in a flat surface you use a "2d" index, whilst a "2dsphere" index used for spherical data. GORM for MongoDB supports both and the following sections describe how to define and query Geospacial data.<p class="paragraph"/>
 
 
-<h2 id="2dsphere">3.5.1 Geospacial 2D Sphere Support</h2>
+<h2 id="2dsphere">3.6.1 Geospacial 2D Sphere Support</h2>
 <h4>Using a 2dsphere Index</h4><p class="paragraph"/>MongoDB's <a href="http://docs.mongodb.org/manual/core/2dsphere/" target="blank">2dsphere indexes</a> support queries that calculate geometries on an earth-like sphere.<p class="paragraph"/>Although you can use coordinate pairs in a 2dsphere index, they are considered legacy by the MongoDB documentation and it is recommended you store data using <a href="http://geojson.org/geojson-spec.html#id2" target="blank">GeoJSON Point</a> types.<p class="paragraph"/><blockquote class="warning">
 MongoDB legacy coordinate pairs are in latitude / longitude order, whilst GeoJSON points are stored in longitude / latitude order!
 </blockquote><p class="paragraph"/>To support this GORM for MongoDB features a special type, <code>grails.mongodb.geo.Point</code>, that can be used within domain classes to store geospacial data:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.mongodb.geo.&#42;
@@ -140,7 +140,7 @@ There is a special <code>Distance</code> class that can help with radian calcula
 
 
 
-<h2 id="2dindex">3.5.2 Geospacial 2D Index Support</h2>
+<h2 id="2dindex">3.6.2 Geospacial 2D Index Support</h2>
 MongoDB supports <a href="http://docs.mongodb.org/manual/core/2d/" target="blank">2d indexes</a> that store points on a two-dimensional plane. although they are considered legacy and you should use `2dsphere` indexes instead.<p class="paragraph"/>It is possible to use a MongoDB 2d index by mapping a list or map property using the <code>geoIndex</code> mapping:<p class="paragraph"/><div class="code"><pre>class Hotel &#123;
     <span class="java&#45;object">String</span> name
     List location<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
@@ -167,7 +167,7 @@ def h = Hotel.findByLocationWithinCircle(&#91;center, radius&#93;)</pre></div><p
 
 
 
-<h2 id="geoJson">3.5.3 GeoJSON Data Models</h2>
+<h2 id="geoJson">3.6.3 GeoJSON Data Models</h2>
 You can also store any GeoJSON shape using the <code>grails.mongodb.geo.Shape</code> super class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.mongodb.geo.&#42;
 &#8230;
 class Entry &#123;
