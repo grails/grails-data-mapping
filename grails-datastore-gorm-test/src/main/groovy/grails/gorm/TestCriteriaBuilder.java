@@ -35,8 +35,8 @@ public class TestCriteriaBuilder extends CriteriaBuilder {
         super(targetClass, session);
     }
 
-   public BuildableCriteria readOnly(boolean readOnly) {
-   		//no-op for now
+    public BuildableCriteria readOnly(boolean readOnly) {
+        //no-op for now
         return this;
-   }
+    }
 }
