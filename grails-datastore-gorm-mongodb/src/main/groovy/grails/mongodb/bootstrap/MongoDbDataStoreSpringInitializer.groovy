@@ -18,6 +18,7 @@ import com.mongodb.DBAddress
 import com.mongodb.Mongo
 import com.mongodb.MongoClientOptions
 import com.mongodb.MongoClientURI
+import grails.mongodb.MongoEntity
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
@@ -53,6 +54,11 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer {
     @Override
     protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {
         DatastorePersistenceContextInterceptor
+    }
+
+    @Override
+    protected boolean isMappedClass(String datastoreType, Class cls) {
+        return MongoEntity.isAssignableFrom(cls) || super.isMappedClass(datastoreType, cls)
     }
 
     /**
