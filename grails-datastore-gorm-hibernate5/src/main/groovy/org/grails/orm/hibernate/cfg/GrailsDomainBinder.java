@@ -3276,104 +3276,104 @@ public class GrailsDomainBinder implements MetadataContributor {
                     (org.hibernate.mapping.Map) collection, sessionFactoryBeanName);
         }
     }
+    /**
+     * A Collection type, for the moment only Set is supported
+     *
+     * @author Graeme
+     */
+    static abstract class CollectionType {
 
+        protected final Class<?> clazz;
+        protected final GrailsDomainBinder binder;
+        protected final MetadataBuildingContext buildingContext;
 
-}
+        protected static CollectionType SET;
+        protected static CollectionType LIST;
+        protected static CollectionType BAG;
+        protected static CollectionType MAP;
+        protected static boolean initialized;
 
-/**
- * A Collection type, for the moment only Set is supported
- *
- * @author Graeme
- */
-abstract class CollectionType {
+        protected static final Map<Class<?>, CollectionType> INSTANCES = new HashMap<Class<?>, CollectionType>();
 
-    protected final Class<?> clazz;
-    protected final GrailsDomainBinder binder;
-    protected final MetadataBuildingContext buildingContext;
+        public abstract Collection create(ToMany property, PersistentClass owner,
+                                          String path, InFlightMetadataCollector mappings, String sessionFactoryBeanName) throws MappingException;
 
-    protected static CollectionType SET;
-    protected static CollectionType LIST;
-    protected static CollectionType BAG;
-    protected static CollectionType MAP;
-    protected static boolean initialized;
-
-    protected static final Map<Class<?>, CollectionType> INSTANCES = new HashMap<Class<?>, CollectionType>();
-
-    public abstract Collection create(ToMany property, PersistentClass owner,
-                                      String path, InFlightMetadataCollector mappings, String sessionFactoryBeanName) throws MappingException;
-
-    protected CollectionType(Class<?> clazz, GrailsDomainBinder binder) {
-        this.clazz = clazz;
-        this.binder = binder;
-        this.buildingContext = binder.getMetadataBuildingContext();
-    }
-
-    @Override
-    public String toString() {
-        return clazz.getName();
-    }
-
-    protected void createInstances() {
-
-        if (initialized) {
-            return;
+        protected CollectionType(Class<?> clazz, GrailsDomainBinder binder) {
+            this.clazz = clazz;
+            this.binder = binder;
+            this.buildingContext = binder.getMetadataBuildingContext();
         }
 
-        initialized = true;
+        @Override
+        public String toString() {
+            return clazz.getName();
+        }
 
-        SET = new CollectionType(Set.class, binder) {
-            @Override
-            public Collection create(ToMany property, PersistentClass owner,
-                                     String path, InFlightMetadataCollector mappings, String sessionFactoryBeanName) throws MappingException {
-                org.hibernate.mapping.Set coll = new org.hibernate.mapping.Set(mappings, owner);
-                coll.setCollectionTable(owner.getTable());
-                binder.bindCollection(property, coll, owner, mappings, path, sessionFactoryBeanName);
-                return coll;
-            }
-        };
-        INSTANCES.put(Set.class, SET);
-        INSTANCES.put(SortedSet.class, SET);
+        protected void createInstances() {
 
-        LIST = new CollectionType(List.class, binder) {
-            @Override
-            public Collection create(ToMany property, PersistentClass owner,
-                                     String path, InFlightMetadataCollector mappings, String sessionFactoryBeanName) throws MappingException {
-                org.hibernate.mapping.List coll = new org.hibernate.mapping.List(mappings, owner);
-                coll.setCollectionTable(owner.getTable());
-                binder.bindCollection(property, coll, owner, mappings, path, sessionFactoryBeanName);
-                return coll;
+            if (initialized) {
+                return;
             }
-        };
-        INSTANCES.put(List.class, LIST);
 
-        BAG = new CollectionType(java.util.Collection.class, binder) {
-            @Override
-            public Collection create(ToMany property, PersistentClass owner,
-                                     String path, InFlightMetadataCollector mappings, String sessionFactoryBeanName) throws MappingException {
-                Bag coll = new Bag(mappings, owner);
-                coll.setCollectionTable(owner.getTable());
-                binder.bindCollection(property, coll, owner, mappings, path, sessionFactoryBeanName);
-                return coll;
-            }
-        };
-        INSTANCES.put(java.util.Collection.class, BAG);
+            initialized = true;
 
-        MAP = new CollectionType(Map.class, binder) {
-            @Override
-            public Collection create(ToMany property, PersistentClass owner,
-                                     String path, InFlightMetadataCollector mappings, String sessionFactoryBeanName) throws MappingException {
-                org.hibernate.mapping.Map map = new org.hibernate.mapping.Map(mappings, owner);
-                binder.bindCollection(property, map, owner, mappings, path, sessionFactoryBeanName);
-                return map;
-            }
-        };
-        INSTANCES.put(Map.class, MAP);
+            SET = new CollectionType(Set.class, binder) {
+                @Override
+                public Collection create(ToMany property, PersistentClass owner,
+                                         String path, InFlightMetadataCollector mappings, String sessionFactoryBeanName) throws MappingException {
+                    org.hibernate.mapping.Set coll = new org.hibernate.mapping.Set(mappings, owner);
+                    coll.setCollectionTable(owner.getTable());
+                    binder.bindCollection(property, coll, owner, mappings, path, sessionFactoryBeanName);
+                    return coll;
+                }
+            };
+            INSTANCES.put(Set.class, SET);
+            INSTANCES.put(SortedSet.class, SET);
+
+            LIST = new CollectionType(List.class, binder) {
+                @Override
+                public Collection create(ToMany property, PersistentClass owner,
+                                         String path, InFlightMetadataCollector mappings, String sessionFactoryBeanName) throws MappingException {
+                    org.hibernate.mapping.List coll = new org.hibernate.mapping.List(mappings, owner);
+                    coll.setCollectionTable(owner.getTable());
+                    binder.bindCollection(property, coll, owner, mappings, path, sessionFactoryBeanName);
+                    return coll;
+                }
+            };
+            INSTANCES.put(List.class, LIST);
+
+            BAG = new CollectionType(java.util.Collection.class, binder) {
+                @Override
+                public Collection create(ToMany property, PersistentClass owner,
+                                         String path, InFlightMetadataCollector mappings, String sessionFactoryBeanName) throws MappingException {
+                    Bag coll = new Bag(mappings, owner);
+                    coll.setCollectionTable(owner.getTable());
+                    binder.bindCollection(property, coll, owner, mappings, path, sessionFactoryBeanName);
+                    return coll;
+                }
+            };
+            INSTANCES.put(java.util.Collection.class, BAG);
+
+            MAP = new CollectionType(Map.class, binder) {
+                @Override
+                public Collection create(ToMany property, PersistentClass owner,
+                                         String path, InFlightMetadataCollector mappings, String sessionFactoryBeanName) throws MappingException {
+                    org.hibernate.mapping.Map map = new org.hibernate.mapping.Map(mappings, owner);
+                    binder.bindCollection(property, map, owner, mappings, path, sessionFactoryBeanName);
+                    return map;
+                }
+            };
+            INSTANCES.put(Map.class, MAP);
+        }
+
+        public CollectionType collectionTypeForClass(Class<?> clazz) {
+            createInstances();
+            return INSTANCES.get(clazz);
+        }
+
+
     }
-
-    public CollectionType collectionTypeForClass(Class<?> clazz) {
-        createInstances();
-        return INSTANCES.get(clazz);
-    }
-
 
 }
+
+
