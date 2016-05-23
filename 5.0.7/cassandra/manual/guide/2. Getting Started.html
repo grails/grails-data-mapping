@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2 Getting Started 5.0.0.BUILD-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/3.%20Mapping%20Domain%20Classes%20to%20Cassandra%20Tables.html"><strong>3</strong><span>Mapping Domain Classes to Cassandra Tables</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20Querying%20and%20Persistence%20Options.html"><strong>4</strong><span>Querying and Persistence Options</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Low-level%20API.html"><strong>5</strong><span>Low-level API</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/1.%20Introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/3.%20Mapping%20Domain%20Classes%20to%20Cassandra%20Tables.html"><strong>3</strong><span>Mapping Domain Classes to Cassandra Tables</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2 Getting Started - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Paras Lakhani</p>
+
+                    <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
+
+                    
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#2.1%20Using%20Cassandra%20Standalone"><strong>2.1</strong><span>Using Cassandra Standalone</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#2.2%20Combining%20Cassandra%20and%20Hibernate"><strong>2.2</strong><span>Combining Cassandra and Hibernate</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#2.3%20Advanced%20Configuration"><strong>2.3</strong><span>Advanced Configuration</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="2. Getting Started">2 Getting Started</h1>
+To get started with GORM for Cassandra you need configure it as a dependency in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
+    compile ':cassandra:latest.version' 
+&#125;</pre></div><p class="paragraph"/>The next step is to setup a running Cassandra server. 
+Refer to the <a href="https://wiki.apache.org/cassandra/GettingStarted" target="blank">Apache Cassandra Getting Started Guide</a> for an explanation on how to setup and startup a Cassandra instance. 
+Once installed, starting Cassandra is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>CASSANDRA_HOME/bin/cassandra &#45;f</pre></div><p class="paragraph"/>With the above command executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>INFO 00:11:16,935 Starting listening <span class="java&#45;keyword">for</span> CQL clients on localhost/127.0.0.1:9042&#8230;
+INFO 00:11:17,013 Using TFramedTransport with a max frame size of 15728640 bytes.
+INFO 00:11:17,014 Binding thrift service to localhost/127.0.0.1:9160
+INFO 00:11:17,042 Using synchronous/threadpool thrift server on localhost : 9160
+INFO 00:11:17,042 Listening <span class="java&#45;keyword">for</span> thrift clients...</pre></div><p class="paragraph"/>As you can see the server listens for CQL clients on port 9042, but don't worry the Cassandra plugin for Grails will automatically configure itself to look for Cassandra on that port by default.<p class="paragraph"/>If you want to configure how Grails connects to Cassandra then you can do so using the following settings in <code>grails-app/conf/DataSource.groovy</code>:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    cassandra &#123;  
+        contactPoints = <span class="java&#45;quote">"localhost"</span> 
+        port = 9042 
+        keyspace.name = <span class="java&#45;quote">"foo"</span> 		
+    &#125;
+&#125;</pre></div>
+
+
+
+<h2 id="2.1 Using Cassandra Standalone">2.1 Using Cassandra Standalone</h2>
+If you plan to use Cassandra as your primary datastore then you need to remove the Hibernate plugin from the <code>grails-app/conf/BuildConfig.groovy</code> file by commenting out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile ':hibernate:3.6.10.12'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Cassandra and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Cassandra. Example:<p class="paragraph"/><div class="code"><pre>class Person &#123;    
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName 
+&#125;
+def person = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Fred"</span>, lastName: <span class="java&#45;quote">"Flintstone"</span>)<p class="paragraph"/>person.save()
+&#8230;
+def person2 = Person.get(uuid)</pre></div>
+
+
+<h2 id="2.2 Combining Cassandra and Hibernate">2.2 Combining Cassandra and Hibernate</h2>
+If you have both the Hibernate and Cassandra plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Cassandra. 
+If you want to persist a particular domain class with Cassandra then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"cassandra"</span></pre></div><p class="paragraph"/>Alternatively you can persist Hibernate entities to Cassandra using the special <code>cassandra</code> scope added to all Hibernate entities.<p class="paragraph"/><div class="code"><pre>person.cassandra.save()</pre></div><p class="paragraph"/>By default the Hibernate plugin transparently adds an implicit <code>id</code> property of type <code>Long</code> to your domain class. The Cassandra plugin adds an <code>id</code> property of type <code>UUID</code>. 
+If you install both plugins, the <code>id</code> property will be of type <code>Long</code>.
+So if you have a domain class with an auto-generated <code>id</code> (the default behaviour) and you want to save it to both datastores, you should define a <code>UUID id</code> 
+property as a <code>Long</code> won't really work for Cassandra. You also need to set the id's <code>generator</code> attribute so that the Hibernate plugin can auto-generate a <code>UUID</code>.
+Here is an example of persisting an entity to both datastores:
+<div class="code"><pre>class Person &#123;
+    UUID id
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName 
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        id generator:'uuid2'        
+    &#125;   
+&#125;<p class="paragraph"/>def hibernatePerson = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Fred"</span>, lastName: <span class="java&#45;quote">"Flintstone"</span>)<p class="paragraph"/>hibernatePerson.save()<p class="paragraph"/>hibernatePerson = Person.get(uuid)<p class="paragraph"/>hibernatePerson.cassandra.insert()<p class="paragraph"/>def cassandraPerson = Person.cassandra.get(uuid)</pre></div><p class="paragraph"/>Note that as an identifier has been assigned to the entity by the Hibernate plugin, you will need to use the <code>insert</code> method for Cassandra instead of the <code>save</code> method, 
+otherwise GORM can't work out whether you are trying to achieve an insert or an update.
+
+
+<h2 id="2.3 Advanced Configuration">2.3 Advanced Configuration</h2>
+<h4>Cassandra Database Connection Configuration</h4><p class="paragraph"/>As mentioned above, the GORM for Cassandra plugin will configure itself with default settings, but if you wish to customize those defaults you can do so in the <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    cassandra &#123;
+        contactPoints = <span class="java&#45;quote">"localhost"</span>
+        port = 9042
+        schemaAction = <span class="java&#45;quote">"recreate&#45;drop&#45;unused"</span>
+        keyspace &#123;
+            name = <span class="java&#45;quote">"foo"</span> 
+            action = <span class="java&#45;quote">"create"</span>
+        &#125;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>The <code>keyspace name</code> property configures the default keyspace to use. If it's not specified the <code>keyspace</code> used will default to the name of your application.<p class="paragraph"/>In production scenarios you will typically use more than one Cassandra node:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    cassandra &#123;
+        contactPoints = <span class="java&#45;quote">"192.168.0.1, 192.168.0.2"</span> //comma&#45;separated list of hostnames or IP addresses of nodes to connect to
+    &#125;
+&#125;</pre></div><p class="paragraph"/><h4>Keyspace creation</h4><p class="paragraph"/>If you want the plugin to automatically create the application's keyspace you can specify a value for the <code>keyspace action</code> property:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    cassandra &#123;
+        keyspace &#123;
+            name = <span class="java&#45;quote">"foo"</span> 
+            action = <span class="java&#45;quote">"create"</span>
+        &#125;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Valid options for <code>action</code> are:
+<ul class="star">
+<li><strong class="bold">create</strong> - Create the keyspace if it doesn't exist</li>
+<li><strong class="bold">create-drop</strong> - Drop the keyspace and create it if doesn't exist</li>
+</ul><p class="paragraph"/><h4>Schema creation</h4><p class="paragraph"/>The plugin can automatically create the Cassandra tables and indexes required for your domain model. You have some control over when and how it does this through the <code>dbCreate</code> property, which can take these values: 
+<ul class="star">
+<li><strong class="bold">none</strong> - The default. Do not create any schema objects.</li>
+<li><strong class="bold">create</strong> - Create a table and indexes for each domain class on startup. Fail if a table already exists.</li>
+<li><strong class="bold">recreate</strong> - Create a table and indexes for each domain class on startup, dropping the table first if it exists.</li>
+<li><strong class="bold">recreate-drop-unused</strong> - Drop <strong class="bold">all</strong> tables in the keyspace, then create a table and indexes for each domain class on startup.</li>
+<li>update - TO IMPLEMENT</li>
+</ul><p class="paragraph"/>Example:
+<div class="code"><pre>grails &#123;
+    cassandra &#123;
+        dbCreate = <span class="java&#45;quote">"recreate&#45;drop&#45;unused"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>You can remove the dbCreate property completely, which is recommended once your schema is relatively stable and definitely when your application and database are deployed in production.<p class="paragraph"/><h4>Configuration Options Guide</h4><p class="paragraph"/>Below is a complete example showing all configuration options, including <a href="http://www.datastax.com/documentation/cql/3.1/cql/cql_reference/create_keyspace_r.html" target="blank">keyspace options</a>:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    cassandra &#123;
+    	contactPoints = <span class="java&#45;quote">"localhost"</span> //comma&#45;separated list of hostnames or IP addresses of nodes to connect to
+        port = 9042 //the port to connect to
+        dbCreate = <span class="java&#45;quote">"recreate"</span> //the strategy to create cassandra tables and indexes <span class="java&#45;keyword">for</span> domain classes, <span class="java&#45;keyword">default</span>: <span class="java&#45;quote">"none"</span>     
+        stateless = <span class="java&#45;keyword">false</span> // whether to use stateless sessions by <span class="java&#45;keyword">default</span><p class="paragraph"/>        keyspace &#123;
+            name = <span class="java&#45;quote">"foo"</span> //the name of the keyspace to use, <span class="java&#45;keyword">default</span>: the name of the application
+            action = <span class="java&#45;quote">"create"</span> //whether to create a keyspace, <span class="java&#45;keyword">default</span>: no keyspace created<p class="paragraph"/>            //keyspace properties to set only <span class="java&#45;keyword">if</span> the plugin is to create the keyspace         			
+            durableWrites = <span class="java&#45;keyword">false</span> //<span class="java&#45;keyword">default</span>: <span class="java&#45;keyword">false</span>                        
+            replicationStrategy = <span class="java&#45;quote">"SimpleStrategy"</span> OR <span class="java&#45;quote">"NetworkTopologyStrategy"</span> //<span class="java&#45;keyword">default</span>: <span class="java&#45;quote">"SimpleStrategy"</span>             
+            replicationFactor = 1 //<span class="java&#45;keyword">default</span>: 1                        
+            dataCenter = &#91;<span class="java&#45;quote">"us&#45;west"</span>:1, <span class="java&#45;quote">"eu&#45;west"</span>:2&#93; //<span class="java&#45;keyword">if</span> replicationStrategy is <span class="java&#45;quote">"NetworkTopologyStrategy"</span>,
+                                                    //a map of data centre names and replication factors
+        &#125;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>
+<h4>Global Mapping Configuration</h4><p class="paragraph"/>Using the <code>grails.cassandra.default.mapping</code> setting in <code>Config.groovy</code> you can configure global mapping options across your domain classes. 
+The following configuration will disable optimistic locking globally:<p class="paragraph"/><div class="code"><pre>grails.cassandra.<span class="java&#45;keyword">default</span>.mapping = &#123;
+    version <span class="java&#45;keyword">false</span>    
+&#125;</pre></div>
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/1.%20Introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/3.%20Mapping%20Domain%20Classes%20to%20Cassandra%20Tables.html"><strong>3</strong><span>Mapping Domain Classes to Cassandra Tables</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Beans/cassandraTemplate.html">cassandraTemplate</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/appendTo.html">appendTo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/deleteAtFrom.html">deleteAtFrom</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/deleteFrom.html">deleteFrom</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/prependTo.html">prependTo</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/replaceAtIn.html">replaceAtIn</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/updateProperties.html">updateProperties</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/updateProperty.html">updateProperty</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/updateSingleTypes.html">updateSingleTypes</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

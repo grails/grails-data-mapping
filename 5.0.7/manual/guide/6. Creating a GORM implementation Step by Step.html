@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>6 Creating a GORM implementation Step by Step 5.0.0.BUILD-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/3.%20Understanding%20the%20Low-level%20API.html"><strong>3</strong><span>Understanding the Low-level API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20GORM%20Enhancer.html"><strong>4</strong><span>GORM Enhancer</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Using%20the%20Test%20Compatibility%20Kit.html"><strong>5</strong><span>Using the Test Compatibility Kit</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/6.%20Creating%20a%20GORM%20implementation%20Step%20by%20Step.html"><strong>6</strong><span>Creating a GORM implementation Step by Step</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/5.%20Using%20the%20Test%20Compatibility%20Kit.html">&lt;&lt; <strong>5</strong><span>Using the Test Compatibility Kit</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+
+
+                <div class="project">
+                    <h1>6 Creating a GORM implementation Step by Step - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher</p>
+
+                    <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h1 id="6. Creating a GORM implementation Step by Step">6 Creating a GORM implementation Step by Step</h1>
+To get started with your a new GORM implementation the following steps are required:<p class="paragraph"/><h3>Initial Directory Creation</h3><p class="paragraph"/><div class="code"><pre>$ git clone git@github.com:SpringSource/grails&#45;data&#45;mapping.git 
+$ cd grails&#45;data&#45;mapping
+$ mkdir grails&#45;datastore&#45;gorm&#45;xyz</pre></div><p class="paragraph"/><h3>Setup Gradle Build</h3><p class="paragraph"/>Create build.gradle:<p class="paragraph"/><div class="code"><pre>$ vi grails&#45;datastore&#45;gorm&#45;xyz/build.gradle</pre></div><p class="paragraph"/>With contents:<p class="paragraph"/><div class="code"><pre>dependencies &#123;
+    compile project(':grails&#45;datastore&#45;gorm'),
+            project(':grails&#45;datastore&#45;web'),
+            project(':grails&#45;datastore&#45;gorm&#45;plugin&#45;support')<p class="paragraph"/>    testCompile project(':grails&#45;datastore&#45;gorm&#45;test'),
+                project(':grails&#45;datastore&#45;gorm&#45;tck')
+    testRuntime <span class="java&#45;quote">"javax.servlet:javax.servlet&#45;api:$servletApiVersion"</span>
+    testRuntime 'org.grails:grails&#45;gorm:$grailsVersion'
+    testRuntime 'org.grails:grails&#45;web:$grailsVersion'<p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>Add new project to settings.gradle in root project:<p class="paragraph"/><div class="code"><pre>$ vi settings.gradle</pre></div><p class="paragraph"/>Changes shown below:<p class="paragraph"/><div class="code"><pre>// GORM Implementations
+'grails&#45;datastore&#45;gorm&#45;jpa',
+'grails&#45;datastore&#45;gorm&#45;neo4j',
+'grails&#45;datastore&#45;gorm&#45;xyz',
+....</pre></div><p class="paragraph"/><h3>Create Project Source Directories</h3><p class="paragraph"/><div class="code"><pre>$ mkdir grails&#45;datastore&#45;gorm&#45;xyz/src/main/groovy
+$ mkdir grails&#45;datastore&#45;gorm&#45;xyz/src/test/groovy</pre></div><p class="paragraph"/><h3>Generate IDE Project Files and Import into IDE</h3><p class="paragraph"/><div class="code"><pre>$ gradlew grails&#45;datastore&#45;gorm&#45;xyz:idea</pre></div><p class="paragraph"/>Or<p class="paragraph"/><div class="code"><pre>$ gradlew grails&#45;datastore&#45;gorm&#45;xyz:eclipse</pre></div><p class="paragraph"/><h3>Implement Required Interfaces</h3><p class="paragraph"/>In <code>src/main/groovy</code> create implementations:
+<ul class="star">
+<li><code>org.grails.datastore.xyz.XyzDatastore</code> extends and implements <code>org.grails.datastore.mapping.core.AbstractDatastore</code></li>
+<li><code>org.grails.datastore.xyz.XyzSession</code> extends and implements <code>org.grails.datastore.mapping.core.AbstractSession</code></li>
+<li><code>org.grails.datastore.xyz.engine.XyzEntityPersister</code> extends and implements <code>org.grails.datastore.mapping.engine.NativeEntryEntityPersister</code></li>
+<li><code>org.grails.datastore.xyz.query.XyzQuery</code> extends and implements <code>org.grails.datastore.mapping.query.Query</code></li>
+</ul><p class="paragraph"/><h3>Create Test Suite </h3><p class="paragraph"/>In <code>src/test/groovy</code> create <code>org.grails.datastore.gorm.Setup</code> class to configure TCK:<p class="paragraph"/><div class="code"><pre>class Setup &#123;<p class="paragraph"/>    <span class="java&#45;keyword">static</span> xyz
+    <span class="java&#45;keyword">static</span> destroy() &#123;
+        xyz.disconnect()
+    &#125;
+    <span class="java&#45;keyword">static</span> Session setup(classes) &#123;
+        def ctx = <span class="java&#45;keyword">new</span> GenericApplicationContext()
+        ctx.refresh()
+        xyz = <span class="java&#45;keyword">new</span> XyzDatastore(ctx)
+        <span class="java&#45;keyword">for</span> (cls in classes) &#123;
+            xyz.mappingContext.addPersistentEntity(cls)
+        &#125;<p class="paragraph"/>
+        def enhancer = <span class="java&#45;keyword">new</span> GormEnhancer(xyz, <span class="java&#45;keyword">new</span> DatastoreTransactionManager(datastore: xyz))
+        enhancer.enhance()<p class="paragraph"/>        xyz.mappingContext.addMappingContextListener(&#123; e &#45;&#62; enhancer.enhance e &#125; as MappingContext.Listener)
+        xyz.applicationContext.addApplicationListener <span class="java&#45;keyword">new</span> DomainEventListener(xyz)
+        xyz.applicationContext.addApplicationListener <span class="java&#45;keyword">new</span> AutoTimestampEventListener(xyz)<p class="paragraph"/>        xyz.connect()
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Then in <code>src/test/groovy</code> create test suite class to allow running tests in IDE (without this you won't be able to run TCK tests from the IDE). Example test suite:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">package</span> org.grails.datastore.gorm<p class="paragraph"/><span class="java&#45;keyword">import</span> org.junit.runners.Suite.SuiteClasses
+<span class="java&#45;keyword">import</span> org.junit.runners.Suite
+<span class="java&#45;keyword">import</span> org.junit.runner.RunWith
+<span class="java&#45;keyword">import</span> grails.gorm.tests.&#42;<p class="paragraph"/>/&#42;&#42;
+ &#42; @author graemerocher
+ &#42;/
+@RunWith(Suite)
+@SuiteClasses(&#91;
+  FindByMethodSpec,
+  ListOrderBySpec
+&#93;)
+class XyzTestSuite &#123;
+&#125;</pre></div><p class="paragraph"/><h3>Implement the TCK!</h3><p class="paragraph"/>Keep iterating until you have implemented all the tests in the TCK.<p class="paragraph"/>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/5.%20Using%20the%20Test%20Compatibility%20Kit.html">&lt;&lt; <strong>5</strong><span>Using the Test Compatibility Kit</span></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Implementations</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/ConcurrentHashMap.html">ConcurrentHashMap</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/Hibernate.html">Hibernate</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/JPA.html">JPA</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/MongoDB.html">MongoDB</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/Neo4j.html">Neo4j</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/Redis.html">Redis</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/Riak.html">Riak</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Implementations/SimpleDB.html">SimpleDB</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
