@@ -20,7 +20,6 @@ include ("grails-datastore-core",
 
         // Core GORM Implementation projects
         'grails-datastore-gorm',
-        'grails-datastore-gorm-rx',
         'grails-datastore-gorm-support',
         'grails-datastore-gorm-grails2-support',
         'grails-datastore-gorm-tck',
@@ -29,11 +28,17 @@ include ("grails-datastore-core",
         'grails-datastore-gorm-plugin-support',
         'grails-datastore-test-support',
 
+
+        // RX projects
+        'grails-datastore-gorm-rx',
+        'grails-datastore-gorm-rx-plugin-support',
+
         // Grails 3 Plugins
         'grails-plugins/hibernate3',
         'grails-plugins/hibernate4',
         'grails-plugins/hibernate5',
         'grails-plugins/mongodb',
+        'grails-plugins/rx-mongodb',
         'grails-plugins/neo4j',
         'grails-plugins/cassandra',
         'grails-plugins/redis-gorm',
@@ -55,6 +60,7 @@ include ("grails-datastore-core",
         'grails-datastore-gorm-redis',
         'grails-datastore-gorm-rest-client',
         'grails-datastore-gorm-mongodb',
+        'grails-datastore-gorm-mongodb-ext',
         'grails-datastore-gorm-rx-mongodb',
         'grails-datastore-gorm-hibernate-core',
         'grails-datastore-gorm-hibernate',

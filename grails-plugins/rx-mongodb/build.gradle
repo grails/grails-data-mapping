@@ -51,10 +51,8 @@ dependencies {
 
     compile project(":grails-datastore-web")
     compile project(":grails-datastore-simple")
-    compile project(":grails-datastore-gorm-mongodb-ext"), {
-        exclude group:'org.grails', module:'grails-datastore-gorm-mongodb'
-    }
-    compile project(":grails-datastore-gorm-mongodb"), {
+    compile project(":grails-datastore-gorm-rx-plugin-support")
+    compile project(":grails-datastore-gorm-rx-mongodb"), {
         exclude group:'org.springframework', module:'spring-context'
         exclude group:'org.springframework', module:'spring-core'
         exclude group:'org.springframework', module:'spring-beans'

@@ -29,8 +29,6 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.grails.datastore.gorm.mongo.bean.factory.MongoClientFactoryBean;
-import org.grails.datastore.gorm.mongo.extensions.MongoExtensions;
-import org.grails.datastore.mapping.config.utils.PropertyResolverMap;
 import org.grails.datastore.mapping.core.*;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.model.*;
@@ -417,7 +415,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                 List<MongoCollection.Index> indices = mappedForm.getIndices();
                 for (MongoCollection.Index index : indices) {
                     final Map<String, Object> options = index.getOptions();
-                    final IndexOptions indexOptions = MongoExtensions.mapToObject(IndexOptions.class, options);
+                    final IndexOptions indexOptions = MongoConstants.mapToObject(IndexOptions.class, options);
                     collection.createIndex(new Document(index.getDefinition()), indexOptions);
                 }
 
@@ -432,7 +430,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                     }
                     Document indexDef = new Document(compoundIndex);
                     if (indexAttributes != null) {
-                        final IndexOptions indexOptions = MongoExtensions.mapToObject(IndexOptions.class, indexAttributes);
+                        final IndexOptions indexOptions = MongoConstants.mapToObject(IndexOptions.class, indexAttributes);
                         collection.createIndex(indexDef, indexOptions);
                     } else {
                         collection.createIndex(indexDef);
@@ -464,7 +462,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                 if (options.isEmpty()) {
                     collection.createIndex(dbObject);
                 } else {
-                    final IndexOptions indexOptions = MongoExtensions.mapToObject(IndexOptions.class, options);
+                    final IndexOptions indexOptions = MongoConstants.mapToObject(IndexOptions.class, options);
                     collection.createIndex(dbObject, indexOptions);
                 }
             }

@@ -122,7 +122,7 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
             return
         }
 
-        classNode.putNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER, Boolean.TRUE)
+
         AstUtils.addTransformedEntityName(classNode.name)
         // Add the entity annotation and enable generic replacement
         classNode.setUsingGenerics(true);
@@ -266,7 +266,9 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
 
         if(compilationUnit != null && !isRxEntity) {
             org.codehaus.groovy.transform.trait.TraitComposer.doExtendTraits(classNode, sourceUnit, compilationUnit);
+            classNode.putNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER, Boolean.TRUE)
         }
+
 
     }
 

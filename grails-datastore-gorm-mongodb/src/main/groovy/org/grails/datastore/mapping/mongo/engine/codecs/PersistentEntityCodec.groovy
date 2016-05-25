@@ -595,19 +595,7 @@ class PersistentEntityCodec implements Codec {
         entity.javaClass
     }
 
-    /**
-     * An interface for encoding PersistentProperty instances
-     */
-    static interface PropertyEncoder<T extends PersistentProperty> {
-        void encode(BsonWriter writer, T property, Object value, EntityAccess parentAccess, EncoderContext encoderContext, CodecRegistry codecRegistry)
-    }
 
-    /**
-     * An interface for encoding PersistentProperty instances
-     */
-    static interface PropertyDecoder<T extends PersistentProperty> {
-        void decode(BsonReader reader, T property, EntityAccess entityAccess, DecoderContext decoderContext, CodecRegistry codecRegistry)
-    }
 
     /**
      * A {@PropertyDecoder} capable of decoding the {@link Identity}
