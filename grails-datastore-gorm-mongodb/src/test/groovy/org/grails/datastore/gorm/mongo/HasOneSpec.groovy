@@ -17,8 +17,8 @@ class HasOneSpec extends GormDatastoreSpec {
 
             session.clear()
             f = Face.get(f.id)
-            def fdbo = Face.collection.findOne()
-            def ndbo = Nose.collection.findOne()
+            def fdbo = Face.collection.find().first()
+            def ndbo = Nose.collection.find().first()
 
         then:"The data is persisted correctly"
             f.nose != null

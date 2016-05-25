@@ -45,11 +45,11 @@ class EmbeddedWithNonEmbeddedAssociationsSpec extends GormDatastoreSpec {
             Boat.count() == 1
 
         when:"The underlying Mongo document is queried"
-            def boatDbo = Boat.collection.findOne()
+            def boatDbo = Boat.collection.find().first()
 
         then:"It is correctly defined"
             boatDbo.name == "The Float"
-            Captain.collection.findOne(boatDbo.captain).name == "Bob"
+            Captain.collection.find(new Document("_id", boatDbo.captain)).first().name == "Bob"
             boatDbo.firstMate instanceof Document
             boatDbo.firstMate.name == "Jim"
             boatDbo.crew.size() == 2

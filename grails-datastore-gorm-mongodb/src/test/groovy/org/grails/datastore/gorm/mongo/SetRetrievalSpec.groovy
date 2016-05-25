@@ -4,6 +4,7 @@ import com.mongodb.client.MongoDatabase
 import grails.gorm.tests.GormDatastoreSpec
 import grails.mongodb.MongoEntity
 import grails.persistence.Entity
+import org.bson.Document
 import org.bson.types.ObjectId
 import spock.lang.Issue
 
@@ -16,7 +17,7 @@ class SetRetrievalSpec extends GormDatastoreSpec {
     void "Test retrieve an existing set"() {
         when:"a set is retrieved"
         MongoDatabase db = Team.DB
-        db.getCollection('team').insert(name:"Manchester United", nicknames:['Red Devils'] as Set)
+        db.getCollection('team').insertOne(new Document(name:"Manchester United", nicknames:['Red Devils'] as Set))
 
         def teams = Team.list()
         then:"the result is correct"

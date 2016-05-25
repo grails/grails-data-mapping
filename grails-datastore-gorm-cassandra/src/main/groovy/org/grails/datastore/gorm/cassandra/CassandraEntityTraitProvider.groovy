@@ -27,4 +27,9 @@ import org.grails.compiler.gorm.GormEntityTraitProvider
 @CompileStatic
 class CassandraEntityTraitProvider implements GormEntityTraitProvider{
     final Class entityTrait = CassandraEntity
+
+    @Override
+    boolean isAvailable() {
+        return true
+    }
 }

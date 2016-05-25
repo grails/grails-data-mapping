@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.mongo
 import com.mongodb.DBRef
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+import org.bson.Document
 import org.bson.types.ObjectId
 import spock.lang.Issue
 
@@ -21,10 +22,10 @@ class DbRefWithEmbeddedSpec extends GormDatastoreSpec {
             two.link2one = new Link2One(link: one)
             two.save(flush: true)
             session.clear()
-            final link2one = Two.collection.findOne().link2one?.link
+            final link2one = Two.collection.find().first().link2one?.link
         then:""
             link2one instanceof DBRef
-            Two.DB.getCollection(link2one.collectionName).findOne(link2one.id).name == "My Foo"
+            Two.DB.getCollection(link2one.collectionName).find(new Document('_id', link2one.id)).first().name == "My Foo"
 
         when:"The entity is loaded again"
             two = Two.first()

@@ -16,9 +16,10 @@ class CustomCollectionAndAttributeMappingSpec extends GormDatastoreSpec {
     void "Test that custom collection and attribute names are correctly used"() {
         when:"An entity with custom collection and attribute naming is persisted"
             def p = new CCAAMPerson(groupId:10, pets:[new CCAAMPet(name:"Joe")]).save(flush:true)
-            def dbo = CCAAMPerson.collection.findOne()
+            def dbo = CCAAMPerson.collection.find()
+                                            .first()
         then:"The underlying mongo collection is correctly populated"
-            CCAAMPerson.collection.name == "persons"
+            CCAAMPerson.collection.namespace.collectionName == "persons"
             dbo.gid == 10
             dbo.ps != null
             dbo.ps.size() == 1

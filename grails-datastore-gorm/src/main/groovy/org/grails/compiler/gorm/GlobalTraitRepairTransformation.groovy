@@ -25,6 +25,8 @@ import org.grails.datastore.mapping.reflect.AstUtils
 @CompileStatic
 @GroovyASTTransformation(phase= CompilePhase.CANONICALIZATION)
 class GlobalTraitRepairTransformation implements ASTTransformation {
+
+    private static final Object TRANSFORM_APPLIED_MARKER = new Object()
     @Override
     void visit(ASTNode[] nodes, SourceUnit source) {
         ModuleNode ast = source.getAST();
@@ -35,10 +37,10 @@ class GlobalTraitRepairTransformation implements ASTTransformation {
     }
 
     void visitClass(ClassNode aClass) {
-        if (aClass.getNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER) == null) {
+        if (aClass.getNodeMetaData(TRANSFORM_APPLIED_MARKER) == null) {
 
             if (AstUtils.implementsInterface(aClass, "org.grails.datastore.gorm.GormEntity") || AstUtils.implementsInterface(aClass, "grails.gorm.rx.RxEntity")) {
-                aClass.putNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER, Boolean.TRUE)
+                aClass.putNodeMetaData(TRANSFORM_APPLIED_MARKER, Boolean.TRUE)
                 def allMethods = aClass.getMethods()
                 for (MethodNode mn in allMethods) {
                     for (GenericsType gt in mn.returnType.genericsTypes) {

@@ -5,6 +5,7 @@ import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.tests.Nose
 import grails.gorm.tests.Person
 import grails.gorm.tests.Pet
+import org.bson.Document
 
 class OneToOneIntegritySpec extends GormDatastoreSpec {
 
@@ -26,7 +27,7 @@ class OneToOneIntegritySpec extends GormDatastoreSpec {
             pet.owner.firstName == "Fred"
 
         when:"The low level API is accessed"
-            def petDbo = Pet.collection.findOne(name:"Dino")
+            def petDbo = Pet.collection.find(new Document(name:"Dino")).first()
             def ownerRef =petDbo.owner
 
         then:"check the state is valid"
@@ -62,7 +63,7 @@ class OneToOneIntegritySpec extends GormDatastoreSpec {
             nose.face.name == "Joe"
 
         when:"The low level API is accessed"
-            def noseDbo = Nose.collection.findOne(hasFreckles:true)
+            def noseDbo = Nose.collection.find(new Document(hasFreckles:true)).first()
             def faceRef = noseDbo.face
         then:"check the state is valid"
             noseDbo != null

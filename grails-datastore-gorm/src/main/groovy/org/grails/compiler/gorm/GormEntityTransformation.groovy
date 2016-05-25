@@ -317,10 +317,19 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
     @Memoized
     private List<GormEntityTraitProvider> findTraitProviders(Class<GormEntityTraitProvider> traitProviderInterface, ClassLoader classLoader) {
         def traitProviders = ServiceLoader.load(traitProviderInterface, classLoader)
-        def allTraitProviders = traitProviders.toList()
+        List<GormEntityTraitProvider> allTraitProviders = []
+        for(provider in traitProviders) {
+            if(provider.isAvailable()) {
+                allTraitProviders.add(provider)
+            }
+        }
         if(allTraitProviders.isEmpty()) {
             traitProviders = ServiceLoader.load(traitProviderInterface, Thread.currentThread().contextClassLoader)
-            allTraitProviders = traitProviders.toList()
+            for(provider in traitProviders) {
+                if(provider.isAvailable()) {
+                    allTraitProviders.add(provider)
+                }
+            }
         }
         return allTraitProviders
     }
