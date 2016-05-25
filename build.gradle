@@ -147,6 +147,21 @@ subprojects {
    version = "${projectVersion}.${releaseType}"
    group = "org.grails"
 
+    if(project.name.contains('grails-plugins') || project.name.contains('grails2-plugins')) {
+        project.tasks.all { Task t ->
+            t.onlyIf {
+                !Boolean.getBoolean('skipPlugins')
+            }
+        }
+    }
+    else {
+        project.tasks.all { Task t ->
+            t.onlyIf {
+                !Boolean.getBoolean('onlyPlugins')
+            }
+        }
+    }
+
     if(project.name.endsWith("spring-boot")) return
     if(project.name.contains("grails2-plugins")) return
    afterEvaluate { project ->
