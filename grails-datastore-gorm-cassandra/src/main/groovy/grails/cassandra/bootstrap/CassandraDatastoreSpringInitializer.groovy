@@ -16,6 +16,7 @@
 
 package grails.cassandra.bootstrap
 
+import grails.cassandra.CassandraEntity
 import groovy.transform.InheritConstructors
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.cassandra.CassandraGormEnhancer
@@ -42,6 +43,12 @@ class CassandraDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {
         DatastorePersistenceContextInterceptor
     }
+
+    @Override
+    protected boolean isMappedClass(String datastoreType, Class cls) {
+        return CassandraEntity.isAssignableFrom(cls) || super.isMappedClass(datastoreType, cls)
+    }
+
 
     @Override
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {

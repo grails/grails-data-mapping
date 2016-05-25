@@ -1,5 +1,6 @@
 package grails.redis.bootstrap
 
+import grails.redis.RedisEntity
 import groovy.transform.InheritConstructors
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
@@ -16,6 +17,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
  */
 @InheritConstructors
 class RedisDatastoreSpringInitializer extends AbstractDatastoreInitializer{
+
+    @Override
+    protected boolean isMappedClass(String datastoreType, Class cls) {
+        return RedisEntity.isAssignableFrom(cls) || super.isMappedClass(datastoreType, cls)
+    }
 
     @Override
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
