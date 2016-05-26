@@ -282,7 +282,7 @@ class PersistentEntityCodec implements Codec {
      * @param value A {@link Bson} that is the update object
      * @return A Bson
      */
-    Document encodeUpdate(Object value, EntityAccess access = createEntityAccess(value), EncoderContext encoderContext = DEFAULT_ENCODER_CONTEXT) {
+    Document encodeUpdate(Object value, EntityAccess access = createEntityAccess(value), EncoderContext encoderContext = DEFAULT_ENCODER_CONTEXT, boolean embedded = false) {
         Document update = new Document()
         def entity = access.persistentEntity
 
@@ -330,10 +330,10 @@ class PersistentEntityCodec implements Codec {
                     Object v = access.getProperty(prop.name)
                     if (v != null) {
                         if(prop instanceof Embedded) {
-                            encodeEmbeddedUpdate(sets, (Association)prop, v)
+                            encodeEmbeddedUpdate(sets,unsets, (Association)prop, v)
                         }
                         else if(prop instanceof EmbeddedCollection) {
-                            encodeEmbeddedCollectionUpdate(access, sets, (Association)prop, v)
+                            encodeEmbeddedCollectionUpdate(access, sets, unsets, (Association)prop, v)
                         }
                         else {
                             def propKind = prop.getClass().superclass
@@ -341,7 +341,7 @@ class PersistentEntityCodec implements Codec {
                         }
 
                     }
-                    else if(!isNew) {
+                    else if(embedded || !isNew) {
                         unsets[prop.name] = BLANK_STRING
                     }
                 }
@@ -396,7 +396,7 @@ class PersistentEntityCodec implements Codec {
                     if( v instanceof DirtyCheckable ) {
                         if(((DirtyCheckable)v).hasChanged()) {
                             if(association instanceof Embedded) {
-                                encodeEmbeddedUpdate(sets, association, v)
+                                encodeEmbeddedUpdate(sets, unsets, association, v)
                             }
                         }
                     }
@@ -405,7 +405,7 @@ class PersistentEntityCodec implements Codec {
                     def v = access.getProperty(association.name)
                     if( v instanceof DirtyCheckableCollection ) {
                         if(((DirtyCheckableCollection)v).hasChanged()) {
-                            encodeEmbeddedCollectionUpdate(access, sets, association, v)
+                            encodeEmbeddedCollectionUpdate(access, sets, unsets, association, v)
                         }
                     }
                 }
@@ -439,18 +439,25 @@ class PersistentEntityCodec implements Codec {
         return update
     }
 
-    protected void encodeEmbeddedCollectionUpdate(EntityAccess parentAccess, BsonDocument sets, Association association, v) {
+    protected void encodeEmbeddedCollectionUpdate(EntityAccess parentAccess, BsonDocument sets, Document unsets, Association association, v) {
         if(v instanceof Collection) {
             if((v instanceof DirtyCheckableCollection) && !((DirtyCheckableCollection)v).hasChangedSize()) {
                 int i = 0
                 for(o in v) {
-                    def embeddedUpdate = encodeUpdate(o)
+                    def embeddedUpdate = encodeUpdate(o, createEntityAccess(o), EncoderContext.builder().build(), true)
                     def embeddedSets = embeddedUpdate.get(MONGO_SET_OPERATOR)
                     if(embeddedSets) {
 
                         def map = (Map) embeddedSets
                         for (key in map.keySet()) {
                             sets.put("${association.name}.${i}.$key", (BsonValue) map.get(key))
+                        }
+                    }
+                    def embeddedUnsets = embeddedUpdate.get(MONGO_UNSET_OPERATOR)
+                    if(embeddedUnsets) {
+                        def map = (Map) embeddedUnsets
+                        for (key in map.keySet()) {
+                            unsets.put("${association.name}.${i}.$key", BLANK_STRING)
                         }
                     }
                     i++
@@ -502,7 +509,9 @@ class PersistentEntityCodec implements Codec {
         }
 
     }
-    protected void encodeEmbeddedUpdate(BsonDocument sets, Association association, v) {
+    protected void encodeEmbeddedUpdate(BsonDocument sets, Document unsets, Association association, v) {
+
+
         def embeddedUpdate = encodeUpdate(v)
         def embeddedSets = embeddedUpdate.get(MONGO_SET_OPERATOR)
         if(embeddedSets) {
@@ -510,6 +519,14 @@ class PersistentEntityCodec implements Codec {
             def map = (Map) embeddedSets
             for (key in map.keySet()) {
                 sets.put("${association.name}.$key", (BsonValue) map.get(key))
+            }
+        }
+
+        def embeddedUnsets = embeddedUpdate.get(MONGO_UNSET_OPERATOR)
+        if(embeddedUnsets) {
+            def map = (Map) embeddedUnsets
+            for (key in map.keySet()) {
+                unsets.put("${association.name}.$key", BLANK_STRING)
             }
         }
     }
