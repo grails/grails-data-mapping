@@ -30,6 +30,7 @@ env:
   - secure: TNZ8oWsN+E1gkvxhyTHjguyakIWm+T9KxoZVNq+OoHv2kuyWTIbTJUtP3JVyXX+P+B9F9o+8Kkxp5jomgW0cRdjWxQebceeGlrNAzTVvvOm7tVFFxLjzjRnUPsWKfGXkIzSagvFdSgHIpinDqrtERD10pbym2ZDwqRCejCMjz0U=
   - secure: io7oNZbf/aYRn+a73x6B/8yjg27CYVVdwRobQ+vZBNwBzS31bBcC/8pMtIpsBFqSEtE8GrSM4dYtMSFSj5PasiMg6PgYG/frsbtgGmRqTBkmENfv2EIO+Ex0pgycL+hCUVtPqD9j3mwhfPWkim9vPdmpYe2BbQuTYs0spJuu6PQ=
   matrix:
+  - GORM_IMPL=cassandra
   - GORM_IMPL=test
   - GORM_IMPL=testgrails2
   - GORM_IMPL=hibernate
@@ -37,7 +38,6 @@ env:
   - GORM_IMPL=hibernate5
   - GORM_IMPL=mongodb
   - GORM_IMPL=redis
-  - GORM_IMPL=cassandra
   - GORM_IMPL=neo4j
   - GORM_IMPL=restclient
 before_script:
