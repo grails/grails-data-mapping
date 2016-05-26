@@ -29,14 +29,6 @@ import org.hibernate.criterion.DetachedCriteria;
  */
 public class HibernateCriterionAdapter extends AbstractHibernateCriterionAdapter {
 
-    public HibernateCriterionAdapter(PersistentEntity entity, Query.Criterion criterion, String alias) {
-        super(entity, criterion, alias);
-    }
-
-    public HibernateCriterionAdapter(Query.Criterion criterion) {
-        super(criterion);
-    }
-
     protected Criterion createRlikeExpression(String propertyName, String pattern) {
         return new RlikeExpression(propertyName, pattern);
     }
