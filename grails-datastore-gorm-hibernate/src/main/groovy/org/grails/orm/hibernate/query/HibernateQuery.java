@@ -49,6 +49,8 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 @SuppressWarnings("rawtypes")
 public class HibernateQuery extends AbstractHibernateQuery {
 
+    public static final HibernateCriterionAdapter HIBERNATE_CRITERION_ADAPTER = new HibernateCriterionAdapter();
+
     public HibernateQuery(Criteria criteria, AbstractHibernateSession session, PersistentEntity entity) {
         super(criteria, session, entity);
     }
@@ -64,8 +66,10 @@ public class HibernateQuery extends AbstractHibernateQuery {
     public HibernateQuery(DetachedCriteria criteria, PersistentEntity entity) {
         super(criteria, entity);
     }
-    protected AbstractHibernateCriterionAdapter createHibernateCriterionAdapter(PersistentEntity entity, Criterion c, String alias) {
-        return new HibernateCriterionAdapter(entity, c, alias);
+
+    @Override
+    protected AbstractHibernateCriterionAdapter createHibernateCriterionAdapter() {
+        return HIBERNATE_CRITERION_ADAPTER;
     }
 
     protected org.hibernate.criterion.Criterion createRlikeExpression(String propertyName, String value) {

@@ -102,7 +102,7 @@ public class HibernateProjectionAdapter {
         return projectionAdapter.toHibernateProjection(projection);
     }
 
-    private static interface ProjectionAdapter {
+    private interface ProjectionAdapter {
         Projection toHibernateProjection(Query.Projection gormProjection);
     }
 }

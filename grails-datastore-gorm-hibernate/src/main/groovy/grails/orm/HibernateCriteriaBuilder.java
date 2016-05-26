@@ -170,7 +170,7 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
     private static void populateHibernateDetachedCriteria(AbstractHibernateQuery hibernateQuery, org.hibernate.criterion.DetachedCriteria detachedCriteria, QueryableCriteria<?> queryableCriteria) {
         List<Query.Criterion> criteriaList = queryableCriteria.getCriteria();
         for (Query.Criterion criterion : criteriaList) {
-            Criterion hibernateCriterion = new HibernateCriterionAdapter(criterion).toHibernateCriterion(hibernateQuery);
+            Criterion hibernateCriterion = HibernateQuery.HIBERNATE_CRITERION_ADAPTER.toHibernateCriterion(hibernateQuery, criterion, null);
             if (hibernateCriterion != null) {
                 detachedCriteria.add(hibernateCriterion);
             }

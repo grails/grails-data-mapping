@@ -219,7 +219,7 @@ public class HibernateCriteriaBuilder extends AbstractHibernateCriteriaBuilder {
     private static void populateHibernateDetachedCriteria(AbstractHibernateQuery query, org.hibernate.criterion.DetachedCriteria detachedCriteria, QueryableCriteria<?> queryableCriteria) {
         List<org.grails.datastore.mapping.query.Query.Criterion> criteriaList = queryableCriteria.getCriteria();
         for (org.grails.datastore.mapping.query.Query.Criterion criterion : criteriaList) {
-            Criterion hibernateCriterion = new HibernateCriterionAdapter(criterion).toHibernateCriterion(query);
+            Criterion hibernateCriterion = HibernateQuery.HIBERNATE_CRITERION_ADAPTER.toHibernateCriterion(query, criterion, null);
             if (hibernateCriterion != null) {
                 detachedCriteria.add(hibernateCriterion);
             }
