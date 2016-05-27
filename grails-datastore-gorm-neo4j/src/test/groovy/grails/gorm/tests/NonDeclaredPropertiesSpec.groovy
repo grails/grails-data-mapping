@@ -19,12 +19,14 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
         when:'An object is initially saved'
         def club = new Club(name: 'Cosima')
         club.buddy = 'Lara'
+        club.gstring = "Name ${club.buddy}"
         club.save(flush:true)
         session.clear()
 
         club = Club.get(club.id)
         then:"it is not diry"
         club.buddy == 'Lara'
+        club.gstring == 'Name Lara'
         !club.hasChanged()
 
         when:"A dynamic property is modified with the same value"
@@ -40,6 +42,8 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
         then:"The object has changes"
         club.hasChanged()
         club.hasChanged('buddy')
+
+
 
     }
 

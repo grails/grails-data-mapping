@@ -139,6 +139,9 @@ public class Neo4jMappingContext extends AbstractMappingContext  {
             if(BASIC_TYPES.contains(type)) {
                 return value;
             }
+            else if(value instanceof CharSequence) {
+                return value.toString();
+            }
             else if(value instanceof Collection) {
                 return value;
             }
