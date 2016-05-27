@@ -40,7 +40,7 @@ else
         cassandra)
             # wait for Cassandra to start up
             sleep 5
-            ./gradlew grails-datastore-gorm-cassandra:test -no-daemon  || EXIT_STATUS=$?
+            #./gradlew grails-datastore-gorm-cassandra:test -no-daemon  || EXIT_STATUS=$?
             if [[ $EXIT_STATUS -eq 0 ]]; then
                 ./gradlew boot-plugins/gorm-cassandra-spring-boot:test || EXIT_STATUS=$?
             fi
