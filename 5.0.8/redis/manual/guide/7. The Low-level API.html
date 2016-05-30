@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>7 The Low-level API 5.0.0.BUILD-SNAPSHOT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/3.%20Object%20Mapping.html"><strong>3</strong><span>Object Mapping</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20Querying.html"><strong>4</strong><span>Querying</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Transactions.html"><strong>5</strong><span>Transactions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/6.%20Redis%20Specific%20Extensions.html"><strong>6</strong><span>Redis Specific Extensions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/7.%20The%20Low-level%20API.html"><strong>7</strong><span>The Low-level API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/8.%20Testing.html"><strong>8</strong><span>Testing</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/6.%20Redis%20Specific%20Extensions.html">&lt;&lt; <strong>6</strong><span>Redis Specific Extensions</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/8.%20Testing.html"><strong>8</strong><span>Testing</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>7 The Low-level API - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Graeme Rocher</p>
+
+                    <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h1 id="7. The Low-level API">7 The Low-level API</h1>
+There is a lower-level API that provides access to the majority of commands from the <a href="http://code.google.com/p/redis/wiki/CommandReference" target="blank">Redis Command Reference</a>. The API is available via a Spring bean called <code>redis</code> that you can inject into your own artifacts.<p class="paragraph"/>For example in a controller:<p class="paragraph"/><div class="code"><pre>class MyController &#123;
+    def redis<p class="paragraph"/>    def foo = &#123;
+        redis.select(2)
+        redis.flushdb()
+        redis&#91;<span class="java&#45;quote">"message"</span>&#93; = <span class="java&#45;quote">"World"</span><p class="paragraph"/>        render <span class="java&#45;quote">"Hello $&#123;redis&#91;"</span>message<span class="java&#45;quote">"&#93;&#125;!"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>See the <code>org.grails.redis.util.RedisTemplate</code> interface for the full list of available methods.<p class="paragraph"/>The low-level API gives you an easy way to work with Redis lists, sets and hashes via the <code>list</code>, <code>set</code> and <code>hash</code> methods. For example, the <code>list</code> method returns a normal Java <code>java.util.List</code> that is backed onto a Redis list:<p class="paragraph"/><div class="code"><pre>def list = redis.list(<span class="java&#45;quote">"my.list"</span>)
+list &#60;&#60; 1 &#60;&#60; 2 &#60;&#60; 3
+assert 3 == list.size()
+assert 1 == list&#91;0&#93; as <span class="java&#45;object">Integer</span>
+assert 2 == list&#91;1&#93; as <span class="java&#45;object">Integer</span>
+assert 3 == list&#91;2&#93; as <span class="java&#45;object">Integer</span></pre></div><p class="paragraph"/>whilst the <code>set</code> method returns a Java <code>java.util.Set</code>:<p class="paragraph"/><div class="code"><pre>def set = redis.set(<span class="java&#45;quote">"my.set"</span>)
+set &#60;&#60; 1 &#60;&#60; 2 &#60;&#60; 3 &#60;&#60; 1 &#60;&#60; 2
+assert 3 == set.size()
+assert set.contains(1)</pre></div><p class="paragraph"/>And finally the <code>hash</code> method returns a Java <code>java.util.Map</code>:<p class="paragraph"/><div class="code"><pre>def hash = redis.hash(<span class="java&#45;quote">"my.hash"</span>)<p class="paragraph"/>hash&#91;<span class="java&#45;quote">"foo"</span>&#93; = <span class="java&#45;quote">"bar"</span><p class="paragraph"/>assert <span class="java&#45;quote">"bar"</span> == hash&#91;<span class="java&#45;quote">"foo"</span>&#93;</pre></div><p class="paragraph"/>There is also an <code>entities</code> helper method for obtaining domain classes from a Redis set or list. This is useful when you want to build your own indices:<p class="paragraph"/><div class="code"><pre>def theSimpsons = Person.findAllByLastName(<span class="java&#45;quote">"Simpson"</span>)<p class="paragraph"/>def list = redis.list(<span class="java&#45;quote">"the.simpsons"</span>)
+theSimpsons.each &#123; list &#60;&#60; it.id &#125;</pre></div><p class="paragraph"/>and later query them:<p class="paragraph"/><div class="code"><pre>def theSimpsons = redis.entities(Person, <span class="java&#45;quote">"the.simpsons"</span>)
+theSimpsons.each &#123;
+    println it.firstName
+&#125;</pre></div>
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/6.%20Redis%20Specific%20Extensions.html">&lt;&lt; <strong>6</strong><span>Redis Specific Extensions</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/8.%20Testing.html"><strong>8</strong><span>Testing</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Beans/redis.html">redis</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/expire.html">expire</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/pop.html">pop</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/random.html">random</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Testing/DatastoreUnitTestMixin.html">DatastoreUnitTestMixin</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

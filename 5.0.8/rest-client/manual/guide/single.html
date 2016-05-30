@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>GORM REST Client 5.0.0.BUILD-SNAPSHOT</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+        <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+    <script type="text/javascript">
+function addJsClass(el) {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+    </head>
+
+    <body class="body" onload="addJsClass();">
+        <div id="navigation">
+            <ul>
+                <li>
+                    <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                        <a href="../guide/index.html" class="button">Table of contents</a>
+                        <div id="nav-summary-childs" style="display:none;">
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#1.%20Introduction"><strong>1</strong><span>Introduction</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#2.%20Getting%20Started"><strong>2</strong><span>Getting Started</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#3.%20Making%20REST%20Calls"><strong>3</strong><span>Making REST Calls</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#4.%20Making%20Async%20REST%20Calls"><strong>4</strong><span>Making Async REST Calls</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#5.%20Configuration"><strong>5</strong><span>Configuration</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#6.%20Testing"><strong>6</strong><span>Testing</span></a></div>
+                            
+                        </div>
+                    </div>
+                </li>
+                <li class="separator selected">
+                    <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+                </li>
+            </ul>
+        </div>
+        <div id="header">
+            <div class="images clearfix">
+                
+                
+            </div>
+            <p></p>
+        </div>
+
+
+        <table id="colset" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td id="col1">
+                    <div id="main" class="corner-all">
+
+                        <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                        <div class="project">
+                            <h1>GORM REST Client - Reference Documentation</h1>
+                            <p><strong>Authors:</strong> Graeme Rocher</p>
+                            <p><strong>Version:</strong> 5.0.0.BUILD-SNAPSHOT</p>
+                            
+                        </div>
+
+                        
+                        <div id="table-of-content">
+                            <h2>Table of Contents</h2>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#1.%20Introduction"><strong>1</strong><span>Introduction</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:10px"><a href="#1.2%20Release%20Notes"><strong>1.1</strong><span>Release Notes</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#2.%20Getting%20Started"><strong>2</strong><span>Getting Started</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#3.%20Making%20REST%20Calls"><strong>3</strong><span>Making REST Calls</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#4.%20Making%20Async%20REST%20Calls"><strong>4</strong><span>Making Async REST Calls</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#5.%20Configuration"><strong>5</strong><span>Configuration</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#6.%20Testing"><strong>6</strong><span>Testing</span></a></div>
+                            
+                            <div style="clear:both" ></div>
+                        </div>
+                        
+                        
+
+<h1 id="1. Introduction">1 Introduction</h1>
+The GORM REST Client plugin tries to provide a GORM-like API to interact with REST Web Services. Building on the REST features of Grails 2.3.x, this plugin works only with Grails 2.3.x and above. Note that in its current state the GORM REST Client plugin only implements basic CRUD operations and should be seen as convenience for easily converting between REST representations and a domain model rather than a full object mapping tool.
+
+
+<h2 id="1.2 Release Notes">1.1 Release Notes</h2>
+Below are the details of the changes across releases:<p class="paragraph"/><h4>1.0 M1</h4>
+<ul class="star">
+<li>Initial milestone release</li>
+</ul><p class="paragraph"/>
+
+
+<h1 id="2. Getting Started">2 Getting Started</h1>
+To quickly get started with GORM for REST first you need a REST server. This is pretty simple with Grails 2.3.0. Simply follow these steps on the command line:<p class="paragraph"/><div class="code"><pre>$ grails create&#45;app amazon
+$ cd amazon
+$ grails create&#45;domain&#45;class Book
+$ vi grails&#45;app/domain/amazon/Book.groovy</pre></div><p class="paragraph"/>Modify the <code>Book</code> domain class to look like:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.<span class="java&#45;keyword">rest</span>.&#42;<p class="paragraph"/>@Resource(uri=<span class="java&#45;quote">"/books"</span>)
+class Book &#123;<p class="paragraph"/>	<span class="java&#45;object">String</span> title
+	<span class="java&#45;object">String</span> author
+	<span class="java&#45;object">int</span> pages<p class="paragraph"/>    <span class="java&#45;keyword">static</span> constraints = &#123;
+    	title blank:<span class="java&#45;keyword">false</span>
+    	author blank:<span class="java&#45;keyword">false</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>This will automatically expose the domain class as a REST service. You can start the application with:<p class="paragraph"/><div class="code"><pre>$ grails run&#45;app</pre></div><p class="paragraph"/>To verify that is running try the following (Assumes a Unix system):<p class="paragraph"/><div class="code"><pre>$ curl &#45;i http://localhost:8080/amazon/books</pre></div><p class="paragraph"/>You should get an XML response:<p class="paragraph"/><div class="code"><pre>HTTP/1.1 200 OK
+Server: Apache&#45;Coyote/1.1
+Content&#45;Type: text/xml;charset=UTF&#45;8
+Transfer&#45;Encoding: chunked
+Date: Tue, 10 Sep 2013 13:14:52 GMT<p class="paragraph"/>&#60;?xml version=<span class="java&#45;quote">"1.0"</span> encoding=<span class="java&#45;quote">"UTF&#45;8"</span>?&#62;&#60;list /&#62;</pre></div><p class="paragraph"/>You can obtain a JSON response with:<p class="paragraph"/><div class="code"><pre>$ curl &#45;H <span class="java&#45;quote">"Accept:application/json"</span> &#45;i http://localhost:8080/amazon/books</pre></div><p class="paragraph"/>Now to create the client create a separate Grails application:<p class="paragraph"/>
+<div class="code"><pre>$ grails create&#45;app amazon&#45;client
+$ cd amazon&#45;client
+$ grails create&#45;domain&#45;class Book</pre></div><p class="paragraph"/>
+And configure GORM for REST as a dependency in <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
+	// or whatever is the latest version
+    compile ':gorm&#45;<span class="java&#45;keyword">rest</span>&#45;client:1.0.0.M1' 
+&#125;</pre></div><p class="paragraph"/><blockquote class="note">
+Note if you plan to remove the Hibernate plugin, then in 2.3.0 of Grails you also need to remove the 'database-migration' plugin
+</blockquote><p class="paragraph"/>Then open up the <code>grails-app/domain/amazon/client/Book.groovy</code> domain class and modify it as follows:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">package</span> amazon.client<p class="paragraph"/>class Book &#123;
+	<span class="java&#45;object">String</span> title
+	<span class="java&#45;object">String</span> author
+	<span class="java&#45;object">int</span> pages<p class="paragraph"/>    <span class="java&#45;keyword">static</span> constraints = &#123;
+    	title blank:<span class="java&#45;keyword">false</span>
+    	author blank:<span class="java&#45;keyword">false</span>
+    &#125;
+    <span class="java&#45;keyword">static</span> mappedWith = <span class="java&#45;quote">"restclient"</span>
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+    	url <span class="java&#45;quote">"http://localhost:8080/amazon/books"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Now fire up the Grails console:<p class="paragraph"/><div class="code"><pre>$ grails console</pre></div><p class="paragraph"/>And try the following:<p class="paragraph"/><div class="code"><pre>def book = <span class="java&#45;keyword">new</span> Book(title:<span class="java&#45;quote">"The Stand"</span>, author:<span class="java&#45;quote">"Stephen King"</span>, pages:1200)
+book.save(flush:<span class="java&#45;keyword">true</span>)<p class="paragraph"/>Book.list().each &#123; b &#45;&#62;
+  println b.title
+  println b.author
+&#125;</pre></div><p class="paragraph"/>Essentially GORM for REST will transparently issue the appropriate POST request to create a REST resource and the the appropriate GET request to retrieve REST resources.
+
+
+<h1 id="3. Making REST Calls">3 Making REST Calls</h1>
+Currently GORM for REST supports only basic CRUD operations.<p class="paragraph"/>The following will issue a POST request to create a resource:<p class="paragraph"/><div class="code"><pre>def book = <span class="java&#45;keyword">new</span> Book(title:<span class="java&#45;quote">"The Stand"</span>, author:<span class="java&#45;quote">"Stephen King"</span>, pages:1200)
+book.save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>The issue a GET request to retrieve the resource you can use the <code>get(id)</code> method:<p class="paragraph"/><div class="code"><pre>def book = Book.get(1)</pre></div><p class="paragraph"/>To issue a GET request for all resources you can use the <code>list()</code> method:<p class="paragraph"/><div class="code"><pre>Book.list()
+Book.list(offset:10, max:20) // with pagination</pre></div><p class="paragraph"/>If you pass pagination argument as per the above then the <code>offset</code> and <code>max</code> parameters are sent as part of the request.<p class="paragraph"/>To update a resource with a PUT request you can use the <code>save()</code> method on an existing resource:<p class="paragraph"/><div class="code"><pre>def book = Book.get(1)
+book.title = <span class="java&#45;quote">"The Shining"</span>
+book.save()</pre></div><p class="paragraph"/>Finally, to issue DELETE request to delete a resource simply call the <code>delete()</code> method:<p class="paragraph"/><div class="code"><pre>def book = Book.get(1)
+book.delete()</pre></div>
+
+
+<h1 id="4. Making Async REST Calls">4 Making Async REST Calls</h1>
+By default GORM for REST makes all REST calls asynchronously, however it is advisable to configure a default timeout. This can be done per entity using:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapping = &#123;
+	readTimeout 2000
+	connectTimeout 2000
+&#125;</pre></div><p class="paragraph"/>However, you may want to take control of the asynchronous calls yourself. To do this you can disable internal Async processing:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapping = &#123;
+	async <span class="java&#45;keyword">false</span>
+&#125;</pre></div><p class="paragraph"/>And then simply use <a href="http://grails.org/doc/2.3.x/guide/async.html#asyncGorm" target="blank">Asynchronous GORM</a> to make the calls in a non-blocking fashion:<p class="paragraph"/><div class="code"><pre>Book.async.get(1).onComplete &#123; Book book &#45;&#62;
+  // <span class="java&#45;keyword">do</span> stuff with the book
+&#125;</pre></div><p class="paragraph"/>
+
+
+<h1 id="5. Configuration">5 Configuration</h1>
+The following configuration properties are available inside the <code>mapping</code> block of each entity:
+<ul class="star">
+<li><code>httpRequestFactory</code> - The <a href="http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/http/client/SimpleClientHttpRequestFactory.html" target="blank">SimpleClientHttpRequestFactory</a> to use to make REST calls</li>
+<li><code>url</code> - The full URL of the endpoint</li>
+<li><code>uri</code> - The URI of the endpoint relative to the configured base URL (Set using the <code>grails.gorm.restClient.baseUrl</code> setting in Config.groovy)</li>
+<li><code>contentType</code> - The content type of the end point to pass to the Content-Type header when sending requests</li>
+<li><code>connectTimeout</code> - The timeout for connecting to the REST resource. Defaults to none.</li>
+<li><code>readTimeout</code> - The timeout for reading the REST resource. Defaults to none.</li>
+<li><code>accept</code> - The accept type of the end point to pass to the Accept header when sending requests</li>
+<li><code>headers</code> - A map of any additional headers to send</li>
+<li><code>async</code> - Whether to perform requests asynchronously or not (defaults to true)</li>
+</ul><p class="paragraph"/>All of these can be configured by default for all domain classes using the <code>grails.gorm.restClient.default.mapping</code> setting in <code>Config.groovy</code>. Example:<p class="paragraph"/><div class="code"><pre>grails.gorm.restClient.baseUrl = <span class="java&#45;quote">"http://mycompany/api"</span>
+grails.gorm.restClient.<span class="java&#45;keyword">default</span>.mapping = &#123;
+	connectTimeout 2000
+	readTimeout 2000
+	accept <span class="java&#45;quote">"application/json"</span><p class="paragraph"/>&#125;</pre></div>
+
+
+<h1 id="6. Testing">6 Testing</h1>
+GORM for REST uses Spring's RestTemplate under the covers, so testing can be done with Spring's <a href="http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/test/web/client/MockRestServiceServer.html" target="blank">MockRestServiceServer</a> API.<p class="paragraph"/>Here is an example integration test:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">package</span> amazon.client<p class="paragraph"/><span class="java&#45;keyword">import</span> <span class="java&#45;keyword">static</span> org.springframework.test.web.client.match.MockRestRequestMatchers.method
+<span class="java&#45;keyword">import</span> <span class="java&#45;keyword">static</span> org.springframework.test.web.client.match.MockRestRequestMatchers.header
+<span class="java&#45;keyword">import</span> <span class="java&#45;keyword">static</span> org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo
+<span class="java&#45;keyword">import</span> <span class="java&#45;keyword">static</span> org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess<p class="paragraph"/><span class="java&#45;keyword">import</span> org.springframework.http.HttpMethod
+<span class="java&#45;keyword">import</span> org.springframework.http.HttpHeaders
+<span class="java&#45;keyword">import</span> org.springframework.http.MediaType
+<span class="java&#45;keyword">import</span> org.springframework.test.web.client.MockRestServiceServer
+<span class="java&#45;keyword">import</span> org.springframework.web.client.RestTemplate<p class="paragraph"/><span class="java&#45;keyword">import</span> grails.test.spock.IntegrationSpec<p class="paragraph"/>class BookSpec <span class="java&#45;keyword">extends</span> IntegrationSpec &#123;<p class="paragraph"/>    void 'Book list returns correct number of books'() &#123;
+        given:
+        RestTemplate rt = Book.restBuilder.restTemplate
+        <span class="java&#45;keyword">final</span> MockRestServiceServer mockServer = MockRestServiceServer.createServer(rt)
+        mockServer.expect(requestTo(<span class="java&#45;quote">"http://localhost:8080/amazon/books"</span>))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString()))
+                .andRespond(withSuccess('&#91;&#123;<span class="java&#45;quote">"id"</span>:1, <span class="java&#45;quote">"title"</span>:<span class="java&#45;quote">"The Stand"</span>, <span class="java&#45;quote">"pages"</span>:200&#125;&#93;', MediaType.APPLICATION_JSON))<p class="paragraph"/>        when:
+        List results = Book.list()<p class="paragraph"/>        then:
+        results.size() == 1
+    &#125;<p class="paragraph"/>&#125;</pre></div>
+
+
+                    </div>
+                </td>
+                <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+            </tr>
+        </table>
+
+        <div id="footer">
+            
+            
+        </div>
+
+
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+    </body>
+</html>
