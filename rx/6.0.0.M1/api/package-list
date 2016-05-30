@@ -1,0 +1,14 @@
+grails.gorm.rx
+grails.gorm.rx.api
+grails.gorm.rx.collection
+grails.gorm.rx.proxy
+org.grails.datastore.rx
+org.grails.datastore.rx.batch
+org.grails.datastore.rx.collection
+org.grails.datastore.rx.internal
+org.grails.datastore.rx.proxy
+org.grails.datastore.rx.query
+org.grails.datastore.rx.query.event
+org.grails.gorm.rx.api
+org.grails.gorm.rx.events
+org.grails.gorm.rx.finders
