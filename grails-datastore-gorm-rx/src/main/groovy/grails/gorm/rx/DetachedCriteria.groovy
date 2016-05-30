@@ -12,6 +12,8 @@ import org.grails.datastore.mapping.query.api.QueryableCriteria
 import org.grails.datastore.rx.query.RxQuery
 import org.grails.gorm.rx.api.RxGormEnhancer
 import rx.Observable
+import rx.Subscriber
+import rx.Subscription
 
 import javax.persistence.FetchType
 
@@ -22,7 +24,7 @@ import javax.persistence.FetchType
  * @since 6.0
  */
 @CompileStatic
-class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> {
+class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implements PersistentObservable<T> {
     DetachedCriteria(Class<Observable<T>> targetClass, String alias) {
         super(targetClass, alias)
     }
@@ -636,4 +638,13 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> {
         query
     }
 
+    @Override
+    Observable<T> toObservable() {
+        findAll()
+    }
+
+    @Override
+    Subscription subscribe(Subscriber<? super T> subscriber) {
+        findAll().subscribe(subscriber)
+    }
 }
