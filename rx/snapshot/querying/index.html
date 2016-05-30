@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
-<title>Installation using Grails</title>
+<title>Basic Querying</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -422,71 +422,151 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel3">
-<li><a href="#_installation_using_grails">Installation using Grails</a></li>
-<li><a href="#_installation_without_grails">Installation without Grails</a></li>
+<ul class="sectlevel2">
+<li><a href="#_basic_querying">Basic Querying</a></li>
+<li><a href="#_where_queries">Where Queries</a></li>
+<li><a href="#_dynamic_finders">Dynamic Finders</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
-<div class="sect3">
-<h4 id="_installation_using_grails">Installation using Grails</h4>
 <div class="paragraph">
-<p>To get started with RxGORM for MongoDB in a Grails application simply add the following dependency to your <code>build.gradle</code> file:</p>
+<p>RxGORM supports all the typical ways of querying that you are used to with GORM including:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://docs.grails.org/latest/guide/GORM.html#finders">Dynamic finders</a></p>
+</li>
+<li>
+<p><a href="http://docs.grails.org/latest/guide/GORM.html#whereQueries">Where queries</a></p>
+</li>
+<li>
+<p><a href="http://docs.grails.org/latest/guide/GORM.html#detachedCriteria">Detached Criteria</a></p>
+</li>
+<li>
+<p><a href="http://docs.grails.org/latest/guide/GORM.html#criteria">Criteria queries</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The major difference is that all query operations return an <code>Observable</code>. In this section we will go through the various ways you can query for GORM objects.</p>
+</div>
+<div class="sect2">
+<h3 id="_basic_querying">Basic Querying</h3>
+<div class="paragraph">
+<p>To query for a single instance by identifier you can use the <code>get(id)</code> method:</p>
 </div>
 <div class="listingblock">
-<div class="title"><code>build.gradle</code></div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails.plugins:rx-mongodb:6.0.0.BUILD-SNAPSHOT"</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_installation_without_grails">Installation without Grails</h4>
-<div class="paragraph">
-<p>If you are not developing a Grails application then define the following dependency in your <code>build.gradle</code> or <code>pom.xml</code>:</p>
-</div>
-<div class="listingblock">
-<div class="title"><code>build.gradle</code></div>
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx-mongodb:6.0.0.BUILD-SNAPSHOT"</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.get(id)
+    .subscribe { Book it -&gt;
+    println "Title = ${it.title}"
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>With that done you will need to place the following logic in the bootstrap path of your application:</p>
+<p>To query for a <code>List</code> of objects you can use the <code>list()</code> method:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.grails.datastore.rx.mongodb.*
-import com.mongodb.rx.client.MongoClient
-...
-MongoClient mongoClient = ... // create the MongoClient
-
-new RxMongoDatastoreClient(
-            mongoClient, <i class="conum" data-value="1"></i><b>(1)</b>
-            "myDatabase", <i class="conum" data-value="2"></i><b>(2)</b>
-            MyClass <i class="conum" data-value="3"></i><b>(3)</b>
-)</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.list()
+    .subscribe { List&lt;Book&gt; books -&gt;
+    for(book in books)
+        println "Title = ${book.title}"
+}</code></pre>
 </div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <code>MongoClient</code> instance</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The name of the default database to save objects to</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>One or many classes that implement <a href="api/grails/gorm/rx/RxEntity.html">RxEntity</a></td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
-<p>The <code>org.grails.datastore.rx.mongodb.RxMongoDatastoreClient</code> class is required to initialize RxGORM for MongoDB.</p>
+<p>However, for large data sets it is better to use the <code>findAll()</code> method which will return each result in a reactive manner rather than load the entire list into memory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.findAll()
+    .subscribe { Book it -&gt;
+    println "Title = ${it.title}"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To return the first result you can use the <code>first()</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.first()
+    .subscribe { Book it -&gt;
+    println "Title = ${it.title}"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And conversely to return the last result you can use the <code>last()</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.last()
+    .subscribe { Book it -&gt;
+    println "Title = ${it.title}"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_where_queries">Where Queries</h3>
+<div class="paragraph">
+<p>Where queries are the preferred way to build more complex queries. They are type safe, expressive and lazily executed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def query = Book.where {
+    title == 'The Stand'
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that no query is actually executed directly, instead the <code>where(Closure)</code> method returns an instance of <a href="api/grails/gorm/rx/DetachedCriteria.html">DetachedCriteria</a>.</p>
+</div>
+<div class="paragraph">
+<p>Like an <code>rx.Observable</code>, the <code>DetachedCriteria</code> class can be subscribed to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.where {
+    title == 'The Stand'
+}.subscribe { Book it -&gt;
+    println "Title = ${it.title}"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively you can execute one of the query methods to invoke the query and return an <code>rx.Observable</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.where {
+    title == 'The Stand'
+}.list().subscribe { List&lt;Book&gt; books -&gt;
+    for(book in books)
+        println "Title = ${book.title}"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information on the syntax of where queries see the <a href="http://docs.grails.org/latest/guide/GORM.html#whereQueries">relevant section in the GORM documentation</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_dynamic_finders">Dynamic Finders</h3>
+<div class="paragraph">
+<p>Although Where queries are preferred, Dynamic finders are another option for simple queries and are also very expressive. The <a href="http://docs.grails.org/latest/guide/GORM.html#finders">syntax for Dynamic finders is described in the GORM user guide</a>, the major difference in RxGORM is that all dynamic finders return an <code>rx.Observable</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.findByAuthor("Stephen King")
+    .subscribe { Book it -&gt;
+    println "Title = ${it.title}"
+}</code></pre>
+</div>
 </div>
 </div>
 </div>

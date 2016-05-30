@@ -528,6 +528,20 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_performing_crud_operations">2.3. Performing CRUD Operations</a></li>
 </ul>
 </li>
+<li><a href="#_configuration">3. Configuration</a></li>
+<li><a href="#_querying">4. Querying</a>
+<ul class="sectlevel2">
+<li><a href="#_basic_querying">4.1. Basic Querying</a></li>
+<li><a href="#_where_queries">4.2. Where Queries</a></li>
+<li><a href="#_dynamic_finders">4.3. Dynamic Finders</a></li>
+</ul>
+</li>
+<li><a href="#_associations_and_lazy_loading">5. Associations and Lazy Loading</a>
+<ul class="sectlevel2">
+<li><a href="#_single_ended_associations">5.1. Single Ended Associations</a></li>
+<li><a href="#_many_ended_associations">5.2. Many Ended Associations</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -546,6 +560,18 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div class="paragraph">
 <p>Currently only MongoDB is supported as a backing store, however implementations are planned for SQL, REST client and other NoSQL datastores in the future (subject to driver support)</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+RxGORM is still at the milestone phase and this document is still evolving and subject to change!
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -611,7 +637,7 @@ MongoClient mongoClient = ... <span class="comment">// create the MongoClient</s
 </table>
 </div>
 <div class="paragraph">
-<p>The <a href="api/org/grails/datastore/rx/mongodb/RxMongoDatastoreClient.html">RxMongoDatastoreClient</a> class is required to initialize RxGORM.</p>
+<p>The <code>org.grails.datastore.rx.mongodb.RxMongoDatastoreClient</code> class is required to initialize RxGORM for MongoDB.</p>
 </div>
 </div>
 </div>
@@ -642,11 +668,23 @@ MongoClient mongoClient = ... <span class="comment">// create the MongoClient</s
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Notice that the type is provided as a generic argument to the <code>RxMongoEntity</code> trait. This is important to ensure the correct return signatures are produced for methods provided by the trait.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The type is provided as a generic argument to the <code>RxMongoEntity</code> trait. This is important to ensure the correct return signatures are produced for methods provided by the trait.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>In addition, for MongoDB an <code>id</code> of type <code>ObjectId</code> is required.</p>
+</div>
+<div class="paragraph">
+<p>For more information on domain modelling in GORM, take a look at the <a href="http://docs.grails.org/latest/guide/GORM.html#domainClasses">GORM user guide documentation</a> on the subject.</p>
 </div>
 </div>
 <div class="sect2">
@@ -776,10 +814,309 @@ If you don&#8217;t call <code>subscribe(..)</code> or convert the <code>Observab
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_configuration">3. Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you are using Grails then configuration can be provided via the <code>grails-app/conf/application.yml</code> file.</p>
+</div>
+<div class="paragraph">
+<p>An example configuration can be seen below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">mongodb</span>:
+        <span class="key">host</span>: <span class="string"><span class="content">mycompany</span></span>
+        <span class="key">port</span>: <span class="string"><span class="content">1234</span></span>
+        <span class="key">username</span>: <span class="string"><span class="content">foo</span></span>
+        <span class="key">password</span>: <span class="string"><span class="content">bar</span></span>
+        <span class="key">options</span>:
+            <span class="key">clusterSettings</span>:
+                <span class="key">maxWaitQueueSize</span>: <span class="string"><span class="content">10</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can specify any setting of the <a href="https://api.mongodb.com/java/current/com/mongodb/async/client/MongoClientSettings.html">MongoClientSettings</a> within the <code>options</code> block. The example above is configuring the <a href="https://api.mongodb.com/java/current/com/mongodb/connection/ClusterSettings.html#getMaxWaitQueueSize--">maxWaitQueueSize</a> property.</p>
+</div>
+<div class="paragraph">
+<p>An alternative to specifying the host and port is to use a MongoDB <a href="https://api.mongodb.com/java/current/com/mongodb/ConnectionString.html">ConnectionString</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">mongodb</span>:
+        <span class="key">connectionString</span>:  <span class="string"><span class="content">mongodb://user:pass@mycompany:27017</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are not using Grails you can either provide a <code>MongoClient</code> instance directly in the constructor or you can supply an instance of <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/env/PropertyResolver.html">PropertyResolver</a> with the necessary configuration.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.springframework.core.env.*</span>
+
+<span class="keyword">def</span> env = <span class="keyword">new</span> StandardEnvironment()
+env.getPropertySources().addLast(<span class="keyword">new</span> PropertiesPropertySource(<span class="string"><span class="delimiter">&quot;</span><span class="content">myConfig</span><span class="delimiter">&quot;</span></span>, myConfig))
+
+<span class="keyword">new</span> RxMongoDatastoreClient(
+            env, <i class="conum" data-value="1"></i><b>(1)</b>
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">myDatabase</span><span class="delimiter">&quot;</span></span>, <i class="conum" data-value="2"></i><b>(2)</b>
+            MyClass <i class="conum" data-value="3"></i><b>(3)</b>
+)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are using Spring Boot then the <code>Environment</code> instance can be obtained from the <code>ApplicationContext</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">new</span> RxMongoDatastoreClient(
+            applicationContext.getEnvironment(), <i class="conum" data-value="1"></i><b>(1)</b>
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">myDatabase</span><span class="delimiter">&quot;</span></span>, <i class="conum" data-value="2"></i><b>(2)</b>
+            MyClass <i class="conum" data-value="3"></i><b>(3)</b>
+)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_querying">4. Querying</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>RxGORM supports all the typical ways of querying that you are used to with GORM including:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://docs.grails.org/latest/guide/GORM.html#finders">Dynamic finders</a></p>
+</li>
+<li>
+<p><a href="http://docs.grails.org/latest/guide/GORM.html#whereQueries">Where queries</a></p>
+</li>
+<li>
+<p><a href="http://docs.grails.org/latest/guide/GORM.html#detachedCriteria">Detached Criteria</a></p>
+</li>
+<li>
+<p><a href="http://docs.grails.org/latest/guide/GORM.html#criteria">Criteria queries</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The major difference is that all query operations return an <code>Observable</code>. In this section we will go through the various ways you can query for GORM objects.</p>
+</div>
+<div class="sect2">
+<h3 id="_basic_querying">4.1. Basic Querying</h3>
+<div class="paragraph">
+<p>To query for a single instance by identifier you can use the <code>get(id)</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.get(id)
+    .subscribe { <span class="predefined-type">Book</span> <span class="local-variable">it</span> -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title = </span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">it</span>.title<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To query for a <code>List</code> of objects you can use the <code>list()</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.list()
+    .subscribe { <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books -&gt;
+    <span class="keyword">for</span>(book <span class="keyword">in</span> books)
+        println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title = </span><span class="inline"><span class="inline-delimiter">${</span>book.title<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, for large data sets it is better to use the <code>findAll()</code> method which will return each result in a reactive manner rather than load the entire list into memory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.findAll()
+    .subscribe { <span class="predefined-type">Book</span> <span class="local-variable">it</span> -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title = </span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">it</span>.title<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To return the first result you can use the <code>first()</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.first()
+    .subscribe { <span class="predefined-type">Book</span> <span class="local-variable">it</span> -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title = </span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">it</span>.title<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And conversely to return the last result you can use the <code>last()</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.last()
+    .subscribe { <span class="predefined-type">Book</span> <span class="local-variable">it</span> -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title = </span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">it</span>.title<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_where_queries">4.2. Where Queries</h3>
+<div class="paragraph">
+<p>Where queries are the preferred way to build more complex queries. They are type safe, expressive and lazily executed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> query = <span class="predefined-type">Book</span>.where {
+    title == <span class="string"><span class="delimiter">'</span><span class="content">The Stand</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that no query is actually executed directly, instead the <code>where(Closure)</code> method returns an instance of <a href="api/grails/gorm/rx/DetachedCriteria.html">DetachedCriteria</a>.</p>
+</div>
+<div class="paragraph">
+<p>Like an <code>rx.Observable</code>, the <code>DetachedCriteria</code> class can be subscribed to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.where {
+    title == <span class="string"><span class="delimiter">'</span><span class="content">The Stand</span><span class="delimiter">'</span></span>
+}.subscribe { <span class="predefined-type">Book</span> <span class="local-variable">it</span> -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title = </span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">it</span>.title<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively you can execute one of the query methods to invoke the query and return an <code>rx.Observable</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.where {
+    title == <span class="string"><span class="delimiter">'</span><span class="content">The Stand</span><span class="delimiter">'</span></span>
+}.list().subscribe { <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books -&gt;
+    <span class="keyword">for</span>(book <span class="keyword">in</span> books)
+        println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title = </span><span class="inline"><span class="inline-delimiter">${</span>book.title<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information on the syntax of where queries see the <a href="http://docs.grails.org/latest/guide/GORM.html#whereQueries">relevant section in the GORM documentation</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_dynamic_finders">4.3. Dynamic Finders</h3>
+<div class="paragraph">
+<p>Although Where queries are preferred, Dynamic finders are another option for simple queries and are also very expressive. The <a href="http://docs.grails.org/latest/guide/GORM.html#finders">syntax for Dynamic finders is described in the GORM user guide</a>, the major difference in RxGORM is that all dynamic finders return an <code>rx.Observable</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.findByAuthor(<span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>)
+    .subscribe { <span class="predefined-type">Book</span> <span class="local-variable">it</span> -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title = </span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">it</span>.title<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_associations_and_lazy_loading">5. Associations and Lazy Loading</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Associations and how they are handled are the biggest difference between RxGORM and the regular blocking version of GORM. As a user it is import that you familiarize yourself with how associations are handled in RxGORM in order to effectively build reactive, non-blocking applications. The following sections will describe how to adapt your code to take into account associations and your data model.</p>
+</div>
+<div class="sect2">
+<h3 id="_single_ended_associations">5.1. Single Ended Associations</h3>
+<div class="paragraph">
+<p>Consider for example a domain model such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+...
+class <span class="predefined-type">Book</span> <span class="directive">implements</span> RxMongoEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    ObjectId id
+    <span class="predefined-type">String</span> title
+
+    Author author
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each <code>Book</code> has an <code>Author</code> instance. The <code>Author</code> instance may have its own set of associations. In order to avoid potentially loading your entire object graph into memory RxGORM will load each <code>Book</code> instance with the <code>author</code> property loaded as a lazy proxy.</p>
+</div>
+<div class="paragraph">
+<p>This is traditionally how most blocking object mapping implementations have worked. However, an issue arises in a reactive scenario when you access the proxy:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">for</span>(book <span class="keyword">in</span> books) {
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Author: </span><span class="inline"><span class="inline-delimiter">${</span>book.author.name<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example RxGORM has no choice but to block in order to load the association lazy and access the <code>name</code>! Typically you do not want your reactive application to block at any point, so in order to get around this each proxy loaded by GORM implements the <a href="api/grails/gorm/rx/proxy/ObservableProxy.html">ObservableProxy</a> interface. That means the above code can be written in a non-blocking manner:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">for</span>(book <span class="keyword">in</span> books) {
+    book.author.subscribe { Author author -&gt;
+        println <span class="string"><span class="delimiter">&quot;</span><span class="content">Author: </span><span class="inline"><span class="inline-delimiter">${</span>author.name<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Another alternative if you know you plan to access the <code>author</code> association, is to use an eager GORM query. In this case GORM will fetch and initialize the association in a non-blocking manner:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// using a dynamic finder</span>
+<span class="predefined-type">Book</span>.findByTitle(<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>, [<span class="key">fetch</span>:[<span class="key">author</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">eager</span><span class="delimiter">&quot;</span></span>]])
+
+<span class="comment">// using a where query</span>
+<span class="predefined-type">Book</span>.where {
+    title == <span class="string"><span class="delimiter">'</span><span class="content">The Stand</span><span class="delimiter">'</span></span>
+}.join(<span class="string"><span class="delimiter">'</span><span class="content">author</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_many_ended_associations">5.2. Many Ended Associations</h3>
+<div class="paragraph">
+<p>In the previous section we discussed the implications of association proxies for single-ended associations, however the same applies with many-ended associations.</p>
+</div>
+<div class="paragraph">
+<p>In the case of collection types, these implement the <a href="api/grails/gorm/rx/collection/RxPersistentCollection.html">RxPersistentCollection</a> and again can be subscribed to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Author author == ... <span class="comment">// load author</span>
+author.books.subscribe { <span class="predefined-type">Collection</span>&lt;<span class="predefined-type">Book</span>&gt; books -&gt;
+    <span class="keyword">for</span>(<span class="predefined-type">Book</span> book <span class="keyword">in</span> books)
+        println <span class="string"><span class="delimiter">&quot;</span><span class="content">Book: </span><span class="inline"><span class="inline-delimiter">${</span>book.title<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Like single-ended associations you can also use a join query to eagerly fetch the association and avoid having to subscribe to it in order to achieve a non-blocking outcome.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-05-27 14:28:35 UTC
+Last updated 2016-05-30 08:37:52 UTC
 </div>
 </div>
 </body>

@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
-<title>Installation using Grails</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -422,71 +422,72 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel3">
-<li><a href="#_installation_using_grails">Installation using Grails</a></li>
-<li><a href="#_installation_without_grails">Installation without Grails</a></li>
-</ul>
+
 </div>
 </div>
 <div id="content">
-<div class="sect3">
-<h4 id="_installation_using_grails">Installation using Grails</h4>
 <div class="paragraph">
-<p>To get started with RxGORM for MongoDB in a Grails application simply add the following dependency to your <code>build.gradle</code> file:</p>
-</div>
-<div class="listingblock">
-<div class="title"><code>build.gradle</code></div>
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails.plugins:rx-mongodb:6.0.0.BUILD-SNAPSHOT"</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_installation_without_grails">Installation without Grails</h4>
-<div class="paragraph">
-<p>If you are not developing a Grails application then define the following dependency in your <code>build.gradle</code> or <code>pom.xml</code>:</p>
-</div>
-<div class="listingblock">
-<div class="title"><code>build.gradle</code></div>
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx-mongodb:6.0.0.BUILD-SNAPSHOT"</code></pre>
-</div>
+<p>If you are using Grails then configuration can be provided via the <code>grails-app/conf/application.yml</code> file.</p>
 </div>
 <div class="paragraph">
-<p>With that done you will need to place the following logic in the bootstrap path of your application:</p>
+<p>An example configuration can be seen below:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.grails.datastore.rx.mongodb.*
-import com.mongodb.rx.client.MongoClient
-...
-MongoClient mongoClient = ... // create the MongoClient
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    mongodb:
+        host: mycompany
+        port: 1234
+        username: foo
+        password: bar
+        options:
+            clusterSettings:
+                maxWaitQueueSize: 10</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can specify any setting of the <a href="https://api.mongodb.com/java/current/com/mongodb/async/client/MongoClientSettings.html">MongoClientSettings</a> within the <code>options</code> block. The example above is configuring the <a href="https://api.mongodb.com/java/current/com/mongodb/connection/ClusterSettings.html#getMaxWaitQueueSize--">maxWaitQueueSize</a> property.</p>
+</div>
+<div class="paragraph">
+<p>An alternative to specifying the host and port is to use a MongoDB <a href="https://api.mongodb.com/java/current/com/mongodb/ConnectionString.html">ConnectionString</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    mongodb:
+        connectionString:  mongodb://user:pass@mycompany:27017</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are not using Grails you can either provide a <code>MongoClient</code> instance directly in the constructor or you can supply an instance of <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/env/PropertyResolver.html">PropertyResolver</a> with the necessary configuration.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.springframework.core.env.*
+
+def env = new StandardEnvironment()
+env.getPropertySources().addLast(new PropertiesPropertySource("myConfig", myConfig))
 
 new RxMongoDatastoreClient(
-            mongoClient, <i class="conum" data-value="1"></i><b>(1)</b>
+            env, <i class="conum" data-value="1"></i><b>(1)</b>
             "myDatabase", <i class="conum" data-value="2"></i><b>(2)</b>
             MyClass <i class="conum" data-value="3"></i><b>(3)</b>
 )</code></pre>
 </div>
 </div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <code>MongoClient</code> instance</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The name of the default database to save objects to</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>One or many classes that implement <a href="api/grails/gorm/rx/RxEntity.html">RxEntity</a></td>
-</tr>
-</table>
-</div>
 <div class="paragraph">
-<p>The <code>org.grails.datastore.rx.mongodb.RxMongoDatastoreClient</code> class is required to initialize RxGORM for MongoDB.</p>
+<p>If you are using Spring Boot then the <code>Environment</code> instance can be obtained from the <code>ApplicationContext</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">new RxMongoDatastoreClient(
+            applicationContext.getEnvironment(), <i class="conum" data-value="1"></i><b>(1)</b>
+            "myDatabase", <i class="conum" data-value="2"></i><b>(2)</b>
+            MyClass <i class="conum" data-value="3"></i><b>(3)</b>
+)</code></pre>
 </div>
 </div>
 </div>

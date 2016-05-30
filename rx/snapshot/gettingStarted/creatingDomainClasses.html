@@ -451,16 +451,28 @@ class Book implements RxMongoEntity&lt;Book&gt; {
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Notice that the type is provided as a generic argument to the <code>RxMongoEntity</code> trait. This is important to ensure the correct return signatures are produced for methods provided by the trait.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The type is provided as a generic argument to the <code>RxMongoEntity</code> trait. This is important to ensure the correct return signatures are produced for methods provided by the trait.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>In addition, for MongoDB an <code>id</code> of type <code>ObjectId</code> is required.</p>
 </div>
+<div class="paragraph">
+<p>For more information on domain modelling in GORM, take a look at the <a href="http://docs.grails.org/latest/guide/GORM.html#domainClasses">GORM user guide documentation</a> on the subject.</p>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-05-27 14:28:35 UTC
+Last updated 2016-05-30 08:37:52 UTC
 </div>
 </div>
 </body>

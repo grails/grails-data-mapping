@@ -446,6 +446,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>Currently only MongoDB is supported as a backing store, however implementations are planned for SQL, REST client and other NoSQL datastores in the future (subject to driver support)</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+RxGORM is still at the milestone phase and this document is still evolving and subject to change!
+</td>
+</tr>
+</table>
+</div>
 <div class="sect1">
 <h2 id="_getting_started">Getting Started</h2>
 <div class="sectionbody">
@@ -508,7 +520,7 @@ new RxMongoDatastoreClient(
 </table>
 </div>
 <div class="paragraph">
-<p>The <a href="api/org/grails/datastore/rx/mongodb/RxMongoDatastoreClient.html">RxMongoDatastoreClient</a> class is required to initialize RxGORM.</p>
+<p>The <code>org.grails.datastore.rx.mongodb.RxMongoDatastoreClient</code> class is required to initialize RxGORM for MongoDB.</p>
 </div>
 </div>
 </div>
@@ -539,11 +551,23 @@ class Book implements RxMongoEntity&lt;Book&gt; {
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Notice that the type is provided as a generic argument to the <code>RxMongoEntity</code> trait. This is important to ensure the correct return signatures are produced for methods provided by the trait.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The type is provided as a generic argument to the <code>RxMongoEntity</code> trait. This is important to ensure the correct return signatures are produced for methods provided by the trait.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>In addition, for MongoDB an <code>id</code> of type <code>ObjectId</code> is required.</p>
+</div>
+<div class="paragraph">
+<p>For more information on domain modelling in GORM, take a look at the <a href="http://docs.grails.org/latest/guide/GORM.html#domainClasses">GORM user guide documentation</a> on the subject.</p>
 </div>
 </div>
 <div class="sect2">
@@ -676,7 +700,7 @@ If you don&#8217;t call <code>subscribe(..)</code> or convert the <code>Observab
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-05-27 14:28:35 UTC
+Last updated 2016-05-30 08:37:52 UTC
 </div>
 </div>
 </body>

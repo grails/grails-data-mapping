@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
-<title>Installation using Grails</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -422,71 +422,62 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel3">
-<li><a href="#_installation_using_grails">Installation using Grails</a></li>
-<li><a href="#_installation_without_grails">Installation without Grails</a></li>
-</ul>
+
 </div>
 </div>
 <div id="content">
-<div class="sect3">
-<h4 id="_installation_using_grails">Installation using Grails</h4>
 <div class="paragraph">
-<p>To get started with RxGORM for MongoDB in a Grails application simply add the following dependency to your <code>build.gradle</code> file:</p>
-</div>
-<div class="listingblock">
-<div class="title"><code>build.gradle</code></div>
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails.plugins:rx-mongodb:6.0.0.BUILD-SNAPSHOT"</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_installation_without_grails">Installation without Grails</h4>
-<div class="paragraph">
-<p>If you are not developing a Grails application then define the following dependency in your <code>build.gradle</code> or <code>pom.xml</code>:</p>
-</div>
-<div class="listingblock">
-<div class="title"><code>build.gradle</code></div>
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx-mongodb:6.0.0.BUILD-SNAPSHOT"</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>With that done you will need to place the following logic in the bootstrap path of your application:</p>
+<p>Consider for example a domain model such as:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.grails.datastore.rx.mongodb.*
-import com.mongodb.rx.client.MongoClient
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
 ...
-MongoClient mongoClient = ... // create the MongoClient
+class Book implements RxMongoEntity&lt;Book&gt; {
+    ObjectId id
+    String title
 
-new RxMongoDatastoreClient(
-            mongoClient, <i class="conum" data-value="1"></i><b>(1)</b>
-            "myDatabase", <i class="conum" data-value="2"></i><b>(2)</b>
-            MyClass <i class="conum" data-value="3"></i><b>(3)</b>
-)</code></pre>
+    Author author
+}</code></pre>
 </div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <code>MongoClient</code> instance</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The name of the default database to save objects to</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>One or many classes that implement <a href="api/grails/gorm/rx/RxEntity.html">RxEntity</a></td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
-<p>The <code>org.grails.datastore.rx.mongodb.RxMongoDatastoreClient</code> class is required to initialize RxGORM for MongoDB.</p>
+<p>Each <code>Book</code> has an <code>Author</code> instance. The <code>Author</code> instance may have its own set of associations. In order to avoid potentially loading your entire object graph into memory RxGORM will load each <code>Book</code> instance with the <code>author</code> property loaded as a lazy proxy.</p>
+</div>
+<div class="paragraph">
+<p>This is traditionally how most blocking object mapping implementations have worked. However, an issue arises in a reactive scenario when you access the proxy:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">for(book in books) {
+    println "Author: ${book.author.name}"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example RxGORM has no choice but to block in order to load the association lazy and access the <code>name</code>! Typically you do not want your reactive application to block at any point, so in order to get around this each proxy loaded by GORM implements the <a href="api/grails/gorm/rx/proxy/ObservableProxy.html">ObservableProxy</a> interface. That means the above code can be written in a non-blocking manner:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">for(book in books) {
+    book.author.subscribe { Author author -&gt;
+        println "Author: ${author.name}"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Another alternative if you know you plan to access the <code>author</code> association, is to use an eager GORM query. In this case GORM will fetch and initialize the association in a non-blocking manner:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// using a dynamic finder
+Book.findByTitle("The Stand", [fetch:[author:"eager"]])
+
+// using a where query
+Book.where {
+    title == 'The Stand'
+}.join('author')</code></pre>
 </div>
 </div>
 </div>
