@@ -6,6 +6,9 @@ configurations.all {
 
     }
 }
+configurations {
+    documentation
+}
 dependencies {
     compile project(":grails-datastore-gorm"), {
         exclude group:"org.grails", module:'grails-async'
@@ -14,6 +17,11 @@ dependencies {
     compile project(":grails-datastore-core"), {
         exclude group:"org.springframework", module:'spring-beans'
     }
+    documentation "org.grails:grails-async:$grailsVersion"
     compileOnly "org.springframework:spring-beans:$springVersion"
     compile 'io.reactivex:rxjava:1.1.3'
+}
+
+tasks.withType(Groovydoc) {
+    classpath = classpath += configurations.documentation
 }
