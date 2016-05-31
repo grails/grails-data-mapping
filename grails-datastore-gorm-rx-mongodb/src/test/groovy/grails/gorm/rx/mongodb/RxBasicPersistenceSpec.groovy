@@ -33,6 +33,13 @@ class RxBasicPersistenceSpec extends Specification {
         then:"It is returned correctly"
         result.name == 'Fred'
 
+        when:"An object is queried with a string id"
+        o = Simple.get(s.id.toString())
+        result = o.toBlocking().single()
+
+        then:"It is returned correctly"
+        result.name == 'Fred'
+
         when:"The object is updated"
         result.name = "Bob"
         result.save().toBlocking().single()

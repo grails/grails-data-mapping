@@ -143,7 +143,11 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
             public void handle(EmbeddedQueryEncoder queryEncoder, IdEquals criterion, Document query, PersistentEntity entity) {
-                query.put(MongoEntityPersister.MONGO_ID_FIELD, criterion.getValue());
+                Object value = criterion.getValue();
+                MappingContext mappingContext = entity.getMappingContext();
+                PersistentProperty identity = entity.getIdentity();
+                Object converted = mappingContext.getConversionService().convert(value, identity.getType());
+                query.put(MongoEntityPersister.MONGO_ID_FIELD, converted);
             }
         });
 
