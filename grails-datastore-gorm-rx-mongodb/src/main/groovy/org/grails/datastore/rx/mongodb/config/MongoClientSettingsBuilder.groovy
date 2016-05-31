@@ -44,16 +44,17 @@ class MongoClientSettingsBuilder {
         this.databaseName = databaseName
 
         host = propertyResolver.getProperty(MongoConstants.SETTING_HOST, '')
+        username = propertyResolver.getProperty(MongoConstants.SETTING_USERNAME, '')
+        password = propertyResolver.getProperty(MongoConstants.SETTING_PASSWORD, '')
+        uAndP = username && password ? "$username:$password@" : ''
         if(host) {
             def port = propertyResolver.getProperty(MongoConstants.SETTING_PORT, '')
+             port = port ? ":$port" : ''
             connectionString = new ConnectionString("mongodb://${uAndP}${host}${port}/$databaseName")
         }
         else {
             connectionString = new ConnectionString(propertyResolver.getProperty(MongoConstants.SETTING_CONNECTION_STRING, propertyResolver.getProperty(MongoConstants.SETTING_URL, "mongodb://localhost/$databaseName")))
         }
-        username = propertyResolver.getProperty(MongoConstants.SETTING_USERNAME, '')
-        password = propertyResolver.getProperty(MongoConstants.SETTING_PASSWORD, '')
-        uAndP = username && password ? "$username:$password@" : ''
         mongoCredential = uAndP ? MongoCredential.createCredential(username, databaseName, password.toCharArray()) : null
     }
 

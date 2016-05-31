@@ -19,6 +19,7 @@ package org.grails.datastore.gorm.redis
 import grails.redis.RedisEntity
 import groovy.transform.CompileStatic
 import org.grails.compiler.gorm.GormEntityTraitProvider
+import org.grails.datastore.mapping.reflect.ClassUtils
 
 
 /**
@@ -28,4 +29,5 @@ import org.grails.compiler.gorm.GormEntityTraitProvider
 @CompileStatic
 class RedisEntityTraitProvider implements GormEntityTraitProvider {
     final Class entityTrait = RedisEntity
+    final boolean available = ClassUtils.isPresent("redis.clients.jedis.Jedis")
 }

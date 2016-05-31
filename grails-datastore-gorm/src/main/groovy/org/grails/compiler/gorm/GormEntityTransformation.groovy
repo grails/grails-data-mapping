@@ -122,7 +122,7 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
             return
         }
 
-        classNode.putNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER, Boolean.TRUE)
+
         AstUtils.addTransformedEntityName(classNode.name)
         // Add the entity annotation and enable generic replacement
         classNode.setUsingGenerics(true);
@@ -266,7 +266,9 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
 
         if(compilationUnit != null && !isRxEntity) {
             org.codehaus.groovy.transform.trait.TraitComposer.doExtendTraits(classNode, sourceUnit, compilationUnit);
+            classNode.putNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER, Boolean.TRUE)
         }
+
 
     }
 
@@ -315,10 +317,19 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
     @Memoized
     private List<GormEntityTraitProvider> findTraitProviders(Class<GormEntityTraitProvider> traitProviderInterface, ClassLoader classLoader) {
         def traitProviders = ServiceLoader.load(traitProviderInterface, classLoader)
-        def allTraitProviders = traitProviders.toList()
+        List<GormEntityTraitProvider> allTraitProviders = []
+        for(provider in traitProviders) {
+            if(provider.isAvailable()) {
+                allTraitProviders.add(provider)
+            }
+        }
         if(allTraitProviders.isEmpty()) {
             traitProviders = ServiceLoader.load(traitProviderInterface, Thread.currentThread().contextClassLoader)
-            allTraitProviders = traitProviders.toList()
+            for(provider in traitProviders) {
+                if(provider.isAvailable()) {
+                    allTraitProviders.add(provider)
+                }
+            }
         }
         return allTraitProviders
     }

@@ -18,7 +18,7 @@ package org.grails.datastore.gorm.mongo
 import grails.mongodb.MongoEntity
 import groovy.transform.CompileStatic
 import org.grails.compiler.gorm.GormEntityTraitProvider
-
+import org.grails.datastore.mapping.reflect.ClassUtils
 
 
 /**
@@ -30,4 +30,6 @@ import org.grails.compiler.gorm.GormEntityTraitProvider
 @CompileStatic
 class MongoEntityTraitProvider implements GormEntityTraitProvider {
     final Class entityTrait = MongoEntity
+
+    final boolean available = ClassUtils.isPresent("com.mongodb.MongoClient")
 }

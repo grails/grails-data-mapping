@@ -73,10 +73,14 @@ dependencies {
 }
 
 test {
-    maxParallelForks = 2
+    if (isTravisBuild) {
+        maxParallelForks = 1
+    }
+    else {
+        maxParallelForks = 2
+    }
     forkEvery = 10
-//    jvmArgs = ['-server', '-Xmx768M', '-XX:MaxPermSize=256m','-Dgorm_neo4j_test_mode=server']
-    jvmArgs = ['-server', '-Xmx768M', '-XX:MaxPermSize=256m']
+    jvmArgs = ['-server', '-Xmx1028M', '-XX:MaxPermSize=256m']
     afterSuite {
         System.out.print('.')
         System.out.flush()

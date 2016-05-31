@@ -29,9 +29,9 @@ project.ext {
     projectMinorVersion = "0"
     projectPatchVersion = "0"
 //    releaseType = "RELEASE"
-//    releaseType = "M4"
+//    releaseType = "M1"
 //    releaseType = "RC4"
-    releaseType = "BUILD-SNAPSHOT"
+     releaseType = "BUILD-SNAPSHOT"
 
     // overall project version
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
@@ -146,6 +146,21 @@ subprojects {
     }
    version = "${projectVersion}.${releaseType}"
    group = "org.grails"
+
+    if(project.name.contains('grails-plugins') || project.name.contains('grails2-plugins')) {
+        project.tasks.all { Task t ->
+            t.onlyIf {
+                !Boolean.getBoolean('skipPlugins')
+            }
+        }
+    }
+    else {
+        project.tasks.all { Task t ->
+            t.onlyIf {
+                !Boolean.getBoolean('onlyPlugins')
+            }
+        }
+    }
 
     if(project.name.endsWith("spring-boot")) return
     if(project.name.contains("grails2-plugins")) return

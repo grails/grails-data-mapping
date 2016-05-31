@@ -5,7 +5,7 @@ import org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 
 class Neo4jGrailsPlugin {
-    def version = "5.0.0.BUILD-SNAPSHOT" // added by Gradle
+    def version = "6.0.0.BUILD-SNAPSHOT" // added by Gradle
     def license = "Apache 2.0 License"
     def organization = [name: "Grails", url: "http://grails.org/"]
     def developers = [

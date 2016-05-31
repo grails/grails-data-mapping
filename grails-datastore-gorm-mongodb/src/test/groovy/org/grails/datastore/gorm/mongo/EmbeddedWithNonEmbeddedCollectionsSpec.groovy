@@ -31,7 +31,7 @@ class EmbeddedWithNonEmbeddedCollectionsSpec extends GormDatastoreSpec{
         session.clear()
 
         when:"The underlying Mongo document is queried"
-        def shipDbo = Ship.collection.findOne()
+        def shipDbo = Ship.collection.find().first()
         Sailor fred = Sailor.findByName("Fred")
         Sailor joe = Sailor.findByName("Joe")
 

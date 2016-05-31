@@ -17,6 +17,7 @@ package grails.gorm
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
+import org.grails.datastore.gorm.async.AsyncQuery
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.query.GormOperations
 import org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria
@@ -68,6 +69,13 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
     DetachedCriteria<T> whereLazy(@DelegatesTo(DetachedCriteria) Closure additionalQuery) {
         DetachedCriteria<T> newQuery = clone()
         return newQuery.build(additionalQuery)
+    }
+
+    /**
+     * @return The async version of the DetachedCriteria API
+     */
+    AsyncQuery<T> getAsync() {
+        return new AsyncQuery<T>(this)
     }
 
     /**

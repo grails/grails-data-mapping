@@ -14,8 +14,8 @@ class OneToOneNoReferenceSpec extends GormDatastoreSpec{
             noref.save flush:true
 
         then:"The association is saved without a dbref"
-            println NoRef.collection.findOne()
-            NoRef.collection.findOne().other == other.id
+            println NoRef.collection.find().first()
+            NoRef.collection.find().first().other == other.id
     }
 
     void "Test that querying an association works"() {

@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import spock.lang.Ignore
 
+@Ignore // moved to 'grails-datastore-gorm-mongodb-ex
 class DBObjectConversionSpec extends GormDatastoreSpec {
 
     @Override
@@ -16,7 +17,7 @@ class DBObjectConversionSpec extends GormDatastoreSpec {
 
         when:"A DBObject is read then converted to an entity"
 
-        def doc = Boat.collection.findOne()
+        def doc = Boat.collection.find().first()
         Boat boat = doc as Boat
 
         then:"The results are returned correctly"

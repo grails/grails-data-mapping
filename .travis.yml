@@ -39,6 +39,8 @@ env:
   - secure: io7oNZbf/aYRn+a73x6B/8yjg27CYVVdwRobQ+vZBNwBzS31bBcC/8pMtIpsBFqSEtE8GrSM4dYtMSFSj5PasiMg6PgYG/frsbtgGmRqTBkmENfv2EIO+Ex0pgycL+hCUVtPqD9j3mwhfPWkim9vPdmpYe2BbQuTYs0spJuu6PQ=
   matrix:
   - GORM_IMPL=test
+  - GORM_IMPL=neo4j
+  - GORM_IMPL=cassandra
   - GORM_IMPL=testgrails2
   - GORM_IMPL=hibernate
   - GORM_IMPL=hibernate4
@@ -46,8 +48,6 @@ env:
   - GORM_IMPL=mongodb
   - GORM_IMPL=rx-mongodb
   - GORM_IMPL=redis
-  - GORM_IMPL=cassandra
-  - GORM_IMPL=neo4j
   - GORM_IMPL=restclient
 before_script:
 - sudo service postgresql stop || true

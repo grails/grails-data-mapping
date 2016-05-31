@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.mongo
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 
 /**
@@ -27,4 +28,15 @@ class MongoConstants {
     public static final String SETTING_PORT = "grails.mongodb.port";
     public static final String SETTING_USERNAME = "grails.mongodb.username";
     public static final String SETTING_PASSWORD = "grails.mongodb.password";
+
+    @CompileDynamic
+    public static <T> T mapToObject(Class<T> targetType, Map<String,Object> values) {
+        T t = targetType.newInstance()
+        for(String name in values.keySet()) {
+            if(t.respondsTo(name)) {
+                t."$name"( values.get(name) )
+            }
+        }
+        return t
+    }
 }

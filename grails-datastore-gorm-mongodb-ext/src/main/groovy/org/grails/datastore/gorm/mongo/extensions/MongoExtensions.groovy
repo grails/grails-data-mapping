@@ -20,13 +20,13 @@ import com.mongodb.client.*
 import com.mongodb.client.model.*
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.UpdateResult
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.mapping.mongo.AbstractMongoSession
+import org.grails.datastore.mapping.mongo.MongoConstants
 import org.grails.datastore.mapping.mongo.engine.AbstractMongoObectEntityPersister
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.grails.datastore.mapping.mongo.query.MongoQuery
@@ -191,19 +191,10 @@ class MongoExtensions {
     }
 
     static void createCollection(MongoDatabase db, final String collectionName, final Map<String, Object> options) {
-        db.createCollection(collectionName, mapToObject(CreateCollectionOptions, options))
+        db.createCollection(collectionName, MongoConstants.mapToObject(CreateCollectionOptions, options))
     }
 
-    @CompileDynamic
-    public static <T> T mapToObject(Class<T> targetType, Map<String,Object> values) {
-        T t = targetType.newInstance()
-        for(String name in values.keySet()) {
-            if(t.respondsTo(name)) {
-                t."$name"( values.get(name) )
-            }
-        }
-        return t
-    }
+
 
 
     /**
@@ -407,7 +398,7 @@ class MongoExtensions {
 
     static long getCount(MongoCollection<Document> collection, final Map<String, Object> query, final  Map<String, Object> options) {
         collection
-                .count((Bson)new Document(query), mapToObject(CountOptions, options))
+                .count((Bson)new Document(query), MongoConstants.mapToObject(CountOptions, options))
     }
 
     static long getCount(DBCollection collection, final Map query, final Map projection) {
@@ -462,7 +453,7 @@ class MongoExtensions {
     }
 
     static void createIndex(final MongoCollection<Document> collection, final Map<String, Object> keys, final Map<String, Object> options) {
-        collection.createIndex((Bson)new Document(keys), mapToObject(IndexOptions, options))
+        collection.createIndex((Bson)new Document(keys), MongoConstants.mapToObject(IndexOptions, options))
     }
     static void dropIndex(final DBCollection collection, final Map index) {
         collection.dropIndex((DBObject)new BasicDBObject(index))
@@ -595,11 +586,11 @@ class MongoExtensions {
     }
 
     static UpdateResult updateOne(final MongoCollection<Document> collection, Map<String,Object> filter, Map<String, Object> update, Map<String, Object> options) {
-        collection.updateOne((Bson)new Document(filter), new Document(update), mapToObject(UpdateOptions, options))
+        collection.updateOne((Bson)new Document(filter), new Document(update), MongoConstants.mapToObject(UpdateOptions, options))
     }
 
     static UpdateResult update(final MongoCollection<Document> collection, Map<String,Object> filter, Map<String, Object> update, Map<String, Object> options) {
-        collection.updateOne((Bson)new Document(filter), new Document(update), mapToObject(UpdateOptions, options))
+        collection.updateOne((Bson)new Document(filter), new Document(update), MongoConstants.mapToObject(UpdateOptions, options))
     }
 
     static WriteResult update(final DBCollection collection, final Map query, final Map update, final boolean upsert, final boolean multi,
@@ -624,7 +615,7 @@ class MongoExtensions {
     }
 
     static UpdateResult updateMany(final MongoCollection<Document> collection, Map<String,Object> filter, Map<String, Object> update, Map<String, Object> options) {
-        collection.updateMany((Bson)new Document(filter), new Document(update), mapToObject(UpdateOptions, options))
+        collection.updateMany((Bson)new Document(filter), new Document(update), MongoConstants.mapToObject(UpdateOptions, options))
     }
 
     static WriteResult updateMulti(final DBCollection collection, final Map query, final Map update) {
@@ -783,7 +774,7 @@ class MongoExtensions {
     }
 
     static UpdateResult replaceOne(MongoCollection<Document> collection, Map<String, Object> filter, Document replacement, Map<String,Object> options) {
-        collection.replaceOne((Bson)new Document(filter), replacement, mapToObject(UpdateOptions, options))
+        collection.replaceOne((Bson)new Document(filter), replacement, MongoConstants.mapToObject(UpdateOptions, options))
     }
 
     static Document findOneAndDelete(MongoCollection<Document> collection, Map<String, Object> filter) {
@@ -791,7 +782,7 @@ class MongoExtensions {
     }
 
     static Document findOneAndDelete(MongoCollection<Document> collection, Map<String, Object> filter, Map<String, Object> options) {
-        collection.findOneAndDelete( (Bson)new Document(filter), mapToObject(FindOneAndDeleteOptions, options) )
+        collection.findOneAndDelete( (Bson)new Document(filter), MongoConstants.mapToObject(FindOneAndDeleteOptions, options) )
     }
 
     static Document findOneAndReplace(MongoCollection<Document> collection, Map<String, Object> filter, Map<String, Object> replacement) {
@@ -799,7 +790,7 @@ class MongoExtensions {
     }
 
     static Document findOneAndReplace(MongoCollection<Document> collection, Map<String, Object> filter, Map<String, Object> replacement, Map<String, Object> options) {
-        collection.findOneAndReplace( (Bson)new Document(filter), new Document(replacement), mapToObject(FindOneAndReplaceOptions, options) )
+        collection.findOneAndReplace( (Bson)new Document(filter), new Document(replacement), MongoConstants.mapToObject(FindOneAndReplaceOptions, options) )
     }
 
     static Document findOneAndUpdate(MongoCollection<Document> collection, Map<String, Object> filter, Map<String, Object> update) {
@@ -807,7 +798,7 @@ class MongoExtensions {
     }
 
     static Document findOneAndUpdate(MongoCollection<Document> collection, Map<String, Object> filter, Map<String, Object> update, Map<String, Object> options) {
-        collection.findOneAndUpdate( (Bson)new Document(filter), new Document(update), mapToObject(FindOneAndUpdateOptions, options) )
+        collection.findOneAndUpdate( (Bson)new Document(filter), new Document(update), MongoConstants.mapToObject(FindOneAndUpdateOptions, options) )
     }
 
 }

@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject
 import com.mongodb.DBCollection
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+import org.bson.Document
 
 /**
  * @author Noam Y. Tenne
@@ -21,7 +22,7 @@ class BrokenManyToManyAssociationSpec extends GormDatastoreSpec {
         session.clear()
 
         when:'Low-level deleting 1 owned entity to simulate a broken relationship'
-        ReferencedEntity.collection.remove('_id': ReferencedEntity.find{}.id)
+        ReferencedEntity.collection.deleteOne(new Document('_id': ReferencedEntity.find{}.id))
         session.clear()
         referencing = ReferencingEntity.find{}
 

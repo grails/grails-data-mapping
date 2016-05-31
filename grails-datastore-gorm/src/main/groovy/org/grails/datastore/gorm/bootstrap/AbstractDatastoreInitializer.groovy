@@ -4,8 +4,10 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar
 import org.grails.datastore.mapping.reflect.AstUtils
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
@@ -243,7 +245,8 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                 }
             }
 
-            for(cls in persistentClasses) {
+            Collection<Class> classes = collectMappedClasses(type)
+            for(cls in classes) {
                 "${cls.name}"(cls) { bean ->
                     bean.singleton = false
                     bean.autowire = "byName"
@@ -262,6 +265,18 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                 }
             }
         }
+    }
+
+
+    protected Collection<Class> collectMappedClasses(String datastoreType) {
+        def classes = !secondaryDatastore ? persistentClasses : persistentClasses.findAll() { Class cls ->
+            isMappedClass(datastoreType, cls)
+        }
+        return classes
+    }
+
+    protected boolean isMappedClass(String datastoreType, Class cls) {
+        datastoreType.equals(ClassPropertyFetcher.forClass(cls).getStaticPropertyValue(GormProperties.MAPPING_STRATEGY, cls))
     }
 
 

@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+import org.bson.Document
 
 class InheritanceQueryingSpec extends GormDatastoreSpec {
 
@@ -62,7 +63,7 @@ class InheritanceQueryingSpec extends GormDatastoreSpec {
 
     def "Access prop through mongo"() {
         when:
-            def jsonString = (A.collection.findOne(_id:"id")).toString()
+            def jsonString = (A.collection.find(new Document(_id:"id")).first()).toString()
 
         then:
             jsonString.contains("id")

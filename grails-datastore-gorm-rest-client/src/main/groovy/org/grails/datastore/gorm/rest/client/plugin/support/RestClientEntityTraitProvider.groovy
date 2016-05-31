@@ -29,4 +29,9 @@ import org.grails.compiler.gorm.GormEntityTraitProvider
 class RestClientEntityTraitProvider implements GormEntityTraitProvider {
 
     final Class entityTrait = RestClientEntity
+
+    @Override
+    boolean isAvailable() {
+        return true
+    }
 }

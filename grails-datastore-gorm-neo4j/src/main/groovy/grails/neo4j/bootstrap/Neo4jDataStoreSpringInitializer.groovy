@@ -16,6 +16,7 @@
  */
 package grails.neo4j.bootstrap
 
+import grails.neo4j.Neo4jEntity
 import groovy.transform.InheritConstructors
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
@@ -43,6 +44,11 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
     @Override
     protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {
         DatastorePersistenceContextInterceptor
+    }
+
+    @Override
+    protected boolean isMappedClass(String datastoreType, Class cls) {
+        return Neo4jEntity.isAssignableFrom(cls) || super.isMappedClass(datastoreType, cls)
     }
 
     @Override

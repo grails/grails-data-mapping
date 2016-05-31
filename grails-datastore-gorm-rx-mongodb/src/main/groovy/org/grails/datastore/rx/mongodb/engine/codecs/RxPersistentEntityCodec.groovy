@@ -31,6 +31,8 @@ import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.mongo.AbstractMongoSession
 import org.grails.datastore.mapping.mongo.config.MongoAttribute
 import org.grails.datastore.mapping.mongo.engine.codecs.PersistentEntityCodec
+import org.grails.datastore.mapping.mongo.engine.codecs.PropertyDecoder
+import org.grails.datastore.mapping.mongo.engine.codecs.PropertyEncoder
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.reflect.FieldEntityAccess
 import org.grails.datastore.rx.RxDatastoreClient
@@ -54,8 +56,8 @@ import javax.persistence.FetchType
 @CompileStatic
 class RxPersistentEntityCodec extends PersistentEntityCodec {
 
-    private static final Map<Class, PersistentEntityCodec.PropertyEncoder> RX_ENCODERS = [:]
-    private static final Map<Class, PersistentEntityCodec.PropertyDecoder> RX_DECODERS = [:]
+    private static final Map<Class, PropertyEncoder> RX_ENCODERS = [:]
+    private static final Map<Class, PropertyDecoder> RX_DECODERS = [:]
 
     static {
         RX_ENCODERS[OneToMany] = new OneToManyEncoder()
@@ -73,7 +75,7 @@ class RxPersistentEntityCodec extends PersistentEntityCodec {
     final RxDatastoreClient datastoreClient
 
 
-    private final Map<Class, PersistentEntityCodec.PropertyDecoder> localDecoders = [:]
+    private final Map<Class, PropertyDecoder> localDecoders = [:]
     private final QueryState queryState
 
 
@@ -144,12 +146,12 @@ class RxPersistentEntityCodec extends PersistentEntityCodec {
     }
 
     @Override
-    protected <T extends PersistentProperty> PersistentEntityCodec.PropertyEncoder<T> getPropertyEncoder(Class<T> type) {
+    protected <T extends PersistentProperty> PropertyEncoder<T> getPropertyEncoder(Class<T> type) {
         return RX_ENCODERS.get(type) ?: super.getPropertyEncoder(type)
     }
 
     @Override
-    protected <T extends PersistentProperty> PersistentEntityCodec.PropertyDecoder<T> getPropertyDecoder(Class<T> type) {
+    protected <T extends PersistentProperty> PropertyDecoder<T> getPropertyDecoder(Class<T> type) {
         return localDecoders.get(type) ?: RX_DECODERS.get(type) ?: super.getPropertyDecoder(type)
     }
 
@@ -181,7 +183,7 @@ class RxPersistentEntityCodec extends PersistentEntityCodec {
         }
     }
 
-    static class IdentityDecoder implements PersistentEntityCodec.PropertyDecoder<Identity> {
+    static class IdentityDecoder implements PropertyDecoder<Identity> {
         final QueryState queryState
 
         IdentityDecoder(QueryState queryState) {
@@ -209,7 +211,7 @@ class RxPersistentEntityCodec extends PersistentEntityCodec {
         }
     }
 
-    static class OneToManyDecoder implements PersistentEntityCodec.PropertyDecoder<ToMany> {
+    static class OneToManyDecoder implements PropertyDecoder<ToMany> {
         final QueryState queryState
 
         OneToManyDecoder(QueryState queryState) {
@@ -267,7 +269,7 @@ class RxPersistentEntityCodec extends PersistentEntityCodec {
         }
     }
 
-    static class ToOneDecoder implements PersistentEntityCodec.PropertyDecoder<ToOne> {
+    static class ToOneDecoder implements PropertyDecoder<ToOne> {
 
         final QueryState queryState
 
@@ -310,7 +312,7 @@ class RxPersistentEntityCodec extends PersistentEntityCodec {
         }
     }
     @CompileStatic
-    static class OneToManyEncoder implements PersistentEntityCodec.PropertyEncoder<OneToMany> {
+    static class OneToManyEncoder implements PropertyEncoder<OneToMany> {
 
         @Override
         void encode(BsonWriter writer, OneToMany property, Object value, EntityAccess parentAccess, EncoderContext encoderContext, CodecRegistry codecRegistry) {

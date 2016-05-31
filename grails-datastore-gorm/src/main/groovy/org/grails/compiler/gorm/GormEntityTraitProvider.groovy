@@ -26,4 +26,9 @@ package org.grails.compiler.gorm
 interface GormEntityTraitProvider {
 
     Class getEntityTrait()
+
+    /**
+     * @return Whether this trait provided is available
+     */
+    boolean isAvailable()
 }

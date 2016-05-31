@@ -24,7 +24,7 @@ class EnumTypeSpec extends GormDatastoreSpec {
             session.clear()
 
         then:"The value is saved using ordinal value"
-            Dist.collection.findOne().unit == 1
+            Dist.collection.find().first().unit == 1
 
         when:"An enum property mapped as ordinal is retrieved"
             d = Dist.get(d.id)

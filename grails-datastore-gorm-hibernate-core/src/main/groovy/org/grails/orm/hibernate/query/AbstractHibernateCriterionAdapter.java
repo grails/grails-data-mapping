@@ -34,18 +34,9 @@ import java.util.Map;
  */
 public abstract class AbstractHibernateCriterionAdapter {
     protected static final Map<Class<?>, CriterionAdaptor<?>> criterionAdaptors = new HashMap<Class<?>, CriterionAdaptor<?>>();
-    protected String alias;
     protected static boolean initialized;
 
-    protected Query.Criterion criterion;
-
-    protected AbstractHibernateCriterionAdapter(Query.Criterion criterion) {
-        this(null, criterion, null);
-    }
-
-    protected AbstractHibernateCriterionAdapter(PersistentEntity entity, Query.Criterion criterion, String alias) {
-        this.criterion = criterion;
-        this.alias = alias;
+    public AbstractHibernateCriterionAdapter() {
         initialize();
     }
 
@@ -528,7 +519,8 @@ public abstract class AbstractHibernateCriterionAdapter {
         }
     }
 
-    public org.hibernate.criterion.Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery) {
+
+    public org.hibernate.criterion.Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.Criterion criterion, String alias) {
         final CriterionAdaptor criterionAdaptor = criterionAdaptors.get(criterion.getClass());
         if (criterionAdaptor != null) {
             return criterionAdaptor.toHibernateCriterion(hibernateQuery, criterion, alias);

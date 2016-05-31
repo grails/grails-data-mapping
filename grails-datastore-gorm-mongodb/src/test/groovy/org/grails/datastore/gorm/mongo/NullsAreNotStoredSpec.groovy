@@ -23,7 +23,7 @@ class NullsAreNotStoredSpec extends GormDatastoreSpec {
             session.clear()
 
         when:"The instance is read from the database"
-            Document personObj = NANSPerson.collection.findOne(person.id)
+            Document personObj = NANSPerson.collection.find(new Document('_id', person.id)).first()
 
         then:"The null-valued fields are not stored"
             personObj != null
@@ -41,7 +41,7 @@ class NullsAreNotStoredSpec extends GormDatastoreSpec {
             person.name = null
             person.save(flush: true)
             session.clear()
-            Document personObj = NANSPerson.collection.findOne(person.id)
+            Document personObj = NANSPerson.collection.find(new Document('_id', person.id)).first()
 
         then:"The null-valued fields are not stored"
             personObj != null

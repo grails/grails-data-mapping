@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+import org.bson.Document
 import org.bson.types.ObjectId
 
 /**
@@ -50,7 +51,7 @@ class ReadManyObjectsSpec extends GormDatastoreSpec {
     void createData() {
         ProfileDoc.collection.drop()
         100000.times {
-            ProfileDoc.collection.insert(n1:"Plane $it".toString(),n2:it,n3:it.toLong(), date: new Date())
+            ProfileDoc.collection.insertOne(new Document(n1:"Plane $it".toString(),n2:it,n3:it.toLong(), date: new Date()))
         }
     }
 
