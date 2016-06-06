@@ -1,7 +1,0 @@
-h3. Introduction
-
-The GORM Datastore API is split into a low-level API that implementors need to implement for each individual datastore and then set of higher level APIs that enhance domain classes with things regular users see such as dynamic finders, criteria queries and so on.
-
-The low-level API classes are found in the @grails-datastore-core@ subproject, whilst the higher level APIs used to enhance domain classes are found in @grails-datastore-gorm@. In this section we will discuss the low-level API.
-
-

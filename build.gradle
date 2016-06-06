@@ -69,9 +69,7 @@ def groovyProjects() {
 }
 
 def isGroovyProject(project) {
-    def isGrailsPlugin = project.name.contains("grails-plugins")
-    def isDocumentation = project.name.contains("documentation")
-    !isGrailsPlugin && !isDocumentation
+    !project.name.contains("grails-plugins")
 }
 
 configurations {
@@ -235,8 +233,6 @@ subprojects {
             project.name != 'grails-datastore-gorm-rest-client'
 
 
-    def isDocumentationProject = project.name.startsWith("grails-documentation")
-
     dependencies {
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:1.11"
@@ -260,46 +256,6 @@ subprojects {
                 exclude group:'org.hamcrest',module:'hamcrest-core'
                 transitive = false
             }
-        }
-    }
-
-    if (isDocumentationProject) {
-
-        dependencies {
-            documentation group: 'org.grails', name: 'grails-docs', version: grailsVersion
-            documentation group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
-            project(":grails-datastore-core")
-            documentation "org.slf4j:jcl-over-slf4j:$slf4jVersion"
-            documentation "org.slf4j:slf4j-api:$slf4jVersion"
-            documentation "org.slf4j:slf4j-simple:$slf4jVersion"
-        }
-        task docs << {
-            ant.taskdef (name: 'docs', classname : 'grails.doc.ant.DocPublisherTask') {
-                classpath {
-                    configurations.documentation.resolve().each { f ->
-                        pathelement(location:f)
-                    }
-                }
-
-            }
-            def props = new Properties()
-            project.file("src/docs/doc.properties").withReader {
-                props.load(it)
-            }
-
-            props['version'] = project.version.toString()
-            def f = new File(File.createTempDir(), "${project.name}-docs.properties")
-            f.withWriter {
-                props.store(it, "Generated")
-            }
-            f.deleteOnExit()
-            ant.docs(src:"src/docs", dest:destinationDir, properties:f.canonicalPath)
-        }
-        docs.ext.destinationDir = "${buildDir}/docs"
-
-
-        task clean << {
-            ant.delete(dir:buildDir)
         }
     }
 
@@ -461,89 +417,6 @@ dependencies {
 
 task install(dependsOn: subprojects*.tasks*.withType(PublishToMavenLocal))
 
-task coreApiDocs(type: Groovydoc) {
-   def coreDocs = [ 'grails-datastore-core',
-                    'grails-datastore-gorm',
-                    'grails-datastore-gorm-hibernate-core',
-                    'grails-datastore-gorm-hibernate4',
-                    'grails-datastore-simple',
-                    'grails-datastore-web',
-                    'grails-datastore-gorm-test']
-   def projs = subprojects.findAll { project -> coreDocs.contains(project.name) }
-   source projs.collect { project -> project.sourceSets.main.allGroovy } + projs.collect { project -> project.sourceSets.main.allJava }
-   destinationDir = new File(buildDir, 'docs/api')
-   // Might need a classpath
-    docTitle = "GORM ${projectVersion}"
-   classpath = files(projs.collect {project -> project.sourceSets.main.compileClasspath + project.configurations.documentation})
-   groovyClasspath = files(projs.collect {project -> project.sourceSets.main.compileClasspath + project.configurations.documentation})
-}
-
-
-task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
-    def docTasks = getTasksByName("docs", true)
-    def groovydocTasks = getTasksByName("groovydoc", true)
-    def allDocsDir = "$buildDir/docs"
-    mkdir allDocsDir
-    def stores = []
-    for(task in docTasks) {
-        def dir = task.destinationDir
-        def projectName = task.project.name
-        if (projectName.endsWith("-core")) {
-            mkdir "$allDocsDir/manual"
-
-            copy {
-                from dir
-                into "$allDocsDir/manual"
-            }
-        }
-        else {
-            def storeName = projectName["grails-documentation-".size()..-1]
-
-            // for the moment skip REST client
-            if(storeName != 'rest-client') {
-
-                stores << storeName
-                def docsDir = "$allDocsDir/$storeName"
-                mkdir docsDir
-                def groovydocTask = groovydocTasks.find { it.project.name == "grails-datastore-$storeName" }
-                if (groovydocTask == null) groovydocTask = groovydocTasks.find { it.project.name == "grails-datastore-gorm-$storeName" }
-                if (groovydocTask != null) {
-                    mkdir "$docsDir/api"
-                    groovydocTask.actions.each { it.execute(groovydocTask) }
-                    copy {
-                        from groovydocTask.destinationDir
-                        into "$docsDir/api"
-                    }
-                }
-                mkdir "$docsDir/manual"
-                copy {
-                    from dir
-                    into "$docsDir/manual"
-                }
-            }
-        }
-
-        def engine = new groovy.text.SimpleTemplateEngine()
-        def binding = [
-            datastores:stores.collect { "<li><a href=\"$it/index.html\">GORM for ${it[0].toUpperCase()}${it[1..-1]}</a></li>" }.join(System.getProperty("line.separator"))
-        ]
-        def template = engine.createTemplate(new File("src/docs/resources/core.template")).make(binding)
-        new File("$allDocsDir/index.html").text = template.toString()
-        copy {
-            from "src/docs/resources/assets"
-            into allDocsDir
-        }
-        for(store in stores) {
-            def index = "$allDocsDir/$store/index.html"
-            def storeName = "${store[0].toUpperCase()}${store[1..-1]}".toString()
-            binding = [
-                datastore:storeName
-            ]
-            template = engine.createTemplate(new File("src/docs/resources/datastore.template")).make( binding )
-            new File(index).text = template.toString()
-        }
-    }
-}
 
 task test(dependsOn: getTasksByName("test", true)) << {
     def reportsDir = "${buildDir}/reports"
@@ -573,23 +446,4 @@ task test(dependsOn: getTasksByName("test", true)) << {
         report(todir: testReportsDir)
     }
 
-    // Aggregate the coverage results
-    if (project.hasProperty("withClover")) {
-        def db = "clover/clover.db"
-        def mergedDb = "${buildDir}/${db}"
-        def cloverReportsDir = "${reportsDir}/clover"
-        ant.taskdef(resource: "cloverlib.xml", classpath: configurations.build.asPath)
-        ant."clover-merge"(initstring: mergedDb) {
-            subprojects.each {
-                def projectCloverDb = "${it.buildDir}/${db}"
-                if (new File(projectCloverDb).exists()) {
-                    cloverdb(initstring: projectCloverDb)
-                }
-            }
-        }
-        ant."clover-report"(initstring: mergedDb) {
-            current(outfile:"${cloverReportsDir}/clover.xml")
-        }
-        ant."clover-html-report"(initstring: mergedDb, outdir:"${cloverReportsDir}/html")
-    }
 }

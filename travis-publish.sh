@@ -78,45 +78,24 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         ./gradlew closeAndPromoteRepository
         ./gradlew --stop
         echo "Building documentation"
-        ./gradlew allDocs || EXIT_STATUS=$?
-
         git config --global user.name "$GIT_NAME"
         git config --global user.email "$GIT_EMAIL"
         git config --global credential.helper "store --file=~/.git-credentials"
         echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
-        git clone https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git -b gh-pages gh-pages --single-branch > /dev/null
-        cd gh-pages
+        git clone https://${GH_TOKEN}@github.com/grails/gorm-docs.git gorm-docs
+        cd gorm-docs
+        git branch --track 5.0.x remotes/origin/5.0.x
+        git checkout 5.0.x
 
-        # If this is the master branch then update the snapshot
-        #      if [[ $TRAVIS_BRANCH == 'master' ]]; then
-        #        mkdir -p snapshot
-        #        cp -r ../build/docs/. ./snapshot/
-        #
-        #        git add snapshot/*
-        #      fi
-        version="$TRAVIS_TAG"
-        version=${version:1}
-
-        mkdir -p latest
-        cp -r ../build/docs/. ./latest/
-        git add latest/*
-
-        majorVersion=${version:0:4}
-        majorVersion="${majorVersion}x"
-
-        mkdir -p "$version"
-        cp -r ../build/docs/. "./$version/"
-        git add "$version/*"
-
-        mkdir -p "$majorVersion"
-        cp -r ../build/docs/. "./$majorVersion/"
-        git add "$majorVersion/*"
-
-        git commit -a -m "Updating docs for Travis build: https://travis-ci.org/$TRAVIS_REPO_SLUG/builds/$TRAVIS_BUILD_ID"
-        git push origin HEAD
+        echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties
+        git add gradle.properties
+        git commit -m "Release $TRAVIS_TAG docs"
+        git tag $TRAVIS_TAG
+        git push --tags
+        git push
         cd ..
-        rm -rf gh-pages
+
       fi
   else
       echo "Error occured during publishing, skipping docs"
