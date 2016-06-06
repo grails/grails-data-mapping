@@ -2,21 +2,6 @@ include ("grails-datastore-core",
         "grails-datastore-simple",
         "grails-datastore-web",
         'grails-datastore-rest-client',
-/*
-        "grails-datastore-jcr",*/
-
-
-        // Documentation
-        'grails-documentation-core',
-        'grails-documentation-hibernate',
-        'grails-documentation-mongodb',
-        'grails-documentation-redis',
-/*        'grails-documentation-riak',*/
-        'grails-documentation-neo4j',
-//        'grails-documentation-simpledb',
-//        'grails-documentation-dynamodb',
-        'grails-documentation-rest-client',
-        'grails-documentation-cassandra',
 
         // Core GORM Implementation projects
         'grails-datastore-gorm',
