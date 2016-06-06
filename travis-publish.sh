@@ -91,8 +91,6 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
 
         git clone https://${GH_TOKEN}@github.com/grails/gorm-docs.git gorm-docs
         cd gorm-docs
-        git branch --track 5.0.x remotes/origin/5.0.x
-        git checkout 5.0.x
 
         echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties
         git add gradle.properties
