@@ -9,7 +9,7 @@ buildscript {
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
-        classpath "com.github.adrianbk:gradle-travisci-trigger-plugin:1.0.0"
+        classpath "io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1"
     }
 }
 
@@ -82,36 +82,19 @@ group = "org.grails"
 
 apply plugin: 'idea'
 apply plugin: 'project-report'
-apply plugin: "com.github.adrianbk.tcitrigger"
 apply plugin: 'io.codearte.nexus-staging'
 
 nexusStaging {
     delayBetweenRetriesInMillis = 5000
 }
 
-tciTrigger {
-    gitHubRepo 'grails/grails-data-mapping-functional-tests'
-    travisVariable {
-        name = "GORM_VERSION"
-        value = "${projectVersion}.${releaseType}"
-    }
-}
-
 ext {
     isCiBuild = project.hasProperty("isCiBuild")
 }
+
 allprojects {
     repositories {
         mavenLocal()
-        if(System.getProperty('useJbossNexus')) {
-            // jboss-nexus contains Hibernate source code archives which aren't in maven central
-            // usefull with eclipse and idea tasks, for example
-            // ./gradlew -PuseJbossNexus cleanEclipse eclipse
-            maven {
-                name 'jboss-nexus'
-                url "https://repository.jboss.org/nexus/content/groups/public/"
-            }
-        }
         maven { url "https://repo.grails.org/grails/core" }
         if(isBuildSnapshot) {
             maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
@@ -121,19 +104,11 @@ allprojects {
     configurations {
         all {
             resolutionStrategy {
-                    force "org.codehaus.groovy:groovy:$groovyVersion"
-                    force "org.codehaus.groovy:groovy-xml:$groovyVersion"
-
-//                def cacheHours = isCiBuild ? 1 : 24
-//                cacheDynamicVersionsFor cacheHours, 'hours'
-//                cacheChangingModulesFor cacheHours, 'hours'
+                force "org.codehaus.groovy:groovy:$groovyVersion"
+                force "org.codehaus.groovy:groovy-xml:$groovyVersion"
             }
         }
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.8'
 }
 
 apply from: "gradle/idea.gradle"
@@ -162,6 +137,7 @@ subprojects {
 
     if(project.name.endsWith("spring-boot")) return
     if(project.name.contains("grails2-plugins")) return
+
    afterEvaluate { project ->
         if (isGroovyProject(project)) {
             def hasSnapshotVersion = project.version.endsWith("-SNAPSHOT")
@@ -216,6 +192,7 @@ subprojects {
 
     if (isStandardGroovyMavenProject) {
         apply plugin: 'groovy'
+        apply plugin: "io.github.groovylang.groovydoc"
         apply plugin: 'eclipse'
         apply plugin: 'com.bmuschko.nexus'
         apply plugin: 'maven-publish'
@@ -349,7 +326,8 @@ subprojects {
         }
 
         configure([groovydoc]) {
-            groovyClasspath += configurations.documentation
+            classpath += configurations.documentation
+            jvmArgs "-Xmx512M"
         }
 
         modifyPom {
