@@ -437,6 +437,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
+<p>Each domain class will implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait. You can define this explicitly if you prefer:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Pet implements Neo4jEntity&lt;Pet&gt; {
+    String name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
 <p>When an instance of <code>Pet</code> is saved:</p>
 </div>
 <div class="listingblock">
@@ -446,7 +456,7 @@ p.save(flush:true)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Then the following Cypher CREATE is issued:</p>
+<p>Then the following Cypher <code>CREATE</code> is issued:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -471,7 +481,7 @@ If you want to see what queries GORM for Neo4j generates, enabling logging for t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-06 12:11:30 UTC
+Last updated 2016-06-08 10:50:57 UTC
 </div>
 </div>
 </body>

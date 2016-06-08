@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
-<title>Purpose</title>
+<title>Configuration Changes</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -422,56 +422,28 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_example">Example</a></li>
-<li><a href="#_description">Description</a></li>
+<ul class="sectlevel3">
+<li><a href="#_configuration_changes">Configuration Changes</a></li>
+<li><a href="#_bolt_java_driver_and_api_changes">Bolt Java Driver and API Changes</a></li>
+<li><a href="#_general_neo4j_3_x_changes">General Neo4j 3.x Changes</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Execute a cypher query.</p>
+<p>If you are upgrading from a previous version of the plugin to the 6.0.0.BUILD-SNAPSHOT, you will need to take into account the following changes.</p>
 </div>
-</div>
-<div class="sect4">
-<h5 id="_example">Example</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">setup:
-new Person(lastName:'person1').save()
-new Person(lastName:'person2').save()
-session.flush()
-session.clear()
+<div class="sect3">
+<h4 id="_configuration_changes">Configuration Changes</h4>
 
-when:
-def result = Person.cypherStatic("start n=node({this}) match n-[:INSTANCE]-&gt;m where m.lastName='person1' return m")
+</div>
+<div class="sect3">
+<h4 id="_bolt_java_driver_and_api_changes">Bolt Java Driver and API Changes</h4>
 
-then:
-result.iterator().size()==1</code></pre>
 </div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
-<div class="paragraph">
-<p><code>cypherStatic</code> is invoked on any domain class and returns a <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/StatementResult.html">org.neo4j.driver.v1.StatementResult</a></p>
-</div>
-<div class="paragraph">
-<p>The parameters passed are:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the domain class&#8217;s (aka subreference) node</p>
-</li>
-<li>
-<p>a optional map of cypher parameters</p>
-</li>
-</ul>
-</div>
+<div class="sect3">
+<h4 id="_general_neo4j_3_x_changes">General Neo4j 3.x Changes</h4>
+
 </div>
 </div>
 <div id="footer">

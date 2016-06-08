@@ -522,19 +522,20 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#introduction">Introduction</a>
 <ul class="sectlevel2">
 <li><a href="#compatibility">Compatibility with GORM for Hibernate</a></li>
-<li><a href="#releaseNotes">Release Notes</a></li>
+<li><a href="#releaseNotes">Release History</a></li>
+<li><a href="#upgrading">Upgrading from previous versions</a></li>
 </ul>
 </li>
 <li><a href="#gettingStarted">Getting Started</a>
 <ul class="sectlevel2">
+<li><a href="#configurationOptions">Neo4j Bolt Driver Configuration Options</a></li>
 <li><a href="#usingNeo4jStandalone">Using Neo4j Standalone</a></li>
 <li><a href="#combiningNeo4jAndHibernate">Combining Neo4j And Hibernate</a></li>
-<li><a href="#advancedConfiguration">Advanced Configuration</a></li>
 <li><a href="#springBoot">Using GORM in Spring Boot</a></li>
 <li><a href="#standalone">GORM for Neo4j without Grails</a></li>
 </ul>
 </li>
-<li><a href="#mapping">Mapping domain classes to Neo4j node space</a>
+<li><a href="#mapping">Mapping Domain Classes to Neo4j Nodes</a>
 <ul class="sectlevel2">
 <li><a href="#idGeneration">Neo4j ID generators</a></li>
 <li><a href="#associations">Understanding Association Mapping</a></li>
@@ -549,15 +550,15 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#indexing">Defining the Query Index</a></li>
 </ul>
 </li>
-<li><a href="#neo4jEnhancements">Enhancements to Neo4j core API</a>
+<li><a href="#neo4jEnhancements">Enhancements to Neo4j Java Driver API</a>
 <ul class="sectlevel3">
-<li><a href="#_setting_properties_on_nodes_relationships">Setting properties on nodes/relationships</a></li>
+<li><a href="#_getting_properties_from_nodes">Getting Properties from Nodes</a></li>
+<li><a href="#_cast_a_node_to_a_map">Cast a Node to a Map</a></li>
 </ul>
 </li>
 <li><a href="#reference">Reference</a>
 <ul class="sectlevel2">
 <li><a href="#ref-additional-gorm-methods">Additional Gorm Methods</a></li>
-<li><a href="#ref-beans">Beans</a></li>
 </ul>
 </li>
 </ul>
@@ -588,7 +589,7 @@ table.CodeRay td.code>pre{padding:0}
 <p>access to Neo4j&#8217;s traversal capabilities</p>
 </li>
 <li>
-<p>Access the Neo4j graph database in all flavours (Embedded, REST and HA)</p>
+<p>Access the Neo4j graph database via the Bolt Java Driver</p>
 </li>
 <li>
 <p>Neo4j autoindexing</p>
@@ -655,14 +656,35 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect2">
-<h3 id="releaseNotes">Release Notes</h3>
+<h3 id="releaseNotes">Release History</h3>
+<div class="sect3">
+<h4 id="_6_0_x">6.0.x</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Support for Neo4j 3.0.x or above</p>
+</li>
+<li>
+<p>Rewritten for Neo4j Bolt Java Driver</p>
+</li>
+<li>
+<p>Refactored Bootstrapping</p>
+</li>
+<li>
+<p>Uses new DynamicAttributes trait</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_5_0_x">5.0.x</h4>
 <div class="paragraph">
 <p>The following new features are available in this release.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Support for Neo4j Neo4j 2.3.x or above</p>
+<p>Support for Neo4j 2.3.x or above</p>
 </li>
 <li>
 <p>Ability to query using Cypher with the default GORM methods (find, findAll)</p>
@@ -695,6 +717,83 @@ table.CodeRay td.code>pre{padding:0}
 </ul>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_4_0_x">4.0.x</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Rewritten for Groovy traits &amp; Grails 3</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_3_0_x">3.0.x</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Initial support for Neo4j 2.0.x</p>
+</li>
+<li>
+<p>Support for Cypher via Neo4j JDBC</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_2_0_x">2.0.x</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Refinements from 1.0.x</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_1_0_x">1.0.x</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>works with Neo4j HA</p>
+</li>
+<li>
+<p>implementing new GORM property criteria filters</p>
+</li>
+<li>
+<p>uses Neo4j 1.8.2</p>
+</li>
+<li>
+<p>first GORM compliant version of the plugin</p>
+</li>
+<li>
+<p>works with embedded and REST Neo4j databases</p>
+</li>
+<li>
+<p>exposing traversal options to domain classes</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="upgrading">Upgrading from previous versions</h3>
+<div class="paragraph">
+<p>If you are upgrading from a previous version of the plugin to the 6.0.0.BUILD-SNAPSHOT, you will need to take into account the following changes.</p>
+</div>
+<div class="sect3">
+<h4 id="_configuration_changes">Configuration Changes</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_bolt_java_driver_and_api_changes">Bolt Java Driver and API Changes</h4>
+
+</div>
+<div class="sect3">
+<h4 id="_general_neo4j_3_x_changes">General Neo4j 3.x Changes</h4>
+
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -709,17 +808,17 @@ table.CodeRay td.code>pre{padding:0}
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-        compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:neo4j:VERSION</span><span class="delimiter">'</span></span>
+	compile 'org.grails.plugins:neo4j:6.0.0.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>To do so for Grails 2.x edit the <code>grails-app/conf/BuildConfig.groovy</code> file and add the following plugin definition, where <code>VERSION</code> is the version of the plugin you plan to use:</p>
+<p>To do so for Grails 2.x edit the <code>grails-app/conf/BuildConfig.groovy</code> file and add the following plugin definition:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    compile <span class="string"><span class="delimiter">'</span><span class="content">:neo4j:VERSION</span><span class="delimiter">'</span></span>
+    compile ':neo4j:6.0.0.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -730,13 +829,97 @@ table.CodeRay td.code>pre{padding:0}
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-GORM for Neo4j requires Grails 2.5.x or above and Neo4j 2.3.x or above
+GORM for Neo4j requires Grails 2.5.x or above and Neo4j 3.0.x or above, if you wish to use Neo4j 2.3.x use the <a href="http://gorm.grails.org/5.0.x">5.x version</a> of GORM
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>By default Neo4j will used as embedded database inside the JVM, the default directory for the Neo4j datastore is <code>data/neo4j</code>.</p>
+<p>By default the Grails plugin assumes you have a Neo4j instance running on port <code>7687</code>, however you can run Neo4j embedded by including the following configuration in <code>grails-app/conf/application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">neo4j</span>:
+        <span class="key">type</span>: <span class="string"><span class="content">embedded</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then adding the Neo4j test harness to your <code>provided</code> dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">provided <span class="string"><span class="delimiter">'</span><span class="content">org.neo4j.test:neo4j-harness:3.0.2</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The Neo4j server uses Jetty, so when you add Neo4j as embedded Grails will also use Jetty (not Tomcat) as the container since it discovered on the classpath, therefore it is not recommended to use Neo4j embedded.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To configure the Neo4j server URL you can use the <code>grails.neo4j.url</code> setting in <code>grails-app/conf/application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">neo4j</span>:
+        <span class="key">url</span>: <span class="string"><span class="content">bolt://localhost:7687</span></span></code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="configurationOptions">Neo4j Bolt Driver Configuration Options</h3>
+<div class="paragraph">
+<p>The following options can be configured in <code>grails-app/conf/application.yml</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>grails.neo4j.url</code> - The Neo4j Bolt URL</p>
+</li>
+<li>
+<p><code>grails.neo4j.buildIndex</code> - Whether to build the Neo4j index on startup (defaults to true)</p>
+</li>
+<li>
+<p><code>grails.neo4j.type</code> - The Neo4j server type. If set to <code>embedded</code> loads an embedded server</p>
+</li>
+<li>
+<p><code>grails.neo4j.flush.mode</code> - The flush mode to use when working with Neo4j sessions. Default to <code>AUTO</code>.</p>
+</li>
+<li>
+<p><code>grails.neo4j.username</code> - The username to use to authenticate</p>
+</li>
+<li>
+<p><code>grails.neo4j.password</code> - The password to use to authenticate</p>
+</li>
+<li>
+<p><code>grails.neo4j.default.mapping</code> - The default database mapping. Must be a closure configured in <code>application.groovy</code></p>
+</li>
+<li>
+<p><code>grails.neo4j.options</code> - Any options to be passed to the driver</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <code>grails.neo4j.options</code> setting allows you to configure the properties of <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/Config.html">org.neo4j.driver.v1.Config</a>, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">neo4j</span>:
+        <span class="key">options</span>:
+            <span class="key">maxSessions</span>: <span class="string"><span class="content">100</span></span>
+            <span class="key">encryptionLevel</span>: <span class="string"><span class="content">NONE</span></span>
+            <span class="key">sessionLivenessCheckTimeout</span>: <span class="string"><span class="content">200</span></span></code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="usingNeo4jStandalone">Using Neo4j Standalone</h3>
@@ -767,186 +950,13 @@ GORM for Neo4j requires Grails 2.5.x or above and Neo4j 2.3.x or above
 </div>
 </div>
 <div class="sect2">
-<h3 id="advancedConfiguration">Advanced Configuration</h3>
-<div class="paragraph">
-<p>As mentioned the GORM for Neo4j plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your <code>grails-app/conf/DataSource.groovy</code> file or in the <code>grails-app/conf/application.groovy</code> file for Grails 3.x and above:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grails {
-    neo4j {
-        type = <span class="string"><span class="delimiter">&quot;</span><span class="content">embedded</span><span class="delimiter">&quot;</span></span>
-        location = <span class="string"><span class="delimiter">&quot;</span><span class="content">/var/neo4j</span><span class="delimiter">&quot;</span></span>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>type</code> provides currently the following choices:</p>
-</div>
-<div class="sect3">
-<h4 id="_type_embedded">type = "embedded"</h4>
-<div class="paragraph">
-<p>Runs Neo4j in embedded mode, Neo4j and Grails use the same JVM. No seperate setup outside the Grails application is required. <code>location</code> specifies the directory where Neo4j stores its data.</p>
-</div>
-<div class="paragraph">
-<p>Example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grails {
-    neo4j {
-        type = <span class="string"><span class="delimiter">&quot;</span><span class="content">embedded</span><span class="delimiter">&quot;</span></span>
-        location = <span class="string"><span class="delimiter">&quot;</span><span class="content">/var/neo4j</span><span class="delimiter">&quot;</span></span>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-If your configuration is empty, <em>embedded</em> is used as default.
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_type_rest">type = "rest"</h4>
-<div class="paragraph">
-<p>Uses a <code>org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase</code> instance to connect to a Neo4j database. See <a href="http://neo4j.com/docs/stable/server-installation.html" class="bare">http://neo4j.com/docs/stable/server-installation.html</a> for how to setup a Neo4j server.</p>
-</div>
-<div class="paragraph">
-<p><code>location</code> specifies the URL of he Neo4j REST server. When using the Heroku Neo4j addon, omit the location. In this case location will default to env.NEO4J_URL that is provided by Heroku.</p>
-</div>
-<div class="paragraph">
-<p>Example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grails {
-    neo4j {
-        type = <span class="string"><span class="delimiter">&quot;</span><span class="content">rest</span><span class="delimiter">&quot;</span></span>
-        location = <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:7474/db/data/</span><span class="delimiter">&quot;</span></span>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Additionally you must add the following dependencies to your application&#8217;s <code>build.gradle</code> or <code>grails-app/conf/BuildConfig.groovy</code> file:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.springframework.data:spring-data-neo4j:3.4.0.RELEASE</span><span class="delimiter">'</span></span>
-compile <span class="string"><span class="delimiter">'</span><span class="content">org.springframework.data:spring-data-neo4j-rest:3.4.0.RELEASE</span><span class="delimiter">'</span></span>
-    exclude <span class="key">group</span>:<span class="string"><span class="delimiter">'</span><span class="content">org.neo4j.test</span><span class="delimiter">'</span></span>, <span class="key">module</span>:<span class="string"><span class="delimiter">'</span><span class="content">neo4j-harness</span><span class="delimiter">'</span></span>
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>GORM for Neo4j uses the REST implementation from the Spring Data Neo4j REST project.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_type_ha">type = "ha"</h4>
-<div class="paragraph">
-<p>Uses a Neo4j HA setup, for details see <a href="http://neo4j.com/docs/stable/ha.html" class="bare">http://neo4j.com/docs/stable/ha.html</a>. In this case params must at least contain</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-For Neo4j HA either a commercial license is <a href="http://neo4j.org/licensing-guide/">required</a>, or you could use AGPL.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grails {
-    neo4j {
-        type = <span class="string"><span class="delimiter">&quot;</span><span class="content">ha</span><span class="delimiter">&quot;</span></span>
-        location = <span class="string"><span class="delimiter">&quot;</span><span class="content">/var/neo4j</span><span class="delimiter">&quot;</span></span>
-        <span class="comment">// see http://neo4j.com/docs/stable/ha-configuration.html</span>
-        options = [
-                <span class="string"><span class="delimiter">'</span><span class="content">ha.server_id</span><span class="delimiter">'</span></span>: <span class="integer">1</span>,
-                <span class="string"><span class="delimiter">'</span><span class="content">ha.coordinators</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">localhost:2181,localhost:2182,localhost:2183</span><span class="delimiter">'</span></span>
-        ]
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Additionally you must add another dependency to your application&#8217;s <code>build.gradle</code> or <code>grails-app/conf/BuildConfig.groovy</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.neo4j:neo4j-ha:$neo4jVersion</span><span class="delimiter">'</span></span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_type_impermanent">type = "impermanent"</h4>
-<div class="paragraph">
-<p>Uses ImpermanentGraphDatabase which is good for testing and early stage development.</p>
-</div>
-<div class="paragraph">
-<p>This option required a dependency to artifact [group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests'] in <code>build.gradle</code> or <code>BuildConfig.groovy</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="key">group</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">org.neo4j</span><span class="delimiter">&quot;</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">neo4j-kernel</span><span class="delimiter">&quot;</span></span>, <span class="key">version</span>: neo4jVersion, <span class="key">classifier</span>: <span class="string"><span class="delimiter">'</span><span class="content">tests</span><span class="delimiter">'</span></span></code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-ImpermanentGraphDatabase is intended to be used for testing.
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_custom_graph_database">custom graph database</h4>
-<div class="paragraph">
-<p>If you use a custom implementation of GraphDatabaseService, you can use</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grails {
-    neo4j {
-        type = <span class="string"><span class="delimiter">&quot;</span><span class="content">my.fancy.custom.GraphDatabaseServiceImplementation</span><span class="delimiter">&quot;</span></span>
-        location = <span class="string"><span class="delimiter">&quot;</span><span class="content">/var/neo4j</span><span class="delimiter">&quot;</span></span>
-        options = [ :]
-    }
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
 <h3 id="springBoot">Using GORM in Spring Boot</h3>
 <div class="paragraph">
 <p>To use GORM for Neo4j in Spring Boot add the necessary dependencies to your Boot application:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile(<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:gorm-neo4j-spring-boot:VERSION</span><span class="delimiter">&quot;</span></span>)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-neo4j-spring-boot:6.0.0.BUILD-SNAPSHOT")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -995,6 +1005,9 @@ If your GORM entities are in a different package specify the package name as the
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>To configure GORM for Neo4j within Spring Boot create an <code>application.yml</code> file and populate your <a href="#configurationOptions">configuration</a> options within it.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="standalone">GORM for Neo4j without Grails</h3>
@@ -1003,27 +1016,29 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-gorm-neo4j:VERSION</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:6.0.0.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation:</p>
+<p>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation and implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Entity</span>
-<span class="type">class</span> <span class="class">Person</span> {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.neo4j.*</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.annotation.*</span>
+
+<span class="annotation">@Entity</span>
+<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Neo4jEntity&lt;Person&gt;{
     <span class="predefined-type">String</span> name
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Then you need to place the bootstrap logic somewhere in your application which uses <code>Neo4jDataStoreSpringInitializer</code>:</p>
+<p>Then you need to place the bootstrap logic somewhere in your application which uses <a href="../api/org/grails/datastore/gorm/neo4j/Neo4jDatastore.html">Neo4jDatastore</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> initializer = <span class="keyword">new</span> Neo4jDataStoreSpringInitializer(Person)
-<span class="keyword">def</span> applicationContext = initializer.configure()
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> datastore = <span class="keyword">new</span> Neo4jDatastore(Person)
 
 println Person.count()</code></pre>
 </div>
@@ -1033,14 +1048,13 @@ println Person.count()</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> initializer = <span class="keyword">new</span> Neo4jDataStoreSpringInitializer([<span class="string"><span class="delimiter">'</span><span class="content">grails.neo4j.location</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">http://myserver</span><span class="delimiter">'</span></span>], Person)
-<span class="keyword">def</span> applicationContext = initializer.configure()
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> datastore = <span class="keyword">new</span> Neo4jDatastore([<span class="string"><span class="delimiter">'</span><span class="content">grails.neo4j.url</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">bolt://...</span><span class="delimiter">'</span></span>], Person)
 
 println Person.count()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:</p>
+<p>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call use <a href="../api/grails/neo4j/bootstrap/Neo4jDataStoreSpringInitializer.html">Neo4jDataStoreSpringInitializer</a> and call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1055,7 +1069,7 @@ println Person.count()</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="mapping">Mapping domain classes to Neo4j node space</h2>
+<h2 id="mapping">Mapping Domain Classes to Neo4j Nodes</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>GORM for Neo4j will map each Grails domain instance to a Node in the node space. For example given the following domain class:</p>
@@ -1063,6 +1077,16 @@ println Person.count()</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Pet</span> {
+    <span class="predefined-type">String</span> name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each domain class will implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait. You can define this explicitly if you prefer:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Pet</span> <span class="directive">implements</span> Neo4jEntity&lt;Pet&gt; {
     <span class="predefined-type">String</span> name
 }</code></pre>
 </div>
@@ -1077,7 +1101,7 @@ p.save(<span class="key">flush</span>:<span class="predefined-constant">true</sp
 </div>
 </div>
 <div class="paragraph">
-<p>Then the following Cypher CREATE is issued:</p>
+<p>Then the following Cypher <code>CREATE</code> is issued:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1243,86 +1267,54 @@ If you want to see what queries GORM for Neo4j generates, enabling logging for t
 <div class="paragraph">
 <p>Neo4j is a schemaless database. This means that, unlike SQL where you can only have a fixed number of rows and columns, nodes can have unlimited properties.</p>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>Most existing object mapping tools in statically typed languages don't allow you to harness this power, but GORM for Neo4j allows you to define both statically defined properties (ie the properties of the domain class) and domain properties.</pre>
+<div class="paragraph">
+<p>Most existing object mapping tools in statically typed languages don&#8217;t allow you to harness this power, but GORM for Neo4j allows you to define both statically defined properties (ie the properties of the domain class) and domain properties.</p>
 </div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>For example, take the following domain class:</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>[source,groovy]</pre>
-</div>
+<div class="paragraph">
+<p>For example, take the following domain class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>class Plant {
-    String name
- }</pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Plant</span> {
+    <span class="predefined-type">String</span> name
+ }</code></pre>
 </div>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>You can set both the statically defined `name` property, but also any arbitrary number of dynamic properties using the subscript operator in Groovy:</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>[source,groovy]</pre>
-</div>
+<div class="paragraph">
+<p>You can set both the statically defined <code>name</code> property, but also any arbitrary number of dynamic properties using the subscript operator in Groovy:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>def p = new Plant(name:"Carrot")
-  p['goesInPatch'] = true
-  p.save(flush:true)</pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> p = <span class="keyword">new</span> Plant(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Carrot</span><span class="delimiter">&quot;</span></span>)
+  p[<span class="string"><span class="delimiter">'</span><span class="content">goesInPatch</span><span class="delimiter">'</span></span>] = <span class="predefined-constant">true</span>
+  p.save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
 </div>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>Any simple properties can be included, however if you wish to have dynamic associations you can as well by modifying the mapping:</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>[source,groovy]</pre>
-</div>
+<div class="paragraph">
+<p>Any simple properties can be included, however if you wish to have dynamic associations you can as well by modifying the mapping:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>class Plant {
-    String name
-    static mapping = {
-        dynamicAssociations true
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Plant</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> mapping = {
+        dynamicAssociations <span class="predefined-constant">true</span>
     }
- }</pre>
+ }</code></pre>
 </div>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>With this in place you can define dynamic associations:</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>[source,groovy]</pre>
-</div>
+<div class="paragraph">
+<p>With this in place you can define dynamic associations:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>def p = new Plant(name:"Carrot")
-  p['related'] = [ new Plant(name:"Potato").save() ]
-  p.save(flush:true)</pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> p = <span class="keyword">new</span> Plant(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Carrot</span><span class="delimiter">&quot;</span></span>)
+  p[<span class="string"><span class="delimiter">'</span><span class="content">related</span><span class="delimiter">'</span></span>] = [ <span class="keyword">new</span> Plant(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Potato</span><span class="delimiter">&quot;</span></span>).save() ]
+  p.save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
 </div>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>The downside of dynamic associations is that GORM has to issue a separate query for each loaded instance when retrieving entities. If you have a small amount of data this is not a problem, but for larger data sets it is not recommended.</pre>
-</div>
+<div class="paragraph">
+<p>The downside of dynamic associations is that GORM has to issue a separate query for each loaded instance when retrieving entities. If you have a small amount of data this is not a problem, but for larger data sets it is not recommended.</p>
 </div>
 </div>
 </div>
@@ -1488,62 +1480,36 @@ RETURN n <span class="keyword">as</span> data, collect(DISTINCT leagueNode.__id_
 <div class="paragraph">
 <p>To query with raw Cypher queries you can use the built in <code>find</code> and <code>findAll</code> methods:</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>[source,groovy]</pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> club = Club.find(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH n where n.name = {1} RETURN n</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">FC Bayern Muenchen</span><span class="delimiter">'</span></span>)
+<span class="keyword">def</span> clubs = Club.findAll(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH n where n.name = {1} RETURN n</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">FC Bayern Muenchen</span><span class="delimiter">'</span></span>)</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results use <code>cypherStatic</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>def club = Club.find("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')
- def clubs = Club.findAll("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')</pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">StatementResult result = Club.cypherStatic(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH n where n.name = {1} RETURN n</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">FC Bayern Muenchen</span><span class="delimiter">'</span></span>)</code></pre>
 </div>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results use `cypherStatic`:</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>[source,groovy]</pre>
-</div>
+<div class="paragraph">
+<p>When working with raw results, you can convert any <code>org.neo4j.driver.v1.types.Node</code> into a domain instance using the <code>as</code> keyword:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>Result result = Club.cypherStatic("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')</pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">Node myNode = ...
+ Club club = myNode <span class="keyword">as</span> Club</code></pre>
 </div>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>When working with raw results, you can convert any `org.neo4j.graphdb.Node` into a domain instance using the `as` keyword:</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>[source,groovy]</pre>
-</div>
+<div class="paragraph">
+<p>You can also convert any <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/StatementResult.html">org.neo4j.driver.v1.StatementResult</a> instance to a list of domain classes:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>Node myNode = ...
- Club club = myNode as Club</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>You can also convert any `org.neo4j.graphdb.Result` instance to a list of domain classes:</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>[source,groovy]</pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>Result result = ...
-  List&lt;Club&gt; clubs = result.toList(Club)</pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">StatementResult result = ...
+List&lt;Club&gt; clubs = result.toList(Club)</code></pre>
 </div>
 </div>
 </div>
@@ -1591,30 +1557,36 @@ RETURN n <span class="keyword">as</span> data, collect(DISTINCT leagueNode.__id_
 </div>
 </div>
 <div class="sect1">
-<h2 id="neo4jEnhancements">Enhancements to Neo4j core API</h2>
+<h2 id="neo4jEnhancements">Enhancements to Neo4j Java Driver API</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Neo4j Grails contains some enhancements to the Neo4j core API.</p>
+<p>GORM for Neo4j contains some enhancements to the Neo4j Bolt Driver API.</p>
 </div>
 <div class="sect3">
-<h4 id="_setting_properties_on_nodes_relationships">Setting properties on nodes/relationships</h4>
+<h4 id="_getting_properties_from_nodes">Getting Properties from Nodes</h4>
 <div class="paragraph">
-<p>Assigning an arbitrary property onto a Neo4j node or relationship can be simply done by using Groovy&#8217;s property
-mechanism:</p>
+<p>The dot operator can be used to obtain properties from a node:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> node = graphDatabaseService.createNode()
-node.myProperty = myValue</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">Node node = ...
+def value = node.myProperty
+
+<span class="comment">// or</span>
+
+<span class="keyword">def</span> value = node[<span class="string"><span class="delimiter">'</span><span class="content">myProperty</span><span class="delimiter">'</span></span>]</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_cast_a_node_to_a_map">Cast a Node to a Map</h4>
 <div class="paragraph">
-<p>The same applies for getting properties:</p>
+<p>Nodes can be cast to maps:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> node = ...
-def value = node.myProperty</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">Node node = ...
+Map myMap = node <span class="keyword">as</span> <span class="predefined-type">Map</span></code></pre>
 </div>
 </div>
 </div>
@@ -1627,10 +1599,6 @@ def value = node.myProperty</code></pre>
 <h3 id="ref-additional-gorm-methods">Additional Gorm Methods</h3>
 <div class="sect3">
 <h4 id="ref-additional-gorm-methods-cypher">cypher</h4>
-<div class="sect4">
-<h5 id="_cypher">cypher</h5>
-
-</div>
 <div class="sect4">
 <h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
@@ -1660,18 +1628,25 @@ result.iterator().size() == <span class="integer">1</span></code></pre>
 <div class="sect4">
 <h5 id="_description">Description</h5>
 <div class="paragraph">
-<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://api.neo4j.org/current/org/neo4j/cypher/javacompat/ExecutionResult.html">ExecutionResult</a> The parameters passed are:
-* cypher query string. The query string might use a implizit <code>this</code> parameter pointing to the instance&#8217;s node
-* a optional map of cypher parameters</p>
+<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/StatementResult.html">org.neo4j.driver.v1.StatementResult</a></p>
+</div>
+<div class="paragraph">
+<p>The parameters passed are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the instance&#8217;s node</p>
+</li>
+<li>
+<p>a optional map of cypher parameters</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="ref-additional-gorm-methods-cypherStatic">cypherStatic</h4>
-<div class="sect4">
-<h5 id="_cypherstatic">cypherStatic</h5>
-
-</div>
 <div class="sect4">
 <h5 id="_purpose_2">Purpose</h5>
 <div class="paragraph">
@@ -1699,36 +1674,29 @@ result.iterator().size()==<span class="integer">1</span></code></pre>
 <div class="sect4">
 <h5 id="_description_2">Description</h5>
 <div class="paragraph">
-<p><code>cypherStatic</code> is invoked on any domain class and returns a <a href="http://api.neo4j.org/current/org/neo4j/cypher/javacompat/ExecutionResult.html">ExecutionResult</a> The parameters passed are:
-* cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the domain class&#8217;s (aka subreference) node
-* a optional map of cypher parameters</p>
+<p><code>cypherStatic</code> is invoked on any domain class and returns a <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/StatementResult.html">org.neo4j.driver.v1.StatementResult</a></p>
 </div>
 <div class="paragraph">
-<p>[[ref-additional-gorm-methods-schemaless attributes]]
-==== schemaless attributes</p>
+<p>The parameters passed are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the domain class&#8217;s (aka subreference) node</p>
+</li>
+<li>
+<p>a optional map of cypher parameters</p>
+</li>
+</ul>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_schemaless_attributes">schemaless attributes</h5>
-
 </div>
+<div class="sect3">
+<h4 id="_schemaless_attributes">Schemaless Attributes</h4>
 <div class="sect4">
 <h5 id="_purpose_3">Purpose</h5>
 <div class="paragraph">
-<p>For domain classes mapped by Neo4j you can put and get arbitrary attributes on a instances by using the dot operator or
-map semantics on the domain instance.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Setting arbitrary attribute in only allowed when the domain instance is persisted (aka <code>save</code> has been called)!
-</td>
-</tr>
-</table>
+<p>For domain classes mapped by Neo4j you can put and get arbitrary attributes on a instances by using the dot operator or map semantics on the domain instance.</p>
 </div>
 </div>
 <div class="sect4">
@@ -1747,7 +1715,7 @@ Setting arbitrary attribute in only allowed when the domain instance is persiste
 </div>
 </div>
 <div class="sect4">
-<h5 id="_using_map_semantics">using map semantics</h5>
+<h5 id="_using_map_semantics">Using Map Semantics</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>:
@@ -1771,7 +1739,7 @@ person[<span class="string"><span class="delimiter">'</span><span class="content
 </div>
 </div>
 <div class="sect4">
-<h5 id="_using_dot_operator">using dot operator</h5>
+<h5 id="_using_dot_operator">Using Dot Operator</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>:
@@ -1800,52 +1768,7 @@ person.someDoubleArray == [<span class="float">0.9</span>, <span class="float">1
 <div class="sect4">
 <h5 id="_description_3">Description</h5>
 <div class="paragraph">
-<p>The non declared attribtes are stored a regular properties on the domain instance&#8217;s node. The values of the schemaless
-attributes must be a valid type for Neo4j property (String, primitives and arrays of the former two).</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="ref-beans">Beans</h3>
-<div class="sect3">
-<h4 id="ref-beans-graphDatabaseService">graphDatabaseService</h4>
-<div class="sect4">
-<h5 id="_graphdatabaseservice">graphDatabaseService</h5>
-
-</div>
-<div class="sect4">
-<h5 id="_purpose_4">Purpose</h5>
-<div class="paragraph">
-<p>A Spring bean that provides access to the lower level Neo4j GraphDatabaseService instance.</p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_examples">Examples</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> graphDatabaseService
-
-<span class="keyword">def</span> foo = {
-    <span class="keyword">def</span> graphDatabaseService
-    <span class="keyword">def</span> myAction = {
-        <span class="keyword">def</span> node = graphDatabaseService.createNode() <span class="comment">// create</span>
-        ... do something with node ...s
-    }
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_description_4">Description</h5>
-<div class="paragraph">
-<p>See the <a href="http://api.neo4j.org/current/org/neo4j/graphdb/GraphDatabaseService.html">Neo4j Api doc</a> docs for how to use the graphDatabaseService bean.</p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_configuration">Configuration</h5>
-<div class="paragraph">
-<p>tbd</p>
+<p>The non declared attribtes are stored a regular properties on the domain instance&#8217;s node. The values of the schemaless attributes must be a valid type for Neo4j property (String, primitives and arrays of the former two).</p>
 </div>
 </div>
 </div>

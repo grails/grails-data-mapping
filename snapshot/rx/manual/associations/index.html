@@ -463,7 +463,7 @@ class Book implements RxMongoEntity&lt;Book&gt; {
 </div>
 </div>
 <div class="paragraph">
-<p>In the above example RxGORM has no choice but to block in order to load the association lazy and access the <code>name</code>! Typically you do not want your reactive application to block at any point, so in order to get around this each proxy loaded by GORM implements the <a href="api/grails/gorm/rx/proxy/ObservableProxy.html">ObservableProxy</a> interface. That means the above code can be written in a non-blocking manner:</p>
+<p>In the above example RxGORM has no choice but to block in order to load the association lazy and access the <code>name</code>! Typically you do not want your reactive application to block at any point, so in order to get around this each proxy loaded by GORM implements the <a href="../api/grails/gorm/rx/proxy/ObservableProxy.html">ObservableProxy</a> interface. That means the above code can be written in a non-blocking manner:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -495,7 +495,7 @@ Book.where {
 <p>In the previous section we discussed the implications of association proxies for single-ended associations, however the same applies with many-ended associations.</p>
 </div>
 <div class="paragraph">
-<p>In the case of collection types, these implement the <a href="api/grails/gorm/rx/collection/RxPersistentCollection.html">RxPersistentCollection</a> and again can be subscribed to:</p>
+<p>In the case of collection types, these implement the <a href="../api/grails/gorm/rx/collection/RxPersistentCollection.html">RxPersistentCollection</a> and again can be subscribed to:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -513,7 +513,7 @@ author.books.subscribe { Collection&lt;Book&gt; books -&gt;
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-06 12:11:30 UTC
+Last updated 2016-06-08 10:50:57 UTC
 </div>
 </div>
 </body>

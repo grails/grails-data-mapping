@@ -429,91 +429,59 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>Neo4j is a schemaless database. This means that, unlike SQL where you can only have a fixed number of rows and columns, nodes can have unlimited properties.</p>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>Most existing object mapping tools in statically typed languages don't allow you to harness this power, but GORM for Neo4j allows you to define both statically defined properties (ie the properties of the domain class) and domain properties.</pre>
+<div class="paragraph">
+<p>Most existing object mapping tools in statically typed languages don&#8217;t allow you to harness this power, but GORM for Neo4j allows you to define both statically defined properties (ie the properties of the domain class) and domain properties.</p>
 </div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>For example, take the following domain class:</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>[source,groovy]</pre>
-</div>
+<div class="paragraph">
+<p>For example, take the following domain class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>class Plant {
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Plant {
     String name
- }</pre>
+ }</code></pre>
 </div>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>You can set both the statically defined `name` property, but also any arbitrary number of dynamic properties using the subscript operator in Groovy:</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>[source,groovy]</pre>
-</div>
+<div class="paragraph">
+<p>You can set both the statically defined <code>name</code> property, but also any arbitrary number of dynamic properties using the subscript operator in Groovy:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>def p = new Plant(name:"Carrot")
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def p = new Plant(name:"Carrot")
   p['goesInPatch'] = true
-  p.save(flush:true)</pre>
+  p.save(flush:true)</code></pre>
 </div>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>Any simple properties can be included, however if you wish to have dynamic associations you can as well by modifying the mapping:</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>[source,groovy]</pre>
-</div>
+<div class="paragraph">
+<p>Any simple properties can be included, however if you wish to have dynamic associations you can as well by modifying the mapping:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>class Plant {
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Plant {
     String name
     static mapping = {
         dynamicAssociations true
     }
- }</pre>
+ }</code></pre>
 </div>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>With this in place you can define dynamic associations:</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>[source,groovy]</pre>
-</div>
+<div class="paragraph">
+<p>With this in place you can define dynamic associations:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>def p = new Plant(name:"Carrot")
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def p = new Plant(name:"Carrot")
   p['related'] = [ new Plant(name:"Potato").save() ]
-  p.save(flush:true)</pre>
+  p.save(flush:true)</code></pre>
 </div>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>The downside of dynamic associations is that GORM has to issue a separate query for each loaded instance when retrieving entities. If you have a small amount of data this is not a problem, but for larger data sets it is not recommended.</pre>
-</div>
+<div class="paragraph">
+<p>The downside of dynamic associations is that GORM has to issue a separate query for each loaded instance when retrieving entities. If you have a small amount of data this is not a problem, but for larger data sets it is not recommended.</p>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-06 12:11:30 UTC
+Last updated 2016-06-08 10:50:57 UTC
 </div>
 </div>
 </body>

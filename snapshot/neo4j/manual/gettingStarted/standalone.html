@@ -431,27 +431,29 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:VERSION"</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:6.0.0.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation:</p>
+<p>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation and implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Entity
-class Person {
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.neo4j.*
+import grails.gorm.annotation.*
+
+@Entity
+class Person implements Neo4jEntity&lt;Person&gt;{
     String name
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Then you need to place the bootstrap logic somewhere in your application which uses <code>Neo4jDataStoreSpringInitializer</code>:</p>
+<p>Then you need to place the bootstrap logic somewhere in your application which uses <a href="../api/org/grails/datastore/gorm/neo4j/Neo4jDatastore.html">Neo4jDatastore</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">def initializer = new Neo4jDataStoreSpringInitializer(Person)
-def applicationContext = initializer.configure()
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def datastore = new Neo4jDatastore(Person)
 
 println Person.count()</code></pre>
 </div>
@@ -461,14 +463,13 @@ println Person.count()</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">def initializer = new Neo4jDataStoreSpringInitializer(['grails.neo4j.location':'http://myserver'], Person)
-def applicationContext = initializer.configure()
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def datastore = new Neo4jDatastore(['grails.neo4j.url':'bolt://...'], Person)
 
 println Person.count()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:</p>
+<p>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call use <a href="../api/grails/neo4j/bootstrap/Neo4jDataStoreSpringInitializer.html">Neo4jDataStoreSpringInitializer</a> and call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -482,7 +483,7 @@ println Person.count()</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-06 12:11:30 UTC
+Last updated 2016-06-08 10:50:57 UTC
 </div>
 </div>
 </body>

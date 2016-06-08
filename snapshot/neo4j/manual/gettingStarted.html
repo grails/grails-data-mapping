@@ -435,17 +435,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">dependencies {
-	compile 'org.grails.plugins:neo4j:VERSION'
+	compile 'org.grails.plugins:neo4j:6.0.0.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>To do so for Grails 2.x edit the <code>grails-app/conf/BuildConfig.groovy</code> file and add the following plugin definition, where <code>VERSION</code> is the version of the plugin you plan to use:</p>
+<p>To do so for Grails 2.x edit the <code>grails-app/conf/BuildConfig.groovy</code> file and add the following plugin definition:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    compile ':neo4j:VERSION'
+    compile ':neo4j:6.0.0.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -456,18 +456,55 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-GORM for Neo4j requires Grails 2.5.x or above and Neo4j 2.3.x or above
+GORM for Neo4j requires Grails 2.5.x or above and Neo4j 3.0.x or above, if you wish to use Neo4j 2.3.x use the <a href="http://gorm.grails.org/5.0.x">5.x version</a> of GORM
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>By default Neo4j will used as embedded database inside the JVM, the default directory for the Neo4j datastore is <code>data/neo4j</code>.</p>
+<p>By default the Grails plugin assumes you have a Neo4j instance running on port <code>7687</code>, however you can run Neo4j embedded by including the following configuration in <code>grails-app/conf/application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    neo4j:
+        type: embedded</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then adding the Neo4j test harness to your <code>provided</code> dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">provided 'org.neo4j.test:neo4j-harness:3.0.2'</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The Neo4j server uses Jetty, so when you add Neo4j as embedded Grails will also use Jetty (not Tomcat) as the container since it discovered on the classpath, therefore it is not recommended to use Neo4j embedded.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To configure the Neo4j server URL you can use the <code>grails.neo4j.url</code> setting in <code>grails-app/conf/application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    neo4j:
+        url: bolt://localhost:7687</code></pre>
+</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-06 12:11:30 UTC
+Last updated 2016-06-08 10:50:57 UTC
 </div>
 </div>
 </body>

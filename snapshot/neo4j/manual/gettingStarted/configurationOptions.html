@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
-<title>Purpose</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -422,55 +422,52 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_example">Example</a></li>
-<li><a href="#_description">Description</a></li>
-</ul>
+
 </div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Execute a cypher query.</p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_example">Example</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">setup:
-new Person(lastName:'person1').save()
-new Person(lastName:'person2').save()
-session.flush()
-session.clear()
-
-when:
-def result = Person.cypherStatic("start n=node({this}) match n-[:INSTANCE]-&gt;m where m.lastName='person1' return m")
-
-then:
-result.iterator().size()==1</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
-<div class="paragraph">
-<p><code>cypherStatic</code> is invoked on any domain class and returns a <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/StatementResult.html">org.neo4j.driver.v1.StatementResult</a></p>
-</div>
-<div class="paragraph">
-<p>The parameters passed are:</p>
+<p>The following options can be configured in <code>grails-app/conf/application.yml</code>:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the domain class&#8217;s (aka subreference) node</p>
+<p><code>grails.neo4j.url</code> - The Neo4j Bolt URL</p>
 </li>
 <li>
-<p>a optional map of cypher parameters</p>
+<p><code>grails.neo4j.buildIndex</code> - Whether to build the Neo4j index on startup (defaults to true)</p>
+</li>
+<li>
+<p><code>grails.neo4j.type</code> - The Neo4j server type. If set to <code>embedded</code> loads an embedded server</p>
+</li>
+<li>
+<p><code>grails.neo4j.flush.mode</code> - The flush mode to use when working with Neo4j sessions. Default to <code>AUTO</code>.</p>
+</li>
+<li>
+<p><code>grails.neo4j.username</code> - The username to use to authenticate</p>
+</li>
+<li>
+<p><code>grails.neo4j.password</code> - The password to use to authenticate</p>
+</li>
+<li>
+<p><code>grails.neo4j.default.mapping</code> - The default database mapping. Must be a closure configured in <code>application.groovy</code></p>
+</li>
+<li>
+<p><code>grails.neo4j.options</code> - Any options to be passed to the driver</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>The <code>grails.neo4j.options</code> setting allows you to configure the properties of <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/Config.html">org.neo4j.driver.v1.Config</a>, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    neo4j:
+        options:
+            maxSessions: 100
+            encryptionLevel: NONE
+            sessionLivenessCheckTimeout: 200</code></pre>
 </div>
 </div>
 </div>

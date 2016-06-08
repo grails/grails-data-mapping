@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
-<title>schemaless attributes</title>
+<title>Purpose</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,37 +423,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel4">
-<li><a href="#_schemaless_attributes">schemaless attributes</a></li>
 <li><a href="#_purpose">Purpose</a></li>
 <li><a href="#_example">Example</a></li>
-<li><a href="#_using_map_semantics">using map semantics</a></li>
-<li><a href="#_using_dot_operator">using dot operator</a></li>
+<li><a href="#_using_map_semantics">Using Map Semantics</a></li>
+<li><a href="#_using_dot_operator">Using Dot Operator</a></li>
 <li><a href="#_description">Description</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div class="sect4">
-<h5 id="_schemaless_attributes">schemaless attributes</h5>
-
-</div>
-<div class="sect4">
 <h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>For domain classes mapped by Neo4j you can put and get arbitrary attributes on a instances by using the dot operator or
-map semantics on the domain instance.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Setting arbitrary attribute in only allowed when the domain instance is persisted (aka <code>save</code> has been called)!
-</td>
-</tr>
-</table>
+<p>For domain classes mapped by Neo4j you can put and get arbitrary attributes on a instances by using the dot operator or map semantics on the domain instance.</p>
 </div>
 </div>
 <div class="sect4">
@@ -472,7 +454,7 @@ Setting arbitrary attribute in only allowed when the domain instance is persiste
 </div>
 </div>
 <div class="sect4">
-<h5 id="_using_map_semantics">using map semantics</h5>
+<h5 id="_using_map_semantics">Using Map Semantics</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">when:
@@ -496,7 +478,7 @@ person['someDoubleArray'] == [0.9, 1.0, 1.1]</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_using_dot_operator">using dot operator</h5>
+<h5 id="_using_dot_operator">Using Dot Operator</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">when:
@@ -525,14 +507,13 @@ person.someDoubleArray == [0.9, 1.0, 1.1]</code></pre>
 <div class="sect4">
 <h5 id="_description">Description</h5>
 <div class="paragraph">
-<p>The non declared attribtes are stored a regular properties on the domain instance&#8217;s node. The values of the schemaless
-attributes must be a valid type for Neo4j property (String, primitives and arrays of the former two).</p>
+<p>The non declared attribtes are stored a regular properties on the domain instance&#8217;s node. The values of the schemaless attributes must be a valid type for Neo4j property (String, primitives and arrays of the former two).</p>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-06 12:11:30 UTC
+Last updated 2016-06-08 10:50:57 UTC
 </div>
 </div>
 </body>
