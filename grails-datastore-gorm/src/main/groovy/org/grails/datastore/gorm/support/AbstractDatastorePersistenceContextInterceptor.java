@@ -83,7 +83,10 @@ public abstract class AbstractDatastorePersistenceContextInterceptor  {
     }
 
     public void flush() {
-        getSession().flush();
+        Session session = getSession();
+        if(session.hasTransaction()) {
+            session.flush();
+        }
     }
 
     public void clear() {

@@ -81,7 +81,14 @@ public class Neo4jMappingContext extends AbstractMappingContext  {
 
     public Neo4jMappingContext(Closure defaultMapping) {
         super();
+        setProxyFactory(new HashcodeEqualsAwareProxyFactory());
         mappingFactory.setDefaultMapping(defaultMapping);
+    }
+
+    public Neo4jMappingContext(Closure defaultMapping, Class...classes) {
+        super();
+        mappingFactory.setDefaultMapping(defaultMapping);
+        addPersistentEntities(classes);
     }
 
     public IdGenerator getIdGenerator() {
@@ -136,7 +143,17 @@ public class Neo4jMappingContext extends AbstractMappingContext  {
     public Object convertToNative(Object value) {
         if(value != null) {
             final Class<?> type = value.getClass();
-            if(BASIC_TYPES.contains(type)) {
+            if(type.equals(byte[].class)) {
+                // workaround for https://github.com/neo4j/neo4j-java-driver/issues/182, remove when fixed
+                byte[] bytes = (byte[])value;
+                int[] intArray = new int[bytes.length];
+                for (int i = 0; i < bytes.length; i++) {
+                    byte b = bytes[i];
+                    intArray[i] = b;
+                }
+                return intArray;
+            }
+            else if(BASIC_TYPES.contains(type)) {
                 return value;
             }
             else if(value instanceof CharSequence) {

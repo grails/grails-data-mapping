@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
 import org.grails.datastore.gorm.neo4j.engine.Neo4jQuery
-import org.neo4j.helpers.collection.IteratorUtil
+import org.grails.datastore.gorm.neo4j.util.IteratorUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Issue
@@ -12,7 +12,7 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
-        [Club]
+        [Pet, Club]
     }
 
     def "non declared properties should not mark the object as dirty if the value is the same"() {
@@ -56,7 +56,7 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
             club.buddy = 'Lara'
 
         then:
-            club.dynamicAttributes() == [buddy: 'Lara']
+            club.attributes() == [buddy: 'Lara']
             club.buddy == 'Lara'
 
 
@@ -96,7 +96,7 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
             club.born == date.time
 
         and: "we have no additional properties"
-        club.dynamicAttributes().size() == 2
+        club.attributes().size() == 2
     }
 
     def "test handling of non-declared properties"() {
@@ -190,7 +190,7 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
         session.clear()
 
         when:
-        def result = session.nativeInterface.execute("MATCH (n:Pet {__id__:{1}})-[:buddy]->(l) return l", [cosima.id])
+        def result = session.transaction.nativeTransaction.execute("MATCH (n:Pet {__id__:{1}})-[:buddy]->(l) return l", [cosima.id])
 
         then:
         IteratorUtil.count(result) == 1
@@ -214,7 +214,7 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
         session.clear()
 
         when:
-        def result = session.nativeInterface.execute("MATCH (n:Pet {__id__:{1}})-[:buddies]->(l) return l", [cosima.id])
+        def result = session.transaction.nativeTransaction.execute("MATCH (n:Pet {__id__:{1}})-[:buddies]->(l) return l", [cosima.id])
 
         then:
         IteratorUtil.count(result) == 2
@@ -254,7 +254,7 @@ class NonDeclaredPropertiesSpec extends GormDatastoreSpec {
         Pet.findByName("Cosima").buddy.name == "Fred"
 
         and: "using plural named properties returns an array"
-        Pet.findByName("Cosima").friends*.name == ["Lara", "Bob"]
+        Pet.findByName("Cosima").friends*.name.sort() == ["Bob","Lara"]
     }
 
 }

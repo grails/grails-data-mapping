@@ -1,12 +1,16 @@
 package grails.gorm.tests
 
 import grails.gorm.dirty.checking.DirtyCheck
+import grails.neo4j.Neo4jEntity
 import grails.persistence.Entity
 import org.grails.datastore.gorm.Setup
 import org.grails.datastore.gorm.neo4j.GraphPersistentEntity
+import org.grails.datastore.gorm.neo4j.util.IteratorUtil
 import org.grails.datastore.mapping.core.Session
 import org.neo4j.graphdb.DynamicLabel
-import org.neo4j.helpers.collection.IteratorUtil
+import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.graphdb.Label
+import org.neo4j.graphdb.Transaction
 import spock.lang.Issue
 
 /**
@@ -20,20 +24,17 @@ class LabelStrategySpec extends GormDatastoreSpec {
         [FinalSubClass, ParentClass, ClassInTheMiddle, SubClass, Default, StaticLabel, StaticLabels, DynLabel, MixedLabels, InstanceDependentLabels]
     }
 
-    def setupSpec() {
-        setupClass = LocalSetup
+    Transaction tx
+    def setup() {
+        def graph = serverControls.graph()
+        tx = graph.beginTx()
     }
 
-    public class LocalSetup extends Setup {
-        @Override
-        static Session setup(classes) {
-            skipIndexSetup = false
-            extendedValidatorSetup = { mappingContext, grailsApplication ->
-                setupValidator(mappingContext, grailsApplication, InstanceDependentLabels.simpleName)
-            }
-            Setup.setup(classes)
-        }
+    def cleanup() {
+        tx?.close()
     }
+
+
 
     def "test dynamic associations with dynamic labels"() {
         when:
@@ -62,8 +63,10 @@ class LabelStrategySpec extends GormDatastoreSpec {
         then:
         verifyLabelsForId(d.id, [labelName])
 
+
         and:
-        Setup.graphDb.schema().getIndexes(DynamicLabel.label(labelName))*.propertyKeys == [['__id__']]
+        def graph = serverControls.graph()
+        graph.schema().getIndexes(Label.label(labelName))*.propertyKeys == [['__id__']]
     }
 
     def "should static label mapping work"() {
@@ -75,7 +78,7 @@ class LabelStrategySpec extends GormDatastoreSpec {
         verifyLabelsForId(s.id, [labelName])
 
         and:
-        Setup.graphDb.schema().getIndexes(DynamicLabel.label(labelName))*.propertyKeys == [['__id__']]
+        serverControls.graph().schema().getIndexes(Label.label(labelName))*.propertyKeys == [['__id__']]
     }
 
     def "should static label mapping work for multiple labels"() {
@@ -88,7 +91,7 @@ class LabelStrategySpec extends GormDatastoreSpec {
 
         and:
         labels.every {
-            Setup.graphDb.schema().getIndexes(DynamicLabel.label(it))*.propertyKeys == [['__id__']]
+            serverControls.graph().schema().getIndexes(Label.label(it))*.propertyKeys == [['__id__']]
         }
 
         when:
@@ -131,6 +134,9 @@ class LabelStrategySpec extends GormDatastoreSpec {
     @Issue("https://jira.grails.org/browse/GPNEO4J-17")
     def "should instance dependent labels mapping work"() {
 
+        setup:
+        setupValidator(InstanceDependentLabels)
+
         when:
         def s = new InstanceDependentLabels(name:'Sam', profession: 'Fireman')
         s.save(flush:true)
@@ -140,13 +146,13 @@ class LabelStrategySpec extends GormDatastoreSpec {
         verifyLabelsForId(s.id, ["InstanceDependentLabels", "${s.profession}"])
 
         and:
-        Setup.graphDb.schema().getIndexes(DynamicLabel.label("MyLabel"))*.propertyKeys == [['__id__']]
+        serverControls.graph().schema().getIndexes(Label.label("MyLabel"))*.propertyKeys == [['__id__']]
 
         and: "no index on instance label"
-        !Setup.graphDb.schema().getIndexes(DynamicLabel.label(s.name)).iterator().hasNext()
+        !serverControls.graph().schema().getIndexes(Label.label(s.name)).iterator().hasNext()
 
         and: "there are no indexes on null"
-        Setup.graphDb.schema().getIndexes().every { it.label.name() != 'null'}
+        serverControls.graph().schema().getIndexes().every { it.label.name() != 'null'}
 
         when: "create Sam again, now as policeman"
         def d = new InstanceDependentLabels(name:'Sam', profession: 'Policeman')
@@ -181,15 +187,18 @@ class LabelStrategySpec extends GormDatastoreSpec {
     }
 
     private def verifyLabelsForId(id, labelz) {
-        def cypherResult = session.nativeInterface.execute("MATCH (n {__id__:{1}}) return labels(n) as labels", ["1":id])
-        assert IteratorUtil.first(cypherResult)["labels"] as Set == labelz as Set
+        def cypherResult = session.transaction.nativeTransaction.run("MATCH (n {__id__:{1}}) return labels(n) as labels", ["1":id])
+
+        def result = IteratorUtil.single(cypherResult)
+        def labelsObject = result["labels"].asList()
+        assert labelsObject as Set == labelz as Set
         true
     }
 }
 
 @DirtyCheck
 @Entity
-class ParentClass {
+class ParentClass implements Neo4jEntity<ParentClass>{
     Long id
     Long version
     String name
@@ -197,25 +206,25 @@ class ParentClass {
 
 @DirtyCheck
 @Entity
-abstract class ClassInTheMiddle extends ParentClass {
+abstract class ClassInTheMiddle extends ParentClass implements Neo4jEntity<ClassInTheMiddle>{
     String middleName
 }
 
 @DirtyCheck
 @Entity
-class SubClass extends ClassInTheMiddle {
+class SubClass extends ClassInTheMiddle implements Neo4jEntity<SubClass>{
     String subName
 }
 
 @DirtyCheck
 @Entity
-final class FinalSubClass extends SubClass {
+final class FinalSubClass extends SubClass implements Neo4jEntity<FinalSubClass> {
     String finalName
 }
 
 @DirtyCheck
 @Entity
-class Default {
+class Default implements Neo4jEntity<Default>{
     Long id
     Long version
     String name
@@ -223,7 +232,7 @@ class Default {
 
 @DirtyCheck
 @Entity
-class StaticLabels {
+class StaticLabels implements Neo4jEntity<StaticLabels>{
     Long id
     Long version
     String name
@@ -236,7 +245,7 @@ class StaticLabels {
 
 @DirtyCheck
 @Entity
-class StaticLabel {
+class StaticLabel implements Neo4jEntity<StaticLabel>{
     Long id
     Long version
     String name
@@ -248,7 +257,7 @@ class StaticLabel {
 
 @DirtyCheck
 @Entity
-class DynLabel {
+class DynLabel implements Neo4jEntity<DynLabel>{
     Long id
     Long version
     String name
@@ -260,7 +269,7 @@ class DynLabel {
 
 @DirtyCheck
 @Entity
-class MixedLabels {
+class MixedLabels implements Neo4jEntity<MixedLabels>{
     Long id
     Long version
     String name
@@ -272,7 +281,7 @@ class MixedLabels {
 
 @DirtyCheck
 @Entity
-class InstanceDependentLabels {
+class InstanceDependentLabels implements Neo4jEntity<InstanceDependentLabels>{
     Long id
     Long version
     String name

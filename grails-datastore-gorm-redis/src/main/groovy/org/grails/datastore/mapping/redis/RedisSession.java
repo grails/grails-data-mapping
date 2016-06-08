@@ -56,6 +56,7 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
         redisTemplate = template;
     }
 
+
     @Override
     protected void flushPendingInserts(final Map<PersistentEntity, Collection<PendingInsert>> inserts) {
         // Optimizes saving multiple entities at once

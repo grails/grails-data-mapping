@@ -293,7 +293,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
 
     def cleanup() {
-        session.datastore.applicationContext.beanFactory.destroySingleton 'personService'
+        session.datastore.applicationContext?.beanFactory?.destroySingleton 'personService'
     }
 }
 

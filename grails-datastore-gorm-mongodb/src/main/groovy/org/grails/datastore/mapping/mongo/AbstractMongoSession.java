@@ -58,6 +58,12 @@ public abstract class AbstractMongoSession extends AbstractSession<MongoClient> 
     }
 
     @Override
+    public boolean hasTransaction() {
+        // the session is the transaction, since MongoDB doesn't support them directly
+        return true;
+    }
+
+    @Override
     public MongoDatastore getDatastore() {
         return (MongoDatastore) super.getDatastore();
     }

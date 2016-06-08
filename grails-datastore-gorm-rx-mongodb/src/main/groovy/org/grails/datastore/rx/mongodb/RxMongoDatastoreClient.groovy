@@ -224,7 +224,7 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
 
     /**
      * Creates a new RxMongoDatastoreClient from the given configuration which is supplied by a property resolver
-     *
+     *\
      * @param configuration The configuration resolver
      * @param databaseName The default database name
      * @param classes The classes which must implement {@link grails.gorm.rx.mongodb.RxMongoEntity}

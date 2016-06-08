@@ -13,7 +13,7 @@ class ValidationSpec extends GormDatastoreSpec {
     @Override
     List getDomainClasses() {
         return [ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,
-                ClassWithOverloadedBeforeValidate]
+                ClassWithOverloadedBeforeValidate, TestEntity, ChildEntity, Task]
     }
 
 
@@ -218,6 +218,7 @@ class ValidationSpec extends GormDatastoreSpec {
             def task = new Task()
 
         when:
+
             task.validate(validateParams)
 
         then:
@@ -225,9 +226,10 @@ class ValidationSpec extends GormDatastoreSpec {
 
         where:
             validateParams        | cascade
+            [deepValidate: false] | false
             [:]                   | true
             [deepValidate: true]  | true
-            [deepValidate: false] | false
+
     }
 
     private PersistentEntity persistentEntityFor(Class c) {

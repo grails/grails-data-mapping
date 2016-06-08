@@ -1,39 +1,8 @@
 sourceSets.main.java.srcDirs = []
 sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
-repositories {
-    //mavenLocal()
-    //mavenCentral()
-
-    // some artifacts used are not available on mavenCentral
-    maven { url "http://m2.neo4j.org/content/repositories/releases/" }
-//    maven { url "http://m2.neo4j.org/content/repositories/snapshots/" }
-//    maven { url "https://repo.grails.org/grails/core" }
-    maven { url 'http://maven.restlet.com'}
-}
-
 dependencies {
-    compile "org.neo4j:neo4j:$neo4jVersion", {
-        artifact {
-            name = 'neo4j' //artifact name different than module name
-            type = 'pom'
-        }
-    }
-    compile "org.neo4j:neo4j-kernel:$neo4jVersion"
-
-
-    // Only used for testing
-    compile "org.neo4j:neo4j-graphviz:$neo4jVersion", optional
-
-    // Only needed of high availability is used
-    compile "org.neo4j:neo4j-ha:$neo4jVersion", optional
-
-    // Only required for REST support
-    compile 'org.springframework.data:spring-data-neo4j:3.4.0.RELEASE', optional
-    compile 'org.springframework.data:spring-data-neo4j-rest:3.4.0.RELEASE', { dep ->
-        project.ext.optionalDeps << dep
-        exclude group:'org.neo4j.test', module:'neo4j-harness'
-    }
+    compile 'org.neo4j.driver:neo4j-java-driver:1.0.2'
 
     // during development (aka snapshot version), use project dependencies
     // during release, use 'regular' dependencies
@@ -44,21 +13,11 @@ dependencies {
         exclude group:'org.grails', module:'grails-datastore-gorm-hibernate-core'
     }
 
+    compileOnly 'org.neo4j.test:neo4j-harness:3.0.2'
+
+    testCompile 'org.neo4j.test:neo4j-harness:3.0.2'
     testCompile project(":grails-datastore-gorm-test"),
             project(":grails-datastore-gorm-tck")
-
-    testCompile 'org.codehaus.gpars:gpars:0.12',
-            [group: "org.neo4j", name: "neo4j-kernel", version: neo4jVersion, classifier: 'tests'],
-            [group: "org.neo4j", name: "neo4j-io", version: neo4jVersion, classifier: 'tests'],
-            [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion, classifier: 'tests'],
-            [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion],
-            "org.neo4j:neo4j-graphviz:$neo4jVersion",
-            "org.neo4j:neo4j-management:$neo4jVersion",
-            "org.neo4j:neo4j-ha:$neo4jVersion",
-            'com.sun.jersey:jersey-server:1.9',
-            'com.sun.jersey:jersey-core:1.9',
-            'com.sun.jersey:jersey-client:1.9',
-            'p6spy:p6spy:2.0.2'
 
 
     testRuntime "org.grails:grails-web:$grailsVersion", {

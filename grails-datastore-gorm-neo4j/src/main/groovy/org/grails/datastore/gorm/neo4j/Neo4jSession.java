@@ -4,6 +4,7 @@ import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import com.googlecode.concurrentlinkedhashmap.EvictionListener;
 import org.grails.datastore.gorm.neo4j.engine.*;
 import org.grails.datastore.gorm.neo4j.mapping.config.DynamicToOneAssociation;
+import org.grails.datastore.gorm.schemaless.DynamicAttributes;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
@@ -22,16 +23,17 @@ import org.grails.datastore.mapping.model.types.Simple;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
-import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.grails.datastore.mapping.transactions.Transaction;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Result;
-import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.Record;
+import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.StatementResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -54,7 +56,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @since 1.0
  *
  */
-public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
+public class Neo4jSession extends AbstractSession<Session> {
 
     private static final String COUNT_RETURN = "count(n) as total";
     private static final String TOTAL_COUNT = "total";
@@ -79,15 +81,15 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
 
     /** map node id to hashmap of relationship types showing startNode id and endNode id */
-    protected final GraphDatabaseService graphDatabaseService;
+    protected final Session boltSession;
 
 
-    public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, GraphDatabaseService graphDatabaseService) {
+    public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless, Driver boltDriver) {
         super(datastore, mappingContext, publisher, stateless);
         if(log.isDebugEnabled()) {
             log.debug("Session created");
         }
-        this.graphDatabaseService = graphDatabaseService;
+        this.boltSession = boltDriver.session();
     }
 
 
@@ -174,7 +176,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                 if(transactionDefinition.getName() == null) {
                     transactionDefinition = createDefaultTransactionDefinition(transactionDefinition);
                 }
-                tx = new Neo4jTransaction(graphDatabaseService, transactionDefinition, sessionCreated);
+                tx = new Neo4jTransaction(boltSession, transactionDefinition, sessionCreated);
             }
             this.transaction = tx;
             return transaction;
@@ -193,6 +195,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
                     transaction.close();
                 }
+                boltSession.close();
             } catch (IOException e) {
                 log.error("Error closing transaction: " + e.getMessage(), e);
             }
@@ -211,8 +214,8 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
     }
 
     @Override
-    public GraphDatabaseService getNativeInterface() {
-        return graphDatabaseService;
+    public Session getNativeInterface() {
+        return boltSession;
     }
 
     @Override
@@ -317,9 +320,8 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                         log.debug("UPDATE Cypher [{}] for parameters [{}]", cypher, params);
                     }
 
-                    final Result executionResult = graphDatabaseService.execute(cypher, params);
-                    Map<String, Object> result = IteratorUtil.singleOrNull(executionResult);
-                    if (result == null && isVersioned) {
+                    final StatementResult executionResult = getTransaction().getNativeTransaction().run(cypher, params);
+                    if (!executionResult.hasNext() && isVersioned) {
                         throw new OptimisticLockingException(entity, id);
                     }
                     else {
@@ -342,7 +344,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
                 Set<RelationshipUpdateKey> relationshipUpdates = pendingRelationshipInserts.keySet();
                 for (RelationshipUpdateKey relationshipUpdate : relationshipUpdates) {
                     if(relationshipUpdate.association instanceof DynamicToOneAssociation) {
-                        cascadingOperations.add(new RelationshipPendingInsert(access, relationshipUpdate.association, pendingRelationshipInserts.get(relationshipUpdate), graphDatabaseService, true));
+                        cascadingOperations.add(new RelationshipPendingInsert(access, relationshipUpdate.association, pendingRelationshipInserts.get(relationshipUpdate), getTransaction().getTransaction(), true));
                     }
                 }
             }
@@ -353,11 +355,11 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         final RelationshipUpdateKey key = new RelationshipUpdateKey(parentId, association);
         final Collection<Serializable> pendingInserts = pendingRelationshipInserts.get(key);
         if(pendingInserts != null) {
-            cascadingOperations.add(new RelationshipPendingInsert(parent, association, pendingInserts, graphDatabaseService, true));
+            cascadingOperations.add(new RelationshipPendingInsert(parent, association, pendingInserts, getTransaction().getTransaction(), true));
         }
         final Collection<Serializable> pendingDeletes = pendingRelationshipDeletes.get(key);
         if(pendingDeletes != null) {
-            cascadingOperations.add(new RelationshipPendingDelete(parent, association, pendingDeletes, graphDatabaseService));
+            cascadingOperations.add(new RelationshipPendingDelete(parent, association, pendingDeletes, getTransaction().getNativeTransaction()));
         }
     }
 
@@ -418,7 +420,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
             if(log.isDebugEnabled()) {
                 log.debug("CREATE Cypher [{}] for parameters [{}]", finalCypher, params);
             }
-            graphDatabaseService.execute(finalCypher, params);
+            getTransaction().getNativeTransaction().run(finalCypher, params);
 
         }
         executePendings(cascadingOperations);
@@ -527,7 +529,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
             if (log.isDebugEnabled()) {
                 log.debug("DELETE Cypher [{}] for parameters {}", cypher, idMap);
             }
-            graphDatabaseService.execute(cypher, idMap);
+            getTransaction().getNativeTransaction().run(cypher, idMap);
 
             executePendings(cascadingOperations);
 
@@ -540,24 +542,26 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
 
     protected Map<String, List<Object>> amendMapWithUndeclaredProperties(Map<String, Object> simpleProps, Object pojo, MappingContext mappingContext, List<String> nulls) {
         Map<String, List<Object>> dynRelProps = new LinkedHashMap<String, List<Object>>();
-        Map<String,Object> map = (Map<String, Object>) getAttribute(pojo, Neo4jQuery.UNDECLARED_PROPERTIES);
-        if (map!=null) {
-            for (Map.Entry<String,Object> entry : map.entrySet()) {
-                Object value = entry.getValue();
-                String key = entry.getKey();
-                if(value == null) {
-                    nulls.add(key);
-                    continue;
-                }
+        if(pojo instanceof DynamicAttributes) {
+            Map<String,Object> map = ((DynamicAttributes)pojo).attributes();
+            if (map!=null) {
+                for (Map.Entry<String,Object> entry : map.entrySet()) {
+                    Object value = entry.getValue();
+                    String key = entry.getKey();
+                    if(value == null) {
+                        nulls.add(key);
+                        continue;
+                    }
 
-                if  (mappingContext.isPersistentEntity(value)) {
-                    List<Object> objects = getOrInit(dynRelProps, key);
-                    objects.add(value);
-                } else if (isCollectionWithPersistentEntities(value, mappingContext)) {
-                    List<Object> objects = getOrInit(dynRelProps, key);
-                    objects.addAll((Collection) value);
-                } else {
-                    simpleProps.put(key, ((Neo4jMappingContext)mappingContext).convertToNative(value));
+                    if  (mappingContext.isPersistentEntity(value)) {
+                        List<Object> objects = getOrInit(dynRelProps, key);
+                        objects.add(value);
+                    } else if (isCollectionWithPersistentEntities(value, mappingContext)) {
+                        List<Object> objects = getOrInit(dynRelProps, key);
+                        objects.addAll((Collection) value);
+                    } else {
+                        simpleProps.put(key, ((Neo4jMappingContext)mappingContext).convertToNative(value));
+                    }
                 }
             }
         }
@@ -600,6 +604,9 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
             persistDirtyButUnsavedInstances();
             super.flush();
         }
+        else {
+            throw new NoTransactionException("Cannot flush write operations without an active transaction!");
+        }
     }
 
     @Override
@@ -623,7 +630,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         if(transaction == null || (wasTransactionTerminated() && !TransactionSynchronizationManager.isSynchronizationActive())) {
             // start a new transaction upon termination
             final DefaultTransactionDefinition transactionDefinition = createDefaultTransactionDefinition(null);
-            transaction = new Neo4jTransaction(graphDatabaseService, transactionDefinition, true);
+            transaction = new Neo4jTransaction(boltSession, transactionDefinition, true);
         }
         return (Neo4jTransaction) transaction;
     }
@@ -672,7 +679,7 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
             log.debug("DELETE Cypher [{}] for parameters [{}]", cypher, params);
         }
         Number count = (Number) query.singleResult();
-        graphDatabaseService.execute(cypher, params);
+        getTransaction().getNativeTransaction().run(cypher, params);
         return count.longValue();
     }
 
@@ -709,9 +716,11 @@ public class Neo4jSession extends AbstractSession<GraphDatabaseService> {
         if(log.isDebugEnabled()) {
             log.debug("UPDATE Cypher [{}] for parameters [{}]", cypher, params);
         }
-        final Result execute = graphDatabaseService.execute(cypher, params);
+
+        final StatementResult execute = getTransaction().getNativeTransaction().run(cypher, params);
         if(execute.hasNext()) {
-            final Map<String, Object> result = IteratorUtil.single(execute);
+            Record currentRecord = execute.next();
+            final Map<String, Object> result = currentRecord.asMap();
             return ((Number) result.get(TOTAL_COUNT)).longValue();
         }
         else {

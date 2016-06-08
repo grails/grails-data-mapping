@@ -21,14 +21,16 @@ import org.grails.datastore.gorm.neo4j.engine.Neo4jEntityPersister
 import org.grails.datastore.gorm.query.AbstractResultList
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.query.QueryException
-import org.neo4j.graphdb.Node
-import org.neo4j.graphdb.Result
+import org.neo4j.driver.v1.Record
+import org.neo4j.driver.v1.StatementResult
+import org.neo4j.driver.v1.Value
+import org.neo4j.driver.v1.types.Node
 
 import javax.persistence.LockModeType
 
 
 /**
- * A Neo4j result list for decoding objects from the {@link Result} interface
+ * A Neo4j result list for decoding objects from the {@link StatementResult} interface
  *
  * @author Graeme Rocher
  * @since 5.0
@@ -45,7 +47,7 @@ class Neo4jResultList extends AbstractResultList {
 
     protected final LockModeType lockMode
 
-    Neo4jResultList(int offset, Result cursor, Neo4jEntityPersister entityPersister, LockModeType lockMode = LockModeType.NONE) {
+    Neo4jResultList(int offset, StatementResult cursor, Neo4jEntityPersister entityPersister, LockModeType lockMode = LockModeType.NONE) {
         super(offset, (Iterator<Object>)cursor)
         this.entityPersister = entityPersister
         this.lockMode = lockMode;
@@ -83,14 +85,18 @@ class Neo4jResultList extends AbstractResultList {
             Node node = (Node) next
             return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node, EMPTY_RESULT_DATA, initializedAssociations, lockMode)
         } else {
-            Map<String, Object> map = (Map<String, Object>) next
-            if (map.containsKey(CypherBuilder.NODE_DATA)) {
-                Node data = (Node) map.get(CypherBuilder.NODE_DATA);
-                return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), data, map, initializedAssociations, lockMode)
+            Record record = (Record) next
+            if (record.containsKey(CypherBuilder.NODE_DATA)) {
+                Node data = (Node) record.get(CypherBuilder.NODE_DATA).asNode();
+                return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), data, record.asMap(), initializedAssociations, lockMode)
             } else {
-                Node node = (Node) map.values().find() { it instanceof Node }
+
+                Node node = record.values().find() {  Value v ->
+                    v.type() == entityPersister.getSession().getNativeInterface().typeSystem().NODE()
+                }?.asNode()
+
                 if (node != null) {
-                    return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node, map, initializedAssociations, lockMode)
+                    return entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node, record.asMap(), initializedAssociations, lockMode)
                 } else {
                     throw new QueryException("Query must return a node as the first column of the RETURN statement")
                 }
@@ -98,11 +104,8 @@ class Neo4jResultList extends AbstractResultList {
         }
     }
 
-
     @Override
     void close() throws IOException {
-        if(cursor instanceof Result) {
-            ((Result)cursor).close()
-        }
+        // no-op
     }
 }

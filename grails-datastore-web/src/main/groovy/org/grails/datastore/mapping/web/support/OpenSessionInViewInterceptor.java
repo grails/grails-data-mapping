@@ -74,7 +74,9 @@ public class OpenSessionInViewInterceptor implements WebRequestInterceptor {
         final Session session = sessionHolder.getSession();
 
         if (session.getFlushMode() == FlushModeType.AUTO) {
-            session.flush();
+            if(session.hasTransaction()) {
+                session.flush();
+            }
         }
     }
 

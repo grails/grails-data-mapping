@@ -27,6 +27,11 @@ import spock.lang.Ignore
  */
 class TransactionPropagationSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        [Person]
+    }
+
     void "Test nested setRollbackOnly() transaction"() {
         when:"An entity is persisted in a nested transaction"
         Person.withTransaction {

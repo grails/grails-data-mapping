@@ -7,7 +7,7 @@ import grails.gorm.tests.*
 
 @RunWith(Suite)
 @SuiteClasses([
-DeleteAllSpec
+NamedQuerySpec
 ])
 class Neo4jSuite {
 }

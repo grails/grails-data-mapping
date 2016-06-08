@@ -56,6 +56,13 @@ public class CassandraSession extends AbstractSession<Session> {
         this.cassandraTemplate = cassandraTemplate;
     }
 
+
+    @Override
+    public boolean hasTransaction() {
+        // the session is the transaction, since Cassandra doesn't support them directly
+        return true;
+    }
+
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());

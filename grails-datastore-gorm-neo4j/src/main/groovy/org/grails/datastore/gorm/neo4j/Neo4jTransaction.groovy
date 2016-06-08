@@ -16,9 +16,7 @@ package org.grails.datastore.gorm.neo4j
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import org.neo4j.graphdb.GraphDatabaseService
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.neo4j.driver.v1.Session
 import org.grails.datastore.mapping.transactions.Transaction
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.support.DefaultTransactionDefinition
@@ -31,7 +29,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition
  */
 @CompileStatic
 @Slf4j
-class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction>, Closeable {
+class Neo4jTransaction implements Transaction<org.neo4j.driver.v1.Transaction>, Closeable {
 
     public static final String DEFAULT_NAME = "Neo4j Transaction"
 
@@ -39,15 +37,15 @@ class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction>, Cl
     final boolean sessionCreated
     boolean rollbackOnly = false
 
-    GraphDatabaseService databaseService
-    org.neo4j.graphdb.Transaction transaction
+    Session boltSession
+    org.neo4j.driver.v1.Transaction transaction
     TransactionDefinition transactionDefinition
 
-    Neo4jTransaction(GraphDatabaseService databaseService, TransactionDefinition transactionDefinition = new DefaultTransactionDefinition(), boolean sessionCreated = false) {
+    Neo4jTransaction(Session boltSession, TransactionDefinition transactionDefinition = new DefaultTransactionDefinition(), boolean sessionCreated = false) {
 
         log.debug("TX START: Neo4J beginTx()")
-        transaction = databaseService.beginTx()
-        this.databaseService = databaseService;
+        transaction = boltSession.beginTransaction()
+        this.boltSession = boltSession;
         this.transactionDefinition = transactionDefinition
         this.sessionCreated = sessionCreated
     }
@@ -84,7 +82,7 @@ class Neo4jTransaction implements Transaction<org.neo4j.graphdb.Transaction>, Cl
         }
     }
 
-    org.neo4j.graphdb.Transaction getNativeTransaction() {
+    org.neo4j.driver.v1.Transaction getNativeTransaction() {
         return transaction;
     }
 

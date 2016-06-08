@@ -90,19 +90,29 @@ class GormEnhancer implements Closeable {
         }
         NAMED_QUERIES.clear()
         for(entity in datastore.mappingContext.persistentEntities) {
-            if(appliesToDatastore(datastore, entity)) {
-                def cls = entity.javaClass
-                Set<String> qualifiers = allQualifiers(datastore, entity)
-                for(qualifier in qualifiers) {
-                    def staticApi = getStaticApi(cls)
-                    def name = entity.name
-                    STATIC_APIS.get(qualifier).put(name, staticApi)
-                    def instanceApi = getInstanceApi(cls)
-                    INSTANCE_APIS.get(qualifier).put(name, instanceApi)
-                    def validationApi = getValidationApi(cls)
-                    VALIDATION_APIS.get(qualifier).put(name, validationApi)
-                    DATASTORES.get(qualifier).put(name, datastore)
-                }
+            registerEntity(entity)
+        }
+    }
+
+    /**
+     * Registers a new entity with the GORM enhancer
+     *
+     * @param entity The entity
+     */
+    void registerEntity(PersistentEntity entity) {
+        Datastore datastore = this.datastore
+        if (appliesToDatastore(datastore, entity)) {
+            def cls = entity.javaClass
+            Set<String> qualifiers = allQualifiers(this.datastore, entity)
+            for (qualifier in qualifiers) {
+                def staticApi = getStaticApi(cls)
+                def name = entity.name
+                STATIC_APIS.get(qualifier).put(name, staticApi)
+                def instanceApi = getInstanceApi(cls)
+                INSTANCE_APIS.get(qualifier).put(name, instanceApi)
+                def validationApi = getValidationApi(cls)
+                VALIDATION_APIS.get(qualifier).put(name, validationApi)
+                DATASTORES.get(qualifier).put(name, this.datastore)
             }
         }
     }

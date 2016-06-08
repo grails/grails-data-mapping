@@ -14,10 +14,15 @@
  */
 package org.grails.datastore.gorm.neo4j;
 
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-import org.grails.datastore.gorm.neo4j.identity.SnowflakeIdGenerator;
+import groovy.lang.Closure;
+import org.grails.datastore.gorm.GormEnhancer;
+import org.grails.datastore.gorm.events.AutoTimestampEventListener;
+import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher;
+import org.grails.datastore.gorm.events.DefaultApplicationEventPublisher;
+import org.grails.datastore.gorm.events.DomainEventListener;
+import org.grails.datastore.gorm.neo4j.config.Neo4jDriverConfigBuilder;
+import org.grails.datastore.gorm.neo4j.util.EmbeddedNeo4jServer;
 import org.grails.datastore.mapping.config.Property;
-import org.grails.datastore.mapping.config.utils.PropertyResolverMap;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.StatelessDatastore;
@@ -27,23 +32,20 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Simple;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.QueryExecutionException;
-import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.factory.GraphDatabaseBuilder;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.graphdb.factory.GraphDatabaseSettings;
+import org.grails.datastore.mapping.reflect.ClassUtils;
+import org.neo4j.driver.v1.*;
+import org.neo4j.driver.v1.exceptions.Neo4jException;
+import org.neo4j.harness.ServerControls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.PropertyResolver;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.core.env.StandardEnvironment;
 
+import javax.annotation.PreDestroy;
 import javax.persistence.FlushModeType;
-import java.io.Serializable;
-import java.lang.reflect.Method;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -54,9 +56,11 @@ import java.util.*;
  *
  * @since 1.0
  */
-public class Neo4jDatastore extends AbstractDatastore implements InitializingBean, DisposableBean, StatelessDatastore, GraphDatastore {
+public class Neo4jDatastore extends AbstractDatastore implements Closeable, StatelessDatastore, GraphDatastore {
 
-    public static final String DEFAULT_LOCATION = "data/neo4j";
+    public static final String DEFAULT_LOCATION = "bolt://localhost:7687";
+    public static final String SETTING_NEO4J_URL = "grails.neo4j.url";
+    public static final String SETTING_NEO4J_BUILD_INDEX = "grails.neo4j.buildIndex";
     public static final String SETTING_NEO4J_LOCATION = "grails.neo4j.location";
     public static final String SETTING_NEO4J_TYPE = "grails.neo4j.type";
     public static final String SETTING_NEO4J_FLUSH_MODE = "grails.neo4j.flush.mode";
@@ -65,129 +69,221 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     public static final String SETTING_DEFAULT_MAPPING = "grails.neo4j.default.mapping";
     public static final String SETTING_NEO4J_DB_PROPERTIES = "grails.neo4j.options";
     public static final String DEFAULT_DATABASE_TYPE = "embedded";
-    public static final String DATABASE_TYPE_HA = "ha";
-    public static final String DATABASE_TYPE_REST = "rest";
-    public static final String DATABASE_TYPE_IMPERMANENT = "impermanent";
     public static final String DATABASE_TYPE_EMBEDDED = DEFAULT_DATABASE_TYPE;
 
     private static Logger log = LoggerFactory.getLogger(Neo4jDatastore.class);
 
-    protected GraphDatabaseService graphDatabaseService;
     protected boolean skipIndexSetup = false;
-    protected FlushModeType defaultFlushMode = FlushModeType.AUTO;
+    protected final Driver boltDriver;
+    protected final FlushModeType defaultFlushMode;
+    protected final ConfigurableApplicationEventPublisher eventPublisher;
+    protected final Neo4jDatastoreTransactionManager transactionManager;
+    protected final GormEnhancer gormEnhancer;
+    protected static AutoCloseable embeddedServer = null;
 
     /**
      * Configures a new {@link Neo4jDatastore} for the given arguments
      *
      * @param mappingContext The {@link MappingContext} which contains information about the mapped classes
      * @param configuration The configuration for the datastore
-     * @param applicationContext The Spring ApplicationContext
+     * @param eventPublisher The Spring ApplicationContext
      */
-    public Neo4jDatastore(MappingContext mappingContext, PropertyResolver configuration, ConfigurableApplicationContext applicationContext) {
-        super(mappingContext, configuration, applicationContext);
-        this.graphDatabaseService = createGraphDatabaseService(configuration);
-    }
-
-    /**
-     * Configures a new {@link Neo4jDatastore} for the given arguments
-     *
-     * @param mappingContext The {@link MappingContext} which contains information about the mapped classes
-     * @param configuration The configuration for the datastore
-     * @param applicationContext The Spring ApplicationContext
-     */
-    public Neo4jDatastore(MappingContext mappingContext, PropertyResolver configuration, ConfigurableApplicationContext applicationContext, GraphDatabaseService graphDatabaseService) {
-        super(mappingContext, configuration, applicationContext);
-        this.graphDatabaseService = graphDatabaseService;
-    }
-
-    /**
-     * @see #Neo4jDatastore(MappingContext, PropertyResolver, ConfigurableApplicationContext)
-     */
-    public Neo4jDatastore(MappingContext mappingContext, ConfigurableApplicationContext applicationContext) {
-        this(mappingContext, applicationContext.getEnvironment(), applicationContext);
-    }
-
-    /**
-     * @see #Neo4jDatastore(MappingContext, PropertyResolver, ConfigurableApplicationContext)
-     */
-    public Neo4jDatastore(MappingContext mappingContext, ConfigurableApplicationContext applicationContext, GraphDatabaseService graphDatabaseService) {
-        this(mappingContext, applicationContext.getEnvironment(), applicationContext, graphDatabaseService);
-    }
-
-    protected GraphDatabaseService createGraphDatabaseService(PropertyResolver configuration) {
+    public Neo4jDatastore(Driver boltDriver, MappingContext mappingContext, PropertyResolver configuration, ConfigurableApplicationEventPublisher eventPublisher) {
+        super(mappingContext, configuration, null);
+        this.boltDriver = boltDriver;
+        this.eventPublisher = eventPublisher;
         this.defaultFlushMode = configuration.getProperty(SETTING_NEO4J_FLUSH_MODE, FlushModeType.class, FlushModeType.AUTO);
-        final String type = configuration.getProperty(SETTING_NEO4J_TYPE, DEFAULT_DATABASE_TYPE);
-        final String location = configuration.getProperty(SETTING_NEO4J_LOCATION, DEFAULT_LOCATION);
-        final Map dbProperties = configuration.getProperty(SETTING_NEO4J_DB_PROPERTIES, Map.class, new LinkedHashMap<String, String>());
-        GraphDatabaseFactory graphDatabaseFactory;
-        if(DATABASE_TYPE_HA.equalsIgnoreCase(type)) {
-            try {
-                graphDatabaseFactory = (GraphDatabaseFactory) Class.forName("org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory",true, Thread.currentThread().getContextClassLoader()).newInstance();
-            } catch (Throwable e) {
-                throw new DatastoreConfigurationException("Cannot load class [org.neo4j.graphdb.factory.HighlyAvailableGraphDatabaseFactory] for HA mode. Check 'neo4j-ha' dependency is on your classpath", e);
-            }
+        this.skipIndexSetup = !configuration.getProperty(SETTING_NEO4J_BUILD_INDEX, Boolean.class, true);
+
+        if(!skipIndexSetup) {
+            setupIndexing();
         }
-        else if(DATABASE_TYPE_REST.equalsIgnoreCase(type) ) {
-            if(!location.startsWith("http")) {
-                throw new DatastoreConfigurationException("The ["+SETTING_NEO4J_LOCATION+"] setting must be an HTTP or HTTPS URL");
+
+        transactionManager = new Neo4jDatastoreTransactionManager(this);
+        gormEnhancer = new GormEnhancer(this, transactionManager);
+
+        registerEventListeners(eventPublisher);
+
+        mappingContext.addMappingContextListener(new MappingContext.Listener() {
+            @Override
+            public void persistentEntityAdded(PersistentEntity entity) {
+                gormEnhancer.registerEntity(entity);
             }
+        });
+    }
 
-            final String username = configuration.getProperty(SETTING_NEO4J_USERNAME);
-            final String password = configuration.getProperty(SETTING_NEO4J_PASSWORD);
+    /**
+     * Configures a Neo4jDatastore for the given {@link Driver}, {@link MappingContext} and {@link ApplicationEventPublisher}
+     *
+     * @param boltDriver The Bolt driver
+     * @param mappingContext The MappingContext
+     */
+    public Neo4jDatastore(Driver boltDriver, MappingContext mappingContext) {
+        this(boltDriver, mappingContext, new StandardEnvironment(), new DefaultApplicationEventPublisher());
+    }
+
+    /**
+     * Configures a Neo4jDatastore for the given {@link Driver}, {@link MappingContext} and {@link ApplicationEventPublisher}
+     *
+     * @param boltDriver The Bolt driver
+     * @param mappingContext The MappingContext
+     * @param eventPublisher The event publisher
+     */
+    public Neo4jDatastore(Driver boltDriver, MappingContext mappingContext, ConfigurableApplicationEventPublisher eventPublisher) {
+        this(boltDriver, mappingContext, new StandardEnvironment(), eventPublisher);
+    }
+
+    /**
+     * Configures a new {@link Neo4jDatastore} for the given arguments
+     *
+     * @param boltDriver The driver
+     * @param configuration The configuration for the datastore
+     * @param eventPublisher The Spring ApplicationContext
+     * @param classes The persistent classes
+     */
+    public Neo4jDatastore(Driver boltDriver, PropertyResolver configuration, ConfigurableApplicationEventPublisher eventPublisher, Class...classes) {
+        this(boltDriver, createMappingContext(configuration,classes), configuration, eventPublisher);
+    }
+
+    /**
+     * Configures a new {@link Neo4jDatastore} for the given arguments
+     *
+     * @param boltDriver The driver
+     * @param eventPublisher The Spring ApplicationContext
+     * @param classes The persistent classes
+     */
+    public Neo4jDatastore(Driver boltDriver, ConfigurableApplicationEventPublisher eventPublisher, Class...classes) {
+        this(boltDriver, createMappingContext(new StandardEnvironment(),classes), new StandardEnvironment(), eventPublisher);
+    }
+    /**
+     * Configures a new {@link Neo4jDatastore} for the given arguments
+     *
+     * @param boltDriver The driver
+     * @param configuration The configuration for the datastore
+     * @param classes The persistent classes
+     */
+    public Neo4jDatastore(Driver boltDriver, PropertyResolver configuration, Class...classes) {
+        this(boltDriver, configuration, new DefaultApplicationEventPublisher(), classes);
+    }
+
+    /**
+     * Configures a new {@link Neo4jDatastore} for the given arguments
+     *
+     * @param boltDriver The driver
+     * @param classes The persistent classes
+     */
+    public Neo4jDatastore(Driver boltDriver, Class...classes) {
+        this(boltDriver, new StandardEnvironment(), new DefaultApplicationEventPublisher(), classes);
+    }
+
+    /**
+     * Configures a new {@link Neo4jDatastore} for the given arguments
+     *
+     * @param mappingContext The {@link MappingContext} which contains information about the mapped classes
+     * @param configuration The configuration for the datastore
+     * @param eventPublisher The Spring ApplicationContext
+     */
+    public Neo4jDatastore(MappingContext mappingContext, PropertyResolver configuration, ConfigurableApplicationEventPublisher eventPublisher) {
+        this(createGraphDatabaseDriver(configuration), mappingContext, configuration, eventPublisher);
+    }
+
+    /**
+     * Configures a new {@link Neo4jDatastore} for the given arguments
+     *
+     * @param mappingContext The {@link MappingContext} which contains information about the mapped classes
+     * @param configuration The configuration for the datastore
+     */
+    public Neo4jDatastore(MappingContext mappingContext, PropertyResolver configuration) {
+        this(createGraphDatabaseDriver(configuration), mappingContext, configuration, new DefaultApplicationEventPublisher());
+    }
 
 
-            try {
-                final Class<?> restFactory = Class.forName("org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase", true, Thread.currentThread().getContextClassLoader());
-                final boolean hasCredentials = username != null && password != null;
+    /**
+     * Configures a new {@link Neo4jDatastore} for the given arguments
+     *
+     * @param configuration The configuration for the datastore
+     * @param eventPublisher The Spring ApplicationContext
+     * @param classes The persistent classes
+     */
+    public Neo4jDatastore(PropertyResolver configuration, ConfigurableApplicationEventPublisher eventPublisher, Class...classes) {
+        this(createGraphDatabaseDriver(configuration), createMappingContext(configuration, classes), configuration, eventPublisher);
+    }
 
-                for (Object option : dbProperties.keySet()) {
-                    final Object value = dbProperties.get(option);
-                    if(value != null) {
-                        System.setProperty("org.neo4j.rest." + option, value.toString());
-                    }
+    /**
+     * Configures a new {@link Neo4jDatastore} for the given arguments
+     *
+     * @param configuration The configuration for the datastore
+     * @param classes The persistent classes
+     */
+    public Neo4jDatastore(PropertyResolver configuration, Class...classes) {
+        this(createGraphDatabaseDriver(configuration), createMappingContext(configuration, classes), configuration, new DefaultApplicationEventPublisher());
+    }
+
+    /**
+     * Configures a new {@link Neo4jDatastore} for the given arguments
+     *
+     * @param classes The persistent classes
+     */
+    public Neo4jDatastore(Class...classes) {
+        this(new StandardEnvironment(), classes);
+    }
+
+    /**
+     * @return The transaction manager
+     */
+    public Neo4jDatastoreTransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
+    public static AutoCloseable getEmbeddedServer() {
+        return embeddedServer;
+    }
+
+    @Override
+    public ConfigurableApplicationEventPublisher getApplicationEventPublisher() {
+        return this.eventPublisher;
+    }
+
+    protected static Neo4jMappingContext createMappingContext(PropertyResolver configuration, Class[] classes) {
+        return new Neo4jMappingContext(configuration.getProperty(SETTING_DEFAULT_MAPPING, Closure.class, null), classes);
+    }
+
+    protected static Driver createGraphDatabaseDriver(PropertyResolver configuration) {
+        final String url = configuration.getProperty(SETTING_NEO4J_LOCATION, configuration.getProperty(SETTING_NEO4J_URL, (String)null));
+        final String username = configuration.getProperty(SETTING_NEO4J_USERNAME, String.class, null);
+        final String password = configuration.getProperty(SETTING_NEO4J_PASSWORD, String.class, null);
+        final String type = configuration.getProperty(SETTING_NEO4J_TYPE, String.class, null);
+        if(type != null && DATABASE_TYPE_EMBEDDED.equalsIgnoreCase(type)) {
+            if(ClassUtils.isPresent("org.neo4j.harness.ServerControls") && EmbeddedNeo4jServer.isAvailable()) {
+                ServerControls serverControls;
+                try {
+                    serverControls = url != null ? EmbeddedNeo4jServer.start(url) : EmbeddedNeo4jServer.start();
+                } catch (IOException e) {
+                    throw new DatastoreConfigurationException("Unable to start embedded Neo4j server: " + e.getMessage(), e);
                 }
-                if(hasCredentials) {
-                    return (GraphDatabaseService) DefaultGroovyMethods.newInstance(restFactory, new String[]{ location, username,password });
-                }
-                else {
-                    return (GraphDatabaseService) DefaultGroovyMethods.newInstance(restFactory, new String[]{location});
-                }
-            } catch (Throwable e) {
-                throw new DatastoreConfigurationException("Cannot load class [org.neo4j.rest.graphdb.GraphDatabaseFactory] for REST mode. Check 'neo4j-rest-graphdb' dependency is on your classpath", e);
+
+                embeddedServer = serverControls;
+                return GraphDatabase.driver(serverControls.boltURI(), Config.build().withEncryptionLevel(Config.EncryptionLevel.NONE).toConfig());
             }
-        }
-        else if(DATABASE_TYPE_IMPERMANENT.equalsIgnoreCase(type)) {
-            try {
-                graphDatabaseFactory = (GraphDatabaseFactory) Class.forName("org.neo4j.test.TestGraphDatabaseFactory",true, Thread.currentThread().getContextClassLoader()).newInstance();
-            } catch (Throwable e) {
-                throw new DatastoreConfigurationException("Cannot load class [org.neo4j.test.TestGraphDatabaseFactory] for impermanent mode. Check 'neo4j-kernel' (classifier: 'tests') dependency is on your classpath", e);
-            }
-        }
-        else if(DATABASE_TYPE_EMBEDDED.equalsIgnoreCase(type)) {
-            graphDatabaseFactory = new GraphDatabaseFactory();
-        }
-        else {
-            try {
-                return (GraphDatabaseService) Class.forName(type,true, Thread.currentThread().getContextClassLoader()).newInstance();
-            } catch (Throwable e) {
-                throw new DatastoreConfigurationException("Cannot load class GraphDatabaseService for type ["+type+"]: " +e.getMessage(), e);
+            else {
+                log.error("Embedded Neo4j server was configured but 'neo4j-harness' classes not found on classpath.");
             }
         }
 
-        final GraphDatabaseBuilder graphDatabaseBuilder = graphDatabaseFactory.newEmbeddedDatabaseBuilder(
-                location
-        );
+        AuthToken authToken = null;
 
-        if(!dbProperties.containsKey(GraphDatabaseSettings.cache_type.name())) {
-            graphDatabaseBuilder.setConfig(GraphDatabaseSettings.cache_type, "soft");
+        if(username != null && password != null) {
+            authToken = AuthTokens.basic(username, password);
         }
 
-        graphDatabaseBuilder
-                .setConfig(dbProperties);
+        Neo4jDriverConfigBuilder configBuilder = new Neo4jDriverConfigBuilder(configuration);
 
+        return GraphDatabase.driver(url != null ? url : DEFAULT_LOCATION, authToken, configBuilder.build());
+    }
 
-        return graphDatabaseBuilder
-                    .newGraphDatabase();
+    protected void registerEventListeners(ConfigurableApplicationEventPublisher eventPublisher) {
+        eventPublisher.addApplicationListener(new DomainEventListener(this));
+        eventPublisher.addApplicationListener(new AutoTimestampEventListener(this));
     }
 
     public void setSkipIndexSetup(boolean skipIndexSetup) {
@@ -196,19 +292,14 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
 
     @Override
     protected Session createSession(PropertyResolver connectionDetails) {
-        final Neo4jSession neo4jSession = new Neo4jSession(this, mappingContext, getApplicationContext(), false, graphDatabaseService);
+        final Neo4jSession neo4jSession = new Neo4jSession(this, mappingContext, eventPublisher, false, boltDriver);
         neo4jSession.setFlushMode(defaultFlushMode);
         return neo4jSession;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if (!skipIndexSetup) {
-            setupIndexing();
-        }
-    }
 
     public void setupIndexing() {
+        if(skipIndexSetup) return;
         List<String> schemaStrings = new ArrayList<String>(); // using set to avoid duplicate index creation
 
         for (PersistentEntity persistentEntity:  mappingContext.getPersistentEntities()) {
@@ -250,19 +341,20 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
             }
         }
 
-        final Transaction transaction = graphDatabaseService.beginTx();
+        org.neo4j.driver.v1.Session boltSession = boltDriver.session();
+
+        final Transaction transaction = boltSession.beginTransaction();;
         try {
             for (String cypher: schemaStrings) {
                 if(log.isDebugEnabled()) {
                     log.debug("CREATE INDEX Cypher [{}]", cypher);
                 }
-                graphDatabaseService.execute(cypher);
+                transaction.run(cypher);
                 transaction.success();
             }
-        } catch (QueryExecutionException e) {
-            transaction.failure();
         } catch(Throwable e) {
             log.error("Error creating Neo4j index: " + e.getMessage(), e);
+            transaction.failure();
             throw new DatastoreConfigurationException("Error creating Neo4j index: " + e.getMessage(), e);
         }
         finally {
@@ -274,17 +366,41 @@ public class Neo4jDatastore extends AbstractDatastore implements InitializingBea
     }
 
     /**
-     * @return The {@link GraphDatabaseService} used by this datastore
+     * @return The {@link Driver} used by this datastore
      */
-    public GraphDatabaseService getGraphDatabaseService() {
-        return graphDatabaseService;
+    public Driver getBoltDriver() {
+        return boltDriver;
     }
 
     @Override
-    public void destroy() throws Exception {
-        super.destroy();
-        if(graphDatabaseService != null) {
-            graphDatabaseService.shutdown();
+    @PreDestroy
+    public void close() throws IOException {
+        try {
+            try {
+                gormEnhancer.close();
+            } catch (Throwable e) {
+                // ignore
+            }
+            try {
+                if(boltDriver != null) {
+                    boltDriver.close();
+                }
+            } catch (Neo4jException e) {
+                log.error("Error shutting down Bolt driver: " + e.getMessage(), e);
+            }
+            if(embeddedServer != null) {
+                try {
+                    embeddedServer.close();
+                } catch (Throwable e) {
+                    log.error("Error shutting down Embedded Neo4j server: " + e.getMessage(), e);
+                }
+                finally {
+                    embeddedServer = null;
+                }
+            }
+            super.destroy();
+        } catch (Exception e) {
+            throw new IOException("Error shutting down Neo4j datastore", e);
         }
     }
 }

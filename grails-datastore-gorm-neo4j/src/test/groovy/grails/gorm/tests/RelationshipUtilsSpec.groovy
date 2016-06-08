@@ -7,6 +7,11 @@ import org.grails.datastore.gorm.neo4j.RelationshipUtils
  */
 class RelationshipUtilsSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        [Person, Pet]
+    }
+
     def "unidirectional associations are never reversed"() {
 
         setup:

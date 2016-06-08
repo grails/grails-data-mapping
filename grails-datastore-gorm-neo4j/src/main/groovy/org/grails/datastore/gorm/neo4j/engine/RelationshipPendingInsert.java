@@ -23,7 +23,8 @@ import org.grails.datastore.mapping.core.impl.PendingInsertAdapter;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.ToOne;
-import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,24 +46,24 @@ public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Seri
     public static final String TARGET_TYPE = "targetType";
 
     private static Logger log = LoggerFactory.getLogger(RelationshipPendingInsert.class);
-    private final GraphDatabaseService graphDatabaseService;
+    private final Transaction boltTransaction;
     private final Association association;
     private final Collection<Serializable> targetIdentifiers;
     private final boolean isUpdate;
 
 
 
-    public RelationshipPendingInsert(EntityAccess parent, Association association, Collection<Serializable> pendingInserts, GraphDatabaseService graphDatabaseService, boolean isUpdate) {
+    public RelationshipPendingInsert(EntityAccess parent, Association association, Collection<Serializable> pendingInserts, Transaction boltTransaction, boolean isUpdate) {
         super(parent.getPersistentEntity(), -1L, parent.getEntity(), parent);
 
-        this.graphDatabaseService = graphDatabaseService;
+        this.boltTransaction = boltTransaction;
         this.targetIdentifiers = pendingInserts;
         this.association = association;
         this.isUpdate = isUpdate;
     }
 
-    public RelationshipPendingInsert(EntityAccess parent, Association association, Collection<Serializable> pendingInserts, GraphDatabaseService graphDatabaseService) {
-        this(parent, association, pendingInserts, graphDatabaseService, false);
+    public RelationshipPendingInsert(EntityAccess parent, Association association, Collection<Serializable> pendingInserts, Transaction boltTransaction) {
+        this(parent, association, pendingInserts, boltTransaction, false);
     }
 
 
@@ -107,7 +108,7 @@ public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Seri
             if(log.isDebugEnabled()) {
                 log.debug("DELETE Cypher [{}] for parameters [{}]", cypher, params);
             }
-            graphDatabaseService.execute(cypher, Collections.singletonMap(CypherBuilder.START,parentId));
+            boltTransaction.run(cypher, Collections.singletonMap(CypherBuilder.START,parentId));
         }
 
         StringBuilder cypherQuery = new StringBuilder("MATCH (from").append(labelsFrom).append("), (to").append(labelsTo).append(") WHERE ");
@@ -132,7 +133,7 @@ public class RelationshipPendingInsert extends PendingInsertAdapter<Object, Seri
         if (log.isDebugEnabled()) {
             log.debug("MERGE Cypher [{}] for parameters [{}]", cypher, params);
         }
-        graphDatabaseService.execute(cypher, params);
+        boltTransaction.run(cypher, params);
     }
 
 }

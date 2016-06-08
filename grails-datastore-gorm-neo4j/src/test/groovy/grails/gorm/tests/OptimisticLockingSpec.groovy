@@ -14,6 +14,11 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 class OptimisticLockingSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        [OptLockNotVersioned, OptLockVersioned]
+    }
+
     void "Test versioning"() {
 
         given:
@@ -51,7 +56,7 @@ class OptimisticLockingSpec extends GormDatastoreSpec {
         session.transaction.nativeTransaction.close()
         session.clear()
 
-        def graphDatabaseService = (GraphDatabaseService) session.getNativeInterface()
+        def graphDatabaseService = (org.neo4j.driver.v1.Session) session.getNativeInterface()
         SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(session.getDatastore());
         sessionHolder.setTransaction( new Neo4jTransaction(graphDatabaseService))
 

@@ -26,9 +26,11 @@ import org.grails.datastore.mapping.model.types.ToMany
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.AssociationQuery
 import org.grails.datastore.mapping.query.Query
-import org.neo4j.graphdb.GraphDatabaseService
-import org.neo4j.graphdb.Node
-import org.neo4j.graphdb.Result
+import org.neo4j.driver.v1.Record
+import org.neo4j.driver.v1.StatementResult
+import org.neo4j.driver.v1.StatementRunner
+import org.neo4j.driver.v1.Value
+import org.neo4j.driver.v1.types.Node
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -262,7 +264,7 @@ class Neo4jQuery extends Query {
                 @Override
                 @CompileStatic
                 CypherExpression handle(PersistentEntity entity, Query.IsNull criterion, CypherBuilder builder, String prefix) {
-                    return new CypherExpression("has($prefix.${criterion.property})")
+                    return new CypherExpression("EXISTS($prefix.${criterion.property})")
                 }
             },
             (AssociationQuery): new AssociationQueryHandler(),
@@ -398,33 +400,38 @@ class Neo4jQuery extends Query {
 
         log.debug("QUERY Cypher [$cypher] for params [$params]")
 
-        Result executionResult = params.isEmpty() ? graphDatabaseService.execute(cypher) : graphDatabaseService.execute(cypher, params)
+        StatementRunner statementRunner = session.hasTransaction() ? session.getTransaction().getTransaction() : boltSession
+        StatementResult executionResult = params.isEmpty() ? statementRunner.run(cypher) : statementRunner.run(cypher, params)
         if (projectionList.empty) {
             return new Neo4jResultList(offset, executionResult, neo4jEntityPersister, lockResult)
         } else {
 
-            def projectedResults = executionResult.collect { Map<String, Object> row ->
-                def columnNames = executionResult.columns()
-                columnNames.collect { String columnName ->
-                    def value = row.get(columnName)
-                    if(value instanceof Node) {
+            List projectedResults = []
+            while( executionResult.hasNext() ) {
+
+                Record record = executionResult.next()
+                def columnNames = executionResult.keys()
+                projectedResults.add columnNames.collect { String columnName ->
+                    Value value = record.get(columnName)
+                    if(value.type() == boltSession.typeSystem().NODE()) {
                         // if a Node has been project then this is an association
                         def propName = columnName.substring(0, columnName.lastIndexOf('_'))
                         def prop = persistentEntity.getPropertyByName(propName)
                         if(prop instanceof ToOne) {
                             Association association = (Association)prop
-                            Node childNode = (Node)value
+                            Node childNode = value.asNode()
 
                             def persister = getSession().getEntityPersister(association.type)
 
                             def data = Collections.<String,Object>singletonMap( CypherBuilder.NODE_DATA, childNode)
                             return persister.unmarshallOrFromCache(
-                                                association.associatedEntity, data)
+                                    association.associatedEntity, data)
                         }
                     }
-                    return value
+                    return value.asObject()
                 }
-            } as List
+            }
+
             if(projectionList.size() == 1 || projectedResults.size() == 1) {
                 return projectedResults.flatten()
             }
@@ -519,8 +526,8 @@ class Neo4jQuery extends Query {
         return (Neo4jSession)super.getSession()
     }
 
-    GraphDatabaseService getGraphDatabaseService() {
-        return (GraphDatabaseService)getSession().getNativeInterface()
+    org.neo4j.driver.v1.Session getBoltSession() {
+        return (org.neo4j.driver.v1.Session)getSession().getNativeInterface()
     }
 
     /**

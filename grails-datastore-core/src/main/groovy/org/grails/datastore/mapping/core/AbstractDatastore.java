@@ -40,6 +40,7 @@ import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.annotation.PreDestroy;
 import java.util.Map;
 
 /**
@@ -103,6 +104,7 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         }
     }
 
+    @PreDestroy
     public void destroy() throws Exception {
         FieldEntityAccess.clearReflectors();
         final MetaClassRegistry registry = GroovySystem.getMetaClassRegistry();
@@ -213,9 +215,14 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         return mappingContext;
     }
 
+    /**
+     * @deprecated  Deprecated, will be removed in a future version of GORM
+     */
+    @Deprecated
     public ConfigurableApplicationContext getApplicationContext() {
         return (ConfigurableApplicationContext)applicationContext;
     }
+
 
     public ApplicationEventPublisher getApplicationEventPublisher() {
         return getApplicationContext();

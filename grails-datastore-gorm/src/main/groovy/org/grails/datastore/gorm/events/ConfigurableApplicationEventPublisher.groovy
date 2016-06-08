@@ -1,9 +1,11 @@
-package org.grails.gorm.rx.events
+package org.grails.datastore.gorm.events
 
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.ApplicationListener
 
 /**
+ * An {@link ApplicationEventPublisher} that is configurable with new listeners
+ *
  * @author Graeme Rocher
  * @since 6.0
  */

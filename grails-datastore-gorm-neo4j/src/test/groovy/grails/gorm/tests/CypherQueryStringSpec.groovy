@@ -26,7 +26,7 @@ class CypherQueryStringSpec extends GormDatastoreSpec {
         setupDomain()
 
         when:"A find method is executed"
-        def club = Club.find("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')
+        def club = Club.find("MATCH (n) where n.name = {1} RETURN n", 'FC Bayern Muenchen')
 
         then:"The result is correct"
         club instanceof Club
@@ -35,7 +35,7 @@ class CypherQueryStringSpec extends GormDatastoreSpec {
         club.teams.size() == 2
 
         when:"A find method is executed with map arguments"
-        club = Club.find("MATCH n where n.name = {name} RETURN n", [name:'FC Bayern Muenchen'])
+        club = Club.find("MATCH (n) where n.name = {name} RETURN n", [name:'FC Bayern Muenchen'])
 
         then:"The result is correct"
         club instanceof Club
@@ -45,7 +45,7 @@ class CypherQueryStringSpec extends GormDatastoreSpec {
 
         when:"A find method is executed on the inverse side"
         session.clear()
-        def team = Team.find("MATCH n where n.name = {name} RETURN n", [name:'FCB Team 1'])
+        def team = Team.find("MATCH (n) where n.name = {name} RETURN n", [name:'FCB Team 1'])
 
         then:"The result is correct"
         team instanceof Team
@@ -60,7 +60,7 @@ class CypherQueryStringSpec extends GormDatastoreSpec {
         setupDomain()
 
         when:"A find method is executed"
-        def clubs = Club.findAll("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')
+        def clubs = Club.findAll("MATCH (n) where n.name = {1} RETURN n", 'FC Bayern Muenchen')
 
         then:"The result is correct"
         clubs.size() == 1
@@ -71,7 +71,7 @@ class CypherQueryStringSpec extends GormDatastoreSpec {
 
         when:"A find method is executed with map arguments"
         session.clear()
-        clubs = Club.findAll("MATCH n where n.name = {name} RETURN n", [name:'FC Bayern Muenchen'])
+        clubs = Club.findAll("MATCH (n) where n.name = {name} RETURN n", [name:'FC Bayern Muenchen'])
 
         then:"The result is correct"
         clubs.size() == 1
@@ -87,7 +87,7 @@ class CypherQueryStringSpec extends GormDatastoreSpec {
         setupDomain()
 
         when:"A cypher query is executed"
-        def result = Club.cypherStatic("MATCH n where n.name = {name} RETURN n", [name:'FC Bayern Muenchen'])
+        def result = Club.cypherStatic("MATCH (n) where n.name = {name} RETURN n", [name:'FC Bayern Muenchen'])
         Club club = result as Club
 
         then:"the conversion is correct"
@@ -97,7 +97,7 @@ class CypherQueryStringSpec extends GormDatastoreSpec {
         club.teams.size() == 2
 
         when:"A cypher query is executed"
-        result = Club.cypherStatic("MATCH n where n.name = {name} RETURN n", [name:'FC Bayern Muenchen'])
+        result = Club.cypherStatic("MATCH (n) where n.name = {name} RETURN n", [name:'FC Bayern Muenchen'])
         List<Club> clubs = result.toList(Club)
 
         then:"the conversion is correct"

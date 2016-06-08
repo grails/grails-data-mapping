@@ -23,6 +23,11 @@ import java.io.IOException;
 public class Neo4jDatastoreTransactionManager extends DatastoreTransactionManager {
 
     private static final Logger log = LoggerFactory.getLogger(Neo4jDatastoreTransactionManager.class);
+
+    public Neo4jDatastoreTransactionManager(Neo4jDatastore datastore) {
+        setDatastore(datastore);
+    }
+
     /**
      * Override doSetRollbackOnly to call {@link org.neo4j.graphdb.Transaction#terminate()}
      * @param status The transaction status

@@ -1,4 +1,4 @@
-package org.grails.gorm.rx.events
+package org.grails.datastore.gorm.events
 
 import groovy.transform.CompileStatic
 import org.springframework.context.ApplicationEvent

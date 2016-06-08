@@ -3,25 +3,24 @@ package org.grails.datastore.gorm
 import grails.core.DefaultGrailsApplication
 import grails.core.GrailsApplication
 import grails.util.Holders
-import org.apache.tomcat.jdbc.pool.DataSource
-import org.apache.tomcat.jdbc.pool.PoolProperties
 import org.grails.core.lifecycle.ShutdownOperations
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
-import org.grails.datastore.gorm.neo4j.internal.tools.DumpGraphOnSessionFlushListener
 import org.grails.datastore.gorm.neo4j.HashcodeEqualsAwareProxyFactory
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
-import org.grails.datastore.gorm.neo4j.TestServer
-import org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.validation.GrailsDomainClassValidator
+import org.neo4j.driver.v1.Config
+import org.neo4j.driver.v1.Driver
+import org.neo4j.driver.v1.GraphDatabase
 import org.neo4j.graphdb.GraphDatabaseService
-import org.neo4j.server.web.WebServer
-import org.neo4j.test.TestGraphDatabaseFactory
+import org.neo4j.harness.ServerControls
+import org.neo4j.harness.TestServerBuilders
+import org.neo4j.harness.internal.Ports
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.support.GenericApplicationContext
@@ -29,36 +28,26 @@ import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
-import java.lang.management.ManagementFactory
-import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
+
+import static org.neo4j.graphdb.factory.GraphDatabaseSettings.BoltConnector.EncryptionLevel.DISABLED
+import static org.neo4j.graphdb.factory.GraphDatabaseSettings.boltConnector
 
 class Setup {
 
     protected static final Logger log = LoggerFactory.getLogger(getClass())
 
     static Neo4jDatastore datastore
-    static GraphDatabaseService graphDb
-    static WebServer webServer
+    static ServerControls serverControls
     static skipIndexSetup = true
     static Closure extendedValidatorSetup = null
 
     static destroy() {
-//        TxManager txManager = graphDb.getDependencyResolver().resolveDependency(TxManager)
-//        log.info "before shutdown, active: $txManager.activeTxCount, committed $txManager.committedTxCount, started: $txManager.startedTxCount, rollback: $txManager.rolledbackTxCount, status: $txManager.status"
-//        assert txManager.activeTxCount == 0, "something is wrong with connection handling - we still have $txManager.activeTxCount connections open"
-
         def enhancer = new GormEnhancer(datastore, new Neo4jDatastoreTransactionManager(datastore: datastore))
         enhancer.close()
-        webServer?.stop()
-
-//        graphDb.@neoDataSource.kernel.stop()
-
-
-        graphDb?.shutdown()
-        datastore.destroy()
-        graphDb = null
-        webServer = null
+        serverControls?.close()
+        serverControls = null
+        datastore.close()
         datastore = null
 
         // force clearing of thread locals, Neo4j connection pool leaks :(
@@ -93,40 +82,22 @@ class Setup {
         MappingContext mappingContext = nativeId ? new Neo4jMappingContext(nativeIdMapping) : new Neo4jMappingContext()
 
         // setup datasource
-        def testMode = System.getProperty("gorm_neo4j_test_mode", "embedded")
 
+        InetSocketAddress inetAddr = Ports.findFreePort("localhost", [ 7687, 64 * 1024 - 1 ] as int[])
+        String myBoltAddress = String.format("%s:%d", inetAddr.getHostName(), inetAddr.getPort())
 
-        switch (testMode) {
-            case "embedded":
-                graphDb = new TestGraphDatabaseFactory().newImpermanentDatabaseBuilder()
-                        .setConfig("cache_type", "soft") // prevent hpc cache during tests, potentially leaking memory due to many restarts
-                        .newGraphDatabase()
-                break
-            case "server":
+        serverControls = TestServerBuilders.newInProcessBuilder()
+                .withConfig(boltConnector("0").enabled, "true")
+                .withConfig(boltConnector("0").encryption_level, DISABLED.name())
+                .withConfig(boltConnector("0").address, myBoltAddress)
+                .newServer()
 
-                def impermanentDatabase = new TestGraphDatabaseFactory().newImpermanentDatabase()
+        Driver boltDriver = GraphDatabase.driver("bolt://" + myBoltAddress, Config.build().withEncryptionLevel(Config.EncryptionLevel.NONE).toConfig())
 
-                def port
-                (port, webServer) = TestServer.startWebServer(impermanentDatabase)
-                skipIndexSetup = true
-                graphDb = new GrailsCypherRestGraphDatabase("http://localhost:$port/db/data") {
-                    @Override
-                    void shutdown() {
-                        impermanentDatabase.shutdown()
-                        super.shutdown()
-                    }
-                }
-                break
-
-            case "remote":
-                break
-            default:
-                throw new IllegalStateException("dunno know how to handle mode $testMode")
-        }
         datastore = new Neo4jDatastore(
+                boltDriver,
                 mappingContext,
-                ctx,
-                graphDb
+                ctx
         )
         datastore.skipIndexSetup = skipIndexSetup
         datastore.mappingContext.proxyFactory = new HashcodeEqualsAwareProxyFactory()
@@ -147,9 +118,8 @@ class Setup {
         def enhancer = new GormEnhancer(datastore, transactionManager)
         enhancer.enhance()
 
-        datastore.afterPropertiesSet()
 
-        waitForIndexesBeingOnline(graphDb)
+//        waitForIndexesBeingOnline(graphDb)
 
         mappingContext.addMappingContextListener({ e ->
             enhancer.enhance e
@@ -159,10 +129,6 @@ class Setup {
         ctx.addApplicationListener new DomainEventListener(datastore)
         ctx.addApplicationListener new AutoTimestampEventListener(datastore)
 
-      // enable for debugging
-        if (graphDb) {
-            ctx.addApplicationListener new DumpGraphOnSessionFlushListener(graphDb)
-        }
         def session = datastore.connect()
         session.beginTransaction()
         return session
@@ -197,7 +163,7 @@ class Setup {
         }
     }
 
-    private static void waitForIndexesBeingOnline(GraphDatabaseService graphDb) {
+    private static void waitForIndexesBgeingOnline(GraphDatabaseService graphDb) {
         if (graphDb && (skipIndexSetup==false)) {
             def tx = graphDb.beginTx()
             try {

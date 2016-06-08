@@ -17,11 +17,10 @@ package org.grails.datastore.gorm.neo4j.engine;
 
 import org.grails.datastore.gorm.neo4j.CypherBuilder;
 import org.grails.datastore.gorm.neo4j.GraphPersistentEntity;
-import org.grails.datastore.mapping.core.impl.PendingInsertAdapter;
 import org.grails.datastore.mapping.core.impl.PendingOperationAdapter;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.types.Association;
-import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.driver.v1.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,15 +39,15 @@ public class RelationshipPendingDelete extends PendingOperationAdapter<Object, S
 
     private static Logger log = LoggerFactory.getLogger(RelationshipPendingDelete.class);
 
-    private final GraphDatabaseService graphDatabaseService;
+    private final Transaction boltTransaction;
     private final Association association;
     private final Collection<Serializable> targetIdentifiers;
 
 
-    public RelationshipPendingDelete(EntityAccess parent, Association association, Collection<Serializable> pendingInserts, GraphDatabaseService graphDatabaseService) {
+    public RelationshipPendingDelete(EntityAccess parent, Association association, Collection<Serializable> pendingInserts, Transaction boltTransaction) {
         super(parent.getPersistentEntity(), (Serializable) parent.getIdentifier(), parent.getEntity());
         this.targetIdentifiers = pendingInserts;
-        this.graphDatabaseService = graphDatabaseService;
+        this.boltTransaction = boltTransaction;
         this.association = association;
     }
 
@@ -89,6 +88,6 @@ public class RelationshipPendingDelete extends PendingOperationAdapter<Object, S
         if (log.isDebugEnabled()) {
             log.debug("DELETE Cypher [{}] for parameters [{}]", cypher, params);
         }
-        graphDatabaseService.execute(cypher, params);
+        boltTransaction.run(cypher, params);
     }
 }

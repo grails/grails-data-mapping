@@ -57,6 +57,12 @@ class RestClientSession extends AbstractSession{
     }
 
     @Override
+    public boolean hasTransaction() {
+        // the session is the transaction, since MongoDB doesn't support them directly
+        return true;
+    }
+
+    @Override
     Serializable insert(Object o) {
         if(o) {
             RestClientEntityPersister persister = (RestClientEntityPersister)getPersister(o)

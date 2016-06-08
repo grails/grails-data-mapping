@@ -16,16 +16,15 @@
 package org.grails.datastore.gorm.neo4j.extensions
 
 import groovy.transform.CompileStatic
-import groovy.transform.stc.ClosureParams
-import groovy.transform.stc.MapEntryOrKeyValue
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jSession
 import org.grails.datastore.gorm.neo4j.collection.Neo4jResultList
 import org.grails.datastore.mapping.core.AbstractDatastore
-import org.neo4j.graphdb.GraphDatabaseService
-import org.neo4j.graphdb.Node
-import org.neo4j.graphdb.PropertyContainer
-import org.neo4j.graphdb.Result
+import org.neo4j.driver.v1.Session
+import org.neo4j.driver.v1.StatementResult
+import org.neo4j.driver.v1.StatementRunner
+import org.neo4j.driver.v1.types.MapAccessor
+import org.neo4j.driver.v1.types.Node
 
 
 /**
@@ -40,15 +39,8 @@ class Neo4jExtensions {
     /**
      * Allows the subscript operator on nodes
      */
-    static Object getAt(PropertyContainer node, String name) {
-        node.getProperty(name)
-    }
-
-    /**
-     * Allows the subscript operator on nodes
-     */
-    static void putAt(PropertyContainer node, String name, value) {
-        node.setProperty(name, value)
+    static Object getAt(MapAccessor node, String name) {
+        node.get(name)
     }
 
     /**
@@ -78,7 +70,7 @@ class Neo4jExtensions {
      * @param c The domain class type
      * @return The domain instance
      */
-    static <N> N asType(Result result, Class<N> c) {
+    static <N> N asType(StatementResult result, Class<N> c) {
         Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
         def entityPersister = session.getEntityPersister(c)
         if(entityPersister != null) {
@@ -103,7 +95,7 @@ class Neo4jExtensions {
      * @param c The domain class type
      * @return The domain instance
      */
-    static <N> List<N> toList(Result result, Class<N> c) {
+    static <N> List<N> toList(StatementResult result, Class<N> c) {
         Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
         def entityPersister = session.getEntityPersister(c)
         if(entityPersister != null) {
@@ -115,47 +107,6 @@ class Neo4jExtensions {
     }
 
     /**
-     * Allows a Node to be iterated through using a closure. If the
-     * closure takes one parameter then it will be passed the Map.Entry
-     * otherwise if the closure takes two parameters then it will be
-     * passed the key and the value.
-     * <pre class="groovyTestCase">def result = ""
-     * [a:1, b:3].each { key, value -> result += "$key$value" }
-     * assert result == "a1b3"</pre>
-     * <pre class="groovyTestCase">def result = ""
-     * [a:1, b:3].each { entry -> result += entry }
-     * assert result == "a=1b=3"</pre>
-     *
-     *
-     * @param self    the map over which we iterate
-     * @param closure the 1 or 2 arg closure applied on each entry of the map
-     * @return returns the self parameter
-     */
-    public static PropertyContainer each(PropertyContainer self, @ClosureParams(MapEntryOrKeyValue.class) Closure closure) {
-        for (final String prop : self.propertyKeys) {
-            final value = self.getProperty(prop)
-            callClosureForMapEntry(closure, new Map.Entry<String, Object>() {
-                @Override
-                String getKey() {
-                    prop
-                }
-
-                @Override
-                Object getValue() {
-                    value
-                }
-
-                @Override
-                Object setValue(Object v) {
-                    self.setProperty(prop, v)
-                    return value
-                }
-            })
-        }
-        return self;
-    }
-
-    /**
      * Executes a cypher query with positional parameters
      *
      * @param databaseService The GraphDatabaseService
@@ -163,21 +114,13 @@ class Neo4jExtensions {
      * @param positionalParameters The position parameters
      * @return The query result
      */
-    static Result execute(GraphDatabaseService databaseService, String cypher, List<Object> positionalParameters) {
+    static StatementResult execute(StatementRunner session, String cypher, List<Object> positionalParameters) {
         Map<String,Object> params = new LinkedHashMap<>()
         int i = 0;
         for(p in positionalParameters) {
             params.put(String.valueOf(++i), p)
         }
-        databaseService.execute(cypher, params)
+        session.run(cypher, params)
     }
 
-
-    // internal helper method
-    protected static <T> T callClosureForMapEntry(Closure<T> closure, Map.Entry entry) {
-        if (closure.getMaximumNumberOfParameters() == 2) {
-            return closure.call(entry.key, entry.value);
-        }
-        return closure.call(entry)
-    }
 }

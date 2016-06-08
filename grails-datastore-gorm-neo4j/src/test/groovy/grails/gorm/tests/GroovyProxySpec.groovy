@@ -8,6 +8,11 @@ import org.springframework.dao.DataIntegrityViolationException
  */
 class GroovyProxySpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        [Location]
+    }
+
     void "Test creation and behavior of Groovy proxies"() {
         setup:
         if(useGroovyProxyFactory) {

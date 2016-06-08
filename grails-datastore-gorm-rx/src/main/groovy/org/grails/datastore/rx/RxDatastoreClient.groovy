@@ -4,10 +4,8 @@ import grails.gorm.rx.proxy.ObservableProxy
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.QueryCreator
-import org.grails.gorm.rx.events.ConfigurableApplicationEventPublisher
-import org.springframework.context.ApplicationEventPublisher
+import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher
 import rx.Observable
-import rx.Single
 
 /**
  * Represents a client connection pool that can be used to interact with a backing implementation in RxGORM

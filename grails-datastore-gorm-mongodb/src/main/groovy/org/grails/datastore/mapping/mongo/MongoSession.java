@@ -60,6 +60,7 @@ public class MongoSession extends AbstractMongoSession {
         super(datastore, mappingContext, publisher, stateless);
     }
 
+
     @Override
     public Query createQuery(@SuppressWarnings("rawtypes") Class type) {
         return super.createQuery(type);

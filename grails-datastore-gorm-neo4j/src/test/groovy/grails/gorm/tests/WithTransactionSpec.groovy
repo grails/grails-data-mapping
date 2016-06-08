@@ -7,6 +7,11 @@ import groovy.transform.InheritConstructors
  */
 class WithTransactionSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        [TestEntity]
+    }
+
     void "Test save() with transaction"() {
         given:
         TestEntity.withTransaction {

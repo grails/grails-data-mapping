@@ -26,8 +26,9 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ToOne
-import org.neo4j.graphdb.GraphDatabaseService
-import org.neo4j.graphdb.Result
+import org.neo4j.driver.v1.Session
+import org.neo4j.driver.v1.StatementResult
+import org.neo4j.driver.v1.StatementRunner
 
 
 /**
@@ -62,7 +63,7 @@ class Neo4jAssociationQueryExecutor implements AssociationQueryExecutor<Serializ
     @Override
     List<Object> query(Serializable primaryKey) {
 
-        GraphDatabaseService graphDatabaseService = (GraphDatabaseService)session.nativeInterface
+        StatementRunner statementRunner = session.hasTransaction() ? session.getTransaction().getNativeTransaction() : (Session)session.nativeInterface
         def relType = Neo4jQuery.matchForAssociation(association)
         GraphPersistentEntity parent = (GraphPersistentEntity)association.owner
         GraphPersistentEntity related = (GraphPersistentEntity)indexedEntity
@@ -97,11 +98,11 @@ class Neo4jAssociationQueryExecutor implements AssociationQueryExecutor<Serializ
         log.debug("Lazy loading association [${association}] using relationship $relationship")
         log.debug("QUERY Cypher [$cypher] for params [$params]")
 
-        Result result = graphDatabaseService.execute(cypher.toString(), params)
+        StatementResult result = statementRunner.run(cypher.toString(), params)
         if(isLazy()) {
             List<Object> results = []
             while(result.hasNext()) {
-                def id = result.next().get(GormProperties.IDENTITY)
+                def id = result.next().get(GormProperties.IDENTITY).asNumber()
                 if(id instanceof Long) {
                     results.add( session.proxy(related.javaClass, id) )
                 }

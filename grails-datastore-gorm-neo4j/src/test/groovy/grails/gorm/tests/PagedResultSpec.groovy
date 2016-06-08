@@ -7,9 +7,11 @@ import spock.lang.Ignore
  *
  */
 class PagedResultSpec extends GormDatastoreSpec{
-
-
-    //@Ignore("temprary disabled due to implicit required sorting based on Comparable")
+    @Override
+    List getDomainClasses() {
+        [Person]
+    }
+//@Ignore("temprary disabled due to implicit required sorting based on Comparable")
     void "Test that a paged result list is returned from the list() method with pagination params"() {
         given:"Some people"
             createPeople()

@@ -20,24 +20,32 @@ import grails.neo4j.Neo4jEntity
 import groovy.transform.InheritConstructors
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
+import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPublisher
+import org.grails.datastore.gorm.events.DefaultApplicationEventPublisher
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
 import org.grails.datastore.gorm.neo4j.bean.factory.DefaultMappingHolder
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
+import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
+import org.grails.datastore.mapping.validation.BeanFactoryValidatorLookup
+import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.config.CustomEditorConfigurer
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.propertyeditors.ClassEditor
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.util.ClassUtils
+
 /**
  * @author Graeme Rocher
  * @since 4.0
  */
 @InheritConstructors
 class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
-    static String neo4jDefaultLocation = "data/neo4j"
-    public static final String JDBC_NEO4J_PREFIX = "jdbc:neo4j:instance:"
+    public static final String DATASTORE_TYPE = "neo4j"
 
     protected Closure defaultMapping
 
@@ -54,48 +62,38 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
     @Override
     Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         {->
-            def callable = getCommonConfiguration(beanDefinitionRegistry, "neo4j")
+            def callable = getCommonConfiguration(beanDefinitionRegistry, DATASTORE_TYPE)
             callable.delegate = delegate
             callable.call()
 
+            ApplicationEventPublisher eventPublisher
+            if(beanDefinitionRegistry instanceof ConfigurableApplicationContext){
+                eventPublisher = new ConfigurableApplicationContextEventPublisher((ConfigurableApplicationContext)beanDefinitionRegistry)
+            }
+            else {
+                eventPublisher = new DefaultApplicationEventPublisher()
+            }
+            neo4jDatastore(Neo4jDatastore, configuration, eventPublisher, collectMappedClasses(DATASTORE_TYPE))
+            neo4jMappingContext(neo4jDatastore:"getMappingContext") {
+                validatorLookup = new BeanFactoryValidatorLookup((BeanFactory)beanDefinitionRegistry)
+            }
+            neo4jTransactionManager(neo4jDatastore:"getTransactionManager")
+            neo4jDriver(neo4jDatastore:"getBoltDriver")
+            neo4jPersistenceInterceptor(getPersistenceInterceptorClass(), ref("neo4jDatastore"))
+            neo4jPersistenceContextInterceptorAggregator(PersistenceContextInterceptorAggregator)
 
-            // reverting the change done for fixing GRAILS-11112
-            // since we supply a GraphDatabaseService instance to dbProperties we do not want
-            // it being converted to a String
-            customEditors(CustomEditorConfigurer) {
-                customEditors = [(Class.name): ClassEditor.name ]
+
+            def transactionManagerBeanName = TRANSACTION_MANAGER_BEAN
+            if (!containsRegisteredBean(delegate, beanDefinitionRegistry, transactionManagerBeanName)) {
+                beanDefinitionRegistry.registerAlias("neo4jTransactionManager", transactionManagerBeanName)
             }
 
-            Closure defaultMapping = configuration.getProperty(Neo4jDatastore.SETTING_DEFAULT_MAPPING,Closure, this.defaultMapping)
-
-            neo4jMappingContext(Neo4jMappingContextFactoryBean) {
-                grailsApplication = ref('grailsApplication')
-                defaultExternal = secondaryDatastore
-                if (defaultMapping) {
-                    delegate.defaultMapping = new DefaultMappingHolder(defaultMapping)
+            def classLoader = getClass().getClassLoader()
+            if (beanDefinitionRegistry.containsBeanDefinition('dispatcherServlet') && ClassUtils.isPresent(OSIV_CLASS_NAME, classLoader)) {
+                String interceptorName = "neo4jOpenSessionInViewInterceptor"
+                "${interceptorName}"(ClassUtils.forName(OSIV_CLASS_NAME, classLoader)) {
+                    datastore = ref("neo4jDatastore")
                 }
-            }
-
-            neo4jDatastore(Neo4jDatastoreFactoryBean) {
-                mappingContext = neo4jMappingContext
-                delegate.configuration = configuration
-            }
-
-
-            callable = getAdditionalBeansConfiguration(beanDefinitionRegistry, "neo4j")
-            callable.delegate = delegate
-            callable.call()
-
-            "neo4jTransactionManager"(Neo4jDatastoreTransactionManager) {
-                datastore = ref("neo4jDatastore")
-            }
-            graphDatabaseService(neo4jDatastore:"getGraphDatabaseService")
-
-            "org.grails.gorm.neo4j.internal.GORM_ENHANCER_BEAN-neo4j"(GormEnhancer, ref("neo4jDatastore"), ref("neo4jTransactionManager")) { bean ->
-                bean.initMethod = 'enhance'
-                bean.destroyMethod = 'close'
-                bean.lazyInit = false
-                includeExternal = !secondaryDatastore
             }
         }
     }

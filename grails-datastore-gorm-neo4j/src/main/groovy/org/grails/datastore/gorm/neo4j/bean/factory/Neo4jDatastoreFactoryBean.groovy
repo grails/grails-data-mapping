@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.neo4j.bean.factory
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPublisher
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.springframework.beans.factory.FactoryBean
@@ -30,8 +31,10 @@ import org.springframework.core.env.PropertyResolver
  * Factory bean for constructing a {@link Neo4jDatastore} instance.
  *
  * @author Stefan Armbruster
+ * @deprecated No longer necessary, use the constructors of {@link Neo4jDatastore} instead
  */
 @CompileStatic
+@Deprecated
 class Neo4jDatastoreFactoryBean implements FactoryBean<Neo4jDatastore>, ApplicationContextAware {
 
     MappingContext mappingContext
@@ -39,14 +42,7 @@ class Neo4jDatastoreFactoryBean implements FactoryBean<Neo4jDatastore>, Applicat
     ApplicationContext applicationContext
 
     Neo4jDatastore getObject() {
-
-        Neo4jDatastore datastore = new Neo4jDatastore(mappingContext, configuration,  (ConfigurableApplicationContext)applicationContext)
-
-        ((ConfigurableApplicationContext) applicationContext).addApplicationListener new DomainEventListener(datastore)
-        ((ConfigurableApplicationContext) applicationContext).addApplicationListener new AutoTimestampEventListener(datastore)
-
-        datastore.afterPropertiesSet()
-        datastore
+        return new Neo4jDatastore(mappingContext, configuration, new ConfigurableApplicationContextEventPublisher((ConfigurableApplicationContext)applicationContext) )
     }
 
     Class<?> getObjectType() { Neo4jDatastore }

@@ -26,12 +26,11 @@ import org.grails.gorm.rx.api.RxGormInstanceApi
 import org.grails.gorm.rx.api.RxGormStaticApi
 import org.grails.gorm.rx.api.RxGormValidationApi
 import org.grails.gorm.rx.events.AutoTimestampEventListener
-import org.grails.gorm.rx.events.ConfigurableApplicationEventPublisher
-import org.grails.gorm.rx.events.DefaultApplicationEventPublisher
+import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher
+import org.grails.datastore.gorm.events.DefaultApplicationEventPublisher
 import org.grails.gorm.rx.events.DomainEventListener
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.context.event.ApplicationEventMulticaster
 import rx.Observable
 
 import javax.persistence.CascadeType

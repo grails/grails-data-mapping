@@ -1,5 +1,6 @@
 package grails.gorm.tests
 
+import grails.neo4j.Neo4jEntity
 import grails.persistence.Entity
 
 /*
@@ -22,7 +23,7 @@ import grails.persistence.Entity
  * @author graemerocher
  */
 @Entity
-class Pet implements Serializable {
+class Pet implements Neo4jEntity<Pet> {
     Long id
     Long version
     String name

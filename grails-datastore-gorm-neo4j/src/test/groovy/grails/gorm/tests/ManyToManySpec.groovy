@@ -2,7 +2,7 @@ package grails.gorm.tests
 
 import grails.gorm.dirty.checking.DirtyCheck
 import grails.persistence.Entity
-import org.neo4j.helpers.collection.IteratorUtil
+import org.grails.datastore.gorm.neo4j.util.IteratorUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Issue
@@ -227,10 +227,10 @@ class ManyToManySpec extends GormDatastoreSpec {
         fetchedFelix.friends.size() == 100
 
         when: "we have 100 relationships"
-        def result = session.nativeInterface.execute("MATCH (:BidirectionalFriends {name:{1}})<-[:FRIENDS]-(o) return count(o) as c", ["1":"felix"])
+        def result = session.transaction.nativeTransaction.run("MATCH (:BidirectionalFriends {name:{1}})<-[:FRIENDS]-(o) return count(o) as c", ["1":"felix"])
 
         then:
-        IteratorUtil.single(result)["c"] == 100
+        IteratorUtil.single(result)["c"].asNumber() == 100
 
     }
 

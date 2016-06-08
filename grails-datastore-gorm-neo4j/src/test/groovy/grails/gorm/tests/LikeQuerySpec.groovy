@@ -20,6 +20,10 @@ package grails.gorm.tests
  * @author graemerocher
  */
 class LikeQuerySpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [Pet]
+    }
 
     void "Test for like query"() {
         given:
