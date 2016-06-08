@@ -6,7 +6,7 @@ import grails.util.Holders
 import org.grails.core.lifecycle.ShutdownOperations
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
-import org.grails.datastore.gorm.neo4j.HashcodeEqualsAwareProxyFactory
+import org.grails.datastore.gorm.neo4j.proxy.HashcodeEqualsAwareProxyFactory
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext

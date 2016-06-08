@@ -1,4 +1,4 @@
-package org.grails.datastore.gorm.neo4j;
+package org.grails.datastore.gorm.neo4j.proxy;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyObject;

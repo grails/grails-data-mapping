@@ -38,6 +38,9 @@ import org.neo4j.driver.v1.StatementRunner
  */
 @CompileStatic
 trait Neo4jEntity<D> implements GormEntity<D>, DynamicAttributes {
+    /**
+     * @see DynamicAttributes#putAt(java.lang.String, java.lang.Object)
+     */
     @Override
     void putAt(String name, Object val) {
         def old = DynamicAttributes.super.getAt(name)

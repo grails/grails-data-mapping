@@ -21,6 +21,9 @@ import org.grails.datastore.mapping.config.Entity;
  * Extends the default {@link Entity} configuration adding the ability to assign labels
  *
  * @author Stefan Armbruster
+ * @author Graeme Rocher
+ *
+ * @since 1.0
  */
 public class Neo4jEntity extends Entity {
 

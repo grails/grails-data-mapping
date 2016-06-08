@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.neo4j;
 
 import groovy.lang.Closure;
 import org.grails.datastore.gorm.neo4j.identity.SnowflakeIdGenerator;
+import org.grails.datastore.gorm.neo4j.proxy.HashcodeEqualsAwareProxyFactory;
 import org.grails.datastore.mapping.engine.NonPersistentTypeException;
 import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;

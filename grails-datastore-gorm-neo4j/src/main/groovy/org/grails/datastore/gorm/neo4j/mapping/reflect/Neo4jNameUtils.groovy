@@ -29,10 +29,18 @@ import org.grails.datastore.mapping.reflect.NameUtils
 @CompileStatic
 class Neo4jNameUtils extends NameUtils {
 
+    /**
+     * @param word The word
+     * @return Whether the given word is plural
+     */
     static boolean isPlural( String word ) {
         PlingStemmer.isPlural(word)
     }
 
+    /**
+     * @param word The word
+     * @return Whether the given word is singular
+     */
     static boolean isSingular( String word ) {
         PlingStemmer.isSingular( word )
     }

@@ -17,7 +17,7 @@ package org.grails.datastore.gorm.neo4j.bean.factory
 import groovy.transform.Canonical
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
-import org.grails.datastore.gorm.neo4j.HashcodeEqualsAwareProxyFactory
+import org.grails.datastore.gorm.neo4j.proxy.HashcodeEqualsAwareProxyFactory
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
 import org.grails.datastore.mapping.model.MappingContext
 
@@ -26,8 +26,11 @@ import org.grails.datastore.mapping.model.MappingContext
  *
  * @author Stefan Armbruster
  * @author Graeme Rocher
+ *
+ * @deprecated No longer needed, do not use, will be removed in a future version
  */
 @CompileStatic
+@Deprecated
 class Neo4jMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
 
     DefaultMappingHolder defaultMapping
@@ -41,6 +44,7 @@ class Neo4jMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
 }
 
 @Canonical
+@Deprecated
 class DefaultMappingHolder {
     Closure defaultMapping
 }

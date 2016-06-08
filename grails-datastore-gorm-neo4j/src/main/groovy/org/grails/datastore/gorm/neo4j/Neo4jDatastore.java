@@ -39,6 +39,7 @@ import org.neo4j.harness.ServerControls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
 
@@ -226,6 +227,33 @@ public class Neo4jDatastore extends AbstractDatastore implements Closeable, Stat
      */
     public Neo4jDatastore(Class...classes) {
         this(new StandardEnvironment(), classes);
+    }
+
+    /**
+     * Configures a new {@link Neo4jDatastore} for the given arguments
+     *
+     * @param configuration The configuration
+     * @param classes The persistent classes
+     */
+    public Neo4jDatastore(Map<String, Object> configuration, Class...classes) {
+        this(configuration, new DefaultApplicationEventPublisher(), classes);
+    }
+
+
+    /**
+     * Configures a new {@link Neo4jDatastore} for the given arguments
+     *
+     * @param configuration The configuration
+     * @param classes The persistent classes
+     */
+    public Neo4jDatastore(Map<String, Object> configuration, ConfigurableApplicationEventPublisher eventPublisher,Class...classes) {
+        this(createPropertyResolver(configuration),eventPublisher, classes);
+    }
+
+    private static PropertyResolver createPropertyResolver(Map<String,Object> configuration) {
+        StandardEnvironment env = new StandardEnvironment();
+        env.getPropertySources().addFirst(new MapPropertySource("neo4j", configuration));
+        return env;
     }
 
     /**

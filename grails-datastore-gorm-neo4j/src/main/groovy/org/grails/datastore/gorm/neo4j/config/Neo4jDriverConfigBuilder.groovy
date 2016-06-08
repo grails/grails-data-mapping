@@ -47,7 +47,7 @@ class Neo4jDriverConfigBuilder {
                 if (parameterTypes.length == 1) {
                     Class argType = parameterTypes[0]
 
-                    String settingName = String.valueOf(Character.toLowerCase(methodName.charAt(5))) + methodName.substring(5)
+                    String settingName = String.valueOf(Character.toLowerCase(methodName.charAt(4))) + methodName.substring(5)
 
                     def value = propertyResolver.getProperty("${startingPrefix}.${settingName}", argType, null)
                     if(value != null) {

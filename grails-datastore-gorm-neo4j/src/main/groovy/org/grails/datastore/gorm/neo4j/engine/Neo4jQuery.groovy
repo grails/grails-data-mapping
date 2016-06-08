@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.neo4j.engine
 import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
 import groovy.util.logging.Commons
+import groovy.util.logging.Slf4j
 import org.grails.datastore.gorm.neo4j.*
 import org.grails.datastore.gorm.neo4j.collection.Neo4jResultList
 import org.grails.datastore.mapping.core.Session
@@ -39,7 +40,7 @@ import org.neo4j.driver.v1.types.Node
  * @author Graeme Rocher
  */
 @CompileStatic
-@Commons
+@Slf4j
 class Neo4jQuery extends Query {
 
     private static final String ORDER_BY_CLAUSE = " ORDER BY "

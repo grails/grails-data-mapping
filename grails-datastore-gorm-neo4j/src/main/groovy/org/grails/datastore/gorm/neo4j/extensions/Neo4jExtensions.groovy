@@ -44,6 +44,20 @@ class Neo4jExtensions {
     }
 
     /**
+     * Allows the dot operator on nodes
+     */
+    static Object getProperty(MapAccessor node, String name) {
+        node.get(name)
+    }
+
+    /**
+     * Allows the subscript operator on nodes
+     */
+    static Boolean asBoolean(MapAccessor node) {
+        return node.size() > 0
+    }
+
+    /**
      * Allow casting from Node to domain class
      *
      * @param node The node
@@ -52,13 +66,18 @@ class Neo4jExtensions {
      * @return The domain instance
      */
     static <N> N asType(Node node, Class<N> c) {
-        Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
-        def entityPersister = session.getEntityPersister(c)
-        if(entityPersister != null) {
-            return (N)entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node)
+        if(Map.isAssignableFrom(c)) {
+            return (N)node.asMap()
         }
         else {
-            throw new ClassCastException("Class [$c.name] is not a GORM entity")
+            Neo4jSession session = (Neo4jSession)AbstractDatastore.retrieveSession(Neo4jDatastore)
+            def entityPersister = session.getEntityPersister(c)
+            if(entityPersister != null) {
+                return (N)entityPersister.unmarshallOrFromCache(entityPersister.getPersistentEntity(), node)
+            }
+            else {
+                throw new ClassCastException("Class [$c.name] is not a GORM entity")
+            }
         }
     }
 

@@ -21,13 +21,25 @@ import java.io.Serializable;
  * An interface for generating unique identifiers for instances
  *
  * @author Stefan
+ * @author Graeme Rocher
  */
 public interface IdGenerator {
     /**
      * Default id generator types
      */
     enum Type {
-        NATIVE, ASSIGNED, SNOWFLAKE
+        /**
+         * Native identifiers using the Node id
+         */
+        NATIVE,
+        /**
+         * Assigned identifiers, assigned by the developer
+         */
+        ASSIGNED,
+        /**
+         * Identifiers generated using the Snowflake algorithm
+         */
+        SNOWFLAKE
     }
 
     /**

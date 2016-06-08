@@ -40,6 +40,10 @@ import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.util.ClassUtils
 
 /**
+ * An {@link AbstractDatastoreInitializer} used for initializing GORM for Neo4j when using Spring.
+ *
+ * If you are not using the Spring container then using the constructors of {@link Neo4jDatastore} is preferable
+ *
  * @author Graeme Rocher
  * @since 4.0
  */
@@ -101,6 +105,7 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
     /**
      * Sets the default Neo4j GORM mapping configuration
      */
+    @Deprecated
     void setDefaultMapping(Closure defaultMapping) {
         this.defaultMapping = defaultMapping
     }

@@ -8,7 +8,10 @@ import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 
 /**
+ * Represents a mapping between a GORM entity and the Graph
+ *
  * @author Stefan Armbruster
+ * @author Graeme Rocher
  */
 @CompileStatic
 class GraphClassMapping extends AbstractClassMapping<Neo4jEntity> {

@@ -21,6 +21,9 @@ import static org.neo4j.graphdb.factory.GraphDatabaseSettings.boltConnector;
  */
 public class EmbeddedNeo4jServer {
 
+    /**
+     * @return Whether the embedded server capability is available or not
+     */
     public static boolean isAvailable() {
         return ClassUtils.isPresent("org.neo4j.harness.ServerControls", EmbeddedNeo4jServer.class.getClassLoader());
     }

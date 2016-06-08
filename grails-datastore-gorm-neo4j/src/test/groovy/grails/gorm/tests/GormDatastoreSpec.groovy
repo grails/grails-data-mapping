@@ -3,17 +3,14 @@ package grails.gorm.tests
 import grails.core.DefaultGrailsApplication
 import grails.core.GrailsApplication
 import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPublisher
-import org.grails.datastore.gorm.neo4j.HashcodeEqualsAwareProxyFactory
+import org.grails.datastore.gorm.neo4j.proxy.HashcodeEqualsAwareProxyFactory
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jSession
-import org.grails.datastore.gorm.neo4j.util.EmbeddedNeo4jServer
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.validation.GrailsDomainClassValidator
-import org.neo4j.driver.v1.Config
 import org.neo4j.driver.v1.Driver
-import org.neo4j.driver.v1.GraphDatabase
 import org.neo4j.harness.ServerControls
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.core.env.MapPropertySource
@@ -47,19 +44,15 @@ abstract class GormDatastoreSpec extends Specification {
         ctx.refresh()
         def allClasses = getDomainClasses() as Class[]
 
-        def config = new StandardEnvironment()
-        config.propertySources.addFirst(new MapPropertySource("test",
-            [(Neo4jDatastore.SETTING_NEO4J_TYPE): Neo4jDatastore.DATABASE_TYPE_EMBEDDED]
-        ))
         neo4jDatastore = new Neo4jDatastore(
-                config,
+                [(Neo4jDatastore.SETTING_NEO4J_TYPE): Neo4jDatastore.DATABASE_TYPE_EMBEDDED],
                 new ConfigurableApplicationContextEventPublisher(ctx),
                 allClasses
         )
         serverControls = (ServerControls)Neo4jDatastore.embeddedServer
         boltDriver = neo4jDatastore.boltDriver
-        neo4jDatastore.mappingContext.proxyFactory = new HashcodeEqualsAwareProxyFactory()
         mappingContext = neo4jDatastore.mappingContext
+
         grailsApplication = new DefaultGrailsApplication(allClasses, getClass().getClassLoader())
         grailsApplication.mainContext = ctx
         grailsApplication.initialise()

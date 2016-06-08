@@ -28,7 +28,7 @@ class MongoGormEnhancerSpec extends GormDatastoreSpec{
             MongoCollection collection = MyMongoEntity.collection
 
         then:
-            collection.name == 'mycollection'
+            collection.namespace.collectionName == 'mycollection'
     }
 
     @Override

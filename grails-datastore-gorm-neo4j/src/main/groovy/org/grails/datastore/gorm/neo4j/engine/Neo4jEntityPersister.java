@@ -40,7 +40,11 @@ import java.util.*;
 import static org.grails.datastore.mapping.query.Query.*;
 
 /**
+ * Core {@link EntityPersister} implementation responsible for CRUD operations against the Graph.
+ *
  * @author Stefan Armbruster (stefan@armbruster-it.de)
+ * @author Graeme Rocher
+ * @since 1.0
  */
 public class Neo4jEntityPersister extends EntityPersister {
 
