@@ -27,7 +27,7 @@ import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.grails.datastore.mapping.reflect.FieldEntityAccess;
-import org.grails.datastore.mapping.validation.ValidatorLookup;
+import org.grails.datastore.mapping.validation.ValidatorRegistry;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
@@ -56,7 +56,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     protected Collection<Listener> eventListeners = new ConcurrentLinkedQueue<Listener>();
     protected GenericConversionService conversionService = new DefaultConversionService();
     protected ProxyFactory proxyFactory;
-    protected ValidatorLookup validatorLookup;
+    protected ValidatorRegistry validatorRegistry;
     private boolean canInitializeEntities = true;
     private boolean initialized;
 
@@ -110,8 +110,8 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
             this.proxyFactory = factory;
         }
     }
-    public void setValidatorLookup(ValidatorLookup validatorLookup) {
-        this.validatorLookup = validatorLookup;
+    public void setValidatorRegistry(ValidatorRegistry validatorRegistry) {
+        this.validatorRegistry = validatorRegistry;
     }
 
     private static class DefaultProxyFactoryCreator {
@@ -134,8 +134,8 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         if (entity != null) {
 
             Validator validator = entityValidators.get(entity);
-            if(validator == null && validatorLookup != null) {
-                Validator v = validatorLookup.getValidator(entity);
+            if(validator == null && validatorRegistry != null) {
+                Validator v = validatorRegistry.getValidator(entity);
                 if(v != null) {
                     entityValidators.put(entity, v);
                     return v;

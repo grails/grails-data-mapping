@@ -9,7 +9,7 @@ import org.springframework.validation.Validator;
  * @author Graeme Rocher
  * @since 6.0
  */
-public interface ValidatorLookup {
+public interface ValidatorRegistry {
 
     /**
      * Looks up a validator for the given entity

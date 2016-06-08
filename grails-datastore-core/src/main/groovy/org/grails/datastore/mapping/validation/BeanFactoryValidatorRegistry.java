@@ -10,10 +10,10 @@ import org.springframework.validation.Validator;
  * @author Graeme Rocher
  * @since 6.0
  */
-public class BeanFactoryValidatorLookup implements ValidatorLookup {
+public class BeanFactoryValidatorRegistry implements ValidatorRegistry {
     private final BeanFactory beanFactory;
 
-    public BeanFactoryValidatorLookup(BeanFactory beanFactory) {
+    public BeanFactoryValidatorRegistry(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 

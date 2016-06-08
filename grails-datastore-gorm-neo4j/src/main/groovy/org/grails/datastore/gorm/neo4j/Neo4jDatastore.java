@@ -59,7 +59,9 @@ import java.util.*;
  */
 public class Neo4jDatastore extends AbstractDatastore implements Closeable, StatelessDatastore, GraphDatastore {
 
-    public static final String DEFAULT_LOCATION = "bolt://localhost:7687";
+    public static final String DEFAULT_URL = "bolt://localhost:7687";
+    @Deprecated
+    public static final String DEFAULT_LOCATION = DEFAULT_URL;
     public static final String SETTING_NEO4J_URL = "grails.neo4j.url";
     public static final String SETTING_NEO4J_BUILD_INDEX = "grails.neo4j.buildIndex";
     public static final String SETTING_NEO4J_LOCATION = "grails.neo4j.location";
@@ -69,8 +71,8 @@ public class Neo4jDatastore extends AbstractDatastore implements Closeable, Stat
     public static final String SETTING_NEO4J_PASSWORD = "grails.neo4j.password";
     public static final String SETTING_DEFAULT_MAPPING = "grails.neo4j.default.mapping";
     public static final String SETTING_NEO4J_DB_PROPERTIES = "grails.neo4j.options";
-    public static final String DEFAULT_DATABASE_TYPE = "embedded";
-    public static final String DATABASE_TYPE_EMBEDDED = DEFAULT_DATABASE_TYPE;
+    public static final String DEFAULT_DATABASE_TYPE = "remote";
+    public static final String DATABASE_TYPE_EMBEDDED = "embedded";
 
     private static Logger log = LoggerFactory.getLogger(Neo4jDatastore.class);
 
@@ -280,8 +282,8 @@ public class Neo4jDatastore extends AbstractDatastore implements Closeable, Stat
         final String url = configuration.getProperty(SETTING_NEO4J_LOCATION, configuration.getProperty(SETTING_NEO4J_URL, (String)null));
         final String username = configuration.getProperty(SETTING_NEO4J_USERNAME, String.class, null);
         final String password = configuration.getProperty(SETTING_NEO4J_PASSWORD, String.class, null);
-        final String type = configuration.getProperty(SETTING_NEO4J_TYPE, String.class, null);
-        if(type != null && DATABASE_TYPE_EMBEDDED.equalsIgnoreCase(type)) {
+        final String type = configuration.getProperty(SETTING_NEO4J_TYPE, String.class, DEFAULT_DATABASE_TYPE);
+        if(DATABASE_TYPE_EMBEDDED.equalsIgnoreCase(type)) {
             if(ClassUtils.isPresent("org.neo4j.harness.ServerControls") && EmbeddedNeo4jServer.isAvailable()) {
                 ServerControls serverControls;
                 try {
@@ -306,7 +308,7 @@ public class Neo4jDatastore extends AbstractDatastore implements Closeable, Stat
 
         Neo4jDriverConfigBuilder configBuilder = new Neo4jDriverConfigBuilder(configuration);
 
-        return GraphDatabase.driver(url != null ? url : DEFAULT_LOCATION, authToken, configBuilder.build());
+        return GraphDatabase.driver(url != null ? url : DEFAULT_URL, authToken, configBuilder.build());
     }
 
     protected void registerEventListeners(ConfigurableApplicationEventPublisher eventPublisher) {

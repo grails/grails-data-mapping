@@ -18,23 +18,16 @@ package grails.neo4j.bootstrap
 
 import grails.neo4j.Neo4jEntity
 import groovy.transform.InheritConstructors
-import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPublisher
 import org.grails.datastore.gorm.events.DefaultApplicationEventPublisher
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
-import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
-import org.grails.datastore.gorm.neo4j.bean.factory.DefaultMappingHolder
-import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
-import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
 import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
-import org.grails.datastore.mapping.validation.BeanFactoryValidatorLookup
+import org.grails.datastore.mapping.validation.BeanFactoryValidatorRegistry
 import org.springframework.beans.factory.BeanFactory
-import org.springframework.beans.factory.config.CustomEditorConfigurer
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
-import org.springframework.beans.propertyeditors.ClassEditor
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.util.ClassUtils
@@ -79,7 +72,7 @@ class Neo4jDataStoreSpringInitializer extends AbstractDatastoreInitializer {
             }
             neo4jDatastore(Neo4jDatastore, configuration, eventPublisher, collectMappedClasses(DATASTORE_TYPE))
             neo4jMappingContext(neo4jDatastore:"getMappingContext") {
-                validatorLookup = new BeanFactoryValidatorLookup((BeanFactory)beanDefinitionRegistry)
+                validatorRegistry = new BeanFactoryValidatorRegistry((BeanFactory)beanDefinitionRegistry)
             }
             neo4jTransactionManager(neo4jDatastore:"getTransactionManager")
             neo4jDriver(neo4jDatastore:"getBoltDriver")
