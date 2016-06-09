@@ -272,7 +272,7 @@ subprojects {
                 exceptionFormat ='full'
             }
             if (isTravisBuild) {
-                maxParallelForks = 2
+                maxParallelForks = 1
                 jvmArgs = ['-Xmx768M']
                 forkEvery = 5
                 afterSuite {
@@ -283,10 +283,6 @@ subprojects {
                 maxParallelForks = 4
                 forkEvery = 100
                 jvmArgs = ['-server', '-Xmx2048M']
-            }
-            if(System.getProperty("debug.tests")) {
-                jvmArgs '-Xmx2g', '-Xdebug', '-Xnoagent', '-Djava.compiler=NONE',
-                        '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
             }
         }
         test.doFirst {
