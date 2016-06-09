@@ -15,8 +15,8 @@ public class NullableConstraint extends AbstractVetoingConstraint {
 
     private final boolean nullable;
 
-    public NullableConstraint(String constraintPropertyName, Class<?> constraintOwningClass, Object constraintParameter, MessageSource messageSource) {
-        super(constraintPropertyName, constraintOwningClass, constraintParameter, messageSource);
+    public NullableConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
+        super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
         this.nullable = (boolean) constraintParameter;
     }
 

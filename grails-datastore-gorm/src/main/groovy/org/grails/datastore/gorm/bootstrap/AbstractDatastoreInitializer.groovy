@@ -276,7 +276,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     }
 
     protected boolean isMappedClass(String datastoreType, Class cls) {
-        datastoreType.equals(ClassPropertyFetcher.forClass(cls).getStaticPropertyValue(GormProperties.MAPPING_STRATEGY, cls))
+        datastoreType.equals(ClassPropertyFetcher.forClass(cls).getStaticPropertyValue(GormProperties.MAPPING_STRATEGY, String))
     }
 
 

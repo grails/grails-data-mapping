@@ -12,7 +12,7 @@ import org.springframework.validation.Errors;
  */
 public abstract class AbstractVetoingConstraint extends AbstractConstraint implements VetoingConstraint {
 
-    public AbstractVetoingConstraint(String constraintPropertyName, Class<?> constraintOwningClass, Object constraintParameter, MessageSource messageSource) {
+    public AbstractVetoingConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
     }
 

@@ -2,6 +2,21 @@ package org.grails.datastore.gorm.validation.constraints.registry
 
 import grails.gorm.validation.Constraint
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.validation.constraints.BlankConstraint
+import org.grails.datastore.gorm.validation.constraints.CreditCardConstraint
+import org.grails.datastore.gorm.validation.constraints.EmailConstraint
+import org.grails.datastore.gorm.validation.constraints.InListConstraint
+import org.grails.datastore.gorm.validation.constraints.MatchesConstraint
+import org.grails.datastore.gorm.validation.constraints.MaxConstraint
+import org.grails.datastore.gorm.validation.constraints.MaxSizeConstraint
+import org.grails.datastore.gorm.validation.constraints.MinConstraint
+import org.grails.datastore.gorm.validation.constraints.MinSizeConstraint
+import org.grails.datastore.gorm.validation.constraints.NotEqualConstraint
+import org.grails.datastore.gorm.validation.constraints.NullableConstraint
+import org.grails.datastore.gorm.validation.constraints.RangeConstraint
+import org.grails.datastore.gorm.validation.constraints.ScaleConstraint
+import org.grails.datastore.gorm.validation.constraints.SizeConstraint
+import org.grails.datastore.gorm.validation.constraints.UrlConstraint
 import org.grails.datastore.gorm.validation.constraints.factory.ConstraintFactory
 import org.grails.datastore.gorm.validation.constraints.factory.DefaultConstraintFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,10 +45,31 @@ class DefaultConstraintRegistry implements ConstraintRegistry {
 
     DefaultConstraintRegistry(MessageSource messageSource) {
         this.messageSource = messageSource
+
+
+        def charSequenceType = [CharSequence]
+        def comparableNumberType = [Comparable, Number]
+        def charSequenceIterableType = [CharSequence, Iterable]
+
+        addConstraint(BlankConstraint, charSequenceType)
+        addConstraint(CreditCardConstraint, charSequenceType)
+        addConstraint(EmailConstraint, charSequenceType)
+        addConstraint(InListConstraint)
+        addConstraint(MatchesConstraint, charSequenceType)
+        addConstraint(MaxConstraint, comparableNumberType)
+        addConstraint(MaxSizeConstraint, charSequenceIterableType)
+        addConstraint(MinConstraint, comparableNumberType)
+        addConstraint(MinSizeConstraint, charSequenceIterableType)
+        addConstraint(NotEqualConstraint)
+        addConstraint(NullableConstraint)
+        addConstraint(RangeConstraint, comparableNumberType)
+        addConstraint(ScaleConstraint, [BigDecimal, Double, Float])
+        addConstraint(SizeConstraint, charSequenceIterableType)
+        addConstraint(UrlConstraint, charSequenceType)
     }
 
     @Autowired(required = false)
-    void setConstraintFactories(ConstraintFactory[] constraintFactories) {
+    void setConstraintFactories(ConstraintFactory... constraintFactories) {
         for(factory in constraintFactories) {
             addConstraintFactory(factory)
         }
@@ -46,8 +82,8 @@ class DefaultConstraintRegistry implements ConstraintRegistry {
     }
 
     @Override
-    void addConstraint(Class<? extends Constraint> constraintClass, Class targetPropertyType = Object) {
-        addConstraintFactory(new DefaultConstraintFactory(constraintClass, messageSource, targetPropertyType))
+    void addConstraint(Class<? extends Constraint> constraintClass, List<Class> targetPropertyTypes = [Object]) {
+        addConstraintFactory(new DefaultConstraintFactory(constraintClass, messageSource, targetPropertyTypes))
     }
 
     @Override

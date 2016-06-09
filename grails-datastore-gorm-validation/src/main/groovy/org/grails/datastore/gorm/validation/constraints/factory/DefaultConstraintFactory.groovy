@@ -4,6 +4,8 @@ import grails.gorm.validation.Constraint
 import grails.gorm.validation.exceptions.ValidationConfigurationException
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.validation.constraints.AbstractConstraint
+import org.grails.datastore.gorm.validation.constraints.NullableConstraint
+import org.grails.datastore.mapping.reflect.ClassUtils
 import org.springframework.context.MessageSource
 
 import java.beans.Introspector
@@ -21,15 +23,15 @@ class DefaultConstraintFactory implements ConstraintFactory {
     final Class<? extends Constraint> type
     final String name
     final MessageSource messageSource
-    final Class targetType
+    final List<Class> targetTypes
 
     protected final Constructor constraintConstructor
 
-    DefaultConstraintFactory(Class<? extends Constraint> constraintClass, MessageSource messageSource, Class targetType = Object) {
+    DefaultConstraintFactory(Class<? extends Constraint> constraintClass, MessageSource messageSource, List<Class> targetTypes = []) {
         this.type = constraintClass
         this.name = Introspector.decapitalize(constraintClass.simpleName) - "Constraint"
         this.messageSource = messageSource
-        this.targetType = targetType
+        this.targetTypes = targetTypes
 
         try {
             constraintConstructor = constraintClass.getConstructor(Class, String, Object, MessageSource)
@@ -40,7 +42,12 @@ class DefaultConstraintFactory implements ConstraintFactory {
 
     @Override
     boolean supports(Class targetType) {
-        return this.targetType.isAssignableFrom(targetType)
+        if(NullableConstraint.isAssignableFrom(type)) {
+            return !targetType.isPrimitive()
+        }
+        else {
+            return this.targetTypes.any() { Class type -> ClassUtils.isAssignableOrConvertibleFrom(type, targetType) }
+        }
     }
 
     @Override

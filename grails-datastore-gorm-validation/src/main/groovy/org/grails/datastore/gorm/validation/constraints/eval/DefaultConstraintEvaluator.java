@@ -59,7 +59,7 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
         // Evaluate all the constraints closures in the inheritance chain
         for (Class aClassChain : classChain) {
             clazz = (Class<?>) aClassChain;
-            Closure<?> c = (Closure<?>) ClassPropertyFetcher.forClass(aClassChain).getStaticPropertyValue(PROPERTY_NAME, aClassChain);
+            Closure<?> c = (Closure<?>) ClassPropertyFetcher.forClass(aClassChain).getStaticPropertyValue(PROPERTY_NAME, Closure.class);
 
             if (c != null) {
                 c = (Closure<?>) c.clone();

@@ -11,6 +11,8 @@ import org.grails.datastore.gorm.validation.constraints.factory.ConstraintFactor
  */
 interface ConstraintRegistry {
 
+    String DEFAULT_CONSTRAINTS = 'grails.gorm.default.constraints'
+
     /**
      * Adds a constraint factory
      *
@@ -23,8 +25,9 @@ interface ConstraintRegistry {
      * Adds a constraint for the given class
      *
      * @param constraintClass The constraint class
+     * @param targetPropertyTypes the target types if any
      */
-    void addConstraint(Class<? extends Constraint> constraintClass, Class targetPropertyType)
+    void addConstraint(Class<? extends Constraint> constraintClass, List<Class> targetPropertyTypes)
 
     /**
      * Adds a constraint for the given class
