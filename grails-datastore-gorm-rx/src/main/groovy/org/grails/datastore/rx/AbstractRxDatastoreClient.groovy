@@ -166,7 +166,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
             }.defaultIfEmpty(0)
         }
         else {
-            return Observable.just(0)
+            return Observable.just((Number)0)
         }
     }
 

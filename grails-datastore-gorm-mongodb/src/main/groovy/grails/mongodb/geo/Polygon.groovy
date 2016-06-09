@@ -138,12 +138,14 @@ class Polygon extends Shape implements GeoJSON{
 
         return coords.collect {
             if(it instanceof Point) {
-                return it
+                return (Point)it
             }
             else if(it instanceof List) {
                 return Point.valueOf((List<Number>)it)
             }
-            throw new IllegalArgumentException("Invalid coordinates: $coords")
+            else {
+                throw new IllegalArgumentException("Invalid coordinates: $coords")
+            }
         }
     }
 

@@ -152,6 +152,7 @@ class Mapping extends Entity {
      */
     String comment
 
+
     boolean isTablePerConcreteClass() {
         return tablePerConcreteClass
     }

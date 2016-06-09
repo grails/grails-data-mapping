@@ -12,6 +12,7 @@ import org.bson.BsonDocument
 import org.bson.BsonDocumentReader
 import org.bson.BsonDocumentWriter
 import org.bson.Document
+import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
 import org.bson.codecs.configuration.CodecRegistry
@@ -40,7 +41,9 @@ trait RxMongoEntity<D> implements RxEntity<D>, DynamicAttributes {
         def staticApi = RxGormEnhancer.findStaticApi(getClass())
         RxMongoDatastoreClient client = (RxMongoDatastoreClient)staticApi.datastoreClient
         def doc = new BsonDocument()
-        client.codecRegistry.get(getClass()).encode(new BsonDocumentWriter(doc), this, EncoderContext.builder().build())
+
+        Codec<D> codec = client.codecRegistry.get((Class<D>)getClass())
+        codec.encode(new BsonDocumentWriter(doc), (D)this, EncoderContext.builder().build())
         return doc
     }
 

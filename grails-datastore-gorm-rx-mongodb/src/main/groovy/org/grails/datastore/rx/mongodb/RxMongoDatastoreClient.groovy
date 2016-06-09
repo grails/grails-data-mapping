@@ -439,14 +439,14 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
             }
         }
 
-        return Observable.concatEager(observables)
+        return (Observable<Number>)Observable.concatEager(observables)
                             .reduce(0L, { Long count, BulkWriteResult bwr ->
             if(bwr.wasAcknowledged()) {
                 count += bwr.insertedCount
                 count += bwr.modifiedCount
                 count += bwr.deletedCount
             }
-            return count
+            return (Number)count
         })
     }
 
@@ -465,15 +465,15 @@ class RxMongoDatastoreClient extends AbstractRxDatastoreClient<MongoClient> impl
         }
 
         if(observables.isEmpty()) {
-            return Observable.just(0L)
+            return Observable.just((Number)0L)
         }
         else {
-            return Observable.concatEager(observables)
+            return (Observable<Number>)Observable.concatEager(observables)
                              .reduce(0L, { Long count, DeleteResult dr ->
                 if(dr.wasAcknowledged()) {
                     count += dr.deletedCount
                 }
-                return count
+                return (Number)count
             })
         }
     }

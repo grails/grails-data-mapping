@@ -158,6 +158,7 @@ class GormEnhancer implements Closeable {
     }
 
 
+    @CompileDynamic
     static <D> GormStaticApi<D> findStaticApi(Class<D> entity, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
         def staticApi = STATIC_APIS.get(qualifier)?.get(NameUtils.getClassName(entity))
         if(staticApi == null) {
@@ -302,8 +303,8 @@ class GormEnhancer implements Closeable {
 
 
 
-    @CompileStatic
-    protected <D> List<AbstractGormApi<D>> getInstanceMethodApiProviders(Class cls) {
+    @CompileDynamic
+    protected <D> List<AbstractGormApi<D>> getInstanceMethodApiProviders(Class<D> cls) {
         [getInstanceApi(cls), getValidationApi(cls)]
     }
 
@@ -390,6 +391,6 @@ class GormEnhancer implements Closeable {
          new FindAllByBooleanFinder(datastore),
          new FindByBooleanFinder(datastore),
          new CountByFinder(datastore),
-         new ListOrderByFinder(datastore)]
+         new ListOrderByFinder(datastore)] as List<FinderMethod>
     }
 }

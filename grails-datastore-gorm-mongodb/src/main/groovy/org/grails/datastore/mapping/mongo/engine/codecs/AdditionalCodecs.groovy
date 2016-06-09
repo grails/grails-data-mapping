@@ -229,7 +229,7 @@ class AdditionalCodecs implements CodecProvider{
     }
 
     static Collection<Converter> getBsonConverters() {
-        BSON_VALUE_CONVERTERS.values().flatten()
+        return (Collection<Converter>)BSON_VALUE_CONVERTERS.values().flatten()
     }
     static Converter getBsonConverter(Class<? extends BsonValue> type) {
         BSON_VALUE_CONVERTERS.get(type).first()
@@ -293,8 +293,8 @@ class AdditionalCodecs implements CodecProvider{
                     writer.writeNull()
                 }
                 else {
-                    Codec c = codecRegistry.get( v.getClass() )
-                    c.encode(writer, (Object)v, encoderContext)
+                    Codec<Object> c = (Codec<Object>)codecRegistry.get( v.getClass() )
+                    c.encode(writer, v, encoderContext)
                 }
             }
             writer.writeEndDocument()
@@ -341,8 +341,8 @@ class AdditionalCodecs implements CodecProvider{
                     writer.writeNull()
                 }
                 else {
-                    Codec c = codecRegistry.get( v.getClass() )
-                    c.encode(writer, (Object)v, encoderContext)
+                    Codec<Object> c = (Codec<Object>)codecRegistry.get( v.getClass() )
+                    c.encode(writer, v, encoderContext)
                 }
             }
             writer.writeEndArray()

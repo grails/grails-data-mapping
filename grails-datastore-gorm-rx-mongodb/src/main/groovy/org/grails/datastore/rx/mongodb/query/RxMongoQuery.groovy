@@ -209,9 +209,9 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
                 return result.modifiedCount
             }
             else {
-                return 0
+                return (Number)0
             }
-        }).defaultIfEmpty(0L)
+        }).defaultIfEmpty((Number)0L)
     }
 
     @Override
@@ -224,9 +224,9 @@ class RxMongoQuery extends MongoQuery implements RxQuery {
                 return result.deletedCount
             }
             else {
-                return 0L
+                return (Number)0L
             }
-        }).defaultIfEmpty(0L)
+        }).defaultIfEmpty((Number)0L)
     }
 
     protected Observable executeQuery(List<Query.Projection> projectionList) {

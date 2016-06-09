@@ -293,7 +293,7 @@ class PersistentEntityCodec implements Codec {
         if(value instanceof DirtyCheckable) {
             def sets = new BsonDocument()
             def unsets = new Document()
-            def writer = new BsonDocumentWriter(sets)
+            BsonWriter writer = new BsonDocumentWriter(sets)
             writer.writeStartDocument()
             DirtyCheckable dirty = (DirtyCheckable)value
             Set<String> processed = []
@@ -337,7 +337,8 @@ class PersistentEntityCodec implements Codec {
                         }
                         else {
                             def propKind = prop.getClass().superclass
-                            getPropertyEncoder(propKind)?.encode(writer, prop, v, access, encoderContext, codecRegistry)
+                            PropertyEncoder<Object> propertyEncoder = (PropertyEncoder<Object>)getPropertyEncoder(propKind)
+                            propertyEncoder?.encode(writer, prop, v, access, encoderContext, codecRegistry)
                         }
 
                     }
@@ -348,15 +349,15 @@ class PersistentEntityCodec implements Codec {
             }
 
             if(value instanceof DynamicAttributes) {
-                def attributes = ((DynamicAttributes) value).attributes()
+                Map<String, Object> attributes = ((DynamicAttributes) value).attributes()
                 for(attr in attributes.keySet()) {
-                    def v = attributes.get(attr)
+                    Object v = attributes.get(attr)
                     if(v == null) {
                         unsets.put(attr,BLANK_STRING)
                     }
                     else {
                         writer.writeName(attr)
-                        def codec = codecRegistry.get(v.getClass())
+                        Codec<Object> codec = (Codec<Object>)codecRegistry.get(v.getClass())
                         codec.encode(writer, v, encoderContext)
                     }
                 }
@@ -375,7 +376,7 @@ class PersistentEntityCodec implements Codec {
                             }
                             else {
                                 writer.writeName(name)
-                                def codec = codecRegistry.get(v.getClass())
+                                Codec<Object> codec = (Codec<Object>)codecRegistry.get(v.getClass())
                                 codec.encode(writer, v, encoderContext)
                             }
                         }
@@ -582,7 +583,7 @@ class PersistentEntityCodec implements Codec {
         for (name in attributes.keySet()) {
             writer.writeName name
             Object v = attributes.get(name)
-            def codec = codecRegistry.get(v.getClass())
+            Codec<Object> codec = (Codec<Object>)codecRegistry.get(v.getClass())
             codec.encode(writer, v, encoderContext)
         }
     }
@@ -1131,7 +1132,7 @@ class PersistentEntityCodec implements Codec {
                                 identityEncoder.encode writer, ref, encoderContext
                             }
                             else {
-                                def identityEncoder = codecRegistry.get(associationId.getClass())
+                                Codec<Object> identityEncoder = (Codec<Object>)codecRegistry.get(associationId.getClass())
                                 identityEncoder.encode writer, associationId, encoderContext
                             }
                         }

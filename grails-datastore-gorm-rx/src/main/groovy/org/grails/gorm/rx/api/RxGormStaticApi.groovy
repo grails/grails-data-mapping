@@ -450,7 +450,7 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
          new FindAllByFinder(datastoreClient),
          new CountByFinder(datastoreClient),
          new FindByBooleanFinder(datastoreClient),
-         new FindAllByBooleanFinder(datastoreClient)]
+         new FindAllByBooleanFinder(datastoreClient)] as List<FinderMethod>
     }
 
 }

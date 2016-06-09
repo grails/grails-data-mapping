@@ -1,2 +1,1 @@
 org.grails.datastore.gorm.query.transform.GlobalDetachedCriteriaASTTransformation
-org.grails.compiler.gorm.GlobalTraitRepairTransformation

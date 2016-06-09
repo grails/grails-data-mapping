@@ -22,7 +22,7 @@ project.ext {
     grails2Version = '2.5.3'
     slf4jVersion = "1.7.10"
     junitVersion = "4.12"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.5'
+    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.7'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectMajorVersion = "6"
