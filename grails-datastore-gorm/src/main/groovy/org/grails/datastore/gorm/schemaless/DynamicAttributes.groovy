@@ -28,7 +28,7 @@ trait DynamicAttributes {
             def oldValue = dynamicAttributes.put(name, value)
             if(oldValue != value) {
                 if(this instanceof DirtyCheckable) {
-                    ((DirtyCheckable)this).markDirty(name)
+                    ((DirtyCheckable)this).markDirty(name, value, oldValue)
                 }
             }
         }
