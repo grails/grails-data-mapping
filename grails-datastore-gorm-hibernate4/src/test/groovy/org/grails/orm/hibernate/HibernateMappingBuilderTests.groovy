@@ -275,9 +275,9 @@ class HibernateMappingBuilderTests extends GroovyTestCase {
             }
         }
 
-        assertEquals FetchMode.JOIN,mapping.getPropertyConfig('things').fetch
-        assertEquals FetchMode.SELECT,mapping.getPropertyConfig('others').fetch
-        assertEquals FetchMode.DEFAULT,mapping.getPropertyConfig('mores').fetch
+        assertEquals FetchMode.JOIN,mapping.getPropertyConfig('things').fetchMode
+        assertEquals FetchMode.SELECT,mapping.getPropertyConfig('others').fetchMode
+        assertEquals FetchMode.DEFAULT,mapping.getPropertyConfig('mores').fetchMode
     }
 
     void testEnumType() {

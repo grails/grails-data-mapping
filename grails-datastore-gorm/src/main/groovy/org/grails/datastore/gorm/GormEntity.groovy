@@ -248,14 +248,16 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
         EntityReflector entityReflector = mappingContext.getEntityReflector(entity)
         def association = entity.getPropertyByName(associationName)
         if(association instanceof ToOne) {
-
             def proxyHandler = mappingContext.getProxyHandler()
             def value = entityReflector.getProperty(this, associationName)
             if(proxyHandler.isProxy(value)) {
                 return proxyHandler.getIdentifier(value)
             }
             else {
-                return entityReflector.getIdentifier(value)
+                PersistentEntity associatedEntity = ((ToOne)association).getAssociatedEntity()
+                if(associatedEntity != null) {
+                    return associatedEntity.getReflector().getIdentifier(value)
+                }
             }
         }
         return null

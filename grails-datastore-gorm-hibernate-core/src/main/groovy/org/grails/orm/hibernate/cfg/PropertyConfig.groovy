@@ -82,15 +82,28 @@ class PropertyConfig extends Property {
     CacheConfig cache
     JoinTable joinTable = new JoinTable()
 
+    /**
+     * @param fetch The Hibernate {@link FetchMode}
+     */
     void setFetch(FetchMode fetch) {
         if(FetchMode.JOIN.equals(fetch)) {
             super.setFetchStrategy(FetchType.EAGER)
         }
-        this.fetch = fetch
     }
 
-    FetchMode getFetch() {
-        return fetch
+    /**
+     * @return The Hibernate {@link FetchMode}
+     */
+    FetchMode getFetchMode() {
+        FetchType strategy = super.getFetchStrategy()
+        switch (strategy) {
+            case FetchType.EAGER:
+                return FetchMode.JOIN
+            case FetchType.LAZY:
+                return FetchMode.SELECT
+            default:
+                return FetchMode.DEFAULT
+        }
     }
     /**
      * The column used to produce the index for index based collections (lists and maps)
@@ -212,7 +225,7 @@ class PropertyConfig extends Property {
     PropertyConfig clone() throws CloneNotSupportedException {
         PropertyConfig pc = (PropertyConfig)super.clone()
 
-        pc.fetch = fetch
+        pc.fetch = fetchMode
         pc.indexColumn = indexColumn != null ? (PropertyConfig)indexColumn.clone() : null
         pc.cache = cache != null ? cache.clone() : cache
         pc.joinTable = joinTable.clone()
