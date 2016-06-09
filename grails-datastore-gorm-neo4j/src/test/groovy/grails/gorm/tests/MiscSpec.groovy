@@ -161,7 +161,7 @@ class MiscSpec extends GormDatastoreSpec {
                 def session = boltDriver.session()
                 def tx = session.beginTransaction()
 
-                tx.run("(n1:Team {props})", [props:[name:"Team $count".toString()]])
+                tx.run("CREATE (n1:Team {props})", [props:[name:"Team $count".toString()]])
                 tx.success()
                 session.close()
             }
