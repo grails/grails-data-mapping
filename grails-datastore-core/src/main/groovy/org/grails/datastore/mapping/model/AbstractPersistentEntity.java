@@ -29,6 +29,7 @@ import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.OneToMany;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
+import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
 
@@ -60,6 +61,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     private PersistentProperty[] compositeIdentity;
     private final String mappingStrategy;
     private final boolean isAbstract;
+    private EntityReflector entityReflector;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         Assert.notNull(javaClass, "The argument [javaClass] cannot be null");
@@ -189,7 +191,12 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
 
 
         propertiesInitialized = true;
+        this.entityReflector = getMappingContext().getEntityReflector(this);
+    }
 
+    @Override
+    public EntityReflector getReflector() {
+        return this.entityReflector;
     }
 
     protected boolean isAnnotatedSuperClass(MappingConfigurationStrategy mappingSyntaxStrategy, Class superClass) {

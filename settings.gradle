@@ -5,6 +5,7 @@ include ("grails-datastore-core",
 
         // Core GORM Implementation projects
         'grails-datastore-gorm',
+        'grails-datastore-gorm-validation',
         'grails-datastore-gorm-support',
         'grails-datastore-gorm-grails2-support',
         'grails-datastore-gorm-tck',

@@ -24,7 +24,9 @@ import org.springframework.validation.Validator
  *
  * @author Graeme Rocher
  * @since 1.0
+ * @deprecated No longer supported
  */
+@Deprecated
 abstract class OnChangeHandler extends DynamicMethodsConfigurer{
 
     OnChangeHandler(Datastore datastore, PlatformTransactionManager transactionManager) {
