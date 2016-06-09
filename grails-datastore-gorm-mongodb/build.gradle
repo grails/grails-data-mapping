@@ -19,7 +19,7 @@ dependencies {
 tasks.withType(GroovyCompile) {
     configure(groovyOptions.forkOptions) {
         memoryMaximumSize = '1g'
-        jvmArgs = ['-XX:MaxPermSize=512m', '-Xms512m', '-Xmx1g']
+        jvmArgs = ['-Xms512m', '-Xmx1g']
     }
 }
 
