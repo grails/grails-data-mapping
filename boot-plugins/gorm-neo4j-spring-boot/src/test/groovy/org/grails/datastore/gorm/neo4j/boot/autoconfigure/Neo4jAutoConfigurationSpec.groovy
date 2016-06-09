@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.neo4j.boot.autoconfigure
 
 import grails.persistence.Entity
 import org.grails.boot.internal.EnableAutoConfiguration
+import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
@@ -23,8 +24,10 @@ class Neo4jDbGormAutoConfigurationSpec extends Specification{
 
     void setup() {
 
+        System.setProperty(Neo4jDatastore.SETTING_NEO4J_TYPE, Neo4jDatastore.DATABASE_TYPE_EMBEDDED)
         AutoConfigurationPackages.register(context, Neo4jDbGormAutoConfigurationSpec.package.name)
-        this.context.register( TestConfiguration, PropertyPlaceholderAutoConfiguration.class);
+        this.context.register( TestConfiguration, PropertyPlaceholderAutoConfiguration.class, );
+
     }
 
 

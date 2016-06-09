@@ -32,5 +32,6 @@ dependencies {
     }
     compile "org.springframework:spring-tx:$springVersion"
 
+    testRuntime 'org.neo4j.test:neo4j-harness:3.0.2'
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
 }
