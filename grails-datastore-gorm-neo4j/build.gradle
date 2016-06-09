@@ -2,7 +2,7 @@ sourceSets.main.java.srcDirs = []
 sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
 dependencies {
-    compile 'org.neo4j.driver:neo4j-java-driver:1.0.2'
+    compile 'org.neo4j.driver:neo4j-java-driver:1.0.1'
 
     // during development (aka snapshot version), use project dependencies
     // during release, use 'regular' dependencies

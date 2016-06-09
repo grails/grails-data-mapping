@@ -152,7 +152,7 @@ class MiscSpec extends GormDatastoreSpec {
         tournament.teams[0].club.name == 'club'
     }
 
-    @Ignore
+//    @Ignore
     // This test is failing due to a bug in the driver
     void "test concurrent native accesses"() {
         when:
@@ -177,7 +177,7 @@ class MiscSpec extends GormDatastoreSpec {
         100   | 100
     }
 
-    @Ignore
+//    @Ignore
     // This test is failing due to a bug in the driver
     void "test concurrent accesses"() {
         when:
