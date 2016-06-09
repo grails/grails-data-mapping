@@ -73,6 +73,4 @@ dependencies {
         exclude group:'org.grails', module:'grails-core'
         exclude group:'javax.transaction', module:'jta'
     }
-
-    runtime(group:"org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:"tests")
 }
