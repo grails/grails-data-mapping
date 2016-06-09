@@ -5,6 +5,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.cglib.reflect.FastClass;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Used for reflective data
@@ -30,6 +31,11 @@ public interface EntityReflector {
      * @return The name of the identifier
      */
     String getIdentifierName();
+
+    /**
+     * @return The property names
+     */
+    Iterable<String> getPropertyNames();
 
     /**
      * @return Obtain the identifier

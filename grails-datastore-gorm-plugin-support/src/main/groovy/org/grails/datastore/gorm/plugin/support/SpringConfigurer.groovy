@@ -34,7 +34,9 @@ import org.springframework.transaction.annotation.Transactional
  *
  * @author Graeme Rocher
  * @since 1.0
+ * @deprecated Replaced by AbstractDatastoreInitializer
  */
+@Deprecated
 abstract class SpringConfigurer {
 
 

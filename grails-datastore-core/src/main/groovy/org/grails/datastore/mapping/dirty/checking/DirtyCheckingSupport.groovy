@@ -17,10 +17,12 @@ package org.grails.datastore.mapping.dirty.checking
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.reflect.EntityReflector
 
 /**
  * Support methods for dirty checking
@@ -42,15 +44,17 @@ class DirtyCheckingSupport {
     static boolean areAssociationsDirty(Session session, PersistentEntity entity, Object instance) {
         if(!instance) return false
 
-        final proxyFactory = session.mappingContext.proxyFactory
-        final cpf = ClassPropertyFetcher.forClass(instance.getClass())
+
+        MappingContext mappingContext = session.mappingContext
+        final proxyFactory = mappingContext.proxyFactory
+        final EntityReflector entityReflector = mappingContext.getEntityReflector(entity)
 
         final associations = entity.associations
         for(Association a in associations) {
             final isOwner = a.isOwningSide() || (a.bidirectional && !a.inverseSide?.owningSide)
             if(isOwner) {
                 if(a instanceof ToOne) {
-                    final value = cpf.getPropertyValue(instance, a.name)
+                    final value = entityReflector.getProperty(instance, a.name)
                     if(proxyFactory.isInitialized(value)) {
                         if(value instanceof DirtyCheckable) {
                             DirtyCheckable dirtyCheckable = (DirtyCheckable) value
@@ -61,7 +65,7 @@ class DirtyCheckingSupport {
                     }
                 }
                 else {
-                    final value = cpf.getPropertyValue(instance, a.name)
+                    final value = entityReflector.getProperty(instance, a.name)
                     if(value instanceof PersistentCollection) {
                         PersistentCollection coll = (PersistentCollection)value
                         if(coll.isInitialized()) {

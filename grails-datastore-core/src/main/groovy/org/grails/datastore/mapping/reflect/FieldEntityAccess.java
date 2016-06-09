@@ -316,6 +316,11 @@ public class FieldEntityAccess implements EntityAccess {
         }
 
         @Override
+        public Iterable<String> getPropertyNames() {
+            return readerMap.keySet();
+        }
+
+        @Override
         public Object getProperty(Object object, int index) {
             return readers[index].read(object);
         }

@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.model.types.conversion.DefaultConversionServ
 import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 import org.grails.datastore.mapping.validation.ValidatorRegistry;
@@ -212,6 +213,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
                 eventListener.persistentEntityAdded(entity);
             }
         }
+        ClassPropertyFetcher.clearCache();
         return entities;
     }
 
@@ -249,6 +251,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         for (Listener eventListener : eventListeners) {
             eventListener.persistentEntityAdded(entity);
         }
+        ClassPropertyFetcher.clearCache();
         return entity;
     }
 

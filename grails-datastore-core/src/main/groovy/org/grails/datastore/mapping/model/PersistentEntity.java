@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.grails.datastore.mapping.model.lifecycle.Initializable;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.reflect.EntityReflector;
 
 /**
  * Represents a persistent entity.
@@ -183,4 +184,8 @@ public interface PersistentEntity extends Initializable {
      */
     boolean isIdentityName(String propertyName);
 
+    /**
+     * @return The reflector this entity
+     */
+    EntityReflector getReflector();
 }

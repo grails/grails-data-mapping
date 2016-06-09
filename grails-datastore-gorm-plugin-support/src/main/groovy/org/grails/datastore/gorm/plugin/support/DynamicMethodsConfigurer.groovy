@@ -31,7 +31,9 @@ import org.springframework.transaction.PlatformTransactionManager
  *
  * @author Graeme Rocher
  * @since 1.0
+ * @deprecate No longer supported, replaced by traits
  */
+@Deprecated
 abstract class DynamicMethodsConfigurer {
 
     Datastore datastore

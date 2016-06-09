@@ -46,10 +46,45 @@ public class Property implements Cloneable {
     private int scale = -1;
     private List<String> inList = null;
     private List<String> uniquenessGroup = new ArrayList<String>();
-
+    private boolean derived;
+    private String cascade;
+    private String formula;
     @Override
     public Property clone() throws CloneNotSupportedException {
         return (Property) super.clone();
+    }
+    /**
+     * The formula used to build the property
+     */
+    public String getFormula() {
+        return formula;
+    }
+
+    public void setFormula(String formula) {
+        this.formula = formula;
+    }
+
+    /**
+     * Cascading strategy for this property. Only makes sense if the
+     * property is an association or collection.
+     */
+    public String getCascade() {
+        return cascade;
+    }
+
+    public void setCascade(String cascade) {
+        this.cascade = cascade;
+    }
+
+    /**
+     * @return Whether the property is derived or not
+     */
+    public boolean isDerived() {
+        return formula != null || derived;
+    }
+
+    public void setDerived(boolean derived) {
+        this.derived = derived;
     }
 
     /**

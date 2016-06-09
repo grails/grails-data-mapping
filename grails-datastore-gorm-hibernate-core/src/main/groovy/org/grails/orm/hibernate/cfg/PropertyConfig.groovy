@@ -15,7 +15,6 @@
  */
 package org.grails.orm.hibernate.cfg
 
-import groovy.transform.AutoClone
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.config.Property
 import org.hibernate.FetchMode
@@ -35,10 +34,6 @@ class PropertyConfig extends Property {
     boolean explicitSaveUpdateCascade;
 
     /**
-     * Whether the property is derived
-     */
-    boolean derived = false
-    /**
      * The Hibernate type or user type of the property. This can be
      * a string or a class.
      */
@@ -55,7 +50,6 @@ class PropertyConfig extends Property {
      */
     String sort
 
-    String formula
 
     /**
      * The default sort order
@@ -67,15 +61,6 @@ class PropertyConfig extends Property {
      */
     Integer batchSize
 
-    /**
-     * Cascading strategy for this property. Only makes sense if the
-     * property is an association or collection.
-     */
-    String cascade
-    /**
-     * The fetch strategy for this property.
-     */
-    FetchMode fetch = FetchMode.DEFAULT
 
     /**
      * Whether to ignore ObjectNotFoundException
