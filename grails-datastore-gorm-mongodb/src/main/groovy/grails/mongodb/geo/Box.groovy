@@ -14,7 +14,6 @@
  */
 package grails.mongodb.geo
 
-import groovy.transform.Canonical
 import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode
 
@@ -60,7 +59,7 @@ class Box extends Shape{
      * @return A box
      */
     static Box valueOf(List<List<Double>> coords) {
-        if(coords.size() != null) throw new IllegalArgumentException("Coordinates should contain at least 2 entries for a Box")
+        if(coords.size() != 2) throw new IllegalArgumentException("Coordinates should contain at least 2 entries for a Box")
 
         new Box( Point.getPointAtIndex(coords, 0), Point.getPointAtIndex(coords, 1) )
     }
