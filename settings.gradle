@@ -22,7 +22,7 @@ include ("grails-datastore-core",
         'grails-plugins/hibernate3',
         'grails-plugins/hibernate4',
         'grails-plugins/hibernate5',
-        'grails-plugins/redis-gorm',
+
 
         // Grails 2 Plugins
         'grails2-plugins/hibernate4',
@@ -32,7 +32,6 @@ include ("grails-datastore-core",
         'boot-plugins/gorm-cassandra-spring-boot',
 
         // GORM Implementations
-        'grails-datastore-gorm-redis',
         'grails-datastore-gorm-rest-client',
         'grails-datastore-gorm-hibernate-core',
         'grails-datastore-gorm-hibernate',

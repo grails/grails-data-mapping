@@ -33,7 +33,6 @@ env:
   - GORM_IMPL=hibernate
   - GORM_IMPL=hibernate4
   - GORM_IMPL=hibernate5
-  - GORM_IMPL=redis
 before_install:
 - ./openssl-setup.sh
 matrix:

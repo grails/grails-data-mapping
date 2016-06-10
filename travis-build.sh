@@ -22,14 +22,8 @@ else
         hibernate5)
             ./gradlew grails-datastore-gorm-hibernate5:test -no-daemon  --stacktrace || EXIT_STATUS=$?
             ;;
-        redis)
-            ./gradlew grails-datastore-gorm-redis:test -no-daemon  || EXIT_STATUS=$?
-            ;;
         testgrails2)
             ./gradlew grails-datastore-gorm-grails2-test:test -no-daemon  || EXIT_STATUS=$?
-            ;;
-        restclient)
-            ./gradlew grails-datastore-gorm-rest-client:test -no-daemon  || EXIT_STATUS=$?
             ;;
         *)
 
