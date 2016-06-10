@@ -12,7 +12,6 @@ include ("grails-datastore-core",
         'grails-datastore-gorm-test',
         'grails-datastore-gorm-grails2-test',
         'grails-datastore-gorm-plugin-support',
-        'grails-datastore-test-support',
 
 
         // RX projects
@@ -42,14 +41,4 @@ include ("grails-datastore-core",
         'grails-datastore-gorm-hibernate4',
         'grails-datastore-gorm-hibernate5'
 
-        // Unmaintained / Deprecated Implementations
-/*        'grails-datastore-gorm-riak',*/
-//        'grails-datastore-gorm-simpledb',
-//        'grails-datastore-gorm-dynamodb',
-
-/*
-        'grails-datastore-gorm-jcr',
-        'grails-datastore-gorm-simpledb'
-*/
 )
-// Datastore Project
