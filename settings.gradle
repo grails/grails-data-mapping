@@ -23,27 +23,20 @@ include ("grails-datastore-core",
         'grails-plugins/hibernate3',
         'grails-plugins/hibernate4',
         'grails-plugins/hibernate5',
-        'grails-plugins/mongodb',
-        'grails-plugins/rx-mongodb',
         'grails-plugins/cassandra',
         'grails-plugins/redis-gorm',
 
         // Grails 2 Plugins
-        'grails2-plugins/mongodb',
         'grails2-plugins/hibernate4',
 
         // Boot Extensions
         'boot-plugins/gorm-hibernate4-spring-boot',
-        'boot-plugins/gorm-mongodb-spring-boot',
         'boot-plugins/gorm-cassandra-spring-boot',
 
         // GORM Implementations
         'grails-datastore-gorm-cassandra',
         'grails-datastore-gorm-redis',
         'grails-datastore-gorm-rest-client',
-        'grails-datastore-gorm-mongodb',
-        'grails-datastore-gorm-mongodb-ext',
-        'grails-datastore-gorm-rx-mongodb',
         'grails-datastore-gorm-hibernate-core',
         'grails-datastore-gorm-hibernate',
         'grails-datastore-gorm-hibernate4',

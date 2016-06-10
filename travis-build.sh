@@ -22,18 +22,6 @@ else
         hibernate5)
             ./gradlew grails-datastore-gorm-hibernate5:test -no-daemon  --stacktrace || EXIT_STATUS=$?
             ;;
-        mongodb)
-            ./gradlew grails-datastore-gorm-mongodb:test -no-daemon --stacktrace || EXIT_STATUS=$?
-            if [[ $EXIT_STATUS -eq 0 ]]; then
-                ./gradlew grails2-plugins/mongodb:test || EXIT_STATUS=$?
-            fi
-            if [[ $EXIT_STATUS -eq 0 ]]; then
-                ./gradlew boot-plugins/gorm-mongodb-spring-boot:test || EXIT_STATUS=$?
-            fi
-            ;;
-        rx-mongodb)
-            ./gradlew grails-datastore-gorm-rx-mongodb:test -no-daemon --stacktrace || EXIT_STATUS=$?
-            ;;
         redis)
             ./gradlew grails-datastore-gorm-redis:test -no-daemon  || EXIT_STATUS=$?
             ;;
@@ -46,15 +34,6 @@ else
             #./gradlew grails-datastore-gorm-cassandra:test -no-daemon  || EXIT_STATUS=$?
             if [[ $EXIT_STATUS -eq 0 ]]; then
                 ./gradlew boot-plugins/gorm-cassandra-spring-boot:test || EXIT_STATUS=$?
-            fi
-            ;;
-        neo4j)
-            ./gradlew grails-datastore-gorm-neo4j:test -no-daemon  || EXIT_STATUS=$?
-            if [[ $EXIT_STATUS -eq 0 ]]; then
-                ./gradlew grails2-plugins/neo4j:test || EXIT_STATUS=$?
-            fi
-            if [[ $EXIT_STATUS -eq 0 ]]; then
-                ./gradlew boot-plugins/gorm-neo4j-spring-boot:test || EXIT_STATUS=$?
             fi
             ;;
         restclient)
