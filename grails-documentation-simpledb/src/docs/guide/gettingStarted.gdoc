@@ -1,6 +1,0 @@
-To get started with GORM for SimpleDB you need to install the plugin into a Grails application:
-
-{code}
-grails install-plugin simpledb
-{code}
-
