@@ -5,16 +5,6 @@ cache:
 language: groovy
 services:
 - redis
-- mongodb
-- cassandra
-addons:
-  apt:
-    sources:
-      - mongodb-upstart
-      - mongodb-3.0-precise
-    packages:
-      - mongodb-org-server
-      - mongodb-org-shell
 jdk:
 - oraclejdk7
 env:
@@ -39,25 +29,11 @@ env:
   - secure: io7oNZbf/aYRn+a73x6B/8yjg27CYVVdwRobQ+vZBNwBzS31bBcC/8pMtIpsBFqSEtE8GrSM4dYtMSFSj5PasiMg6PgYG/frsbtgGmRqTBkmENfv2EIO+Ex0pgycL+hCUVtPqD9j3mwhfPWkim9vPdmpYe2BbQuTYs0spJuu6PQ=
   matrix:
   - GORM_IMPL=test
-#  - GORM_IMPL=neo4j
-  - GORM_IMPL=cassandra
   - GORM_IMPL=testgrails2
   - GORM_IMPL=hibernate
   - GORM_IMPL=hibernate4
   - GORM_IMPL=hibernate5
-  - GORM_IMPL=mongodb
-  - GORM_IMPL=rx-mongodb
   - GORM_IMPL=redis
-  - GORM_IMPL=restclient
-before_script:
-- sudo service postgresql stop || true
-- sudo service mysql stop || true
-- sudo service memcached stop || true
-- sudo service bootlogd stop || true
-- sudo service elasticsearch stop || true
-- sudo service cassandra stop || true
-- sudo service rsync stop || true
-- sudo service x11-common stop || true
 before_install:
 - ./openssl-setup.sh
 matrix:
