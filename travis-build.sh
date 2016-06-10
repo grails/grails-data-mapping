@@ -19,9 +19,6 @@ else
                 ./gradlew boot-plugins/gorm-hibernate4-spring-boot:test || EXIT_STATUS=$?
             fi
             ;;
-        hibernate5)
-            ./gradlew grails-datastore-gorm-hibernate5:test -no-daemon  --stacktrace || EXIT_STATUS=$?
-            ;;
         testgrails2)
             ./gradlew grails-datastore-gorm-grails2-test:test -no-daemon  || EXIT_STATUS=$?
             ;;

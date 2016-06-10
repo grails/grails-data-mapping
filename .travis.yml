@@ -32,7 +32,6 @@ env:
   - GORM_IMPL=testgrails2
   - GORM_IMPL=hibernate
   - GORM_IMPL=hibernate4
-  - GORM_IMPL=hibernate5
 before_install:
 - ./openssl-setup.sh
 matrix:

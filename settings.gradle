@@ -21,7 +21,6 @@ include ("grails-datastore-core",
         // Grails 3 Plugins
         'grails-plugins/hibernate3',
         'grails-plugins/hibernate4',
-        'grails-plugins/hibernate5',
 
 
         // Grails 2 Plugins
@@ -35,7 +34,6 @@ include ("grails-datastore-core",
         'grails-datastore-gorm-rest-client',
         'grails-datastore-gorm-hibernate-core',
         'grails-datastore-gorm-hibernate',
-        'grails-datastore-gorm-hibernate4',
-        'grails-datastore-gorm-hibernate5'
+        'grails-datastore-gorm-hibernate4'
 
 )

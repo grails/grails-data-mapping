@@ -83,6 +83,23 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         git config --global credential.helper "store --file=~/.git-credentials"
         echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
+        echo "Triggering Hibernate 5 build"
+        git clone https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
+        cd gorm-hibernate5
+        echo "$(date)" > .snapshot
+        git add .snapshot
+        if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
+            echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties
+            git add gradle.properties
+            git commit -m "Release GORM for Hibernate 5 $TRAVIS_TAG"
+            git tag $TRAVIS_TAG
+            git push --tags
+        else
+            git commit -m "New Core Snapshot: $(date)"
+        fi
+        git push
+        cd ..
+
         echo "Triggering Neo4j build"
         git clone https://${GH_TOKEN}@github.com/grails/gorm-neo4j.git gorm-neo4j
         cd gorm-neo4j
