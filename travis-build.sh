@@ -33,14 +33,11 @@ else
             ;;
         *)
 
-            # Run unit testing API tests
-            if [[ $EXIT_STATUS -eq 0 ]]; then
-                ./gradlew grails-datastore-test-support:test || EXIT_STATUS=$?
-            fi
-            if [[ $EXIT_STATUS -eq 0 ]]; then
-                ./gradlew grails-datastore-gorm:test grails-datastore-gorm-test:test || EXIT_STATUS=$?
-            fi
-            ;;
+        # Run unit testing API tests
+        if [[ $EXIT_STATUS -eq 0 ]]; then
+            ./gradlew grails-datastore-gorm:test grails-datastore-gorm-test:test || EXIT_STATUS=$?
+        fi
+        ;;
     esac
 
 fi
