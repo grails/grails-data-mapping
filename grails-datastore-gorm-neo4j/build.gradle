@@ -39,7 +39,7 @@ test {
         maxParallelForks = 2
     }
     forkEvery = 10
-    jvmArgs = ['-server', '-Xmx1028M']
+    jvmArgs = ['-server', '-Xmx1028M', '-XX:MaxPermSize=256m']
     afterSuite {
         System.out.print('.')
         System.out.flush()
