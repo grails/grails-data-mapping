@@ -95,7 +95,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
             git tag $TRAVIS_TAG
             git push --tags
         else
-            git commit -m "New Travis Snapshot: $(date)"
+            git commit -m "New Core Snapshot: $(date)"
         fi
         git push
         cd ..
@@ -112,7 +112,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
             git tag $TRAVIS_TAG
             git push --tags
         else
-            git commit -m "New Travis Snapshot: $(date)"
+            git commit -m "New Core Snapshot: $(date)"
         fi
         git push
         cd ..
@@ -129,7 +129,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
             git tag $TRAVIS_TAG
             git push --tags
         else
-            git commit -m "New Travis Snapshot: $(date)"
+            git commit -m "New Core Snapshot: $(date)"
         fi
         git push
         cd ..
@@ -146,7 +146,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
             git tag $TRAVIS_TAG
             git push --tags
         else
-            git commit -m "New Travis Snapshot: $(date)"
+            git commit -m "New Core Snapshot: $(date)"
         fi
         git push
         cd ..
