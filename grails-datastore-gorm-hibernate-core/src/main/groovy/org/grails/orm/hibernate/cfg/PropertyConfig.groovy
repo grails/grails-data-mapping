@@ -31,6 +31,10 @@ import javax.persistence.FetchType
 @CompileStatic
 class PropertyConfig extends Property {
 
+    PropertyConfig() {
+        setFetchStrategy(null)
+    }
+
     boolean explicitSaveUpdateCascade;
 
     /**
@@ -89,6 +93,9 @@ class PropertyConfig extends Property {
         if(FetchMode.JOIN.equals(fetch)) {
             super.setFetchStrategy(FetchType.EAGER)
         }
+        else {
+            super.setFetchStrategy(FetchType.LAZY)
+        }
     }
 
     /**
@@ -96,6 +103,9 @@ class PropertyConfig extends Property {
      */
     FetchMode getFetchMode() {
         FetchType strategy = super.getFetchStrategy()
+        if(strategy == null) {
+            return FetchMode.DEFAULT
+        }
         switch (strategy) {
             case FetchType.EAGER:
                 return FetchMode.JOIN

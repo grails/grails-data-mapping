@@ -231,6 +231,12 @@ public class Property implements Cloneable {
         if(FetchType.EAGER.name().equalsIgnoreCase(name)) {
             setFetchStrategy(FetchType.EAGER);
         }
+        else if("select".equalsIgnoreCase(name)) {
+            setFetchStrategy(FetchType.LAZY);
+        }
+        else if("join".equalsIgnoreCase(name)) {
+            setFetchStrategy(FetchType.EAGER);
+        }
         else {
             setFetchStrategy(FetchType.LAZY);
         }
