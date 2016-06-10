@@ -273,7 +273,7 @@ subprojects {
             }
             if (isTravisBuild) {
                 maxParallelForks = 2
-                jvmArgs = ['-server', '-Xmx1024M']
+                jvmArgs = ['-server', '-Xmx512M', '-XX:MaxPermSize=128m']
                 forkEvery = 10
                 afterSuite {
                     System.out.print('.')
@@ -282,7 +282,7 @@ subprojects {
             } else {
                 maxParallelForks = 4
                 forkEvery = 100
-                jvmArgs = ['-server', '-Xmx2048M']
+                jvmArgs = ['-server', '-Xmx2048M', '-XX:MaxPermSize=256m']
             }
             if(System.getProperty("debug.tests")) {
                 jvmArgs '-Xmx2g', '-Xdebug', '-Xnoagent', '-Djava.compiler=NONE',
@@ -323,7 +323,7 @@ subprojects {
             options.encoding "UTF-8"
             options.docEncoding "UTF-8"
             options.charSet "UTF-8"
-            options.jFlags "-Xms64M", "-Xmx512M"
+            options.jFlags "-Xms64M", "-Xmx512M", "-XX:MaxPermSize=256m"
         }
 
         configure([groovydoc]) {
