@@ -272,8 +272,8 @@ subprojects {
                 exceptionFormat ='full'
             }
             if (isTravisBuild) {
-                maxParallelForks = 1
-                jvmArgs = ['-Xmx1048M']
+                maxParallelForks = 2
+                jvmArgs = ['-server', '-Xmx1024M']
                 forkEvery = 10
                 afterSuite {
                     System.out.print('.')
