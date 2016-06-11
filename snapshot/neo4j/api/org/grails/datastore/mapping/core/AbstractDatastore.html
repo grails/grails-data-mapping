@@ -272,7 +272,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>org.springframework.context.ConfigurableApplicationContext</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getApplicationContext()">getApplicationContext</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getApplicationContext()">getApplicationContext</a></strong>()</code><br>@deprecated  Deprecated, will be removed in a future version of GORM</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -518,7 +518,8 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/Session.ht
                         <a name="destroy()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>destroy</strong>()</h4>
+                                <h4>@javax.annotation.PreDestroy
+public&nbsp;void <strong>destroy</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -526,8 +527,10 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/Session.ht
                         <a name="getApplicationContext()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;org.springframework.context.ConfigurableApplicationContext <strong>getApplicationContext</strong>()</h4>
-                                <p></p>
+                                <h4>@java.lang.Deprecated
+public&nbsp;org.springframework.context.ConfigurableApplicationContext <strong>getApplicationContext</strong>()</h4>
+                                <p><DL><DT><B>deprecated:</B></DT><DD>Deprecated, will be removed in a future version of GORM</DD></DL>
+     </p>
                             </li>
                         </ul>
                     

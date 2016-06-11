@@ -158,17 +158,27 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.String</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getEnumType()">getEnumType</a></strong>()</code><br>@return The type of the enum, either ordinal or string</td>
+                            <td class="colLast"><code><strong><a href="#getCascade()">getCascade</a></strong>()</code><br>Cascading strategy for this property. </td>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getEnumType()">getEnumType</a></strong>()</code><br>@return The type of the enum, either ordinal or string</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>javax.persistence.EnumType</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getEnumTypeObject()">getEnumTypeObject</a></strong>()</code><br>@return The type of the enum, either ordinal or string</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>javax.persistence.FetchType</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getFetchStrategy()">getFetchStrategy</a></strong>()</code><br>@return The strategy to use to fetch the property (lazy or eager)</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getFormula()">getFormula</a></strong>()</code><br>The formula used to build the property</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -228,47 +238,67 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isIndex()">isIndex</a></strong>()</code><br>@return Whether this property is index</td>
+                            <td class="colLast"><code><strong><a href="#isDerived()">isDerived</a></strong>()</code><br>@return Whether the property is derived or not</td>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isIndex()">isIndex</a></strong>()</code><br>@return Whether this property is index</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isLazy()">isLazy</a></strong>()</code><br>Whether to use lazy proxies for each association. </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isNullable()">isNullable</a></strong>()</code><br>@return Whether the property is nullable</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isUnique()">isUnique</a></strong>()</code><br>@return Whether the property should be unique</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isUniqueWithinGroup()">isUniqueWithinGroup</a></strong>()</code><br>@return Whether the property is unique within a group</td>
                         </tr>
                         
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#setCascade(java.lang.String)">setCascade</a></strong>(java.lang.String cascade)</code><br></td>
+                        </tr>
+                        
                         <tr class="altColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#setDerived(boolean)">setDerived</a></strong>(boolean derived)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setEnumType(javax.persistence.EnumType)">setEnumType</a></strong>(javax.persistence.EnumType enumType)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setEnumType(java.lang.String)">setEnumType</a></strong>(java.lang.String enumType)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setFetch(java.lang.String)">setFetch</a></strong>(java.lang.String name)</code><br>Makes it easier to configure the fetch strategy</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setFetchStrategy(javax.persistence.FetchType)">setFetchStrategy</a></strong>(javax.persistence.FetchType fetchStrategy)</code><br>Sets the strategy to use to fetch the property (lazy or eager)</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#setFormula(java.lang.String)">setFormula</a></strong>(java.lang.String formula)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -415,6 +445,16 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/config/Property
                             </li>
                         </ul>
                     
+                        <a name="getCascade()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;java.lang.String <strong>getCascade</strong>()</h4>
+                                <p> Cascading strategy for this property. Only makes sense if the
+ property is an association or collection.
+     </p>
+                            </li>
+                        </ul>
+                    
                         <a name="getEnumType()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -439,6 +479,15 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/config/Property
                                 <h4>public&nbsp;javax.persistence.FetchType <strong>getFetchStrategy</strong>()</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>The strategy to use to fetch the property (lazy or eager)</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getFormula()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;java.lang.String <strong>getFormula</strong>()</h4>
+                                <p> The formula used to build the property
+     </p>
                             </li>
                         </ul>
                     
@@ -539,6 +588,15 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/config/Property
                             </li>
                         </ul>
                     
+                        <a name="isDerived()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;boolean <strong>isDerived</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Whether the property is derived or not</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="isIndex()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -587,6 +645,22 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/config/Property
                             </li>
                         </ul>
                     
+                        <a name="setCascade(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;void <strong>setCascade</strong>(java.lang.String cascade)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="setDerived(boolean)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;void <strong>setDerived</strong>(boolean derived)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="setEnumType(javax.persistence.EnumType)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -618,6 +692,14 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/config/Property
                                 <h4>public&nbsp;void <strong>setFetchStrategy</strong>(javax.persistence.FetchType fetchStrategy)</h4>
                                 <p> Sets the strategy to use to fetch the property (lazy or eager)
      <DL><DT><B>Parameters:</B></DT><DD><code>fetchStrategy</code> -  The fetch strategy to use</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="setFormula(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;void <strong>setFormula</strong>(java.lang.String formula)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     

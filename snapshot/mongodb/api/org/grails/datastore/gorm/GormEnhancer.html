@@ -314,7 +314,7 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html' title='AbstractGormApi'>AbstractGormApi</a>&lt;D&gt;&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getInstanceMethodApiProviders(java.lang.Class)">getInstanceMethodApiProviders</a></strong>(java.lang.Class cls)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getInstanceMethodApiProviders(Class<D>)">getInstanceMethodApiProviders</a></strong>(java.lang.Class&lt;D&gt; cls)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -338,16 +338,21 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#registerEntity(org.grails.datastore.mapping.model.PersistentEntity)">registerEntity</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br>Registers a new entity with the GORM enhancer</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#registerInstanceMethod(java.lang.Class, groovy.lang.ExpandoMetaClass, org.grails.datastore.gorm.AbstractGormApi, java.lang.String, java.lang.Class)">registerInstanceMethod</a></strong>(java.lang.Class cls, groovy.lang.ExpandoMetaClass mc, <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html'>AbstractGormApi</a> apiProvider, java.lang.String methodName, java.lang.Class[] parameterTypes)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#registerStaticMethod(groovy.lang.ExpandoMetaClass, java.lang.String, Class<?>, org.grails.datastore.gorm.GormStaticApi)">registerStaticMethod</a></strong>(groovy.lang.ExpandoMetaClass mc, java.lang.String methodName, java.lang.Class&lt;?&gt;[] parameterTypes, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html'>GormStaticApi</a> staticApiProvider)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#removeConstraints()">removeConstraints</a></strong>()</code><br></td>
                         </tr>
@@ -606,7 +611,8 @@ void <strong>enhance</strong>(<a href='../../../../org/grails/datastore/mapping/
                         <a name="findStaticApi(Class<D>, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormStaticApi.html' title='GormStaticApi'>GormStaticApi</a>&lt;D&gt; <strong>findStaticApi</strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</h4>
+                                <h4>@groovy.transform.CompileDynamic
+static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormStaticApi.html' title='GormStaticApi'>GormStaticApi</a>&lt;D&gt; <strong>findStaticApi</strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -637,11 +643,11 @@ protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormInstanceApi.ht
                             </li>
                         </ul>
                     
-                        <a name="getInstanceMethodApiProviders(java.lang.Class)"><!-- --></a>
+                        <a name="getInstanceMethodApiProviders(Class<D>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
-protected&nbsp;java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html' title='AbstractGormApi'>AbstractGormApi</a>&lt;D&gt;&gt; <strong>getInstanceMethodApiProviders</strong>(java.lang.Class cls)</h4>
+                                <h4>@groovy.transform.CompileDynamic
+protected&nbsp;java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html' title='AbstractGormApi'>AbstractGormApi</a>&lt;D&gt;&gt; <strong>getInstanceMethodApiProviders</strong>(java.lang.Class&lt;D&gt; cls)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -678,6 +684,15 @@ protected&nbsp;static&nbsp;boolean <strong>isRealMethod</strong>(groovy.lang.Met
                             <li class="blockList">
                                 <h4>protected&nbsp;void <strong>registerConstraints</strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="registerEntity(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>void <strong>registerEntity</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <p> Registers a new entity with the GORM enhancer
+     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
                             </li>
                         </ul>
                     

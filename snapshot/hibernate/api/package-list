@@ -2,8 +2,6 @@ grails.gorm
 grails.gorm.annotation
 grails.gorm.dirty.checking
 grails.gorm.transactions
-grails.orm
-grails.orm.bootstrap
 org.grails.compiler.gorm
 org.grails.datastore.gorm
 org.grails.datastore.gorm.async
@@ -68,7 +66,6 @@ org.grails.orm.hibernate
 org.grails.orm.hibernate.cfg
 org.grails.orm.hibernate.datasource
 org.grails.orm.hibernate.exceptions
-org.grails.orm.hibernate.persister.entity
 org.grails.orm.hibernate.proxy
 org.grails.orm.hibernate.query
 org.grails.orm.hibernate.support

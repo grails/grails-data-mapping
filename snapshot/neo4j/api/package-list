@@ -2,8 +2,6 @@ grails.gorm
 grails.gorm.annotation
 grails.gorm.dirty.checking
 grails.gorm.transactions
-grails.neo4j
-grails.neo4j.bootstrap
 org.grails.compiler.gorm
 org.grails.datastore.gorm
 org.grails.datastore.gorm.async
@@ -12,17 +10,6 @@ org.grails.datastore.gorm.bootstrap.support
 org.grails.datastore.gorm.events
 org.grails.datastore.gorm.finders
 org.grails.datastore.gorm.internal
-org.grails.datastore.gorm.neo4j
-org.grails.datastore.gorm.neo4j.bean.factory
-org.grails.datastore.gorm.neo4j.collection
-org.grails.datastore.gorm.neo4j.engine
-org.grails.datastore.gorm.neo4j.extensions
-org.grails.datastore.gorm.neo4j.identity
-org.grails.datastore.gorm.neo4j.internal.tools
-org.grails.datastore.gorm.neo4j.mapping.config
-org.grails.datastore.gorm.neo4j.mapping.reflect
-org.grails.datastore.gorm.neo4j.parsers
-org.grails.datastore.gorm.neo4j.rest
 org.grails.datastore.gorm.plugin.support
 org.grails.datastore.gorm.proxy
 org.grails.datastore.gorm.query

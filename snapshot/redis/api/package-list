@@ -1,10 +1,7 @@
-grails.datastore
 grails.gorm
 grails.gorm.annotation
 grails.gorm.dirty.checking
 grails.gorm.transactions
-grails.redis
-grails.redis.bootstrap
 org.grails.compiler.gorm
 org.grails.datastore.gorm
 org.grails.datastore.gorm.async
@@ -18,8 +15,6 @@ org.grails.datastore.gorm.proxy
 org.grails.datastore.gorm.query
 org.grails.datastore.gorm.query.criteria
 org.grails.datastore.gorm.query.transform
-org.grails.datastore.gorm.redis
-org.grails.datastore.gorm.redis.bean.factory
 org.grails.datastore.gorm.schemaless
 org.grails.datastore.gorm.support
 org.grails.datastore.gorm.timestamp
@@ -59,11 +54,6 @@ org.grails.datastore.mapping.query.jpa
 org.grails.datastore.mapping.query.order
 org.grails.datastore.mapping.query.projections
 org.grails.datastore.mapping.rdbms
-org.grails.datastore.mapping.redis
-org.grails.datastore.mapping.redis.collection
-org.grails.datastore.mapping.redis.engine
-org.grails.datastore.mapping.redis.query
-org.grails.datastore.mapping.redis.util
 org.grails.datastore.mapping.reflect
 org.grails.datastore.mapping.simple
 org.grails.datastore.mapping.simple.engine

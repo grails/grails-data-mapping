@@ -2,9 +2,6 @@ grails.gorm
 grails.gorm.annotation
 grails.gorm.dirty.checking
 grails.gorm.transactions
-grails.mongodb
-grails.mongodb.bootstrap
-grails.mongodb.geo
 org.grails.compiler.gorm
 org.grails.datastore.gorm
 org.grails.datastore.gorm.async
@@ -13,11 +10,6 @@ org.grails.datastore.gorm.bootstrap.support
 org.grails.datastore.gorm.events
 org.grails.datastore.gorm.finders
 org.grails.datastore.gorm.internal
-org.grails.datastore.gorm.mongo
-org.grails.datastore.gorm.mongo.bean.factory
-org.grails.datastore.gorm.mongo.extensions
-org.grails.datastore.gorm.mongo.geo
-org.grails.datastore.gorm.mongo.simple
 org.grails.datastore.gorm.plugin.support
 org.grails.datastore.gorm.proxy
 org.grails.datastore.gorm.query
@@ -53,11 +45,6 @@ org.grails.datastore.mapping.model.config
 org.grails.datastore.mapping.model.lifecycle
 org.grails.datastore.mapping.model.types
 org.grails.datastore.mapping.model.types.conversion
-org.grails.datastore.mapping.mongo
-org.grails.datastore.mapping.mongo.config
-org.grails.datastore.mapping.mongo.engine
-org.grails.datastore.mapping.mongo.engine.codecs
-org.grails.datastore.mapping.mongo.query
 org.grails.datastore.mapping.proxy
 org.grails.datastore.mapping.query
 org.grails.datastore.mapping.query.api

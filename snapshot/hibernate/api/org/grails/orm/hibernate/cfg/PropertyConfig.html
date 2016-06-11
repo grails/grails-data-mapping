@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -142,33 +142,13 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#cascade">cascade</a></code><br>Cascading strategy for this property. </td>
-                        </tr>
-                        
-                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.util.List&lt;<a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html' title='ColumnConfig'>ColumnConfig</a>&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#columns">columns</a></code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#derived">derived</a></code><br>Whether the property is derived</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#explicitSaveUpdateCascade">explicitSaveUpdateCascade</a></code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code><strong>org.hibernate.FetchMode</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#fetch">fetch</a></code><br>The fetch strategy for this property.</td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#formula">formula</a></code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -227,6 +207,28 @@ if (location.href.indexOf('is-external=true') == -1) {
         
 
         
+        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
+        <ul class="blockList">
+                <li class="blockList"><a name="constructor_summary"><!--   --></a>
+                    <h3>Constructor Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
+                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Constructor and description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#PropertyConfig()">PropertyConfig</a></strong>
+                                ()</code><br></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+              </li>
+        </ul>
+        
 
         
         <!-- ========== METHOD SUMMARY =========== -->
@@ -264,7 +266,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>org.hibernate.FetchMode</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getFetch()">getFetch</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getFetchMode()">getFetchMode</a></strong>()</code><br>@return The Hibernate org.hibernate.FetchMode</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -300,7 +302,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setFetch(org.hibernate.FetchMode)">setFetch</a></strong>(org.hibernate.FetchMode fetch)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setFetch(org.hibernate.FetchMode)">setFetch</a></strong>(org.hibernate.FetchMode fetch)</code><br>@param fetch The Hibernate org.hibernate.FetchMode</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -329,7 +331,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../org/grails/datastore/mapping/config/Property.html'>Property</a></strong></code></td>
-                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/config/Property.html#clone()'>clone</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getEnumType()'>getEnumType</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getEnumTypeObject()'>getEnumTypeObject</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getFetchStrategy()'>getFetchStrategy</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getGenerator()'>getGenerator</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getInList()'>getInList</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getLazy()'>getLazy</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getMax()'>getMax</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getMaxSize()'>getMaxSize</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getMin()'>getMin</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getMinSize()'>getMinSize</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getName()'>getName</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getScale()'>getScale</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getTargetName()'>getTargetName</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getUniquenessGroup()'>getUniquenessGroup</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#isIndex()'>isIndex</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#isLazy()'>isLazy</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#isNullable()'>isNullable</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#isUnique()'>isUnique</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#isUniqueWithinGroup()'>isUniqueWithinGroup</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setEnumType(javax.persistence.EnumType)'>setEnumType</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setEnumType(java.lang.String)'>setEnumType</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setFetch(java.lang.String)'>setFetch</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setFetchStrategy(javax.persistence.FetchType)'>setFetchStrategy</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setGenerator(java.lang.String)'>setGenerator</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setInList(List<String>)'>setInList</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setIndex(boolean)'>setIndex</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setLazy(java.lang.Boolean)'>setLazy</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setMax(java.lang.Comparable)'>setMax</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setMaxSize(java.lang.Number)'>setMaxSize</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setMin(java.lang.Comparable)'>setMin</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setMinSize(java.lang.Number)'>setMinSize</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setName(java.lang.String)'>setName</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setNullable(boolean)'>setNullable</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setRange(groovy.lang.ObjectRange)'>setRange</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setScale(int)'>setScale</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setSize(groovy.lang.IntRange)'>setSize</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setTargetName(java.lang.String)'>setTargetName</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setUnique(boolean)'>setUnique</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setUnique(java.lang.String)'>setUnique</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setUnique(List<String>)'>setUnique</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/config/Property.html#clone()'>clone</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getCascade()'>getCascade</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getEnumType()'>getEnumType</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getEnumTypeObject()'>getEnumTypeObject</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getFetchStrategy()'>getFetchStrategy</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getFormula()'>getFormula</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getGenerator()'>getGenerator</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getInList()'>getInList</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getLazy()'>getLazy</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getMax()'>getMax</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getMaxSize()'>getMaxSize</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getMin()'>getMin</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getMinSize()'>getMinSize</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getName()'>getName</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getScale()'>getScale</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getTargetName()'>getTargetName</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#getUniquenessGroup()'>getUniquenessGroup</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#isDerived()'>isDerived</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#isIndex()'>isIndex</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#isLazy()'>isLazy</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#isNullable()'>isNullable</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#isUnique()'>isUnique</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#isUniqueWithinGroup()'>isUniqueWithinGroup</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setCascade(java.lang.String)'>setCascade</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setDerived(boolean)'>setDerived</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setEnumType(javax.persistence.EnumType)'>setEnumType</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setEnumType(java.lang.String)'>setEnumType</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setFetch(java.lang.String)'>setFetch</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setFetchStrategy(javax.persistence.FetchType)'>setFetchStrategy</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setFormula(java.lang.String)'>setFormula</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setGenerator(java.lang.String)'>setGenerator</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setInList(List<String>)'>setInList</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setIndex(boolean)'>setIndex</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setLazy(java.lang.Boolean)'>setLazy</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setMax(java.lang.Comparable)'>setMax</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setMaxSize(java.lang.Number)'>setMaxSize</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setMin(java.lang.Comparable)'>setMin</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setMinSize(java.lang.Number)'>setMinSize</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setName(java.lang.String)'>setName</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setNullable(boolean)'>setNullable</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setRange(groovy.lang.ObjectRange)'>setRange</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setScale(int)'>setScale</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setSize(groovy.lang.IntRange)'>setSize</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setTargetName(java.lang.String)'>setTargetName</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setUnique(boolean)'>setUnique</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setUnique(java.lang.String)'>setUnique</a>, <a href='../../../../../org/grails/datastore/mapping/config/Property.html#setUnique(List<String>)'>setUnique</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class java.lang.Object</strong></code></td>
@@ -377,16 +379,6 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="cascade"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.lang.String <strong>cascade</strong></h4>
-                                <p> Cascading strategy for this property. Only makes sense if the
- property is an association or collection.
-     </p>
-                            </li>
-                        </ul>
-                    
                         <a name="columns"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -395,36 +387,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="derived"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>boolean <strong>derived</strong></h4>
-                                <p> Whether the property is derived
-     </p>
-                            </li>
-                        </ul>
-                    
                         <a name="explicitSaveUpdateCascade"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>boolean <strong>explicitSaveUpdateCascade</strong></h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="fetch"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>org.hibernate.FetchMode <strong>fetch</strong></h4>
-                                <p> The fetch strategy for this property.
-     </p>
-                            </li>
-                        </ul>
-                    
-                        <a name="formula"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.lang.String <strong>formula</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -518,6 +484,24 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
             
+            <!-- =========== CONSTRUCTOR DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="constructor_detail">
+                    <!--   -->
+                </a>
+                    <h3>Constructor Detail</h3>
+                    
+                        <a name="PropertyConfig()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>PropertyConfig</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
+            
 
 
             
@@ -563,11 +547,12 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="getFetch()"><!-- --></a>
+                        <a name="getFetchMode()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.FetchMode <strong>getFetch</strong>()</h4>
-                                <p></p>
+                                <h4>org.hibernate.FetchMode <strong>getFetchMode</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>The Hibernate org.hibernate.FetchMode</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -636,7 +621,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>void <strong>setFetch</strong>(org.hibernate.FetchMode fetch)</h4>
-                                <p></p>
+                                <p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>fetch</code> -  The Hibernate org.hibernate.FetchMode</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -691,11 +677,11 @@ void <strong>setScale</strong>(int scale)</h4>
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     
