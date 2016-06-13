@@ -27,6 +27,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.env.PropertyResolver;
 
 import javax.annotation.PreDestroy;
 
@@ -36,7 +37,7 @@ import javax.annotation.PreDestroy;
  * @author Graeme Rocher
  * @since 2.0.7
  */
-public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInterceptor implements PersistenceContextInterceptor, InitializingBean, ApplicationContextAware, GrailsConfigurationAware {
+public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInterceptor implements PersistenceContextInterceptor, InitializingBean, ApplicationContextAware {
 
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory";
     public static final String DEFAULT_DATA_SOURCE_NAME = "dataSource";
@@ -44,11 +45,10 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
 
     protected List<PersistenceContextInterceptor> interceptors = new ArrayList<PersistenceContextInterceptor>();
     protected ApplicationContext applicationContext;
-    protected Config config;
+    protected PropertyResolver config;
 
 
-    @Override
-    public void setConfiguration(Config co) {
+    public void setConfiguration(PropertyResolver co) {
         this.config = co;
     }
 
@@ -144,9 +144,8 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
     }
 
     private Set<String> aggregateDataSourceNames() {
-        if(applicationContext == null) return Collections.emptySet();
         Set<String> resolvedDataSourceNames = new HashSet<String>();
-        Set<String> dataSourceNames = calculateDataSourceNames(applicationContext.getBean(GrailsApplication.class));
+        Set<String> dataSourceNames = calculateDataSourceNames(config);
         for (String dataSourceName : dataSourceNames) {
             if (applicationContext.containsBean(dataSourceName.equals(Mapping.DEFAULT_DATA_SOURCE) ? "dataSource" : "dataSource_" + dataSourceName)) {
                 resolvedDataSourceNames.add(dataSourceName);
@@ -156,14 +155,18 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
     }
 
     private static Set<String> datasourceNames = null;
-    public static Set<String> calculateDataSourceNames(GrailsApplication grailsApplication) {
+    public static Set<String> calculateDataSourceNames(PropertyResolver configuration) {
         if(datasourceNames != null) return datasourceNames;
 
+
+
         datasourceNames = new HashSet<String>();
+        if(configuration == null) {
+            return datasourceNames;
+        }
 
 
-        Config config = grailsApplication.getConfig();
-        Map dataSources = config.getProperty(DATA_SOURCES, Map.class, Collections.emptyMap());
+        Map dataSources = configuration.getProperty(DATA_SOURCES, Map.class, Collections.emptyMap());
 
         if (dataSources != null && !dataSources.isEmpty()) {
             for (Object name : dataSources.keySet()) {
@@ -175,7 +178,7 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
                 }
             }
         } else {
-            Map dataSource = config.getProperty(DEFAULT_DATA_SOURCE_NAME, Map.class, Collections.emptyMap());
+            Map dataSource = configuration.getProperty(DEFAULT_DATA_SOURCE_NAME, Map.class, Collections.emptyMap());
             if (!dataSource.isEmpty()) {
                 datasourceNames.add( Mapping.DEFAULT_DATA_SOURCE);
             }

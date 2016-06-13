@@ -347,10 +347,10 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     protected boolean isGrailsPresent() {
         ClassLoader cl = getClass().getClassLoader()
-        if(ClassUtils.isPresent("grails.core.DefaultGrailsApplication", cl)) {
+        if(ClassUtils.isPresent("grails.core.DefaultGrailsApplication", cl) && ClassUtils.isPresent("grails.validation.CascadingValidator", cl)) {
             return true
         }
-        if(ClassUtils.isPresent("org.codehaus.groovy.grails.commons.DefaultGrailsApplication", cl)) {
+        else if(ClassUtils.isPresent("org.codehaus.groovy.grails.commons.DefaultGrailsApplication", cl) && ClassUtils.isPresent("org.codehaus.groovy.grails.validation.CascadingValidator", cl)) {
             return true
         }
         return false
@@ -358,7 +358,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     @CompileStatic
     protected Class getGrailsValidatorClass() {
-        ClassLoader cl = Thread.currentThread().contextClassLoader
+        ClassLoader cl = getClass().getClassLoader()
         if(ClassUtils.isPresent("org.grails.datastore.gorm.validation.DefaultDomainClassValidator", cl)) {
             return ClassUtils.forName("org.grails.datastore.gorm.validation.DefaultDomainClassValidator", cl)
         }

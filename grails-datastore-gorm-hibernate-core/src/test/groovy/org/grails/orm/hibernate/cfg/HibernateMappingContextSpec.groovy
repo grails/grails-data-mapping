@@ -401,6 +401,7 @@ class TwoCircularUnidirectionalOneToManyUser {
 }
 
 
+@Entity
 class BidirectionalOneToManyAndCircularOneToManyUser implements java.io.Serializable {
     Long id
     Long version
@@ -408,13 +409,14 @@ class BidirectionalOneToManyAndCircularOneToManyUser implements java.io.Serializ
     static hasMany = [users: BidirectionalOneToManyAndCircularOneToManyUser,
                       uploads: BidirectionalOneToManyAndCircularOneToManyUpload,
                       uploadLogs: BidirectionalOneToManyAndCircularOneToManyUploadLog]
-    Set users
-    Set uploads
+    Set<BidirectionalOneToManyAndCircularOneToManyUser> users
+    Set<BidirectionalOneToManyAndCircularOneToManyUpload> uploads
     Set uploadLogs
-    static mappedBy = [uploads: 'recipient', uploadLogs: 'sender']
+    static mappedBy = [uploads: 'recipient', uploadLogs: 'sender', users:'manager']
     BidirectionalOneToManyAndCircularOneToManyUser manager
 }
 
+@Entity
 class BidirectionalOneToManyAndCircularOneToManyUploadLog implements Serializable {
     Long id
     Long version
@@ -422,6 +424,7 @@ class BidirectionalOneToManyAndCircularOneToManyUploadLog implements Serializabl
     BidirectionalOneToManyAndCircularOneToManyUser sender
 }
 
+@Entity
 class BidirectionalOneToManyAndCircularOneToManyUpload implements Serializable {
     Long id
     Long version

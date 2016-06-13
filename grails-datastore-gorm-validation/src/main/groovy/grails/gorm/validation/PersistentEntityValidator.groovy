@@ -169,6 +169,9 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         }
 
         PersistentEntity associatedEntity = association.getAssociatedEntity()
+        if(associatedEntity == null) {
+            return
+        }
 
         MappingContext mappingContext = associatedEntity.getMappingContext()
         EntityReflector associatedReflector = mappingContext.getEntityReflector(associatedEntity)

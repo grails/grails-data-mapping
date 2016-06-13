@@ -57,7 +57,7 @@ class Hibernate4GrailsPlugin {
         def domainClasses = application.getArtefacts(DomainClassArtefactHandler.TYPE)
                             .findAll() { GrailsDomainClass cls -> cls.mappingStrategy != "none" && cls.mappingStrategy == GrailsDomainClass.GORM}
                             .collect() { GrailsClass cls -> cls.clazz }
-        dataSourceNames = AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.calculateDataSourceNames(application)
+        dataSourceNames = AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.calculateDataSourceNames(application.config)
         def initializer = new HibernateDatastoreSpringInitializer(application.config, domainClasses)
         initializer.registerApplicationIfNotPresent = false
         initializer.enableReload = grails.util.Environment.isDevelopmentMode()

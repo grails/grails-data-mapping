@@ -119,7 +119,9 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             // for listening to Hibernate events
             hibernateEventListeners(HibernateEventListeners)
             // Useful interceptor for wrapping Hibernate behavior
-            persistenceInterceptor(AggregatePersistenceContextInterceptor)
+            persistenceInterceptor(AggregatePersistenceContextInterceptor){
+                delegate.configuration = configuration
+            }
 
             // domain model mapping context, used for configuration
             grailsDomainClassMappingContext(HibernateMappingContextFactoryBean) {
@@ -129,12 +131,15 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             }
 
             // override Validator beans with Hibernate aware instances
-            for(cls in persistentClasses) {
-                "${cls.name}Validator"(HibernateDomainClassValidator) {
-                    messageSource = ref("messageSource")
-                    domainClass = ref("${cls.name}DomainClass")
-                    grailsApplication = ref('grailsApplication')
-                    mappingContext = ref("grailsDomainClassMappingContext")
+            final boolean isGrailsPresent = isGrailsPresent()
+            if(isGrailsPresent) {
+                for(cls in persistentClasses) {
+                    "${cls.name}Validator"(HibernateDomainClassValidator) {
+                        messageSource = ref("messageSource")
+                        domainClass = ref("${cls.name}DomainClass")
+                        grailsApplication = ref('grailsApplication')
+                        mappingContext = ref("grailsDomainClassMappingContext")
+                    }
                 }
             }
 
@@ -276,8 +281,11 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                     bean.lazyInit = false
                 }
 
+
                 "org.grails.gorm.hibernate.internal.POST_INIT_BEAN-${dataSourceName}$suffix"(PostInitializationHandling) { bean ->
-                    grailsApplication = ref("grailsApplication")
+                    if(isGrailsPresent) {
+                        grailsApplication = ref("grailsApplication")
+                    }
                     bean.lazyInit = false
                 }
 
@@ -369,7 +377,7 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
         @CompileDynamic
         void afterPropertiesSet() throws Exception {
             def ctx = applicationContext
-            grailsApplication.setMainContext(ctx)
+            grailsApplication?.setMainContext(ctx)
             def datastores = ctx.getBeansOfType(HibernateDatastore).values()
             ctx.getBean(ClosureEventTriggeringInterceptor).setDatastores(datastores as HibernateDatastore[])
             ctx.publishEvent(new DatastoreInitializedEvent(datastores))

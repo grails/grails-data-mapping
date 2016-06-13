@@ -65,7 +65,7 @@ class HibernateGrailsPlugin extends Plugin {
 
         GrailsApplication grailsApplication = grailsApplication
         Config config = grailsApplication.config
-        dataSourceNames = AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.calculateDataSourceNames(grailsApplication)
+        dataSourceNames = AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.calculateDataSourceNames(config)
 
         def domainClasses = grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE)
                 .findAll() { GrailsClass cls ->
