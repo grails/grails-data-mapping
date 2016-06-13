@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.support.GenericApplicationContext
+import org.springframework.core.convert.converter.Converter
 import org.springframework.core.convert.support.ConfigurableConversionService
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.MapPropertySource
@@ -98,6 +99,12 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         } else {
             // this is to support Grails 2.x
             def env = new StandardEnvironment()
+            env.conversionService.addConverter(new Converter<ConfigObject, Object>() {
+                @Override
+                Object convert(ConfigObject source) {
+                    return null
+                }
+            })
             def config = new ConfigObject()
             if (configuration instanceof ConfigObject) {
                 config = (ConfigObject) configuration
@@ -107,17 +114,26 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                 config.merge(new ConfigSlurper().parse(properties))
                 config.putAll(config.flatten())
             }
-            env.propertySources.addFirst(new MapPropertySource("datastoreConfig", config) {
+            env.propertySources.addFirst(new MapPropertySource("gormConfig", config) {
                 @Override
                 boolean containsProperty(String name) {
-                    getProperty(name) != null
+                    def value = getProperty(name)
+                    if(value == null) {
+                        return false
+                    }
+                    else if(value instanceof ConfigObject) {
+                        return !((ConfigObject)value).isEmpty()
+                    }
+                    else {
+                        return true
+                    }
                 }
 
                 @Override
                 Object getProperty(String name) {
                     def v = super.getProperty(name)
                     if (v != null) {
-                        return v
+                        return valueOrNull(v)
                     } else if (name.contains('.')) {
                         def map = getSource()
                         def tokens = name.split(/\./)
@@ -128,8 +144,21 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                             v = co.get(tokens[++i])
                         }
 
-                        return v
+                        return valueOrNull(v)
 
+                    }
+                }
+
+                protected Object valueOrNull(v) {
+                    if (v instanceof ConfigObject) {
+                        def co = (ConfigObject) v
+                        if (co.isEmpty()) {
+                            return null
+                        } else {
+                            return co
+                        }
+                    } else {
+                        return v
                     }
                 }
             })
