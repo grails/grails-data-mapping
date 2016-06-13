@@ -39,14 +39,16 @@ import javax.annotation.PreDestroy;
  */
 public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInterceptor implements PersistenceContextInterceptor, InitializingBean, ApplicationContextAware {
 
-    public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory";
-    public static final String DEFAULT_DATA_SOURCE_NAME = "dataSource";
-    public static final String DATA_SOURCES = "dataSources";
+
 
     protected List<PersistenceContextInterceptor> interceptors = new ArrayList<PersistenceContextInterceptor>();
     protected ApplicationContext applicationContext;
     protected PropertyResolver config;
+    protected Set<String> dataSourceNames;
 
+    public void setDataSourceNames(Set<String> dataSourceNames) {
+        this.dataSourceNames = dataSourceNames;
+    }
 
     public void setConfiguration(PropertyResolver co) {
         this.config = co;
@@ -138,14 +140,9 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
 
     protected abstract SessionFactoryAwarePersistenceContextInterceptor createPersistenceContextInterceptor(String dataSourceName);
 
-    @Deprecated
-    public void setDataSourceNames(List<String> dataSourceNames) {
-        // noop, here for compatibility
-    }
 
     private Set<String> aggregateDataSourceNames() {
         Set<String> resolvedDataSourceNames = new HashSet<String>();
-        Set<String> dataSourceNames = calculateDataSourceNames(config);
         for (String dataSourceName : dataSourceNames) {
             if (applicationContext.containsBean(dataSourceName.equals(Mapping.DEFAULT_DATA_SOURCE) ? "dataSource" : "dataSource_" + dataSourceName)) {
                 resolvedDataSourceNames.add(dataSourceName);
@@ -154,40 +151,4 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
         return resolvedDataSourceNames;
     }
 
-    private static Set<String> datasourceNames = null;
-    public static Set<String> calculateDataSourceNames(PropertyResolver configuration) {
-        if(datasourceNames != null) return datasourceNames;
-
-
-
-        datasourceNames = new HashSet<String>();
-        if(configuration == null) {
-            return datasourceNames;
-        }
-
-
-        Map dataSources = configuration.getProperty(DATA_SOURCES, Map.class, Collections.emptyMap());
-
-        if (dataSources != null && !dataSources.isEmpty()) {
-            for (Object name : dataSources.keySet()) {
-                String nameAsString = name.toString();
-                if (nameAsString.equals( DEFAULT_DATA_SOURCE_NAME) ) {
-                    datasourceNames.add( Mapping.DEFAULT_DATA_SOURCE );
-                } else {
-                    datasourceNames.add( nameAsString );
-                }
-            }
-        } else {
-            Map dataSource = configuration.getProperty(DEFAULT_DATA_SOURCE_NAME, Map.class, Collections.emptyMap());
-            if (!dataSource.isEmpty()) {
-                datasourceNames.add( Mapping.DEFAULT_DATA_SOURCE);
-            }
-        }
-        return datasourceNames;
-    }
-
-    @PreDestroy
-    public void clearDataSourceNames() {
-        datasourceNames = null;
-    }
 }

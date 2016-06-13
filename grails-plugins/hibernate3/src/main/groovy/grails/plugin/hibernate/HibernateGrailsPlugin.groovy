@@ -65,8 +65,6 @@ class HibernateGrailsPlugin extends Plugin {
 
         GrailsApplication grailsApplication = grailsApplication
         Config config = grailsApplication.config
-        dataSourceNames = AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.calculateDataSourceNames(config)
-
         def domainClasses = grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE)
                 .findAll() { GrailsClass cls ->
             GrailsDomainClass dc = (GrailsDomainClass)cls
@@ -80,7 +78,7 @@ class HibernateGrailsPlugin extends Plugin {
             springInitializer.ddlAuto = ''
         }
         springInitializer.registerApplicationIfNotPresent = false
-        springInitializer.dataSources = dataSourceNames
+        dataSourceNames = springInitializer.dataSources
         springInitializer.enableReload = Environment.isDevelopmentMode()
         def beans = springInitializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
 

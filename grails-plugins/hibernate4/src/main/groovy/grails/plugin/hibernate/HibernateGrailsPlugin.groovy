@@ -65,7 +65,6 @@ class HibernateGrailsPlugin extends Plugin {
 
         GrailsApplication grailsApplication = grailsApplication
         Config config = grailsApplication.config
-        dataSourceNames = AbstractMultipleDataSourceAggregatePersistenceContextInterceptor.calculateDataSourceNames(config)
 
         def domainClasses = grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE)
                                                 .findAll() { GrailsClass cls ->
@@ -75,13 +74,13 @@ class HibernateGrailsPlugin extends Plugin {
                                                 .collect() { GrailsClass cls -> cls.clazz }
 
         def springInitializer = new HibernateDatastoreSpringInitializer((PropertyResolver)config, domainClasses)
+        dataSourceNames = springInitializer.dataSources
         if(!Environment.isDevelopmentMode()) {
             // set no-op for default DDL auto setting if not in development mode
             springInitializer.ddlAuto = ''
         }
         springInitializer.enableReload = Environment.isDevelopmentMode()
         springInitializer.registerApplicationIfNotPresent = false
-        springInitializer.dataSources = dataSourceNames
         def beans = springInitializer.getBeanDefinitions((BeanDefinitionRegistry)applicationContext)
 
         beans.delegate = delegate

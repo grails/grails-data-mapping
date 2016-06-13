@@ -46,6 +46,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     Collection<String> packages = []
     PropertyResolver configuration = new StandardEnvironment()
     boolean registerApplicationIfNotPresent = true
+    Object originalConfiguration
 
     protected ClassLoader classLoader = Thread.currentThread().contextClassLoader
     protected boolean secondaryDatastore = false
@@ -75,8 +76,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     }
 
     AbstractDatastoreInitializer(PropertyResolver configuration, Class...persistentClasses) {
-        this.configuration = configuration
-        this.persistentClasses = Arrays.asList(persistentClasses)
+        this(configuration, Arrays.asList(persistentClasses))
     }
 
     AbstractDatastoreInitializer(PropertyResolver configuration, String...packages) {
@@ -85,23 +85,27 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     }
 
     AbstractDatastoreInitializer(Map configuration, Collection<Class> persistentClasses) {
+        this(createPropertyResolverForConfig(configuration), persistentClasses)
+        this.originalConfiguration = configuration
+    }
+
+    protected static PropertyResolver createPropertyResolverForConfig(Map configuration) {
         // Grails 3.x has better support for property resolving from configuration so we should
         // if the config is a PropertyResolver
-        if(configuration instanceof PropertyResolver) {
-            this.configuration = (PropertyResolver)configuration;
-        }
-        else {
+        PropertyResolver finalConfiguration
+        if (configuration instanceof PropertyResolver) {
+            finalConfiguration = (PropertyResolver) configuration;
+        } else {
             // this is to support Grails 2.x
             def env = new StandardEnvironment()
             def config = new ConfigObject()
-            if(configuration instanceof ConfigObject) {
+            if (configuration instanceof ConfigObject) {
                 config = (ConfigObject) configuration
-            }
-            else if(configuration != null) {
+            } else if (configuration != null) {
                 def properties = new Properties()
                 properties.putAll(configuration)
                 config.merge(new ConfigSlurper().parse(properties))
-                config.putAll( config.flatten() )
+                config.putAll(config.flatten())
             }
             env.propertySources.addFirst(new MapPropertySource("datastoreConfig", config) {
                 @Override
@@ -112,15 +116,15 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                 @Override
                 Object getProperty(String name) {
                     def v = super.getProperty(name)
-                    if(v != null) {
+                    if (v != null) {
                         return v
-                    } else if(name.contains('.')) {
+                    } else if (name.contains('.')) {
                         def map = getSource()
                         def tokens = name.split(/\./)
                         int i = 0
                         v = map.get(tokens[i])
-                        while(v instanceof Map && i < tokens.length -1) {
-                            Map co = (Map)v
+                        while (v instanceof Map && i < tokens.length - 1) {
+                            Map co = (Map) v
                             v = co.get(tokens[++i])
                         }
 
@@ -129,9 +133,9 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                     }
                 }
             })
-            this.configuration = env
+            finalConfiguration = env
         }
-        this.persistentClasses = persistentClasses
+        finalConfiguration
     }
 
     AbstractDatastoreInitializer(Map configuration, Class... persistentClasses) {
@@ -232,7 +236,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
             GrailsBeanBuilderInit.registerBeans(beanDefinitionRegistry, getBeanDefinitions(beanDefinitionRegistry))
         }
         else {
-            throw new IllegalStateException("Neither Spring 4.0 nor grails-spring dependency found on classpath to enable GORM configuration. If you are using an earlier version of Spring please add the grails-spring dependency to your classpath.")
+            throw new IllegalStateException("Neither Spring 4.0+ nor grails-spring dependency found on classpath to enable GORM configuration. If you are using an earlier version of Spring please add the grails-spring dependency to your classpath.")
         }
     }
 

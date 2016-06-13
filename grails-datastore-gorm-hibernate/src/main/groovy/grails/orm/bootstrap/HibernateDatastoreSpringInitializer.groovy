@@ -17,6 +17,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 import groovy.util.logging.Commons
+import groovy.util.logging.Slf4j
 import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
 import org.grails.datastore.gorm.proxy.ProxyHandlerAdapter
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
@@ -45,6 +46,7 @@ import org.springframework.context.ApplicationContextAware
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.Environment
+import org.springframework.core.env.PropertyResolver
 
 import javax.sql.DataSource
 /**
@@ -53,17 +55,63 @@ import javax.sql.DataSource
  * @author Graeme Rocher
  * @since 3.0
  */
-@Commons
+@Slf4j
 @InheritConstructors
 class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory"
     public static final String DEFAULT_DATA_SOURCE_NAME = 'dataSource'
+    public static final String DATA_SOURCES = "dataSources";
 
     String defaultDataSourceBeanName = Mapping.DEFAULT_DATA_SOURCE
     String defaultSessionFactoryBeanName = SESSION_FACTORY_BEAN_NAME
     String ddlAuto = "update"
     Set<String> dataSources = [defaultDataSourceBeanName]
     boolean enableReload = false
+
+    HibernateDatastoreSpringInitializer(PropertyResolver configuration, Collection<Class> persistentClasses) {
+        super(configuration, persistentClasses)
+        configureDataSources(configuration)
+    }
+
+    HibernateDatastoreSpringInitializer(PropertyResolver configuration, Class... persistentClasses) {
+        super(configuration, persistentClasses)
+        configureDataSources(configuration)
+    }
+
+    HibernateDatastoreSpringInitializer(PropertyResolver configuration, String... packages) {
+        super(configuration, packages)
+        configureDataSources(configuration)
+    }
+
+    @CompileStatic
+    void configureDataSources(PropertyResolver config) {
+
+        Set<String> dataSourceNames = new HashSet<String>()
+
+        if(config == null) {
+            dataSourceNames = [defaultDataSourceBeanName] as Set
+        }
+        else {
+            Map dataSources = config.getProperty(DATA_SOURCES, Map.class, Collections.emptyMap())
+
+            if (dataSources != null && !dataSources.isEmpty()) {
+                for (Object name : dataSources.keySet()) {
+                    String nameAsString = name.toString();
+                    if (nameAsString.equals( DEFAULT_DATA_SOURCE_NAME) ) {
+                        dataSourceNames.add( Mapping.DEFAULT_DATA_SOURCE )
+                    } else {
+                        dataSourceNames.add( nameAsString )
+                    }
+                }
+            } else {
+                Map dataSource = (Map)config.getProperty(DEFAULT_DATA_SOURCE_NAME, Map.class, Collections.emptyMap())
+                if (dataSource != null && !dataSource.isEmpty()) {
+                    dataSourceNames.add( Mapping.DEFAULT_DATA_SOURCE)
+                }
+            }
+        }
+        this.dataSources = dataSourceNames
+    }
 
     @Override
     protected Class<AbstractDatastorePersistenceContextInterceptor> getPersistenceInterceptorClass() {
@@ -124,7 +172,9 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
             // for listening to Hibernate events
             hibernateEventListeners(HibernateEventListeners)
             // Useful interceptor for wrapping Hibernate behavior
-            persistenceInterceptor(AggregatePersistenceContextInterceptor)
+            persistenceInterceptor(AggregatePersistenceContextInterceptor){
+                delegate.dataSourceNames  = dataSources
+            }
             // domain model mapping context, used for configuration
             grailsDomainClassMappingContext(HibernateMappingContextFactoryBean) {
                 delegate.configuration = this.configuration
