@@ -669,8 +669,9 @@ class DefaultConstrainedProperty implements ConstrainedProperty {
         if (c == null) {
             for (factory in constraintRegistry.findConstraintFactories(constraintName)) {
                 c = factory.build(owningClass, propertyName, constrainingValue)
-                if (c.supports(propertyType)) {
+                if (c != null && c.supports(propertyType)) {
                     appliedConstraints.put(constraintName, c)
+                    break
                 }
             }
         }

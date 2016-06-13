@@ -45,6 +45,9 @@ dependencyManagement {
 dependencies {
 
     provided("org.grails:grails-core")
+    provided("org.grails:grails-validation:$grailsVersion") {
+        exclude group:'org.grails',module:'grails-core'
+    }
 
     compile project(":grails-datastore-simple")
     compile project(":grails-datastore-gorm-support")

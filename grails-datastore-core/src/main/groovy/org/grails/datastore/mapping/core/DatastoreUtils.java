@@ -21,8 +21,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.grails.datastore.mapping.transactions.SessionHolder;
@@ -40,7 +40,7 @@ import org.springframework.util.Assert;
 @SuppressWarnings("rawtypes")
 public abstract class DatastoreUtils {
 
-     public static final Log logger = LogFactory.getLog(DatastoreUtils.class);
+     public static final Logger logger = LoggerFactory.getLogger(DatastoreUtils.class);
      private static final ThreadLocal<Map<Datastore, Set<Session>>> deferredCloseHolder =
             new NamedThreadLocal<Map<Datastore, Set<Session>>>(
                     "Datastore Sessions registered for deferred close");

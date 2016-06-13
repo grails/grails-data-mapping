@@ -27,7 +27,7 @@ class DefaultConstraintFactory implements ConstraintFactory {
 
     protected final Constructor constraintConstructor
 
-    DefaultConstraintFactory(Class<? extends Constraint> constraintClass, MessageSource messageSource, List<Class> targetTypes = []) {
+    DefaultConstraintFactory(Class<? extends Constraint> constraintClass, MessageSource messageSource, List<Class> targetTypes = [Object]) {
         this.type = constraintClass
         this.name = Introspector.decapitalize(constraintClass.simpleName) - "Constraint"
         this.messageSource = messageSource

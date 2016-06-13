@@ -239,6 +239,10 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     @CompileDynamic
     Closure getCommonConfiguration(BeanDefinitionRegistry registry, String type) {
         return {
+            if(!isGrailsPresent()) {
+                return
+            }
+
             if(!registry.containsBeanDefinition("grailsApplication") && registerApplicationIfNotPresent) {
                 grailsApplication(getGrailsApplicationClass(), persistentClasses as Class[], Thread.currentThread().contextClassLoader) { bean ->
                     bean.initMethod = 'initialise'
@@ -330,7 +334,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     @CompileStatic
     protected Class getGrailsApplicationClass() {
-        ClassLoader cl = Thread.currentThread().contextClassLoader
+        ClassLoader cl = getClass().getClassLoader()
         if(ClassUtils.isPresent("grails.core.DefaultGrailsApplication", cl)) {
             return ClassUtils.forName("grails.core.DefaultGrailsApplication", cl)
         }
@@ -339,6 +343,17 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         }
         throw new IllegalStateException("No version of Grails found on classpath")
 
+    }
+
+    protected boolean isGrailsPresent() {
+        ClassLoader cl = getClass().getClassLoader()
+        if(ClassUtils.isPresent("grails.core.DefaultGrailsApplication", cl)) {
+            return true
+        }
+        if(ClassUtils.isPresent("org.codehaus.groovy.grails.commons.DefaultGrailsApplication", cl)) {
+            return true
+        }
+        return false
     }
 
     @CompileStatic

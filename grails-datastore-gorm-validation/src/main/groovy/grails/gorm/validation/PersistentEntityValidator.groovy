@@ -110,7 +110,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
             }
         }
         else if (association instanceof ToMany) {
-            cascadeValidationToMany(parent, propertyName, association, errors, entityReflector)
+            cascadeValidationToMany(parent, propertyName, association, errors, reflector)
         }
     }
 
