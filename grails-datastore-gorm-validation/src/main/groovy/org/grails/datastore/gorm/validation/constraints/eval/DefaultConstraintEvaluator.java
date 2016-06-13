@@ -223,7 +223,8 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
 
     protected boolean isConstrainableProperty(PersistentProperty p, String propertyName) {
 
-        return !propertyName.equals(GormProperties.DATE_CREATED) &&
+        return !propertyName.equals(GormProperties.VERSION) &&
+                !propertyName.equals(GormProperties.DATE_CREATED) &&
                 !propertyName.equals(GormProperties.LAST_UPDATED) &&
                 !(p instanceof Identity) &&
                 !(p.getMapping().getMappedForm().isDerived()) &&
