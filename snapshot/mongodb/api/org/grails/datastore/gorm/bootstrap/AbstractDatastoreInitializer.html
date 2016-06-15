@@ -226,21 +226,26 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><strong>java.lang.Object</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#originalConfiguration">originalConfiguration</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.util.Collection&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#packages">packages</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.util.Collection&lt;java.lang.Class&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#persistentClasses">persistentClasses</a></code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#registerApplicationIfNotPresent">registerApplicationIfNotPresent</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>org.springframework.core.io.support.ResourcePatternResolver</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#resourcePatternResolver">resourcePatternResolver</a></code><br></td>
                         </tr>
@@ -367,33 +372,43 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;static&nbsp;org.springframework.core.env.PropertyResolver</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createPropertyResolverForConfig(java.util.Map)">createPropertyResolverForConfig</a></strong>(java.util.Map configuration)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>groovy.lang.Closure</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getAdditionalBeansConfiguration(org.springframework.beans.factory.support.BeanDefinitionRegistry, java.lang.String)">getAdditionalBeansConfiguration</a></strong>(org.springframework.beans.factory.support.BeanDefinitionRegistry registry, java.lang.String type)</code><br>Internal method aiding in datastore configuration.</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>groovy.lang.Closure</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getBeanDefinitions(org.springframework.beans.factory.support.BeanDefinitionRegistry)">getBeanDefinitions</a></strong>(org.springframework.beans.factory.support.BeanDefinitionRegistry beanDefinitionRegistry)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>groovy.lang.Closure</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getCommonConfiguration(org.springframework.beans.factory.support.BeanDefinitionRegistry, java.lang.String)">getCommonConfiguration</a></strong>(org.springframework.beans.factory.support.BeanDefinitionRegistry registry, java.lang.String type)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.Class</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getGrailsApplicationClass()">getGrailsApplicationClass</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.Class</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getGrailsValidatorClass()">getGrailsValidatorClass</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.Class&lt;<a href='../../../../../org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html' title='AbstractDatastorePersistenceContextInterceptor'>AbstractDatastorePersistenceContextInterceptor</a>&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getPersistenceInterceptorClass()">getPersistenceInterceptorClass</a></strong>()</code><br>@return The class used to define the persistence interceptor</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>protected&nbsp;boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isGrailsPresent()">isGrailsPresent</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -513,6 +528,14 @@ extends java.lang.Object
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>org.springframework.core.env.PropertyResolver <strong>configuration</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="originalConfiguration"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.Object <strong>originalConfiguration</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -693,6 +716,14 @@ protected&nbsp;boolean <strong>containsRegisteredBean</strong>(java.lang.Object 
                             </li>
                         </ul>
                     
+                        <a name="createPropertyResolverForConfig(java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;static&nbsp;org.springframework.core.env.PropertyResolver <strong>createPropertyResolverForConfig</strong>(java.util.Map configuration)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getAdditionalBeansConfiguration(org.springframework.beans.factory.support.BeanDefinitionRegistry, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -744,6 +775,14 @@ protected&nbsp;java.lang.Class <strong>getGrailsValidatorClass</strong>()</h4>
                                 <h4>protected&nbsp;java.lang.Class&lt;<a href='../../../../../org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html' title='AbstractDatastorePersistenceContextInterceptor'>AbstractDatastorePersistenceContextInterceptor</a>&gt; <strong>getPersistenceInterceptorClass</strong>()</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>The class used to define the persistence interceptor</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isGrailsPresent()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;boolean <strong>isGrailsPresent</strong>()</h4>
+                                <p></p>
                             </li>
                         </ul>
                     

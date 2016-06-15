@@ -701,11 +701,15 @@ If your GORM entities are in a different package specify the package name as the
 <div class="sect2">
 <h3 id="outsideGrails">Using GORM for Hibernate Outside Grails</h3>
 <div class="paragraph">
-<p>If you wish to use GORM for Hibernate outside of a Grails application you should declare the necessary dependencies, for example in Gradle:</p>
+<p>If you wish to use GORM for Hibernate outside of a Grails application you should declare the necessary dependencies for GORM and the database you are using, for example in Gradle:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-gorm-hibernate4:VERSION</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-gorm-hibernate4:VERSION</span><span class="delimiter">&quot;</span></span>
+compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework:spring-expression:VERSION</span><span class="delimiter">&quot;</span></span>
+compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.springframework:spring-aop:VERSION</span><span class="delimiter">&quot;</span></span>
+compile <span class="string"><span class="delimiter">&quot;</span><span class="content">com.h2database:h2:VERSION'</span></span><span class="error">
+</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -714,8 +718,13 @@ If your GORM entities are in a different package specify the package name as the
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Entity</span>
-<span class="type">class</span> <span class="class">Person</span> {
-    <span class="predefined-type">String</span> name
+<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> GormEntity&lt;Person&gt; {
+    <span class="predefined-type">String</span> firstName
+    <span class="predefined-type">String</span> lastName
+    <span class="directive">static</span> constraints = {
+        firstName <span class="key">blank</span>:<span class="predefined-constant">false</span>
+        lastName <span class="key">blank</span>:<span class="predefined-constant">false</span>
+    }
 }</code></pre>
 </div>
 </div>
@@ -725,9 +734,7 @@ If your GORM entities are in a different package specify the package name as the
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> initializer = <span class="keyword">new</span> HibernateDatastoreSpringInitializer(Person)
-<span class="keyword">def</span> applicationContext = initializer.configure()
-
-println Person.count()</code></pre>
+<span class="keyword">def</span> applicationContext = initializer.configureForDataSource(dataSource)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -736,9 +743,7 @@ println Person.count()</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> initializer = <span class="keyword">new</span> HibernateDatastoreSpringInitializer([<span class="string"><span class="delimiter">'</span><span class="content">hibernate.log_sql</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">true</span><span class="delimiter">'</span></span>], Person)
-<span class="keyword">def</span> applicationContext = initializer.configure()
-
-println Person.count()</code></pre>
+<span class="keyword">def</span> applicationContext = initializer.configure()</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -748,13 +753,43 @@ println Person.count()</code></pre>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext myApplicationContext = ...
 def initializer = <span class="keyword">new</span> HibernateDatastoreSpringInitializer(myApplicationContext.getEnvironment(), Person)
-initializer.configureForBeanDefinitionRegistry(myApplicationContext)
-
-println Person.count()</code></pre>
+initializer.configureForBeanDefinitionRegistry(myApplicationContext)</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Note in this case GORM expects there to be a bean named <code>dataSource</code> present.</p>
+</div>
+<div class="paragraph">
+<p>There are a couple of things Grails does automaticaly for you that you&#8217;ll have to do it yourself.
+You must define the <code>dataSource</code>, and you have to acquire a new Session via <code>withNewSession</code> for any GORM operation.</p>
+</div>
+<div class="paragraph">
+<p>Below is a full example for using GORM in standalone application</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> dataSource = <span class="keyword">new</span> DriverManagerDataSource(<span class="string"><span class="delimiter">&quot;</span><span class="content">jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">sa</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>)
+dataSource.setDriverClassName(org.h2.Driver.name)
+
+<span class="keyword">def</span> initializer = <span class="keyword">new</span> HibernateDatastoreSpringInitializer(Person)
+<span class="keyword">def</span> applicationContext = initializer.configureForDataSource(dataSource)
+
+
+Person.withNewSession {
+    <span class="keyword">def</span> person = <span class="keyword">new</span> Person(<span class="key">firstName</span>: <span class="string"><span class="delimiter">'</span><span class="content">John</span><span class="delimiter">'</span></span>, <span class="key">lastName</span>: <span class="string"><span class="delimiter">'</span><span class="content">Doe</span><span class="delimiter">'</span></span>).save()
+    println person.count()
+}
+
+<span class="annotation">@Entity</span>
+<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> GormEntity&lt;Person&gt; {
+    <span class="predefined-type">String</span> firstName
+    <span class="predefined-type">String</span> lastName
+    <span class="directive">static</span> constraints = {
+        firstName <span class="key">blank</span>:<span class="predefined-constant">false</span>
+        lastName <span class="key">blank</span>:<span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
