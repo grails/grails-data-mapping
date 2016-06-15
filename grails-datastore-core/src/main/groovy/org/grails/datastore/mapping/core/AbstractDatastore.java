@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.core;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
 import groovy.util.ConfigObject;
+import groovy.util.ConfigSlurper;
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -42,6 +43,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import javax.annotation.PreDestroy;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Abstract Datastore implementation that deals with binding the Session to thread locale upon creation.
@@ -95,9 +97,18 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
             StandardEnvironment env = new StandardEnvironment();
             if(connectionDetails != null) {
                 MutablePropertySources propertySources = env.getPropertySources();
-                propertySources.addFirst(new MapPropertySource("datastoreConfig", connectionDetails));
+
                 if(connectionDetails instanceof ConfigObject) {
+                    propertySources.addFirst(new ConfigObjectPropertySource((ConfigObject) connectionDetails));
                     propertySources.addFirst(new MapPropertySource("datastoreConfigFlat", ((ConfigObject)connectionDetails).flatten()));
+                }
+                else {
+                    ConfigSlurper configSlurper = new ConfigSlurper();
+                    Properties properties = new Properties();
+                    properties.putAll(connectionDetails);
+                    ConfigObject configObject = configSlurper.parse(properties);
+                    propertySources.addFirst(new ConfigObjectPropertySource(configObject));
+                    propertySources.addFirst(new MapPropertySource("datastoreConfigFlat", connectionDetails));
                 }
             }
             return env;
@@ -246,4 +257,20 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         return false;
     }
 
+    private static class ConfigObjectPropertySource extends MapPropertySource {
+        public ConfigObjectPropertySource(ConfigObject configObject) {
+            super("datastoreConfig", configObject);
+        }
+
+        @Override
+        public Object getProperty(String name) {
+            Object value = super.getProperty(name);
+            if(value instanceof Map) {
+                if(((Map)value).isEmpty()) {
+                    return null;
+                }
+            }
+            return value;
+        }
+    }
 }
