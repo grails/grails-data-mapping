@@ -26,6 +26,7 @@ import org.springframework.core.convert.ConversionService
  * @since 3.0
  */
 @CompileStatic
+@Deprecated
 class ConfigUtils {
     private static ConversionService conversionService = new DefaultConversionService();
 
