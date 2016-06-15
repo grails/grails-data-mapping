@@ -422,8 +422,8 @@ public abstract class DatastoreUtils {
                 MutablePropertySources propertySources = env.getPropertySources();
 
                 if(configuration instanceof ConfigObject) {
-                    propertySources.addFirst(new ConfigObjectPropertySource((ConfigObject) configuration));
-                    propertySources.addFirst(new MapPropertySource("datastoreConfigFlat", ((ConfigObject)configuration).flatten()));
+                    propertySources.addFirst(new ConfigObjectPropertySource(configuration));
+                    propertySources.addFirst(new ConfigObjectPropertySource(createFlatConfig((ConfigObject) configuration)));
                 }
                 else {
                     ConfigSlurper configSlurper = new ConfigSlurper();
@@ -431,15 +431,45 @@ public abstract class DatastoreUtils {
                     properties.putAll(configuration);
                     ConfigObject configObject = configSlurper.parse(properties);
                     propertySources.addFirst(new ConfigObjectPropertySource(configObject));
-                    propertySources.addFirst(new MapPropertySource("datastoreConfigFlat", configuration));
+                    propertySources.addFirst(new ConfigObjectPropertySource(createFlatConfig(configObject)));
                 }
             }
             return env;
         }
     }
 
+    private static Map<String, Object> createFlatConfig(ConfigObject configuration) {
+        Map<String, Object> flatConfig = new LinkedHashMap<>();
+        String prefix = "";
+
+        createFlatConfig(configuration, flatConfig, prefix);
+        return flatConfig;
+    }
+
+    private static void createFlatConfig(ConfigObject currentConfigObject, Map<String, Object> rootConfig, String prefix) {
+        Set keySet = currentConfigObject.keySet();
+        for (Object key : keySet) {
+            Object value = currentConfigObject.get(key);
+            if(value instanceof ConfigObject) {
+                ConfigObject sub = (ConfigObject) value;
+                String fullPath = prefix + key;
+                if(!sub.isEmpty()) {
+                    Map flattened = sub.flatten();
+                    sub.putAll(flattened);
+                    createFlatConfig(sub, rootConfig, fullPath + ".");
+                    if(!rootConfig.containsKey(fullPath)) {
+                        rootConfig.put(fullPath, sub);
+                    }
+                }
+            }
+            else {
+                rootConfig.put(prefix + key, value);
+            }
+        }
+    }
+
     private static class ConfigObjectPropertySource extends MapPropertySource {
-        public ConfigObjectPropertySource(ConfigObject configObject) {
+        public ConfigObjectPropertySource(Map configObject) {
             super("datastoreConfig", configObject);
         }
 
@@ -447,8 +477,20 @@ public abstract class DatastoreUtils {
         public Object getProperty(String name) {
             Object value = super.getProperty(name);
             if(value instanceof Map) {
-                if(((Map)value).isEmpty()) {
+                Map map = (Map) value;
+                if(map.isEmpty()) {
                     return null;
+                }
+                else {
+                    Map newMap = new LinkedHashMap();
+                    for (Object key : map.keySet()) {
+                        Object v = map.get(key);
+                        if( !(v instanceof ConfigObject)) {
+                            newMap.put(key, v);
+                        }
+
+                    }
+                    return newMap;
                 }
             }
             return value;
