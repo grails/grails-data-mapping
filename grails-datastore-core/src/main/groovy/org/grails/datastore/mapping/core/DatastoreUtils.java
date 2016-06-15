@@ -16,14 +16,17 @@ package org.grails.datastore.mapping.core;
 
 import groovy.lang.Closure;
 
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import groovy.util.ConfigObject;
+import groovy.util.ConfigSlurper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.NamedThreadLocal;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertyResolver;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.grails.datastore.mapping.transactions.support.SpringSessionSynchronization;
@@ -401,5 +404,54 @@ public abstract class DatastoreUtils {
         }
 
         closeSessionOrRegisterDeferredClose(session, session.getDatastore());
+    }
+
+    /**
+     * Creates a {@link PropertyResolver} from the given configuration
+     * @param configuration The configuration
+     *
+     * @return A {@link PropertyResolver} instance
+     */
+    public static PropertyResolver createPropertyResolver(Map<String, Object> configuration) {
+        if(configuration instanceof PropertyResolver) {
+            return (PropertyResolver)configuration;
+        }
+        else {
+            StandardEnvironment env = new StandardEnvironment();
+            if(configuration != null) {
+                MutablePropertySources propertySources = env.getPropertySources();
+
+                if(configuration instanceof ConfigObject) {
+                    propertySources.addFirst(new ConfigObjectPropertySource((ConfigObject) configuration));
+                    propertySources.addFirst(new MapPropertySource("datastoreConfigFlat", ((ConfigObject)configuration).flatten()));
+                }
+                else {
+                    ConfigSlurper configSlurper = new ConfigSlurper();
+                    Properties properties = new Properties();
+                    properties.putAll(configuration);
+                    ConfigObject configObject = configSlurper.parse(properties);
+                    propertySources.addFirst(new ConfigObjectPropertySource(configObject));
+                    propertySources.addFirst(new MapPropertySource("datastoreConfigFlat", configuration));
+                }
+            }
+            return env;
+        }
+    }
+
+    private static class ConfigObjectPropertySource extends MapPropertySource {
+        public ConfigObjectPropertySource(ConfigObject configObject) {
+            super("datastoreConfig", configObject);
+        }
+
+        @Override
+        public Object getProperty(String name) {
+            Object value = super.getProperty(name);
+            if(value instanceof Map) {
+                if(((Map)value).isEmpty()) {
+                    return null;
+                }
+            }
+            return value;
+        }
     }
 }

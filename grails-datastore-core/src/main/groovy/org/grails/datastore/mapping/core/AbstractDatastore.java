@@ -17,7 +17,6 @@ package org.grails.datastore.mapping.core;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
 import groovy.util.ConfigObject;
-import groovy.util.ConfigSlurper;
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -36,14 +35,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.annotation.PreDestroy;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Abstract Datastore implementation that deals with binding the Session to thread locale upon creation.
@@ -90,29 +86,7 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     }
 
     protected static PropertyResolver mapToPropertyResolver(Map<String,Object> connectionDetails) {
-        if(connectionDetails instanceof PropertyResolver) {
-            return (PropertyResolver)connectionDetails;
-        }
-        else {
-            StandardEnvironment env = new StandardEnvironment();
-            if(connectionDetails != null) {
-                MutablePropertySources propertySources = env.getPropertySources();
-
-                if(connectionDetails instanceof ConfigObject) {
-                    propertySources.addFirst(new ConfigObjectPropertySource((ConfigObject) connectionDetails));
-                    propertySources.addFirst(new MapPropertySource("datastoreConfigFlat", ((ConfigObject)connectionDetails).flatten()));
-                }
-                else {
-                    ConfigSlurper configSlurper = new ConfigSlurper();
-                    Properties properties = new Properties();
-                    properties.putAll(connectionDetails);
-                    ConfigObject configObject = configSlurper.parse(properties);
-                    propertySources.addFirst(new ConfigObjectPropertySource(configObject));
-                    propertySources.addFirst(new MapPropertySource("datastoreConfigFlat", connectionDetails));
-                }
-            }
-            return env;
-        }
+        return DatastoreUtils.createPropertyResolver(connectionDetails);
     }
 
     @PreDestroy
@@ -257,20 +231,4 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         return false;
     }
 
-    private static class ConfigObjectPropertySource extends MapPropertySource {
-        public ConfigObjectPropertySource(ConfigObject configObject) {
-            super("datastoreConfig", configObject);
-        }
-
-        @Override
-        public Object getProperty(String name) {
-            Object value = super.getProperty(name);
-            if(value instanceof Map) {
-                if(((Map)value).isEmpty()) {
-                    return null;
-                }
-            }
-            return value;
-        }
-    }
 }
