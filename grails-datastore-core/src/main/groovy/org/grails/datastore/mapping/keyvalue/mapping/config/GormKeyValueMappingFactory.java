@@ -68,24 +68,10 @@ public class GormKeyValueMappingFactory extends AbstractGormMappingFactory<Famil
     @Override
     protected IdentityMapping getIdentityMappedForm(final ClassMapping classMapping, KeyValue property) {
         if (property != null) {
-            final String name = property.getName();
-            if (name != null) {
-                final PersistentProperty idProperty = classMapping.getEntity().getPropertyByName(name);
-                return new IdentityMapping() {
-                    public String[] getIdentifierName() {
-                        return new String[]{name};
-                    }
-
-                    public ClassMapping getClassMapping() {
-                        return classMapping;
-                    }
-
-                    public Property getMappedForm() {
-                        return idProperty.getMapping().getMappedForm();
-                    }
-                };
-            }
+            return createDefaultIdentityMapping(classMapping, property);
         }
-        return super.getIdentityMappedForm(classMapping, property);
+        else {
+            return super.getIdentityMappedForm(classMapping, null);
+        }
     }
 }

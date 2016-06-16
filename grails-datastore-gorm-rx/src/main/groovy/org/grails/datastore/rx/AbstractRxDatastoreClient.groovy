@@ -4,6 +4,7 @@ import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.config.Property
+import org.grails.datastore.mapping.core.IdentityGenerationException
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection
 import org.grails.datastore.mapping.engine.EntityAccess
@@ -12,6 +13,7 @@ import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.PropertyMapping
+import org.grails.datastore.mapping.model.ValueGenerator
 import org.grails.datastore.mapping.model.types.ToMany
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.Query
@@ -245,7 +247,19 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
                     }
                 } else {
                     if(!hasId) {
-                        id = generateIdentifier(entity, o, entityReflector)
+                        ValueGenerator valueGenerator = entity.getMapping().getIdentifier().generator
+                        if(valueGenerator == ValueGenerator.NATIVE) {
+                            // if the identifier is generated natively then use the hash code to identity the entity since the
+                            // identifiers themselves will be generated from the insert operation
+                            id = o.hashCode()
+                        }
+                        else if(valueGenerator == ValueGenerator.ASSIGNED) {
+                            throw new IdentityGenerationException("Id generator is set to assigned but not identifier was provided for entity $o")
+                        }
+                        else {
+                            id = generateIdentifier(entity, o, entityReflector)
+                        }
+
                     }
                     def preInsertEvent = new PreInsertEvent(this, entity, entityAccess)
                     eventPublisher?.publishEvent(preInsertEvent)
@@ -327,8 +341,17 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
     }
 
     protected void scheduleInsert(PersistentEntity associatedEntity, DirtyCheckable associatedObject, EntityReflector associationReflector, EntityAccess associationAccess, BatchOperation operation, List<ApplicationEvent> postEvents) {
+        ValueGenerator valueGenerator = associatedEntity.getMapping().getIdentifier().generator
         def associatedId
-        associatedId = generateIdentifier(associatedEntity, associatedObject, associationReflector)
+        if(valueGenerator == ValueGenerator.NATIVE) {
+            // if the identifier is generated natively then use the hash code to identity the entity since the
+            // identifiers themselves will be generated from the insert operation
+            associatedId = associatedObject.hashCode()
+        }
+        else {
+            associatedId = generateIdentifier(associatedEntity, associatedObject, associationReflector)
+        }
+
         def preInsertEvent = new PreInsertEvent(this, associatedEntity, associationAccess)
         eventPublisher?.publishEvent(preInsertEvent)
         if (!preInsertEvent.isCancelled()) {

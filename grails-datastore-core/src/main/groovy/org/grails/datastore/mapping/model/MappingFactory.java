@@ -428,7 +428,19 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
         return new IdentityMapping() {
 
             public String[] getIdentifierName() {
-                return new String[] { IDENTITY_PROPERTY };
+                PersistentProperty identity = classMapping.getEntity().getIdentity();
+                String propertyName = identity != null ? identity.getMapping().getMappedForm().getName() : null;
+                if(propertyName != null) {
+                    return new String[] { propertyName };
+                }
+                else {
+                    return new String[] { IDENTITY_PROPERTY };
+                }
+            }
+
+            @Override
+            public ValueGenerator getGenerator() {
+                return ValueGenerator.AUTO;
             }
 
             public ClassMapping getClassMapping() {
@@ -436,8 +448,36 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             }
 
             public Property getMappedForm() {
-                // no custom mapping
-                return null;
+                return classMapping.getEntity().getIdentity().getMapping().getMappedForm();
+            }
+        };
+    }
+
+    protected IdentityMapping createDefaultIdentityMapping(final ClassMapping classMapping, final T property) {
+        final String targetName = property != null ? property.getName() : null;
+        final String generator = property != null ? property.getGenerator() : null;
+        return new IdentityMapping() {
+
+            public String[] getIdentifierName() {
+                if(targetName != null) {
+                    return new String[] { targetName };
+                }
+                else {
+                    return new String[] { IDENTITY_PROPERTY };
+                }
+            }
+
+            @Override
+            public ValueGenerator getGenerator() {
+                return generator != null ? ValueGenerator.valueOf(generator) : ValueGenerator.AUTO;
+            }
+
+            public ClassMapping getClassMapping() {
+                return classMapping;
+            }
+
+            public Property getMappedForm() {
+                return property;
             }
         };
     }

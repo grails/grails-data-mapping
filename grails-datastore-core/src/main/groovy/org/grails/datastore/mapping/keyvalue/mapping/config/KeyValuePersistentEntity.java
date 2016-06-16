@@ -42,17 +42,6 @@ public class KeyValuePersistentEntity extends AbstractPersistentEntity<Family>{
         return classMapping;
     }
 
-    public class KeyValueClassMapping extends AbstractClassMapping<Family> {
-        public KeyValueClassMapping(PersistentEntity entity, MappingContext context) {
-            super(entity, context);
-
-        }
-        @Override
-        public Family getMappedForm() {
-            return (Family) mappedForm;
-        }
-    }
-
     @Override
     public PersistentEntity getParentEntity() {
         Class superclass = this.javaClass.getSuperclass();
@@ -79,6 +68,17 @@ public class KeyValuePersistentEntity extends AbstractPersistentEntity<Family>{
         }
         else {
             return super.getPropertyByName(name);
+        }
+    }
+
+    public class KeyValueClassMapping extends AbstractClassMapping<Family> {
+        public KeyValueClassMapping(PersistentEntity entity, MappingContext context) {
+            super(entity, context);
+
+        }
+        @Override
+        public Family getMappedForm() {
+            return (Family) mappedForm;
         }
     }
 }

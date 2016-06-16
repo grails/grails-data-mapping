@@ -23,11 +23,7 @@ import java.util.Map;
 
 import org.grails.datastore.mapping.config.groovy.DefaultMappingConfigurationBuilder;
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
-import org.grails.datastore.mapping.model.ClassMapping;
-import org.grails.datastore.mapping.model.IdentityMapping;
-import org.grails.datastore.mapping.model.MappingFactory;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.springframework.beans.BeanUtils;
@@ -125,8 +121,13 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
         return super.createIdentityMapping(classMapping);
     }
 
-    protected IdentityMapping getIdentityMappedForm(ClassMapping classMapping, T property) {
-        return null;
+    protected IdentityMapping getIdentityMappedForm(final ClassMapping classMapping, T property) {
+        if(property != null) {
+            return createDefaultIdentityMapping(classMapping, property);
+        }
+        else {
+            return createDefaultIdentityMapping(classMapping);
+        }
     }
 
     @Override

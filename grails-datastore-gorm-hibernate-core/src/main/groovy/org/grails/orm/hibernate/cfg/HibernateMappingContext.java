@@ -207,6 +207,24 @@ public class HibernateMappingContext extends AbstractMappingContext {
         public IdentityMapping createIdentityMapping(final ClassMapping classMapping) {
             final Mapping mappedForm = createMappedForm(classMapping.getEntity());
             final Object identity = mappedForm.getIdentity();
+            final ValueGenerator generator;
+            if(identity instanceof Identity) {
+                Identity id = (Identity) identity;
+                String generatorName = id.getGenerator();
+                if(generatorName != null) {
+                    try {
+                        generator = ValueGenerator.valueOf(generatorName.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        throw new DatastoreConfigurationException("Invalid id generation strategy for entity ["+classMapping.getEntity().getName()+"]: " + generatorName);
+                    }
+                }
+                else {
+                    generator = ValueGenerator.AUTO;
+                }
+            }
+            else {
+                generator = ValueGenerator.AUTO;
+            }
             return new IdentityMapping() {
                 @Override
                 public String[] getIdentifierName() {
@@ -223,6 +241,12 @@ public class HibernateMappingContext extends AbstractMappingContext {
                         return ((CompositeIdentity) identity).getPropertyNames();
                     }
                     return DEFAULT_IDENTITY_MAPPING;
+                }
+
+                @Override
+                public ValueGenerator getGenerator() {
+
+                    return generator;
                 }
 
                 @Override

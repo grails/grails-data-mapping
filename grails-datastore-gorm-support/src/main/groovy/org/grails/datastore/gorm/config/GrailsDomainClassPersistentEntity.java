@@ -75,6 +75,11 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
                     }
 
                     @Override
+                    public ValueGenerator getGenerator() {
+                        return ValueGenerator.AUTO;
+                    }
+
+                    @Override
                     public ClassMapping getClassMapping() {
                         return classMapping;
                     }
