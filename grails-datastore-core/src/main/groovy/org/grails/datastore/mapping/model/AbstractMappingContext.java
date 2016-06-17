@@ -14,12 +14,14 @@
  */
 package org.grails.datastore.mapping.model;
 
+import java.beans.Introspector;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.lifecycle.Initializable;
 import org.grails.datastore.mapping.model.types.conversion.DefaultConversionService;
 import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
@@ -28,12 +30,14 @@ import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.grails.datastore.mapping.reflect.FieldEntityAccess;
+import org.grails.datastore.mapping.reflect.ReflectionUtils;
 import org.grails.datastore.mapping.validation.ValidatorRegistry;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
@@ -49,6 +53,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
 
     public static final String GROOVY_PROXY_FACTORY_NAME = "org.grails.datastore.gorm.proxy.GroovyProxyFactory";
     public static final String JAVASIST_PROXY_FACTORY = "javassist.util.proxy.ProxyFactory";
+    public static final String CONFIGURATION_PREFIX = "grails.gorm.";
     protected Collection<PersistentEntity> persistentEntities = new ConcurrentLinkedQueue<PersistentEntity>();
     protected Map<String,PersistentEntity>  persistentEntitiesByName = new ConcurrentHashMap<String,PersistentEntity>();
     protected Map<PersistentEntity,Map<String,PersistentEntity>>  persistentEntitiesByDiscriminator = new ConcurrentHashMap<PersistentEntity,Map<String,PersistentEntity>>();
@@ -75,6 +80,45 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
 
     public abstract MappingFactory getMappingFactory();
 
+    @Override
+    public void configure(PropertyResolver configuration) {
+        if(configuration == null) {
+            return;
+        }
+
+        String simpleName = Introspector.decapitalize(getClass().getSimpleName());
+        String suffix = "MappingContext";
+
+        if(simpleName.endsWith(suffix)) {
+            simpleName = simpleName.substring(0, simpleName.length() - suffix.length());
+        }
+
+        String prefix = CONFIGURATION_PREFIX + simpleName;
+
+        List customTypes = configuration.getProperty(prefix + ".custom.types", List.class, Collections.emptyList());
+        for (Object customType : customTypes) {
+            Class customTypeClass = null;
+            if(customType instanceof Class) {
+                customTypeClass = (Class) customType;
+            }
+            else if(customType instanceof CharSequence) {
+                customTypeClass = ReflectionUtils.forName(customType.toString(), getClass().getClassLoader());
+            }
+            if(customTypeClass != null && CustomTypeMarshaller.class.isAssignableFrom(customTypeClass)) {
+                CustomTypeMarshaller customTypeMarshaller = (CustomTypeMarshaller) ReflectionUtils.instantiate(customTypeClass);
+                if(customTypeMarshaller.supports(this)) {
+                    getMappingFactory().registerCustomType(customTypeMarshaller);
+                }
+            }
+        }
+
+        ServiceLoader<CustomTypeMarshaller> customTypeMarshallers = ServiceLoader.load(CustomTypeMarshaller.class, getClass().getClassLoader());
+        for (CustomTypeMarshaller customTypeMarshaller : customTypeMarshallers) {
+            if(customTypeMarshaller.supports(this)) {
+                getMappingFactory().registerCustomType(customTypeMarshaller);
+            }
+        }
+    }
 
     @Override
     public ProxyHandler getProxyHandler() {

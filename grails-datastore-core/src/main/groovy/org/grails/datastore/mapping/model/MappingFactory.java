@@ -103,12 +103,12 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             "org.bson.types.ObjectId")));
     }
 
-    private static Map<Class, Collection<CustomTypeMarshaller>> typeConverterMap = new ConcurrentHashMap<Class, Collection<CustomTypeMarshaller>>();
+    private Map<Class, Collection<CustomTypeMarshaller>> typeConverterMap = new ConcurrentHashMap<>();
 
-    public static void registerCustomType(CustomTypeMarshaller marshallerCustom) {
+    public void registerCustomType(CustomTypeMarshaller marshallerCustom) {
         Collection<CustomTypeMarshaller> marshallers = typeConverterMap.get(marshallerCustom.getTargetType());
         if(marshallers == null) {
-            marshallers = new ConcurrentLinkedQueue<CustomTypeMarshaller>();
+            marshallers = new ConcurrentLinkedQueue<>();
             typeConverterMap.put(marshallerCustom.getTargetType(), marshallers);
         }
         marshallers.add(marshallerCustom);
@@ -196,7 +196,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
         return false;
     }
 
-    protected static CustomTypeMarshaller findCustomType(MappingContext context, Class<?> propertyType) {
+    protected CustomTypeMarshaller findCustomType(MappingContext context, Class<?> propertyType) {
         final Collection<CustomTypeMarshaller> allMarshallers = typeConverterMap.get(propertyType);
         if(allMarshallers != null) {
             for (CustomTypeMarshaller marshaller : allMarshallers) {
@@ -409,7 +409,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
         return createBasicCollection(entity, context, property, null);
     }
 
-    public static boolean isCustomType(Class<?> propertyType) {
+    public boolean isCustomType(Class<?> propertyType) {
         if(typeConverterMap.containsKey(propertyType)) {
             return true;
         }

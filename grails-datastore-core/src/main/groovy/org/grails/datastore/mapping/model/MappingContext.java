@@ -23,6 +23,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.validation.Validator;
 
 /**
@@ -43,6 +44,13 @@ import org.springframework.validation.Validator;
  */
 @SuppressWarnings("rawtypes")
 public interface MappingContext {
+
+    /**
+     * Configures the MappingContext
+     *
+     * @param configuration The configuration
+     */
+    void configure(PropertyResolver configuration);
 
     /**
      * Obtains a list of PersistentEntity instances

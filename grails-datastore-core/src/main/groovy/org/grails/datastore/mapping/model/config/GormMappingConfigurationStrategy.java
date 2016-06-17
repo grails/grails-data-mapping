@@ -214,7 +214,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     }
 
     protected boolean supportsCustomType(Class<?> propertyType) {
-        return MappingFactory.isCustomType(propertyType);
+        return propertyFactory.isCustomType(propertyType);
     }
 
     private List getCollectionStaticProperty(ClassPropertyFetcher cpf, String property) {
