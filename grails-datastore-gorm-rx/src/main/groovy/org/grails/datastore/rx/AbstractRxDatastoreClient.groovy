@@ -91,7 +91,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     def <T> Observable get(Class<T> type, Serializable id, QueryState queryState) {
-        return (Observable<T>)createQuery(type)
+        return (Observable<T>)createQuery(type, queryState)
                 .idEq(id)
                 .max(1)
                 .singleResult()
