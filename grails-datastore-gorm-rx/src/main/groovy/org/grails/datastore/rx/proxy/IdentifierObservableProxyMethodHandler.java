@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.functions.Action1;
+import rx.functions.Func1;
 
 import java.io.Serializable;
 
@@ -20,20 +21,21 @@ class IdentifierObservableProxyMethodHandler extends AbstractObservableProxyMeth
 
     private static final Logger LOG = LoggerFactory.getLogger(IdentifierObservableProxyMethodHandler.class);
     protected final Serializable proxyKey;
-    protected Observable observable;
+    protected final Observable observable;
 
     IdentifierObservableProxyMethodHandler(Class<?> proxyClass, Class type, Serializable proxyKey, RxDatastoreClient client, QueryState queryState) {
         super(proxyClass, type, queryState, client);
         this.proxyKey = proxyKey;
-
+        this.observable = resolveObservable();
     }
 
     protected Observable resolveObservable() {
-        this.observable = ((RxDatastoreClientImplementor) client).get(type, proxyKey, queryState);
-        observable.subscribe(new Action1() {
+        Observable observable = ((RxDatastoreClientImplementor) client).get(type, proxyKey, queryState);
+        observable.map(new Func1() {
             @Override
-            public void call(Object o) {
+            public Object call(Object o) {
                 target = o;
+                return o;
             }
         });
         return observable;

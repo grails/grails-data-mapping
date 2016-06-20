@@ -25,12 +25,13 @@ public class QueryObservableProxyMethodHandler extends AbstractObservableProxyMe
     private static final Logger LOG = LoggerFactory.getLogger(QueryObservableProxyMethodHandler.class);
 
     private final Query query;
-    protected Observable observable;
+    protected final Observable observable;
     protected Serializable proxyKey;
 
     public QueryObservableProxyMethodHandler(Class proxyClass, Query query, QueryState queryState, RxDatastoreClient client) {
         super(proxyClass, query.getEntity().getJavaClass(), queryState, client);
         this.query = query;
+        this.observable = resolveObservable();
     }
 
     @Override
@@ -38,7 +39,7 @@ public class QueryObservableProxyMethodHandler extends AbstractObservableProxyMe
         query.projections().id();
         Observable queryResult = ((RxQuery) query).singleResult();
 
-        this.observable = queryResult.switchMap(new Func1<Serializable, Observable>() {
+        queryResult = queryResult.switchMap(new Func1<Serializable, Observable>() {
             @Override
             public Observable call(Serializable id) {
                 if(id != null) {
@@ -56,13 +57,13 @@ public class QueryObservableProxyMethodHandler extends AbstractObservableProxyMe
                 }
             }
         });
-        this.observable.subscribe(new Action1() {
+        return queryResult.map(new Func1() {
             @Override
-            public void call(Object o) {
+            public Object call(Object o) {
                 target = o;
+                return o;
             }
         });
-        return this.observable;
     }
 
     @Override
