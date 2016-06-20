@@ -71,8 +71,6 @@ public class QueryObservableProxyMethodHandler extends AbstractObservableProxyMe
         if(target != null) {
             return target;
         }
-
-        Observable observable = resolveObservable();
         if(LOG.isWarnEnabled()) {
             LOG.warn("Entity of type [{}] lazy loaded using a blocking operation. Consider using ObservableProxy.subscribe(..) instead", type.getName());
         }

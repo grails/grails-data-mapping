@@ -52,7 +52,6 @@ class IdentifierObservableProxyMethodHandler extends AbstractObservableProxyMeth
             this.target = loadedEntity;
         }
         else {
-            Observable observable = resolveObservable();
             if(LOG.isWarnEnabled()) {
                 LOG.warn("Entity of type [{}] with id [{}] lazy loaded using a blocking operation. Consider using ObservableProxy.subscribe(..) instead", type.getName(), proxyKey);
             }
