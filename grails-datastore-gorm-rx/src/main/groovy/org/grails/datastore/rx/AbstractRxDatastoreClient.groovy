@@ -180,7 +180,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
      */
     @Override
     final <T1> Observable<T1> persist(T1 instance, Map<String, Object> arguments) {
-        persistAll((Iterable<T1>)Arrays.asList(instance)).map { List<Serializable> identifiers ->
+        persistAll((Iterable<T1>)Arrays.asList(instance), arguments).map { List<Serializable> identifiers ->
             if(!identifiers.isEmpty()) {
                 return instance
             }
@@ -192,7 +192,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     final <T1> Observable<T1> insert(T1 instance, Map<String, Object> arguments) {
-        insertAll((Iterable<T1>)Arrays.asList(instance)).map { List<Serializable> identifiers ->
+        insertAll((Iterable<T1>)Arrays.asList(instance), arguments).map { List<Serializable> identifiers ->
             if(!identifiers.isEmpty()) {
                 return instance
             }
@@ -209,21 +209,31 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     Observable<List<Serializable>> insertAll(Iterable instances) {
-        return persistAllInternal(instances, true)
+        return persistAllInternal(instances, true, Collections.emptyMap())
     }
 
     @Override
     Observable<List<Serializable>> persistAll(Iterable instances) {
-        return persistAllInternal(instances, false)
+        return persistAllInternal(instances, false, Collections.emptyMap())
     }
 
-    private Observable<List<Serializable>> persistAllInternal(Iterable instances, boolean isInsert) {
+    @Override
+    Observable<List<Serializable>> persistAll(Iterable instances, Map<String, Object> arguments) {
+        return persistAllInternal(instances, true, arguments)
+    }
+
+    @Override
+    Observable<List<Serializable>> insertAll(Iterable instances, Map<String, Object> arguments) {
+        return persistAllInternal(instances, false, arguments)
+    }
+
+    protected Observable<List<Serializable>> persistAllInternal(Iterable instances, boolean isInsert, Map<String, Object> arguments) {
         MappingContext ctx = this.mappingContext
         ApplicationEventPublisher eventPublisher = this.eventPublisher
 
         def proxyHandler = ctx.getProxyHandler()
         if (instances != null) {
-            def batchOperation = new BatchOperation()
+            def batchOperation = new BatchOperation(arguments)
             List<Serializable> identifiers = []
             List<ApplicationEvent> postEvents = []
             for (o in instances) {

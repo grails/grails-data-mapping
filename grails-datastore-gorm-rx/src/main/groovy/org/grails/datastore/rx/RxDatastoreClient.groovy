@@ -105,6 +105,22 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
     Observable<List<Serializable>> insertAll(Iterable objects)
 
     /**
+     * Batch saves all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    Observable<List<Serializable>> persistAll(Iterable objects, Map<String, Object> arguments)
+
+    /**
+     * Batch insert all all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    Observable<List<Serializable>> insertAll(Iterable objects, Map<String, Object> arguments)
+
+    /**
      * Creates a query for the given type
      *
      * @param type The type
