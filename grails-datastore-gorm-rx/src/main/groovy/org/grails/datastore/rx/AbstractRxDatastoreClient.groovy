@@ -219,12 +219,12 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     Observable<List<Serializable>> persistAll(Iterable instances, Map<String, Object> arguments) {
-        return persistAllInternal(instances, true, arguments)
+        return persistAllInternal(instances, false, arguments)
     }
 
     @Override
     Observable<List<Serializable>> insertAll(Iterable instances, Map<String, Object> arguments) {
-        return persistAllInternal(instances, false, arguments)
+        return persistAllInternal(instances, true, arguments)
     }
 
     protected Observable<List<Serializable>> persistAllInternal(Iterable instances, boolean isInsert, Map<String, Object> arguments) {
