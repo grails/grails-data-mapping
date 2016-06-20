@@ -7,28 +7,25 @@ import org.grails.datastore.rx.query.QueryState;
 import org.grails.datastore.rx.query.RxQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Action1;
 import rx.functions.Func1;
 
 import java.io.Serializable;
 
 /**
- * A proxy {@link javassist.util.proxy.MethodHandler} that uses a query to resolve the target
+ * A proxy {@link javassist.util.proxy.MethodHandler} that uses a query to resolve the id of the the target
  *
  * @author Graeme Rocher
  * @since 6.0
  */
-public class QueryObservableProxyMethodHandler extends AbstractObservableProxyMethodHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(QueryObservableProxyMethodHandler.class);
+public class IdQueryObservableProxyMethodHandler extends AbstractObservableProxyMethodHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(IdQueryObservableProxyMethodHandler.class);
 
     private final Query query;
     protected final Observable observable;
     protected Serializable proxyKey;
 
-    public QueryObservableProxyMethodHandler(Class proxyClass, Query query, QueryState queryState, RxDatastoreClient client) {
+    public IdQueryObservableProxyMethodHandler(Class proxyClass, Query query, QueryState queryState, RxDatastoreClient client) {
         super(proxyClass, query.getEntity().getJavaClass(), queryState, client);
         this.query = query;
         this.observable = resolveObservable();
