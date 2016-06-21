@@ -124,17 +124,27 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     final Observable<Boolean> delete(Object instance) {
-        deleteAll((Iterable)Arrays.asList(instance)).map { Number deleteCount ->
+        delete(instance, Collections.emptyMap())
+    }
+
+    @Override
+    Observable<Number> deleteAll(Iterable instances) {
+        deleteAll(instances, Collections.emptyMap())
+    }
+
+    @Override
+    Observable<Boolean> delete(Object instance, Map<String, Object> arguments) {
+        deleteAll((Iterable)Arrays.asList(instance), arguments).map { Number deleteCount ->
             deleteCount > 0
         }
     }
 
     @Override
-    Observable<Number> deleteAll(Iterable instances) {
+    Observable<Number> deleteAll(Iterable instances, Map<String, Object> arguments) {
         def ctx = this.mappingContext
         def proxyHandler = ctx.getProxyHandler()
         if(instances != null) {
-            def batchOperation = new BatchOperation()
+            def batchOperation = new BatchOperation(arguments)
             List<ApplicationEvent> postEvents = []
             for(o in instances) {
                 Class type = proxyHandler.getProxiedClass(o)

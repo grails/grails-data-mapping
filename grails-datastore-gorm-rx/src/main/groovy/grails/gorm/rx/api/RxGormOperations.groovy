@@ -50,4 +50,11 @@ interface RxGormOperations<D> {
      * @return An observable that returns a boolean true if successful
      */
     Observable<Boolean> delete()
+
+    /**
+     * Deletes an entity
+     *
+     * @return An observable that returns a boolean true if successful
+     */
+    Observable<Boolean> delete(Map<String, Object> arguments)
 }

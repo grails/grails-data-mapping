@@ -57,4 +57,14 @@ interface RxGormInstanceOperations<D> {
      * @return An observable that returns a boolean true if successful
      */
     Observable<Boolean> delete(D instance)
+
+    /**
+     * Deletes an entity
+     *
+     * @param instance The instance
+     * @param arguments The arguments
+     *
+     * @return An observable that returns a boolean true if successful
+     */
+    Observable<Boolean> delete(D instance, Map<String, Object> arguments)
 }

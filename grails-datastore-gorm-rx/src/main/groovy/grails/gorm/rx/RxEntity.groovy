@@ -105,8 +105,8 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return An observable that returns a boolean true if successful
      */
     @Override
-    Observable<Boolean> delete() {
-        currentRxGormInstanceApi().delete this
+    Observable<Boolean> delete(Map<String, Object> arguments = Collections.emptyMap()) {
+        currentRxGormInstanceApi().delete this, arguments
     }
 
 
