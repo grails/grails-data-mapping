@@ -19,11 +19,26 @@ interface RxQuery<T> {
     Observable<T> findAll()
 
     /**
+     * @param queryArguments The query arguments. These are things like the max, offset etc.
+     *
+     * @return All results matching this query as an observable
+     */
+    Observable<T> findAll(Map<String,Object> queryArguments)
+
+    /**
      *
      * @return A single result matching this query as an observable
      */
 
     Observable<T> singleResult()
+
+    /**
+     * @param queryArguments The query arguments. These are things like the max, offset etc.
+     *
+     * @return A single result matching this query as an observable
+     */
+
+    Observable<T> singleResult(Map<String,Object> queryArguments)
 
     /**
      * update all entities matching this query with the given properties

@@ -28,12 +28,12 @@ class RxGormInstanceApi<D> implements RxGormInstanceOperations<D> {
     }
 
     @Override
-    Observable<D> save(D instance, Map<String, Object> arguments = Collections.<String,Object>emptyMap()) {
+    Observable<D> save(D instance, Map arguments = Collections.emptyMap()) {
         datastoreClient.persist(instance, arguments)
     }
 
     @Override
-    Observable<D> insert(D instance, Map<String, Object> arguments = Collections.<String,Object>emptyMap()) {
+    Observable<D> insert(D instance, Map arguments = Collections.emptyMap()) {
         datastoreClient.insert(instance, arguments)
     }
 
@@ -48,7 +48,7 @@ class RxGormInstanceApi<D> implements RxGormInstanceOperations<D> {
     }
 
     @Override
-    Observable<Boolean> delete(D instance, Map<String, Object> arguments) {
+    Observable<Boolean> delete(D instance, Map arguments) {
         datastoreClient.delete(instance, arguments)
     }
 }

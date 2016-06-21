@@ -25,6 +25,13 @@ class FindAllByFinder extends org.grails.datastore.gorm.finders.FindAllByFinder 
         def javaClass = invocation.getJavaClass()
         def query = datastoreClient.createQuery(javaClass)
         query = buildQuery(invocation, javaClass, query)
-        ((RxQuery)query).findAll()
+        def arguments = invocation.getArguments()
+        if (arguments.length > 0 && (arguments[0] instanceof Map)) {
+            ((RxQuery)query).findAll((Map)arguments[0])
+        }
+        else {
+            return ((RxQuery)query).findAll()
+        }
+
     }
 }

@@ -46,7 +46,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     }
 
     @Override
-    Observable<D> insert(Map<String, Object> arguments = Collections.emptyMap()) {
+    Observable<D> insert(Map arguments = Collections.emptyMap()) {
         return doSave(arguments, true)
     }
     /**
@@ -55,7 +55,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return An observable
      */
     Observable<D> save() {
-        save(Collections.<String,Object>emptyMap())
+        save(Collections.emptyMap())
     }
 
     /**
@@ -63,11 +63,11 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return An observable
      */
-    Observable<D> save(Map<String, Object> arguments) {
+    Observable<D> save(Map arguments) {
         return doSave(arguments, false)
     }
 
-    private Observable<D> doSave(Map<String, Object> arguments, boolean isInsert) {
+    private Observable<D> doSave(Map arguments, boolean isInsert) {
         boolean shouldValidate = arguments?.containsKey("validate") ? arguments.validate : true
         if (shouldValidate) {
             def hasErrors = !validate()
@@ -105,7 +105,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return An observable that returns a boolean true if successful
      */
     @Override
-    Observable<Boolean> delete(Map<String, Object> arguments = Collections.emptyMap()) {
+    Observable<Boolean> delete(Map arguments = Collections.emptyMap()) {
         currentRxGormInstanceApi().delete this, arguments
     }
 
@@ -303,7 +303,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param id The id of the instance
      * @return An observable
      */
-    static Observable<D> get(Serializable id, Map<String, Object> args = Collections.emptyMap()) {
+    static Observable<D> get(Serializable id, Map args = Collections.emptyMap()) {
         currentRxGormStaticApi().get(id, args)
     }
 
@@ -340,7 +340,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param objects The objects to save
      * @return An observable that emits the identifiers of the saved objects
      */
-    static Observable<List<Serializable>> saveAll(Iterable<D> objects, Map<String,Object> arguments = Collections.emptyMap()) {
+    static Observable<List<Serializable>> saveAll(Iterable<D> objects, Map arguments = Collections.emptyMap()) {
         currentRxGormStaticApi().saveAll(objects, arguments)
     }
 
@@ -478,7 +478,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param queryMap The map of conditions
      * @return A single result
      */
-    static Observable<D> findWhere(Map<String, Object> queryMap) {
+    static Observable<D> findWhere(Map queryMap) {
         currentRxGormStaticApi().findWhere queryMap
     }
 
@@ -490,7 +490,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A single result
      */
-    static Observable<D> findWhere(Map<String, Object> queryMap, Map args) {
+    static Observable<D> findWhere(Map queryMap, Map args) {
         currentRxGormStaticApi().findWhere queryMap, args
     }
 
@@ -501,7 +501,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param queryMap The map of conditions
      * @return A single result
      */
-    static Observable<D> findOrCreateWhere(Map<String, Object> queryMap) {
+    static Observable<D> findOrCreateWhere(Map queryMap) {
         currentRxGormStaticApi().findOrCreateWhere queryMap
     }
 

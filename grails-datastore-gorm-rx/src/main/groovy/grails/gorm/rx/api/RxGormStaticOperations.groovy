@@ -32,7 +32,7 @@ interface RxGormStaticOperations<D> {
      *
      * @return An observable
      */
-    Observable<D> get(Serializable id, Map<String, Object> queryArgs)
+    Observable<D> get(Serializable id, Map queryArgs)
 
     /**
      * @return Counts the number of instances
@@ -71,7 +71,7 @@ interface RxGormStaticOperations<D> {
      *
      * @return An observable that emits the identifiers of the saved objects
      */
-    Observable<List<Serializable>> saveAll(Iterable<D> objects, Map<String,Object> arguments)
+    Observable<List<Serializable>> saveAll(Iterable<D> objects, Map arguments)
 
     /**
      * Batch saves all of the given objects
@@ -114,7 +114,7 @@ interface RxGormStaticOperations<D> {
      *
      * @return the first object in the datastore, null if none exist
      */
-    Observable<D> first(Map<String,Object> queryParams)
+    Observable<D> first(Map queryParams)
 
     /**
      * Finds the last object using the natural sort order
@@ -141,7 +141,7 @@ interface RxGormStaticOperations<D> {
      *
      * @return A single that will emit the last object, if it exists
      */
-    Observable<D> last(Map<String,Object> params)
+    Observable<D> last(Map params)
 
 
 
@@ -179,7 +179,7 @@ interface RxGormStaticOperations<D> {
      * @param queryMap The map of conditions
      * @return A single result
      */
-    Observable<D> findWhere(Map<String, Object> queryMap)
+    Observable<D> findWhere(Map queryMap)
 
     /**
      * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
@@ -189,7 +189,7 @@ interface RxGormStaticOperations<D> {
      *
      * @return A single result
      */
-    Observable<D> findWhere(Map<String, Object> queryMap, Map args)
+    Observable<D> findWhere(Map queryMap, Map args)
 
     /**
      * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
@@ -198,7 +198,7 @@ interface RxGormStaticOperations<D> {
      * @param queryMap The map of conditions
      * @return A single result
      */
-    Observable<D> findOrCreateWhere(Map<String, Object> queryMap)
+    Observable<D> findOrCreateWhere(Map queryMap)
 
     /**
      * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
@@ -207,7 +207,7 @@ interface RxGormStaticOperations<D> {
      * @param queryMap The map of conditions
      * @return A single result
      */
-    Observable<D> findOrSaveWhere(Map<String,Object> queryMap)
+    Observable<D> findOrSaveWhere(Map queryMap)
 
     /**
      * Finds all results matching all of the given conditions. Eg. Book.findAllWhere(author:"Stephen King", title:"The Stand")
@@ -215,7 +215,7 @@ interface RxGormStaticOperations<D> {
      * @param queryMap The map of conditions
      * @return A list of results
      */
-    Observable<D> findAllWhere(Map<String,Object> queryMap)
+    Observable<D> findAllWhere(Map queryMap)
 
     /**
      * Finds all results matching all of the given conditions. Eg. Book.findAllWhere(author:"Stephen King", title:"The Stand")
@@ -225,7 +225,7 @@ interface RxGormStaticOperations<D> {
      *
      * @return A list of results
      */
-    Observable<D> findAllWhere(Map<String,Object> queryMap, Map args)
+    Observable<D> findAllWhere(Map queryMap, Map args)
     /**
      * Uses detached criteria to build a query and then execute it returning an observable
      *
