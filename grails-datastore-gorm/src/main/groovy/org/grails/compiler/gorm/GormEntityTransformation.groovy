@@ -143,17 +143,21 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         def dirtyCheckTransformer = new DirtyCheckingTransformer()
         dirtyCheckTransformer.performInjectionOnAnnotatedClass(sourceUnit, classNode)
 
+        def rxEntityClassNode = AstUtils.findInterface(classNode, "grails.gorm.rx.RxEntity")
+        boolean isRxEntity = rxEntityClassNode != null
         // now enhance with id and version
         injectIdProperty(classNode)
-        injectVersionProperty(classNode)
+
+        if(!isRxEntity) {
+            injectVersionProperty(classNode)
+        }
 
         // inject toString()
         injectToStringMethod(classNode)
 
 
         // inject the GORM entity trait unless it is an RX entity
-        def rxEntityClassNode = AstUtils.findInterface(classNode, "grails.gorm.rx.RxEntity")
-        boolean isRxEntity = rxEntityClassNode != null
+
         MethodNode addToMethodNode = ADD_TO_METHOD_NODE
         MethodNode removeFromMethodNode = REMOVE_FROM_METHOD_NODE
         MethodNode getAssociationMethodNode = GET_ASSOCIATION_ID_METHOD_NODE
