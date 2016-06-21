@@ -39,6 +39,7 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
 import org.grails.datastore.mapping.query.api.Criteria
 import org.springframework.beans.PropertyAccessorFactory
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
+import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.support.DefaultTransactionDefinition
@@ -250,9 +251,15 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     @CompileStatic(TypeCheckingMode.SKIP)
     D create() {
         D d = persistentClass.newInstance()
-        datastore.applicationContext.autowireCapableBeanFactory.autowireBeanProperties(
-              d, AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, false)
-        d
+
+        def applicationContext = datastore.applicationContext
+
+        if(applicationContext != null) {
+            applicationContext.autowireCapableBeanFactory.autowireBeanProperties(
+                    d, AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, false)
+        }
+
+        return d
     }
 
     /**
