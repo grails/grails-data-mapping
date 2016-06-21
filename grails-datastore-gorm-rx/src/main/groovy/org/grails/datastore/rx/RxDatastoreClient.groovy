@@ -18,6 +18,11 @@ import rx.Observable
 interface RxDatastoreClient<T> extends Closeable, QueryCreator {
 
     /**
+     * Whether blocking operations are allowed
+     */
+    String SETTING_ALLOW_BLOCKING = "grails.gorm.rx.allowBlocking"
+
+    /**
      * Obtains a single instance for the given type and id
      *
      * @param type The persistent type

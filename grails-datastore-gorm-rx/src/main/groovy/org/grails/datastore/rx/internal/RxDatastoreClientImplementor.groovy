@@ -18,6 +18,10 @@ import rx.Observable
 interface RxDatastoreClientImplementor {
 
     /**
+     * @return Whether blocking operations are allowed by the implementation
+     */
+    boolean isAllowBlockingOperations()
+    /**
      * Obtain an instance passing the query state
      *
      * @param type The type

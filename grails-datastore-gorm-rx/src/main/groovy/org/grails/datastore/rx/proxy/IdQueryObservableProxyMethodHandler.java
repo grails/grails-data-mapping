@@ -2,6 +2,7 @@ package org.grails.datastore.rx.proxy;
 
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.rx.RxDatastoreClient;
+import org.grails.datastore.rx.exceptions.BlockingOperationException;
 import org.grails.datastore.rx.internal.RxDatastoreClientImplementor;
 import org.grails.datastore.rx.query.QueryState;
 import org.grails.datastore.rx.query.RxQuery;
@@ -72,10 +73,15 @@ public class IdQueryObservableProxyMethodHandler extends AbstractObservableProxy
         if(target != null) {
             return target;
         }
-        if(LOG.isWarnEnabled()) {
-            LOG.warn("Entity of type [{}] lazy loaded using a blocking operation. Consider using ObservableProxy.subscribe(..) instead", type.getName());
+        if(((RxDatastoreClientImplementor)client).isAllowBlockingOperations()) {
+            if(LOG.isWarnEnabled()) {
+                LOG.warn("Entity of type [{}] with id [{}] lazy loaded using a blocking operation. Consider using ObservableProxy.subscribe(..) instead", type.getName(), proxyKey);
+            }
+            this.target = observable.toBlocking().first();
         }
-        this.target = observable.toBlocking().first();
+        else {
+            throw new BlockingOperationException("Cannot initialize proxy for class ["+type+"] using a blocking operation. Use ObservableProxy.subscribe(..) instead.");
+        }
         return this.target;
     }
 

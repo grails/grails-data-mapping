@@ -33,6 +33,7 @@ import org.grails.datastore.gorm.events.DefaultApplicationEventPublisher
 import org.grails.gorm.rx.events.DomainEventListener
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.core.env.PropertyResolver
 import rx.Observable
 
 import javax.persistence.CascadeType
@@ -53,7 +54,6 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
         this.mappingContext = mappingContext
         this.proxyFactory = new RxJavassistProxyFactory()
         mappingContext.setProxyFactory(new RxJavassistProxyFactory())
-
     }
 
     ConfigurableApplicationEventPublisher getEventPublisher() {
