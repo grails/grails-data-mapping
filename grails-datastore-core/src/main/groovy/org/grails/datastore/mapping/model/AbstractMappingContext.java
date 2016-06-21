@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.grails.datastore.mapping.config.ConfigurationUtils;
 import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
@@ -94,25 +95,9 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         }
 
         String prefix = CONFIGURATION_PREFIX + simpleName;
+        String configurationKey = prefix + ".custom.types";
 
-        List customTypes = configuration.getProperty(prefix + ".custom.types", List.class, Collections.emptyList());
-        for (Object customType : customTypes) {
-            Class customTypeClass = null;
-            if(customType instanceof Class) {
-                customTypeClass = (Class) customType;
-            }
-            else if(customType instanceof CharSequence) {
-                customTypeClass = ReflectionUtils.forName(customType.toString(), getClass().getClassLoader());
-            }
-            if(customTypeClass != null && CustomTypeMarshaller.class.isAssignableFrom(customTypeClass)) {
-                CustomTypeMarshaller customTypeMarshaller = (CustomTypeMarshaller) ReflectionUtils.instantiate(customTypeClass);
-                if(customTypeMarshaller.supports(this)) {
-                    getMappingFactory().registerCustomType(customTypeMarshaller);
-                }
-            }
-        }
-
-        ServiceLoader<CustomTypeMarshaller> customTypeMarshallers = ServiceLoader.load(CustomTypeMarshaller.class, getClass().getClassLoader());
+        Iterable<CustomTypeMarshaller> customTypeMarshallers = ConfigurationUtils.findServices(configuration, configurationKey, CustomTypeMarshaller.class);
         for (CustomTypeMarshaller customTypeMarshaller : customTypeMarshallers) {
             if(customTypeMarshaller.supports(this)) {
                 getMappingFactory().registerCustomType(customTypeMarshaller);
