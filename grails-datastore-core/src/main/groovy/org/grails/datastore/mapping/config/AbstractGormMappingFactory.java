@@ -41,6 +41,7 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
     private Closure defaultMapping;
     private Object contextObject;
     protected Closure defaultConstraints;
+    protected boolean versionByDefault = true;
 
     /**
      * @param contextObject Context object to be passed to mapping blocks
@@ -53,6 +54,14 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
         this.defaultConstraints = defaultConstraints;
     }
 
+    /**
+     * Whether the version entities using optimistic locking by default
+     *
+     * @param versionByDefault True if objects should be versioned by default
+     */
+    public void setVersionByDefault(boolean versionByDefault) {
+        this.versionByDefault = versionByDefault;
+    }
 
     @Override
     public R createMappedForm(PersistentEntity entity) {
@@ -97,6 +106,7 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
     }
 
     protected MappingConfigurationBuilder createConfigurationBuilder(PersistentEntity entity, R family) {
+        family.setVersion(versionByDefault);
         return new DefaultMappingConfigurationBuilder(family, getPropertyMappedFormType());
     }
 
