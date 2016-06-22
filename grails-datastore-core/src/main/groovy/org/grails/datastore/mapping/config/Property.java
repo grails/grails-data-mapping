@@ -33,6 +33,7 @@ public class Property implements Cloneable {
     private boolean index = false;
     private boolean nullable = false;
     private boolean unique = false;
+    private boolean reference = false;
     private FetchType fetchStrategy = FetchType.LAZY;
     private Boolean lazy = null;
     private String targetName;
@@ -49,10 +50,24 @@ public class Property implements Cloneable {
     private boolean derived;
     private String cascade;
     private String formula;
+
+
     @Override
     public Property clone() throws CloneNotSupportedException {
         return (Property) super.clone();
     }
+
+    /**
+     * @return Whether this property is a database reference such as a foreign key
+     */
+    public boolean isReference() {
+        return reference;
+    }
+
+    public void setReference(boolean reference) {
+        this.reference = reference;
+    }
+
     /**
      * The formula used to build the property
      */
