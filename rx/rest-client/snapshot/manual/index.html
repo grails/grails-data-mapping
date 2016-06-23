@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
 <meta name="author" content="Graeme Rocher">
-<title>RxGORM REST Client</title>
+<title>RxGORM for REST</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -512,7 +512,7 @@ table.CodeRay td.code>pre{padding:0}
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>RxGORM REST Client</h1>
+<h1>RxGORM for REST</h1>
 <div class="details">
 <span id="author" class="author">Graeme Rocher</span><br>
 </div>
@@ -520,6 +520,50 @@ table.CodeRay td.code>pre{padding:0}
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#introduction">Introduction</a></li>
+<li><a href="#gettingStarted">Getting Started</a>
+<ul class="sectlevel2">
+<li><a href="#installation">Installation</a></li>
+<li><a href="#creatingDomainClasses">Creating Domain Classes</a></li>
+<li><a href="#crud">Performing CRUD Operations</a></li>
+</ul>
+</li>
+<li><a href="#configuration">Configuration</a>
+<ul class="sectlevel2">
+<li><a href="#_basic_configuration">Basic Configuration</a></li>
+<li><a href="#singleHost">Single Host Connection Pooling</a></li>
+<li><a href="#loadBalanced">Client Side Load Balancing</a></li>
+</ul>
+</li>
+<li><a href="#domainClasses">Working with Domain Classes</a>
+<ul class="sectlevel2">
+<li><a href="#identity">Identity Generation</a></li>
+<li><a href="#converting">Converting to and from JSON</a></li>
+<li><a href="#dynamicAttributes">Dynamic Attributes</a></li>
+<li><a href="#requestCustomization">Customizing the Request</a></li>
+<li><a href="#interceptors">Request Interceptors</a></li>
+<li><a href="#batchUpdates">Batch Updates</a></li>
+<li><a href="#customTypes">Custom Types</a></li>
+</ul>
+</li>
+<li><a href="#associations">Modelling Associations</a>
+<ul class="sectlevel2">
+<li><a href="#embedded">Embedded</a></li>
+<li><a href="#hasOne">Single Ended Associations</a></li>
+<li><a href="#hasMany">Many Ended Associations</a></li>
+<li><a href="#lazyLoading">Lazy Loading</a></li>
+</ul>
+</li>
+<li><a href="#querying">Querying with RxGORM</a>
+<ul class="sectlevel2">
+<li><a href="#joins">Join Queries</a></li>
+<li><a href="#bsonQueries">MongoDB-style Queries</a></li>
+</ul>
+</li>
+<li><a href="#reference">Reference</a>
+<ul class="sectlevel3">
+<li><a href="#configOptions">Configuration Options</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -528,7 +572,716 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="introduction">Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Introduction text</p>
+<p>The RxGORM REST Client projects aims to implement a non-blocking REST client using RxJava, RxNetty and the RxGORM API. RxGORM is a Object mapping technology that has implementations for MongoDB and other databases. In fact RxGORM REST Client uses the same Object to document encoding engine and RxGORM for MongoDB resulting in high performance encoding and decoding of JSON documents from REST web services.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Currently RxGORM REST Client only supports JSON responses and XML support is not planned at this time.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="gettingStarted">Getting Started</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="installation">Installation</h3>
+<div class="paragraph">
+<p>RxGORM for REST is designed to very lightweight, and so can be used in a number of scenarios either standalone or within Grails application.</p>
+</div>
+<div class="sect3">
+<h4 id="withGrails">Installation with Grails</h4>
+<div class="paragraph">
+<p>To use RxGORM for REST within a Grails 3 application adding the following dependency to your <code>build.gradle</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    compile 'org.grails.plugins:rx-gorm-rest-client:1.0.0-SNAPSHOT'
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="withoutGrails">Installation without Grails</h4>
+<div class="paragraph">
+<p>If you are not developing a Grails application then define the following dependency in your <code>build.gradle</code> or <code>pom.xml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title"><code>build.gradle</code></div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx-rest-client:1.0.0-SNAPSHOT"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With that done you will need to place the following logic in the bootstrap path of your application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.core.*</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.rx.rest.*</span>
+...
+
+PropertyResolver configuration = DatastoreUtils.createPropertyResolver(<span class="string"><span class="delimiter">'</span><span class="content">grails.gorm.rest.readTimeout</span><span class="delimiter">'</span></span>:<span class="integer">1500</span>,
+                                                                       <span class="string"><span class="delimiter">'</span><span class="content">grails.gorm.rest.host</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">localhost</span><span class="delimiter">'</span></span>)
+<span class="keyword">new</span> RxRestDatastoreClient(
+            configuration, <i class="conum" data-value="1"></i><b>(1)</b>
+            MyClass <i class="conum" data-value="2"></i><b>(2)</b>
+)</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The configuration. This parameter is optional with the default server being localhost. See <a href="../api/org/grails/datastore/rx/rest/config/Settings.html">Settings</a> for available options.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>One or many classes that implement <a href="../api/grails/gorm/rx/rest/RxRestEntity.html">RxRestEntity</a></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <a href="../api/org/grails/datastore/rx/rest/RxRestDatastoreClient.html">RxRestDatastoreClient</a> class is required to initialize RxGORM for REST.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="creatingDomainClasses">Creating Domain Classes</h3>
+<div class="paragraph">
+<p>When using RxGORM each entity that you submit to a REST service is known as a domain class.</p>
+</div>
+<div class="paragraph">
+<p>If you are using RxGORM within Grails you can create a domain class with the <code>create-domain-class</code> command provided by the command line. Alternatively if you are not using Grails simply creating a Groovy class with <code>src/main/groovy</code> of your project will suffice.</p>
+</div>
+<div class="paragraph">
+<p>A RxGORM for REST domain class must as a minimum implement the <a href="../api/grails/gorm/rx/rest/RxRestEntity.html">RxRestEntity</a> trait. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are not using Grails and have placed the domain class in <code>src/main/groovy</code> you must also annotate the domain class with the <code>Entity</code> annotation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">...
+import grails.gorm.annotation.*
+
+<span class="annotation">@Entity</span>
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The type is provided as a generic argument to the <code>RxRestEntity</code> trait. This is important to ensure the correct return signatures are produced for methods provided by the trait.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For more information on domain modelling in GORM, take a look at the <a href="http://docs.grails.org/latest/guide/GORM.html#domainClasses">GORM user guide documentation</a> on the subject.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="crud">Performing CRUD Operations</h3>
+<div class="paragraph">
+<p>Create, Read, Update and Delete (or CRUD) in REST applications are typically modelled by the HTTP verbs <code>GET</code>, <code>POST</code> and <code>DELETE</code>. The following examples will work you through how to perform each.</p>
+</div>
+<div class="sect3">
+<h4 id="_create_saving_domain_instances">Create - Saving domain instances</h4>
+<div class="paragraph">
+<p>To create and save a new instance to a REST web service you should use the <code>save()</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>)
+        .save()
+        .toBlocking()
+        .first()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>save()</code> method returns an <a href="http://reactivex.io/RxJava/javadoc/rx/Observable.html">rx.Observable</a>.</p>
+</div>
+<div class="paragraph">
+<p>Notice that in this example we are calling <code>toBlocking()</code>, this is purely for demonstration and testing purposes to ensure the operation completes immediately.</p>
+</div>
+<div class="paragraph">
+<p>In a real world application you would typically subscribe to the observable in order to receive a result:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>)
+        .save()
+        .subscribe { <span class="predefined-type">Book</span> <span class="local-variable">it</span> -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title = </span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">it</span>.title<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you don&#8217;t call <code>subscribe(..)</code> or convert the <code>Observable</code> into a blocking operation, then no query will be executed! At least one call to <code>subscribe(..)</code> is required.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>Observable</code> will by default submit to the <code>/book</code> URI using an HTTP <code>POST</code> with a content type of <code>application/json</code> using the following body:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can alter both the URI and the <a href="../api/grails/http/MediaType.html">MediaType</a> to submit in the POST request using your domain mapping:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+<span class="keyword">import</span> <span class="include">grails.http.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+
+    <span class="directive">static</span> mapping = {
+        uri <span class="string"><span class="delimiter">&quot;</span><span class="content">/books{/id}</span><span class="delimiter">&quot;</span></span>
+        contentType MediaType.HAL_JSON
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example a URI is specified that makes the <code>POST</code> request submit to <code>/books</code> instead. URIs are specified using the <a href="https://tools.ietf.org/html/rfc6570">RFC 6570 URI Template</a> syntax.</p>
+</div>
+<div class="paragraph">
+<p>The example also alters the <code>MediaType</code> used to instead be <code>application/hal+json</code>. <a href="https://tools.ietf.org/html/draft-kelly-json-hal-08">HAL (Hypertext Application Language)</a> is a draft specification for representing JSON responses in REST applications also supported by Grails' <a href="http://views.grails.org/latest">JSON Views</a>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_read_retrieving_domain_instances">Read - Retrieving domain instances</h4>
+<div class="paragraph">
+<p>To retrieve an instance you can use the static <code>get(..)</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.get(id)
+    .subscribe { <span class="predefined-type">Book</span> <span class="local-variable">it</span> -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title = </span><span class="inline"><span class="inline-delimiter">${</span><span class="local-variable">it</span>.title<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>get</code> method will issue an HTTP <code>GET</code> request to the <code>/books/id</code> URI and decode the <code>Book</code> from the JSON response. Both HAL and regular JSON responses are supported. To list all the available books you can use the <code>list()</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.list()
+    .subscribe { <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books -&gt;
+    <span class="keyword">for</span>(book <span class="keyword">in</span> books)
+        println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title = </span><span class="inline"><span class="inline-delimiter">${</span>book.title<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To handle errors you can use the RxJava <a href="http://reactivex.io/RxJava/javadoc/rx/Observer.html">Observer</a> interface:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">observable.subscribe(<span class="keyword">new</span> <span class="predefined-type">Observer</span>&lt;<span class="predefined-type">Book</span>&gt;() {
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> onCompleted() {
+        <span class="comment">// when all work is completed</span>
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> onError(<span class="predefined-type">Throwable</span> e) {
+        <span class="comment">// when an occur occurs</span>
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> onNext(<span class="predefined-type">Book</span> book) {
+        <span class="comment">// when a book is read</span>
+    }
+})</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_update_updating_instances">Update - Updating instances</h4>
+<div class="paragraph">
+<p>To update an instance after retrieving it you can use the <a href="http://reactivex.io/RxJava/javadoc/rx/Observable.html#switchMap(rx.functions.Func1)">Observable.switchMap</a> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.get(id)
+    .switchMap() { <span class="predefined-type">Book</span> <span class="local-variable">it</span> -&gt;
+    <span class="local-variable">it</span>.title = <span class="string"><span class="delimiter">&quot;</span><span class="content">The Shining</span><span class="delimiter">&quot;</span></span>
+    <span class="keyword">return</span> <span class="local-variable">it</span>.save()
+}.subscribe { <span class="predefined-type">Book</span> updated -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Book updated!</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>switchMap</code> transforms an <code>Observable</code> and converters the result into another <code>Observable</code>.</p>
+</div>
+<div class="paragraph">
+<p>In this example we first retrieve an instance by id which uses an HTTP <code>GET</code> method, then we call <code>save()</code> on that instance which by default will use an HTTP <code>PUT</code> method to the <code>/books/id</code> URI containing the updated JSON body in full.</p>
+</div>
+<div class="paragraph">
+<p>If you want to send only the updated properties JSON you can use the <code>patch()</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">book.patch()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The patch method will issue an HTTP <code>PATCH</code> with only the JSON that has changed.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Some REST web services use <code>POST</code> or <code>PATCH</code> instead of <code>PUT</code> for updates. If you want to configure RxGORM to always use another HTTP method you can set the <code>grails.gorm.rest.updateMethod</code> property in your configuration to the method of your choosing.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_delete_deleting_instances">Delete - Deleting instances</h4>
+<div class="paragraph">
+<p>To delete an instance after retrieving it you can use the <a href="http://reactivex.io/RxJava/javadoc/rx/Observable.html#switchMap(rx.functions.Func1)">Observable.switchMap</a> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.get(id)
+    .switchMap() { <span class="predefined-type">Book</span> <span class="local-variable">it</span> -&gt;
+    <span class="keyword">return</span> <span class="local-variable">it</span>.delete()
+}.subscribe { <span class="predefined-type">Boolean</span> wasDeleted -&gt;
+    <span class="keyword">if</span>(wasDeleted) {
+        println <span class="string"><span class="delimiter">&quot;</span><span class="content">Book deleted!</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This example once again will issue an HTTP <code>GET</code> method to retrieve an instance and then an HTTP <code>DELETE</code> method to delete it.</p>
+</div>
+<div class="paragraph">
+<p>If you know ahead of time the identifier of the resource you want to delete you can simply create a new instance and call <code>delete()</code> to issue an HTTP <code>DELETE</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>()
+book.id = <span class="integer">1L</span>
+book.delete().subscribe { <span class="predefined-type">Boolean</span> wasDeleted -&gt;
+    <span class="keyword">if</span>(wasDeleted) {
+        println <span class="string"><span class="delimiter">&quot;</span><span class="content">Book deleted!</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Using the constructor syntax <code>new Book(id:1L)</code> will not work in a Grails application as Grails will prevent binding the id via the constructor for security reasons.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="configuration">Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All of the <a href="#configOptions">configuration options</a> for RxGORM for REST can be found within the <a href="../api/org/grails/datastore/rx/rest/config/Settings.html">Settings</a> class.</p>
+</div>
+<div class="sect2">
+<h3 id="_basic_configuration">Basic Configuration</h3>
+<div class="sect3">
+<h4 id="_server_host">Server Host</h4>
+<div class="paragraph">
+<p>You can configure the server host to connect to when issuing HTTP requests using the <code>grails.gorm.rest.host</code> setting in <code>grails-app/conf/application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">rest</span>:
+            <span class="key">host</span>: <span class="string"><span class="content">http://localhost:8080</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For environment specific configuration you can nest the configuration within each environment block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">environments</span>:
+    <span class="key">development</span>:
+        <span class="key">grails</span>:
+            <span class="key">gorm</span>:
+                <span class="key">rest</span>:
+                    <span class="key">host</span>: <span class="string"><span class="content">http://localhost:8080</span></span>
+    <span class="key">production</span>:
+        <span class="key">grails</span>:
+            <span class="key">gorm</span>:
+                <span class="key">rest</span>:
+                    <span class="key">host</span>: <span class="string"><span class="content">http://myapiserver.com</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_read_timeout">Read Timeout</h4>
+<div class="paragraph">
+<p>You can configure the default read timeout (in milliseconds) using the <code>grails.gorm.rest.readTimeout</code> setting:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">rest</span>:
+            <span class="key">host</span>: <span class="string"><span class="content">http://localhost:8080</span></span>
+            <span class="key">readTimeout</span>: <span class="string"><span class="content">2000</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_wire_logging">Wire Logging</h4>
+<div class="paragraph">
+<p>To enable RxNetty wire logging you first need to set the log level using the <code>grails.gorm.rest.logLevel</code> setting:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">rest</span>:
+            <span class="key">host</span>: <span class="string"><span class="content">http://localhost:8080</span></span>
+            <span class="key">readTimeout</span>: <span class="string"><span class="content">2000</span></span>
+            <span class="key">logLevel</span>: <span class="string"><span class="content">TRACE</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then ensure your log configuration enables logging for the <code>io.netty.handler.logging</code> package. For example in <code>logback.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">logger(<span class="string"><span class="delimiter">&quot;</span><span class="content">io.netty.handler.logging</span><span class="delimiter">&quot;</span></span>, TRACE)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="singleHost">Single Host Connection Pooling</h3>
+<div class="paragraph">
+<p>With a single host configuration RxGORM for REST will create a connection pool for that single host.</p>
+</div>
+<div class="paragraph">
+<p>The connection pool is defined by a <a href="https://github.com/ReactiveX/RxNetty/blob/0.5.x/rxnetty-common/src/main/java/io/reactivex/netty/client/pool/PoolConfig.java">io.reactivex.netty.client.pool.PoolConfig</a> instance.</p>
+</div>
+<div class="paragraph">
+<p>The properties of this instance can configured via the <code>grails.gorm.rest.pool.options</code> property. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">rest</span>:
+            <span class="key">host</span>: <span class="string"><span class="content">http://localhost:8080</span></span>
+            <span class="key">pool</span>:
+                <span class="key">options</span>:
+                    <span class="key">maxConnections</span>: <span class="string"><span class="content">20</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="loadBalanced">Client Side Load Balancing</h3>
+<div class="paragraph">
+<p>If you which to use client side load balancing between multiple servers you can use the <code>grails.gorm.rest.hosts</code> option and specify multiple server hosts:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">rest</span>:
+            <span class="key">hosts</span>:
+                - <span class="string"><span class="content">http://one.myapiserver.com</span></span>
+                - <span class="string"><span class="content">http://two.myapiserver.com</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The default load balancing strategy is <a href="https://github.com/ReactiveX/RxNetty/blob/0.5.x/rxnetty-http/src/main/java/io/reactivex/netty/protocol/http/client/loadbalancer/EWMABasedP2CStrategy.java">EWMABasedP2CStrategy</a>. If you which to specify an alternate strategy you can do so with the <code>grails.gorm.rest.loadBalanceStrategy</code> property.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="domainClasses">Working with Domain Classes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When using RxGORM for REST simple types will be converted to their JSON equivalents during the encoding process. For types that cannot be represented in JavaScript such as <code>BigDecimal</code> these will be converted to a JSON <code>String</code> type.</p>
+</div>
+<div class="paragraph">
+<p>JSON arrays can be represented with the <code>List</code> type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; authors
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Nested JSON objects can be represented using the <code>Map</code> type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, <span class="predefined-type">String</span>&gt; attributes
+}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="identity">Identity Generation</h3>
+<div class="paragraph">
+<p>By default it is assumed that numeric identifiers will be used for REST resources. This means that when you save an entity:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>)
+book.save()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A HTTP <code>POST</code> request will be sent to the URI the <code>Book</code> maps to. If the REST endpoint returns JSON then the JSON will be read and the <code>id</code> field populated with the value from the server.</p>
+</div>
+<div class="paragraph">
+<p>If the <code>id</code> of your REST endpoint is not numeric or a different property then you can control that via the <code>mapping</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Entity</span>
+<span class="type">class</span> <span class="class">Product</span> <span class="directive">implements</span> RxRestEntity&lt;Product&gt; {
+
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> mapping = {
+        id <span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="key">generator</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">assigned</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case we have configured the <code>id</code> of the REST resource to be the <code>name</code> property of the entity. Now if you create an entity and save it:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Product product = <span class="keyword">new</span> Product(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">MacBook</span><span class="delimiter">&quot;</span></span>)
+product.save()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>RxGORM for REST will send a <code>PUT</code> request to the URI <code>/product/MacBook</code>. This is because RxGORM assumes that if there is an <code>id</code> then what you are trying to do is an update. To instead perform a <code>POST</code> request to the <code>/product</code> URI you must use the <code>insert()</code> method instead which forces saving of a new entity:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Product product = <span class="keyword">new</span> Product(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">MacBook</span><span class="delimiter">&quot;</span></span>)
+product.insert()</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="converting">Converting to and from JSON</h3>
+
+</div>
+<div class="sect2">
+<h3 id="dynamicAttributes">Dynamic Attributes</h3>
+<div class="paragraph">
+<p>All <code>RxRestEntity</code> instances also implement the <a href="https://gorm.grails.org/6.0.x/api/org/grails/datastore/gorm/schemaless/DynamicAttributes.html">DynamicAttributes</a> trait which allows you to assign arbitrary values to the object using Groovy&#8217;s subscript operator:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>)
+book[<span class="string"><span class="delimiter">'</span><span class="content">pages</span><span class="delimiter">'</span></span>] = <span class="integer">1000</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These will be encoded into the JSON that is sent to the server. Any JSON attributes retrieved from the server that are not declared by the domain class are also available via the subscript operator:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">println book[<span class="string"><span class="delimiter">'</span><span class="content">pages</span><span class="delimiter">'</span></span>]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="requestCustomization">Customizing the Request</h3>
+
+</div>
+<div class="sect2">
+<h3 id="interceptors">Request Interceptors</h3>
+
+</div>
+<div class="sect2">
+<h3 id="batchUpdates">Batch Updates</h3>
+
+</div>
+<div class="sect2">
+<h3 id="customTypes">Custom Types</h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="associations">Modelling Associations</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="embedded">Embedded</h3>
+
+</div>
+<div class="sect2">
+<h3 id="hasOne">Single Ended Associations</h3>
+
+</div>
+<div class="sect2">
+<h3 id="hasMany">Many Ended Associations</h3>
+
+</div>
+<div class="sect2">
+<h3 id="lazyLoading">Lazy Loading</h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying">Querying with RxGORM</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="joins">Join Queries</h3>
+
+</div>
+<div class="sect2">
+<h3 id="bsonQueries">MongoDB-style Queries</h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="reference">Reference</h2>
+<div class="sectionbody">
+<div class="sect3">
+<h4 id="configOptions">Configuration Options</h4>
+<div class="paragraph">
+<p>The following configuration options are available:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>grails.gorm.rest.host</code> - The default host to connect to</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.hosts</code> - The hosts to connect to in a load balanced configuration</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.charset</code> - The character encoding to use</p>
+</li>
+<li>
+<p>`grails.gorm.rest.readTimeout - The default read timeout</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.logLevel</code> -  The default wire log level</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.updateMethod</code> - The default HTTP method to use for updates. Defaults to PUT</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.pool.options</code> - The configuration options to create the <a href="https://github.com/ReactiveX/RxNetty/blob/0.5.x/rxnetty-common/src/main/java/io/reactivex/netty/client/pool/PoolConfig.java">io.reactivex.netty.client.pool.PoolConfig</a> with (only applicable to single host configurations).</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.username</code> - The username to ues for BASIC auth</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.password</code> - The password to use for BASIC auth</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.interceptors</code> - The <a href="../api/org/grails/datastore/rx/rest/interceptor/RequestInterceptor.html">RequestInterceptor</a> instances to use</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.query.type</code> - The type of query implementation to use. Either "simple" or "bson"</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.parameters.order</code> - The name of the parameter used to send the order (descending or ascending) to the server</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.parameters.expand</code> - The name of the parameter used to expand nested resources</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.parameters.sort</code> - The name of the parameter used to send the property to sort by to the server</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.parameters.max</code> - The name of the parameter used to send to restrict the maximum number of results</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.parameters.offset</code> - The name of the parameter used to send to provide the offset for pagination</p>
+</li>
+<li>
+<p><code>grails.gorm.rest.parameters.query</code> - The name of the parameter used to send the query when using "bson" query type</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>

@@ -162,23 +162,33 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><strong>java.util.List&lt;io.netty.handler.codec.http.FullHttpRequest&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#expectedFullRequests">expectedFullRequests</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.util.List&lt;io.reactivex.netty.protocol.http.server.HttpServerRequest&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#expectedRequests">expectedRequests</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.util.List&lt;groovy.lang.Closure&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#expectedResponses">expectedResponses</a></code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#expectedTotal">expectedTotal</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong><a href='../../../../grails/http/client/test/HttpTestServer.html'>HttpTestServer</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#httpTestServer">httpTestServer</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.util.List&lt;io.netty.buffer.ByteBuf&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#inboundBodies">inboundBodies</a></code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -239,33 +249,38 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>protected&nbsp;io.netty.buffer.ByteBuf</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getExpectedBody(io.reactivex.netty.protocol.http.server.HttpServerRequest)">getExpectedBody</a></strong>(io.reactivex.netty.protocol.http.server.HttpServerRequest expected)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#reset()">reset</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../grails/http/client/test/TestHttpServerRequestBuilder.html'>TestHttpServerRequestBuilder</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#respond(groovy.lang.Closure)">respond</a></strong>(groovy.lang.Closure callable)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.net.URI</strong></code></td>
                             <td class="colLast"><code><strong><a href="#serverURI()">serverURI</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.net.InetSocketAddress</strong></code></td>
                             <td class="colLast"><code><strong><a href="#socketAddress()">socketAddress</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#verify()">verify</a></strong>()</code><br>Verifies the expected requests were produced</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#verifyRequest(io.reactivex.netty.protocol.http.server.HttpServerRequest, io.reactivex.netty.protocol.http.server.HttpServerRequest)">verifyRequest</a></strong>(io.reactivex.netty.protocol.http.server.HttpServerRequest expected, io.reactivex.netty.protocol.http.server.HttpServerRequest actual)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#verifyRequest(io.reactivex.netty.protocol.http.server.HttpServerRequest, io.reactivex.netty.protocol.http.server.HttpServerRequest, int)">verifyRequest</a></strong>(io.reactivex.netty.protocol.http.server.HttpServerRequest expected, io.reactivex.netty.protocol.http.server.HttpServerRequest actual, int index)</code><br></td>
                         </tr>
                         
                     </table>
@@ -319,6 +334,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="expectedFullRequests"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.List&lt;io.netty.handler.codec.http.FullHttpRequest&gt; <strong>expectedFullRequests</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="expectedRequests"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -347,6 +370,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/test/HttpTestServer.html'>HttpTestServer</a> <strong>httpTestServer</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="inboundBodies"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.List&lt;io.netty.buffer.ByteBuf&gt; <strong>inboundBodies</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -402,6 +433,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="getExpectedBody(io.reactivex.netty.protocol.http.server.HttpServerRequest)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@groovy.transform.CompileDynamic
+protected&nbsp;io.netty.buffer.ByteBuf <strong>getExpectedBody</strong>(io.reactivex.netty.protocol.http.server.HttpServerRequest expected)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="reset()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -443,10 +483,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="verifyRequest(io.reactivex.netty.protocol.http.server.HttpServerRequest, io.reactivex.netty.protocol.http.server.HttpServerRequest)"><!-- --></a>
+                        <a name="verifyRequest(io.reactivex.netty.protocol.http.server.HttpServerRequest, io.reactivex.netty.protocol.http.server.HttpServerRequest, int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>verifyRequest</strong>(io.reactivex.netty.protocol.http.server.HttpServerRequest expected, io.reactivex.netty.protocol.http.server.HttpServerRequest actual)</h4>
+                                <h4>protected&nbsp;void <strong>verifyRequest</strong>(io.reactivex.netty.protocol.http.server.HttpServerRequest expected, io.reactivex.netty.protocol.http.server.HttpServerRequest actual, int index)</h4>
                                 <p></p>
                             </li>
                         </ul>

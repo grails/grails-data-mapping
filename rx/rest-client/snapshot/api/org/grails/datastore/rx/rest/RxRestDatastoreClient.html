@@ -201,13 +201,13 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>java.util.Observable&lt;io.reactivex.netty.client.Host&gt;</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#defaultClientHost">defaultClientHost</a></code><br>The default client host to connect to</td>
+                            <td class="colFirst"><code><strong>java.util.Set&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#defaultParameterNames">defaultParameterNames</a></code><br>The default allowable set of parameter names</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>java.util.Set&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#defaultParameterNames">defaultParameterNames</a></code><br>The default allowable set of parameter names</td>
+                            <td class="colFirst"><code><strong><a href='../../../../../grails/http/HttpMethod.html'>HttpMethod</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#defaultUpdateMethod">defaultUpdateMethod</a></code><br>The default method to use for updates. </td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -216,61 +216,66 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.util.Observable&lt;io.reactivex.netty.client.Host&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#hosts">hosts</a></code><br>The default client host to connect to</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.util.List&lt;<a href='../../../../../grails/gorm/rx/rest/interceptor/RequestInterceptor.html' title='RequestInterceptor'>RequestInterceptor</a>&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#interceptors">interceptors</a></code><br>The interceptors to use</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>io.netty.handler.logging.LogLevel</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#logLevel">logLevel</a></code><br>The default log level</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#maxParameter">maxParameter</a></code><br>The name of the max parameter to use</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#offsetParameter">offsetParameter</a></code><br>The name of the offset parameter to use</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#orderParameter">orderParameter</a></code><br>The name of the order parameter to use</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#password">password</a></code><br>The password to use for BASIC auth</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#queryParameter">queryParameter</a></code><br>The name of the query parameter to use</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.Class&lt;? extends <a href='../../../../../org/grails/datastore/rx/rest/query/SimpleRxRestQuery.html' title='SimpleRxRestQuery'>SimpleRxRestQuery</a>&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#queryType">queryType</a></code><br>The query type to use</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#readTimeout">readTimeout</a></code><br>The default read timeout</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong><a href='../../../../../grails/http/client/RxHttpClientBuilder.html'>RxHttpClientBuilder</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#rxHttpClientBuilder">rxHttpClientBuilder</a></code><br>A low level client for non entity related operations</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sortParameter">sortParameter</a></code><br>The name of the sort parameter to use</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#username">username</a></code><br>The username to use for BASIC auth</td>
                         </tr>
@@ -298,47 +303,65 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#RxRestDatastoreClient(java.net.SocketAddress, org.springframework.core.env.PropertyResolver, org.grails.datastore.rx.rest.config.RestClientMappingContext)">RxRestDatastoreClient</a></strong>
-                                (java.net.SocketAddress serverAddress, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</code><br></td>
+                                <code><a href="#RxRestDatastoreClient(List<SocketAddress>, org.springframework.core.env.PropertyResolver, org.grails.datastore.rx.rest.config.RestClientMappingContext)">RxRestDatastoreClient</a></strong>
+                                (java.util.List&lt;java.net.SocketAddress&gt; serverAddress, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst">
+                                <code><a href="#RxRestDatastoreClient(List<SocketAddress>, org.grails.datastore.rx.rest.config.RestClientMappingContext)">RxRestDatastoreClient</a></strong>
+                                (java.util.List&lt;java.net.SocketAddress&gt; socketAddresses, <a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#RxRestDatastoreClient(List<SocketAddress>, org.springframework.core.env.PropertyResolver, java.lang.Class)">RxRestDatastoreClient</a></strong>
+                                (java.util.List&lt;java.net.SocketAddress&gt; socketAddresses, org.springframework.core.env.PropertyResolver configuration, java.lang.Class... classes)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst">
+                                <code><a href="#RxRestDatastoreClient(List<SocketAddress>, java.lang.Class)">RxRestDatastoreClient</a></strong>
+                                (java.util.List&lt;java.net.SocketAddress&gt; socketAddresses, java.lang.Class... classes)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#RxRestDatastoreClient(java.net.SocketAddress, org.grails.datastore.rx.rest.config.RestClientMappingContext)">RxRestDatastoreClient</a></strong>
                                 (java.net.SocketAddress serverAddress, <a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst">
                                 <code><a href="#RxRestDatastoreClient(java.net.SocketAddress, org.springframework.core.env.PropertyResolver, java.lang.Class)">RxRestDatastoreClient</a></strong>
                                 (java.net.SocketAddress serverAddress, org.springframework.core.env.PropertyResolver configuration, java.lang.Class... classes)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#RxRestDatastoreClient(java.net.SocketAddress, java.lang.Class)">RxRestDatastoreClient</a></strong>
                                 (java.net.SocketAddress serverAddress, java.lang.Class... classes)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst">
                                 <code><a href="#RxRestDatastoreClient(org.springframework.core.env.PropertyResolver, org.grails.datastore.rx.rest.config.RestClientMappingContext)">RxRestDatastoreClient</a></strong>
                                 (org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#RxRestDatastoreClient(org.grails.datastore.rx.rest.config.RestClientMappingContext)">RxRestDatastoreClient</a></strong>
                                 (<a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst">
                                 <code><a href="#RxRestDatastoreClient(org.springframework.core.env.PropertyResolver, java.lang.Class)">RxRestDatastoreClient</a></strong>
                                 (org.springframework.core.env.PropertyResolver configuration, java.lang.Class... classes)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#RxRestDatastoreClient(java.lang.Class)">RxRestDatastoreClient</a></strong>
                                 (java.lang.Class... classes)</code><br></td>
@@ -400,8 +423,8 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>protected&nbsp;static&nbsp;java.net.InetSocketAddress</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#createServerSocketAddress(org.springframework.core.env.PropertyResolver)">createServerSocketAddress</a></strong>(org.springframework.core.env.PropertyResolver configuration)</code><br></td>
+                            <td class="colFirst"><code>protected&nbsp;static&nbsp;java.util.List&lt;java.net.SocketAddress&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createServerSocketAddresses(org.springframework.core.env.PropertyResolver)">createServerSocketAddresses</a></strong>(org.springframework.core.env.PropertyResolver configuration)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -551,15 +574,6 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                             </li>
                         </ul>
                     
-                        <a name="defaultClientHost"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>final&nbsp;java.util.Observable&lt;io.reactivex.netty.client.Host&gt; <strong>defaultClientHost</strong></h4>
-                                <p> The default client host to connect to
-     </p>
-                            </li>
-                        </ul>
-                    
                         <a name="defaultParameterNames"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -569,11 +583,29 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                             </li>
                         </ul>
                     
+                        <a name="defaultUpdateMethod"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;<a href='../../../../../grails/http/HttpMethod.html'>HttpMethod</a> <strong>defaultUpdateMethod</strong></h4>
+                                <p> The default method to use for updates. Defaults to PUT
+     </p>
+                            </li>
+                        </ul>
+                    
                         <a name="expandParameter"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>final&nbsp;java.lang.String <strong>expandParameter</strong></h4>
                                 <p> The name of the expand parameter to use
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="hosts"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;java.util.Observable&lt;io.reactivex.netty.client.Host&gt; <strong>hosts</strong></h4>
+                                <p> The default client host to connect to
      </p>
                             </li>
                         </ul>
@@ -700,10 +732,34 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                 </a>
                     <h3>Constructor Detail</h3>
                     
-                        <a name="RxRestDatastoreClient(java.net.SocketAddress, org.springframework.core.env.PropertyResolver, org.grails.datastore.rx.rest.config.RestClientMappingContext)"><!-- --></a>
+                        <a name="RxRestDatastoreClient(List<SocketAddress>, org.springframework.core.env.PropertyResolver, org.grails.datastore.rx.rest.config.RestClientMappingContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>RxRestDatastoreClient</strong>(java.net.SocketAddress serverAddress, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</h4>
+                                <h4><strong>RxRestDatastoreClient</strong>(java.util.List&lt;java.net.SocketAddress&gt; serverAddress, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="RxRestDatastoreClient(List<SocketAddress>, org.grails.datastore.rx.rest.config.RestClientMappingContext)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>RxRestDatastoreClient</strong>(java.util.List&lt;java.net.SocketAddress&gt; socketAddresses, <a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="RxRestDatastoreClient(List<SocketAddress>, org.springframework.core.env.PropertyResolver, java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>RxRestDatastoreClient</strong>(java.util.List&lt;java.net.SocketAddress&gt; socketAddresses, org.springframework.core.env.PropertyResolver configuration, java.lang.Class... classes)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="RxRestDatastoreClient(List<SocketAddress>, java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>RxRestDatastoreClient</strong>(java.util.List&lt;java.net.SocketAddress&gt; socketAddresses, java.lang.Class... classes)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -836,10 +892,10 @@ java.util.Observable&lt;java.lang.Number&gt; <strong>batchWrite</strong>(<a href
                             </li>
                         </ul>
                     
-                        <a name="createServerSocketAddress(org.springframework.core.env.PropertyResolver)"><!-- --></a>
+                        <a name="createServerSocketAddresses(org.springframework.core.env.PropertyResolver)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;static&nbsp;java.net.InetSocketAddress <strong>createServerSocketAddress</strong>(org.springframework.core.env.PropertyResolver configuration)</h4>
+                                <h4>protected&nbsp;static&nbsp;java.util.List&lt;java.net.SocketAddress&gt; <strong>createServerSocketAddresses</strong>(org.springframework.core.env.PropertyResolver configuration)</h4>
                                 <p></p>
                             </li>
                         </ul>

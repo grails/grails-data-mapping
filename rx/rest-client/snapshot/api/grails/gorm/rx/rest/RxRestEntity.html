@@ -158,7 +158,7 @@ trait RxRestEntity
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.lang.Boolean&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#delete(Map<String, Object>, groovy.lang.Closure)">delete</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments, groovy.lang.Closure callable)</code><br>Deletes an entity using the given closure to customize the request</td>
+                            <td class="colLast"><code><strong><a href="#delete(java.util.Map, groovy.lang.Closure)">delete</a></strong>(java.util.Map arguments, groovy.lang.Closure callable)</code><br>Deletes an entity using the given closure to customize the request</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -169,6 +169,16 @@ trait RxRestEntity
                         <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;java.util.Observable&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(java.util.Map, groovy.lang.Closure)">findAll</a></strong>(java.util.Map args, groovy.lang.Closure callable)</code><br>Finds all entities and return an observable</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;D</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#fromJson(java.lang.String)">fromJson</a></strong>(java.lang.String json)</code><br>Construct and object from JSON</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;D</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#fromJson(java.io.Reader)">fromJson</a></strong>(java.io.Reader reader)</code><br>Construct and object from JSON</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -188,7 +198,7 @@ trait RxRestEntity
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#insert(Map<String, Object>, groovy.lang.Closure)">insert</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments, groovy.lang.Closure callable)</code><br>Inserts an entity using the given closure to customize the request</td>
+                            <td class="colLast"><code><strong><a href="#insert(java.util.Map, groovy.lang.Closure)">insert</a></strong>(java.util.Map arguments, groovy.lang.Closure callable)</code><br>Inserts an entity using the given closure to customize the request</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -203,12 +213,42 @@ trait RxRestEntity
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#patch(groovy.lang.Closure)">patch</a></strong>(groovy.lang.Closure callable = null)</code><br>Save an entity using the given closure to customize the request</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#patch(java.util.Map, groovy.lang.Closure)">patch</a></strong>(java.util.Map arguments, groovy.lang.Closure callable = null)</code><br>Save an entity using the given closure to customize the request</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#post(groovy.lang.Closure)">post</a></strong>(groovy.lang.Closure callable = null)</code><br>Save an entity using the given closure to customize the request</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#post(java.util.Map, groovy.lang.Closure)">post</a></strong>(java.util.Map arguments, groovy.lang.Closure callable = null)</code><br>Save an entity using the given closure to customize the request</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#save(groovy.lang.Closure)">save</a></strong>(groovy.lang.Closure callable)</code><br>Save an entity using the given closure to customize the request</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#save(Map<String, Object>, groovy.lang.Closure)">save</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments, groovy.lang.Closure callable)</code><br>Saves an entity using the given closure to customize the request</td>
+                            <td class="colLast"><code><strong><a href="#save(java.util.Map, groovy.lang.Closure)">save</a></strong>(java.util.Map arguments, groovy.lang.Closure callable)</code><br>Saves an entity using the given closure to customize the request</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#toJson()">toJson</a></strong>()</code><br>@return Convert this object to a JSON string</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#toJson(java.io.Writer)">toJson</a></strong>(java.io.Writer writer)</code><br>Convert this object to JSON</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -267,10 +307,10 @@ trait RxRestEntity
                             </li>
                         </ul>
                     
-                        <a name="delete(Map<String, Object>, groovy.lang.Closure)"><!-- --></a>
+                        <a name="delete(java.util.Map, groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;java.lang.Boolean&gt; <strong>delete</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments, @groovy.lang.DelegatesTo(HttpClientRequestBuilder) groovy.lang.Closure callable)</h4>
+                                <h4>java.util.Observable&lt;java.lang.Boolean&gt; <strong>delete</strong>(java.util.Map arguments, @groovy.lang.DelegatesTo(HttpClientRequestBuilder) groovy.lang.Closure callable)</h4>
                                 <p> Deletes an entity using the given closure to customize the request
      <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
                             </li>
@@ -291,6 +331,24 @@ trait RxRestEntity
                                 <h4>static&nbsp;java.util.Observable&lt;D&gt; <strong>findAll</strong>(java.util.Map args, @groovy.lang.DelegatesTo(HttpClientRequestBuilder) groovy.lang.Closure callable)</h4>
                                 <p> Finds all entities and return an observable
      <DL><DT><B>Returns:</B></DT><DD>An observable with all results</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="fromJson(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;D <strong>fromJson</strong>(java.lang.String json)</h4>
+                                <p> Construct and object from JSON
+     <DL><DT><B>Returns:</B></DT><DD>The object</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>json</code> -  The JSON string</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="fromJson(java.io.Reader)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;D <strong>fromJson</strong>(java.io.Reader reader)</h4>
+                                <p> Construct and object from JSON
+     <DL><DT><B>Returns:</B></DT><DD>The object</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>reader</code> -  The reader</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -321,10 +379,10 @@ trait RxRestEntity
                             </li>
                         </ul>
                     
-                        <a name="insert(Map<String, Object>, groovy.lang.Closure)"><!-- --></a>
+                        <a name="insert(java.util.Map, groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;D&gt; <strong>insert</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments, @groovy.lang.DelegatesTo(HttpClientRequestBuilder) groovy.lang.Closure callable)</h4>
+                                <h4>java.util.Observable&lt;D&gt; <strong>insert</strong>(java.util.Map arguments, @groovy.lang.DelegatesTo(HttpClientRequestBuilder) groovy.lang.Closure callable)</h4>
                                 <p> Inserts an entity using the given closure to customize the request
      <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
                             </li>
@@ -348,6 +406,42 @@ trait RxRestEntity
                             </li>
                         </ul>
                     
+                        <a name="patch(groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Observable&lt;D&gt; <strong>patch</strong>(@groovy.lang.DelegatesTo(HttpClientRequestBuilder) groovy.lang.Closure callable = null)</h4>
+                                <p> Save an entity using the given closure to customize the request
+     <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="patch(java.util.Map, groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Observable&lt;D&gt; <strong>patch</strong>(java.util.Map arguments, @groovy.lang.DelegatesTo(HttpClientRequestBuilder) groovy.lang.Closure callable = null)</h4>
+                                <p> Save an entity using the given closure to customize the request
+     <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="post(groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Observable&lt;D&gt; <strong>post</strong>(@groovy.lang.DelegatesTo(HttpClientRequestBuilder) groovy.lang.Closure callable = null)</h4>
+                                <p> Save an entity using the given closure to customize the request
+     <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="post(java.util.Map, groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Observable&lt;D&gt; <strong>post</strong>(java.util.Map arguments, @groovy.lang.DelegatesTo(HttpClientRequestBuilder) groovy.lang.Closure callable = null)</h4>
+                                <p> Save an entity using the given closure to customize the request
+     <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="save(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -357,12 +451,30 @@ trait RxRestEntity
                             </li>
                         </ul>
                     
-                        <a name="save(Map<String, Object>, groovy.lang.Closure)"><!-- --></a>
+                        <a name="save(java.util.Map, groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;D&gt; <strong>save</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments, @groovy.lang.DelegatesTo(HttpClientRequestBuilder) groovy.lang.Closure callable)</h4>
+                                <h4>java.util.Observable&lt;D&gt; <strong>save</strong>(java.util.Map arguments, @groovy.lang.DelegatesTo(HttpClientRequestBuilder) groovy.lang.Closure callable)</h4>
                                 <p> Saves an entity using the given closure to customize the request
      <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="toJson()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.String <strong>toJson</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Convert this object to a JSON string</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="toJson(java.io.Writer)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>void <strong>toJson</strong>(java.io.Writer writer)</h4>
+                                <p> Convert this object to JSON
+     <DL><DT><B>Parameters:</B></DT><DD><code>writer</code> -  The target writer</DD></DL></p>
                             </li>
                         </ul>
                     

@@ -131,7 +131,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#ARGUMENT_INTERCEPTOR">ARGUMENT_INTERCEPTOR</a></code><br>The interceptor argument</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#ARGUMENT_LOG_LEVEL">ARGUMENT_LOG_LEVEL</a></code><br>The logLevel argument</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#ARGUMENT_METHOD">ARGUMENT_METHOD</a></code><br>The method argument</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -186,7 +196,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#SETTING_HOSTS">SETTING_HOSTS</a></code><br>The hosts to connect to in a load balanced configuration</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#SETTING_INTERCEPTORS">SETTING_INTERCEPTORS</a></code><br>The <a href='../../../../../../grails/gorm/rx/rest/interceptor/RequestInterceptor.html' title='RequestInterceptor'>RequestInterceptor</a> instances to use</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#SETTING_LOAD_BALANCE_STRATEGY">SETTING_LOAD_BALANCE_STRATEGY</a></code><br>The  io.reactivex.netty.client.loadbalancer.LoadBalancingStrategy to use (only applicable to multiple host configurations)</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -216,32 +236,32 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#SETTING_POOL_OPTIONS">SETTING_POOL_OPTIONS</a></code><br>The configuration options to create the io.reactivex.netty.client.pool.PoolConfig with</td>
+                            <td class="colLast"><code><a href="#SETTING_POOL_OPTIONS">SETTING_POOL_OPTIONS</a></code><br>The configuration options to create the io.reactivex.netty.client.pool.PoolConfig with (only applicable to single host configurations)</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#SETTING_PORT">SETTING_PORT</a></code><br>The default port to connect to</td>
-                        </tr>
-                        
-                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#SETTING_QUERY_PARAMETER">SETTING_QUERY_PARAMETER</a></code><br>The name of the parameter used to send the query when using "bson" query type</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#SETTING_QUERY_TYPE">SETTING_QUERY_TYPE</a></code><br>The type of query implementation to use. </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#SETTING_READ_TIMEOUT">SETTING_READ_TIMEOUT</a></code><br>The default read timeout</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#SETTING_SORT_PARAMETER">SETTING_SORT_PARAMETER</a></code><br>The name of the parameter used to send the property to sort by to the server</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#SETTING_UPDATE_METHOD">SETTING_UPDATE_METHOD</a></code><br>The default HTTP method to use for updates. </td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -280,11 +300,29 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Property Detail</h3>
                     
+                        <a name="ARGUMENT_INTERCEPTOR"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.String <strong>ARGUMENT_INTERCEPTOR</strong></h4>
+                                <p> The interceptor argument
+     </p>
+                            </li>
+                        </ul>
+                    
                         <a name="ARGUMENT_LOG_LEVEL"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.String <strong>ARGUMENT_LOG_LEVEL</strong></h4>
                                 <p> The logLevel argument
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="ARGUMENT_METHOD"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.String <strong>ARGUMENT_METHOD</strong></h4>
+                                <p> The method argument
      </p>
                             </li>
                         </ul>
@@ -379,11 +417,29 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="SETTING_HOSTS"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.String <strong>SETTING_HOSTS</strong></h4>
+                                <p> The hosts to connect to in a load balanced configuration
+     </p>
+                            </li>
+                        </ul>
+                    
                         <a name="SETTING_INTERCEPTORS"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.String <strong>SETTING_INTERCEPTORS</strong></h4>
                                 <p> The <a href='../../../../../../grails/gorm/rx/rest/interceptor/RequestInterceptor.html' title='RequestInterceptor'>RequestInterceptor</a> instances to use
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="SETTING_LOAD_BALANCE_STRATEGY"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.String <strong>SETTING_LOAD_BALANCE_STRATEGY</strong></h4>
+                                <p> The  io.reactivex.netty.client.loadbalancer.LoadBalancingStrategy to use (only applicable to multiple host configurations)
      </p>
                             </li>
                         </ul>
@@ -437,16 +493,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.String <strong>SETTING_POOL_OPTIONS</strong></h4>
-                                <p> The configuration options to create the io.reactivex.netty.client.pool.PoolConfig with
-     </p>
-                            </li>
-                        </ul>
-                    
-                        <a name="SETTING_PORT"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.lang.String <strong>SETTING_PORT</strong></h4>
-                                <p> The default port to connect to
+                                <p> The configuration options to create the io.reactivex.netty.client.pool.PoolConfig with (only applicable to single host configurations)
      </p>
                             </li>
                         </ul>
@@ -483,6 +530,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>java.lang.String <strong>SETTING_SORT_PARAMETER</strong></h4>
                                 <p> The name of the parameter used to send the property to sort by to the server
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="SETTING_UPDATE_METHOD"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.String <strong>SETTING_UPDATE_METHOD</strong></h4>
+                                <p> The default HTTP method to use for updates. Defaults to PUT
      </p>
                             </li>
                         </ul>
