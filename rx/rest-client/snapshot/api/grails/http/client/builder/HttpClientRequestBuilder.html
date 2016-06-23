@@ -165,7 +165,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>io.reactivex.netty.protocol.http.client.HttpClientRequest</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#request">request</a></code><br></td>
                         </tr>
                         
@@ -348,7 +348,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="request"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>io.reactivex.netty.protocol.http.client.HttpClientRequest <strong>request</strong></h4>
+                                <h4>java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt; <strong>request</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -395,10 +395,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <p> Sets the Accept HTTP header to the given value. Example:
 
  <pre><code>
- restBuilder.get("http://..") {
-      accept "application/xml"
- }
- </code></pre>
+ restBuilder.get("http://..") {*      accept "application/xml"
+}* </code></pre>
      <DL><DT><B>Returns:</B></DT><DD>The customizer</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>contentTypes</code> -  The content types</DD></DL></p>
                             </li>
                         </ul>
@@ -410,10 +408,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <p> Used to configure BASIC authentication. Example:
 
  <pre><code>
- builder.put("http://..") {
-      auth "myuser", "mypassword"
- }
- </code></pre>
+ builder.put("http://..") {*      auth "myuser", "mypassword"
+}* </code></pre>
      <DL><DT><B>Returns:</B></DT><DD>The request</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>username</code> -  The username</DD><DD><code>password</code> -  The password</DD></DL></p>
                             </li>
                         </ul>
@@ -425,10 +421,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <p> Sets the Authorization HTTP header to the given value. Used typically to pass OAuth access tokens.
 
  <pre><code>
- builder.put("http://..") {
-      auth myToken
- }
- </code></pre>
+ builder.put("http://..") {*      auth myToken
+}* </code></pre>
      <DL><DT><B>Returns:</B></DT><DD>The customizer</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>accessToken</code> -  The access token</DD></DL></p>
                             </li>
                         </ul>

@@ -139,8 +139,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>io.reactivex.netty.protocol.http.client.HttpClientRequest</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#intercept(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, grails.gorm.rx.RxEntity, io.reactivex.netty.protocol.http.client.HttpClientRequest)">intercept</a></strong>(org.grails.datastore.rx.rest.RestEndpointPersistentEntity entity, <a href='../../../../../grails/gorm/rx/RxEntity.html'>RxEntity</a> instance, io.reactivex.netty.protocol.http.client.HttpClientRequest request)</code><br>The intercept method can modify the executing request. </td>
+                            <td class="colFirst"><code>java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#intercept(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, grails.gorm.rx.RxEntity, Observable<HttpClientResponse>)">intercept</a></strong>(org.grails.datastore.rx.rest.RestEndpointPersistentEntity entity, <a href='../../../../../grails/gorm/rx/RxEntity.html'>RxEntity</a> instance, java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt; request)</code><br>The intercept method can modify the executing request. </td>
                         </tr>
                         
                     </table>
@@ -175,10 +175,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="intercept(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, grails.gorm.rx.RxEntity, io.reactivex.netty.protocol.http.client.HttpClientRequest)"><!-- --></a>
+                        <a name="intercept(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, grails.gorm.rx.RxEntity, Observable<HttpClientResponse>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>io.reactivex.netty.protocol.http.client.HttpClientRequest <strong>intercept</strong>(org.grails.datastore.rx.rest.RestEndpointPersistentEntity entity, <a href='../../../../../grails/gorm/rx/RxEntity.html'>RxEntity</a> instance, io.reactivex.netty.protocol.http.client.HttpClientRequest request)</h4>
+                                <h4>java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt; <strong>intercept</strong>(org.grails.datastore.rx.rest.RestEndpointPersistentEntity entity, <a href='../../../../../grails/gorm/rx/RxEntity.html'>RxEntity</a> instance, java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt; request)</h4>
                                 <p> The intercept method can modify the executing request. Many methods on the io.reactivex.netty.protocol.http.client.HttpClientRequest class return mutated copies so the mutated request should be
  returned and the return type of this method.
      <DL><DT><B>Returns:</B></DT><DD>The mutated or original request. An interceptor should never return null and should never perform a blocking operation.</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity being intercepted</DD><DD><code>instance</code> -  The instance of the entity for which this request is being executed</DD><DD><code>request</code> -  The request being intercepted</DD></DL></p>
