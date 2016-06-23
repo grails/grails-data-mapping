@@ -284,8 +284,8 @@ public class HibernateMappingContextConfiguration extends Configuration implemen
             }
         }
 
-        super.secondPassCompile();
         createSubclassForeignKeys();
+        super.secondPassCompile();
 
         configLocked = true;
     }
