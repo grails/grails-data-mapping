@@ -63,6 +63,8 @@ trait GormValidateable {
     boolean validate(Map arguments) {
         if(!shouldSkipValidation()) {
             currentGormValidationApi().validate this, arguments
+        } else {
+            return true
         }
     }
 
@@ -75,6 +77,8 @@ trait GormValidateable {
     boolean validate(List fields) {
         if(!shouldSkipValidation()) {
             currentGormValidationApi().validate this, fields
+        } else {
+            return true
         }
     }
 
