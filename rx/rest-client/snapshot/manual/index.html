@@ -560,6 +560,12 @@ table.CodeRay td.code>pre{padding:0}
 </ul>
 </li>
 <li><a href="#testing">Testing</a></li>
+<li><a href="#simpleClient">Simple HTTP Client</a>
+<ul class="sectlevel2">
+<li><a href="#_sending_receiving_json">Sending &amp; Receiving JSON</a></li>
+<li><a href="#_sending_receiving_xml">Sending &amp; Receiving XML</a></li>
+</ul>
+</li>
 <li><a href="#reference">Reference</a>
 <ul class="sectlevel3">
 <li><a href="#configOptions">Configuration Options</a></li>
@@ -2152,6 +2158,107 @@ given:<span class="string"><span class="delimiter">&quot;</span><span class="con
 mock.verify()
 book.id == <span class="integer">1L</span>
 book.title == <span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="simpleClient">Simple HTTP Client</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>RxGORM for REST includes a low level client in the form of the <a href="../api/grails/http/client/RxHttpClientBuilder.html">RxHttpClientBuilder</a> class that can be used to fulfill use cases that don&#8217;t warrant the creation of a domain class.</p>
+</div>
+<div class="paragraph">
+<p>The most simple use case for obtaining content can be seen below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.http.client.*</span>
+...
+RxHttpClientBuilder client = <span class="keyword">new</span> RxHttpClientBuilder()
+<span class="predefined-type">Observable</span>&lt;RxHttpClientBuilder&gt; p = client.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">https://localhost:8080/foo/bar</span><span class="delimiter">&quot;</span></span>) {
+    contentType <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>
+    json {
+        title <span class="string"><span class="delimiter">&quot;</span><span class="content">Ping</span><span class="delimiter">&quot;</span></span>
+    }
+}
+p.toJson().subscribe { <span class="predefined-type">Object</span> json -&gt;
+    <span class="keyword">assert</span> json.title == <span class="string"><span class="delimiter">'</span><span class="content">Pong</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are using the Grails plugin then you do not need to instantiate a new instance and can instead just autowire the existing instance into your controller:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Autowired</span>
+RxHttpClientBuilder httpClient</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sending_receiving_json">Sending &amp; Receiving JSON</h3>
+<div class="paragraph">
+<p>To send JSON you can use the <code>json</code> method which uses an instance of Groovy&#8217;s <a href="http://docs.groovy-lang.org/latest/html/api/groovy/json/StreamingJsonBuilder.html">StreamingJsonBuilder</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Observable</span>&lt;HttpClientResponse&gt; p = client.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">https://localhost:8080/foo/bar</span><span class="delimiter">&quot;</span></span>) {
+    contentType <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>
+    json {
+        title <span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>json</code> method is defined within the <a href="../api/grails/http/client/builder/HttpMessageBuilder.html">HttpMessageBuilder</a> which allows you to build JSON with <code>StreamingJsonBuilder</code> in a variety of ways:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">json [<span class="integer">1</span>,<span class="integer">2</span>,<span class="integer">3</span>] <span class="comment">// a JSON array</span>
+json <span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Hello World</span><span class="delimiter">&quot;</span></span> <span class="comment">// a map</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To read a JSON response use the <code>toJson</code> method property of the <a href="../api/grails/http/client/HttpClientResponse.html">HttpClientResponse</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">p.toJson().subscribe { json -&gt;
+    <span class="keyword">assert</span> json.title == <span class="string"><span class="delimiter">'</span><span class="content">Pong</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sending_receiving_xml">Sending &amp; Receiving XML</h3>
+<div class="paragraph">
+<p>To send XML you can use the <code>xml</code> method which uses an instance of Groovy&#8217;s <a href="http://docs.groovy-lang.org/latest/html/gapi/groovy/xml/StreamingMarkupBuilder.html">StreamingMarkupBuilder</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Observable</span>&lt;HttpClientResponse&gt; p = client.post(<span class="string"><span class="delimiter">&quot;</span><span class="content">https://localhost:8080/foo/bar</span><span class="delimiter">&quot;</span></span>) {
+    xml {
+        message {
+            title <span class="string"><span class="delimiter">&quot;</span><span class="content">Ping</span><span class="delimiter">&quot;</span></span>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>xml</code> method is defined within the <a href="../api/grails/http/client/builder/HttpMessageBuilder.html">HttpMessageBuilder</a> class.</p>
+</div>
+<div class="paragraph">
+<p>To read an XML response use the <code>toXml</code> method of the <a href="../api/grails/http/client/HttpClientResponse.html">HttpClientResponse</a>, which returns a Groovy <a href="http://docs.groovy-lang.org/latest/html/api/groovy/util/slurpersupport/GPathResult.html">GPathResult</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">p.toXml().subscribe { GPathResult xml -&gt;
+    <span class="keyword">assert</span> xml.message.text() == <span class="string"><span class="delimiter">'</span><span class="content">Pong</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
 </div>
 </div>
 </div>

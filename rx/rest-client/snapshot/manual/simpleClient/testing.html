@@ -427,96 +427,37 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>Generally in REST applications the URI is the query. So to formulate queries the most typically pattern is pass the <code>uri</code> argument to the query.</p>
+<p>To facilitate testing and mocking you can use the <a href="../api/grails/http/client/test/TestRxHttpClientBuilder.html">TestRxHttpClientBuilder</a> class.</p>
 </div>
 <div class="paragraph">
-<p>For example say we you want to add a query to obtain the latests books. That can be done quite simply by altering the URI passed to the <code>findAll</code> method:</p>
+<p>The <code>TestRxHttpClientBuilder</code> provides the ability to mock HTTP responses and avoid external HTTP requests within your unit tests.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
-
-import grails.gorm.rx.rest.*
-
-class Book implements RxRestEntity&lt;Book&gt; {
-    String title
-
-
-    static Observable&lt;Book&gt; latestBooks(Map arguments = [:]) {
-        arguments.uri = "/books/latest"
-        return findAll(uri)
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">TestRxHttpClientBuilder client = new TestRxHttpClientBuilder()
+client.expect {
+    uri '/foo/bar'
+    method "GET"
+    accept 'application/json'
+}.respond {
+    ok()
+    json {
+        title "Hello"
     }
 }
-
 ...
-Book.latestBooks().subscribe { Book book -&gt;
-    println "Title $book.title"
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If the REST endpoint is parameterized you can use <a href="#uriTemplates">URI Templates</a> to define the query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
-
-import grails.gorm.rx.rest.*
-
-class Book implements RxRestEntity&lt;Book&gt; {
-    String title
-
-
-    static Observable&lt;Book&gt; latestBooks(String category, Map arguments = [:]) {
-        arguments.uri = "/books/{category}/latest"
-        return where {
-            eq 'category', category
-        }.findAll(arguments)
-    }
+Observable&lt;HttpClientResponse&gt; p = client.get("https://localhost:8080/foo/bar") {
+    accept 'application/json'
 }
-
+HttpClientResponse response = p.toBlocking().first()
 ...
-Book.latestBooks("Fiction").subscribe { Book book -&gt;
-    println "Title $book.title"
-}</code></pre>
+assert client.verify()
+assert response.status == HttpStatus.OK
+assert response.json.title == "Hello"</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>In the above example a <code>GET</code> request to <code>/books/Fiction/latest</code> will be produced. You can include any additional parameters not declared in the URI template, for example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.where {
-    eq 'category', 'Fiction'
-    eq 'foo', 'bar'
-}.findAll(uri:"/books/{category}/latest")</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The above example will produce a <code>GET</code> request to <code>/books/Fiction/latest?foo=bar</code>.</p>
-</div>
-<div class="paragraph">
-<p>You can also control pagination and sorting. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.findAll(max:10, offset:10, sort:"title", order:"desc")</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Results in a query such as <code>/books?max=10&amp;offset=10&amp;sort=title&amp;order=desc</code>.</p>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-The names of the pagination paremeters are configurable. See the <a href="#configOptions">Configuration Options</a> section for more information.
-</td>
-</tr>
-</table>
 </div>
 </div>
 <div id="footer">

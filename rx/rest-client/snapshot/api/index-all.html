@@ -879,7 +879,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/http/client/RxHttpClientBuilder.html#close()" title="Method in RxHttpClientBuilder">close()</a></span> - Method in <a href="grails/http/client/RxHttpClientBuilder.html">RxHttpClientBuilder</a>
 </dt><dd> <div class="block">Close down the client and shutdown the backing thread pool</div></dd>
-<dt><span class="strong"><a href="grails/http/client/test/TestAsyncHttpBuilder.html#close()" title="Method in TestAsyncHttpBuilder">close()</a></span> - Method in <a href="grails/http/client/test/TestAsyncHttpBuilder.html">TestAsyncHttpBuilder</a>
+<dt><span class="strong"><a href="grails/http/client/test/TestRxHttpClientBuilder.html#close()" title="Method in TestRxHttpClientBuilder">close()</a></span> - Method in <a href="grails/http/client/test/TestRxHttpClientBuilder.html">TestRxHttpClientBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ClosureToMapPopulator.html" title="Class in org.grails.datastore.mapping.reflect">ClosureToMapPopulator</a></span> - Class in <a href="./org/grails/datastore/mapping/reflect/package-summary.html">org.grails.datastore.mapping.reflect</a>
 </dt><dd><div class="block">A simple class that takes method invocations and property setters and populates
@@ -1934,10 +1934,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/rest/RxRestDatastoreClient.html#expandUri(com.damnhandy.uri.template.UriTemplate, org.grails.datastore.mapping.reflect.EntityReflector, def)" title="Method in RxRestDatastoreClient">expandUri(UriTemplate, EntityReflector, def)</a></span> - Method in <a href="org/grails/datastore/rx/rest/RxRestDatastoreClient.html">RxRestDatastoreClient</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/http/client/test/TestAsyncHttpBuilder.html#expect(groovy.lang.Closure)" title="Method in TestAsyncHttpBuilder">expect(Closure)</a></span> - Method in <a href="grails/http/client/test/TestAsyncHttpBuilder.html">TestAsyncHttpBuilder</a>
-</dt><dd> <div class="block">Adds a new request expectation on a ephemeral port</div></dd>
 <dt><span class="strong"><a href="grails/http/client/test/TestHttpServerRequestBuilder.html#expect(groovy.lang.Closure)" title="Method in TestHttpServerRequestBuilder">expect(Closure)</a></span> - Method in <a href="grails/http/client/test/TestHttpServerRequestBuilder.html">TestHttpServerRequestBuilder</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/http/client/test/TestRxHttpClientBuilder.html#expect(groovy.lang.Closure)" title="Method in TestRxHttpClientBuilder">expect(Closure)</a></span> - Method in <a href="grails/http/client/test/TestRxHttpClientBuilder.html">TestRxHttpClientBuilder</a>
+</dt><dd> <div class="block">Adds a new request expectation on a ephemeral port</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/rest/test/TestRxRestDatastoreClient.html#expect(groovy.lang.Closure)" title="Method in TestRxRestDatastoreClient">expect(Closure)</a></span> - Method in <a href="org/grails/datastore/rx/rest/test/TestRxRestDatastoreClient.html">TestRxRestDatastoreClient</a>
 </dt><dd> <div class="block">Add expectations</div></dd>
 <dt><span class="strong"><a href="grails/http/MediaType.html#extension" title="Field in MediaType">extension</a></span> - Field in <a href="grails/http/MediaType.html">MediaType</a>
@@ -7059,15 +7059,15 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/async/GormAsyncStaticApi.html#task(Closure<T>)" title="Method in GormAsyncStaticApi">task(Closure&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/async/GormAsyncStaticApi.html">GormAsyncStaticApi</a>
 </dt><dd> <div class="block">Used to perform a sequence of operations asynchronously</div></dd>
-<dt><span class="strong"><a href="grails/http/client/test/TestAsyncHttpBuilder.html" title="Class in grails.http.client.test">TestAsyncHttpBuilder</a></span> - Class in <a href="./grails/http/client/test/package-summary.html">grails.http.client.test</a>
-</dt><dd><div class="block">Allows for mocking and testing usages of <a href='../../../../grails/http/client/RxHttpClientBuilder.html' title='RxHttpClientBuilder'>RxHttpClientBuilder</a> in application code</div></dd>
-<dt><span class="strong"><a href="grails/http/client/test/TestAsyncHttpBuilder.html#TestAsyncHttpBuilder(grails.http.client.Configuration)" title="Constructor in TestAsyncHttpBuilder">TestAsyncHttpBuilder(Configuration)</a></span> - Constructor in <a href="grails/http/client/test/TestAsyncHttpBuilder.html">TestAsyncHttpBuilder</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/TestCriteriaBuilder.html" title="Class in grails.gorm">TestCriteriaBuilder</a></span> - Class in <a href="./grails/gorm/package-summary.html">grails.gorm</a>
 </dt><dd><div class="block">A CriteriaBuilder for unit testing</div></dd>
 <dt><span class="strong"><a href="grails/http/client/test/TestHttpServerRequestBuilder.html" title="Class in grails.http.client.test">TestHttpServerRequestBuilder</a></span> - Class in <a href="./grails/http/client/test/package-summary.html">grails.http.client.test</a>
 </dt><dd><div class="block">Allows for mocking and testing usages of <a href='../../../../grails/http/client/RxHttpClientBuilder.html' title='RxHttpClientBuilder'>RxHttpClientBuilder</a> in application code</div></dd>
 <dt><span class="strong"><a href="grails/http/client/test/TestHttpServerRequestBuilder.html#TestHttpServerRequestBuilder(grails.http.client.test.HttpTestServer)" title="Constructor in TestHttpServerRequestBuilder">TestHttpServerRequestBuilder(HttpTestServer)</a></span> - Constructor in <a href="grails/http/client/test/TestHttpServerRequestBuilder.html">TestHttpServerRequestBuilder</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/http/client/test/TestRxHttpClientBuilder.html" title="Class in grails.http.client.test">TestRxHttpClientBuilder</a></span> - Class in <a href="./grails/http/client/test/package-summary.html">grails.http.client.test</a>
+</dt><dd><div class="block">Allows for mocking and testing usages of <a href='../../../../grails/http/client/RxHttpClientBuilder.html' title='RxHttpClientBuilder'>RxHttpClientBuilder</a> in application code</div></dd>
+<dt><span class="strong"><a href="grails/http/client/test/TestRxHttpClientBuilder.html#TestRxHttpClientBuilder(grails.http.client.Configuration)" title="Constructor in TestRxHttpClientBuilder">TestRxHttpClientBuilder(Configuration)</a></span> - Constructor in <a href="grails/http/client/test/TestRxHttpClientBuilder.html">TestRxHttpClientBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/rest/test/TestRxRestDatastoreClient.html" title="Class in org.grails.datastore.rx.rest.test">TestRxRestDatastoreClient</a></span> - Class in <a href="./org/grails/datastore/rx/rest/test/package-summary.html">org.grails.datastore.rx.rest.test</a>
 </dt><dd><div class="block"></div></dd>
