@@ -322,6 +322,16 @@ trait RxEntity
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;<a href='../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#proxy(java.io.Serializable, java.util.Map)">proxy</a></strong>(java.io.Serializable id, java.util.Map args = Collections.emptyMap()</code><br>Obtain a proxy to the given instance</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;<a href='../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#proxy(DetachedCriteria<D>, java.util.Map)">proxy</a></strong>(<a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; query, java.util.Map args = Collections.emptyMap()</code><br>Obtain a proxy to the given instance</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#removeFrom(java.lang.String, java.lang.Object)">removeFrom</a></strong>(java.lang.String associationName, java.lang.Object arg)</code><br>Removes the given value to given association ensuring both sides are correctly disassociated</td>
                         </tr>
@@ -740,6 +750,24 @@ java.util.Observable&lt;D&gt; <strong>insert</strong>(java.util.Map arguments = 
                                 <h4>static&nbsp;java.util.Observable&lt;java.util.List&lt;D&gt;&gt; <strong>list</strong>(java.util.Map args)</h4>
                                 <p> List all entities and return an observable
      <DL><DT><B>Returns:</B></DT><DD>An observable with all results</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="proxy(java.io.Serializable, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;<a href='../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt; <strong>proxy</strong>(java.io.Serializable id, java.util.Map args = Collections.emptyMap()</h4>
+                                <p> Obtain a proxy to the given instance
+     <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>id</code> -  The id of the instance</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="proxy(DetachedCriteria<D>, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;<a href='../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt; <strong>proxy</strong>(<a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; query, java.util.Map args = Collections.emptyMap()</h4>
+                                <p> Obtain a proxy to the given instance
+     <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query that returns the instance</DD></DL></p>
                             </li>
                         </ul>
                     

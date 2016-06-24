@@ -701,16 +701,21 @@ extends <a href='../../../org/grails/datastore/gorm/query/criteria/AbstractDetac
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#toQuery(java.util.Map)">toQuery</a></strong>(java.util.Map args = Collections.emptyMap()</code><br>Convert this <a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a> to a query implementation</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.lang.Number&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#updateAll(java.util.Map)">updateAll</a></strong>(java.util.Map propertiesMap)</code><br>Updates all entities matching this criteria</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#where(groovy.lang.Closure)">where</a></strong>(groovy.lang.Closure additionalQuery)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#whereLazy(groovy.lang.Closure)">whereLazy</a></strong>(groovy.lang.Closure additionalQuery)</code><br></td>
                         </tr>
@@ -1693,6 +1698,15 @@ rx.Subscription <strong>subscribe</strong>(rx.Subscriber&lt;? super T&gt; subscr
                                 <h4>@java.lang.Override
 java.util.Observable&lt;T&gt; <strong>toObservable</strong>()</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="toQuery(java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>toQuery</strong>(java.util.Map args = Collections.emptyMap()</h4>
+                                <p> Convert this <a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a> to a query implementation
+     <DL><DT><B>Returns:</B></DT><DD>The query</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>args</code> -  The arguments</DD></DL></p>
                             </li>
                         </ul>
                     
