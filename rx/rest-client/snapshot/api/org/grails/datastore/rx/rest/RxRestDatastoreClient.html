@@ -226,53 +226,83 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#isSecure">isSecure</a></code><br>Whether communication is over a security HTTPS connection</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>io.netty.handler.logging.LogLevel</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#logLevel">logLevel</a></code><br>The default log level</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#maxParameter">maxParameter</a></code><br>The name of the max parameter to use</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#offsetParameter">offsetParameter</a></code><br>The name of the offset parameter to use</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#orderParameter">orderParameter</a></code><br>The name of the order parameter to use</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#password">password</a></code><br>The password to use for BASIC auth</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#queryParameter">queryParameter</a></code><br>The name of the query parameter to use</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.Class&lt;? extends <a href='../../../../../org/grails/datastore/rx/rest/query/SimpleRxRestQuery.html' title='SimpleRxRestQuery'>SimpleRxRestQuery</a>&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#queryType">queryType</a></code><br>The query type to use</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#readTimeout">readTimeout</a></code><br>The default read timeout</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong><a href='../../../../../grails/http/client/RxHttpClientBuilder.html'>RxHttpClientBuilder</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#rxHttpClientBuilder">rxHttpClientBuilder</a></code><br>A low level client for non entity related operations</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sortParameter">sortParameter</a></code><br>The name of the sort parameter to use</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>io.netty.handler.ssl.SslContext</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#sslContext">sslContext</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>io.netty.handler.ssl.SslProvider</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#sslProvider">sslProvider</a></code><br>The SSL provider</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>long</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#sslSessionCacheSize">sslSessionCacheSize</a></code><br>The default session cache size</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>long</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#sslSessionTimeout">sslSessionTimeout</a></code><br>The SSL timeout period</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>javax.net.ssl.TrustManagerFactory</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#sslTrustManagerFactory">sslTrustManagerFactory</a></code><br>The default trust manager factory</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -624,6 +654,15 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                             </li>
                         </ul>
                     
+                        <a name="isSecure"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;boolean <strong>isSecure</strong></h4>
+                                <p> Whether communication is over a security HTTPS connection
+     </p>
+                            </li>
+                        </ul>
+                    
                         <a name="logLevel"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -710,6 +749,50 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                             <li class="blockList">
                                 <h4>final&nbsp;java.lang.String <strong>sortParameter</strong></h4>
                                 <p> The name of the sort parameter to use
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="sslContext"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;io.netty.handler.ssl.SslContext <strong>sslContext</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="sslProvider"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;io.netty.handler.ssl.SslProvider <strong>sslProvider</strong></h4>
+                                <p> The SSL provider
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="sslSessionCacheSize"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;long <strong>sslSessionCacheSize</strong></h4>
+                                <p> The default session cache size
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="sslSessionTimeout"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;long <strong>sslSessionTimeout</strong></h4>
+                                <p> The SSL timeout period
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="sslTrustManagerFactory"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;javax.net.ssl.TrustManagerFactory <strong>sslTrustManagerFactory</strong></h4>
+                                <p> The default trust manager factory
      </p>
                             </li>
                         </ul>
