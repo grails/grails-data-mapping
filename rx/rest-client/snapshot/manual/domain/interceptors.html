@@ -437,13 +437,28 @@ import grails.gorm.rx.rest.interceptor.*
 
 class AuthInterceptor extends RequestBuilderInterceptor {
     @Override
-    Closure build(RestEndpointPersistentEntity entity, RxEntity instance, HttpClientRequest request) {
+    Closure build(HttpClientRequest request, InterceptorContext context )
         buildRequest {
             auth System.getenv('SERVICE_USERNAME'), System.getenv('SERVICE_PASSWORD')
         }
     }
 }</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>In the example above the credentials for BASIC auth are ready from environment variables.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you wish to configure BASIC auth environment variables globally you can do so with the <code>grails.gorm.rest.username</code> and <code>grails.gorm.rest.password</code> settings in <code>grails-app/conf/application.yml</code>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>The interceptor can then either be passed as an argument to write operation or query:</p>
@@ -474,7 +489,7 @@ Observable&lt;Book&gt; o = Book.get(1L, [interceptor: new AuthInterceptor()])</c
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-24 12:45:01 UTC
+Last updated 2016-06-24 13:33:30 UTC
 </div>
 </div>
 </body>

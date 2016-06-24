@@ -153,7 +153,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>groovy.lang.Closure</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#build(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, grails.gorm.rx.RxEntity, io.reactivex.netty.protocol.http.client.HttpClientRequest)">build</a></strong>(org.grails.datastore.rx.rest.RestEndpointPersistentEntity entity, <a href='../../../../../grails/gorm/rx/RxEntity.html'>RxEntity</a> instance, io.reactivex.netty.protocol.http.client.HttpClientRequest request)</code><br>The build method should be implemented by calling the buildRequest method passing in the closure that uses <a href='../../../../../grails/http/client/builder/HttpClientRequestBuilder.html' title='HttpClientRequestBuilder'>HttpClientRequestBuilder</a> to alter the request</td>
+                            <td class="colLast"><code><strong><a href="#build(io.reactivex.netty.protocol.http.client.HttpClientRequest, grails.gorm.rx.rest.interceptor.InterceptorContext)">build</a></strong>(io.reactivex.netty.protocol.http.client.HttpClientRequest request, <a href='../../../../../grails/gorm/rx/rest/interceptor/InterceptorContext.html'>InterceptorContext</a> context)</code><br>The build method should be implemented by calling the buildRequest method passing in the closure that uses <a href='../../../../../grails/http/client/builder/HttpClientRequestBuilder.html' title='HttpClientRequestBuilder'>HttpClientRequestBuilder</a> to alter the request</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -163,7 +163,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#intercept(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, grails.gorm.rx.RxEntity, Observable<HttpClientResponse>)">intercept</a></strong>(org.grails.datastore.rx.rest.RestEndpointPersistentEntity entity, <a href='../../../../../grails/gorm/rx/RxEntity.html'>RxEntity</a> instance, java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt; request)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#intercept(Observable<HttpClientResponse>, grails.gorm.rx.rest.interceptor.InterceptorContext)">intercept</a></strong>(java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt; request, <a href='../../../../../grails/gorm/rx/rest/interceptor/InterceptorContext.html'>InterceptorContext</a> context)</code><br></td>
                         </tr>
                         
                     </table>
@@ -216,10 +216,10 @@ extends java.lang.Object
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="build(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, grails.gorm.rx.RxEntity, io.reactivex.netty.protocol.http.client.HttpClientRequest)"><!-- --></a>
+                        <a name="build(io.reactivex.netty.protocol.http.client.HttpClientRequest, grails.gorm.rx.rest.interceptor.InterceptorContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>groovy.lang.Closure <strong>build</strong>(org.grails.datastore.rx.rest.RestEndpointPersistentEntity entity, <a href='../../../../../grails/gorm/rx/RxEntity.html'>RxEntity</a> instance, io.reactivex.netty.protocol.http.client.HttpClientRequest request)</h4>
+                                <h4>groovy.lang.Closure <strong>build</strong>(io.reactivex.netty.protocol.http.client.HttpClientRequest request, <a href='../../../../../grails/gorm/rx/rest/interceptor/InterceptorContext.html'>InterceptorContext</a> context)</h4>
                                 <p> The build method should be implemented by calling the buildRequest method passing in the closure that uses <a href='../../../../../grails/http/client/builder/HttpClientRequestBuilder.html' title='HttpClientRequestBuilder'>HttpClientRequestBuilder</a> to alter the request
      <DL><DT><B>Returns:</B></DT><DD>The closure the performs the building</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD><DD><code>instance</code> -  The instance (null if a static call)</DD><DD><code>request</code> -  The request</DD></DL></p>
                             </li>
@@ -233,11 +233,11 @@ extends java.lang.Object
                             </li>
                         </ul>
                     
-                        <a name="intercept(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, grails.gorm.rx.RxEntity, Observable<HttpClientResponse>)"><!-- --></a>
+                        <a name="intercept(Observable<HttpClientResponse>, grails.gorm.rx.rest.interceptor.InterceptorContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-final&nbsp;java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt; <strong>intercept</strong>(org.grails.datastore.rx.rest.RestEndpointPersistentEntity entity, <a href='../../../../../grails/gorm/rx/RxEntity.html'>RxEntity</a> instance, java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt; request)</h4>
+final&nbsp;java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt; <strong>intercept</strong>(java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt; request, <a href='../../../../../grails/gorm/rx/rest/interceptor/InterceptorContext.html'>InterceptorContext</a> context)</h4>
                                 <p></p>
                             </li>
                         </ul>

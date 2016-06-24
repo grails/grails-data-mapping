@@ -1400,13 +1400,28 @@ book[<span class="string"><span class="delimiter">'</span><span class="content">
 
 <span class="type">class</span> <span class="class">AuthInterceptor</span> <span class="directive">extends</span> RequestBuilderInterceptor {
     <span class="annotation">@Override</span>
-    Closure build(RestEndpointPersistentEntity entity, RxEntity instance, HttpClientRequest request) {
+    Closure build(HttpClientRequest request, InterceptorContext context )
         buildRequest {
             auth <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">SERVICE_USERNAME</span><span class="delimiter">'</span></span>), <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">SERVICE_PASSWORD</span><span class="delimiter">'</span></span>)
         }
     }
 }</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>In the example above the credentials for BASIC auth are ready from environment variables.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you wish to configure BASIC auth environment variables globally you can do so with the <code>grails.gorm.rest.username</code> and <code>grails.gorm.rest.password</code> settings in <code>grails-app/conf/application.yml</code>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>The interceptor can then either be passed as an argument to write operation or query:</p>
