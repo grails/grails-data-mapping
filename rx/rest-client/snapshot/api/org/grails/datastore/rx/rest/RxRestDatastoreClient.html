@@ -256,56 +256,61 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.util.List&lt;java.net.Proxy&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#proxies">proxies</a></code><br>The proxies to use to connect</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#queryParameter">queryParameter</a></code><br>The name of the query parameter to use</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.Class&lt;? extends <a href='../../../../../org/grails/datastore/rx/rest/query/SimpleRxRestQuery.html' title='SimpleRxRestQuery'>SimpleRxRestQuery</a>&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#queryType">queryType</a></code><br>The query type to use</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#readTimeout">readTimeout</a></code><br>The default read timeout</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong><a href='../../../../../grails/http/client/RxHttpClientBuilder.html'>RxHttpClientBuilder</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#rxHttpClientBuilder">rxHttpClientBuilder</a></code><br>A low level client for non entity related operations</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sortParameter">sortParameter</a></code><br>The name of the sort parameter to use</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>io.netty.handler.ssl.SslContext</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sslContext">sslContext</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>io.netty.handler.ssl.SslProvider</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sslProvider">sslProvider</a></code><br>The SSL provider</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>long</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sslSessionCacheSize">sslSessionCacheSize</a></code><br>The default session cache size</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>long</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sslSessionTimeout">sslSessionTimeout</a></code><br>The SSL timeout period</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>javax.net.ssl.TrustManagerFactory</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sslTrustManagerFactory">sslTrustManagerFactory</a></code><br>The default trust manager factory</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#username">username</a></code><br>The username to use for BASIC auth</td>
                         </tr>
@@ -428,91 +433,96 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;io.reactivex.netty.protocol.http.client.HttpClient&lt;io.netty.buffer.ByteBuf, io.netty.buffer.ByteBuf&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#configureProxy(HttpClient<ByteBuf, ByteBuf>)">configureProxy</a></strong>(io.reactivex.netty.protocol.http.client.HttpClient&lt;io.netty.buffer.ByteBuf, io.netty.buffer.ByteBuf&gt; httpClient)</code><br>Configures any java.net.Proxy instances for the client</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;java.util.Observable&lt;io.netty.buffer.ByteBuf&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#createContentWriteObservable(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, org.bson.codecs.Codec, org.grails.datastore.rx.batch.BatchOperation.EntityOperation)">createContentWriteObservable</a></strong>(org.grails.datastore.rx.rest.RestEndpointPersistentEntity restEndpointPersistentEntity, org.bson.codecs.Codec codec, <a href='../../../../../org/grails/datastore/rx/batch/BatchOperation.EntityOperation.html'>EntityOperation</a> entityOp)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createEntityQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.query.QueryState)">createEntityQuery</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createEntityQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.query.QueryState, java.util.Map)">createEntityQuery</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>io.reactivex.netty.protocol.http.client.HttpClient&lt;io.netty.buffer.ByteBuf, io.netty.buffer.ByteBuf&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#createHttpClient(Map<String, Object>)">createHttpClient</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createMappingContext(org.springframework.core.env.PropertyResolver, java.lang.Class)">createMappingContext</a></strong>(org.springframework.core.env.PropertyResolver configuration, java.lang.Class... classes)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createQuery(java.lang.Class, com.damnhandy.uri.template.UriTemplate, org.grails.datastore.rx.query.QueryState, java.util.Map)">createQuery</a></strong>(java.lang.Class type, com.damnhandy.uri.template.UriTemplate uriTemplate, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments = Collections.emptyMap()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;static&nbsp;java.util.List&lt;java.net.SocketAddress&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#createServerSocketAddresses(org.springframework.core.env.PropertyResolver)">createServerSocketAddresses</a></strong>(org.springframework.core.env.PropertyResolver configuration)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/gorm/rx/api/RxGormStaticApi.html'>RxGormStaticApi</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createStaticApi(org.grails.datastore.mapping.model.PersistentEntity)">createStaticApi</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#doClose()">doClose</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.String</strong></code></td>
                             <td class="colLast"><code><strong><a href="#expandUri(com.damnhandy.uri.template.UriTemplate, org.grails.datastore.mapping.reflect.EntityReflector, def)">expandUri</a></strong>(com.damnhandy.uri.template.UriTemplate uriTemplate, <a href='../../../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> entityReflector, java.lang.Object object)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.io.Serializable</strong></code></td>
                             <td class="colLast"><code><strong><a href="#generateIdentifier(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object, org.grails.datastore.mapping.reflect.EntityReflector)">generateIdentifier</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.Object instance, <a href='../../../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> reflector)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>org.bson.codecs.Codec&lt;T&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#get(Class<T>, org.bson.codecs.configuration.CodecRegistry)">get</a></strong>(java.lang.Class&lt;T&gt; clazz, org.bson.codecs.configuration.CodecRegistry registry)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getMappingContext()">getMappingContext</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../grails/http/client/RxHttpClientBuilder.html'>RxHttpClientBuilder</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getNativeInterface()">getNativeInterface</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#initDefaultConverters(org.grails.datastore.rx.rest.config.RestClientMappingContext)">initDefaultConverters</a></strong>(<a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#initialize(org.grails.datastore.rx.rest.config.RestClientMappingContext)">initialize</a></strong>(<a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isAllowBlockingOperations()">isAllowBlockingOperations</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;io.reactivex.netty.protocol.http.client.HttpClientResponse&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#prepareRequest(HttpClientRequest<ByteBuf, ByteBuf>, grails.gorm.rx.rest.interceptor.InterceptorContext)">prepareRequest</a></strong>(io.reactivex.netty.protocol.http.client.HttpClientRequest&lt;io.netty.buffer.ByteBuf, io.netty.buffer.ByteBuf&gt; httpClientRequest, <a href='../../../../../grails/gorm/rx/rest/interceptor/InterceptorContext.html'>InterceptorContext</a> context)</code><br></td>
                         </tr>
@@ -704,6 +714,15 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                             <li class="blockList">
                                 <h4>final&nbsp;java.lang.String <strong>password</strong></h4>
                                 <p> The password to use for BASIC auth
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="proxies"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;java.util.List&lt;java.net.Proxy&gt; <strong>proxies</strong></h4>
+                                <p> The proxies to use to connect
      </p>
                             </li>
                         </ul>
@@ -936,6 +955,15 @@ java.util.Observable&lt;java.lang.Number&gt; <strong>batchDelete</strong>(<a hre
                                 <h4>@java.lang.Override
 java.util.Observable&lt;java.lang.Number&gt; <strong>batchWrite</strong>(<a href='../../../../../org/grails/datastore/rx/batch/BatchOperation.html'>BatchOperation</a> operation)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="configureProxy(HttpClient<ByteBuf, ByteBuf>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;io.reactivex.netty.protocol.http.client.HttpClient&lt;io.netty.buffer.ByteBuf, io.netty.buffer.ByteBuf&gt; <strong>configureProxy</strong>(io.reactivex.netty.protocol.http.client.HttpClient&lt;io.netty.buffer.ByteBuf, io.netty.buffer.ByteBuf&gt; httpClient)</h4>
+                                <p> Configures any java.net.Proxy instances for the client
+     <DL><DT><B>Returns:</B></DT><DD>The configured client</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>httpClient</code> -  The client</DD></DL></p>
                             </li>
                         </ul>
                     
