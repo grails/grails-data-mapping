@@ -152,6 +152,16 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
         return ((RxQuery)query).deleteAll()
     }
 
+    /**
+     * Convert this {@link DetachedCriteria} to a query implementation
+     *
+     * @param args The arguments
+     * @return The query
+     */
+    Query toQuery(Map args = Collections.emptyMap()) {
+        return prepareQuery(args, null)
+    }
+
     @Override
     DetachedCriteria<T> where(@DelegatesTo(AbstractDetachedCriteria) Closure additionalQuery) {
         return (DetachedCriteria) super.where(additionalQuery)

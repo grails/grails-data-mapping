@@ -1,6 +1,7 @@
 package grails.gorm.rx
 
 import grails.gorm.rx.api.RxGormOperations
+import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.gorm.finders.FinderMethod
@@ -307,6 +308,26 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
         currentRxGormStaticApi().get(id, args)
     }
 
+    /**
+     * Obtain a proxy to the given instance
+     *
+     * @param id The id of the instance
+     * @return An observable
+     */
+    static ObservableProxy<D> proxy(Serializable id, Map args = Collections.emptyMap()) {
+        currentRxGormStaticApi().proxy(id, args)
+    }
+
+
+    /**
+     * Obtain a proxy to the given instance
+     *
+     * @param query The query that returns the instance
+     * @return An observable
+     */
+    static ObservableProxy<D> proxy(DetachedCriteria<D> query, Map args = Collections.emptyMap()) {
+        currentRxGormStaticApi().proxy(query, args)
+    }
     /**
      * @return Counts the number of instances
      */

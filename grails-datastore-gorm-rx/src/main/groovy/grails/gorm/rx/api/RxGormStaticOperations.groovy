@@ -2,6 +2,7 @@ package grails.gorm.rx.api
 
 import grails.gorm.rx.CriteriaBuilder
 import grails.gorm.rx.DetachedCriteria
+import grails.gorm.rx.proxy.ObservableProxy
 import rx.Observable
 
 /**
@@ -33,6 +34,44 @@ interface RxGormStaticOperations<D> {
      * @return An observable
      */
     Observable<D> get(Serializable id, Map queryArgs)
+
+
+    /**
+     * Retrieve a proxy to an instance by id
+     *
+     * @param id The id of the instance
+     * @return An observable
+     */
+    ObservableProxy<D> proxy(Serializable id)
+
+    /**
+     * Retrieve a proxy to an for the given arguments
+     *
+     * @param id The id
+     * @param queryArgs The query arguments
+     *
+     * @return An observable
+     */
+    ObservableProxy<D> proxy(Serializable id, Map queryArgs)
+
+
+    /**
+     * Retrieve a proxy to an instance by id
+     *
+     * @param query The query
+     * @return An observable
+     */
+    ObservableProxy<D> proxy(DetachedCriteria<D> query)
+
+    /**
+     * Retrieve a proxy to an for the given arguments
+     *
+     * @param query The query
+     * @param queryArgs The query arguments
+     *
+     * @return An observable
+     */
+    ObservableProxy<D> proxy(DetachedCriteria<D> query, Map queryArgs)
 
     /**
      * @return Counts the number of instances

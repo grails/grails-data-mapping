@@ -4,6 +4,7 @@ import grails.gorm.rx.CriteriaBuilder
 import grails.gorm.rx.DetachedCriteria
 import grails.gorm.rx.RxEntity
 import grails.gorm.rx.api.RxGormStaticOperations
+import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -453,4 +454,23 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
          new FindAllByBooleanFinder(datastoreClient)] as List<FinderMethod>
     }
 
+    @Override
+    ObservableProxy<D> proxy(Serializable id) {
+        datastoreClient.proxy(entity.javaClass, id)
+    }
+
+    @Override
+    ObservableProxy<D> proxy(Serializable id, Map queryArgs) {
+        datastoreClient.proxy(entity.javaClass, id)
+    }
+
+    @Override
+    ObservableProxy<D> proxy(DetachedCriteria<D> query) {
+        datastoreClient.proxy(query.toQuery())
+    }
+
+    @Override
+    ObservableProxy<D> proxy(DetachedCriteria<D> query, Map queryArgs) {
+        datastoreClient.proxy(query.toQuery(queryArgs))
+    }
 }
