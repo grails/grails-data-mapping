@@ -58,6 +58,15 @@ interface RxDatastoreClientImplementor {
     Query createQuery(Class type, QueryState queryState)
 
     /**
+     * Create a query, passing the entity state
+     *
+     * @param type The type
+     * @param queryState The query state
+     * @return The query
+     */
+    Query createQuery(Class type, QueryState queryState, Map arguments)
+
+    /**
      * Creates a static API (used for static methods)
      *
      * @param entity The entity

@@ -150,6 +150,14 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
     Query createQuery(Class type)
 
     /**
+     * Creates a query for the given type
+     *
+     * @param type The type
+     * @return The query
+     */
+    Query createQuery(Class type, Map arguments)
+
+    /**
      * @return The native interface to the datastore
      */
     T getNativeInterface()

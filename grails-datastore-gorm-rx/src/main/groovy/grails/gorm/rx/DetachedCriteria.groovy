@@ -615,7 +615,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
     protected Query prepareQuery(Map args, Closure additionalCriteria) {
         def staticApi = RxGormEnhancer.findStaticApi(targetClass)
         applyLazyCriteria()
-        def query = staticApi.datastoreClient.createQuery(targetClass)
+        def query = staticApi.datastoreClient.createQuery(targetClass, args)
 
         if (defaultMax != null) {
             query.max(defaultMax)

@@ -109,17 +109,27 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     final Query createQuery(Class type, QueryState queryState) {
+        return createQuery(type, queryState, [:])
+    }
+
+    @Override
+    final Query createQuery(Class type, QueryState queryState, Map arguments) {
         def entity = mappingContext.getPersistentEntity(type.name)
         if(entity == null) {
             throw new IllegalArgumentException("Type [$type.name] is not a persistent type")
         }
 
-        return createEntityQuery(entity, queryState)
+        return createEntityQuery(entity, queryState, arguments)
+    }
+
+    @Override
+    final Query createQuery(Class type, Map arguments) {
+        return createQuery(type, new QueryState())
     }
 
     @Override
     final Query createQuery(Class type) {
-        return createQuery(type, new QueryState())
+        return createQuery(type, [:])
     }
 
     @Override
@@ -474,5 +484,16 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
      *
      * @return The query object
      */
-    abstract Query createEntityQuery(PersistentEntity entity, QueryState queryState)
+    Query createEntityQuery(PersistentEntity entity, QueryState queryState) {
+        return createEntityQuery(entity, queryState, [:])
+    }
+
+    /**
+     * Creates a query for the given entity
+     *
+     * @param entity The entity
+     *
+     * @return The query object
+     */
+    abstract Query createEntityQuery(PersistentEntity entity, QueryState queryState, Map arguments)
 }
