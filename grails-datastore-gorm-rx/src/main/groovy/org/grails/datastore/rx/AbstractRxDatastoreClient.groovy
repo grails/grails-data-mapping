@@ -163,7 +163,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
                     throw new IllegalArgumentException("Type [$type.name] of instance [$o] is not a persistent type")
                 }
                 def reflector = mappingContext.getEntityReflector(entity)
-                def id = reflector.getIdentifier(o)
+                def id = proxyHandler.getIdentifier(o) ?: reflector.getIdentifier(o)
                 if(id != null) {
 
                     def ea = ctx.createEntityAccess(entity, o)
