@@ -565,7 +565,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param callable The callable
      * @return The observable
      */
-    static Observable<D> findAll(Closure callable) {
+    static Observable<D> findAll(@DelegatesTo(DetachedCriteria) Closure callable) {
         currentRxGormStaticApi().findAll callable
     }
 
@@ -575,7 +575,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param callable The callable
      * @return The observable
      */
-    static Observable<D> find(Closure callable) {
+    static Observable<D> find(@DelegatesTo(DetachedCriteria) Closure callable) {
         currentRxGormStaticApi().find callable
     }
     /**
@@ -583,7 +583,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param callable Callable closure containing detached criteria definition
      * @return The DetachedCriteria instance
      */
-    static DetachedCriteria<D> where(Closure callable) {
+    static DetachedCriteria<D> where(@DelegatesTo(DetachedCriteria) Closure callable) {
         currentRxGormStaticApi().where callable
     }
 
@@ -592,7 +592,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param callable Callable closure containing detached criteria definition
      * @return The DetachedCriteria instance that is lazily initialized
      */
-    static DetachedCriteria<D> whereLazy(Closure callable) {
+    static DetachedCriteria<D> whereLazy(@DelegatesTo(DetachedCriteria) Closure callable) {
         currentRxGormStaticApi().whereLazy callable
     }
 
@@ -601,7 +601,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param callable Callable closure containing detached criteria definition
      * @return The DetachedCriteria instance
      */
-    static DetachedCriteria<D> whereAny(Closure callable) {
+    static DetachedCriteria<D> whereAny(@DelegatesTo(DetachedCriteria) Closure callable) {
         currentRxGormStaticApi().whereAny callable
     }
 
