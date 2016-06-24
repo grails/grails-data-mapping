@@ -427,7 +427,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>Only bidirectional many ended associations are supported. To define an association you can use the <code>hasMany</code> syntax:</p>
+<p>As mentioned previously, URIs are specified using the <a href="https://tools.ietf.org/html/rfc6570">RFC 6570 URI Template</a> syntax. A URI template can contain any properties of a domain class. For example consider the following domain class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -437,58 +437,66 @@ import grails.gorm.rx.rest.*
 
 class Book implements RxRestEntity&lt;Book&gt; {
     String title
-
-    static hasMany = [authors:Author]
-}
-
-class Author implements RxRestEntity&lt;Author&gt; {
-    String name
-    static belongsTo = [book:Book]
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In this case by default a <a href="#uriTemplates">URI template</a> of <code>/book/{book}/authors</code> will be created as it is assumed that the <code>/book</code> resource wholly owns the <code>authors</code> and therefore it is nested within it. You can alter how the URI maps using the <code>mapping</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
-
-import grails.gorm.rx.rest.*
-
-class Book implements RxRestEntity&lt;Book&gt; {
-    String title
-
-    static hasMany = [authors:Author]
+    String author
 
     static mapping = {
-        authors '/books/{book}/info/authors'
+        id name:"title"
+        uri "/authors/{author}/books{/title}"
     }
 }</code></pre>
 </div>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Within the <a href="#uriTemplates">URI Template</a> for the association you can include any properties of the <code>Book</code> class.
-</td>
-</tr>
-</table>
-</div>
 <div class="paragraph">
-<p>When an entity is retrieved all many ended associations are lazy by default and return an instance of <a href="../api/grails/gorm/rx/collection/RxPersistentCollection.html">RxPersistentCollection</a> which allows you to subscribe to the collection to load it in a non-blocking manner:</p>
+<p>In this example when saving the entity:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.get(1).subscribe { Book book -&gt;
-    book.authors.subscribe { Author author -&gt;
-        println "got author $author.name"
-    }
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">new Book(title:"It", author:"Stephen King").save()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A <code>PUT</code> request will be issued to the URI <code>/authors/Stephen%20King/books/It</code> as the properties of the domain are expanded into the URI template. To issue a <code>POST</code> request you can do:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">new Book(title:"It", author:"Stephen King").insert()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A <code>POST</code> request will be sent to the URI <code>/authors/Stephen%20King/books</code> or you can choose whichever method you prefer to use with:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static grails.http.HttpMethod.*
+
+new Book(title:"It", author:"Stephen King").save(method:PATCH)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To perform a query you can do the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Observable&lt;Book&gt; observable = Book.find {
+    title == "It" &amp;&amp; author == "Stephen King"
 }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And a <code>GET</code> request will be issued to <code>/authors/Stephen%20King/books/It</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to alter the URI template for only a single write operation or query you can do so by passing the <code>uri</code> argument:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// write operation
+new Book(title:"It", author:"Stephen King").insert(uri:"/authors/{author}/books{/title}")
+
+// query
+Observable&lt;Book&gt; observable = Book.where {
+    title == "It" &amp;&amp; author == "Stephen King"
+}.find(uri:"/authors/{author}/books{/title}")</code></pre>
 </div>
 </div>
 </div>

@@ -536,13 +536,14 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#domainClasses">Working with Domain Classes</a>
 <ul class="sectlevel2">
+<li><a href="#customTypes">Custom Types</a></li>
 <li><a href="#identity">Identity Generation</a></li>
+<li><a href="#uriTemplates">URI Templates</a></li>
 <li><a href="#converting">Converting to and from JSON</a></li>
 <li><a href="#dynamicAttributes">Dynamic Attributes</a></li>
 <li><a href="#requestCustomization">Customizing the Request</a></li>
 <li><a href="#interceptors">Request Interceptors</a></li>
 <li><a href="#batchUpdates">Batch Updates</a></li>
-<li><a href="#customTypes">Custom Types</a></li>
 </ul>
 </li>
 <li><a href="#associations">Modelling Associations</a>
@@ -555,10 +556,10 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#querying">Querying with RxGORM</a>
 <ul class="sectlevel2">
-<li><a href="#joins">Join Queries</a></li>
 <li><a href="#bsonQueries">MongoDB-style Queries</a></li>
 </ul>
 </li>
+<li><a href="#testing">Testing</a></li>
 <li><a href="#reference">Reference</a>
 <ul class="sectlevel3">
 <li><a href="#configOptions">Configuration Options</a></li>
@@ -572,7 +573,7 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="introduction">Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The RxGORM REST Client projects aims to implement a non-blocking REST client using RxJava, RxNetty and the RxGORM API. RxGORM is a Object mapping technology that has implementations for MongoDB and other databases. In fact RxGORM REST Client uses the same Object to document encoding engine and RxGORM for MongoDB resulting in high performance encoding and decoding of JSON documents from REST web services.</p>
+<p>The RxGORM for REST project aims to implement a non-blocking REST client using RxJava, RxNetty and the RxGORM API. RxGORM is an Object mapping technology that has implementations for MongoDB and other databases. In fact RxGORM for REST uses the same Object-to-Document encoding engine used in RxGORM for MongoDB, resulting in high performance encoding and decoding of JSON documents from REST web services.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -594,12 +595,12 @@ Currently RxGORM REST Client only supports JSON responses and XML support is not
 <div class="sect2">
 <h3 id="installation">Installation</h3>
 <div class="paragraph">
-<p>RxGORM for REST is designed to very lightweight, and so can be used in a number of scenarios either standalone or within Grails application.</p>
+<p>RxGORM for REST is designed to be very lightweight, and so can be used in a number of scenarios either standalone or within a Grails application.</p>
 </div>
 <div class="sect3">
 <h4 id="withGrails">Installation with Grails</h4>
 <div class="paragraph">
-<p>To use RxGORM for REST within a Grails 3 application adding the following dependency to your <code>build.gradle</code> file:</p>
+<p>To use RxGORM for REST within a Grails 3 application add the following dependency to your <code>build.gradle</code> file:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -660,7 +661,7 @@ PropertyResolver configuration = DatastoreUtils.createPropertyResolver(<span cla
 <p>When using RxGORM each entity that you submit to a REST service is known as a domain class.</p>
 </div>
 <div class="paragraph">
-<p>If you are using RxGORM within Grails you can create a domain class with the <code>create-domain-class</code> command provided by the command line. Alternatively if you are not using Grails simply creating a Groovy class with <code>src/main/groovy</code> of your project will suffice.</p>
+<p>If you are using RxGORM within Grails you can create a domain class with the <code>create-domain-class</code> command provided by the command line. Alternatively if you are not using Grails simply creating a Groovy class within <code>src/main/groovy</code> of your project will suffice.</p>
 </div>
 <div class="paragraph">
 <p>A RxGORM for REST domain class must as a minimum implement the <a href="../api/grails/gorm/rx/rest/RxRestEntity.html">RxRestEntity</a> trait. For example:</p>
@@ -1040,7 +1041,7 @@ Using the constructor syntax <code>new Book(id:1L)</code> will not work in a Gra
 <div class="sect2">
 <h3 id="loadBalanced">Client Side Load Balancing</h3>
 <div class="paragraph">
-<p>If you which to use client side load balancing between multiple servers you can use the <code>grails.gorm.rest.hosts</code> option and specify multiple server hosts:</p>
+<p>If you wish to use client side load balancing between multiple servers you can use the <code>grails.gorm.rest.hosts</code> option and specify multiple server hosts:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1095,6 +1096,75 @@ Using the constructor syntax <code>new Book(id:1L)</code> will not work in a Gra
 </div>
 </div>
 <div class="sect2">
+<h3 id="customTypes">Custom Types</h3>
+<div class="paragraph">
+<p>RxGORM for REST is built ontop of MongoDB&#8217;s JSON encoding framework. This means it is possible to implement custom <a href="http://mongodb.github.io/mongo-java-driver/3.2/bson/codecs">Codecs</a> for encoding and decoding values to and from JSON.</p>
+</div>
+<div class="paragraph">
+<p>For example consider the following simple Groovy class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Birthday</span> {
+    <span class="predefined-type">Date</span> date
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By default the encoding engine does not know how to represent this type as a JSON value. To make the encoding engine understand this type you have to implement a custom codec:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.bson.*</span>
+<span class="keyword">import</span> <span class="include">org.bson.codecs.*</span>
+
+<span class="type">class</span> <span class="class">BirthdayCodec</span> <span class="directive">implements</span> Codec&lt;Birthday&gt; {
+    Birthday decode(BsonReader reader, DecoderContext decoderContext) {
+        <span class="keyword">return</span> <span class="keyword">new</span> Birthday(<span class="key">date</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>(reader.readDateTime())) <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+    <span class="type">void</span> encode(BsonWriter writer, Birthday value, EncoderContext encoderContext) {
+        writer.writeDateTime(value.date.time) <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+    <span class="predefined-type">Class</span>&lt;Birthday&gt; getEncoderClass() { Birthday } <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Decodes the <code>Birthday</code> type from the <code>BsonReader</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Encodes the <code>Birthday</code> type to the <code>BsonWriter</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Returns the type that is to be encoded. In this case <code>Birthday</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With that done you then need to register the custom <code>Codec</code>. There are two ways to achieve this.</p>
+</div>
+<div class="paragraph">
+<p>You can register a list of codecs in the <code>grails.gorm.rest.codecs</code> setting in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">rest</span>:
+            <span class="key">codecs</span>:
+                - <span class="string"><span class="content">my.company.BirthdayCodec</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or you can create a <code>META-INF/services/org.bson.Codec</code> file containing the class name of the <code>Codec</code></p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="identity">Identity Generation</h3>
 <div class="paragraph">
 <p>By default it is assumed that numeric identifiers will be used for REST resources. This means that when you save an entity:</p>
@@ -1144,8 +1214,121 @@ product.insert()</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="converting">Converting to and from JSON</h3>
+<h3 id="uriTemplates">URI Templates</h3>
+<div class="paragraph">
+<p>As mentioned previously, URIs are specified using the <a href="https://tools.ietf.org/html/rfc6570">RFC 6570 URI Template</a> syntax. A URI template can contain any properties of a domain class. For example consider the following domain class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
 
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+    <span class="predefined-type">String</span> author
+
+    <span class="directive">static</span> mapping = {
+        id <span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>
+        uri <span class="string"><span class="delimiter">&quot;</span><span class="content">/authors/{author}/books{/title}</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example when saving the entity:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">It</span><span class="delimiter">&quot;</span></span>, <span class="key">author</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>).save()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A <code>PUT</code> request will be issued to the URI <code>/authors/Stephen%20King/books/It</code> as the properties of the domain are expanded into the URI template. To issue a <code>POST</code> request you can do:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">It</span><span class="delimiter">&quot;</span></span>, <span class="key">author</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>).insert()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A <code>POST</code> request will be sent to the URI <code>/authors/Stephen%20King/books</code> or you can choose whichever method you prefer to use with:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.http.HttpMethod.*</span>
+
+<span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">It</span><span class="delimiter">&quot;</span></span>, <span class="key">author</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>).save(<span class="key">method</span>:PATCH)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To perform a query you can do the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; observable = <span class="predefined-type">Book</span>.find {
+    title == <span class="string"><span class="delimiter">&quot;</span><span class="content">It</span><span class="delimiter">&quot;</span></span> &amp;&amp; author == <span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And a <code>GET</code> request will be issued to <code>/authors/Stephen%20King/books/It</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to alter the URI template for only a single write operation or query you can do so by passing the <code>uri</code> argument:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// write operation</span>
+<span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">It</span><span class="delimiter">&quot;</span></span>, <span class="key">author</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>).insert(<span class="key">uri</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">/authors/{author}/books{/title}</span><span class="delimiter">&quot;</span></span>)
+
+<span class="comment">// query</span>
+<span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; observable = <span class="predefined-type">Book</span>.where {
+    title == <span class="string"><span class="delimiter">&quot;</span><span class="content">It</span><span class="delimiter">&quot;</span></span> &amp;&amp; author == <span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>
+}.find(<span class="key">uri</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">/authors/{author}/books{/title}</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="converting">Converting to and from JSON</h3>
+<div class="paragraph">
+<p>You can convert any domain instance to a JSON string with to <code>toJson()</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>)
+println book.toJson()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also pass a <code>java.io.Writer</code> to the method if you wish to write the JSON to a specify target writer:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>)
+<span class="predefined-type">StringWriter</span> writer = <span class="keyword">new</span> <span class="predefined-type">StringWriter</span>()
+book.toJson(writer)
+println writer.toString()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can read an instance from JSON using the <code>fromJson</code> static method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">String</span> json = ...
+Book book = <span class="predefined-type">Book</span>.fromJson(json)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A variation of the method accepts a <code>java.io.Reader</code> to read JSON from an alternate source:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Reader</span> jsonReader = ...
+Book book = <span class="predefined-type">Book</span>.fromJson(jsonReader)</code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="dynamicAttributes">Dynamic Attributes</h3>
@@ -1169,53 +1352,792 @@ book[<span class="string"><span class="delimiter">'</span><span class="content">
 </div>
 <div class="sect2">
 <h3 id="requestCustomization">Customizing the Request</h3>
+<div class="paragraph">
+<p>Each method that issues an HTTP request also accepts a <code>Closure</code> which delegates to the <a href="../api/grails/http/client/builder/HttpClientRequestBuilder.html">HttpClientRequestBuilder</a> class and allows customization of the outgoing request. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.http.HttpHeader.*</span>
 
+<span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; observable = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>).save {
+    header ACCEPT_CHARSET, <span class="string"><span class="delimiter">&quot;</span><span class="content">UTF-8</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example adds an additional <code>ACCEPT_CHARSET</code> header to the request. The same same technique can be used with static methods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.http.HttpHeader.*</span>
+
+<span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; observable = <span class="predefined-type">Book</span>.get(<span class="integer">1</span>) {
+    header ACCEPT_VERSION, <span class="string"><span class="delimiter">&quot;</span><span class="content">v1.0.0</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Another common use case is to add <code>BASIC</code> auth credentials:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; observable = <span class="predefined-type">Book</span>.get(<span class="integer">1</span>) {
+    auth <span class="string"><span class="delimiter">&quot;</span><span class="content">myusername</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">mypassword</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="interceptors">Request Interceptors</h3>
+<div class="paragraph">
+<p>As an alternative to passing <code>Closure</code> to each invocation you can register <a href="../api/grails/gorm/rx/rest/interceptor/RequestInterceptor.html">RequestInterceptor</a> instances. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
 
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.interceptor.*</span>
+
+<span class="type">class</span> <span class="class">AuthInterceptor</span> <span class="directive">extends</span> RequestBuilderInterceptor {
+    <span class="annotation">@Override</span>
+    Closure build(RestEndpointPersistentEntity entity, RxEntity instance, HttpClientRequest request) {
+        buildRequest {
+            auth <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">SERVICE_USERNAME</span><span class="delimiter">'</span></span>), <span class="predefined-type">System</span>.getenv(<span class="string"><span class="delimiter">'</span><span class="content">SERVICE_PASSWORD</span><span class="delimiter">'</span></span>)
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The interceptor can then either be passed as an argument to write operation or query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// write operation with interceptor</span>
+book.save(<span class="key">interceptor</span>: <span class="keyword">new</span> AuthInterceptor())
+
+<span class="comment">// query with interceptor</span>
+<span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; o = <span class="predefined-type">Book</span>.get(<span class="integer">1L</span>, [<span class="key">interceptor</span>: <span class="keyword">new</span> AuthInterceptor()])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or you can register an interceptor globally by defining the <code>grails.gorm.rest.interceptors</code> in <code>grails-app/conf/application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">rest</span>:
+            <span class="key">interceptors</span>: <span class="string"><span class="content">example.AuthInterceptor</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or alternatively you can create a <code>META-INF/services/grails.gorm.rx.rest.interceptor.RequestInterceptor</code> file containing the class name of the <code>RequestInterceptor</code> and it will be picked up automatically.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="batchUpdates">Batch Updates</h3>
-
+<div class="paragraph">
+<p>You can perform multiple HTTP write operations (<code>POST</code> or <code>DELETE</code> etc.) by using either the <code>saveAll</code> or <code>deleteAll</code> methods:</p>
 </div>
-<div class="sect2">
-<h3 id="customTypes">Custom Types</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// multiple POST operations</span>
+<span class="predefined-type">Observable</span> observable = <span class="predefined-type">Book</span>.saveAll(
+    <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>),
+    <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Shining</span><span class="delimiter">&quot;</span></span>)
+)
 
+<span class="comment">// multiple DELETE operations</span>
+<span class="predefined-type">Observable</span> observable = <span class="predefined-type">Book</span>.deleteAll(
+    book1,
+    book2
+)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These methods will return an <code>Observable</code> that only completes when all the operations have been successful.</p>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="associations">Modelling Associations</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>RxGORM for REST supports defining associations between REST endpoints and adds some additional integration with <a href="https://tools.ietf.org/html/draft-kelly-json-hal-08">HAL (Hypertext Application Language)</a> to automatically interpret the HAL <code>_embedded</code> and <code>_links</code> attributes.</p>
+</div>
 <div class="sect2">
 <h3 id="embedded">Embedded</h3>
+<div class="paragraph">
+<p>Embedded associations are supported for both entity and collection types. Simply declare the assocation as <code>embedded</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
 
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+
+    Author author
+    <span class="predefined-type">List</span>&lt;Author&gt; otherAuthors
+
+    <span class="directive">static</span> embedded = [<span class="string"><span class="delimiter">'</span><span class="content">author</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">otherAuthors</span><span class="delimiter">'</span></span>]
+}
+
+<span class="type">class</span> <span class="class">Author</span> <span class="directive">implements</span> RxRestEntity&lt;Author&gt; {
+    <span class="predefined-type">String</span> name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When JSON is sent back from the server the embedded association will be decoded from the JSON:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">author</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>}}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="hasOne">Single Ended Associations</h3>
+<div class="paragraph">
+<p>Single-ended associations can be represented by simply declaring the associated type as a property of the domain class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
 
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+
+    Author author
+}
+
+<span class="type">class</span> <span class="class">Author</span> <span class="directive">implements</span> RxRestEntity&lt;Author&gt; {
+    <span class="predefined-type">String</span> name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When a JSON response is returned that contains only the association id then an <a href="../api/grails/gorm/rx/proxy/ObservableProxy.html">ObservableProxy</a> is returned. For example given the following JSON response:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">author</span><span class="delimiter">&quot;</span></span>:<span class="integer">1</span>}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An <code>ObservableProxy</code> that executes a GET request to the <code>/author/1</code> URI will be returned. This allows you to subscribe the association in order to read it lazily:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.get(<span class="integer">1</span>).subscribe { <span class="predefined-type">Book</span> book -&gt;
+    book.author.subscribe { Author author -&gt;
+        println <span class="string"><span class="delimiter">&quot;</span><span class="content">got author </span><span class="inline"><span class="inline-delimiter">$</span>author</span><span class="content">.name</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you wish to load both the <code>Book</code> and the <code>Author</code> there are a couple of ways to achieve that. One way is to use the <code>switchMap</code> and <code>zip</code> methods to load both in a non-blocking manner:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.get(<span class="integer">1</span>).switchMap { <span class="predefined-type">Book</span> book -&gt;
+    <span class="predefined-type">Observable</span>.zip( <span class="predefined-type">Observable</span>.just(book), book.author.toObservable()) { <span class="predefined-type">Book</span> b1, Author author -&gt;
+        <span class="keyword">return</span> [b1, author]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively a much simpler way is to use an eager query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.get(<span class="integer">1</span>, [<span class="key">fetch</span>:[<span class="key">author</span>:<span class="string"><span class="delimiter">'</span><span class="content">eager</span><span class="delimiter">'</span></span>]).subscribe { <span class="predefined-type">Book</span> book -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.title</span><span class="delimiter">&quot;</span></span>
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Author </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.author.name</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Conversely if the JSON returned from the server includes the <code>author</code> embedded within the JSON, then no <code>ObservableProxy</code> will be created and instead the association will be loaded fully initialized. For example the following JSON will produce an initialized entity:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">author</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">1</span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or if you are using HAL the following JSON will also work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">_embedded</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">author</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">id</span><span class="delimiter">&quot;</span></span>:<span class="integer">1</span>, <span class="key"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span>}},<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can alter the <a href="#uriTemplates">URI Template</a> used by RxGORM to load the association using the <code>mapping</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+
+    Author author
+
+    <span class="directive">static</span> mapping = {
+        author <span class="key">uri</span>:<span class="string"><span class="delimiter">'</span><span class="content">/authors/{name}</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above case the <code>name</code> property of the <code>Author</code> will be used to load the association instead. You can also override the URI used to load an association from the server by sending back HAL links:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{<span class="key"><span class="delimiter">&quot;</span><span class="content">_links</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">author</span><span class="delimiter">&quot;</span></span>:{<span class="key"><span class="delimiter">&quot;</span><span class="content">href</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">/authors/{name}</span><span class="delimiter">&quot;</span></span>},<span class="key"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case RxGORM will create an <code>ObservableProxy</code> to load the author from the <code>/author/{name}</code> URI template.</p>
+</div>
+<div class="paragraph">
+<p>If you define a single-ended association using the <code>hasOne</code> syntax then the foreign key is assumed to always exist on the inverse side of the association:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+
+    <span class="directive">static</span> hasOne = [<span class="key">author</span>:Author]
+}
+
+<span class="type">class</span> <span class="class">Author</span> <span class="directive">implements</span> RxRestEntity&lt;Author&gt; {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> belongsTo = [<span class="key">book</span>:<span class="predefined-type">Book</span>]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case by default a URI template of <code>/book/{book}/author</code> will be created as it is assumed that the <code>/book</code> resource wholly owns the <code>author</code> and therefore it is nested within it. You can alter how the URI maps using the <code>mapping</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+
+    <span class="directive">static</span> hasOne = [<span class="key">author</span>:Author]
+
+    <span class="directive">static</span> mapping = {
+        author <span class="string"><span class="delimiter">'</span><span class="content">/books/{book}/info/author</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Within the <a href="#uriTemplates">URI Template</a> for the association you can include any properties of the <code>Book</code> class.
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect2">
 <h3 id="hasMany">Many Ended Associations</h3>
+<div class="paragraph">
+<p>Only bidirectional many ended associations are supported. To define an association you can use the <code>hasMany</code> syntax:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
 
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+
+    <span class="directive">static</span> hasMany = [<span class="key">authors</span>:Author]
+}
+
+<span class="type">class</span> <span class="class">Author</span> <span class="directive">implements</span> RxRestEntity&lt;Author&gt; {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> belongsTo = [<span class="key">book</span>:<span class="predefined-type">Book</span>]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case by default a <a href="#uriTemplates">URI template</a> of <code>/book/{book}/authors</code> will be created as it is assumed that the <code>/book</code> resource wholly owns the <code>authors</code> and therefore it is nested within it. You can alter how the URI maps using the <code>mapping</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+
+    <span class="directive">static</span> hasMany = [<span class="key">authors</span>:Author]
+
+    <span class="directive">static</span> mapping = {
+        authors <span class="string"><span class="delimiter">'</span><span class="content">/books/{book}/info/authors</span><span class="delimiter">'</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Within the <a href="#uriTemplates">URI Template</a> for the association you can include any properties of the <code>Book</code> class.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>When an entity is retrieved all many ended associations are lazy by default and return an instance of <a href="../api/grails/gorm/rx/collection/RxPersistentCollection.html">RxPersistentCollection</a> which allows you to subscribe to the collection to load it in a non-blocking manner:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.get(<span class="integer">1</span>).subscribe { <span class="predefined-type">Book</span> book -&gt;
+    book.authors.subscribe { Author author -&gt;
+        println <span class="string"><span class="delimiter">&quot;</span><span class="content">got author </span><span class="inline"><span class="inline-delimiter">$</span>author</span><span class="content">.name</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="lazyLoading">Lazy Loading</h3>
+<div class="paragraph">
+<p>As mentioned previously you can retrieve any lazy association using an eager query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// query by id</span>
+<span class="predefined-type">Book</span>.get(<span class="integer">1</span>, [<span class="key">fetch</span>:[<span class="key">authors</span>:<span class="string"><span class="delimiter">'</span><span class="content">eager</span><span class="delimiter">'</span></span>]).subscribe { <span class="predefined-type">Book</span> book -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.title</span><span class="delimiter">&quot;</span></span>
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Authors </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.authors</span><span class="delimiter">&quot;</span></span>
+}
 
+<span class="comment">// query an alternative URI</span>
+<span class="predefined-type">Book</span>.where {
+    title == <span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>
+}.find(<span class="key">uri</span>:<span class="string"><span class="delimiter">'</span><span class="content">/books/byTitle/{title}</span><span class="delimiter">'</span></span>, <span class="key">fetch</span>:[<span class="key">authors</span>:<span class="string"><span class="delimiter">'</span><span class="content">eager</span><span class="delimiter">'</span></span>])
+ .subscribe { <span class="predefined-type">Book</span> book -&gt;
+      println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.title</span><span class="delimiter">&quot;</span></span>
+      println <span class="string"><span class="delimiter">&quot;</span><span class="content">Authors </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.authors</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can however also configure an association to be eager by default:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+
+    <span class="directive">static</span> hasMany = [<span class="key">authors</span>:Author]
+
+    <span class="directive">static</span> mapping = {
+        authors <span class="key">fetch</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">eager</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Additionally, if the server sends back the association embedded within the JSON then no lazy loading is necessary.</p>
+</div>
+<div class="paragraph">
+<p>Finally, some REST APIs support the notion of "resource expansion", for example Grails' <a href="http://views.grails.org/1.1.x/#_rendering_domain_classes">JSON views</a> support an <code>expand</code> request parameter. You can send the <code>expand</code> parameter to the server using the <code>expand</code> argument to any query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// query by id</span>
+<span class="predefined-type">Book</span>.get(<span class="integer">1</span>, [<span class="key">expand</span>:<span class="string"><span class="delimiter">'</span><span class="content">authors</span><span class="delimiter">'</span></span>]).subscribe { <span class="predefined-type">Book</span> book -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.title</span><span class="delimiter">&quot;</span></span>
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Authors </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.authors</span><span class="delimiter">&quot;</span></span>
+}
+
+<span class="comment">// query an alternative URI</span>
+<span class="predefined-type">Book</span>.where {
+    title == <span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>
+}.find(<span class="key">uri</span>:<span class="string"><span class="delimiter">'</span><span class="content">/books/byTitle/{title}</span><span class="delimiter">'</span></span>,[<span class="key">expand</span>:<span class="string"><span class="delimiter">'</span><span class="content">authors</span><span class="delimiter">'</span></span>])
+ .subscribe { <span class="predefined-type">Book</span> book -&gt;
+      println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.title</span><span class="delimiter">&quot;</span></span>
+      println <span class="string"><span class="delimiter">&quot;</span><span class="content">Authors </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.authors</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example a parameter called <code>expand</code> will be appended to the request URI in the form <code>?expand=authors</code>. If you which to expand multiple associations then multiple parameters will be added, for example <code>?expand=authors&amp;expand=publisher</code></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+By default the name of the <code>expand</code> parameter is <code>expand</code> but you can change this by setting <code>grails.gorm.rest.parameters.expand</code> in <code>application.yml</code>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="querying">Querying with RxGORM</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="joins">Join Queries</h3>
+<div class="paragraph">
+<p>Generally in REST applications the URI is the query. So to formulate queries the most typically pattern is pass the <code>uri</code> argument to the query.</p>
+</div>
+<div class="paragraph">
+<p>For example say we you want to add a query to obtain the latests books. That can be done quite simply by altering the URI passed to the <code>findAll</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
 
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+
+
+    <span class="directive">static</span> <span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; latestBooks(<span class="predefined-type">Map</span> arguments = [:]) {
+        arguments.uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/books/latest</span><span class="delimiter">&quot;</span></span>
+        <span class="keyword">return</span> findAll(uri)
+    }
+}
+
+...
+Book.latestBooks().subscribe { <span class="predefined-type">Book</span> book -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.title</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the REST endpoint is parameterized you can use <a href="#uriTemplates">URI Templates</a> to define the query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> example
+
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.rest.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> <span class="directive">implements</span> RxRestEntity&lt;<span class="predefined-type">Book</span>&gt; {
+    <span class="predefined-type">String</span> title
+
+
+    <span class="directive">static</span> <span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; latestBooks(<span class="predefined-type">String</span> category, <span class="predefined-type">Map</span> arguments = [:]) {
+        arguments.uri = <span class="string"><span class="delimiter">&quot;</span><span class="content">/books/{category}/latest</span><span class="delimiter">&quot;</span></span>
+        <span class="keyword">return</span> where {
+            eq <span class="string"><span class="delimiter">'</span><span class="content">category</span><span class="delimiter">'</span></span>, category
+        }.findAll(arguments)
+    }
+}
+
+...
+Book.latestBooks(<span class="string"><span class="delimiter">&quot;</span><span class="content">Fiction</span><span class="delimiter">&quot;</span></span>).subscribe { <span class="predefined-type">Book</span> book -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Title </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.title</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example a <code>GET</code> request to <code>/books/Fiction/latest</code> will be produced. You can include any additional parameters not declared in the URI template, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.where {
+    eq <span class="string"><span class="delimiter">'</span><span class="content">category</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Fiction</span><span class="delimiter">'</span></span>
+    eq <span class="string"><span class="delimiter">'</span><span class="content">foo</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">bar</span><span class="delimiter">'</span></span>
+}.findAll(<span class="key">uri</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">/books/{category}/latest</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example will produce a <code>GET</code> request to <code>/books/Fiction/latest?foo=bar</code>.</p>
+</div>
+<div class="paragraph">
+<p>You can also control pagination and sorting. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.findAll(<span class="key">max</span>:<span class="integer">10</span>, <span class="key">offset</span>:<span class="integer">10</span>, <span class="key">sort</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>, <span class="key">order</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">desc</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Results in a query such as <code>/books?max=10&amp;offset=10&amp;sort=title&amp;order=desc</code>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The names of the pagination paremeters are configurable. See the <a href="#configOptions">Configuration Options</a> section for more information.
+</td>
+</tr>
+</table>
 </div>
 <div class="sect2">
 <h3 id="bsonQueries">MongoDB-style Queries</h3>
+<div class="paragraph">
+<p>When using the URI, only "equals" style queries are supported and other conditional operators (greater than, less than etc.) are not supported.</p>
+</div>
+<div class="paragraph">
+<p>If you are implementing a search endpoint you may need more richness in the querying ability. One option to implement this is to use a MongoDB-style BSON query.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.where {
+    author == <span class="string"><span class="delimiter">&quot;</span><span class="content">Stephen King</span><span class="delimiter">&quot;</span></span> &amp;&amp; pages &gt; <span class="integer">500</span>
+}.findAll(<span class="key">queryType</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">bson</span><span class="delimiter">&quot;</span></span>, <span class="key">uri</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">/books/search</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will produce a query to the URI <code>/books/search</code> passing a parameter called <code>q</code> with the following URL encoded JSON:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="json">{<span class="string"><span class="delimiter">&quot;</span><span class="content">author:</span><span class="delimiter">&quot;</span></span><span class="error">S</span><span class="error">t</span><span class="error">e</span><span class="error">p</span><span class="error">h</span><span class="error">e</span><span class="error">n</span> <span class="error">K</span><span class="error">i</span><span class="error">n</span><span class="error">g</span><span class="string"><span class="delimiter">&quot;</span><span class="content">, </span><span class="delimiter">&quot;</span></span><span class="error">p</span><span class="error">a</span><span class="error">g</span><span class="error">e</span><span class="error">s</span><span class="string"><span class="delimiter">&quot;</span><span class="content">:{</span><span class="delimiter">&quot;</span></span><span class="error">$</span><span class="error">g</span><span class="error">t</span><span class="string"><span class="delimiter">&quot;</span><span class="content">:500}}</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are using MongoDB on the server you can use this to perform a query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.bson.*</span>
 
+<span class="keyword">def</span> <span class="function">search</span>(<span class="predefined-type">String</span> q) {
+    <span class="predefined-type">Document</span> query = <span class="predefined-type">Document</span>.parse(params.q)
+    respond <span class="predefined-type">Book</span>.collection.find(q)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are not using MongoDB on the server you can use the <code>org.grails.datastore.bson.query.BsonQuery</code> class to parse the query into <code>DetachedCriteria</code> instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.grails.datastore.bson.query.*</span>
+
+<span class="keyword">def</span> <span class="function">search</span>(<span class="predefined-type">String</span> q) {
+    DetachedCriteria&lt;<span class="predefined-type">Book</span>&gt; criteria = BsonQuery.parse(<span class="predefined-type">Book</span>, <span class="keyword">new</span> BsonReader(<span class="keyword">new</span> JsonReader(params.q)))
+    respond criteria.list()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All <a href="https://docs.mongodb.com/manual/reference/operator/query/">comparison and logical operators from MongoDB</a> are supported.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="testing">Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>RxGORM for REST is designed to be very lightweight, so it is easy to spin up in a unit test. A specialized <code>org.grails.datastore.rx.rest.test.TestRxRestDatastoreClient</code> class exists to help make testing even easier.</p>
+</div>
+<div class="paragraph">
+<p>To use the <code>TestRxRestDatastoreClient</code> in Spock add a field to your Spock specification declared with <code>AutoCleanup</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">spock.lang.*</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.rx.rest.test.TestRxRestDatastoreClient</span>
+
+<span class="type">class</span> <span class="class">BookSpec</span> <span class="directive">extends</span> Specification {
+    <span class="annotation">@AutoCleanup</span> TestRxRestDatastoreClient client
+
+     <span class="type">void</span> setup() {
+        client = <span class="keyword">new</span> TestRxRestDatastoreClient(<span class="predefined-type">Book</span>)
+     }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>TestRxRestDatastoreClient</code> class with create a test HTTP server running on an ephemeral port.</p>
+</div>
+<div class="paragraph">
+<p>You can then use the test client to create expectations within your test methods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.http.MediaType.*</span>
+...
+
+given:<span class="string"><span class="delimiter">&quot;</span><span class="content">A Test Client</span><span class="delimiter">&quot;</span></span>
+<span class="keyword">def</span> mock = client.expect { <i class="conum" data-value="1"></i><b>(1)</b>
+    uri <span class="string"><span class="delimiter">'</span><span class="content">/book/1</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+    accept(JSON) <i class="conum" data-value="3"></i><b>(3)</b>
+}
+.respond { <i class="conum" data-value="4"></i><b>(4)</b>
+    json { <i class="conum" data-value="5"></i><b>(5)</b>
+        id <span class="integer">1</span>
+        title <span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use the <code>expect</code> method to define expectations for the request</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Here we specify that a <code>uri</code> of <code>/book/1/</code> is expected</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>An HTTP <code>Accept</code> header containing <code>application/json</code> is expected</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Here we define the mocked response from the server using the <code>respond</code> method</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The <code>respond</code> method defines the JSON using <code>StreamingJsonBuilder</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Then you can simply use the regular RxGORM API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">A get request is issued</span><span class="delimiter">&quot;</span></span>
+<span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; observable = <span class="predefined-type">Book</span>.get(<span class="integer">1</span>)
+<span class="predefined-type">Book</span> book = observable.toBlocking().first()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And finally verify the expectations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">then</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The response is correct</span><span class="delimiter">&quot;</span></span>
+mock.verify()
+book.title == <span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For testing JSON requests and responses the <code>toJson</code> method can come in handy. For example to test a <code>POST</code> request you can use an existing instance as test data:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.http.MediaType.*</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.http.HttpMethod.*</span>
+...
+
+...
+
+given:<span class="string"><span class="delimiter">&quot;</span><span class="content">A POST request</span><span class="delimiter">&quot;</span></span>
+<span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="keyword">def</span> mock = client.expect {
+    uri <span class="string"><span class="delimiter">'</span><span class="content">/book</span><span class="delimiter">'</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+    method POST <i class="conum" data-value="3"></i><b>(3)</b>
+    json book.toJson() <i class="conum" data-value="4"></i><b>(4)</b>
+}
+.respond {
+    created() <i class="conum" data-value="5"></i><b>(5)</b>
+    json { <i class="conum" data-value="6"></i><b>(6)</b>
+        id <span class="integer">1</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Create a test instance</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Verify the <code>uri</code> is <code>/book</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Verify the HTTP method is <code>POST</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Verify the JSON sent to the server is the same as the JSON produced from converting the <code>Book</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Respond with an HTTP 201 status of <code>CREATED</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Send the <code>id</code> back as JSON</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Then perform a <code>POST</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">A get request is issued</span><span class="delimiter">&quot;</span></span>
+<span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; observable = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>).save()
+<span class="predefined-type">Book</span> book = observable.toBlocking().first()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then verify the expectations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">then</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The response is correct</span><span class="delimiter">&quot;</span></span>
+mock.verify()
+book.id == <span class="integer">1L</span>
+book.title == <span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
 </div>
 </div>
 </div>

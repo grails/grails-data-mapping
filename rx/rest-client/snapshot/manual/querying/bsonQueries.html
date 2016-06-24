@@ -426,11 +426,63 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
+<div class="paragraph">
+<p>When using the URI, only "equals" style queries are supported and other conditional operators (greater than, less than etc.) are not supported.</p>
+</div>
+<div class="paragraph">
+<p>If you are implementing a search endpoint you may need more richness in the querying ability. One option to implement this is to use a MongoDB-style BSON query.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.where {
+    author == "Stephen King" &amp;&amp; pages &gt; 500
+}.findAll(queryType:"bson", uri:"/books/search")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will produce a query to the URI <code>/books/search</code> passing a parameter called <code>q</code> with the following URL encoded JSON:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">{"author:"Stephen King", "pages":{"$gt":500}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are using MongoDB on the server you can use this to perform a query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.bson.*
 
+def search(String q) {
+    Document query = Document.parse(params.q)
+    respond Book.collection.find(q)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are not using MongoDB on the server you can use the <code>org.grails.datastore.bson.query.BsonQuery</code> class to parse the query into <code>DetachedCriteria</code> instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.grails.datastore.bson.query.*
+
+def search(String q) {
+    DetachedCriteria&lt;Book&gt; criteria = BsonQuery.parse(Book, new BsonReader(new JsonReader(params.q)))
+    respond criteria.list()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All <a href="https://docs.mongodb.com/manual/reference/operator/query/">comparison and logical operators from MongoDB</a> are supported.</p>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-24 09:56:51 UTC
+Last updated 2016-06-24 12:09:48 UTC
 </div>
 </div>
 </body>

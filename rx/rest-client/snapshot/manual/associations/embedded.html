@@ -426,11 +426,41 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
+<div class="paragraph">
+<p>Embedded associations are supported for both entity and collection types. Simply declare the assocation as <code>embedded</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
 
+import grails.gorm.rx.rest.*
+
+class Book implements RxRestEntity&lt;Book&gt; {
+    String title
+
+    Author author
+    List&lt;Author&gt; otherAuthors
+
+    static embedded = ['author', 'otherAuthors']
+}
+
+class Author implements RxRestEntity&lt;Author&gt; {
+    String name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When JSON is sent back from the server the embedded association will be decoded from the JSON:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">{"title":"The Stand", "author":{"name":"Stephen King"}}</code></pre>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-24 09:56:51 UTC
+Last updated 2016-06-24 12:09:48 UTC
 </div>
 </div>
 </body>

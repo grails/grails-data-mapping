@@ -426,11 +426,173 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
+<div class="paragraph">
+<p>Single-ended associations can be represented by simply declaring the associated type as a property of the domain class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
 
+import grails.gorm.rx.rest.*
+
+class Book implements RxRestEntity&lt;Book&gt; {
+    String title
+
+    Author author
+}
+
+class Author implements RxRestEntity&lt;Author&gt; {
+    String name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When a JSON response is returned that contains only the association id then an <a href="../api/grails/gorm/rx/proxy/ObservableProxy.html">ObservableProxy</a> is returned. For example given the following JSON response:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">{"title":"The Stand", "author":1}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An <code>ObservableProxy</code> that executes a GET request to the <code>/author/1</code> URI will be returned. This allows you to subscribe the association in order to read it lazily:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.get(1).subscribe { Book book -&gt;
+    book.author.subscribe { Author author -&gt;
+        println "got author $author.name"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you wish to load both the <code>Book</code> and the <code>Author</code> there are a couple of ways to achieve that. One way is to use the <code>switchMap</code> and <code>zip</code> methods to load both in a non-blocking manner:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.get(1).switchMap { Book book -&gt;
+    Observable.zip( Observable.just(book), book.author.toObservable()) { Book b1, Author author -&gt;
+        return [b1, author]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively a much simpler way is to use an eager query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.get(1, [fetch:[author:'eager']).subscribe { Book book -&gt;
+    println "Title $book.title"
+    println "Author $book.author.name"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Conversely if the JSON returned from the server includes the <code>author</code> embedded within the JSON, then no <code>ObservableProxy</code> will be created and instead the association will be loaded fully initialized. For example the following JSON will produce an initialized entity:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">{"title":"The Stand", "author":{"id":1, "name":"Stephen King"}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or if you are using HAL the following JSON will also work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">{"_embedded":{"author":{"id":1, "name":"Stephen King"}},"title":"The Stand"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can alter the <a href="#uriTemplates">URI Template</a> used by RxGORM to load the association using the <code>mapping</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
+
+import grails.gorm.rx.rest.*
+
+class Book implements RxRestEntity&lt;Book&gt; {
+    String title
+
+    Author author
+
+    static mapping = {
+        author uri:'/authors/{name}'
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above case the <code>name</code> property of the <code>Author</code> will be used to load the association instead. You can also override the URI used to load an association from the server by sending back HAL links:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">{"_links":{"author":{"href":"/authors/{name}"},"title":"The Stand"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case RxGORM will create an <code>ObservableProxy</code> to load the author from the <code>/author/{name}</code> URI template.</p>
+</div>
+<div class="paragraph">
+<p>If you define a single-ended association using the <code>hasOne</code> syntax then the foreign key is assumed to always exist on the inverse side of the association:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
+
+import grails.gorm.rx.rest.*
+
+class Book implements RxRestEntity&lt;Book&gt; {
+    String title
+
+    static hasOne = [author:Author]
+}
+
+class Author implements RxRestEntity&lt;Author&gt; {
+    String name
+    static belongsTo = [book:Book]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case by default a URI template of <code>/book/{book}/author</code> will be created as it is assumed that the <code>/book</code> resource wholly owns the <code>author</code> and therefore it is nested within it. You can alter how the URI maps using the <code>mapping</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
+
+import grails.gorm.rx.rest.*
+
+class Book implements RxRestEntity&lt;Book&gt; {
+    String title
+
+    static hasOne = [author:Author]
+
+    static mapping = {
+        author '/books/{book}/info/author'
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Within the <a href="#uriTemplates">URI Template</a> for the association you can include any properties of the <code>Book</code> class.
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-24 09:56:51 UTC
+Last updated 2016-06-24 12:09:48 UTC
 </div>
 </div>
 </body>

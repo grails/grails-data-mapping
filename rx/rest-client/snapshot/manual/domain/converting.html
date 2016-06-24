@@ -426,11 +426,48 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
-
+<div class="paragraph">
+<p>You can convert any domain instance to a JSON string with to <code>toJson()</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book book = new Book(title:"The Stand")
+println book.toJson()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also pass a <code>java.io.Writer</code> to the method if you wish to write the JSON to a specify target writer:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book book = new Book(title:"The Stand")
+StringWriter writer = new StringWriter()
+book.toJson(writer)
+println writer.toString()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can read an instance from JSON using the <code>fromJson</code> static method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">String json = ...
+Book book = Book.fromJson(json)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A variation of the method accepts a <code>java.io.Reader</code> to read JSON from an alternate source:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Reader jsonReader = ...
+Book book = Book.fromJson(jsonReader)</code></pre>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-24 09:56:51 UTC
+Last updated 2016-06-24 12:09:48 UTC
 </div>
 </div>
 </body>

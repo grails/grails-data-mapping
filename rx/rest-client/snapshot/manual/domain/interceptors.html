@@ -426,11 +426,55 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
+<div class="paragraph">
+<p>As an alternative to passing <code>Closure</code> to each invocation you can register <a href="../api/grails/gorm/rx/rest/interceptor/RequestInterceptor.html">RequestInterceptor</a> instances. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
 
+import grails.gorm.rx.rest.interceptor.*
+
+class AuthInterceptor extends RequestBuilderInterceptor {
+    @Override
+    Closure build(RestEndpointPersistentEntity entity, RxEntity instance, HttpClientRequest request) {
+        buildRequest {
+            auth System.getenv('SERVICE_USERNAME'), System.getenv('SERVICE_PASSWORD')
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The interceptor can then either be passed as an argument to write operation or query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// write operation with interceptor
+book.save(interceptor: new AuthInterceptor())
+
+// query with interceptor
+Observable&lt;Book&gt; o = Book.get(1L, [interceptor: new AuthInterceptor()])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or you can register an interceptor globally by defining the <code>grails.gorm.rest.interceptors</code> in <code>grails-app/conf/application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    gorm:
+        rest:
+            interceptors: example.AuthInterceptor</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or alternatively you can create a <code>META-INF/services/grails.gorm.rx.rest.interceptor.RequestInterceptor</code> file containing the class name of the <code>RequestInterceptor</code> and it will be picked up automatically.</p>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-24 09:56:51 UTC
+Last updated 2016-06-24 12:09:48 UTC
 </div>
 </div>
 </body>

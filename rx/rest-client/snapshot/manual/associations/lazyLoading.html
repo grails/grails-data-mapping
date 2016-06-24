@@ -426,11 +426,90 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
+<div class="paragraph">
+<p>As mentioned previously you can retrieve any lazy association using an eager query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// query by id
+Book.get(1, [fetch:[authors:'eager']).subscribe { Book book -&gt;
+    println "Title $book.title"
+    println "Authors $book.authors"
+}
 
+// query an alternative URI
+Book.where {
+    title == "The Stand"
+}.find(uri:'/books/byTitle/{title}', fetch:[authors:'eager'])
+ .subscribe { Book book -&gt;
+      println "Title $book.title"
+      println "Authors $book.authors"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can however also configure an association to be eager by default:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
+
+import grails.gorm.rx.rest.*
+
+class Book implements RxRestEntity&lt;Book&gt; {
+    String title
+
+    static hasMany = [authors:Author]
+
+    static mapping = {
+        authors fetch:"eager"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Additionally, if the server sends back the association embedded within the JSON then no lazy loading is necessary.</p>
+</div>
+<div class="paragraph">
+<p>Finally, some REST APIs support the notion of "resource expansion", for example Grails' <a href="http://views.grails.org/1.1.x/#_rendering_domain_classes">JSON views</a> support an <code>expand</code> request parameter. You can send the <code>expand</code> parameter to the server using the <code>expand</code> argument to any query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// query by id
+Book.get(1, [expand:'authors']).subscribe { Book book -&gt;
+    println "Title $book.title"
+    println "Authors $book.authors"
+}
+
+// query an alternative URI
+Book.where {
+    title == "The Stand"
+}.find(uri:'/books/byTitle/{title}',[expand:'authors'])
+ .subscribe { Book book -&gt;
+      println "Title $book.title"
+      println "Authors $book.authors"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example a parameter called <code>expand</code> will be appended to the request URI in the form <code>?expand=authors</code>. If you which to expand multiple associations then multiple parameters will be added, for example <code>?expand=authors&amp;expand=publisher</code></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+By default the name of the <code>expand</code> parameter is <code>expand</code> but you can change this by setting <code>grails.gorm.rest.parameters.expand</code> in <code>application.yml</code>
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-24 09:56:51 UTC
+Last updated 2016-06-24 12:09:48 UTC
 </div>
 </div>
 </body>

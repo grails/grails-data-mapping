@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -143,6 +143,27 @@ if (location.href.indexOf('is-external=true') == -1) {
 
         <!-- =========== PROPERTY SUMMARY =========== -->
         
+         <ul class="blockList">
+                <li class="blockList"><a name="property_summary"><!--   --></a>
+                    <h3>Properties Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Properties Summary table, listing nested classes, and an explanation">
+                        <caption><span>Properties</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colLast" scope="col">Name and description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.util.Set&lt;java.lang.Class&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#additionalSimpleTypes">additionalSimpleTypes</a></code><br></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+            </ul>
+        
 
         <!-- =========== ELEMENT SUMMARY =========== -->
         
@@ -164,13 +185,23 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#addSimpleType(java.lang.Class)">addSimpleType</a></strong>(java.lang.Class type)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.Class&lt;<a href='../../../../../../org/grails/datastore/rx/rest/config/Endpoint.html' title='Endpoint'>Endpoint</a>&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getEntityMappedFormType()">getEntityMappedFormType</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.Class&lt;<a href='../../../../../../org/grails/datastore/rx/rest/config/Attribute.html' title='Attribute'>Attribute</a>&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyMappedFormType()">getPropertyMappedFormType</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isSimpleType(java.lang.Class)">isSimpleType</a></strong>(java.lang.Class propType)</code><br></td>
                         </tr>
                         
                     </table>
@@ -193,7 +224,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class org.grails.datastore.mapping.model.MappingFactory</strong></code></td>
-                            <td class="colLast"><code>org.grails.datastore.mapping.model.MappingFactory#registerCustomType(org.grails.datastore.mapping.engine.types.CustomTypeMarshaller), org.grails.datastore.mapping.model.MappingFactory#createIdentity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createCustom(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createSimple(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createOneToOne(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createManyToOne(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createOneToMany(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createManyToMany(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createEmbedded(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createEmbeddedCollection(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createBasicCollection(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createBasicCollection(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor, java.lang.Class), org.grails.datastore.mapping.model.MappingFactory#isCustomType(java.lang.Class), org.grails.datastore.mapping.model.MappingFactory#createIdentityMapping(org.grails.datastore.mapping.model.ClassMapping), org.grails.datastore.mapping.model.MappingFactory#createDefaultIdentityMapping(org.grails.datastore.mapping.model.ClassMapping), org.grails.datastore.mapping.model.MappingFactory#associationtoString(java.lang.String, org.grails.datastore.mapping.model.types.Association), org.grails.datastore.mapping.model.MappingFactory#isSimpleType(java.lang.String), org.grails.datastore.mapping.model.MappingFactory#isSimpleType(java.lang.Class), org.grails.datastore.mapping.model.MappingFactory#createMappedForm(org.grails.datastore.mapping.model.PersistentEntity), org.grails.datastore.mapping.model.MappingFactory#createMappedForm(org.grails.datastore.mapping.model.PersistentProperty), org.grails.datastore.mapping.model.MappingFactory#wait(long, int), org.grails.datastore.mapping.model.MappingFactory#wait(long), org.grails.datastore.mapping.model.MappingFactory#wait(), org.grails.datastore.mapping.model.MappingFactory#equals(java.lang.Object), org.grails.datastore.mapping.model.MappingFactory#toString(), org.grails.datastore.mapping.model.MappingFactory#hashCode(), org.grails.datastore.mapping.model.MappingFactory#getClass(), org.grails.datastore.mapping.model.MappingFactory#notify(), org.grails.datastore.mapping.model.MappingFactory#notifyAll()</code></td>
+                            <td class="colLast"><code>org.grails.datastore.mapping.model.MappingFactory#createIdentity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#isSimpleType(java.lang.String), org.grails.datastore.mapping.model.MappingFactory#isSimpleType(java.lang.Class), org.grails.datastore.mapping.model.MappingFactory#createMappedForm(org.grails.datastore.mapping.model.PersistentProperty), org.grails.datastore.mapping.model.MappingFactory#createMappedForm(org.grails.datastore.mapping.model.PersistentEntity), org.grails.datastore.mapping.model.MappingFactory#registerCustomType(org.grails.datastore.mapping.engine.types.CustomTypeMarshaller), org.grails.datastore.mapping.model.MappingFactory#createCustom(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createSimple(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createOneToOne(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createManyToOne(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createOneToMany(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createManyToMany(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createEmbedded(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createEmbeddedCollection(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createBasicCollection(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor), org.grails.datastore.mapping.model.MappingFactory#createBasicCollection(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor, java.lang.Class), org.grails.datastore.mapping.model.MappingFactory#isCustomType(java.lang.Class), org.grails.datastore.mapping.model.MappingFactory#createIdentityMapping(org.grails.datastore.mapping.model.ClassMapping), org.grails.datastore.mapping.model.MappingFactory#createDefaultIdentityMapping(org.grails.datastore.mapping.model.ClassMapping), org.grails.datastore.mapping.model.MappingFactory#associationtoString(java.lang.String, org.grails.datastore.mapping.model.types.Association), org.grails.datastore.mapping.model.MappingFactory#wait(long, int), org.grails.datastore.mapping.model.MappingFactory#wait(long), org.grails.datastore.mapping.model.MappingFactory#wait(), org.grails.datastore.mapping.model.MappingFactory#equals(java.lang.Object), org.grails.datastore.mapping.model.MappingFactory#toString(), org.grails.datastore.mapping.model.MappingFactory#hashCode(), org.grails.datastore.mapping.model.MappingFactory#getClass(), org.grails.datastore.mapping.model.MappingFactory#notify(), org.grails.datastore.mapping.model.MappingFactory#notifyAll()</code></td>
                         </tr>
                     </table>
                    </ul>
@@ -213,6 +244,24 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
             
+            <!-- =========== PROPERTY DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="prop_detail">
+                    <!--   -->
+                </a>
+                    <h3>Property Detail</h3>
+                    
+                        <a name="additionalSimpleTypes"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;java.util.Set&lt;java.lang.Class&gt; <strong>additionalSimpleTypes</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
+            
 
             
 
@@ -226,6 +275,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                     <!--   -->
                 </a>
                     <h3>Method Detail</h3>
+                    
+                        <a name="addSimpleType(java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>void <strong>addSimpleType</strong>(java.lang.Class type)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
                     
                         <a name="getEntityMappedFormType()"><!-- --></a>
                         <ul class="blockListLast">
@@ -241,6 +298,15 @@ protected&nbsp;java.lang.Class&lt;<a href='../../../../../../org/grails/datastor
                             <li class="blockList">
                                 <h4>@java.lang.Override
 protected&nbsp;java.lang.Class&lt;<a href='../../../../../../org/grails/datastore/rx/rest/config/Attribute.html' title='Attribute'>Attribute</a>&gt; <strong>getPropertyMappedFormType</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isSimpleType(java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+boolean <strong>isSimpleType</strong>(java.lang.Class propType)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -279,11 +345,11 @@ protected&nbsp;java.lang.Class&lt;<a href='../../../../../../org/grails/datastor
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     

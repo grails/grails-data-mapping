@@ -427,68 +427,166 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>Only bidirectional many ended associations are supported. To define an association you can use the <code>hasMany</code> syntax:</p>
+<p>RxGORM for REST is designed to be very lightweight, so it is easy to spin up in a unit test. A specialized <code>org.grails.datastore.rx.rest.test.TestRxRestDatastoreClient</code> class exists to help make testing even easier.</p>
+</div>
+<div class="paragraph">
+<p>To use the <code>TestRxRestDatastoreClient</code> in Spock add a field to your Spock specification declared with <code>AutoCleanup</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import spock.lang.*
+import org.grails.datastore.rx.rest.test.TestRxRestDatastoreClient
 
-import grails.gorm.rx.rest.*
+class BookSpec extends Specification {
+    @AutoCleanup TestRxRestDatastoreClient client
 
-class Book implements RxRestEntity&lt;Book&gt; {
-    String title
-
-    static hasMany = [authors:Author]
-}
-
-class Author implements RxRestEntity&lt;Author&gt; {
-    String name
-    static belongsTo = [book:Book]
+     void setup() {
+        client = new TestRxRestDatastoreClient(Book)
+     }
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In this case by default a <a href="#uriTemplates">URI template</a> of <code>/book/{book}/authors</code> will be created as it is assumed that the <code>/book</code> resource wholly owns the <code>authors</code> and therefore it is nested within it. You can alter how the URI maps using the <code>mapping</code> block:</p>
+<p>The <code>TestRxRestDatastoreClient</code> class with create a test HTTP server running on an ephemeral port.</p>
+</div>
+<div class="paragraph">
+<p>You can then use the test client to create expectations within your test methods:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static grails.http.MediaType.*
+...
 
-import grails.gorm.rx.rest.*
-
-class Book implements RxRestEntity&lt;Book&gt; {
-    String title
-
-    static hasMany = [authors:Author]
-
-    static mapping = {
-        authors '/books/{book}/info/authors'
+given:"A Test Client"
+def mock = client.expect { <i class="conum" data-value="1"></i><b>(1)</b>
+    uri '/book/1' <i class="conum" data-value="2"></i><b>(2)</b>
+    accept(JSON) <i class="conum" data-value="3"></i><b>(3)</b>
+}
+.respond { <i class="conum" data-value="4"></i><b>(4)</b>
+    json { <i class="conum" data-value="5"></i><b>(5)</b>
+        id 1
+        title "The Stand"
     }
 }</code></pre>
 </div>
 </div>
-<div class="admonitionblock tip">
+<div class="colist arabic">
 <table>
 <tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Within the <a href="#uriTemplates">URI Template</a> for the association you can include any properties of the <code>Book</code> class.
-</td>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use the <code>expect</code> method to define expectations for the request</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Here we specify that a <code>uri</code> of <code>/book/1/</code> is expected</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>An HTTP <code>Accept</code> header containing <code>application/json</code> is expected</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Here we define the mocked response from the server using the <code>respond</code> method</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The <code>respond</code> method defines the JSON using <code>StreamingJsonBuilder</code></td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>When an entity is retrieved all many ended associations are lazy by default and return an instance of <a href="../api/grails/gorm/rx/collection/RxPersistentCollection.html">RxPersistentCollection</a> which allows you to subscribe to the collection to load it in a non-blocking manner:</p>
+<p>Then you can simply use the regular RxGORM API:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.get(1).subscribe { Book book -&gt;
-    book.authors.subscribe { Author author -&gt;
-        println "got author $author.name"
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">when:"A get request is issued"
+Observable&lt;Book&gt; observable = Book.get(1)
+Book book = observable.toBlocking().first()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And finally verify the expectations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">then:"The response is correct"
+mock.verify()
+book.title == "The Stand"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For testing JSON requests and responses the <code>toJson</code> method can come in handy. For example to test a <code>POST</code> request you can use an existing instance as test data:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static grails.http.MediaType.*
+import static grails.http.HttpMethod.*
+...
+
+...
+
+given:"A POST request"
+Book book = new Book(title:"The Stand") <i class="conum" data-value="1"></i><b>(1)</b>
+def mock = client.expect {
+    uri '/book' <i class="conum" data-value="2"></i><b>(2)</b>
+    method POST <i class="conum" data-value="3"></i><b>(3)</b>
+    json book.toJson() <i class="conum" data-value="4"></i><b>(4)</b>
+}
+.respond {
+    created() <i class="conum" data-value="5"></i><b>(5)</b>
+    json { <i class="conum" data-value="6"></i><b>(6)</b>
+        id 1
     }
 }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Create a test instance</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Verify the <code>uri</code> is <code>/book</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Verify the HTTP method is <code>POST</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Verify the JSON sent to the server is the same as the JSON produced from converting the <code>Book</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Respond with an HTTP 201 status of <code>CREATED</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Send the <code>id</code> back as JSON</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Then perform a <code>POST</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">when:"A get request is issued"
+Observable&lt;Book&gt; observable = new Book(title:"The Stand").save()
+Book book = observable.toBlocking().first()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then verify the expectations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">then:"The response is correct"
+mock.verify()
+book.id == 1L
+book.title == "The Stand"</code></pre>
 </div>
 </div>
 </div>

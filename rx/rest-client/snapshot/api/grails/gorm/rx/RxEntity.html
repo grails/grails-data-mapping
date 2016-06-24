@@ -513,7 +513,7 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>delete</strong>(java.util.
                         <a name="find(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.util.Observable&lt;D&gt; <strong>find</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;java.util.Observable&lt;D&gt; <strong>find</strong>(@groovy.lang.DelegatesTo(DetachedCriteria) groovy.lang.Closure callable)</h4>
                                 <p> Uses detached criteria to build a query and then execute it returning an observable
      <DL><DT><B>Returns:</B></DT><DD>The observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
                             </li>
@@ -540,7 +540,7 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>delete</strong>(java.util.
                         <a name="findAll(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.util.Observable&lt;D&gt; <strong>findAll</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;java.util.Observable&lt;D&gt; <strong>findAll</strong>(@groovy.lang.DelegatesTo(DetachedCriteria) groovy.lang.Closure callable)</h4>
                                 <p> Uses detached criteria to build a query and then execute it returning an observable
      <DL><DT><B>Returns:</B></DT><DD>The observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
                             </li>
@@ -863,7 +863,7 @@ boolean <strong>validate</strong>()</h4>
                         <a name="where(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>where</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;<a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>where</strong>(@groovy.lang.DelegatesTo(DetachedCriteria) groovy.lang.Closure callable)</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL></p>
                             </li>
@@ -872,7 +872,7 @@ boolean <strong>validate</strong>()</h4>
                         <a name="whereAny(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>whereAny</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;<a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>whereAny</strong>(@groovy.lang.DelegatesTo(DetachedCriteria) groovy.lang.Closure callable)</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL></p>
                             </li>
@@ -881,7 +881,7 @@ boolean <strong>validate</strong>()</h4>
                         <a name="whereLazy(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>whereLazy</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;<a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>whereLazy</strong>(@groovy.lang.DelegatesTo(DetachedCriteria) groovy.lang.Closure callable)</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance that is lazily initialized</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL></p>
                             </li>

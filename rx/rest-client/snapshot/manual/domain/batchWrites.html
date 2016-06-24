@@ -426,11 +426,31 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
+<div class="paragraph">
+<p>You can perform multiple HTTP write operations (<code>POST</code> or <code>DELETE</code> etc.) by using either the <code>saveAll</code> or <code>deleteAll</code> methods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// multiple POST operations
+Observable observable = Book.saveAll(
+    new Book(title:"The Stand"),
+    new Book(title:"The Shining")
+)
 
+// multiple DELETE operations
+Observable observable = Book.deleteAll(
+    book1,
+    book2
+)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These methods will return an <code>Observable</code> that only completes when all the operations have been successful.</p>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-24 09:56:51 UTC
+Last updated 2016-06-24 12:09:48 UTC
 </div>
 </div>
 </body>

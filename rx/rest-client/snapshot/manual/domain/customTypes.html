@@ -426,11 +426,76 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
+<div class="paragraph">
+<p>RxGORM for REST is built ontop of MongoDB&#8217;s JSON encoding framework. This means it is possible to implement custom <a href="http://mongodb.github.io/mongo-java-driver/3.2/bson/codecs">Codecs</a> for encoding and decoding values to and from JSON.</p>
+</div>
+<div class="paragraph">
+<p>For example consider the following simple Groovy class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Birthday {
+    Date date
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By default the encoding engine does not know how to represent this type as a JSON value. To make the encoding engine understand this type you have to implement a custom codec:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.bson.*
+import org.bson.codecs.*
 
+class BirthdayCodec implements Codec&lt;Birthday&gt; {
+    Birthday decode(BsonReader reader, DecoderContext decoderContext) {
+        return new Birthday(date: new Date(reader.readDateTime())) <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+    void encode(BsonWriter writer, Birthday value, EncoderContext encoderContext) {
+        writer.writeDateTime(value.date.time) <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+    Class&lt;Birthday&gt; getEncoderClass() { Birthday } <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Decodes the <code>Birthday</code> type from the <code>BsonReader</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Encodes the <code>Birthday</code> type to the <code>BsonWriter</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Returns the type that is to be encoded. In this case <code>Birthday</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With that done you then need to register the custom <code>Codec</code>. There are two ways to achieve this.</p>
+</div>
+<div class="paragraph">
+<p>You can register a list of codecs in the <code>grails.gorm.rest.codecs</code> setting in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    gorm:
+        rest:
+            codecs:
+                - my.company.BirthdayCodec</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or you can create a <code>META-INF/services/org.bson.Codec</code> file containing the class name of the <code>Codec</code></p>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-24 09:56:51 UTC
+Last updated 2016-06-24 12:09:48 UTC
 </div>
 </div>
 </body>

@@ -149,31 +149,36 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState, java.util.Map)">createQuery</a></strong>(java.lang.Class type, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</code><br>Create a query, passing the entity state</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/gorm/rx/api/RxGormStaticApi.html'>RxGormStaticApi</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createStaticApi(org.grails.datastore.mapping.model.PersistentEntity)">createStaticApi</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br>Creates a static API (used for static methods)</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/gorm/rx/api/RxGormValidationApi.html'>RxGormValidationApi</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createValidationApi(org.grails.datastore.mapping.model.PersistentEntity)">createValidationApi</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br>Creates a validation API (used for validation methods)</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#get(Class<T>, java.io.Serializable, org.grails.datastore.rx.query.QueryState)">get</a></strong>(java.lang.Class&lt;T&gt; type, java.io.Serializable id, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</code><br>Obtain an instance passing the query state</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isAllowBlockingOperations()">isAllowBlockingOperations</a></strong>()</code><br>@return Whether blocking operations are allowed by the implementation</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(Class<T1>, java.io.Serializable, org.grails.datastore.rx.query.QueryState)">proxy</a></strong>(java.lang.Class&lt;T1&gt; type, java.io.Serializable id, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</code><br>Obtain an <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> for the given type and id</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html'>ObservableProxy</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState)">proxy</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</code><br>Obtain an <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> that executes the given query to initialize</td>
                         </tr>
@@ -223,6 +228,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>createQuery</strong>(java.lang.Class type, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</h4>
+                                <p> Create a query, passing the entity state
+     <DL><DT><B>Returns:</B></DT><DD>The query</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>queryState</code> -  The query state</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>createQuery</strong>(java.lang.Class type, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</h4>
                                 <p> Create a query, passing the entity state
      <DL><DT><B>Returns:</B></DT><DD>The query</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>queryState</code> -  The query state</DD></DL></p>
                             </li>

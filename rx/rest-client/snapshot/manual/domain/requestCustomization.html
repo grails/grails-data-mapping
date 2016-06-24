@@ -426,11 +426,44 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
+<div class="paragraph">
+<p>Each method that issues an HTTP request also accepts a <code>Closure</code> which delegates to the <a href="../api/grails/http/client/builder/HttpClientRequestBuilder.html">HttpClientRequestBuilder</a> class and allows customization of the outgoing request. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static grails.http.HttpHeader.*
 
+Observable&lt;Book&gt; observable = new Book(title: "The Stand").save {
+    header ACCEPT_CHARSET, "UTF-8"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example adds an additional <code>ACCEPT_CHARSET</code> header to the request. The same same technique can be used with static methods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static grails.http.HttpHeader.*
+
+Observable&lt;Book&gt; observable = Book.get(1) {
+    header ACCEPT_VERSION, "v1.0.0"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Another common use case is to add <code>BASIC</code> auth credentials:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Observable&lt;Book&gt; observable = Book.get(1) {
+    auth "myusername", "mypassword"
+}</code></pre>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-24 09:56:51 UTC
+Last updated 2016-06-24 12:09:48 UTC
 </div>
 </div>
 </body>
