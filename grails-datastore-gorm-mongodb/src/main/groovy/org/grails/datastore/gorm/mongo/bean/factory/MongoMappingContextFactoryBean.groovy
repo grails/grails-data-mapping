@@ -14,7 +14,6 @@
  */
 package org.grails.datastore.gorm.mongo.bean.factory
 
-import grails.core.GrailsDomainClass
 import grails.mongodb.MongoEntity
 import groovy.transform.Canonical
 import groovy.transform.CompileStatic
@@ -41,8 +40,8 @@ class MongoMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
     }
 
     @Override
-    boolean isCompatibleDomainClass(GrailsDomainClass domainClass) {
-        return MongoEntity.isAssignableFrom(domainClass.clazz)
+    boolean isCompatibleDomainClass(Class domainClass) {
+        return MongoEntity.isAssignableFrom(domainClass)
     }
 }
 

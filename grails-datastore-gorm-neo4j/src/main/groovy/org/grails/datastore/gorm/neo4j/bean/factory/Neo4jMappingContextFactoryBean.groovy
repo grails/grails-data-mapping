@@ -14,7 +14,6 @@
  */
 package org.grails.datastore.gorm.neo4j.bean.factory
 
-import grails.core.GrailsDomainClass
 import grails.neo4j.Neo4jEntity
 import groovy.transform.Canonical
 import groovy.transform.CompileStatic
@@ -42,8 +41,8 @@ class Neo4jMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
     }
 
     @Override
-    boolean isCompatibleDomainClass(GrailsDomainClass domainClass) {
-        return Neo4jEntity.isAssignableFrom(domainClass.clazz)
+    boolean isCompatibleDomainClass(Class domainClass) {
+        return Neo4jEntity.isAssignableFrom(domainClass)
     }
 }
 

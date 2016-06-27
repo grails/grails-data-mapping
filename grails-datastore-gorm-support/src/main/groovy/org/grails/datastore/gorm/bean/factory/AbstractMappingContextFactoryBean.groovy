@@ -58,7 +58,7 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
 
         if (grailsApplication) {
             for (GrailsDomainClass domainClass in (GrailsDomainClass[])grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE)) {
-                if( !isCompatibleDomainClass(domainClass) ) {
+                if( !isCompatibleDomainClass(domainClass.clazz) ) {
                     continue
                 }
 
@@ -84,7 +84,7 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
         return mappingContext
     }
 
-    boolean isCompatibleDomainClass(GrailsDomainClass domainClass) {
+    boolean isCompatibleDomainClass(Class javaClass) {
         return true
     }
 

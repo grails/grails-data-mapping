@@ -39,8 +39,8 @@ class CassandraMappingContextFactoryBean extends AbstractMappingContextFactoryBe
     }
 
     @Override
-    boolean isCompatibleDomainClass(GrailsDomainClass domainClass) {
-        return CassandraEntity.isAssignableFrom(domainClass.clazz)
+    boolean isCompatibleDomainClass(Class domainClass) {
+        return CassandraEntity.isAssignableFrom(domainClass)
     }
 }
 
