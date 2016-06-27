@@ -3398,7 +3398,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html" title="Class in org.grails.datastore.gorm">GormEnhancer</a></span> - Class in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
 </dt><dd><div class="block">Enhances a class with GORM behavior</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#GormEnhancer(org.grails.datastore.mapping.core.Datastore, org.springframework.transaction.PlatformTransactionManager, boolean)" title="Constructor in GormEnhancer">GormEnhancer(Datastore, PlatformTransactionManager, boolean)</a></span> - Constructor in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#GormEnhancer(org.grails.datastore.mapping.core.Datastore, org.springframework.transaction.PlatformTransactionManager, boolean, boolean)" title="Constructor in GormEnhancer">GormEnhancer(Datastore, PlatformTransactionManager, boolean, boolean)</a></span> - Constructor in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html" title="Trait in org.grails.datastore.gorm">GormEntity</a></span> - Trait in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
 </dt><dd><div class="block">A trait that turns any class into a GORM entity</div></dd>
@@ -3426,6 +3426,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Reserved static property names used by GORM to evaluate GORM-style syntax.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/GormQueryOperations.html" title="Interface in org.grails.datastore.gorm.query">GormQueryOperations</a></span> - Interface in <a href="./org/grails/datastore/gorm/query/package-summary.html">org.grails.datastore.gorm.query</a>
 </dt><dd><div class="block">Interface defining all typical query GORM operations on class</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/GormSettings.html" title="Interface in org.grails.datastore.mapping.config">GormSettings</a></span> - Interface in <a href="./org/grails/datastore/mapping/config/package-summary.html">org.grails.datastore.mapping.config</a>
+</dt><dd><div class="block">Common settings across all GORM implementations</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html" title="Class in org.grails.datastore.gorm">GormStaticApi</a></span> - Class in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
 </dt><dd><div class="block">Static methods of the GORM API.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#GormStaticApi(Class<D>, org.grails.datastore.mapping.core.Datastore, List<FinderMethod>, org.springframework.transaction.PlatformTransactionManager)" title="Constructor in GormStaticApi">GormStaticApi(Class&lt;D&gt;, Datastore, List&lt;FinderMethod&gt;, PlatformTransactionManager)</a></span> - Constructor in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
@@ -5509,6 +5511,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">@author Burt Beckwith</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/PreDeleteEvent.html#PreDeleteEvent(java.lang.Object, org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess)" title="Constructor in PreDeleteEvent">PreDeleteEvent(Object, PersistentEntity, EntityAccess)</a></span> - Constructor in <a href="org/grails/datastore/mapping/engine/event/PreDeleteEvent.html">PreDeleteEvent</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/GormSettings.html#PREFIX" title="Field in GormSettings">PREFIX</a></span> - Field in <a href="org/grails/datastore/mapping/config/GormSettings.html">GormSettings</a>
+</dt><dd> <div class="block">The default prefix</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/AssociationIndexer.html#preIndex(K, List<T>)" title="Method in AssociationIndexer">preIndex(K, List&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/AssociationIndexer.html">AssociationIndexer</a>
 </dt><dd> <div class="block">Creates an index queryable via the primary key. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/PreInsertEvent.html" title="Class in org.grails.datastore.mapping.engine.event">PreInsertEvent</a></span> - Class in <a href="./org/grails/datastore/mapping/engine/event/package-summary.html">org.grails.datastore.mapping.engine.event</a>
@@ -6249,6 +6253,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/Transaction.html#rollback()" title="Method in Transaction">rollback()</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/Transaction.html">Transaction</a>
 </dt><dd> <div class="block">Rollback the transaction.</div></dd>
+<dt><span class="strong"><a href="grails/gorm/transactions/GrailsTransactionAttribute.html#rollbackOn(java.lang.Throwable)" title="Method in GrailsTransactionAttribute">rollbackOn(Throwable)</a></span> - Method in <a href="grails/gorm/transactions/GrailsTransactionAttribute.html">GrailsTransactionAttribute</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#ROOT_CALL" title="Field in AbstractCriteriaBuilder">ROOT_CALL</a></span> - Field in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#ROOT_DO_CALL" title="Field in AbstractCriteriaBuilder">ROOT_DO_CALL</a></span> - Field in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
@@ -6728,6 +6734,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/timestamp/AggregateTimestampProvider.html#setTimestampProviders(List<TimestampProvider>)" title="Method in AggregateTimestampProvider">setTimestampProviders(List&lt;TimestampProvider&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/timestamp/AggregateTimestampProvider.html">AggregateTimestampProvider</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/GormSettings.html#SETTING_AUTO_FLUSH" title="Field in GormSettings">SETTING_AUTO_FLUSH</a></span> - Field in <a href="org/grails/datastore/mapping/config/GormSettings.html">GormSettings</a>
+</dt><dd> <div class="block">Whether to flush the session between each query</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/GormSettings.html#SETTING_DEFAULT_MAPPING" title="Field in GormSettings">SETTING_DEFAULT_MAPPING</a></span> - Field in <a href="org/grails/datastore/mapping/config/GormSettings.html">GormSettings</a>
+</dt><dd> <div class="block">The default mapping</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/GormSettings.html#SETTING_FAIL_ON_ERROR" title="Field in GormSettings">SETTING_FAIL_ON_ERROR</a></span> - Field in <a href="org/grails/datastore/mapping/config/GormSettings.html">GormSettings</a>
+</dt><dd> <div class="block">Whether to throw an exception on a validation error</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/GormSettings.html#SETTING_FLUSH_MODE" title="Field in GormSettings">SETTING_FLUSH_MODE</a></span> - Field in <a href="org/grails/datastore/mapping/config/GormSettings.html">GormSettings</a>
+</dt><dd> <div class="block">The default flush mode</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/rest/config/Settings.html" title="Interface in org.grails.datastore.rx.rest.config">Settings</a></span> - Interface in <a href="./org/grails/datastore/rx/rest/config/package-summary.html">org.grails.datastore.rx.rest.config</a>
 </dt><dd><div class="block">All the settings available to configure for this implementation</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.NativeEntryModifyingEntityAccess.html#setToIndex(Map<PersistentProperty, Object>)" title="Method in NativeEntryEntityPersister.NativeEntryModifyingEntityAccess">setToIndex(Map&lt;PersistentProperty, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.NativeEntryModifyingEntityAccess.html">NativeEntryEntityPersister.NativeEntryModifyingEntityAccess</a>
