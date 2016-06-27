@@ -84,8 +84,8 @@ class WithTransactionSpec extends GormDatastoreSpec {
             def results = TestEntity.list()
 
         then:
-            count == 1
-            results.size() == 1
+            count == 0
+            results.size() == 0
             ex instanceof TestCheckedException
             ex.message == 'bad'
     }
