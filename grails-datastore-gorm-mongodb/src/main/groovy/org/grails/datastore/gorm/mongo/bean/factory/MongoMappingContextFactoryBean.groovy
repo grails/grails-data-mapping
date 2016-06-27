@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm.mongo.bean.factory
 
+import grails.core.GrailsDomainClass
+import grails.mongodb.MongoEntity
 import groovy.transform.Canonical
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
@@ -36,6 +38,11 @@ class MongoMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
     protected MappingContext createMappingContext() {
         Assert.hasText(defaultDatabaseName, "Property [defaultDatabaseName] must be set!")
         return new MongoMappingContext(defaultDatabaseName, defaultMapping?.defaultMapping)
+    }
+
+    @Override
+    boolean isCompatibleDomainClass(GrailsDomainClass domainClass) {
+        return MongoEntity.isAssignableFrom(domainClass.clazz)
     }
 }
 

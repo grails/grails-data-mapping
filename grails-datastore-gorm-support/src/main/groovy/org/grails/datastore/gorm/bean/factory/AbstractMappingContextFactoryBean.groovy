@@ -58,6 +58,10 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
 
         if (grailsApplication) {
             for (GrailsDomainClass domainClass in (GrailsDomainClass[])grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE)) {
+                if( !isCompatibleDomainClass(domainClass) ) {
+                    continue
+                }
+
                 def domainMappingStrategy = domainClass.mappingStrategy
                 PersistentEntity entity
 
@@ -78,6 +82,10 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
             }
         }
         return mappingContext
+    }
+
+    boolean isCompatibleDomainClass(GrailsDomainClass domainClass) {
+        return true
     }
 
     protected void registerCustomTypeMarshallers(MappingContext mappingContext) {

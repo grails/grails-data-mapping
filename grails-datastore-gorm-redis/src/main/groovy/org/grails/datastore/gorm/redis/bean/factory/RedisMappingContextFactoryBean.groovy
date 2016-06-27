@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm.redis.bean.factory
 
+import grails.core.GrailsDomainClass
+import grails.redis.RedisEntity
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
@@ -26,5 +28,10 @@ import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
 class RedisMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
     protected MappingContext createMappingContext() {
         new KeyValueMappingContext("")
+    }
+
+    @Override
+    boolean isCompatibleDomainClass(GrailsDomainClass domainClass) {
+        return RedisEntity.isAssignableFrom(domainClass.clazz)
     }
 }
