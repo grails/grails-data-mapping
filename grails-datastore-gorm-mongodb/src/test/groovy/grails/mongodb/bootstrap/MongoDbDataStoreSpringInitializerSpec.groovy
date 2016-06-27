@@ -84,6 +84,23 @@ class MongoDbDataStoreSpringInitializerSpec extends Specification{
             p.home != null
 
     }
+
+    def "test that failOnError is correctly propagated"() {
+        given:
+        def initializer = new MongoDbDataStoreSpringInitializer(['grails.gorm.failOnError':true, 'grails.gorm.default.constraints': {
+            '*'(nullable: false, blank: false)
+        }], Person)
+
+        initializer.configure()
+
+        when:"An object with a formula is saved"
+
+        def date = new Person(name: "")
+        date.save()
+
+        then:"There are not errors"
+        thrown grails.validation.ValidationException
+    }
 }
 
 

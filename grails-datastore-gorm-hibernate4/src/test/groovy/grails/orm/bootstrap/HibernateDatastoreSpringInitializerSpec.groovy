@@ -160,7 +160,57 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         }
 
     }
+
+    def "test that formula properties are not constrained"() {
+        given:
+        def initializer = new HibernateDatastoreSpringInitializer(['hibernate.show_sql':true, 'grails.gorm.default.constraints': {
+            '*'(nullable: false, blank: true)
+        }], MyDate)
+
+        def dataSource = new DriverManagerDataSource("jdbc:h2:mem:formulaDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+        dataSource.driverClassName = Driver.name
+
+        initializer.configureForDataSource(dataSource)
+
+        when:"An object with a formula is saved"
+
+        def date = new MyDate()
+        date.save()
+
+        then:"There are not errors"
+        !date.errors.hasErrors()
+    }
+
+    def "test that failOnError is correctly propagated"() {
+        given:
+        def initializer = new HibernateDatastoreSpringInitializer(['grails.gorm.failOnError':true, 'grails.gorm.default.constraints': {
+            '*'(nullable: false, blank: false)
+        }], Person)
+
+        def dataSource = new DriverManagerDataSource("jdbc:h2:mem:formulaDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+        dataSource.driverClassName = Driver.name
+
+        initializer.configureForDataSource(dataSource)
+
+        when:"An object with a formula is saved"
+
+        def date = new Person(name: "")
+        date.save()
+
+        then:"There are not errors"
+        thrown grails.validation.ValidationException
+    }
 }
+
+@Entity
+class MyDate {
+    String dateDay
+    Date dateCreated
+    static mapping = {
+        dateDay formula: 'DATE_FORMAT(date_created,\'%Y-%m-%d\')'
+    }
+}
+
 @Entity
 class Person {
     Long id

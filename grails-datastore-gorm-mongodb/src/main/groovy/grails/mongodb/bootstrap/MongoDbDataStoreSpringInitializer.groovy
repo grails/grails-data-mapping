@@ -188,7 +188,7 @@ class MongoDbDataStoreSpringInitializer extends AbstractDatastoreInitializer {
             callable.delegate = delegate
             callable.call()
 
-            "org.grails.gorm.mongodb.internal.GORM_ENHANCER_BEAN-${mongoBeanName}"(MongoGormEnhancer, ref("mongoDatastore"), ref("mongoTransactionManager")) { bean ->
+            "org.grails.gorm.mongodb.internal.GORM_ENHANCER_BEAN-${mongoBeanName}"(MongoGormEnhancer, ref("mongoDatastore"), ref("mongoTransactionManager"), config.getProperty(SETTING_FAIL_ON_ERROR, Boolean, false)) { bean ->
                 bean.initMethod = 'enhance'
                 bean.destroyMethod = 'close'
                 bean.lazyInit = false

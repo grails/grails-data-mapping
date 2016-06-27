@@ -55,6 +55,7 @@ import org.springframework.core.env.PropertyResolver;
  */
 public class MongoDatastore extends AbstractDatastore implements InitializingBean, MappingContext.Listener, DisposableBean, StatelessDatastore {
 
+    public static final String SETTING_FAIL_ON_ERROR = "grails.gorm.failOnError";
     public static final String SETTING_DATABASE_NAME = "grails.mongodb.databaseName";
     public static final String SETTING_CONNECTION_STRING = "grails.mongodb.connectionString";
     public static final String SETTING_URL = "grails.mongodb.url";

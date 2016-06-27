@@ -67,7 +67,8 @@ class GormEnhancer implements Closeable {
     final Datastore datastore
     PlatformTransactionManager transactionManager
     List<FinderMethod> finders
-    boolean failOnError
+    final boolean failOnError
+
     /**
      * Whether to include external entities
      */
@@ -81,8 +82,9 @@ class GormEnhancer implements Closeable {
         this(datastore, null)
     }
 
-    GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
+    GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager, boolean failOnError = false) {
         this.datastore = datastore
+        this.failOnError = failOnError
         this.transactionManager = transactionManager
         if(datastore != null) {
             registerConstraints(datastore)

@@ -160,6 +160,26 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         }
 
     }
+
+    def "test that failOnError is correctly propagated"() {
+        given:
+        def initializer = new HibernateDatastoreSpringInitializer(['grails.gorm.failOnError':true, 'grails.gorm.default.constraints': {
+            '*'(nullable: false, blank: false)
+        }], Person)
+
+        def dataSource = new DriverManagerDataSource("jdbc:h2:mem:formulaDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+        dataSource.driverClassName = Driver.name
+
+        initializer.configureForDataSource(dataSource)
+
+        when:"An object with a formula is saved"
+
+        def date = new Person(name: "")
+        date.save()
+
+        then:"There are not errors"
+        thrown grails.validation.ValidationException
+    }
 }
 @Entity
 class Person {

@@ -27,8 +27,8 @@ import org.springframework.transaction.PlatformTransactionManager
 @CompileStatic
 class MongoGormEnhancer extends GormEnhancer {
 
-    MongoGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
-        super(datastore, transactionManager)
+    MongoGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager, boolean failOnError = false) {
+        super(datastore, transactionManager, failOnError)
 
 
         DynamicFinder.registerNewMethodExpression(NearSphere)
