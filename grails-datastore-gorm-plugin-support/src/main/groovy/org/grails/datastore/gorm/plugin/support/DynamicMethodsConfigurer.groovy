@@ -89,8 +89,7 @@ abstract class DynamicMethodsConfigurer {
     }
 
     protected GormEnhancer createEnhancer() {
-        def enhancer = new GormEnhancer(datastore, transactionManager)
-        enhancer.failOnError = failOnError
+        def enhancer = new GormEnhancer(datastore, transactionManager, failOnError)
         return enhancer
     }
 }

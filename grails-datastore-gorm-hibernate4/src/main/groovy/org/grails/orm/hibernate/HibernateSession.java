@@ -16,11 +16,14 @@ package org.grails.orm.hibernate;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.FlushModeType;
 
+import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.grails.orm.hibernate.query.HibernateQuery;
@@ -111,6 +114,12 @@ public class HibernateSession extends AbstractHibernateSession {
             public Integer doInHibernate(Session session) throws HibernateException, SQLException {
                 JpaQueryBuilder builder = new JpaQueryBuilder(criteria);
                 builder.setHibernateCompatible(true);
+                PersistentEntity targetEntity = criteria.getPersistentEntity();
+                PersistentProperty lastUpdated = targetEntity.getPropertyByName(GormProperties.LAST_UPDATED);
+                if(lastUpdated != null && targetEntity.getMapping().getMappedForm().isAutoTimestamp()) {
+                    properties.put(GormProperties.LAST_UPDATED, new Date());
+                }
+
                 JpaQueryInfo jpaQueryInfo = builder.buildUpdate(properties);
 
                 org.hibernate.Query query = session.createQuery(jpaQueryInfo.getQuery());

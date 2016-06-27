@@ -17,7 +17,10 @@ package grails.gorm.transactions
 
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
+import groovy.util.logging.Slf4j
 import org.springframework.transaction.TransactionDefinition
+import org.springframework.transaction.interceptor.NoRollbackRuleAttribute
+import org.springframework.transaction.interceptor.RollbackRuleAttribute
 import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute
 
 
@@ -30,6 +33,7 @@ import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute
  */
 @CompileStatic
 @InheritConstructors
+@Slf4j
 class GrailsTransactionAttribute extends RuleBasedTransactionAttribute {
     private static final long serialVersionUID = 1L;
     private boolean inheritRollbackOnly = true;
@@ -65,6 +69,41 @@ class GrailsTransactionAttribute extends RuleBasedTransactionAttribute {
 
     public boolean isInheritRollbackOnly() {
         return inheritRollbackOnly;
+    }
+
+    @Override
+    boolean rollbackOn(Throwable ex) {
+        if (log.isTraceEnabled()) {
+            log.trace("Applying rules to determine whether transaction should rollback on $ex");
+        }
+
+        RollbackRuleAttribute winner = null
+        int deepest = Integer.MAX_VALUE
+
+        List<RollbackRuleAttribute> rollbackRules = getRollbackRules()
+        if (rollbackRules != null) {
+            for (RollbackRuleAttribute rule in rollbackRules) {
+                int depth = rule.getDepth(ex)
+                if (depth >= 0 && depth < deepest) {
+                    deepest = depth
+                    winner = rule
+                }
+            }
+        }
+
+        if (log.isTraceEnabled()) {
+            log.trace("Winning rollback rule is: $winner" );
+        }
+
+        // User superclass behavior (rollback on unchecked) if no rule matches.
+        if (winner == null) {
+            log.trace("No relevant rollback rule found: applying default rules")
+
+            // always rollback regardless if it is a checked or unchecked exception since Groovy doesn't differentiate those
+            return true
+        }
+
+        return !(winner instanceof NoRollbackRuleAttribute)
     }
 
     public void setInheritRollbackOnly(boolean inheritRollbackOnly) {
