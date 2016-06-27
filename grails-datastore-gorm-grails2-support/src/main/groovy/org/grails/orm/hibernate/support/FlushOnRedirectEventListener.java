@@ -19,6 +19,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.RedirectEventListener;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Flushes the session on a redirect.
@@ -35,15 +36,17 @@ public class FlushOnRedirectEventListener implements RedirectEventListener {
     }
 
     public void responseRedirected(String url) {
-        datastore.getHibernateTemplate().execute(new Closure<Object>(this) {
-            @Override
-            public Object call(Object... args) {
-                Session session = (Session)args[0];
-                if (!FlushMode.isManualFlushMode(session.getFlushMode())) {
-                    session.flush();
+        if( TransactionSynchronizationManager.hasResource( datastore.getSessionFactory() ) ) {
+            datastore.getHibernateTemplate().execute(new Closure<Object>(this) {
+                @Override
+                public Object call(Object... args) {
+                    Session session = (Session)args[0];
+                    if (!FlushMode.isManualFlushMode(session.getFlushMode())) {
+                        session.flush();
+                    }
+                    return null;
                 }
-                return null;
-            }
-        });
+            });
+        }
     }
 }
