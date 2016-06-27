@@ -175,7 +175,9 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         when:"An object with a formula is saved"
 
         def date = new MyDate()
-        date.save()
+        MyDate.withNewSession {
+            date.save()
+        }
 
         then:"There are not errors"
         !date.errors.hasErrors()
@@ -195,7 +197,10 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         when:"An object with a formula is saved"
 
         def date = new Person(name: "")
-        date.save()
+        Person.withNewSession {
+            date.save()
+        }
+
 
         then:"There are not errors"
         thrown grails.validation.ValidationException
