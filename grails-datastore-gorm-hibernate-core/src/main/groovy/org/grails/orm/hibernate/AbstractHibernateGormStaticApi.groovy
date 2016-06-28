@@ -55,8 +55,13 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     D get(Serializable id) {
         if (id || (id instanceof Number)) {
             id = convertIdentifier(id)
-            D result = (D)hibernateTemplate.get((Class)persistentClass, id)
-            return (D)proxyHandler.unwrap(result)
+            if(id != null) {
+                D result = (D)hibernateTemplate.get((Class)persistentClass, id)
+                return (D)proxyHandler.unwrap(result)
+            }
+            else {
+                return null
+            }
         }
     }
 
@@ -423,7 +428,26 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     protected Serializable convertIdentifier(Serializable id) {
         def identity = persistentEntity.identity
         if(identity != null) {
-            return (Serializable)HibernateRuntimeUtils.convertValueToType(id, identity.type, conversionService)
+            ConversionService conversionService = persistentEntity.mappingContext.conversionService
+            if(id != null) {
+                Class identityType = identity.type
+                Class idInstanceType = id.getClass()
+                if(identityType.isAssignableFrom(idInstanceType)) {
+                    return id
+                }
+                else if(conversionService.canConvert(idInstanceType, identityType)) {
+                    try {
+                        return (Serializable)conversionService.convert(id, identityType)
+                    } catch (Throwable e) {
+                        // unconvertable id, return null
+                        return null
+                    }
+                }
+                else {
+                    // unconvertable id, return null
+                    return null
+                }
+            }
         }
         return id
     }
