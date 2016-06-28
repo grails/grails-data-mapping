@@ -67,7 +67,7 @@ class GormEnhancer implements Closeable {
     final Datastore datastore
     PlatformTransactionManager transactionManager
     List<FinderMethod> finders
-    final boolean failOnError
+    boolean failOnError
 
     /**
      * Whether to include external entities
