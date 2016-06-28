@@ -11,6 +11,11 @@ public enum ValueGenerator {
      * Generated natively from the underlying datastore
      */
     NATIVE,
+
+    /**
+     * Using an identity column
+     */
+    IDENTITY,
     /**
      * Generated through assignment
      */
@@ -31,6 +36,11 @@ public enum ValueGenerator {
      * A generator that uses a HILO algorithm
      */
     HILO,
+
+    /**
+     * A generator that uses a sequence and a HILO algorithm
+     */
+    SEQHILO,
     /**
      * A generator that uses an auto-increment column
      */
@@ -42,6 +52,18 @@ public enum ValueGenerator {
     /**
      * A generator that uses UUID2s
      */
-    UUID2
+    UUID2,
+    /**
+     * uses a database-generated GUID string on MS SQL Server and MySQL.
+     */
+    GUID,
+    /**
+     * use the identifier of another object
+     */
+    FOREIGN,
+    /**
+     * Generates the id by selecting from a row using a unique key
+     */
+    SELECT
 
 }
