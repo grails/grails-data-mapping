@@ -67,7 +67,7 @@ class GormEnhancer implements Closeable {
     final Datastore datastore
     PlatformTransactionManager transactionManager
     List<FinderMethod> finders
-    final boolean failOnError
+    boolean failOnError
 
     /**
      * Whether to include external entities
@@ -270,6 +270,8 @@ class GormEnhancer implements Closeable {
      */
     @CompileStatic
     void enhance(PersistentEntity e, boolean onlyExtendedMethods = false) {
+        registerEntity(e)
+
         if(!(GroovyObject.isAssignableFrom(e.javaClass) ) || dynamicEnhance) {
             addInstanceMethods(e, onlyExtendedMethods)
 
