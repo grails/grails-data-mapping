@@ -23,10 +23,13 @@ org.grails.datastore.gorm.proxy
 org.grails.datastore.gorm.query
 org.grails.datastore.gorm.query.criteria
 org.grails.datastore.gorm.query.transform
+org.grails.datastore.gorm.schemaless
 org.grails.datastore.gorm.support
 org.grails.datastore.gorm.timestamp
 org.grails.datastore.gorm.utils
 org.grails.datastore.gorm.validation
+org.grails.datastore.gorm.validation.constraints
+org.grails.datastore.gorm.validation.constraints.builtin
 org.grails.datastore.mapping.cache
 org.grails.datastore.mapping.cache.exception
 org.grails.datastore.mapping.cache.impl
