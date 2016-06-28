@@ -2332,6 +2332,7 @@ public class GrailsDomainBinder implements MetadataContributor {
 
         oneToOne.setReferencedEntityName(otherSide.getOwner().getName());
         oneToOne.setPropertyName(property.getName());
+        oneToOne.setReferenceToPrimaryKey(false);
 
         bindOneToOneInternal(property, oneToOne, path);
 
