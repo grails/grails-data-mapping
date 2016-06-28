@@ -22,7 +22,7 @@
 <html>
 <head>
 
-<title>org.grails.orm.hibernate.query (grails-datastore-gorm-hibernate 5.0.8.RELEASE API)</title>
+<title>org.grails.orm.hibernate.query</title>
 <meta name="keywords" content="org.grails.orm.hibernate.query package">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel ="stylesheet" TYPE="text/css" HREF="../../../../../stylesheet.css" title="Style">
@@ -31,7 +31,7 @@
 <script type="text/javascript">
 function windowTitle()
 {
-    parent.document.title="org.grails.orm.hibernate.query (grails-datastore-gorm-hibernate 5.0.8.RELEASE API)";
+    parent.document.title="org.grails.orm.hibernate.query";
 }
 </script>
 <noscript>
@@ -76,6 +76,32 @@ function windowTitle()
 <div class="contentContainer">
 
 
+    <div class="summary">
+        <ul class="blockList">
+            <li class="blockList">
+                <table border="0" cellpadding="3" cellspacing="0" summary="Interface Summary">
+                    <caption><span>Interface Summary</span><span class="tabEnd">&nbsp;</span></caption>
+                    <tbody>
+                    <tr>
+                        <th class="colFirst" scope="col">Interface</th>
+                        <th class="colLast" scope="col">Description</th>
+                    </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="HibernateQueryConstants.html" title="class in org/grails/orm/hibernate/query">
+                                    HibernateQueryConstants
+                                </a></strong>
+                            </td>
+                            <td>Constants used for query arguments etc.</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </li>
+            </ul>
+        </div>
+    
+
 
 
     <div class="summary">
@@ -90,11 +116,100 @@ function windowTitle()
                     </tr>
 <tr class="altColor">
                             <td class="colOne">
+                                <strong><a href="AbstractHibernateCriteriaBuilder.html" title="class in org/grails/orm/hibernate/query">
+                                    AbstractHibernateCriteriaBuilder
+                                </a></strong>
+                            </td>
+                            <td>Abstract super class for sharing code between Hibernate 3 and 4 implementations of HibernateCriteriaBuilder</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateCriteriaBuilder.LogicalExpression.html" title="class in org/grails/orm/hibernate/query">
+                                    AbstractHibernateCriteriaBuilder.LogicalExpression
+                                </a></strong>
+                            </td>
+                            <td>instances of this class are pushed onto the logicalExpressionStack
+ to represent all the unfinished "and", "or", and "not" expressions.</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateCriterionAdapter.html" title="class in org/grails/orm/hibernate/query">
+                                    AbstractHibernateCriterionAdapter
+                                </a></strong>
+                            </td>
+                            <td>Adapts Grails datastore API to Hibernate API</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateCriterionAdapter.CriterionAdaptor.html" title="class in org/grails/orm/hibernate/query">
+                                    AbstractHibernateCriterionAdapter.CriterionAdaptor
+                                </a></strong>
+                            </td>
+                            <td></td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateQuery.html" title="class in org/grails/orm/hibernate/query">
+                                    AbstractHibernateQuery
+                                </a></strong>
+                            </td>
+                            <td>Bridges the Query API with the Hibernate Criteria API</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateQuery.CriteriaAndAlias.html" title="class in org/grails/orm/hibernate/query">
+                                    AbstractHibernateQuery.CriteriaAndAlias
+                                </a></strong>
+                            </td>
+                            <td></td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateQuery.HibernateAssociationQuery.html" title="class in org/grails/orm/hibernate/query">
+                                    AbstractHibernateQuery.HibernateAssociationQuery
+                                </a></strong>
+                            </td>
+                            <td></td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateQuery.HibernateJunction.html" title="class in org/grails/orm/hibernate/query">
+                                    AbstractHibernateQuery.HibernateJunction
+                                </a></strong>
+                            </td>
+                            <td></td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateQuery.HibernateProjectionList.html" title="class in org/grails/orm/hibernate/query">
+                                    AbstractHibernateQuery.HibernateProjectionList
+                                </a></strong>
+                            </td>
+                            <td></td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="GrailsHibernateQueryUtils.html" title="class in org/grails/orm/hibernate/query">
+                                    GrailsHibernateQueryUtils
+                                </a></strong>
+                            </td>
+                            <td>Utility methods for configuring Hibernate queries</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
                                 <strong><a href="HibernateCriterionAdapter.html" title="class in org/grails/orm/hibernate/query">
                                     HibernateCriterionAdapter
                                 </a></strong>
                             </td>
                             <td>@author Graeme Rocher</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="HibernateProjectionAdapter.html" title="class in org/grails/orm/hibernate/query">
+                                    HibernateProjectionAdapter
+                                </a></strong>
+                            </td>
+                            <td>Adapts Grails datastore API to Hibernate projections.</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -142,7 +257,7 @@ function windowTitle()
         </ul>
     </div>
 
-    <div class="aboutLanguage"><em>Groovy Documentation</em></div>
+    <div class="aboutLanguage"><em></em></div>
     <a name="skip-navbar_bottom">
         <!--   -->
     </a></div>

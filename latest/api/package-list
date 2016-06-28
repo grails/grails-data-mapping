@@ -1,10 +1,7 @@
-grails.datastore.test
 grails.gorm
 grails.gorm.annotation
 grails.gorm.dirty.checking
 grails.gorm.transactions
-grails.orm
-grails.orm.bootstrap
 org.grails.compiler.gorm
 org.grails.datastore.gorm
 org.grails.datastore.gorm.async
@@ -64,13 +61,3 @@ org.grails.datastore.mapping.transactions
 org.grails.datastore.mapping.transactions.support
 org.grails.datastore.mapping.validation
 org.grails.datastore.mapping.web.support
-org.grails.orm.hibernate
-org.grails.orm.hibernate.cfg
-org.grails.orm.hibernate.datasource
-org.grails.orm.hibernate.events
-org.grails.orm.hibernate.exceptions
-org.grails.orm.hibernate.persister.entity
-org.grails.orm.hibernate.proxy
-org.grails.orm.hibernate.query
-org.grails.orm.hibernate.support
-org.grails.orm.hibernate.transaction

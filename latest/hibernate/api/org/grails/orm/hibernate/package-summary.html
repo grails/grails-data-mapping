@@ -22,7 +22,7 @@
 <html>
 <head>
 
-<title>org.grails.orm.hibernate (grails-datastore-gorm-hibernate 5.0.8.RELEASE API)</title>
+<title>org.grails.orm.hibernate</title>
 <meta name="keywords" content="org.grails.orm.hibernate package">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel ="stylesheet" TYPE="text/css" HREF="../../../../stylesheet.css" title="Style">
@@ -31,7 +31,7 @@
 <script type="text/javascript">
 function windowTitle()
 {
-    parent.document.title="org.grails.orm.hibernate (grails-datastore-gorm-hibernate 5.0.8.RELEASE API)";
+    parent.document.title="org.grails.orm.hibernate";
 }
 </script>
 <noscript>
@@ -76,6 +76,40 @@ function windowTitle()
 <div class="contentContainer">
 
 
+    <div class="summary">
+        <ul class="blockList">
+            <li class="blockList">
+                <table border="0" cellpadding="3" cellspacing="0" summary="Interface Summary">
+                    <caption><span>Interface Summary</span><span class="tabEnd">&nbsp;</span></caption>
+                    <tbody>
+                    <tr>
+                        <th class="colFirst" scope="col">Interface</th>
+                        <th class="colLast" scope="col">Description</th>
+                    </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="GrailsHibernateTemplate.HibernateCallback.html" title="class in org/grails/orm/hibernate">
+                                    GrailsHibernateTemplate.HibernateCallback
+                                </a></strong>
+                            </td>
+                            <td></td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="IHibernateTemplate.html" title="class in org/grails/orm/hibernate">
+                                    IHibernateTemplate
+                                </a></strong>
+                            </td>
+                            <td>Template interface that can be used with both Hibernate 3 and Hibernate 4</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </li>
+            </ul>
+        </div>
+    
+
 
 
     <div class="summary">
@@ -90,12 +124,59 @@ function windowTitle()
                     </tr>
 <tr class="altColor">
                             <td class="colOne">
-                                <strong><a href="ConfigurableLocalSessionFactoryBean.html" title="class in org/grails/orm/hibernate">
-                                    ConfigurableLocalSessionFactoryBean
+                                <strong><a href="AbstractEventTriggeringInterceptor.html" title="class in org/grails/orm/hibernate">
+                                    AbstractEventTriggeringInterceptor
                                 </a></strong>
                             </td>
-                            <td>A SessionFactory bean that allows the configuration class to
- be changed and customise for usage within Grails.</td>
+                            <td></td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateDatastore.html" title="class in org/grails/orm/hibernate">
+                                    AbstractHibernateDatastore
+                                </a></strong>
+                            </td>
+                            <td>Datastore implementation that uses a Hibernate SessionFactory underneath.</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateGormInstanceApi.html" title="class in org/grails/orm/hibernate">
+                                    AbstractHibernateGormInstanceApi
+                                </a></strong>
+                            </td>
+                            <td>Abstract extension of the <a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html' title='GormInstanceApi'>GormInstanceApi</a> class that provides common logic shared by Hibernate 3 and Hibernate 4</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateGormStaticApi.html" title="class in org/grails/orm/hibernate">
+                                    AbstractHibernateGormStaticApi
+                                </a></strong>
+                            </td>
+                            <td>Abstract implementation of the Hibernate static API for GORM, providing String-based method implementations</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateGormValidationApi.html" title="class in org/grails/orm/hibernate">
+                                    AbstractHibernateGormValidationApi
+                                </a></strong>
+                            </td>
+                            <td></td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateSession.html" title="class in org/grails/orm/hibernate">
+                                    AbstractHibernateSession
+                                </a></strong>
+                            </td>
+                            <td>Session implementation that wraps a Hibernate org.hibernate.Session.</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="EventListenerIntegrator.html" title="class in org/grails/orm/hibernate">
+                                    EventListenerIntegrator
+                                </a></strong>
+                            </td>
+                            <td></td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -115,6 +196,15 @@ function windowTitle()
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
+                                <strong><a href="GrailsHibernateTemplate.CloseSuppressingInvocationHandler.html" title="class in org/grails/orm/hibernate">
+                                    GrailsHibernateTemplate.CloseSuppressingInvocationHandler
+                                </a></strong>
+                            </td>
+                            <td>Invocation handler that suppresses close calls on Hibernate Sessions.
+ </td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
                                 <strong><a href="GrailsHibernateTransactionManager.html" title="class in org/grails/orm/hibernate">
                                     GrailsHibernateTransactionManager
                                 </a></strong>
@@ -123,11 +213,27 @@ function windowTitle()
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
+                                <strong><a href="GrailsSessionContext.html" title="class in org/grails/orm/hibernate">
+                                    GrailsSessionContext
+                                </a></strong>
+                            </td>
+                            <td>Based on org.springframework.orm.hibernate4.SpringSessionContext.</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
                                 <strong><a href="HibernateDatastore.html" title="class in org/grails/orm/hibernate">
                                     HibernateDatastore
                                 </a></strong>
                             </td>
                             <td>Datastore implementation that uses a Hibernate SessionFactory underneath.</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="HibernateEventListeners.html" title="class in org/grails/orm/hibernate">
+                                    HibernateEventListeners
+                                </a></strong>
+                            </td>
+                            <td></td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -168,7 +274,7 @@ function windowTitle()
                                     HibernateMappingContextSessionFactoryBean
                                 </a></strong>
                             </td>
-                            <td>Configures a SessionFactory using a org.grails.orm.hibernate.cfg.HibernateMappingContext and a <a href='../../../../org/grails/orm/hibernate/cfg/HibernateMappingContextConfiguration.html' title='HibernateMappingContextConfiguration'>HibernateMappingContextConfiguration</a></td>
+                            <td>Configures a SessionFactory using a <a href='../../../../org/grails/orm/hibernate/cfg/HibernateMappingContext.html' title='HibernateMappingContext'>HibernateMappingContext</a> and a <a href='../../../../org/grails/orm/hibernate/cfg/HibernateMappingContextConfiguration.html' title='HibernateMappingContextConfiguration'>HibernateMappingContextConfiguration</a></td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -188,6 +294,15 @@ function windowTitle()
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
+                                <strong><a href="SessionFactoryHolder.html" title="class in org/grails/orm/hibernate">
+                                    SessionFactoryHolder
+                                </a></strong>
+                            </td>
+                            <td>Holds a reference to the SessionFactory, used to allow proxying of the
+ session factory in development mode.</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
                                 <strong><a href="SessionFactoryProxy.html" title="class in org/grails/orm/hibernate">
                                     SessionFactoryProxy
                                 </a></strong>
@@ -202,6 +317,32 @@ function windowTitle()
         </div>
     
 
+
+    <div class="summary">
+        <ul class="blockList">
+            <li class="blockList">
+                <table border="0" cellpadding="3" cellspacing="0" summary="Enum Summary">
+                    <caption><span>Enum Summary</span><span class="tabEnd">&nbsp;</span></caption>
+                    <tbody>
+                    <tr>
+                        <th class="colFirst" scope="col">Enum</th>
+                        <th class="colLast" scope="col">Description</th>
+                    </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="AbstractHibernateDatastore.FlushMode.html" title="class in org/grails/orm/hibernate">
+                                    AbstractHibernateDatastore.FlushMode
+                                </a></strong>
+                            </td>
+                            <td>We use a separate enum here because the classes differ between Hibernate 3 and 4</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </li>
+            </ul>
+        </div>
+    
 
 
 
@@ -232,7 +373,7 @@ function windowTitle()
         </ul>
     </div>
 
-    <div class="aboutLanguage"><em>Groovy Documentation</em></div>
+    <div class="aboutLanguage"><em></em></div>
     <a name="skip-navbar_bottom">
         <!--   -->
     </a></div>

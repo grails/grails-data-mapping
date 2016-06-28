@@ -22,7 +22,7 @@
 <html>
 <head>
 
-<title>org.grails.orm.hibernate.cfg (grails-datastore-gorm-hibernate 5.0.8.RELEASE API)</title>
+<title>org.grails.orm.hibernate.cfg</title>
 <meta name="keywords" content="org.grails.orm.hibernate.cfg package">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel ="stylesheet" TYPE="text/css" HREF="../../../../../stylesheet.css" title="Style">
@@ -31,7 +31,7 @@
 <script type="text/javascript">
 function windowTitle()
 {
-    parent.document.title="org.grails.orm.hibernate.cfg (grails-datastore-gorm-hibernate 5.0.8.RELEASE API)";
+    parent.document.title="org.grails.orm.hibernate.cfg";
 }
 </script>
 <noscript>
@@ -76,6 +76,32 @@ function windowTitle()
 <div class="contentContainer">
 
 
+    <div class="summary">
+        <ul class="blockList">
+            <li class="blockList">
+                <table border="0" cellpadding="3" cellspacing="0" summary="Interface Summary">
+                    <caption><span>Interface Summary</span><span class="tabEnd">&nbsp;</span></caption>
+                    <tbody>
+                    <tr>
+                        <th class="colFirst" scope="col">Interface</th>
+                        <th class="colLast" scope="col">Description</th>
+                    </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="PersistentEntityNamingStrategy.html" title="class in org/grails/orm/hibernate/cfg">
+                                    PersistentEntityNamingStrategy
+                                </a></strong>
+                            </td>
+                            <td>Allows plugging into to custom naming strategies</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </li>
+            </ul>
+        </div>
+    
+
 
 
     <div class="summary">
@@ -90,30 +116,27 @@ function windowTitle()
                     </tr>
 <tr class="altColor">
                             <td class="colOne">
-                                <strong><a href="DefaultGrailsDomainConfiguration.html" title="class in org/grails/orm/hibernate/cfg">
-                                    DefaultGrailsDomainConfiguration
+                                <strong><a href="CacheConfig.html" title="class in org/grails/orm/hibernate/cfg">
+                                    CacheConfig
                                 </a></strong>
                             </td>
-                            <td>Creates runtime configuration mapping for the Grails domain classes
- based on the work done in the Hibernate Annotations project</td>
+                            <td>Defines the cache configuration.</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
-                                <strong><a href="GrailsAnnotationConfiguration.html" title="class in org/grails/orm/hibernate/cfg">
-                                    GrailsAnnotationConfiguration
+                                <strong><a href="ColumnConfig.html" title="class in org/grails/orm/hibernate/cfg">
+                                    ColumnConfig
                                 </a></strong>
                             </td>
-                            <td>Allows configuring Grails' hibernate support to work in conjunction with Hibernate's annotation
- support.</td>
+                            <td>Defines a column within the mapping.</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
-                                <strong><a href="GrailsDomainBinder.html" title="class in org/grails/orm/hibernate/cfg">
-                                    GrailsDomainBinder
+                                <strong><a href="CompositeIdentity.html" title="class in org/grails/orm/hibernate/cfg">
+                                    CompositeIdentity
                                 </a></strong>
                             </td>
-                            <td>Handles the binding Grails domain classes and properties to the Hibernate runtime meta model.
- </td>
+                            <td>Represents a composite identity, equivalent to Hibernate <composite-id> mapping.</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -133,11 +156,36 @@ function windowTitle()
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
+                                <strong><a href="HibernateMappingBuilder.html" title="class in org/grails/orm/hibernate/cfg">
+                                    HibernateMappingBuilder
+                                </a></strong>
+                            </td>
+                            <td>Implements the ORM mapping DSL constructing a model that can be evaluated by the
+ GrailsDomainBinder class which maps GORM classes onto the database.</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="HibernateMappingContext.html" title="class in org/grails/orm/hibernate/cfg">
+                                    HibernateMappingContext
+                                </a></strong>
+                            </td>
+                            <td>A Mapping context for Hibernate</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
                                 <strong><a href="HibernateMappingContextConfiguration.html" title="class in org/grails/orm/hibernate/cfg">
                                     HibernateMappingContextConfiguration
                                 </a></strong>
                             </td>
                             <td>A Configuration that uses a MappingContext to configure Hibernate</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="HibernatePersistentEntity.html" title="class in org/grails/orm/hibernate/cfg">
+                                    HibernatePersistentEntity
+                                </a></strong>
+                            </td>
+                            <td>Persistent entity implementation for Hibernate</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -149,11 +197,85 @@ function windowTitle()
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
+                                <strong><a href="Identity.html" title="class in org/grails/orm/hibernate/cfg">
+                                    Identity
+                                </a></strong>
+                            </td>
+                            <td>Defines the identity generation strategy. </td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
                                 <strong><a href="IdentityEnumType.html" title="class in org/grails/orm/hibernate/cfg">
                                     IdentityEnumType
                                 </a></strong>
                             </td>
                             <td>Hibernate Usertype that enum values by their ID.</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="InstanceProxy.html" title="class in org/grails/orm/hibernate/cfg">
+                                    InstanceProxy
+                                </a></strong>
+                            </td>
+                            <td></td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="JoinTable.html" title="class in org/grails/orm/hibernate/cfg">
+                                    JoinTable
+                                </a></strong>
+                            </td>
+                            <td>Represents a Join table in Grails mapping. </td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="Mapping.html" title="class in org/grails/orm/hibernate/cfg">
+                                    Mapping
+                                </a></strong>
+                            </td>
+                            <td>Models the mapping from GORM classes to the db.</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="NaturalId.html" title="class in org/grails/orm/hibernate/cfg">
+                                    NaturalId
+                                </a></strong>
+                            </td>
+                            <td>@author Graeme Rocher</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="PropertyConfig.html" title="class in org/grails/orm/hibernate/cfg">
+                                    PropertyConfig
+                                </a></strong>
+                            </td>
+                            <td>Custom mapping for a single domain property. </td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="PropertyDefinitionDelegate.html" title="class in org/grails/orm/hibernate/cfg">
+                                    PropertyDefinitionDelegate
+                                </a></strong>
+                            </td>
+                            <td>Builder delegate that handles multiple-column definitions for a
+ single domain property, e.g.
+ </td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="SortConfig.html" title="class in org/grails/orm/hibernate/cfg">
+                                    SortConfig
+                                </a></strong>
+                            </td>
+                            <td></td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="Table.html" title="class in org/grails/orm/hibernate/cfg">
+                                    Table
+                                </a></strong>
+                            </td>
+                            <td>Represents a table definition in GORM.</td>
                         </tr>
 
                     </tbody>
@@ -193,7 +315,7 @@ function windowTitle()
         </ul>
     </div>
 
-    <div class="aboutLanguage"><em>Groovy Documentation</em></div>
+    <div class="aboutLanguage"><em></em></div>
     <a name="skip-navbar_bottom">
         <!--   -->
     </a></div>

@@ -1,163 +1,1862 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-    <head>
-        <title>GORM for Neo4j 5.0.8.RELEASE</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <link rel="stylesheet" href="./css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
-        <link rel="stylesheet" href="./css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
-    <script type="text/javascript">
-function addJsClass(el) {
-    var classes = document.body.className.split(" ");
-    classes.push("js");
-    document.body.className = classes.join(" ");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.3">
+<meta name="author" content="Stefan Armbruster, Graeme Rocher">
+<title>GORM for Neo4j</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<style>
+/* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
+/* Remove comment around @import statement below when using as a custom stylesheet */
+/*@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";*/
+article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}
+audio,canvas,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+[hidden],template{display:none}
+script{display:none!important}
+html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+body{margin:0}
+a{background:transparent}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+abbr[title]{border-bottom:1px dotted}
+b,strong{font-weight:bold}
+dfn{font-style:italic}
+hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
+input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,*:before,*:after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+body{-webkit-font-smoothing:antialiased}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.center{margin-left:auto;margin-right:auto}
+.spread{width:100%}
+p.lead,.paragraph.lead>p,#preamble>.sectionbody>.paragraph:first-of-type p{font-size:1.21875em;line-height:1.6}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0;direction:ltr}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:none}
+p{font-family:inherit;font-weight:400;font-size:1em;line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #ddddd8;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em;height:0}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{font-size:1em;line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol,ul.no-bullet,ol.no-bullet{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0;font-size:1em}
+ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
+ul.square{list-style-type:square}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ul.no-bullet{list-style:none}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
+abbr{text-transform:none}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote cite{display:block;font-size:.9375em;color:rgba(0,0,0,.6)}
+blockquote cite:before{content:"\2014 \0020"}
+blockquote cite a,blockquote cite a:visited{color:rgba(0,0,0,.6)}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media only screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede}
+table thead,table tfoot{background:#f7f8f7;font-weight:bold}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt,table tr:nth-of-type(even){background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+body{tab-size:4}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.clearfix:before,.clearfix:after,.float-group:before,.float-group:after{content:" ";display:table}
+.clearfix:after,.float-group:after{clear:both}
+*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+pre,pre>code{line-height:1.45;color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;text-rendering:optimizeSpeed}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background-color:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menu{color:rgba(0,0,0,.8)}
+b.button:before,b.button:after{position:relative;top:-1px;font-weight:400}
+b.button:before{content:"[";padding:0 3px 0 2px}
+b.button:after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin-left:auto;margin-right:auto;margin-top:0;margin-bottom:0;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header:before,#header:after,#content:before,#content:after,#footnotes:before,#footnotes:after,#footer:before,#footer:after{content:" ";display:table}
+#header:after,#content:after,#footnotes:after,#footer:after{clear:both}
+#content{margin-top:1.25em}
+#content:before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #ddddd8}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #ddddd8;padding-bottom:8px}
+#header .details{border-bottom:1px solid #ddddd8;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:-ms-flexbox;display:-webkit-flex;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span:before{content:"\00a0\2013\00a0"}
+#header .details br+span.author:before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark:before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber:after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #ddddd8;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #efefed;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media only screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+#toc.toc2{margin-top:0!important;background-color:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #efefed;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #efefed;left:auto;right:0}}
+@media only screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:100%;background-color:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:rgba(255,255,255,.8);line-height:1.44}
+.sect1{padding-bottom:.625em}
+@media only screen and (min-width:768px){.sect1{padding-bottom:1.25em}}
+.sect1+.sect1{border-top:1px solid #efefed}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor:before,h2>a.anchor:before,h3>a.anchor:before,#toctitle>a.anchor:before,.sidebarblock>.content>.title>a.anchor:before,h4>a.anchor:before,h5>a.anchor:before,h6>a.anchor:before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock>caption.title{white-space:nowrap;overflow:visible;max-width:0}
+.paragraph.lead>p,#preamble>.sectionbody>.paragraph:first-of-type p{color:rgba(0,0,0,.85)}
+table.tableblock #preamble>.sectionbody>.paragraph:first-of-type p{font-size:inherit}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #ddddd8;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
+.sidebarblock{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock pre:not(.highlight),.listingblock pre[class="highlight"],.listingblock pre[class^="highlight "],.listingblock pre.CodeRay,.listingblock pre.prettyprint{background:#f7f7f8}
+.sidebarblock .literalblock pre,.sidebarblock .listingblock pre:not(.highlight),.sidebarblock .listingblock pre[class="highlight"],.sidebarblock .listingblock pre[class^="highlight "],.sidebarblock .listingblock pre.CodeRay,.sidebarblock .listingblock pre.prettyprint{background:#f2f1f1}
+.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;padding:1em;font-size:.8125em}
+.literalblock pre.nowrap,.literalblock pre[class].nowrap,.listingblock pre.nowrap,.listingblock pre[class].nowrap{overflow-x:auto;white-space:pre;word-wrap:normal}
+@media only screen and (min-width:768px){.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{font-size:.90625em}}
+@media only screen and (min-width:1280px){.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{font-size:1em}}
+.literalblock.output pre{color:#f7f7f8;background-color:rgba(0,0,0,.9)}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;-webkit-border-radius:4px;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]:before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:#999}
+.listingblock:hover code[data-lang]:before{display:block}
+.listingblock.terminal pre .command:before{content:attr(data-prompt);padding-right:.5em;color:#999}
+.listingblock.terminal pre .command:not([data-prompt]):before{content:"$"}
+table.pyhltable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.pyhltable td{vertical-align:top;padding-top:0;padding-bottom:0;line-height:1.45}
+table.pyhltable td.code{padding-left:.75em;padding-right:0}
+pre.pygments .lineno,table.pyhltable td:not(.code){color:#999;padding-left:0;padding-right:.5em;border-right:1px solid #ddddd8}
+pre.pygments .lineno{display:inline-block;margin-right:.25em}
+table.pyhltable .linenodiv{background:none!important;padding-right:0!important}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock blockquote p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote:before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.5em;margin-right:.5ex;text-align:right}
+.quoteblock .quoteblock{margin-left:0;margin-right:0;padding:.5em 0;border-left:3px solid rgba(0,0,0,.6)}
+.quoteblock .quoteblock blockquote{padding:0 0 0 .75em}
+.quoteblock .quoteblock blockquote:before{display:none}
+.verseblock{margin:0 1em 1.25em 1em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract{margin:0 0 1.25em 0;display:block}
+.quoteblock.abstract blockquote,.quoteblock.abstract blockquote p{text-align:left;word-spacing:0}
+.quoteblock.abstract blockquote:before,.quoteblock.abstract blockquote p:first-of-type:before{display:none}
+table.tableblock{max-width:100%;border-collapse:separate}
+table.tableblock td>.paragraph:last-child p>p:last-child,table.tableblock th>p:last-child,table.tableblock td>p:last-child{margin-bottom:0}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all th.tableblock,table.grid-all td.tableblock{border-width:0 1px 1px 0}
+table.grid-all tfoot>tr>th.tableblock,table.grid-all tfoot>tr>td.tableblock{border-width:1px 1px 0 0}
+table.grid-cols th.tableblock,table.grid-cols td.tableblock{border-width:0 1px 0 0}
+table.grid-all *>tr>.tableblock:last-child,table.grid-cols *>tr>.tableblock:last-child{border-right-width:0}
+table.grid-rows th.tableblock,table.grid-rows td.tableblock{border-width:0 0 1px 0}
+table.grid-all tbody>tr:last-child>th.tableblock,table.grid-all tbody>tr:last-child>td.tableblock,table.grid-all thead:last-child>tr>th.tableblock,table.grid-rows tbody>tr:last-child>th.tableblock,table.grid-rows tbody>tr:last-child>td.tableblock,table.grid-rows thead:last-child>tr>th.tableblock{border-bottom-width:0}
+table.grid-rows tfoot>tr>th.tableblock,table.grid-rows tfoot>tr>td.tableblock{border-width:1px 0 0 0}
+table.frame-all{border-width:1px}
+table.frame-sides{border-width:0 1px}
+table.frame-topbot{border-width:1px 0}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{display:table-cell;line-height:1.6;background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+td>div.verse{white-space:pre}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.unstyled,ol.unnumbered,ul.checklist,ul.none{list-style-type:none}
+ul.unstyled,ol.unnumbered,ul.checklist{margin-left:.625em}
+ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1em;font-size:.85em}
+ul.checklist li>p:first-child>input[type="checkbox"]:first-child{width:1em;position:relative;top:1px}
+ul.inline{margin:0 auto .625em auto;margin-left:-1.375em;margin-right:0;padding:0;list-style:none;overflow:hidden}
+ul.inline>li{list-style:none;float:left;margin-left:1.375em;display:block}
+ul.inline>li>*{display:block}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist>table tr>td:first-of-type{padding:0 .75em;line-height:1}
+.colist>table tr>td:last-of-type{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:solid 4px #fff;-webkit-box-shadow:0 0 0 1px #ddd;box-shadow:0 0 0 1px #ddd}
+.imageblock.left,.imageblock[style*="float: left"]{margin:.25em .625em 1.25em 0}
+.imageblock.right,.imageblock[style*="float: right"]{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em 0;border-width:1px 0 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;text-indent:-1.05em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
+.gist .file-data>table td.line-data{width:99%}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background-color:#00fafa}
+.black{color:#000}
+.black-background{background-color:#000}
+.blue{color:#0000bf}
+.blue-background{background-color:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background-color:#fa00fa}
+.gray{color:#606060}
+.gray-background{background-color:#7d7d7d}
+.green{color:#006000}
+.green-background{background-color:#007d00}
+.lime{color:#00bf00}
+.lime-background{background-color:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background-color:#7d0000}
+.navy{color:#000060}
+.navy-background{background-color:#00007d}
+.olive{color:#606000}
+.olive-background{background-color:#7d7d00}
+.purple{color:#600060}
+.purple-background{background-color:#7d007d}
+.red{color:#bf0000}
+.red-background{background-color:#fa0000}
+.silver{color:#909090}
+.silver-background{background-color:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background-color:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background-color:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background-color:#fafa00}
+span.icon>.fa{cursor:default}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note:before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip:before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning:before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution:before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important:before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background-color:rgba(0,0,0,.8);-webkit-border-radius:100px;border-radius:100px;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]:after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,span.alt{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background-color:#fffef7;border-color:#e0e0dc;-webkit-box-shadow:0 1px 4px #e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@media print{@page{margin:1.25cm .75cm}
+*{-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare):after,a[href^="https:"]:not(.bare):after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]:after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #ddddd8!important;padding-bottom:0!important}
+.sect1{padding-bottom:0!important}
+.sect1+.sect1{border:0!important}
+#header>h1:first-child{margin-top:1.25rem}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em 0}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span:before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]:before{display:block}
+#footer{background:none!important;padding:0 .9375em}
+#footer-text{color:rgba(0,0,0,.6)!important;font-size:.9em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<style>
+/* Stylesheet for CodeRay to match GitHub theme | MIT License | http://foundation.zurb.com */
+/*pre.CodeRay {background-color:#f7f7f8;}*/
+.CodeRay .line-numbers{border-right:1px solid #d8d8d8;padding:0 0.5em 0 .25em}
+.CodeRay span.line-numbers{display:inline-block;margin-right:.5em;color:rgba(0,0,0,.3)}
+.CodeRay .line-numbers strong{color:rgba(0,0,0,.4)}
+table.CodeRay{border-collapse:separate;border-spacing:0;margin-bottom:0;border:0;background:none}
+table.CodeRay td{vertical-align: top;line-height:1.45}
+table.CodeRay td.line-numbers{text-align:right}
+table.CodeRay td.line-numbers>pre{padding:0;color:rgba(0,0,0,.3)}
+table.CodeRay td.code{padding:0 0 0 .5em}
+table.CodeRay td.code>pre{padding:0}
+.CodeRay .debug{color:#fff !important;background:#000080 !important}
+.CodeRay .annotation{color:#007}
+.CodeRay .attribute-name{color:#000080}
+.CodeRay .attribute-value{color:#700}
+.CodeRay .binary{color:#509}
+.CodeRay .comment{color:#998;font-style:italic}
+.CodeRay .char{color:#04d}
+.CodeRay .char .content{color:#04d}
+.CodeRay .char .delimiter{color:#039}
+.CodeRay .class{color:#458;font-weight:bold}
+.CodeRay .complex{color:#a08}
+.CodeRay .constant,.CodeRay .predefined-constant{color:#008080}
+.CodeRay .color{color:#099}
+.CodeRay .class-variable{color:#369}
+.CodeRay .decorator{color:#b0b}
+.CodeRay .definition{color:#099}
+.CodeRay .delimiter{color:#000}
+.CodeRay .doc{color:#970}
+.CodeRay .doctype{color:#34b}
+.CodeRay .doc-string{color:#d42}
+.CodeRay .escape{color:#666}
+.CodeRay .entity{color:#800}
+.CodeRay .error{color:#808}
+.CodeRay .exception{color:inherit}
+.CodeRay .filename{color:#099}
+.CodeRay .function{color:#900;font-weight:bold}
+.CodeRay .global-variable{color:#008080}
+.CodeRay .hex{color:#058}
+.CodeRay .integer,.CodeRay .float{color:#099}
+.CodeRay .include{color:#555}
+.CodeRay .inline{color:#000}
+.CodeRay .inline .inline{background:#ccc}
+.CodeRay .inline .inline .inline{background:#bbb}
+.CodeRay .inline .inline-delimiter{color:#d14}
+.CodeRay .inline-delimiter{color:#d14}
+.CodeRay .important{color:#555;font-weight:bold}
+.CodeRay .interpreted{color:#b2b}
+.CodeRay .instance-variable{color:#008080}
+.CodeRay .label{color:#970}
+.CodeRay .local-variable{color:#963}
+.CodeRay .octal{color:#40e}
+.CodeRay .predefined{color:#369}
+.CodeRay .preprocessor{color:#579}
+.CodeRay .pseudo-class{color:#555}
+.CodeRay .directive{font-weight:bold}
+.CodeRay .type{font-weight:bold}
+.CodeRay .predefined-type{color:inherit}
+.CodeRay .reserved,.CodeRay .keyword {color:#000;font-weight:bold}
+.CodeRay .key{color:#808}
+.CodeRay .key .delimiter{color:#606}
+.CodeRay .key .char{color:#80f}
+.CodeRay .value{color:#088}
+.CodeRay .regexp .delimiter{color:#808}
+.CodeRay .regexp .content{color:#808}
+.CodeRay .regexp .modifier{color:#808}
+.CodeRay .regexp .char{color:#d14}
+.CodeRay .regexp .function{color:#404;font-weight:bold}
+.CodeRay .string{color:#d20}
+.CodeRay .string .string .string{background:#ffd0d0}
+.CodeRay .string .content{color:#d14}
+.CodeRay .string .char{color:#d14}
+.CodeRay .string .delimiter{color:#d14}
+.CodeRay .shell{color:#d14}
+.CodeRay .shell .delimiter{color:#d14}
+.CodeRay .symbol{color:#990073}
+.CodeRay .symbol .content{color:#a60}
+.CodeRay .symbol .delimiter{color:#630}
+.CodeRay .tag{color:#008080}
+.CodeRay .tag-special{color:#d70}
+.CodeRay .variable{color:#036}
+.CodeRay .insert{background:#afa}
+.CodeRay .delete{background:#faa}
+.CodeRay .change{color:#aaf;background:#007}
+.CodeRay .head{color:#f8f;background:#505}
+.CodeRay .insert .insert{color:#080}
+.CodeRay .delete .delete{color:#800}
+.CodeRay .change .change{color:#66f}
+.CodeRay .head .head{color:#f4f}
+</style>
+</head>
+<body class="article toc2 toc-left">
+<div id="header">
+<h1>GORM for Neo4j</h1>
+<div class="details">
+<span id="author" class="author">Stefan Armbruster, Graeme Rocher</span><br>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#introduction">Introduction</a>
+<ul class="sectlevel2">
+<li><a href="#compatibility">Compatibility with GORM for Hibernate</a></li>
+<li><a href="#releaseNotes">Release Notes</a></li>
+</ul>
+</li>
+<li><a href="#gettingStarted">Getting Started</a>
+<ul class="sectlevel2">
+<li><a href="#usingNeo4jStandalone">Using Neo4j Standalone</a></li>
+<li><a href="#combiningNeo4jAndHibernate">Combining Neo4j And Hibernate</a></li>
+<li><a href="#advancedConfiguration">Advanced Configuration</a></li>
+<li><a href="#springBoot">Using GORM in Spring Boot</a></li>
+<li><a href="#standalone">GORM for Neo4j without Grails</a></li>
+</ul>
+</li>
+<li><a href="#mapping">Mapping domain classes to Neo4j node space</a>
+<ul class="sectlevel2">
+<li><a href="#idGeneration">Neo4j ID generators</a></li>
+<li><a href="#associations">Understanding Association Mapping</a></li>
+<li><a href="#labelStrategy">Customizing the Label Strategy</a></li>
+<li><a href="#schemaless">Dynamic Properties and Associations</a></li>
+</ul>
+</li>
+<li><a href="#querying">Querying with GORM for Neo4j</a>
+<ul class="sectlevel2">
+<li><a href="#lazyLoading">Understanding Lazy Loading</a></li>
+<li><a href="#cypher">Querying with Cypher</a></li>
+<li><a href="#indexing">Defining the Query Index</a></li>
+</ul>
+</li>
+<li><a href="#neo4jEnhancements">Enhancements to Neo4j core API</a>
+<ul class="sectlevel3">
+<li><a href="#_setting_properties_on_nodes_relationships">Setting properties on nodes/relationships</a></li>
+</ul>
+</li>
+<li><a href="#reference">Reference</a>
+<ul class="sectlevel2">
+<li><a href="#ref-additional-gorm-methods">Additional Gorm Methods</a></li>
+<li><a href="#ref-beans">Beans</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="http://www.neo4j.org">Neo4j</a> a Graph database that fits nicely in a Grails application.</p>
+</div>
+<div class="paragraph">
+<p>The goal of GORM for Neo4j is to provide a <em>as-complete-as-possible</em> GORM implementation that maps domain classes and instances to the Neo4j nodespace. The following features are supported:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Marshalling from Neo4j Nodes to Groovy types and back again</p>
+</li>
+<li>
+<p>Support for GORM dynamic finders, criteria and named queries</p>
+</li>
+<li>
+<p>Session-managed transactions</p>
+</li>
+<li>
+<p>access to Neo4j&#8217;s traversal capabilities</p>
+</li>
+<li>
+<p>Access the Neo4j graph database in all flavours (Embedded, REST and HA)</p>
+</li>
+<li>
+<p>Neo4j autoindexing</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="compatibility">Compatibility with GORM for Hibernate</h3>
+<div class="paragraph">
+<p>This implementation tries to be as compatible as possible with GORM for Hibernate. In general you can refer to the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html">GORM documentation</a> and the "Domain Classes" section of the <a href="http://grails.org/doc/latest/">reference guide</a> (see the left nav) for usage information.</p>
+</div>
+<div class="paragraph">
+<p>The following key features are supported by GORM for Neo4j:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Simple persistence methods (save,delete etc)</p>
+</li>
+<li>
+<p>Dynamic finders</p>
+</li>
+<li>
+<p>Criteria queries</p>
+</li>
+<li>
+<p>Named queries</p>
+</li>
+<li>
+<p>Inheritance</p>
+</li>
+<li>
+<p>Embedded types</p>
+</li>
+<li>
+<p>Query by example</p>
+</li>
+<li>
+<p>Many-to-many associations (these can be modelled with a mapping class)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>However, some features are not supported:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>HQL queries (however Cypher Queries are)</p>
+</li>
+<li>
+<p>Composite primary keys</p>
+</li>
+<li>
+<p>Any direct interaction with the Hibernate API</p>
+</li>
+<li>
+<p>Custom Hibernate user types</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>There may be other limitations not mentioned here so in general it shouldn&#8217;t be expected that an application based on GORM for Hibernate will "just work" without some tweaking involved. Having said that, the large majority of common GORM functionality is supported.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="releaseNotes">Release Notes</h3>
+<div class="paragraph">
+<p>The following new features are available in this release.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Support for Neo4j Neo4j 2.3.x or above</p>
+</li>
+<li>
+<p>Ability to query using Cypher with the default GORM methods (find, findAll)</p>
+</li>
+<li>
+<p>Robust Spring Transaction Management</p>
+</li>
+<li>
+<p>Support for Lazy &amp; Eager Loading using OPTIONAL MATCH</p>
+</li>
+<li>
+<p>Improved Performance</p>
+</li>
+<li>
+<p>Dirty Checking Implementation</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If you are using an older version of the plugin, and looking to upgrade the following changes may impact you:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Neo4j JDBC is no longer used and the corresponding CypherEngine interface was removed</p>
+</li>
+<li>
+<p>Dynamic associations are disabled by default, you can re-enable them in your entity mapping</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="gettingStarted">Getting Started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To get started with GORM for Neo4j you need to install the plugin into a Grails application.</p>
+</div>
+<div class="paragraph">
+<p>For Grails 3.x you need to edit your <code>build.gradle</code> file and add the plugin as a dependency:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+        compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:neo4j:VERSION</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To do so for Grails 2.x edit the <code>grails-app/conf/BuildConfig.groovy</code> file and add the following plugin definition, where <code>VERSION</code> is the version of the plugin you plan to use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">plugins {
+    compile <span class="string"><span class="delimiter">'</span><span class="content">:neo4j:VERSION</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+GORM for Neo4j requires Grails 2.5.x or above and Neo4j 2.3.x or above
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>By default Neo4j will used as embedded database inside the JVM, the default directory for the Neo4j datastore is <code>data/neo4j</code>.</p>
+</div>
+<div class="sect2">
+<h3 id="usingNeo4jStandalone">Using Neo4j Standalone</h3>
+<div class="paragraph">
+<p>If you plan to use Neo4j as your primary datastore then you need to remove the Hibernate plugin by editing your <code>BuildConfig</code> or <code>build.gradle</code> (dependending on the version of Grails) and removing the Hibernate plugin definition</p>
+</div>
+<div class="paragraph">
+<p>With this done all domain classes in grails-app/domain will be persisted via Neo4j and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails create-domain-<span class="type">class</span> <span class="class">Person</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Neo4j.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="combiningNeo4jAndHibernate">Combining Neo4j And Hibernate</h3>
+<div class="paragraph">
+<p>If you have both the Hibernate and Neo4j plugins installed then by default all classes in the <code>grails-app/domain</code>  directory will be persisted by Hibernate and not Neo4j. If you want to persist a particular domain class with Neo4j then you must use the <code>mapWith</code> property in the domain class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapWith = <span class="string"><span class="delimiter">&quot;</span><span class="content">neo4j</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="advancedConfiguration">Advanced Configuration</h3>
+<div class="paragraph">
+<p>As mentioned the GORM for Neo4j plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your <code>grails-app/conf/DataSource.groovy</code> file or in the <code>grails-app/conf/application.groovy</code> file for Grails 3.x and above:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails {
+    neo4j {
+        type = <span class="string"><span class="delimiter">&quot;</span><span class="content">embedded</span><span class="delimiter">&quot;</span></span>
+        location = <span class="string"><span class="delimiter">&quot;</span><span class="content">/var/neo4j</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>type</code> provides currently the following choices:</p>
+</div>
+<div class="sect3">
+<h4 id="_type_embedded">type = "embedded"</h4>
+<div class="paragraph">
+<p>Runs Neo4j in embedded mode, Neo4j and Grails use the same JVM. No seperate setup outside the Grails application is required. <code>location</code> specifies the directory where Neo4j stores its data.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails {
+    neo4j {
+        type = <span class="string"><span class="delimiter">&quot;</span><span class="content">embedded</span><span class="delimiter">&quot;</span></span>
+        location = <span class="string"><span class="delimiter">&quot;</span><span class="content">/var/neo4j</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If your configuration is empty, <em>embedded</em> is used as default.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_type_rest">type = "rest"</h4>
+<div class="paragraph">
+<p>Uses a <code>org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase</code> instance to connect to a Neo4j database. See <a href="http://neo4j.com/docs/stable/server-installation.html" class="bare">http://neo4j.com/docs/stable/server-installation.html</a> for how to setup a Neo4j server.</p>
+</div>
+<div class="paragraph">
+<p><code>location</code> specifies the URL of he Neo4j REST server. When using the Heroku Neo4j addon, omit the location. In this case location will default to env.NEO4J_URL that is provided by Heroku.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails {
+    neo4j {
+        type = <span class="string"><span class="delimiter">&quot;</span><span class="content">rest</span><span class="delimiter">&quot;</span></span>
+        location = <span class="string"><span class="delimiter">&quot;</span><span class="content">http://localhost:7474/db/data/</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Additionally you must add the following dependencies to your application&#8217;s <code>build.gradle</code> or <code>grails-app/conf/BuildConfig.groovy</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.springframework.data:spring-data-neo4j:3.4.0.RELEASE</span><span class="delimiter">'</span></span>
+compile <span class="string"><span class="delimiter">'</span><span class="content">org.springframework.data:spring-data-neo4j-rest:3.4.0.RELEASE</span><span class="delimiter">'</span></span>
+    exclude <span class="key">group</span>:<span class="string"><span class="delimiter">'</span><span class="content">org.neo4j.test</span><span class="delimiter">'</span></span>, <span class="key">module</span>:<span class="string"><span class="delimiter">'</span><span class="content">neo4j-harness</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>GORM for Neo4j uses the REST implementation from the Spring Data Neo4j REST project.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_type_ha">type = "ha"</h4>
+<div class="paragraph">
+<p>Uses a Neo4j HA setup, for details see <a href="http://neo4j.com/docs/stable/ha.html" class="bare">http://neo4j.com/docs/stable/ha.html</a>. In this case params must at least contain</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+For Neo4j HA either a commercial license is <a href="http://neo4j.org/licensing-guide/">required</a>, or you could use AGPL.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails {
+    neo4j {
+        type = <span class="string"><span class="delimiter">&quot;</span><span class="content">ha</span><span class="delimiter">&quot;</span></span>
+        location = <span class="string"><span class="delimiter">&quot;</span><span class="content">/var/neo4j</span><span class="delimiter">&quot;</span></span>
+        <span class="comment">// see http://neo4j.com/docs/stable/ha-configuration.html</span>
+        options = [
+                <span class="string"><span class="delimiter">'</span><span class="content">ha.server_id</span><span class="delimiter">'</span></span>: <span class="integer">1</span>,
+                <span class="string"><span class="delimiter">'</span><span class="content">ha.coordinators</span><span class="delimiter">'</span></span>: <span class="string"><span class="delimiter">'</span><span class="content">localhost:2181,localhost:2182,localhost:2183</span><span class="delimiter">'</span></span>
+        ]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Additionally you must add another dependency to your application&#8217;s <code>build.gradle</code> or <code>grails-app/conf/BuildConfig.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">'</span><span class="content">org.neo4j:neo4j-ha:$neo4jVersion</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_type_impermanent">type = "impermanent"</h4>
+<div class="paragraph">
+<p>Uses ImpermanentGraphDatabase which is good for testing and early stage development.</p>
+</div>
+<div class="paragraph">
+<p>This option required a dependency to artifact [group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests'] in <code>build.gradle</code> or <code>BuildConfig.groovy</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="key">group</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">org.neo4j</span><span class="delimiter">&quot;</span></span>, <span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">neo4j-kernel</span><span class="delimiter">&quot;</span></span>, <span class="key">version</span>: neo4jVersion, <span class="key">classifier</span>: <span class="string"><span class="delimiter">'</span><span class="content">tests</span><span class="delimiter">'</span></span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+ImpermanentGraphDatabase is intended to be used for testing.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_custom_graph_database">custom graph database</h4>
+<div class="paragraph">
+<p>If you use a custom implementation of GraphDatabaseService, you can use</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails {
+    neo4j {
+        type = <span class="string"><span class="delimiter">&quot;</span><span class="content">my.fancy.custom.GraphDatabaseServiceImplementation</span><span class="delimiter">&quot;</span></span>
+        location = <span class="string"><span class="delimiter">&quot;</span><span class="content">/var/neo4j</span><span class="delimiter">&quot;</span></span>
+        options = [ :]
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="springBoot">Using GORM in Spring Boot</h3>
+<div class="paragraph">
+<p>To use GORM for Neo4j in Spring Boot add the necessary dependencies to your Boot application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile(<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:gorm-neo4j-spring-boot:VERSION</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ensure your Boot <code>Application</code> class is annotated with <code>ComponentScan</code>, example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.springframework.boot.SpringApplication</span>
+<span class="keyword">import</span> <span class="include">org.springframework.boot.autoconfigure.EnableAutoConfiguration</span>
+<span class="keyword">import</span> <span class="include">org.springframework.context.annotation.*</span>
+
+<span class="annotation">@Configuration</span>
+<span class="annotation">@EnableAutoConfiguration</span>
+<span class="annotation">@ComponentScan</span>
+<span class="type">class</span> <span class="class">Application</span> {
+    <span class="directive">static</span> <span class="type">void</span> main(<span class="predefined-type">String</span><span class="type">[]</span> args) {
+        SpringApplication.run Application, args
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Using <code>ComponentScan</code> without a value results in Boot scanning for classes in the same package or any package nested within the <code>Application</code> class package.
+If your GORM entities are in a different package specify the package name as the value of the <code>ComponentScan</code> annotation.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Finally create your GORM entities and ensure they are annotated with <code>grails.persistence.Entity</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.persistence.*</span>
+
+<span class="annotation">@Entity</span>
+<span class="type">class</span> <span class="class">Person</span> {
+    <span class="predefined-type">String</span> firstName
+    <span class="predefined-type">String</span> lastName
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="standalone">GORM for Neo4j without Grails</h3>
+<div class="paragraph">
+<p>If you wish to use GORM for Neo4j outside of a Grails application you should declare the necessary dependencies, for example in Gradle:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-gorm-neo4j:VERSION</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Entity</span>
+<span class="type">class</span> <span class="class">Person</span> {
+    <span class="predefined-type">String</span> name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then you need to place the bootstrap logic somewhere in your application which uses <code>Neo4jDataStoreSpringInitializer</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> initializer = <span class="keyword">new</span> Neo4jDataStoreSpringInitializer(Person)
+<span class="keyword">def</span> applicationContext = initializer.configure()
+
+println Person.count()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For configuration you can either pass a map or an instance of the <code>org.springframework.core.env.PropertyResolver</code> interface:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> initializer = <span class="keyword">new</span> Neo4jDataStoreSpringInitializer([<span class="string"><span class="delimiter">'</span><span class="content">grails.neo4j.location</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">http://myserver</span><span class="delimiter">'</span></span>], Person)
+<span class="keyword">def</span> applicationContext = initializer.configure()
+
+println Person.count()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">ApplicationContext myApplicationContext = ...
+def initializer = <span class="keyword">new</span> Neo4jDataStoreSpringInitializer(myApplicationContext.getEnvironment(), Person)
+initializer.configureForBeanDefinitionRegistry(myApplicationContext)
+
+println Person.count()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="mapping">Mapping domain classes to Neo4j node space</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>GORM for Neo4j will map each Grails domain instance to a Node in the node space. For example given the following domain class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Pet</span> {
+    <span class="predefined-type">String</span> name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When an instance of <code>Pet</code> is saved:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> p = <span class="keyword">new</span> Pet(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Dino</span><span class="delimiter">&quot;</span></span>)
+p.save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then the following Cypher CREATE is issued:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">CREATE (<span class="key">n2</span>:Pet {props})</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The properties of the class are converted to native Neo4j types and set as the <code>props</code> parameter to the query.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you want to see what queries GORM for Neo4j generates, enabling logging for the <code>org.grails.datastore.gorm.neo4j</code> package
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="idGeneration">Neo4j ID generators</h3>
+<div class="paragraph">
+<p>GORM by default uses a custom identity generator based on the Snowflake algorithm and stores the generated identifier in a property of each Neo4j node called <code>__id__</code>.</p>
+</div>
+<div class="paragraph">
+<p>This has the advantage of enabling GORM to batch insert operations into a single CREATE cypher statement, hence why it is the default.</p>
+</div>
+<div class="paragraph">
+<p>However, if you prefer to use native Neo4j node identifiers then you can do so by changing the generator used in the mapping:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Club</span> {
+
+    ...
+    static mapping = {
+        id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">native</span><span class="delimiter">'</span></span>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will instead use the Neo4j node identifier as the object identifier with the downside being that GORM has to execute individual CREATE  statements for each new object saved, similar to the way GORM for Hibernate has to perform a SQL INSERT if the id generation strategy is an auto-increment column.</p>
+</div>
+<div class="paragraph">
+<p>This disadvantage can be worked around by using the <code>saveAll</code> method to save multiple domain classes at once:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Club.saveAll([
+    <span class="keyword">new</span> Club(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Manchester United</span><span class="delimiter">&quot;</span></span>),
+    <span class="keyword">new</span> Club(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Arsenal</span><span class="delimiter">&quot;</span></span>)
+])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you wish to globally change id generation then you can do so in <code>grails-app/conf/application.groovy</code> (<code>Config.groovy</code> in Grails 2.x):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails.neo4j.default.mapping = {
+    id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">native</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition, if you wish to use a custom identity generation strategy you can do so by specifying a class name that implements the <code>IdGenerator</code> interface:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails.neo4j.default.mapping = {
+    id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">com.foo.MyIdGenerator</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="associations">Understanding Association Mapping</h3>
+<div class="paragraph">
+<p>GORM for Neo4j will create Neo4j relationships between nodes for you based on the relationship ownership rules defined in your GORM mapping. For example the following mapping:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Owner</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> hasMany = [<span class="key">pets</span>:Pet]
 }
-    </script>
-    </head>
+<span class="type">class</span> <span class="class">Pet</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> belongsTo = [<span class="key">owner</span>:<span class="predefined-type">Owner</span>]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Will generate a Cypher relationship creation query as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">from</span>:<span class="predefined-type">Owner</span> {<span class="key">__id__</span>:{start}}), (<span class="key">to</span>:Pet) WHERE to.__id__ IN {end} CREATE (from)-[<span class="key">r</span>:PETS]-&gt;(to)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see from the query the relationship is defined as <code>(from)-[r:PETS]-&gt;(to)</code>, with the direction of the association defined by who "owns" the association. Since <code>Pet</code> defines a <code>belongTo</code> association to <code>Owner</code>, this means that <code>Owner</code> owns the association and the relationship is from <code>Owner</code> to <code>Pet</code>.</p>
+</div>
+<div class="paragraph">
+<p>For more information on defining relationships with GORM, see the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#gormAssociation">corresponding guide in the GORM documentation</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="labelStrategy">Customizing the Label Strategy</h3>
+<div class="paragraph">
+<p>The default strategy for defining labels is to use the class name, however the strategy to define labels for a given node is completely configurable. For example you can use static mapping to define you labels:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Person</span> {
+    <span class="directive">static</span> mapping = {
+        labels <span class="string"><span class="delimiter">&quot;</span><span class="content">Person</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">People</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also define labels dynamically. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Person</span> {
+    <span class="directive">static</span> mapping = {
+        labels { GraphPersistentEntity pe -&gt; <span class="string"><span class="delimiter">&quot;</span><span class="content">`</span><span class="inline"><span class="inline-delimiter">${</span>pe.javaClass.name<span class="inline-delimiter">}</span></span><span class="content">`</span><span class="delimiter">&quot;</span></span> }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or mix static and dynamic labels:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
+    labels <span class="string"><span class="delimiter">&quot;</span><span class="content">People</span><span class="delimiter">&quot;</span></span>, { GraphPersistentEntity pe -&gt; <span class="string"><span class="delimiter">&quot;</span><span class="content">`</span><span class="inline"><span class="inline-delimiter">${</span>pe.javaClass.name<span class="inline-delimiter">}</span></span><span class="content">`</span><span class="delimiter">&quot;</span></span> }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At a small read/write performance cost you can define dynamic labels based on an instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
+    labels { GraphPersistentEntity pe, instance -&gt;  <span class="comment">// 2 arguments: instance dependent label</span>
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">`</span><span class="inline"><span class="inline-delimiter">${</span>instance.profession<span class="inline-delimiter">}</span></span><span class="content">`</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="schemaless">Dynamic Properties and Associations</h3>
+<div class="paragraph">
+<p>Neo4j is a schemaless database. This means that, unlike SQL where you can only have a fixed number of rows and columns, nodes can have unlimited properties.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Most existing object mapping tools in statically typed languages don't allow you to harness this power, but GORM for Neo4j allows you to define both statically defined properties (ie the properties of the domain class) and domain properties.</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>For example, take the following domain class:</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[source,groovy]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>class Plant {
+    String name
+ }</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>You can set both the statically defined `name` property, but also any arbitrary number of dynamic properties using the subscript operator in Groovy:</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[source,groovy]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>def p = new Plant(name:"Carrot")
+  p['goesInPatch'] = true
+  p.save(flush:true)</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Any simple properties can be included, however if you wish to have dynamic associations you can as well by modifying the mapping:</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[source,groovy]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>class Plant {
+    String name
+    static mapping = {
+        dynamicAssociations true
+    }
+ }</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>With this in place you can define dynamic associations:</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[source,groovy]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>def p = new Plant(name:"Carrot")
+  p['related'] = [ new Plant(name:"Potato").save() ]
+  p.save(flush:true)</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>The downside of dynamic associations is that GORM has to issue a separate query for each loaded instance when retrieving entities. If you have a small amount of data this is not a problem, but for larger data sets it is not recommended.</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying">Querying with GORM for Neo4j</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>GORM for Neo4j supports all the different querying methods provided by GORM including:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#finders">Dynamic Finders</a></p>
+</li>
+<li>
+<p><a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#whereQueries">Where Queries</a></p>
+</li>
+<li>
+<p><a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#criteria">Criteria Queries</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>However, HQL queries are not supported, instead you can use Cypher directly if you so choose.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you want to see what queries GORM for Neo4j generates, enabling logging for the <code>org.grails.datastore.gorm.neo4j</code> package
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="lazyLoading">Understanding Lazy Loading</h3>
+<div class="paragraph">
+<p>When retrieving a GORM entity and its associations by default single-ended associations will only retrieve the association id, whilst associations to many objects will not retrieve the association at all until it is accessed. This is called lazy loading.</p>
+</div>
+<div class="paragraph">
+<p>For example given the following domain model:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">League</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> hasMany = [<span class="key">clubs</span>:Club]
+}
+<span class="type">class</span> <span class="class">Club</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> belongsTo = [<span class="key">league</span>:League]
+    <span class="directive">static</span> hasMany = [<span class="key">teams</span>: Team ]
+}
+<span class="type">class</span> <span class="class">Team</span>  {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> belongsTo = [<span class="key">club</span>:Club]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When you retrieve the <code>Club</code> by name:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> club = Club.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Manchester United</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will get the following Cypher query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">n</span>:Club) WHERE ( n.__id__={<span class="integer">1</span>} )
+OPTIONAL MATCH(n)-[:LEAGUE]-&gt;(leagueNode)
+RETURN n <span class="keyword">as</span> data, collect(DISTINCT leagueNode.__id__) <span class="keyword">as</span> leagueIds</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see the <code>teams</code> association is not loaded in the query, and only the ID of the <code>league</code> association is retrieved. If you then iterate over the teams you will get a second query to obtain the teams:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">for</span>(team <span class="keyword">in</span> club.teams) {
+    println team.name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The query generated will be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">from</span>:Club)&lt;-[:CLUB]-(<span class="key">to</span>:Team) WHERE from.__id__ = {id} RETURN to <span class="keyword">as</span> data</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you wish to avoid this secondary query to retrieve the data you can do so using an eager query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// using a dynamic finder</span>
+<span class="keyword">def</span> club = Club.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Manchester United</span><span class="delimiter">&quot;</span></span>, [<span class="key">fetch</span>:[<span class="key">teams</span>:<span class="string"><span class="delimiter">'</span><span class="content">join</span><span class="delimiter">'</span></span>]])
 
-    <body class="body" onload="addJsClass();">
-        <div id="navigation">
-            <ul>
-                <li>
-                    <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
-                        <a href="./guide/index.html" class="button">Table of contents</a>
-                        <div id="nav-summary-childs" style="display:none;">
-                            
-                            <div class="toc-item" style="margin-left:0"><a href="./guide/introduction.html"><strong>1</strong><span>Introduction</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:0"><a href="./guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:0"><a href="./guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:0"><a href="./guide/querying.html"><strong>4</strong><span>Querying with GORM for Neo4j</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:0"><a href="./guide/neo4jEnhancements.html"><strong>5</strong><span>Enhancements to Neo4j core API</span></a></div>
-                            
-                        </div>
-                    </div>
-                </li>
-                <li class="separator selected">
-                    <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
-                </li>
-            </ul>
-        </div>
-        <div id="header">
-            <div class="images clearfix">
-                
-                
-            </div>
-            <p></p>
-        </div>
+<span class="comment">// using a where queries</span>
+<span class="keyword">def</span> query = Club.where { name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Manchester United</span><span class="delimiter">&quot;</span></span> }
+                .join(<span class="string"><span class="delimiter">'</span><span class="content">teams</span><span class="delimiter">'</span></span>)
+<span class="keyword">def</span> club = query.find()
 
+<span class="comment">// using criteria</span>
+<span class="keyword">def</span> query = Club.createCriteria()
+<span class="keyword">def</span> club = query.get {
+    eq <span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">Manchester United</span><span class="delimiter">&quot;</span></span>
+    join <span class="string"><span class="delimiter">'</span><span class="content">teams</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will instead generate the following query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">n</span>:Club) WHERE ( n.name={<span class="integer">1</span>} )
+OPTIONAL MATCH(n)&lt;-[:CLUB]-(teamsNode)
+OPTIONAL MATCH(n)-[:LEAGUE]-&gt;(leagueNode)
+RETURN n <span class="keyword">as</span> data, collect(DISTINCT leagueNode.__id__) <span class="keyword">as</span> leagueIds, collect(DISTINCT teamsNode) <span class="keyword">as</span> teamsNodes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see the associated team nodes are loaded by the query. If you prefer this to happen for every query, then this can also be configured in the mapping:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Club</span> {
+    ...
 
-        <table id="colset" border="0" cellpadding="0" cellspacing="0">
-            <tr>
-                <td id="col1">
-                    <div id="main" class="corner-all">
+    static mapping = {
+       teams <span class="key">fetch</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">eager</span><span class="delimiter">&quot;</span></span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also configure the collection ids to be eagerly loaded, but the instances themselves to be lazy loaded via proxies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Club</span> {
+    ...
 
-                        <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+    static mapping = {
+       teams <span class="key">fetch</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">eager</span><span class="delimiter">&quot;</span></span>, <span class="key">lazy</span>:<span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="cypher">Querying with Cypher</h3>
+<div class="paragraph">
+<p>To query with raw Cypher queries you can use the built in <code>find</code> and <code>findAll</code> methods:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[source,groovy]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>def club = Club.find("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')
+ def clubs = Club.findAll("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results use `cypherStatic`:</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[source,groovy]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Result result = Club.cypherStatic("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>When working with raw results, you can convert any `org.neo4j.graphdb.Node` into a domain instance using the `as` keyword:</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[source,groovy]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Node myNode = ...
+ Club club = myNode as Club</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>You can also convert any `org.neo4j.graphdb.Result` instance to a list of domain classes:</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>[source,groovy]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Result result = ...
+  List&lt;Club&gt; clubs = result.toList(Club)</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="indexing">Defining the Query Index</h3>
+<div class="paragraph">
+<p>To define which properties of your domain class should be indexed for querying you can do so in the mapping:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Club</span> {
+    <span class="predefined-type">String</span> name
 
-                        <div class="project">
-                            <h1>GORM for Neo4j - Reference Documentation</h1>
-                            <p><strong>Authors:</strong> Stefan Armbruster, Graeme Rocher</p>
-                            <p><strong>Version:</strong> 5.0.8.RELEASE</p>
-                            
-                        </div>
+    ...
+    static mapping = {
+        name <span class="key">index</span>:<span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On startup GORM will use Cypher to create indexes as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">CREATE INDEX ON :Club(name)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To define a unique index use <code>unique</code> instead:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Club</span> {
+    <span class="predefined-type">String</span> name
 
-                        
-                        <div id="table-of-content">
-                            <h2>Table of Contents</h2>
-                            
-                            <div class="toc-item" style="margin-left:0px"><a href="./guide/introduction.html"><strong>1</strong><span>Introduction</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/introduction.html#compatibility"><strong>1.1</strong><span>Compatibility with GORM for Hibernate</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/introduction.html#releaseNotes"><strong>1.2</strong><span>Release Notes</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:0px"><a href="./guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/gettingStarted.html#usingNeo4jStandalone"><strong>2.1</strong><span>Using Neo4j Standalone</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/gettingStarted.html#combiningNeo4jAndHibernate"><strong>2.2</strong><span>Combining Neo4j And Hibernate</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/gettingStarted.html#advancedConfiguration"><strong>2.3</strong><span>Advanced Configuration</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/gettingStarted.html#springBoot"><strong>2.4</strong><span>Using GORM in Spring Boot</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/gettingStarted.html#standalone"><strong>2.5</strong><span>GORM for Neo4j without Grails</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:0px"><a href="./guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/mapping.html#idGeneration"><strong>3.1</strong><span>Neo4j ID generators</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/mapping.html#associations"><strong>3.2</strong><span>Understanding Association Mapping</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/mapping.html#labelStrategy"><strong>3.3</strong><span>Customizing the Label Strategy</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/mapping.html#schemaless"><strong>3.4</strong><span>Dynamic Properties and Associations</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:0px"><a href="./guide/querying.html"><strong>4</strong><span>Querying with GORM for Neo4j</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/querying.html#lazyLoading"><strong>4.1</strong><span>Understanding Lazy Loading</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/querying.html#cypher"><strong>4.2</strong><span>Querying with Cypher</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:10px"><a href="./guide/querying.html#indexing"><strong>4.3</strong><span>Defining the Query Index</span></a></div>
-                            
-                            <div class="toc-item" style="margin-left:0px"><a href="./guide/neo4jEnhancements.html"><strong>5</strong><span>Enhancements to Neo4j core API</span></a></div>
-                            
-                            <div style="clear:both" ></div>
-                        </div>
-                        
-                        
-                    </div>
-                </td>
-                <td id="col2">
-            <div class="local clearfix">
-                <div class="local-title">
-                    <a href="./guide/index.html" target="mainFrame">Quick Reference</a>
-                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
-                </div>
-                <div class="menu">
-                    
-                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Additional Gorm Methods</h1><div class="menu-sub">
-                        
-                        
-                        <div class="menu-item"><a href="./ref/Additional%20Gorm%20Methods/cypher.html">cypher</a>
-                        </div>
-                        
-                        <div class="menu-item"><a href="./ref/Additional%20Gorm%20Methods/cypherStatic.html">cypherStatic</a>
-                        </div>
-                        
-                        <div class="menu-item"><a href="./ref/Additional%20Gorm%20Methods/schemaless%20attributes.html">schemaless attributes</a>
-                        </div>
-                        
-                        </div>
-                    </div>
-                    
-                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
-                        
-                        
-                        <div class="menu-item"><a href="./ref/Beans/graphDatabaseService.html">graphDatabaseService</a>
-                        </div>
-                        
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-        </td>
-            </tr>
-        </table>
+    ...
+    static mapping = {
+        name <span class="key">unique</span>:<span class="predefined-constant">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="neo4jEnhancements">Enhancements to Neo4j core API</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Neo4j Grails contains some enhancements to the Neo4j core API.</p>
+</div>
+<div class="sect3">
+<h4 id="_setting_properties_on_nodes_relationships">Setting properties on nodes/relationships</h4>
+<div class="paragraph">
+<p>Assigning an arbitrary property onto a Neo4j node or relationship can be simply done by using Groovy&#8217;s property
+mechanism:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> node = graphDatabaseService.createNode()
+node.myProperty = myValue</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The same applies for getting properties:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> node = ...
+def value = node.myProperty</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="reference">Reference</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="ref-additional-gorm-methods">Additional Gorm Methods</h3>
+<div class="sect3">
+<h4 id="ref-additional-gorm-methods-cypher">cypher</h4>
+<div class="sect4">
+<h5 id="_cypher">cypher</h5>
 
-        <div id="footer">
-            
-            
-        </div>
+</div>
+<div class="sect4">
+<h5 id="_purpose">Purpose</h5>
+<div class="paragraph">
+<p>Execute a cypher query.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_example">Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">setup</span>:
+<span class="keyword">def</span> person = <span class="keyword">new</span> Person(<span class="key">firstName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Bob</span><span class="delimiter">&quot;</span></span>, <span class="key">lastName</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Builder</span><span class="delimiter">&quot;</span></span>)
+<span class="keyword">def</span> petType = <span class="keyword">new</span> PetType(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">snake</span><span class="delimiter">&quot;</span></span>)
+<span class="keyword">def</span> pet = <span class="keyword">new</span> Pet(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>, <span class="key">type</span>: petType, <span class="key">owner</span>: person)
+person.addToPets(pet)
+person.save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+session.clear()
 
+<span class="key">when</span>:
+<span class="keyword">def</span> result = person.cypher(<span class="string"><span class="delimiter">&quot;</span><span class="content">start n=node({this}) match n-[:pets]-&gt;m return m</span><span class="delimiter">&quot;</span></span>)
 
+<span class="key">then</span>:
+result.iterator().size() == <span class="integer">1</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description">Description</h5>
+<div class="paragraph">
+<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://api.neo4j.org/current/org/neo4j/cypher/javacompat/ExecutionResult.html">ExecutionResult</a> The parameters passed are:
+* cypher query string. The query string might use a implizit <code>this</code> parameter pointing to the instance&#8217;s node
+* a optional map of cypher parameters</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-additional-gorm-methods-cypherStatic">cypherStatic</h4>
+<div class="sect4">
+<h5 id="_cypherstatic">cypherStatic</h5>
 
-<script type="text/javascript" src="./js/docs.js"></script>
+</div>
+<div class="sect4">
+<h5 id="_purpose_2">Purpose</h5>
+<div class="paragraph">
+<p>Execute a cypher query.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_example_2">Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">setup</span>:
+<span class="keyword">new</span> Person(<span class="key">lastName</span>:<span class="string"><span class="delimiter">'</span><span class="content">person1</span><span class="delimiter">'</span></span>).save()
+<span class="keyword">new</span> Person(<span class="key">lastName</span>:<span class="string"><span class="delimiter">'</span><span class="content">person2</span><span class="delimiter">'</span></span>).save()
+session.flush()
+session.clear()
 
-    </body>
+<span class="key">when</span>:
+<span class="keyword">def</span> result = Person.cypherStatic(<span class="string"><span class="delimiter">&quot;</span><span class="content">start n=node({this}) match n-[:INSTANCE]-&gt;m where m.lastName='person1' return m</span><span class="delimiter">&quot;</span></span>)
+
+<span class="key">then</span>:
+result.iterator().size()==<span class="integer">1</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_2">Description</h5>
+<div class="paragraph">
+<p><code>cypherStatic</code> is invoked on any domain class and returns a <a href="http://api.neo4j.org/current/org/neo4j/cypher/javacompat/ExecutionResult.html">ExecutionResult</a> The parameters passed are:
+* cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the domain class&#8217;s (aka subreference) node
+* a optional map of cypher parameters</p>
+</div>
+<div class="paragraph">
+<p>[[ref-additional-gorm-methods-schemaless attributes]]
+==== schemaless attributes</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_schemaless_attributes">schemaless attributes</h5>
+
+</div>
+<div class="sect4">
+<h5 id="_purpose_3">Purpose</h5>
+<div class="paragraph">
+<p>For domain classes mapped by Neo4j you can put and get arbitrary attributes on a instances by using the dot operator or
+map semantics on the domain instance.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Setting arbitrary attribute in only allowed when the domain instance is persisted (aka <code>save</code> has been called)!
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_example_3">Example</h5>
+<div class="paragraph">
+<p>A simple domain class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> <span class="predefined-type">Serializable</span> {
+    <span class="predefined-type">String</span> firstName
+    <span class="predefined-type">String</span> lastName
+    <span class="predefined-type">Integer</span> age = <span class="integer">0</span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_using_map_semantics">using map semantics</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>:
+<span class="keyword">def</span> person = <span class="keyword">new</span> Person(<span class="key">lastName</span>:<span class="string"><span class="delimiter">'</span><span class="content">person1</span><span class="delimiter">'</span></span>).save()
+person[<span class="string"><span class="delimiter">'</span><span class="content">notDeclaredProperty</span><span class="delimiter">'</span></span>] = <span class="string"><span class="delimiter">'</span><span class="content">someValue</span><span class="delimiter">'</span></span>   <span class="comment">// n.b. the 'dot' notation is not valid for undeclared properties</span>
+person[<span class="string"><span class="delimiter">'</span><span class="content">emptyArray</span><span class="delimiter">'</span></span>] = <span class="type">[]</span>
+person[<span class="string"><span class="delimiter">'</span><span class="content">someIntArray</span><span class="delimiter">'</span></span>] = [<span class="integer">1</span>,<span class="integer">2</span>,<span class="integer">3</span>]
+person[<span class="string"><span class="delimiter">'</span><span class="content">someStringArray</span><span class="delimiter">'</span></span>] = [<span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">b</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">c</span><span class="delimiter">'</span></span>]
+person[<span class="string"><span class="delimiter">'</span><span class="content">someDoubleArray</span><span class="delimiter">'</span></span>] = [<span class="float">0.9</span>, <span class="float">1.0</span>, <span class="float">1.1</span>]
+session.flush()
+session.clear()
+person = Person.get(person.id)
+
+<span class="key">then</span>:
+person[<span class="string"><span class="delimiter">'</span><span class="content">notDeclaredProperty</span><span class="delimiter">'</span></span>] == <span class="string"><span class="delimiter">'</span><span class="content">someValue</span><span class="delimiter">'</span></span>
+person[<span class="string"><span class="delimiter">'</span><span class="content">lastName</span><span class="delimiter">'</span></span>] == <span class="string"><span class="delimiter">'</span><span class="content">person1</span><span class="delimiter">'</span></span>  <span class="comment">// declared properties are also available via map semantics</span>
+person[<span class="string"><span class="delimiter">'</span><span class="content">someIntArray</span><span class="delimiter">'</span></span>] == [<span class="integer">1</span>,<span class="integer">2</span>,<span class="integer">3</span>]
+person[<span class="string"><span class="delimiter">'</span><span class="content">someStringArray</span><span class="delimiter">'</span></span>] == [<span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">b</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">c</span><span class="delimiter">'</span></span>]
+person[<span class="string"><span class="delimiter">'</span><span class="content">someDoubleArray</span><span class="delimiter">'</span></span>] == [<span class="float">0.9</span>, <span class="float">1.0</span>, <span class="float">1.1</span>]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_using_dot_operator">using dot operator</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">when</span>:
+<span class="keyword">def</span> person = <span class="keyword">new</span> Person(<span class="key">lastName</span>:<span class="string"><span class="delimiter">'</span><span class="content">person1</span><span class="delimiter">'</span></span>).save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)
+session.clear()
+person = Person.load(person.id)
+person.notDeclaredProperty = <span class="string"><span class="delimiter">'</span><span class="content">someValue</span><span class="delimiter">'</span></span>   <span class="comment">// n.b. the 'dot' notation is not valid for undeclared properties</span>
+person.emptyArray = <span class="type">[]</span>
+person.someIntArray = [<span class="integer">1</span>,<span class="integer">2</span>,<span class="integer">3</span>]
+person.someStringArray = [<span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">b</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">c</span><span class="delimiter">'</span></span>]
+person.someDoubleArray= [<span class="float">0.9</span>, <span class="float">1.0</span>, <span class="float">1.1</span>]
+session.flush()
+session.clear()
+person = Person.get(person.id)
+
+<span class="key">then</span>:
+person.notDeclaredProperty == <span class="string"><span class="delimiter">'</span><span class="content">someValue</span><span class="delimiter">'</span></span>
+person.lastName == <span class="string"><span class="delimiter">'</span><span class="content">person1</span><span class="delimiter">'</span></span>  <span class="comment">// declared properties are also available via map semantics</span>
+person.someIntArray == [<span class="integer">1</span>,<span class="integer">2</span>,<span class="integer">3</span>]
+person.someStringArray == [<span class="string"><span class="delimiter">'</span><span class="content">a</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">b</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">c</span><span class="delimiter">'</span></span>]
+person.emptyArray == <span class="type">[]</span>
+person.someDoubleArray == [<span class="float">0.9</span>, <span class="float">1.0</span>, <span class="float">1.1</span>]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_3">Description</h5>
+<div class="paragraph">
+<p>The non declared attribtes are stored a regular properties on the domain instance&#8217;s node. The values of the schemaless
+attributes must be a valid type for Neo4j property (String, primitives and arrays of the former two).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ref-beans">Beans</h3>
+<div class="sect3">
+<h4 id="ref-beans-graphDatabaseService">graphDatabaseService</h4>
+<div class="sect4">
+<h5 id="_graphdatabaseservice">graphDatabaseService</h5>
+
+</div>
+<div class="sect4">
+<h5 id="_purpose_4">Purpose</h5>
+<div class="paragraph">
+<p>A Spring bean that provides access to the lower level Neo4j GraphDatabaseService instance.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_examples">Examples</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> graphDatabaseService
+
+<span class="keyword">def</span> foo = {
+    <span class="keyword">def</span> graphDatabaseService
+    <span class="keyword">def</span> myAction = {
+        <span class="keyword">def</span> node = graphDatabaseService.createNode() <span class="comment">// create</span>
+        ... do something with node ...s
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_description_4">Description</h5>
+<div class="paragraph">
+<p>See the <a href="http://api.neo4j.org/current/org/neo4j/graphdb/GraphDatabaseService.html">Neo4j Api doc</a> docs for how to use the graphDatabaseService bean.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_configuration">Configuration</h5>
+<div class="paragraph">
+<p>tbd</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2016-06-28 13:58:24 UTC
+</div>
+</div>
+</body>
 </html>
