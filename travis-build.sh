@@ -6,11 +6,13 @@ EXIT_STATUS=0
 if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
     echo "Tagged Release Skipping Tests for Publish"
 else
-    ./gradlew  --resolve-dependencies --no-daemon check || EXIT_STATUS=$?
+    ./gradlew --refresh-dependencies --no-daemon check || EXIT_STATUS=$?
 fi
 
-./gradlew --stop
-./travis-publish.sh || EXIT_STATUS=$?
+if [[ $EXIT_STATUS -eq 0 ]]; then
+    ./gradlew --stop
+    ./travis-publish.sh || EXIT_STATUS=$?
+fi
 
 exit $EXIT_STATUS
 
