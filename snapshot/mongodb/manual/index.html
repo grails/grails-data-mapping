@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
-<meta name="author" content="Graeme Rocher, Burt Beckwith:version: 6.0.0.BUILD-SNAPSHOT">
+<meta name="author" content="Graeme Rocher, Burt Beckwith">
 <title>GORM for MongoDB</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -514,7 +514,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>GORM for MongoDB</h1>
 <div class="details">
-<span id="author" class="author">Graeme Rocher, Burt Beckwith:version: 6.0.0.BUILD-SNAPSHOT</span><br>
+<span id="author" class="author">Graeme Rocher, Burt Beckwith</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -861,33 +861,9 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-        compile <span class="string"><span class="delimiter">'</span><span class="content">org.grails.plugins:mongodb:VERSION</span><span class="delimiter">'</span></span>
+    compile 'org.grails.plugins:mongodb:6.0.0.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>Note, in newer versions of Grails it may be require to enforce the necessary dependencies. If you get errors on startup it is likely due to a dependency problem. The following block will ensure the correct dependencies are in place:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:mongodb:VERSION</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.mongodb:mongodb-driver:3.0.2</span><span class="delimiter">&quot;</span></span>
-    runtime <span class="string"><span class="delimiter">'</span><span class="content">org.springframework.data:spring-data-mongodb:1.8.1.RELEASE</span><span class="delimiter">'</span></span>
-}</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The <code>spring-data-mongodb</code> is not required by GORM for MongoDB, but there is a bug in Spring Boot 1.3 M2 which means that if you are using the MongoDB driver with Grails 3.1 M2 you will get an exception without this dependency. This bug is resolved in Spring Boot 1.3 RC1.
-</td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
 <p>For Grails 2.x you need to modify <code>BuildConfig.groovy</code>:</p>
@@ -895,7 +871,7 @@ The <code>spring-data-mongodb</code> is not required by GORM for MongoDB, but th
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
- compile <span class="string"><span class="delimiter">'</span><span class="content">:mongodb:VERSION</span><span class="delimiter">'</span></span>
+ compile ':mongodb:6.0.0.BUILD-SNAPSHOT.RELEASE'
 }</code></pre>
 </div>
 </div>
@@ -1146,7 +1122,7 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile(<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:gorm-mongodb-spring-boot:VERSION</span><span class="delimiter">&quot;</span></span>)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.0.0.BUILD-SNAPSHOT")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1203,7 +1179,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-gorm-mongodb:VERSION</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.0.0.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3185,6 +3161,7 @@ import grails.test.mixin.mongodb.*
 </div>
 <div id="footer">
 <div id="footer-text">
+Last updated 2016-06-29 08:45:23 UTC
 </div>
 </div>
 </body>
