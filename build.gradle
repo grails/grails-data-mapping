@@ -27,6 +27,7 @@ project.ext {
 
     projectMajorVersion = "6"
     projectMinorVersion = "0"
+
     projectPatchVersion = "0"
 //    releaseType = "RELEASE"
 //    releaseType = "M1"
