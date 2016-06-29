@@ -5,12 +5,10 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath "io.spring.gradle:dependency-management-plugin:0.5.7.RELEASE"
     }
 }
 
-plugins {
-    id "io.spring.dependency-management" version "0.5.2.RELEASE"
-}
 
 
 ext {
@@ -20,6 +18,7 @@ ext {
 group = "org.grails.plugins"
 version = hibernatePluginVersion
 
+apply plugin: "io.spring.dependency-management"
 apply plugin: "org.grails.grails-plugin"
 apply plugin: 'eclipse'
 apply plugin: 'idea'
