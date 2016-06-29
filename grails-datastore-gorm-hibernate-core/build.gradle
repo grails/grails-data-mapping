@@ -15,29 +15,27 @@ dependencies {
         exclude group: 'org.grails', module:'grails-plugin-testing'
     }
 
-    compile "org.springframework:spring-core:$springVersion", {
-        exclude group: 'commons-logging', module:'commons-logging'
-    }
     compile "org.springframework:spring-jdbc:$springVersion", {
         exclude group: 'commons-logging', module:'commons-logging'
     }
     compile "org.springframework:spring-orm:$springVersion", {
         exclude group: 'commons-logging', module:'commons-logging'
     }
-    compile "org.springframework:spring-tx:$springVersion", {
-        exclude group: 'commons-logging', module:'commons-logging'
-    }
 
     compile 'javax.transaction:jta:1.1'
-    compile 'org.javassist:javassist:3.17.1-GA'
+    compile 'org.javassist:javassist:3.20.0-GA'
 
-    provided('org.hibernate:hibernate-core:3.6.10.Final') {
+    String hibVersion = "${hibernateVersion}.Final"
+
+    compileOnly("org.hibernate:hibernate-core:$hibVersion") {
         exclude group:'commons-logging', module:'commons-logging'
-        exclude group:'commons-collections', module:'commons-collections'
-        exclude group:'org.slf4j', module:'slf4j-api'
-        exclude group:'xml-apis', module:'xml-apis'
         exclude group:'dom4j', module:'dom4j'
-        exclude group:'antlr', module: 'antlr'
+        exclude group:'com.h2database', module:'h2'
+        exclude group:'commons-collections', module:'commons-collections'
+        exclude group:'org.slf4j', module:'jcl-over-slf4j'
+        exclude group:'org.slf4j', module:'slf4j-api'
+        exclude group:'org.slf4j', module:'slf4j-log4j12'
+        exclude group:'xml-apis', module:'xml-apis'
     }
 
     compile('dom4j:dom4j:1.6.1') {
@@ -49,21 +47,20 @@ dependencies {
     }
 
 
-    provided('org.hibernate:hibernate-commons-annotations:3.2.0.Final'){
+    compileOnly('org.hibernate.common:hibernate-commons-annotations:4.0.5.Final'){
         exclude group: 'org.slf4j', module:'slf4j-api'
         exclude group: 'commons-logging', module:'commons-logging'
     }
 
+    compileOnly(project(":grails-datastore-web"))
 
-    provided(project(":grails-datastore-web"))
-
-
-    provided('org.hibernate:hibernate-validator:4.1.0.Final') {
+    compileOnly('org.hibernate:hibernate-validator:5.0.3.Final') {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'org.slf4j', module:'slf4j-api'
     }
-    provided('org.hibernate:hibernate-ehcache:3.6.10.Final') {
+
+    compileOnly('org.hibernate:hibernate-ehcache:3.6.10.Final') {
          exclude group:'commons-logging', module:'commons-logging'
          exclude group:'commons-collections', module:'commons-collections'
          exclude group:'org.slf4j', module:'slf4j-api'
@@ -74,8 +71,8 @@ dependencies {
          exclude group:'net.sf.ehcache', module:'ehcache-core'
     }
 
-    provided "org.springframework:spring-expression:$springVersion"
-    provided ("net.sf.ehcache:ehcache-core:2.4.8") {
+    compileOnly "org.springframework:spring-expression:$springVersion"
+    compileOnly ("net.sf.ehcache:ehcache-core:2.4.8") {
         exclude group: 'commons-logging', module:'commons-logging'
 }
 

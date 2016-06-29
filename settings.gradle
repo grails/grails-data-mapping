@@ -19,7 +19,6 @@ include ("grails-datastore-core",
         'grails-datastore-gorm-rx-plugin-support',
 
         // Grails 3 Plugins
-        'grails-plugins/hibernate3',
         'grails-plugins/hibernate4',
 
 
@@ -33,7 +32,6 @@ include ("grails-datastore-core",
         // GORM Implementations
         'grails-datastore-gorm-rest-client',
         'grails-datastore-gorm-hibernate-core',
-        'grails-datastore-gorm-hibernate',
         'grails-datastore-gorm-hibernate4'
 
 )

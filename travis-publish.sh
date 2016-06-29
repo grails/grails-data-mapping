@@ -1,17 +1,5 @@
 #!/bin/bash
 
-# use travis_after_all.py for publishing only after all builds are successfull.
-if [[ "$BUILD_LEADER" == "YES" ]]; then
-  if [[ "$BUILD_AGGREGATE_STATUS" != "others_succeeded" ]]; then
-    echo "Some builds failed, not publishing."
-    exit 0
-  fi
-else
-  # not build leader, exit
-  echo "Not build leader, exiting"
-  exit 0
-fi
-
 echo "Publishing..."
 
 EXIT_STATUS=0

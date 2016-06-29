@@ -42,7 +42,7 @@ project.ext {
     mongoVersion = '3.2.1'
 
     // plugin versions
-    hibernateVersion = "4.3.10"
+    hibernateVersion = "4.3.11"
     hibernate5Version = "5.1.0"
 
     def defaultPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
