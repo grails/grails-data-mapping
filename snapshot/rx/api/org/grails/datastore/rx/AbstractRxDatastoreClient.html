@@ -250,33 +250,53 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createEntityQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.query.QueryState, java.util.Map)">createEntityQuery</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</code><br>Creates a query for the given entity</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/gorm/rx/api/RxGormInstanceApi.html'>RxGormInstanceApi</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createInstanceApi(org.grails.datastore.mapping.model.PersistentEntity)">createInstanceApi</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState)">createQuery</a></strong>(java.lang.Class type, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</code><br></td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState, java.util.Map)">createQuery</a></strong>(java.lang.Class type, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</code><br></td>
+                        </tr>
+                        
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createQuery(java.lang.Class, java.util.Map)">createQuery</a></strong>(java.lang.Class type, java.util.Map arguments)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createQuery(java.lang.Class)">createQuery</a></strong>(java.lang.Class type)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/gorm/rx/api/RxGormStaticApi.html'>RxGormStaticApi</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createStaticApi(org.grails.datastore.mapping.model.PersistentEntity)">createStaticApi</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/gorm/rx/api/RxGormValidationApi.html'>RxGormValidationApi</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createValidationApi(org.grails.datastore.mapping.model.PersistentEntity)">createValidationApi</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.lang.Boolean&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#delete(java.lang.Object)">delete</a></strong>(java.lang.Object instance)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;java.lang.Boolean&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#delete(java.lang.Object, Map<String, Object>)">delete</a></strong>(java.lang.Object instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -285,48 +305,58 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;java.lang.Number&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#deleteAll(java.lang.Iterable, Map<String, Object>)">deleteAll</a></strong>(java.lang.Iterable instances, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#doClose()">doClose</a></strong>()</code><br>Close the client</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.io.Serializable</strong></code></td>
                             <td class="colLast"><code><strong><a href="#generateIdentifier(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object, org.grails.datastore.mapping.reflect.EntityReflector)">generateIdentifier</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.Object instance, <a href='../../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> reflector)</code><br>Generates an identifier for the given entity and instance</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable</strong></code></td>
                             <td class="colLast"><code><strong><a href="#get(Class<T>, java.io.Serializable, org.grails.datastore.rx.query.QueryState)">get</a></strong>(java.lang.Class&lt;T&gt; type, java.io.Serializable id, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#get(Class<T1>, java.io.Serializable)">get</a></strong>(java.lang.Class&lt;T1&gt; type, java.io.Serializable id)</code><br>Retrieve and instance of the given type and id</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getEventPublisher()">getEventPublisher</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getMappingContext()">getMappingContext</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#initDefaultEventListeners(org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)">initDefaultEventListeners</a></strong>(<a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> configurableApplicationEventPublisher)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insert(T1, Map<String, Object>)">insert</a></strong>(<a href='../../../../T1.html'>T1</a> instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insertAll(java.lang.Iterable)">insertAll</a></strong>(java.lang.Iterable instances)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#insertAll(java.lang.Iterable, Map<String, Object>)">insertAll</a></strong>(java.lang.Iterable instances, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -352,6 +382,16 @@ extends java.lang.Object
                         <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persistAll(java.lang.Iterable)">persistAll</a></strong>(java.lang.Iterable instances)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#persistAll(java.lang.Iterable, Map<String, Object>)">persistAll</a></strong>(java.lang.Iterable instances, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>protected&nbsp;java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#persistAllInternal(java.lang.Iterable, boolean, Map<String, Object>)">persistAllInternal</a></strong>(java.lang.Iterable instances, boolean isInsert, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -545,6 +585,15 @@ final&nbsp;void <strong>close</strong>()</h4>
                             </li>
                         </ul>
                     
+                        <a name="createEntityQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.query.QueryState, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>createEntityQuery</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</h4>
+                                <p> Creates a query for the given entity
+     <DL><DT><B>Returns:</B></DT><DD>The query object</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="createInstanceApi(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -559,6 +608,24 @@ final&nbsp;void <strong>close</strong>()</h4>
                             <li class="blockList">
                                 <h4>@java.lang.Override
 final&nbsp;<a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>createQuery</strong>(java.lang.Class type, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+final&nbsp;<a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>createQuery</strong>(java.lang.Class type, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="createQuery(java.lang.Class, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+final&nbsp;<a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>createQuery</strong>(java.lang.Class type, java.util.Map arguments)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -599,11 +666,29 @@ final&nbsp;java.util.Observable&lt;java.lang.Boolean&gt; <strong>delete</strong>
                             </li>
                         </ul>
                     
+                        <a name="delete(java.lang.Object, Map<String, Object>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;java.lang.Boolean&gt; <strong>delete</strong>(java.lang.Object instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="deleteAll(java.lang.Iterable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
 java.util.Observable&lt;java.lang.Number&gt; <strong>deleteAll</strong>(java.lang.Iterable instances)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="deleteAll(java.lang.Iterable, Map<String, Object>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;java.lang.Number&gt; <strong>deleteAll</strong>(java.lang.Iterable instances, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -687,6 +772,15 @@ java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>i
                             </li>
                         </ul>
                     
+                        <a name="insertAll(java.lang.Iterable, Map<String, Object>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>insertAll</strong>(java.lang.Iterable instances, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="isIndexed(org.grails.datastore.mapping.model.PersistentProperty)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -728,6 +822,23 @@ final&nbsp;java.util.Observable&lt;T1&gt; <strong>persist</strong>(<a href='../.
                             <li class="blockList">
                                 <h4>@java.lang.Override
 java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>persistAll</strong>(java.lang.Iterable instances)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="persistAll(java.lang.Iterable, Map<String, Object>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>persistAll</strong>(java.lang.Iterable instances, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="persistAllInternal(java.lang.Iterable, boolean, Map<String, Object>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>persistAllInternal</strong>(java.lang.Iterable instances, boolean isInsert, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</h4>
                                 <p></p>
                             </li>
                         </ul>

@@ -262,32 +262,32 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findAllWhere(Map<String, Object>)">findAllWhere</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryMap)</code><br>Finds a single result matching all of the given conditions. </td>
+                            <td class="colLast"><code><strong><a href="#findAllWhere(java.util.Map)">findAllWhere</a></strong>(java.util.Map queryMap)</code><br>Finds a single result matching all of the given conditions. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findAllWhere(Map<String, Object>, java.util.Map)">findAllWhere</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryMap, java.util.Map args)</code><br>Finds a single result matching all of the given conditions. </td>
+                            <td class="colLast"><code><strong><a href="#findAllWhere(java.util.Map, java.util.Map)">findAllWhere</a></strong>(java.util.Map queryMap, java.util.Map args)</code><br>Finds a single result matching all of the given conditions. </td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findOrCreateWhere(Map<String, Object>)">findOrCreateWhere</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryMap)</code><br>Finds a single result matching all of the given conditions. </td>
+                            <td class="colLast"><code><strong><a href="#findOrCreateWhere(java.util.Map)">findOrCreateWhere</a></strong>(java.util.Map queryMap)</code><br>Finds a single result matching all of the given conditions. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findOrSaveWhere(Map<String, Object>)">findOrSaveWhere</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryMap)</code><br>Finds a single result matching all of the given conditions. </td>
+                            <td class="colLast"><code><strong><a href="#findOrSaveWhere(java.util.Map)">findOrSaveWhere</a></strong>(java.util.Map queryMap)</code><br>Finds a single result matching all of the given conditions. </td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findWhere(Map<String, Object>)">findWhere</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryMap)</code><br>Finds a single result matching all of the given conditions. </td>
+                            <td class="colLast"><code><strong><a href="#findWhere(java.util.Map)">findWhere</a></strong>(java.util.Map queryMap)</code><br>Finds a single result matching all of the given conditions. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findWhere(Map<String, Object>, java.util.Map)">findWhere</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryMap, java.util.Map args)</code><br>Finds a single result matching all of the given conditions. </td>
+                            <td class="colLast"><code><strong><a href="#findWhere(java.util.Map, java.util.Map)">findWhere</a></strong>(java.util.Map queryMap, java.util.Map args)</code><br>Finds a single result matching all of the given conditions. </td>
                         </tr>
                         
                         <tr class="altColor">
@@ -297,12 +297,12 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#first(Map<String, Object>)">first</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; params = Collections.emptyMap()</code><br>Finds the first object.  </td>
+                            <td class="colLast"><code><strong><a href="#first(java.util.Map)">first</a></strong>(java.util.Map params = Collections.emptyMap()</code><br>Finds the first object.  </td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#get(java.io.Serializable, Map<String, Object>)">get</a></strong>(java.io.Serializable id, java.util.Map&lt;java.lang.String, java.lang.Object&gt; args = Collections.emptyMap()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#get(java.io.Serializable, java.util.Map)">get</a></strong>(java.io.Serializable id, java.util.Map args = Collections.emptyMap()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -312,7 +312,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#last(Map<String, Object>)">last</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; params = Collections.emptyMap()</code><br>Finds the last object.  </td>
+                            <td class="colLast"><code><strong><a href="#last(java.util.Map)">last</a></strong>(java.util.Map params = Collections.emptyMap()</code><br>Finds the last object.  </td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -331,8 +331,28 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#proxy(java.io.Serializable)">proxy</a></strong>(java.io.Serializable id)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#proxy(java.io.Serializable, java.util.Map)">proxy</a></strong>(java.io.Serializable id, java.util.Map queryArgs)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#proxy(DetachedCriteria<D>)">proxy</a></strong>(<a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; query)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#proxy(DetachedCriteria<D>, java.util.Map)">proxy</a></strong>(<a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; query, java.util.Map queryArgs)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#saveAll(Iterable<D>, Map<String, Object>)">saveAll</a></strong>(java.lang.Iterable&lt;D&gt; objects, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments = Collections.emptyMap()</code><br>Batch saves all of the given objects</td>
+                            <td class="colLast"><code><strong><a href="#saveAll(Iterable<D>, java.util.Map)">saveAll</a></strong>(java.lang.Iterable&lt;D&gt; objects, java.util.Map arguments = Collections.emptyMap()</code><br>Batch saves all of the given objects</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -574,57 +594,57 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>exists</strong>(java.io.Se
                             </li>
                         </ul>
                     
-                        <a name="findAllWhere(Map<String, Object>)"><!-- --></a>
+                        <a name="findAllWhere(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;D&gt; <strong>findAllWhere</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryMap)</h4>
+                                <h4>java.util.Observable&lt;D&gt; <strong>findAllWhere</strong>(java.util.Map queryMap)</h4>
                                 <p> Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
      <DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="findAllWhere(Map<String, Object>, java.util.Map)"><!-- --></a>
+                        <a name="findAllWhere(java.util.Map, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;D&gt; <strong>findAllWhere</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryMap, java.util.Map args)</h4>
+                                <h4>java.util.Observable&lt;D&gt; <strong>findAllWhere</strong>(java.util.Map queryMap, java.util.Map args)</h4>
                                 <p> Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
      <DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD><DD><code>args</code> -  The Query arguments</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="findOrCreateWhere(Map<String, Object>)"><!-- --></a>
+                        <a name="findOrCreateWhere(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;D&gt; <strong>findOrCreateWhere</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryMap)</h4>
+                                <h4>java.util.Observable&lt;D&gt; <strong>findOrCreateWhere</strong>(java.util.Map queryMap)</h4>
                                 <p> Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
  a matching persistent entity is not found a new entity is created and returned.
      <DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="findOrSaveWhere(Map<String, Object>)"><!-- --></a>
+                        <a name="findOrSaveWhere(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;D&gt; <strong>findOrSaveWhere</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryMap)</h4>
+                                <h4>java.util.Observable&lt;D&gt; <strong>findOrSaveWhere</strong>(java.util.Map queryMap)</h4>
                                 <p> Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
  a matching persistent entity is not found a new entity is created, saved and returned.
      <DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="findWhere(Map<String, Object>)"><!-- --></a>
+                        <a name="findWhere(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;D&gt; <strong>findWhere</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryMap)</h4>
+                                <h4>java.util.Observable&lt;D&gt; <strong>findWhere</strong>(java.util.Map queryMap)</h4>
                                 <p> Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
      <DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="findWhere(Map<String, Object>, java.util.Map)"><!-- --></a>
+                        <a name="findWhere(java.util.Map, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;D&gt; <strong>findWhere</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryMap, java.util.Map args)</h4>
+                                <h4>java.util.Observable&lt;D&gt; <strong>findWhere</strong>(java.util.Map queryMap, java.util.Map args)</h4>
                                 <p> Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
      <DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD><DD><code>args</code> -  The Query arguments</DD></DL></p>
                             </li>
@@ -639,10 +659,10 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>exists</strong>(java.io.Se
                             </li>
                         </ul>
                     
-                        <a name="first(Map<String, Object>)"><!-- --></a>
+                        <a name="first(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;D&gt; <strong>first</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; params = Collections.emptyMap()</h4>
+                                <h4>java.util.Observable&lt;D&gt; <strong>first</strong>(java.util.Map params = Collections.emptyMap()</h4>
                                 <p> Finds the first object.  If queryParams includes 'sort', that will
  dictate the sort order, otherwise natural sort order will be used.
  queryParams may include any of the same parameters that might be passed
@@ -652,11 +672,11 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>exists</strong>(java.io.Se
                             </li>
                         </ul>
                     
-                        <a name="get(java.io.Serializable, Map<String, Object>)"><!-- --></a>
+                        <a name="get(java.io.Serializable, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-java.util.Observable&lt;D&gt; <strong>get</strong>(java.io.Serializable id, java.util.Map&lt;java.lang.String, java.lang.Object&gt; args = Collections.emptyMap()</h4>
+java.util.Observable&lt;D&gt; <strong>get</strong>(java.io.Serializable id, java.util.Map args = Collections.emptyMap()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -670,10 +690,10 @@ java.util.Observable&lt;D&gt; <strong>get</strong>(java.io.Serializable id, java
                             </li>
                         </ul>
                     
-                        <a name="last(Map<String, Object>)"><!-- --></a>
+                        <a name="last(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;D&gt; <strong>last</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; params = Collections.emptyMap()</h4>
+                                <h4>java.util.Observable&lt;D&gt; <strong>last</strong>(java.util.Map params = Collections.emptyMap()</h4>
                                 <p> Finds the last object.  If queryParams includes 'sort', that will
  dictate the sort order, otherwise natural sort order will be used.
  queryParams may include any of the same parameters that might be passed
@@ -709,11 +729,47 @@ java.util.Observable&lt;D&gt; <strong>methodMissing</strong>(java.lang.String me
                             </li>
                         </ul>
                     
-                        <a name="saveAll(Iterable<D>, Map<String, Object>)"><!-- --></a>
+                        <a name="proxy(java.io.Serializable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>saveAll</strong>(java.lang.Iterable&lt;D&gt; objects, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments = Collections.emptyMap()</h4>
+<a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt; <strong>proxy</strong>(java.io.Serializable id)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="proxy(java.io.Serializable, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt; <strong>proxy</strong>(java.io.Serializable id, java.util.Map queryArgs)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="proxy(DetachedCriteria<D>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt; <strong>proxy</strong>(<a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; query)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="proxy(DetachedCriteria<D>, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt; <strong>proxy</strong>(<a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; query, java.util.Map queryArgs)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="saveAll(Iterable<D>, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>saveAll</strong>(java.lang.Iterable&lt;D&gt; objects, java.util.Map arguments = Collections.emptyMap()</h4>
                                 <p> Batch saves all of the given objects
      <DL><DT><B>Returns:</B></DT><DD>An observable that emits the identifiers of the saved objects</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>objects</code> -  The objects to save</DD></DL></p>
                             </li>

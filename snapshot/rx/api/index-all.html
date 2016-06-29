@@ -379,8 +379,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.html#allEq(Map<String, Object>)" title="Method in Query">allEq(Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.html">Query</a>
 </dt><dd> <div class="block">Shortcut to restrict the query to multiple given property values</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#allowArbitraryCustomTypes()" title="Method in MappingFactory">allowArbitraryCustomTypes()</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#allQualifiers(org.grails.datastore.mapping.core.Datastore, org.grails.datastore.mapping.model.PersistentEntity)" title="Method in GormEnhancer">allQualifiers(Datastore, PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#and(groovy.lang.Closure)" title="Method in AbstractCriteriaBuilder">and(Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
@@ -485,8 +483,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#associations" title="Field in AbstractPersistentEntity">associations</a></span> - Field in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#associationtoString(java.lang.String, org.grails.datastore.mapping.model.types.Association)" title="Method in MappingFactory">associationtoString(String, Association)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html" title="Class in org.grails.datastore.mapping.reflect">AstUtils</a></span> - Class in <a href="./org/grails/datastore/mapping/reflect/package-summary.html">org.grails.datastore.mapping.reflect</a>
 </dt><dd><div class="block">Utility methods for dealing with Groovy ASTs</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/async/AsyncQuery.html" title="Class in org.grails.datastore.gorm.async">AsyncQuery</a></span> - Class in <a href="./org/grails/datastore/gorm/async/package-summary.html">org.grails.datastore.gorm.async</a>
@@ -552,6 +548,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Represents a batch operation</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/batch/BatchOperation.EntityOperation.html" title="Class in org.grails.datastore.rx.batch.BatchOperation">BatchOperation.EntityOperation</a></span> - Class in <a href="./org/grails/datastore/rx/batch/package-summary.html">org.grails.datastore.rx.batch</a>
 </dt><dd><div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/batch/BatchOperation.html#BatchOperation(Map<String, Object>)" title="Constructor in BatchOperation">BatchOperation(Map&lt;String, Object&gt;)</a></span> - Constructor in <a href="org/grails/datastore/rx/batch/BatchOperation.html">BatchOperation</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#batchWrite(org.grails.datastore.rx.batch.BatchOperation)" title="Method in AbstractRxDatastoreClient">batchWrite(BatchOperation)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
 </dt><dd> <div class="block">Executes a batch write operation</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/BeanEntityAccess.html" title="Class in org.grails.datastore.mapping.engine">BeanEntityAccess</a></span> - Class in <a href="./org/grails/datastore/mapping/engine/package-summary.html">org.grails.datastore.mapping.engine</a>
@@ -614,11 +612,17 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Restricts the results by the given property value range</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Restrictions.html#between(java.lang.String, java.lang.Object, java.lang.Object)" title="Method in Restrictions">between(String, Object, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/query/Restrictions.html">Restrictions</a>
 </dt><dd> <div class="block">Restricts the results by the given property value range</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/exceptions/BlockingOperationException.html" title="Class in org.grails.datastore.rx.exceptions">BlockingOperationException</a></span> - Class in <a href="./org/grails/datastore/rx/exceptions/package-summary.html">org.grails.datastore.rx.exceptions</a>
+</dt><dd><div class="block">Thrown when a blocking operation is executed</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/exceptions/BlockingOperationException.html#BlockingOperationException(java.lang.String)" title="Constructor in BlockingOperationException">BlockingOperationException(String)</a></span> - Constructor in <a href="org/grails/datastore/rx/exceptions/BlockingOperationException.html">BlockingOperationException</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#build(groovy.lang.Closure)" title="Method in AbstractCriteriaBuilder">build(Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#build(groovy.lang.Closure)" title="Method in AbstractDetachedCriteria">build(Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
 </dt><dd> <div class="block">Enable the builder syntax for constructing Criteria</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/support/BeforeValidateHelper.BeforeValidateEventTriggerCaller.html#build(Class<?>, groovy.lang.MetaClass, Class<?>)" title="Method in BeforeValidateHelper.BeforeValidateEventTriggerCaller">build(Class&lt;?&gt;, MetaClass, Class&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/support/BeforeValidateHelper.BeforeValidateEventTriggerCaller.html">BeforeValidateHelper.BeforeValidateEventTriggerCaller</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/DatastoreConfigurationBuilder.html#build()" title="Method in DatastoreConfigurationBuilder">build()</a></span> - Method in <a href="org/grails/datastore/mapping/config/DatastoreConfigurationBuilder.html">DatastoreConfigurationBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/DetachedCriteria.html#build(groovy.lang.Closure)" title="Method in DetachedCriteria">build(Closure)</a></span> - Method in <a href="grails/gorm/DetachedCriteria.html">DetachedCriteria</a>
 </dt><dd> <div class="block">Enable the builder syntax for constructing Criteria</div></dd>
@@ -838,10 +842,16 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html" title="Interface in org.grails.datastore.gorm.events">ConfigurableApplicationEventPublisher</a></span> - Interface in <a href="./org/grails/datastore/gorm/events/package-summary.html">org.grails.datastore.gorm.events</a>
 </dt><dd><div class="block">An org.springframework.context.ApplicationEventPublisher that is configurable with new listeners</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractMappingContext.html#CONFIGURATION_PREFIX" title="Field in AbstractMappingContext">CONFIGURATION_PREFIX</a></span> - Field in <a href="org/grails/datastore/mapping/model/AbstractMappingContext.html">AbstractMappingContext</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html#configure()" title="Method in AbstractDatastoreInitializer">configure()</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html">AbstractDatastoreInitializer</a>
 </dt><dd> <div class="block">Configures for an existing Mongo instance</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractMappingContext.html#configure(org.springframework.core.env.PropertyResolver)" title="Method in AbstractMappingContext">configure(PropertyResolver)</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractMappingContext.html">AbstractMappingContext</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#configure()" title="Method in DynamicMethodsConfigurer">configure()</a></span> - Method in <a href="org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html">DynamicMethodsConfigurer</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingContext.html#configure(org.springframework.core.env.PropertyResolver)" title="Method in MappingContext">configure(PropertyResolver)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingContext.html">MappingContext</a>
+</dt><dd> <div class="block">Configures the MappingContext</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html#configureForBeanDefinitionRegistry(org.springframework.beans.factory.support.BeanDefinitionRegistry)" title="Method in AbstractDatastoreInitializer">configureForBeanDefinitionRegistry(BeanDefinitionRegistry)</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html">AbstractDatastoreInitializer</a>
 </dt><dd> <div class="block">Configures an existing BeanDefinitionRegistry</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/DynamicFinder.html#configureQueryWithArguments(java.lang.Class, org.grails.datastore.mapping.query.Query, java.lang.Object)" title="Method in DynamicFinder">configureQueryWithArguments(Class, Query, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/DynamicFinder.html">DynamicFinder</a>
@@ -1014,12 +1024,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#createAlias(java.lang.String, java.lang.String)" title="Method in AbstractDetachedCriteria">createAlias(String, String)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
 </dt><dd> <div class="block">If the underlying datastore supports aliases, then an alias is created for the given association</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createBasicCollection(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor)" title="Method in MappingFactory">createBasicCollection(PersistentEntity, MappingContext, PropertyDescriptor)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/DatastoreConfigurationBuilder.html#createBuilder()" title="Method in DatastoreConfigurationBuilder">createBuilder()</a></span> - Method in <a href="org/grails/datastore/mapping/config/DatastoreConfigurationBuilder.html">DatastoreConfigurationBuilder</a>
+</dt><dd> <div class="block">Creates the native builder</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/PersistentSet.html#createCollection()" title="Method in PersistentSet">createCollection()</a></span> - Method in <a href="org/grails/datastore/mapping/collection/PersistentSet.html">PersistentSet</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/internal/MappingUtils.html#createConcreteCollection(java.lang.Class)" title="Method in MappingUtils">createConcreteCollection(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/internal/MappingUtils.html">MappingUtils</a>
 </dt><dd> <div class="block">Creates a concrete collection for the supplied interface</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxCollectionUtils.html#createConcreteCollection(org.grails.datastore.mapping.model.types.Association, org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState)" title="Method in RxCollectionUtils">createConcreteCollection(Association, Query, QueryState)</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxCollectionUtils.html">RxCollectionUtils</a>
+</dt><dd> <div class="block">Creates a concrete collection for the given association</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html#createConfigurationBuilder(org.grails.datastore.mapping.model.PersistentEntity, R)" title="Method in AbstractGormMappingFactory">createConfigurationBuilder(PersistentEntity, R)</a></span> - Method in <a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html">AbstractGormMappingFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#createCriteria()" title="Method in GormEntity">createCriteria()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
@@ -1066,22 +1078,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Rlike.html#createCriterion()" title="Method in MethodExpression.Rlike">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.Rlike.html">MethodExpression.Rlike</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createCustom(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor)" title="Method in MappingFactory">createCustom(PersistentEntity, MappingContext, PropertyDescriptor)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block">Creates a custom prpoerty type</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createDefaultIdentityMapping(org.grails.datastore.mapping.model.ClassMapping)" title="Method in MappingFactory">createDefaultIdentityMapping(ClassMapping)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html#createDocumentMappingFactory(groovy.lang.Closure)" title="Method in DocumentMappingContext">createDocumentMappingFactory(Closure)</a></span> - Method in <a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html">DocumentMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#createDynamicFinders()" title="Method in GormEnhancer">createDynamicFinders()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#createDynamicFinders()" title="Method in RxGormStaticApi">createDynamicFinders()</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createEmbedded(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor)" title="Method in MappingFactory">createEmbedded(PersistentEntity, MappingContext, PropertyDescriptor)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block">Creates an <a href='../../../../../org/grails/datastore/mapping/model/types/Embedded.html' title='Embedded'>Embedded</a> type used to model an embedded association (composition)</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#createEmbeddedCacheEntryKey(java.lang.Object)" title="Method in NativeEntryEntityPersister">createEmbeddedCacheEntryKey(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createEmbeddedCollection(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor)" title="Method in MappingFactory">createEmbeddedCollection(PersistentEntity, MappingContext, PropertyDescriptor)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block">Creates an <a href='../../../../../org/grails/datastore/mapping/model/types/EmbeddedCollection.html' title='EmbeddedCollection'>EmbeddedCollection</a> type used to model an embedded collection association (composition).</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractMappingContext.html#createEmbeddedEntity(java.lang.Class)" title="Method in AbstractMappingContext">createEmbeddedEntity(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractMappingContext.html">AbstractMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingContext.html#createEmbeddedEntity(java.lang.Class)" title="Method in MappingContext">createEmbeddedEntity(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingContext.html">MappingContext</a>
@@ -1100,7 +1104,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/SessionImplementor.html#createEntityAccess(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object)" title="Method in SessionImplementor">createEntityAccess(PersistentEntity, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/core/SessionImplementor.html">SessionImplementor</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#createEntityQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.query.QueryState)" title="Method in AbstractRxDatastoreClient">createEntityQuery(PersistentEntity, QueryState)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#createEntityQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.query.QueryState, java.util.Map)" title="Method in AbstractRxDatastoreClient">createEntityQuery(PersistentEntity, QueryState, Map)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
 </dt><dd> <div class="block">Creates a query for the given entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/DynamicFinder.html#createFinderInvocation(java.lang.Class, java.lang.String, groovy.lang.Closure, java.lang.Object)" title="Method in DynamicFinder">createFinderInvocation(Class, String, Closure, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/DynamicFinder.html">DynamicFinder</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1108,28 +1112,18 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#createGormStaticApi(java.lang.Class, List<FinderMethod>)" title="Method in DynamicMethodsConfigurer">createGormStaticApi(Class, List&lt;FinderMethod&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html">DynamicMethodsConfigurer</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createIdentity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor)" title="Method in MappingFactory">createIdentity(PersistentEntity, MappingContext, PropertyDescriptor)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block">Creates an identifier property</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html#createIdentityMapping(org.grails.datastore.mapping.model.ClassMapping)" title="Method in AbstractGormMappingFactory">createIdentityMapping(ClassMapping)</a></span> - Method in <a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html">AbstractGormMappingFactory</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createIdentityMapping(org.grails.datastore.mapping.model.ClassMapping)" title="Method in MappingFactory">createIdentityMapping(ClassMapping)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#createInstanceApi(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in AbstractRxDatastoreClient">createInstanceApi(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html#createInstanceApi(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in RxDatastoreClientImplementor">createInstanceApi(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html">RxDatastoreClientImplementor</a>
 </dt><dd> <div class="block">Creates an instance API (used for instance methods)</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createManyToMany(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor)" title="Method in MappingFactory">createManyToMany(PersistentEntity, MappingContext, PropertyDescriptor)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block">Creates a <a href='../../../../../org/grails/datastore/mapping/model/types/ManyToMany.html' title='ManyToMany'>ManyToMany</a> type used to model a many-to-many association between entities</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createManyToOne(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor)" title="Method in MappingFactory">createManyToOne(PersistentEntity, MappingContext, PropertyDescriptor)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block">Creates a many-to-one association type used for a mapping a many-to-one association between entities</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html#createMappedForm(org.grails.datastore.mapping.model.PersistentProperty)" title="Method in AbstractGormMappingFactory">createMappedForm(PersistentProperty)</a></span> - Method in <a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html">AbstractGormMappingFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/keyvalue/mapping/config/GormKeyValueMappingFactory.html#createMappedForm(org.grails.datastore.mapping.model.PersistentProperty)" title="Method in GormKeyValueMappingFactory">createMappedForm(PersistentProperty)</a></span> - Method in <a href="org/grails/datastore/mapping/keyvalue/mapping/config/GormKeyValueMappingFactory.html">GormKeyValueMappingFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValueMappingFactory.html#createMappedForm(org.grails.datastore.mapping.model.PersistentProperty)" title="Method in KeyValueMappingFactory">createMappedForm(PersistentProperty)</a></span> - Method in <a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValueMappingFactory.html">KeyValueMappingFactory</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createMappedForm(org.grails.datastore.mapping.model.PersistentProperty)" title="Method in MappingFactory">createMappedForm(PersistentProperty)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block">Creates the mapped form of a PersistentProperty instance</div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#createMarkDirtyMethodCall(org.codehaus.groovy.ast.MethodNode, java.lang.String, org.codehaus.groovy.ast.Variable)" title="Method in DirtyCheckingTransformer">createMarkDirtyMethodCall(MethodNode, String, Variable)</a></span> - Method in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/JavassistProxyFactory.html#createMethodHandler(org.grails.datastore.mapping.core.Session, java.lang.Class, java.lang.Class, java.io.Serializable)" title="Method in JavassistProxyFactory">createMethodHandler(Session, Class, Class, Serializable)</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/JavassistProxyFactory.html">JavassistProxyFactory</a>
@@ -1148,10 +1142,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#createObjectFromNativeEntry(org.grails.datastore.mapping.model.PersistentEntity, java.io.Serializable, T)" title="Method in NativeEntryEntityPersister">createObjectFromNativeEntry(PersistentEntity, Serializable, T)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createOneToMany(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor)" title="Method in MappingFactory">createOneToMany(PersistentEntity, MappingContext, PropertyDescriptor)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block">Creates a <a href='../../../../../org/grails/datastore/mapping/model/types/OneToMany.html' title='OneToMany'>OneToMany</a> type used to model a one-to-many association between entities</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createOneToOne(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor)" title="Method in MappingFactory">createOneToOne(PersistentEntity, MappingContext, PropertyDescriptor)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block">Creates a one-to-one association type used for mapping a one-to-one association between entities</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractMappingContext.html#createPersistentEntity(java.lang.Class, boolean)" title="Method in AbstractMappingContext">createPersistentEntity(Class, boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractMappingContext.html">AbstractMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html#createPersistentEntity(java.lang.Class, boolean)" title="Method in DocumentMappingContext">createPersistentEntity(Class, boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html">DocumentMappingContext</a>
@@ -1161,8 +1151,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractSession.html#createPersister(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)" title="Method in AbstractSession">createPersister(Class, MappingContext)</a></span> - Method in <a href="org/grails/datastore/mapping/core/AbstractSession.html">AbstractSession</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/simple/SimpleMapSession.html#createPersister(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)" title="Method in SimpleMapSession">createPersister(Class, MappingContext)</a></span> - Method in <a href="org/grails/datastore/mapping/simple/SimpleMapSession.html">SimpleMapSession</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createPropertyMapping(PersistentProperty<T>, org.grails.datastore.mapping.model.PersistentEntity)" title="Method in MappingFactory">createPropertyMapping(PersistentProperty&lt;T&gt;, PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html#createPropertyResolverForConfig(java.util.Map)" title="Method in AbstractDatastoreInitializer">createPropertyResolverForConfig(Map)</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html">AbstractDatastoreInitializer</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1188,9 +1176,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Creates a query instance for the give type</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/QueryCreator.html#createQuery(java.lang.Class)" title="Method in QueryCreator">createQuery(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/query/QueryCreator.html">QueryCreator</a>
 </dt><dd> <div class="block">Creates a query instance for the give type</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/RxDatastoreClient.html#createQuery(java.lang.Class)" title="Method in RxDatastoreClient">createQuery(Class)</a></span> - Method in <a href="org/grails/datastore/rx/RxDatastoreClient.html">RxDatastoreClient</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/RxDatastoreClient.html#createQuery(java.lang.Class, java.util.Map)" title="Method in RxDatastoreClient">createQuery(Class, Map)</a></span> - Method in <a href="org/grails/datastore/rx/RxDatastoreClient.html">RxDatastoreClient</a>
 </dt><dd> <div class="block">Creates a query for the given type</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html#createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState)" title="Method in RxDatastoreClientImplementor">createQuery(Class, QueryState)</a></span> - Method in <a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html">RxDatastoreClientImplementor</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html#createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState, java.util.Map)" title="Method in RxDatastoreClientImplementor">createQuery(Class, QueryState, Map)</a></span> - Method in <a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html">RxDatastoreClientImplementor</a>
 </dt><dd> <div class="block">Create a query, passing the entity state</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html#createQuery(java.lang.Class)" title="Method in Session">createQuery(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/core/Session.html">Session</a>
 </dt><dd> <div class="block">Creates a query instance for the give type</div></dd>
@@ -1200,8 +1188,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Creates the native session</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/simple/SimpleMapDatastore.html#createSession(org.springframework.core.env.PropertyResolver)" title="Method in SimpleMapDatastore">createSession(PropertyResolver)</a></span> - Method in <a href="org/grails/datastore/mapping/simple/SimpleMapDatastore.html">SimpleMapDatastore</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createSimple(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor)" title="Method in MappingFactory">createSimple(PersistentEntity, MappingContext, PropertyDescriptor)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block">Creates a simple property type used for mapping basic types such as String, long, integer etc.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractDatastore.html#createStatelessSession(org.springframework.core.env.PropertyResolver)" title="Method in AbstractDatastore">createStatelessSession(PropertyResolver)</a></span> - Method in <a href="org/grails/datastore/mapping/core/AbstractDatastore.html">AbstractDatastore</a>
 </dt><dd> <div class="block">Creates the native stateless session</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#createStaticApi(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in AbstractRxDatastoreClient">createStaticApi(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
@@ -1273,6 +1259,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/DatastoreAware.html" title="Interface in org.grails.datastore.mapping.core">DatastoreAware</a></span> - Interface in <a href="./org/grails/datastore/mapping/core/package-summary.html">org.grails.datastore.mapping.core</a>
 </dt><dd><div class="block">An interface for classes to implement that want access to the Datastore</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/DatastoreConfigurationBuilder.html" title="Class in org.grails.datastore.mapping.config">DatastoreConfigurationBuilder</a></span> - Class in <a href="./org/grails/datastore/mapping/config/package-summary.html">org.grails.datastore.mapping.config</a>
+</dt><dd><div class="block">A generic configuration builder that implementors can implement to construct the configuration from the source org.springframework.core.env.PropertyResolver</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/DatastoreConfigurationBuilder.html#DatastoreConfigurationBuilder(org.springframework.core.env.PropertyResolver, java.lang.String, java.lang.String)" title="Constructor in DatastoreConfigurationBuilder">DatastoreConfigurationBuilder(PropertyResolver, String, String)</a></span> - Constructor in <a href="org/grails/datastore/mapping/config/DatastoreConfigurationBuilder.html">DatastoreConfigurationBuilder</a>
+</dt><dd> <div class="block">@param propertyResolver The property resolver</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/DatastoreConfigurationException.html" title="Class in org.grails.datastore.mapping.model">DatastoreConfigurationException</a></span> - Class in <a href="./org/grails/datastore/mapping/model/package-summary.html">org.grails.datastore.mapping.model</a>
 </dt><dd><div class="block">Exception thrown when something goes wrong configuring a datastore.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/DatastoreConfigurationException.html#DatastoreConfigurationException(java.lang.String, java.lang.Throwable)" title="Constructor in DatastoreConfigurationException">DatastoreConfigurationException(String, Throwable)</a></span> - Constructor in <a href="org/grails/datastore/mapping/model/DatastoreConfigurationException.html">DatastoreConfigurationException</a>
@@ -1332,7 +1322,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">A delegating implementation of <a href='../../../../org/grails/datastore/gorm/GormEntityApi.html' title='GormEntityApi'>GormEntityApi</a></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/DelegatingGormEntityApi.html#DelegatingGormEntityApi(GormInstanceApi<D>, D)" title="Constructor in DelegatingGormEntityApi">DelegatingGormEntityApi(GormInstanceApi&lt;D&gt;, D)</a></span> - Constructor in <a href="org/grails/datastore/gorm/DelegatingGormEntityApi.html">DelegatingGormEntityApi</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#delete(java.lang.Object)" title="Method in AbstractRxDatastoreClient">delete(Object)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#delete(java.lang.Object, Map<String, Object>)" title="Method in AbstractRxDatastoreClient">delete(Object, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractSession.html#delete(java.lang.Iterable)" title="Method in AbstractSession">delete(Iterable)</a></span> - Method in <a href="org/grails/datastore/mapping/core/AbstractSession.html">AbstractSession</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1350,19 +1340,19 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Deletes an instance from the datastore</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/Persister.html#delete(java.lang.Object)" title="Method in Persister">delete(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/Persister.html">Persister</a>
 </dt><dd> <div class="block">Deletes a single object</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/RxDatastoreClient.html#delete(java.lang.Object)" title="Method in RxDatastoreClient">delete(Object)</a></span> - Method in <a href="org/grails/datastore/rx/RxDatastoreClient.html">RxDatastoreClient</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/RxDatastoreClient.html#delete(java.lang.Object, Map<String, Object>)" title="Method in RxDatastoreClient">delete(Object, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/RxDatastoreClient.html">RxDatastoreClient</a>
 </dt><dd> <div class="block">Deletes an instance</div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#delete()" title="Method in RxEntity">delete()</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
+<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#delete(java.util.Map)" title="Method in RxEntity">delete(Map)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
 </dt><dd> <div class="block">Deletes an entity</div></dd>
-<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormInstanceApi.html#delete(D)" title="Method in RxGormInstanceApi">delete(D)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormInstanceApi.html">RxGormInstanceApi</a>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormInstanceApi.html#delete(D, java.util.Map)" title="Method in RxGormInstanceApi">delete(D, Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormInstanceApi.html">RxGormInstanceApi</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormInstanceOperations.html#delete(D)" title="Method in RxGormInstanceOperations">delete(D)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormInstanceOperations.html">RxGormInstanceOperations</a>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormInstanceOperations.html#delete(D, java.util.Map)" title="Method in RxGormInstanceOperations">delete(D, Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormInstanceOperations.html">RxGormInstanceOperations</a>
 </dt><dd> <div class="block">Deletes an entity</div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormOperations.html#delete()" title="Method in RxGormOperations">delete()</a></span> - Method in <a href="grails/gorm/rx/api/RxGormOperations.html">RxGormOperations</a>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormOperations.html#delete(Map<String, Object>)" title="Method in RxGormOperations">delete(Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormOperations.html">RxGormOperations</a>
 </dt><dd> <div class="block">Deletes an entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html#delete(java.lang.Object)" title="Method in Session">delete(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/core/Session.html">Session</a>
 </dt><dd> <div class="block">Deletes a single object</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#deleteAll(java.lang.Iterable)" title="Method in AbstractRxDatastoreClient">deleteAll(Iterable)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#deleteAll(java.lang.Iterable, Map<String, Object>)" title="Method in AbstractRxDatastoreClient">deleteAll(Iterable, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractSession.html#deleteAll(org.grails.datastore.mapping.query.api.QueryableCriteria)" title="Method in AbstractSession">deleteAll(QueryableCriteria)</a></span> - Method in <a href="org/grails/datastore/mapping/core/AbstractSession.html">AbstractSession</a>
 </dt><dd> <div class="block">This default implementation of the deleteAll method is unlikely to be optimal as it iterates and deletes each object.</div></dd>
@@ -1374,7 +1364,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Deletes all entities matching this criteria</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#deleteAll(java.lang.Iterable)" title="Method in GormStaticApi">deleteAll(Iterable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
 </dt><dd> <div class="block">Deletes a list of objects in one go</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/RxDatastoreClient.html#deleteAll(java.lang.Iterable)" title="Method in RxDatastoreClient">deleteAll(Iterable)</a></span> - Method in <a href="org/grails/datastore/rx/RxDatastoreClient.html">RxDatastoreClient</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/RxDatastoreClient.html#deleteAll(java.lang.Iterable, Map<String, Object>)" title="Method in RxDatastoreClient">deleteAll(Iterable, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/RxDatastoreClient.html">RxDatastoreClient</a>
 </dt><dd> <div class="block">Deletes a number of instances</div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#deleteAll(Iterable<D>)" title="Method in RxEntity">deleteAll(Iterable&lt;D&gt;)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
 </dt><dd> <div class="block">Batch deletes a number of objects in one go</div></dd>
@@ -1858,8 +1848,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Uses detached criteria to build a query and then execute it returning an observable</div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#findAll(groovy.lang.Closure)" title="Method in RxGormStaticOperations">findAll(Closure)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
 </dt><dd> <div class="block">Uses detached criteria to build a query and then execute it returning an observable</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/query/RxQuery.html#findAll()" title="Method in RxQuery">findAll()</a></span> - Method in <a href="org/grails/datastore/rx/query/RxQuery.html">RxQuery</a>
-</dt><dd> <div class="block">@return All results matching this query as an observable</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/query/RxQuery.html#findAll(Map<String, Object>)" title="Method in RxQuery">findAll(Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/query/RxQuery.html">RxQuery</a>
+</dt><dd> <div class="block"> <DL><DT><B>Parameters:</B></DT><DD><code>queryArguments</code> -  The query arguments.</DD></DL></div></dd>
 <dt><span class="strong"><a href="org/grails/gorm/rx/finders/FindAllByBooleanFinder.html" title="Class in org.grails.gorm.rx.finders">FindAllByBooleanFinder</a></span> - Class in <a href="./org/grails/gorm/rx/finders/package-summary.html">org.grails.gorm.rx.finders</a>
 </dt><dd><div class="block">Implementation of findAllBy* boolean finder for RxGORM</div></dd>
 <dt><span class="strong"><a href="org/grails/gorm/rx/finders/FindAllByBooleanFinder.html#FindAllByBooleanFinder(org.grails.datastore.rx.RxDatastoreClient)" title="Constructor in FindAllByBooleanFinder">FindAllByBooleanFinder(RxDatastoreClient)</a></span> - Constructor in <a href="org/grails/gorm/rx/finders/FindAllByBooleanFinder.html">FindAllByBooleanFinder</a>
@@ -1876,9 +1866,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#findAllWhere(java.util.Map, java.util.Map)" title="Method in RxEntity">findAllWhere(Map, Map)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
 </dt><dd> <div class="block">Finds all results matching all of the given conditions. </div></dd>
-<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#findAllWhere(Map<String, Object>, java.util.Map)" title="Method in RxGormStaticApi">findAllWhere(Map&lt;String, Object&gt;, Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#findAllWhere(java.util.Map, java.util.Map)" title="Method in RxGormStaticApi">findAllWhere(Map, Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#findAllWhere(Map<String, Object>, java.util.Map)" title="Method in RxGormStaticOperations">findAllWhere(Map&lt;String, Object&gt;, Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#findAllWhere(java.util.Map, java.util.Map)" title="Method in RxGormStaticOperations">findAllWhere(Map, Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
 </dt><dd> <div class="block">Finds all results matching all of the given conditions. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#findAnnotation(org.codehaus.groovy.ast.ClassNode, List<AnnotationNode>)" title="Method in AstUtils">findAnnotation(ClassNode, List&lt;AnnotationNode&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1889,8 +1879,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/gorm/rx/finders/FindByFinder.html" title="Class in org.grails.gorm.rx.finders">FindByFinder</a></span> - Class in <a href="./org/grails/gorm/rx/finders/package-summary.html">org.grails.gorm.rx.finders</a>
 </dt><dd><div class="block">Implementation of findBy* dynamic finder for RxGORM</div></dd>
 <dt><span class="strong"><a href="org/grails/gorm/rx/finders/FindByFinder.html#FindByFinder(org.grails.datastore.rx.RxDatastoreClient)" title="Constructor in FindByFinder">FindByFinder(RxDatastoreClient)</a></span> - Constructor in <a href="org/grails/gorm/rx/finders/FindByFinder.html">FindByFinder</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#findCustomType(org.grails.datastore.mapping.model.MappingContext, Class<?>)" title="Method in MappingFactory">findCustomType(MappingContext, Class&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#findDatastore(java.lang.Class, java.lang.String)" title="Method in GormEnhancer">findDatastore(Class, String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1916,11 +1904,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#findOrCreateWhere(java.util.Map)" title="Method in GormStaticApi">findOrCreateWhere(Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#findOrCreateWhere(Map<String, Object>)" title="Method in RxEntity">findOrCreateWhere(Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
+<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#findOrCreateWhere(java.util.Map)" title="Method in RxEntity">findOrCreateWhere(Map)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
-<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#findOrCreateWhere(Map<String, Object>)" title="Method in RxGormStaticApi">findOrCreateWhere(Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#findOrCreateWhere(java.util.Map)" title="Method in RxGormStaticApi">findOrCreateWhere(Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#findOrCreateWhere(Map<String, Object>)" title="Method in RxGormStaticOperations">findOrCreateWhere(Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#findOrCreateWhere(java.util.Map)" title="Method in RxGormStaticOperations">findOrCreateWhere(Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/FindOrSaveByFinder.html" title="Class in org.grails.datastore.gorm.finders">FindOrSaveByFinder</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
 </dt><dd><div class="block"></div></dd>
@@ -1932,9 +1920,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#findOrSaveWhere(java.util.Map)" title="Method in RxEntity">findOrSaveWhere(Map)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
-<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#findOrSaveWhere(Map<String, Object>)" title="Method in RxGormStaticApi">findOrSaveWhere(Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#findOrSaveWhere(java.util.Map)" title="Method in RxGormStaticApi">findOrSaveWhere(Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#findOrSaveWhere(Map<String, Object>)" title="Method in RxGormStaticOperations">findOrSaveWhere(Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#findOrSaveWhere(java.util.Map)" title="Method in RxGormStaticOperations">findOrSaveWhere(Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/plugin/support/PersistenceContextInterceptorAggregator.html#findPersistenceInterceptorBeanNames(org.springframework.beans.factory.support.BeanDefinitionRegistry)" title="Method in PersistenceContextInterceptorAggregator">findPersistenceInterceptorBeanNames(BeanDefinitionRegistry)</a></span> - Method in <a href="org/grails/datastore/gorm/plugin/support/PersistenceContextInterceptorAggregator.html">PersistenceContextInterceptorAggregator</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1952,11 +1940,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/NamedCriteriaProxy.html#findWhere(java.util.Map)" title="Method in NamedCriteriaProxy">findWhere(Map)</a></span> - Method in <a href="org/grails/datastore/gorm/query/NamedCriteriaProxy.html">NamedCriteriaProxy</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#findWhere(Map<String, Object>, java.util.Map)" title="Method in RxEntity">findWhere(Map&lt;String, Object&gt;, Map)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
+<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#findWhere(java.util.Map, java.util.Map)" title="Method in RxEntity">findWhere(Map, Map)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
-<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#findWhere(Map<String, Object>, java.util.Map)" title="Method in RxGormStaticApi">findWhere(Map&lt;String, Object&gt;, Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#findWhere(java.util.Map, java.util.Map)" title="Method in RxGormStaticApi">findWhere(Map, Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#findWhere(Map<String, Object>, java.util.Map)" title="Method in RxGormStaticOperations">findWhere(Map&lt;String, Object&gt;, Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#findWhere(java.util.Map, java.util.Map)" title="Method in RxGormStaticOperations">findWhere(Map, Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
 </dt><dd> <div class="block">Finds a single result matching all of the given conditions. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/EntityPersister.html#firePostDeleteEvent(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess)" title="Method in EntityPersister">firePostDeleteEvent(PersistentEntity, EntityAccess)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/EntityPersister.html">EntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1976,9 +1964,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#first(java.util.Map)" title="Method in RxEntity">first(Map)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
 </dt><dd> <div class="block">Finds the first object.  </div></dd>
-<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#first(Map<String, Object>)" title="Method in RxGormStaticApi">first(Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#first(java.util.Map)" title="Method in RxGormStaticApi">first(Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
 </dt><dd> <div class="block">Finds the first object.  </div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#first(Map<String, Object>)" title="Method in RxGormStaticOperations">first(Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#first(java.util.Map)" title="Method in RxGormStaticOperations">first(Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
 </dt><dd> <div class="block">Finds the first object.  </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html#first()" title="Method in RxPersistentSortedSet">first()</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html">RxPersistentSortedSet</a>
 </dt><dd> <div class="block"></div></dd>
@@ -2029,6 +2017,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#formulateDatabaseReference(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.types.Association, java.io.Serializable)" title="Method in NativeEntryEntityPersister">formulateDatabaseReference(PersistentEntity, Association, Serializable)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block">Formulates a database reference for the given entity, association and association id</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html#forName(java.lang.String, java.lang.ClassLoader)" title="Method in ReflectionUtils">forName(String, ClassLoader)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html">ReflectionUtils</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html#FUNCTION_CALL_CRITERION" title="Field in DetachedCriteriaTransformer">FUNCTION_CALL_CRITERION</a></span> - Field in <a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html">DetachedCriteriaTransformer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/criteria/FunctionCallingCriterion.html" title="Class in org.grails.datastore.mapping.query.criteria">FunctionCallingCriterion</a></span> - Class in <a href="./org/grails/datastore/mapping/query/criteria/package-summary.html">org.grails.datastore.mapping.query.criteria</a>
@@ -2120,11 +2110,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Obtains a single instance for the given type and id</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html#get(Class<T>, java.io.Serializable, org.grails.datastore.rx.query.QueryState)" title="Method in RxDatastoreClientImplementor">get(Class&lt;T&gt;, Serializable, QueryState)</a></span> - Method in <a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html">RxDatastoreClientImplementor</a>
 </dt><dd> <div class="block">Obtain an instance passing the query state</div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#get(java.io.Serializable, Map<String, Object>)" title="Method in RxEntity">get(Serializable, Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
+<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#get(java.io.Serializable, java.util.Map)" title="Method in RxEntity">get(Serializable, Map)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
 </dt><dd> <div class="block">Retrieve an instance by id</div></dd>
-<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#get(java.io.Serializable, Map<String, Object>)" title="Method in RxGormStaticApi">get(Serializable, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#get(java.io.Serializable, java.util.Map)" title="Method in RxGormStaticApi">get(Serializable, Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#get(java.io.Serializable, Map<String, Object>)" title="Method in RxGormStaticOperations">get(Serializable, Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#get(java.io.Serializable, java.util.Map)" title="Method in RxGormStaticOperations">get(Serializable, Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
 </dt><dd> <div class="block">Retrieve an instance by id for the given arguments</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/EntityProxyMethodHandler.html#GET_TARGET_METHOD" title="Field in EntityProxyMethodHandler">GET_TARGET_METHOD</a></span> - Field in <a href="org/grails/datastore/mapping/proxy/EntityProxyMethodHandler.html">EntityProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
@@ -2501,6 +2491,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#getFurthestUnresolvedParent(org.codehaus.groovy.ast.ClassNode)" title="Method in AstUtils">getFurthestUnresolvedParent(ClassNode)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/IdentityMapping.html#getGenerator()" title="Method in IdentityMapping">getGenerator()</a></span> - Method in <a href="org/grails/datastore/mapping/model/IdentityMapping.html">IdentityMapping</a>
+</dt><dd> <div class="block">@return The type of value generated used</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#getGenerator()" title="Method in Property">getGenerator()</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
 </dt><dd> <div class="block">Get the id generator.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/internal/MappingUtils.html#getGenericType(java.lang.Class)" title="Method in MappingUtils">getGenericType(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/internal/MappingUtils.html">MappingUtils</a>
@@ -3014,6 +3006,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">@return The identifier</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/EntityProxyMethodHandler.html#getProxyKey(java.lang.Object)" title="Method in EntityProxyMethodHandler">getProxyKey(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/EntityProxyMethodHandler.html">EntityProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html#getProxyKey(java.lang.Object)" title="Method in IdQueryObservableProxyMethodHandler">getProxyKey(Object)</a></span> - Method in <a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html">IdQueryObservableProxyMethodHandler</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html#getProxyKey(java.lang.Object)" title="Method in QueryObservableProxyMethodHandler">getProxyKey(Object)</a></span> - Method in <a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html">QueryObservableProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/SessionEntityProxyMethodHandler.html#getProxyKey(java.lang.Object)" title="Method in SessionEntityProxyMethodHandler">getProxyKey(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/SessionEntityProxyMethodHandler.html">SessionEntityProxyMethodHandler</a>
@@ -3175,7 +3169,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html" title="Class in org.grails.datastore.gorm">GormEnhancer</a></span> - Class in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
 </dt><dd><div class="block">Enhances a class with GORM behavior</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#GormEnhancer(org.grails.datastore.mapping.core.Datastore, org.springframework.transaction.PlatformTransactionManager, boolean)" title="Constructor in GormEnhancer">GormEnhancer(Datastore, PlatformTransactionManager, boolean)</a></span> - Constructor in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#GormEnhancer(org.grails.datastore.mapping.core.Datastore, org.springframework.transaction.PlatformTransactionManager, boolean, boolean)" title="Constructor in GormEnhancer">GormEnhancer(Datastore, PlatformTransactionManager, boolean, boolean)</a></span> - Constructor in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html" title="Trait in org.grails.datastore.gorm">GormEntity</a></span> - Trait in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
 </dt><dd><div class="block">A trait that turns any class into a GORM entity</div></dd>
@@ -3203,6 +3197,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Reserved static property names used by GORM to evaluate GORM-style syntax.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/GormQueryOperations.html" title="Interface in org.grails.datastore.gorm.query">GormQueryOperations</a></span> - Interface in <a href="./org/grails/datastore/gorm/query/package-summary.html">org.grails.datastore.gorm.query</a>
 </dt><dd><div class="block">Interface defining all typical query GORM operations on class</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/GormSettings.html" title="Interface in org.grails.datastore.mapping.config">GormSettings</a></span> - Interface in <a href="./org/grails/datastore/mapping/config/package-summary.html">org.grails.datastore.mapping.config</a>
+</dt><dd><div class="block">Common settings across all GORM implementations</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html" title="Class in org.grails.datastore.gorm">GormStaticApi</a></span> - Class in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
 </dt><dd><div class="block">Static methods of the GORM API.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#GormStaticApi(Class<D>, org.grails.datastore.mapping.core.Datastore, List<FinderMethod>, org.springframework.transaction.PlatformTransactionManager)" title="Constructor in GormStaticApi">GormStaticApi(Class&lt;D&gt;, Datastore, List&lt;FinderMethod&gt;, PlatformTransactionManager)</a></span> - Constructor in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
@@ -3457,8 +3453,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Identity.html#Identity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.lang.String, java.lang.Class)" title="Constructor in Identity">Identity(PersistentEntity, MappingContext, String, Class)</a></span> - Constructor in <a href="org/grails/datastore/mapping/model/types/Identity.html">Identity</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#IDENTITY_PROPERTY" title="Field in MappingFactory">IDENTITY_PROPERTY</a></span> - Field in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/IdentityGenerationException.html" title="Class in org.grails.datastore.mapping.core">IdentityGenerationException</a></span> - Class in <a href="./org/grails/datastore/mapping/core/package-summary.html">org.grails.datastore.mapping.core</a>
 </dt><dd><div class="block">Thrown when an identity cannot be generated.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/IdentityGenerationException.html#IdentityGenerationException(java.lang.String)" title="Constructor in IdentityGenerationException">IdentityGenerationException(String)</a></span> - Constructor in <a href="org/grails/datastore/mapping/core/IdentityGenerationException.html">IdentityGenerationException</a>
@@ -3484,6 +3478,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/api/Criteria.html#idEquals(java.lang.Object)" title="Method in Criteria">idEquals(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/query/api/Criteria.html">Criteria</a>
 </dt><dd> <div class="block">Creates a criterion that restricts the id to the given value</div></dd>
 <dt><span class="strong"><a href="grails/gorm/DetachedCriteria.html#idEquals(java.lang.Object)" title="Method in DetachedCriteria">idEquals(Object)</a></span> - Method in <a href="grails/gorm/DetachedCriteria.html">DetachedCriteria</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html" title="Class in org.grails.datastore.rx.proxy">IdQueryObservableProxyMethodHandler</a></span> - Class in <a href="./org/grails/datastore/rx/proxy/package-summary.html">org.grails.datastore.rx.proxy</a>
+</dt><dd><div class="block">A proxy javassist.util.proxy.MethodHandler that uses a query to resolve the id of the the target</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html#IdQueryObservableProxyMethodHandler(java.lang.Class, org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState, org.grails.datastore.rx.RxDatastoreClient)" title="Constructor in IdQueryObservableProxyMethodHandler">IdQueryObservableProxyMethodHandler(Class, Query, QueryState, RxDatastoreClient)</a></span> - Constructor in <a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html">IdQueryObservableProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.Order.html#ignoreCase()" title="Method in Query.Order">ignoreCase()</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.Order.html">Query.Order</a>
 </dt><dd> <div class="block">Whether to ignore the case for this order definition</div></dd>
@@ -3641,19 +3639,19 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Forces an insert of an object rather than trying to guess if it is an insert or an update</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/RxDatastoreClient.html#insert(T1, Map<String, Object>)" title="Method in RxDatastoreClient">insert(T1, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/RxDatastoreClient.html">RxDatastoreClient</a>
 </dt><dd> <div class="block">Force an insert of an instance and return the observable</div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#insert(Map<String, Object>)" title="Method in RxEntity">insert(Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
+<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#insert(java.util.Map)" title="Method in RxEntity">insert(Map)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormInstanceApi.html#insert(D, Map<String, Object>)" title="Method in RxGormInstanceApi">insert(D, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormInstanceApi.html">RxGormInstanceApi</a>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormInstanceApi.html#insert(D, java.util.Map)" title="Method in RxGormInstanceApi">insert(D, Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormInstanceApi.html">RxGormInstanceApi</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormInstanceOperations.html#insert(D, Map<String, Object>)" title="Method in RxGormInstanceOperations">insert(D, Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormInstanceOperations.html">RxGormInstanceOperations</a>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormInstanceOperations.html#insert(D, java.util.Map)" title="Method in RxGormInstanceOperations">insert(D, Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormInstanceOperations.html">RxGormInstanceOperations</a>
 </dt><dd> <div class="block">Saves an entity and returns an java.util.Observable, forcing an insert operation regardless whether an identifier is already present or not</div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/api/RxGormOperations.html#insert(Map<String, Object>)" title="Method in RxGormOperations">insert(Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormOperations.html">RxGormOperations</a>
 </dt><dd> <div class="block">Saves an entity and returns an java.util.Observable, forcing an insert operation regardless whether an identifier is already present or not</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html#insert(java.lang.Object)" title="Method in Session">insert(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/core/Session.html">Session</a>
 </dt><dd> <div class="block">Forces an insert</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#insertAll(java.lang.Iterable)" title="Method in AbstractRxDatastoreClient">insertAll(Iterable)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#insertAll(java.lang.Iterable, Map<String, Object>)" title="Method in AbstractRxDatastoreClient">insertAll(Iterable, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/RxDatastoreClient.html#insertAll(java.lang.Iterable)" title="Method in RxDatastoreClient">insertAll(Iterable)</a></span> - Method in <a href="org/grails/datastore/rx/RxDatastoreClient.html">RxDatastoreClient</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/RxDatastoreClient.html#insertAll(java.lang.Iterable, Map<String, Object>)" title="Method in RxDatastoreClient">insertAll(Iterable, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/RxDatastoreClient.html">RxDatastoreClient</a>
 </dt><dd> <div class="block">Batch insert all all of the given objects</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/support/InstanceFactoryBean.html" title="Class in org.grails.datastore.gorm.bootstrap.support">InstanceFactoryBean</a></span> - Class in <a href="./org/grails/datastore/gorm/bootstrap/support/package-summary.html">org.grails.datastore.gorm.bootstrap.support</a>
 </dt><dd><div class="block">Simple singleton instance implementation of Spring's FactoryBean interface</div></dd>
@@ -3749,6 +3747,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/Transaction.html#isActive()" title="Method in Transaction">isActive()</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/Transaction.html">Transaction</a>
 </dt><dd> <div class="block">Whether the transaction is active</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html#isAllowBlockingOperations()" title="Method in RxDatastoreClientImplementor">isAllowBlockingOperations()</a></span> - Method in <a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html">RxDatastoreClientImplementor</a>
+</dt><dd> <div class="block">@return Whether blocking operations are allowed by the implementation</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/batch/BatchOperation.html#isAlreadyPending(org.grails.datastore.mapping.model.PersistentEntity, java.io.Serializable, java.lang.Object)" title="Method in BatchOperation">isAlreadyPending(PersistentEntity, Serializable, Object)</a></span> - Method in <a href="org/grails/datastore/rx/batch/BatchOperation.html">BatchOperation</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#isAnnotatedSuperClass(org.grails.datastore.mapping.model.MappingConfigurationStrategy, java.lang.Class)" title="Method in AbstractPersistentEntity">isAnnotatedSuperClass(MappingConfigurationStrategy, Class)</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
@@ -3798,8 +3798,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html#isConnected()" title="Method in Session">isConnected()</a></span> - Method in <a href="org/grails/datastore/mapping/core/Session.html">Session</a>
 </dt><dd> <div class="block">@return <code>true</code> if connected to the datastore</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#isCustomType(Class<?>)" title="Method in MappingFactory">isCustomType(Class&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#isDerived()" title="Method in Property">isDerived()</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
 </dt><dd> <div class="block">@return Whether the property is derived or not</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#isDirty()" title="Method in AbstractPersistentCollection">isDirty()</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
@@ -4050,6 +4048,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#isRealMethod(groovy.lang.MetaMethod)" title="Method in GormEnhancer">isRealMethod(MetaMethod)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#isReference()" title="Method in Property">isReference()</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
+</dt><dd> <div class="block">@return Whether this property is a database reference such as a foreign key</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/TransactionObject.html#isRollbackOnly()" title="Method in TransactionObject">isRollbackOnly()</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/TransactionObject.html">TransactionObject</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#isRoot()" title="Method in AbstractPersistentEntity">isRoot()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
@@ -4067,8 +4067,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/QueryCreator.html#isSchemaless()" title="Method in QueryCreator">isSchemaless()</a></span> - Method in <a href="org/grails/datastore/mapping/query/QueryCreator.html">QueryCreator</a>
 </dt><dd> <div class="block">@return Whether schemaless queries are allowed</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html#isSetter(java.lang.String, java.lang.Class)" title="Method in ReflectionUtils">isSetter(String, Class)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html">ReflectionUtils</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#isSimpleType(java.lang.String)" title="Method in MappingFactory">isSimpleType(String)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/support/InstanceFactoryBean.html#isSingleton()" title="Method in InstanceFactoryBean">isSingleton()</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/support/InstanceFactoryBean.html">InstanceFactoryBean</a>
 </dt><dd> <div class="block"></div></dd>
@@ -4203,9 +4201,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#last(Map<String, Object>)" title="Method in RxEntity">last(Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
 </dt><dd> <div class="block">Finds the last object.  </div></dd>
-<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#last(Map<String, Object>)" title="Method in RxGormStaticApi">last(Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#last(java.util.Map)" title="Method in RxGormStaticApi">last(Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
 </dt><dd> <div class="block">Finds the last object.  </div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#last(Map<String, Object>)" title="Method in RxGormStaticOperations">last(Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#last(java.util.Map)" title="Method in RxGormStaticOperations">last(Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
 </dt><dd> <div class="block">Finds the last object.  </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html#last()" title="Method in RxPersistentSortedSet">last()</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html">RxPersistentSortedSet</a>
 </dt><dd> <div class="block"></div></dd>
@@ -4463,8 +4461,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">A constraint that restricts constraints to be applicable only to a given <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html' title='MappingContext'>MappingContext</a></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/MappingContextAwareConstraintFactory.html#MappingContextAwareConstraintFactory(Class<? extends Constraint>, org.springframework.context.MessageSource, org.grails.datastore.mapping.model.MappingContext, List<Class>)" title="Constructor in MappingContextAwareConstraintFactory">MappingContextAwareConstraintFactory(Class&lt;? extends Constraint&gt;, MessageSource, MappingContext, List&lt;Class&gt;)</a></span> - Constructor in <a href="org/grails/datastore/gorm/validation/constraints/MappingContextAwareConstraintFactory.html">MappingContextAwareConstraintFactory</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html" title="Class in org.grails.datastore.mapping.model">MappingFactory</a></span> - Class in <a href="./org/grails/datastore/mapping/model/package-summary.html">org.grails.datastore.mapping.model</a>
-</dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValueMappingContext.html#mappingFactory" title="Field in KeyValueMappingContext">mappingFactory</a></span> - Field in <a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValueMappingContext.html">KeyValueMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/internal/MappingUtils.html" title="Class in org.grails.datastore.mapping.engine.internal">MappingUtils</a></span> - Class in <a href="./org/grails/datastore/mapping/engine/internal/package-summary.html">org.grails.datastore.mapping.engine.internal</a>
@@ -4756,6 +4752,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#OBJECT_CLASS_NODE" title="Field in AstUtils">OBJECT_CLASS_NODE</a></span> - Field in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html#observable" title="Field in IdQueryObservableProxyMethodHandler">observable</a></span> - Field in <a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html">IdQueryObservableProxyMethodHandler</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html#observable" title="Field in QueryObservableProxyMethodHandler">observable</a></span> - Field in <a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html">QueryObservableProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/collection/ObservableCollection.html" title="Interface in grails.gorm.rx.collection">ObservableCollection</a></span> - Interface in <a href="./grails/gorm/rx/collection/package-summary.html">grails.gorm.rx.collection</a>
@@ -4928,10 +4926,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Persist and instance and return the observable</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html#persist(java.lang.Iterable)" title="Method in Session">persist(Iterable)</a></span> - Method in <a href="org/grails/datastore/mapping/core/Session.html">Session</a>
 </dt><dd> <div class="block">Persists several objects returning their identifiers in the order specified by the Iterable</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#persistAll(java.lang.Iterable)" title="Method in AbstractRxDatastoreClient">persistAll(Iterable)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#persistAll(java.lang.Iterable, Map<String, Object>)" title="Method in AbstractRxDatastoreClient">persistAll(Iterable, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/RxDatastoreClient.html#persistAll(java.lang.Iterable)" title="Method in RxDatastoreClient">persistAll(Iterable)</a></span> - Method in <a href="org/grails/datastore/rx/RxDatastoreClient.html">RxDatastoreClient</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/RxDatastoreClient.html#persistAll(java.lang.Iterable, Map<String, Object>)" title="Method in RxDatastoreClient">persistAll(Iterable, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/RxDatastoreClient.html">RxDatastoreClient</a>
 </dt><dd> <div class="block">Batch saves all of the given objects</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#persistAllInternal(java.lang.Iterable, boolean, Map<String, Object>)" title="Method in AbstractRxDatastoreClient">persistAllInternal(Iterable, boolean, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/plugin/support/PersistenceContextInterceptorAggregator.html" title="Class in org.grails.datastore.gorm.plugin.support">PersistenceContextInterceptorAggregator</a></span> - Class in <a href="./org/grails/datastore/gorm/plugin/support/package-summary.html">org.grails.datastore.gorm.plugin.support</a>
 </dt><dd><div class="block">BeanDefinitionRegistryPostProcessor that replaces multiple discovered PersistenceContextInterceptor beans with
  a single aggregating instance. </div></dd>
@@ -5041,6 +5041,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">@author Burt Beckwith</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/PreDeleteEvent.html#PreDeleteEvent(java.lang.Object, org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess)" title="Constructor in PreDeleteEvent">PreDeleteEvent(Object, PersistentEntity, EntityAccess)</a></span> - Constructor in <a href="org/grails/datastore/mapping/engine/event/PreDeleteEvent.html">PreDeleteEvent</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/GormSettings.html#PREFIX" title="Field in GormSettings">PREFIX</a></span> - Field in <a href="org/grails/datastore/mapping/config/GormSettings.html">GormSettings</a>
+</dt><dd> <div class="block">The default prefix</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/web/support/OpenSessionInViewInterceptor.html#preHandle(org.springframework.web.context.request.WebRequest)" title="Method in OpenSessionInViewInterceptor">preHandle(WebRequest)</a></span> - Method in <a href="org/grails/datastore/mapping/web/support/OpenSessionInViewInterceptor.html">OpenSessionInViewInterceptor</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/AssociationIndexer.html#preIndex(K, List<T>)" title="Method in AssociationIndexer">preIndex(K, List&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/AssociationIndexer.html">AssociationIndexer</a>
@@ -5071,6 +5073,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html#processAssociations(org.grails.datastore.mapping.model.PersistentEntity, java.io.Serializable, java.lang.Object, org.grails.datastore.mapping.reflect.EntityReflector, org.grails.datastore.rx.batch.BatchOperation, List<ApplicationEvent>)" title="Method in AbstractRxDatastoreClient">processAssociations(PersistentEntity, Serializable, Object, EntityReflector, BatchOperation, List&lt;ApplicationEvent&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/AbstractRxDatastoreClient.html">AbstractRxDatastoreClient</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/query/RxQueryUtils.html#processFetchStrategies(org.grails.datastore.rx.internal.RxDatastoreClientImplementor, java.util.Observable, org.grails.datastore.mapping.model.PersistentEntity, Map<String, FetchType>, org.grails.datastore.rx.query.QueryState)" title="Method in RxQueryUtils">processFetchStrategies(RxDatastoreClientImplementor, Observable, PersistentEntity, Map&lt;String, FetchType&gt;, QueryState)</a></span> - Method in <a href="org/grails/datastore/rx/query/RxQueryUtils.html">RxQueryUtils</a>
+</dt><dd> <div class="block">Process fetch strategies for a query</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/builtin/UniqueConstraint.html#processValidate(java.lang.Object, java.lang.Object, org.springframework.validation.Errors)" title="Method in UniqueConstraint">processValidate(Object, Object, Errors)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/builtin/UniqueConstraint.html">UniqueConstraint</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/api/ProjectionList.html" title="Interface in org.grails.datastore.mapping.query.api">ProjectionList</a></span> - Interface in <a href="./org/grails/datastore/mapping/query/api/package-summary.html">org.grails.datastore.mapping.query.api</a>
@@ -5157,6 +5161,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Obtain an <a href='../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> that executes the given query to initialize</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html#proxy(org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState)" title="Method in RxDatastoreClientImplementor">proxy(Query, QueryState)</a></span> - Method in <a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html">RxDatastoreClientImplementor</a>
 </dt><dd> <div class="block">Obtain an <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> that executes the given query to initialize</div></dd>
+<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#proxy(DetachedCriteria<D>, java.util.Map)" title="Method in RxEntity">proxy(DetachedCriteria&lt;D&gt;, Map)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
+</dt><dd> <div class="block">Obtain a proxy to the given instance</div></dd>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#proxy(DetachedCriteria<D>, java.util.Map)" title="Method in RxGormStaticApi">proxy(DetachedCriteria&lt;D&gt;, Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#proxy(DetachedCriteria<D>, java.util.Map)" title="Method in RxGormStaticOperations">proxy(DetachedCriteria&lt;D&gt;, Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
+</dt><dd> <div class="block">Retrieve a proxy to an for the given arguments</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html#proxy(Class<T>, java.io.Serializable)" title="Method in Session">proxy(Class&lt;T&gt;, Serializable)</a></span> - Method in <a href="org/grails/datastore/mapping/core/Session.html">Session</a>
 </dt><dd> <div class="block">Retrieves a proxy for the given key</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html#proxyClass" title="Field in GroovyObjectMethodHandler">proxyClass</a></span> - Field in <a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html">GroovyObjectMethodHandler</a>
@@ -5174,6 +5184,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/proxy/ProxyInstanceMetaClass.html" title="Class in org.grails.datastore.gorm.proxy">ProxyInstanceMetaClass</a></span> - Class in <a href="./org/grails/datastore/gorm/proxy/package-summary.html">org.grails.datastore.gorm.proxy</a>
 </dt><dd><div class="block">Per-instance metaclass to use for proxied GORM domain objects. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/proxy/ProxyInstanceMetaClass.html#ProxyInstanceMetaClass(groovy.lang.MetaClass, org.grails.datastore.mapping.core.Session, java.io.Serializable)" title="Constructor in ProxyInstanceMetaClass">ProxyInstanceMetaClass(MetaClass, Session, Serializable)</a></span> - Constructor in <a href="org/grails/datastore/gorm/proxy/ProxyInstanceMetaClass.html">ProxyInstanceMetaClass</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html#proxyKey" title="Field in IdQueryObservableProxyMethodHandler">proxyKey</a></span> - Field in <a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html">IdQueryObservableProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html#proxyKey" title="Field in QueryObservableProxyMethodHandler">proxyKey</a></span> - Field in <a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html">QueryObservableProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
@@ -5496,7 +5508,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#queryMetaClass" title="Field in AbstractCriteriaBuilder">queryMetaClass</a></span> - Field in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html" title="Class in org.grails.datastore.rx.proxy">QueryObservableProxyMethodHandler</a></span> - Class in <a href="./org/grails/datastore/rx/proxy/package-summary.html">org.grails.datastore.rx.proxy</a>
-</dt><dd><div class="block">A proxy javassist.util.proxy.MethodHandler that uses a query to resolve the target</div></dd>
+</dt><dd><div class="block">A proxy javassist.util.proxy.MethodHandler that uses a query to resolve the target using a query</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html#QueryObservableProxyMethodHandler(java.lang.Class, org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState, org.grails.datastore.rx.RxDatastoreClient)" title="Constructor in QueryObservableProxyMethodHandler">QueryObservableProxyMethodHandler(Class, Query, QueryState, RxDatastoreClient)</a></span> - Constructor in <a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html">QueryObservableProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/query/QueryState.html" title="Class in org.grails.datastore.rx.query">QueryState</a></span> - Class in <a href="./org/grails/datastore/rx/query/package-summary.html">org.grails.datastore.rx.query</a>
@@ -5504,6 +5516,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/rx/proxy/AbstractObservableProxyMethodHandler.html#queryState" title="Field in AbstractObservableProxyMethodHandler">queryState</a></span> - Field in <a href="org/grails/datastore/rx/proxy/AbstractObservableProxyMethodHandler.html">AbstractObservableProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/query/QueryState.html#QueryState()" title="Constructor in QueryState">QueryState()</a></span> - Constructor in <a href="org/grails/datastore/rx/query/QueryState.html">QueryState</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentList.html#queryState" title="Field in RxPersistentList">queryState</a></span> - Field in <a href="org/grails/datastore/rx/collection/RxPersistentList.html">RxPersistentList</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSet.html#queryState" title="Field in RxPersistentSet">queryState</a></span> - Field in <a href="org/grails/datastore/rx/collection/RxPersistentSet.html">RxPersistentSet</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html#queryState" title="Field in RxPersistentSortedSet">queryState</a></span> - Field in <a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html">RxPersistentSortedSet</a>
 </dt><dd> <div class="block"></div></dd>
 </dl>
 
@@ -5580,8 +5598,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#registerConstraints(org.grails.datastore.mapping.core.Datastore)" title="Method in GormEnhancer">registerConstraints(Datastore)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#registerCustomType(org.grails.datastore.mapping.engine.types.CustomTypeMarshaller)" title="Method in MappingFactory">registerCustomType(CustomTypeMarshaller)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#registerEntity(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in GormEnhancer">registerEntity(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block">Registers a new entity with the GORM enhancer</div></dd>
 <dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormEnhancer.html#registerEntity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.RxDatastoreClient, java.lang.String)" title="Method in RxGormEnhancer">registerEntity(PersistentEntity, RxDatastoreClient, String)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormEnhancer.html">RxGormEnhancer</a>
@@ -5640,6 +5656,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html#resolveDelegate(java.lang.Object)" title="Method in GroovyObjectMethodHandler">resolveDelegate(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html">GroovyObjectMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html#resolveDelegate(java.lang.Object)" title="Method in IdQueryObservableProxyMethodHandler">resolveDelegate(Object)</a></span> - Method in <a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html">IdQueryObservableProxyMethodHandler</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html#resolveDelegate(java.lang.Object)" title="Method in QueryObservableProxyMethodHandler">resolveDelegate(Object)</a></span> - Method in <a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html">QueryObservableProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/SessionEntityProxyMethodHandler.html#resolveDelegate(java.lang.Object)" title="Method in SessionEntityProxyMethodHandler">resolveDelegate(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/SessionEntityProxyMethodHandler.html">SessionEntityProxyMethodHandler</a>
@@ -5661,7 +5679,15 @@ if (location.href.indexOf('is-external=true') == -1) {
  resolve the value of startDate by walking through the key list.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/proxy/AbstractObservableProxyMethodHandler.html#resolveObservable()" title="Method in AbstractObservableProxyMethodHandler">resolveObservable()</a></span> - Method in <a href="org/grails/datastore/rx/proxy/AbstractObservableProxyMethodHandler.html">AbstractObservableProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html#resolveObservable()" title="Method in IdQueryObservableProxyMethodHandler">resolveObservable()</a></span> - Method in <a href="org/grails/datastore/rx/proxy/IdQueryObservableProxyMethodHandler.html">IdQueryObservableProxyMethodHandler</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html#resolveObservable()" title="Method in QueryObservableProxyMethodHandler">resolveObservable()</a></span> - Method in <a href="org/grails/datastore/rx/proxy/QueryObservableProxyMethodHandler.html">QueryObservableProxyMethodHandler</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentList.html#resolveObservable(org.grails.datastore.mapping.query.Query)" title="Method in RxPersistentList">resolveObservable(Query)</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentList.html">RxPersistentList</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSet.html#resolveObservable(org.grails.datastore.mapping.query.Query)" title="Method in RxPersistentSet">resolveObservable(Query)</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentSet.html">RxPersistentSet</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html#resolveObservable(org.grails.datastore.mapping.query.Query)" title="Method in RxPersistentSortedSet">resolveObservable(Query)</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html">RxPersistentSortedSet</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/proxy/GroovyProxyFactory.html#resolveTargetMetaClass(T, Class<T>)" title="Method in GroovyProxyFactory">resolveTargetMetaClass(T, Class&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/proxy/GroovyProxyFactory.html">GroovyProxyFactory</a>
 </dt><dd> <div class="block"></div></dd>
@@ -5722,6 +5748,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/Transaction.html#rollback()" title="Method in Transaction">rollback()</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/Transaction.html">Transaction</a>
 </dt><dd> <div class="block">Rollback the transaction.</div></dd>
+<dt><span class="strong"><a href="grails/gorm/transactions/GrailsTransactionAttribute.html#rollbackOn(java.lang.Throwable)" title="Method in GrailsTransactionAttribute">rollbackOn(Throwable)</a></span> - Method in <a href="grails/gorm/transactions/GrailsTransactionAttribute.html">GrailsTransactionAttribute</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#ROOT_CALL" title="Field in AbstractCriteriaBuilder">ROOT_CALL</a></span> - Field in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#ROOT_DO_CALL" title="Field in AbstractCriteriaBuilder">ROOT_DO_CALL</a></span> - Field in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
@@ -5734,6 +5762,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Count the number of records returned</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.ProjectionList.html#rowCount()" title="Method in Query.ProjectionList">rowCount()</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.ProjectionList.html">Query.ProjectionList</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxCollection.html" title="Trait in org.grails.datastore.rx.collection">RxCollection</a></span> - Trait in <a href="./org/grails/datastore/rx/collection/package-summary.html">org.grails.datastore.rx.collection</a>
+</dt><dd><div class="block">A trait that can be implemented by collection types to make them observable</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxCollectionUtils.html" title="Class in org.grails.datastore.rx.collection">RxCollectionUtils</a></span> - Class in <a href="./org/grails/datastore/rx/collection/package-summary.html">org.grails.datastore.rx.collection</a>
+</dt><dd><div class="block">Utility methods for RxCollections</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/RxDatastoreClient.html" title="Interface in org.grails.datastore.rx">RxDatastoreClient</a></span> - Interface in <a href="./org/grails/datastore/rx/package-summary.html">org.grails.datastore.rx</a>
 </dt><dd><div class="block">Represents a client connection pool that can be used to interact with a backing implementation in RxGORM</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html" title="Interface in org.grails.datastore.rx.internal">RxDatastoreClientImplementor</a></span> - Interface in <a href="./org/grails/datastore/rx/internal/package-summary.html">org.grails.datastore.rx.internal</a>
@@ -5766,18 +5798,20 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Represents a reactive collection</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentList.html" title="Class in org.grails.datastore.rx.collection">RxPersistentList</a></span> - Class in <a href="./org/grails/datastore/rx/collection/package-summary.html">org.grails.datastore.rx.collection</a>
 </dt><dd><div class="block">Represents a reactive list that can be observed in order to allow non-blocking lazy loading of associations</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentList.html#RxPersistentList(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.mapping.model.types.Association, List<Serializable>, org.grails.datastore.rx.query.QueryState)" title="Constructor in RxPersistentList">RxPersistentList(RxDatastoreClient, Association, List&lt;Serializable&gt;, QueryState)</a></span> - Constructor in <a href="org/grails/datastore/rx/collection/RxPersistentList.html">RxPersistentList</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentList.html#RxPersistentList(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.mapping.model.types.Association, org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState)" title="Constructor in RxPersistentList">RxPersistentList(RxDatastoreClient, Association, Query, QueryState)</a></span> - Constructor in <a href="org/grails/datastore/rx/collection/RxPersistentList.html">RxPersistentList</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSet.html" title="Class in org.grails.datastore.rx.collection">RxPersistentSet</a></span> - Class in <a href="./org/grails/datastore/rx/collection/package-summary.html">org.grails.datastore.rx.collection</a>
 </dt><dd><div class="block">Represents a reactive set that can be observed in order to allow non-blocking lazy loading of associations</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSet.html#RxPersistentSet(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.mapping.model.types.Association, List<Serializable>, org.grails.datastore.rx.query.QueryState)" title="Constructor in RxPersistentSet">RxPersistentSet(RxDatastoreClient, Association, List&lt;Serializable&gt;, QueryState)</a></span> - Constructor in <a href="org/grails/datastore/rx/collection/RxPersistentSet.html">RxPersistentSet</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSet.html#RxPersistentSet(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.mapping.model.types.Association, org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState)" title="Constructor in RxPersistentSet">RxPersistentSet(RxDatastoreClient, Association, Query, QueryState)</a></span> - Constructor in <a href="org/grails/datastore/rx/collection/RxPersistentSet.html">RxPersistentSet</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html" title="Class in org.grails.datastore.rx.collection">RxPersistentSortedSet</a></span> - Class in <a href="./org/grails/datastore/rx/collection/package-summary.html">org.grails.datastore.rx.collection</a>
 </dt><dd><div class="block">Represents a reactive sorted set that can be observed in order to allow non-blocking lazy loading of associations</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html#RxPersistentSortedSet(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.mapping.model.types.Association, List<Serializable>, org.grails.datastore.rx.query.QueryState)" title="Constructor in RxPersistentSortedSet">RxPersistentSortedSet(RxDatastoreClient, Association, List&lt;Serializable&gt;, QueryState)</a></span> - Constructor in <a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html">RxPersistentSortedSet</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html#RxPersistentSortedSet(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.mapping.model.types.Association, org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState)" title="Constructor in RxPersistentSortedSet">RxPersistentSortedSet(RxDatastoreClient, Association, Query, QueryState)</a></span> - Constructor in <a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html">RxPersistentSortedSet</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/query/RxQuery.html" title="Interface in org.grails.datastore.rx.query">RxQuery</a></span> - Interface in <a href="./org/grails/datastore/rx/query/package-summary.html">org.grails.datastore.rx.query</a>
 </dt><dd><div class="block">Represents a reactive query implementation in RxGORM</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/query/RxQueryUtils.html" title="Class in org.grails.datastore.rx.query">RxQueryUtils</a></span> - Class in <a href="./org/grails/datastore/rx/query/package-summary.html">org.grails.datastore.rx.query</a>
+</dt><dd><div class="block">Utility methods for building Query implementations</div></dd>
 <dt><span class="strong"><a href="org/grails/plugins/web/rx/mvc/RxResultTransformer.html" title="Class in org.grails.plugins.web.rx.mvc">RxResultTransformer</a></span> - Class in <a href="./org/grails/plugins/web/rx/mvc/package-summary.html">org.grails.plugins.web.rx.mvc</a>
 </dt><dd><div class="block">Transforms an RX result into async dispatch</div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/collection/RxUnidirectionalCollection.html" title="Interface in grails.gorm.rx.collection">RxUnidirectionalCollection</a></span> - Interface in <a href="./grails/gorm/rx/collection/package-summary.html">grails.gorm.rx.collection</a>
@@ -5797,11 +5831,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Saves an object with the given parameters</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormInstanceApi.html#save(D, java.util.Map)" title="Method in GormInstanceApi">save(D, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormInstanceApi.html">GormInstanceApi</a>
 </dt><dd> <div class="block">Saves an object with the given parameters</div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#save(Map<String, Object>)" title="Method in RxEntity">save(Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
+<dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#save(java.util.Map)" title="Method in RxEntity">save(Map)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
 </dt><dd> <div class="block">Save an instance and return an observable</div></dd>
-<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormInstanceApi.html#save(D, Map<String, Object>)" title="Method in RxGormInstanceApi">save(D, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormInstanceApi.html">RxGormInstanceApi</a>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormInstanceApi.html#save(D, java.util.Map)" title="Method in RxGormInstanceApi">save(D, Map)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormInstanceApi.html">RxGormInstanceApi</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormInstanceOperations.html#save(D, Map<String, Object>)" title="Method in RxGormInstanceOperations">save(D, Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormInstanceOperations.html">RxGormInstanceOperations</a>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormInstanceOperations.html#save(D, java.util.Map)" title="Method in RxGormInstanceOperations">save(D, Map)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormInstanceOperations.html">RxGormInstanceOperations</a>
 </dt><dd> <div class="block">Saves an entity and returns an java.util.Observable, picking either an insert or an update automatically based on whether the object has an id already.</div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/api/RxGormOperations.html#save(Map<String, Object>)" title="Method in RxGormOperations">save(Map&lt;String, Object&gt;)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormOperations.html">RxGormOperations</a>
 </dt><dd> <div class="block">Saves an entity and returns an java.util.Observable, picking either an insert or an update automatically based on whether the object has an id already.</div></dd>
@@ -6123,6 +6157,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html#setReadWrite()" title="Method in AbstractDatastorePersistenceContextInterceptor">setReadWrite()</a></span> - Method in <a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html">AbstractDatastorePersistenceContextInterceptor</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#setReference(boolean)" title="Method in Property">setReference(boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#setReferencedPropertyName(java.lang.String)" title="Method in Association">setReferencedPropertyName(String)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html#setResourceLoader(org.springframework.core.io.ResourceLoader)" title="Method in AbstractDatastoreInitializer">setResourceLoader(ResourceLoader)</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html">AbstractDatastoreInitializer</a>
@@ -6167,6 +6203,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/timestamp/AggregateTimestampProvider.html#setTimestampProviders(List<TimestampProvider>)" title="Method in AggregateTimestampProvider">setTimestampProviders(List&lt;TimestampProvider&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/timestamp/AggregateTimestampProvider.html">AggregateTimestampProvider</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/GormSettings.html#SETTING_AUTO_FLUSH" title="Field in GormSettings">SETTING_AUTO_FLUSH</a></span> - Field in <a href="org/grails/datastore/mapping/config/GormSettings.html">GormSettings</a>
+</dt><dd> <div class="block">Whether to flush the session between each query</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/GormSettings.html#SETTING_DEFAULT_MAPPING" title="Field in GormSettings">SETTING_DEFAULT_MAPPING</a></span> - Field in <a href="org/grails/datastore/mapping/config/GormSettings.html">GormSettings</a>
+</dt><dd> <div class="block">The default mapping</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/GormSettings.html#SETTING_FAIL_ON_ERROR" title="Field in GormSettings">SETTING_FAIL_ON_ERROR</a></span> - Field in <a href="org/grails/datastore/mapping/config/GormSettings.html">GormSettings</a>
+</dt><dd> <div class="block">Whether to throw an exception on a validation error</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/GormSettings.html#SETTING_FLUSH_MODE" title="Field in GormSettings">SETTING_FLUSH_MODE</a></span> - Field in <a href="org/grails/datastore/mapping/config/GormSettings.html">GormSettings</a>
+</dt><dd> <div class="block">The default flush mode</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.NativeEntryModifyingEntityAccess.html#setToIndex(Map<PersistentProperty, Object>)" title="Method in NativeEntryEntityPersister.NativeEntryModifyingEntityAccess">setToIndex(Map&lt;PersistentProperty, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.NativeEntryModifyingEntityAccess.html">NativeEntryEntityPersister.NativeEntryModifyingEntityAccess</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/cache/TPCacheAdapterRepository.html#setTPCacheAdapter(java.lang.String, TPCacheAdapter<T>)" title="Method in TPCacheAdapterRepository">setTPCacheAdapter(String, TPCacheAdapter&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/cache/TPCacheAdapterRepository.html">TPCacheAdapterRepository</a>
@@ -6204,6 +6248,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/EntityPersister.html#setVersion(org.grails.datastore.mapping.engine.EntityAccess)" title="Method in EntityPersister">setVersion(EntityAccess)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/EntityPersister.html">EntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html#setVersionByDefault(boolean)" title="Method in AbstractGormMappingFactory">setVersionByDefault(boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html">AbstractGormMappingFactory</a>
+</dt><dd> <div class="block">Whether the version entities using optimistic locking by default</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/impl/PendingDeleteAdapter.html#setVetoed(boolean)" title="Method in PendingDeleteAdapter">setVetoed(boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/core/impl/PendingDeleteAdapter.html">PendingDeleteAdapter</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/impl/PendingInsertAdapter.html#setVetoed(boolean)" title="Method in PendingInsertAdapter">setVetoed(boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/core/impl/PendingInsertAdapter.html">PendingInsertAdapter</a>
@@ -6225,8 +6271,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Simple.html" title="Class in org.grails.datastore.mapping.model.types">Simple</a></span> - Class in <a href="./org/grails/datastore/mapping/model/types/package-summary.html">org.grails.datastore.mapping.model.types</a>
 </dt><dd><div class="block">Models a simple property type</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Simple.html#Simple(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.lang.String, java.lang.Class)" title="Constructor in Simple">Simple(PersistentEntity, MappingContext, String, Class)</a></span> - Constructor in <a href="org/grails/datastore/mapping/model/types/Simple.html">Simple</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#SIMPLE_TYPES" title="Field in MappingFactory">SIMPLE_TYPES</a></span> - Field in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/simple/SimpleMapDatastore.html" title="Class in org.grails.datastore.mapping.simple">SimpleMapDatastore</a></span> - Class in <a href="./org/grails/datastore/mapping/simple/package-summary.html">org.grails.datastore.mapping.simple</a>
 </dt><dd><div class="block">A simple implementation of the <a href='../../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a> interface that backs onto an in-memory map.
@@ -6253,8 +6297,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.html#singleResult()" title="Method in Query">singleResult()</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.html">Query</a>
 </dt><dd> <div class="block">Executes the query returning a single result or null</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/query/RxQuery.html#singleResult()" title="Method in RxQuery">singleResult()</a></span> - Method in <a href="org/grails/datastore/rx/query/RxQuery.html">RxQuery</a>
-</dt><dd> <div class="block">@return A single result matching this query as an observable</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/query/RxQuery.html#singleResult(Map<String, Object>)" title="Method in RxQuery">singleResult(Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/rx/query/RxQuery.html">RxQuery</a>
+</dt><dd> <div class="block"> <DL><DT><B>Parameters:</B></DT><DD><code>queryArguments</code> -  The query arguments.</DD></DL></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#size()" title="Method in AbstractPersistentCollection">size()</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#size()" title="Method in AbstractResultList">size()</a></span> - Method in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
@@ -6402,9 +6446,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/PersistentObservable.html#subscribe(Subscriber<? super T>)" title="Method in PersistentObservable">subscribe(Subscriber&lt;? super T&gt;)</a></span> - Method in <a href="grails/gorm/rx/PersistentObservable.html">PersistentObservable</a>
 </dt><dd> <div class="block">A convenience method that subscribes to the Observable as provided by <a href='#toObservable'>toObservable</a>.</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentList.html#subscribe(rx.Subscriber)" title="Method in RxPersistentList">subscribe(Subscriber)</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentList.html">RxPersistentList</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSet.html#subscribe(rx.Subscriber)" title="Method in RxPersistentSet">subscribe(Subscriber)</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentSet.html">RxPersistentSet</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxCollection.html#subscribe(rx.Subscriber)" title="Method in RxCollection">subscribe(Subscriber)</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxCollection.html">RxCollection</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html#subscribe(rx.Subscriber)" title="Method in RxPersistentSortedSet">subscribe(Subscriber)</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html">RxPersistentSortedSet</a>
 </dt><dd> <div class="block"></div></dd>
@@ -6496,16 +6538,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/PagedResultList.html#toArray(T)" title="Method in PagedResultList">toArray(T)</a></span> - Method in <a href="grails/gorm/PagedResultList.html">PagedResultList</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/DatastoreConfigurationBuilder.html#toConfiguration(B)" title="Method in DatastoreConfigurationBuilder">toConfiguration(B)</a></span> - Method in <a href="org/grails/datastore/mapping/config/DatastoreConfigurationBuilder.html">DatastoreConfigurationBuilder</a>
+</dt><dd> <div class="block">Convert the builder to the final configuration</div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/DetachedCriteria.html#toList(java.util.Map, groovy.lang.Closure)" title="Method in DetachedCriteria">toList(Map, Closure)</a></span> - Method in <a href="grails/gorm/rx/DetachedCriteria.html">DetachedCriteria</a>
 </dt><dd> <div class="block">Converts the observable to another observable that outputs the complete list. </div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/collection/ObservableCollection.html#toListObservable()" title="Method in ObservableCollection">toListObservable()</a></span> - Method in <a href="grails/gorm/rx/collection/ObservableCollection.html">ObservableCollection</a>
 </dt><dd> <div class="block">Returns an Observable for the operation</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentList.html#toListObservable()" title="Method in RxPersistentList">toListObservable()</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentList.html">RxPersistentList</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSet.html#toListObservable()" title="Method in RxPersistentSet">toListObservable()</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentSet.html">RxPersistentSet</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html#toListObservable()" title="Method in RxPersistentSortedSet">toListObservable()</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html">RxPersistentSortedSet</a>
-</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxCollection.html#toListObservable()" title="Method in RxCollection">toListObservable()</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxCollection.html">RxCollection</a>
+</dt><dd> <div class="block">@return A list observable</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/ToMany.html" title="Class in org.grails.datastore.mapping.model.types">ToMany</a></span> - Class in <a href="./org/grails/datastore/mapping/model/types/package-summary.html">org.grails.datastore.mapping.model.types</a>
 </dt><dd><div class="block">Shared super class inherited by both <a href='../../../../../../org/grails/datastore/mapping/model/types/OneToMany.html' title='OneToMany'>OneToMany</a> and <a href='../../../../../../org/grails/datastore/mapping/model/types/ManyToMany.html' title='ManyToMany'>ManyToMany</a></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/ToMany.html#ToMany(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.lang.String, java.lang.Class)" title="Constructor in ToMany">ToMany(PersistentEntity, MappingContext, String, Class)</a></span> - Constructor in <a href="org/grails/datastore/mapping/model/types/ToMany.html">ToMany</a>
@@ -6514,16 +6554,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/PersistentObservable.html#toObservable()" title="Method in PersistentObservable">toObservable()</a></span> - Method in <a href="grails/gorm/rx/PersistentObservable.html">PersistentObservable</a>
 </dt><dd> <div class="block">Returns an Observable for the operation</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentList.html#toObservable()" title="Method in RxPersistentList">toObservable()</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentList.html">RxPersistentList</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSet.html#toObservable()" title="Method in RxPersistentSet">toObservable()</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentSet.html">RxPersistentSet</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html#toObservable()" title="Method in RxPersistentSortedSet">toObservable()</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxPersistentSortedSet.html">RxPersistentSortedSet</a>
+<dt><span class="strong"><a href="org/grails/datastore/rx/collection/RxCollection.html#toObservable()" title="Method in RxCollection">toObservable()</a></span> - Method in <a href="org/grails/datastore/rx/collection/RxCollection.html">RxCollection</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/ToOne.html" title="Class in org.grails.datastore.mapping.model.types">ToOne</a></span> - Class in <a href="./org/grails/datastore/mapping/model/types/package-summary.html">org.grails.datastore.mapping.model.types</a>
 </dt><dd><div class="block">@author Graeme Rocher</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/ToOne.html#ToOne(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.lang.String, java.lang.Class)" title="Constructor in ToOne">ToOne(PersistentEntity, MappingContext, String, Class)</a></span> - Constructor in <a href="org/grails/datastore/mapping/model/types/ToOne.html">ToOne</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/gorm/rx/DetachedCriteria.html#toQuery(java.util.Map)" title="Method in DetachedCriteria">toQuery(Map)</a></span> - Method in <a href="grails/gorm/rx/DetachedCriteria.html">DetachedCriteria</a>
+</dt><dd> <div class="block">Convert this <a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a> to a query implementation</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#toString()" title="Method in AbstractPersistentCollection">toString()</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#toString()" title="Method in AbstractPersistentEntity">toString()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
@@ -6670,6 +6708,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.PropertyCriterion.html#value" title="Field in Query.PropertyCriterion">value</a></span> - Field in <a href="org/grails/datastore/mapping/query/Query.PropertyCriterion.html">Query.PropertyCriterion</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/ValueGenerator.html" title="Enum in org.grails.datastore.mapping.model">ValueGenerator</a></span> - Enum in <a href="./org/grails/datastore/mapping/model/package-summary.html">org.grails.datastore.mapping.model</a>
+</dt><dd><div class="block">Value generation strategies</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/utils/PropertyResolverMap.html#values()" title="Method in PropertyResolverMap">values()</a></span> - Method in <a href="org/grails/datastore/mapping/config/utils/PropertyResolverMap.html">PropertyResolverMap</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#version" title="Field in AbstractPersistentEntity">version</a></span> - Field in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
@@ -6677,6 +6717,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/config/GormProperties.html#VERSION" title="Field in GormProperties">VERSION</a></span> - Field in <a href="org/grails/datastore/mapping/model/config/GormProperties.html">GormProperties</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/groovy/DefaultMappingConfigurationBuilder.html#VERSION_KEY" title="Field in DefaultMappingConfigurationBuilder">VERSION_KEY</a></span> - Field in <a href="org/grails/datastore/mapping/config/groovy/DefaultMappingConfigurationBuilder.html">DefaultMappingConfigurationBuilder</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html#versionByDefault" title="Field in AbstractGormMappingFactory">versionByDefault</a></span> - Field in <a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html">AbstractGormMappingFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaASTTransformation.html#visit(org.codehaus.groovy.ast.ASTNode, org.codehaus.groovy.control.SourceUnit)" title="Method in DetachedCriteriaASTTransformation">visit(ASTNode, SourceUnit)</a></span> - Method in <a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaASTTransformation.html">DetachedCriteriaASTTransformation</a>
 </dt><dd> <div class="block">The method is invoked when an AST Transformation is active. </div></dd>

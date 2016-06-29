@@ -144,21 +144,26 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;java.lang.Boolean&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#delete(Map<String, Object>)">delete</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Deletes an entity</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insert()">insert</a></strong>()</code><br>Saves an entity and returns an java.util.Observable, forcing an insert operation regardless whether an identifier is already present or not</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insert(Map<String, Object>)">insert</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Saves an entity and returns an java.util.Observable, forcing an insert operation regardless whether an identifier is already present or not</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#save()">save</a></strong>()</code><br>Saves an entity and returns an java.util.Observable, picking either an insert or an update automatically based on whether the object has an id already.</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#save(Map<String, Object>)">save</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Saves an entity and returns an java.util.Observable, picking either an insert or an update automatically based on whether the object has an id already.</td>
                         </tr>
@@ -199,6 +204,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;java.lang.Boolean&gt; <strong>delete</strong>()</h4>
+                                <p> Deletes an entity
+     <DL><DT><B>Returns:</B></DT><DD>An observable that returns a boolean true if successful</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="delete(Map<String, Object>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Observable&lt;java.lang.Boolean&gt; <strong>delete</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</h4>
                                 <p> Deletes an entity
      <DL><DT><B>Returns:</B></DT><DD>An observable that returns a boolean true if successful</DD></DL></p>
                             </li>

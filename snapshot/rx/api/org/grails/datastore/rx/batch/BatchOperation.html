@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -154,16 +154,21 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Map&lt;java.io.Serializable, EntityOperation&gt;&gt;</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#deletes">deletes</a></code><br></td>
+                            <td class="colFirst"><code><strong>java.util.Map&lt;java.lang.String, java.lang.Object&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#arguments">arguments</a></code><br>Arguments to the operation</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Map&lt;java.io.Serializable, EntityOperation&gt;&gt;</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#inserts">inserts</a></code><br></td>
+                            <td class="colLast"><code><a href="#deletes">deletes</a></code><br></td>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Map&lt;java.io.Serializable, EntityOperation&gt;&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#inserts">inserts</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Map&lt;java.io.Serializable, EntityOperation&gt;&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#updates">updates</a></code><br></td>
                         </tr>
@@ -177,6 +182,28 @@ if (location.href.indexOf('is-external=true') == -1) {
         <!-- =========== ELEMENT SUMMARY =========== -->
         
 
+        
+        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
+        <ul class="blockList">
+                <li class="blockList"><a name="constructor_summary"><!--   --></a>
+                    <h3>Constructor Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
+                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Constructor and description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#BatchOperation(Map<String, Object>)">BatchOperation</a></strong>
+                                (java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments = Collections.emptyMap()</code><br></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+              </li>
+        </ul>
         
 
         
@@ -261,6 +288,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Property Detail</h3>
                     
+                        <a name="arguments"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Map&lt;java.lang.String, java.lang.Object&gt; <strong>arguments</strong></h4>
+                                <p> Arguments to the operation
+     </p>
+                            </li>
+                        </ul>
+                    
                         <a name="deletes"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -291,6 +327,24 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             
 
+            
+            <!-- =========== CONSTRUCTOR DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="constructor_detail">
+                    <!--   -->
+                </a>
+                    <h3>Constructor Detail</h3>
+                    
+                        <a name="BatchOperation(Map<String, Object>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>BatchOperation</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments = Collections.emptyMap()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
             
 
 
@@ -380,11 +434,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     

@@ -144,28 +144,33 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;java.lang.Boolean&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#delete(D, java.util.Map)">delete</a></strong>(D instance, java.util.Map arguments)</code><br>Deletes an entity</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.io.Serializable</strong></code></td>
                             <td class="colLast"><code><strong><a href="#ident(D)">ident</a></strong>(D instance)</code><br>Obtain the objects identifier</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insert(D)">insert</a></strong>(D instance)</code><br>Saves an entity and returns an java.util.Observable, forcing an insert operation regardless whether an identifier is already present or not</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#insert(D, Map<String, Object>)">insert</a></strong>(D instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Saves an entity and returns an java.util.Observable, forcing an insert operation regardless whether an identifier is already present or not</td>
+                            <td class="colLast"><code><strong><a href="#insert(D, java.util.Map)">insert</a></strong>(D instance, java.util.Map arguments)</code><br>Saves an entity and returns an java.util.Observable, forcing an insert operation regardless whether an identifier is already present or not</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#save(D)">save</a></strong>(D instance)</code><br>Saves an entity and returns an rx.Observable, picking either an insert or an update automatically based on whether the object has an id already.</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#save(D, Map<String, Object>)">save</a></strong>(D instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Saves an entity and returns an java.util.Observable, picking either an insert or an update automatically based on whether the object has an id already.</td>
+                            <td class="colLast"><code><strong><a href="#save(D, java.util.Map)">save</a></strong>(D instance, java.util.Map arguments)</code><br>Saves an entity and returns an java.util.Observable, picking either an insert or an update automatically based on whether the object has an id already.</td>
                         </tr>
                         
                     </table>
@@ -209,6 +214,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="delete(D, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Observable&lt;java.lang.Boolean&gt; <strong>delete</strong>(D instance, java.util.Map arguments)</h4>
+                                <p> Deletes an entity
+     <DL><DT><B>Returns:</B></DT><DD>An observable that returns a boolean true if successful</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>arguments</code> -  The arguments</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="ident(D)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -227,10 +241,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="insert(D, Map<String, Object>)"><!-- --></a>
+                        <a name="insert(D, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;D&gt; <strong>insert</strong>(D instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</h4>
+                                <h4>java.util.Observable&lt;D&gt; <strong>insert</strong>(D instance, java.util.Map arguments)</h4>
                                 <p> Saves an entity and returns an java.util.Observable, forcing an insert operation regardless whether an identifier is already present or not
      <DL><DT><B>Returns:</B></DT><DD>An java.util.Observable with the result of the operation</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>arguments</code> -  The arguments to the save method</DD></DL></p>
                             </li>
@@ -245,10 +259,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="save(D, Map<String, Object>)"><!-- --></a>
+                        <a name="save(D, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Observable&lt;D&gt; <strong>save</strong>(D instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</h4>
+                                <h4>java.util.Observable&lt;D&gt; <strong>save</strong>(D instance, java.util.Map arguments)</h4>
                                 <p> Saves an entity and returns an java.util.Observable, picking either an insert or an update automatically based on whether the object has an id already.
      <DL><DT><B>Returns:</B></DT><DD>An java.util.Observable with the result of the operation</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>arguments</code> -  The arguments to the save method</DD></DL></p>
                             </li>

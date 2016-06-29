@@ -150,7 +150,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findAll(Map<String, Object>)">findAll</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryArguments)</code><br> <DL><DT><B>Parameters:</B></DT><DD><code>queryArguments</code> -  The query arguments.</DD></DL></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;T&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#singleResult()">singleResult</a></strong>()</code><br>@return A single result matching this query as an observable</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;T&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#singleResult(Map<String, Object>)">singleResult</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryArguments)</code><br> <DL><DT><B>Parameters:</B></DT><DD><code>queryArguments</code> -  The query arguments.</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -208,12 +218,30 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="findAll(Map<String, Object>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Observable&lt;T&gt; <strong>findAll</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryArguments)</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>All results matching this query as an observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryArguments</code> -  The query arguments. These are things like the max, offset etc.</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="singleResult()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;T&gt; <strong>singleResult</strong>()</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>A single result matching this query as an observable</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="singleResult(Map<String, Object>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Observable&lt;T&gt; <strong>singleResult</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; queryArguments)</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>A single result matching this query as an observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryArguments</code> -  The query arguments. These are things like the max, offset etc.</DD></DL></p>
                             </li>
                         </ul>
                     

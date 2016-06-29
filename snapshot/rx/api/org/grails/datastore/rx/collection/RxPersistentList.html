@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Implemented Interfaces and Traits:</dt>
-                <dd><a href='../../../../../grails/gorm/rx/collection/RxPersistentCollection.html'>RxPersistentCollection</a>, <a href='../../../../../grails/gorm/rx/collection/RxUnidirectionalCollection.html'>RxUnidirectionalCollection</a></dd>
+                <dd><a href='../../../../../org/grails/datastore/rx/collection/RxCollection.html'>RxCollection</a>, <a href='../../../../../grails/gorm/rx/collection/RxPersistentCollection.html'>RxPersistentCollection</a>, <a href='../../../../../grails/gorm/rx/collection/RxUnidirectionalCollection.html'>RxUnidirectionalCollection</a></dd>
             </dl>
             <!-- todo: direct known subclasses -->
             <hr>
@@ -131,6 +131,27 @@ extends <a href='../../../../../org/grails/datastore/mapping/collection/Persiste
         <!-- =========== FIELD SUMMARY =========== -->
         
             <ul class="blockList">
+                <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <h3>Field Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Enum constants summary table">
+                        <caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Modifiers</th>
+                            <th class="colLast" scope="col">Name</th>
+                            <th class="colLast" scope="col">Description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#queryState">queryState</a></code></td>
+                            <td class="colLast"></code></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+                
                 <li class="blockList"><a name="field_summary"><!--   --></a>
                     <ul class="blockList">
                     <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited fields summary table">
@@ -174,11 +195,6 @@ extends <a href='../../../../../org/grails/datastore/mapping/collection/Persiste
                             <td class="colLast"><code><a href="#datastoreClient">datastoreClient</a></code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
-                            <td class="colFirst"><code><strong>java.util.Observable</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#observable">observable</a></code><br></td>
-                        </tr>
-                        
                     </table>
                    </ul>
                 </li>
@@ -212,6 +228,12 @@ extends <a href='../../../../../org/grails/datastore/mapping/collection/Persiste
                                 (<a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> datastoreClient, <a href='../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, java.util.List&lt;java.io.Serializable&gt; entitiesKeys, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState = null)</code><br></td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#RxPersistentList(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.mapping.model.types.Association, org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState)">RxPersistentList</a></strong>
+                                (<a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> datastoreClient, <a href='../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, <a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> initializerQuery, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState = null)</code><br></td>
+                        </tr>
+                        
                     </table>
                    </ul>
               </li>
@@ -243,18 +265,13 @@ extends <a href='../../../../../org/grails/datastore/mapping/collection/Persiste
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>rx.Subscription</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#subscribe(rx.Subscriber)">subscribe</a></strong>(rx.Subscriber subscriber)</code><br></td>
+                            <td class="colFirst"><code>protected&nbsp;java.util.Observable</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#resolveObservable()">resolveObservable</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>java.util.Observable&lt;java.util.List&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#toListObservable()">toListObservable</a></strong>()</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code>java.util.Observable</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#toObservable()">toObservable</a></strong>()</code><br></td>
+                            <td class="colFirst"><code>protected&nbsp;java.util.Observable</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#resolveObservable(org.grails.datastore.mapping.query.Query)">resolveObservable</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query)</code><br></td>
                         </tr>
                         
                     </table>
@@ -299,6 +316,24 @@ extends <a href='../../../../../org/grails/datastore/mapping/collection/Persiste
            
 
             
+            <!-- =========== FIELD DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="field_detail">
+                    <!--   -->
+                </a>
+                    <h3>Field Detail</h3>
+                    
+                        <a name="queryState"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;final&nbsp;<a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> <strong>queryState</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
+            
 
             
             <!-- =========== PROPERTY DETAIL =========== -->
@@ -320,14 +355,6 @@ extends <a href='../../../../../org/grails/datastore/mapping/collection/Persiste
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>final&nbsp;<a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> <strong>datastoreClient</strong></h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="observable"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.util.Observable <strong>observable</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -358,6 +385,14 @@ extends <a href='../../../../../org/grails/datastore/mapping/collection/Persiste
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><strong>RxPersistentList</strong>(<a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> datastoreClient, <a href='../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, java.util.List&lt;java.io.Serializable&gt; entitiesKeys, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState = null)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="RxPersistentList(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.mapping.model.types.Association, org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>RxPersistentList</strong>(<a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> datastoreClient, <a href='../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, <a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> initializerQuery, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState = null)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -393,29 +428,18 @@ void <strong>initialize</strong>()</h4>
                             </li>
                         </ul>
                     
-                        <a name="subscribe(rx.Subscriber)"><!-- --></a>
+                        <a name="resolveObservable()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.Override
-rx.Subscription <strong>subscribe</strong>(rx.Subscriber subscriber)</h4>
+                                <h4>protected&nbsp;java.util.Observable <strong>resolveObservable</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="toListObservable()"><!-- --></a>
+                        <a name="resolveObservable(org.grails.datastore.mapping.query.Query)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.Override
-java.util.Observable&lt;java.util.List&gt; <strong>toListObservable</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="toObservable()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>@java.lang.Override
-java.util.Observable <strong>toObservable</strong>()</h4>
+                                <h4>protected&nbsp;java.util.Observable <strong>resolveObservable</strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -454,11 +478,11 @@ java.util.Observable <strong>toObservable</strong>()</h4>
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     
