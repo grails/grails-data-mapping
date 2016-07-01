@@ -64,6 +64,10 @@ public enum ValueGenerator {
     /**
      * Generates the id by selecting from a row using a unique key
      */
-    SELECT
+    SELECT,
+    /**
+     * Custom value generation strategy
+     */
+    CUSTOM
 
 }

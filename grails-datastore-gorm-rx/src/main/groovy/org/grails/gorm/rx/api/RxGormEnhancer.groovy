@@ -1,8 +1,8 @@
 package org.grails.gorm.rx.api
 
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.GormValidationApi
-import org.grails.datastore.mapping.config.Entity
+import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesSupport
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.rx.RxDatastoreClient
 import org.grails.datastore.rx.internal.RxDatastoreClientImplementor
@@ -37,14 +37,34 @@ class RxGormEnhancer {
         VALIDATION_APIS.clear()
     }
 
-    static void registerEntity(PersistentEntity entity, RxDatastoreClient client, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
-        STATIC_APIS.get(qualifier).put( entity.getName(), ((RxDatastoreClientImplementor)client).createStaticApi(entity))
-        INSTANCE_APIS.get(qualifier).put( entity.getName(), ((RxDatastoreClientImplementor)client).createInstanceApi(entity))
-        VALIDATION_APIS.get(qualifier).put( entity.getName(), ((RxDatastoreClientImplementor)client).createValidationApi(entity))
+    static void registerEntity(PersistentEntity entity, RxDatastoreClient client) {
+        List<String> connectionSourceNames = ConnectionSourcesSupport.getConnectionSourceNames(entity)
+        String defaultConnectionSource = ConnectionSourcesSupport.getDefaultConnectionSourceName(entity)
+        RxDatastoreClientImplementor rxDatastoreClientImplementor = (RxDatastoreClientImplementor) client
+
+        if(defaultConnectionSource == ConnectionSource.ALL) {
+            for(ConnectionSource cs in client.getConnectionSources()) {
+                registerEntityWithConnectionSource(entity, cs.name, cs.name, rxDatastoreClientImplementor)
+            }
+        }
+        else {
+            registerEntityWithConnectionSource(entity, ConnectionSource.DEFAULT, defaultConnectionSource, rxDatastoreClientImplementor)
+            for(String connectionSourceName in connectionSourceNames) {
+                if(connectionSourceName == ConnectionSource.DEFAULT) continue
+                registerEntityWithConnectionSource(entity, connectionSourceName, connectionSourceName, rxDatastoreClientImplementor)
+            }
+        }
+    }
+
+    protected static void registerEntityWithConnectionSource(PersistentEntity entity, String qualifierName, String connectionSourceName, RxDatastoreClientImplementor rxDatastoreClientImplementor) {
+        String entityName = entity.getName()
+        STATIC_APIS.get(qualifierName).put(entityName, rxDatastoreClientImplementor.createStaticApi(entity, connectionSourceName))
+        INSTANCE_APIS.get(qualifierName).put(entityName, rxDatastoreClientImplementor.createInstanceApi(entity, connectionSourceName))
+        VALIDATION_APIS.get(qualifierName).put(entityName, rxDatastoreClientImplementor.createValidationApi(entity, connectionSourceName))
     }
 
 
-    static <T> RxGormStaticApi<T> findStaticApi(Class<T> type, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
+    static <T> RxGormStaticApi<T> findStaticApi(Class<T> type, String qualifier = ConnectionSource.DEFAULT) {
         def api = STATIC_APIS.get(qualifier).get(type.name)
         if(api == null) {
             throw stateException(type)
@@ -52,7 +72,7 @@ class RxGormEnhancer {
         return api
     }
 
-    static <T> RxGormInstanceApi<T> findInstanceApi(Class<T> type, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
+    static <T> RxGormInstanceApi<T> findInstanceApi(Class<T> type, String qualifier = ConnectionSource.DEFAULT) {
         def api = INSTANCE_APIS.get(qualifier).get(type.name)
         if(api == null) {
             throw stateException(type)
@@ -60,7 +80,7 @@ class RxGormEnhancer {
         return api
     }
 
-    static <T> RxGormValidationApi<T> findValidationApi(Class<T> type, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
+    static <T> RxGormValidationApi<T> findValidationApi(Class<T> type, String qualifier = ConnectionSource.DEFAULT) {
         def api = VALIDATION_APIS.get(qualifier).get(type.name)
         if(api == null) {
             throw stateException(type)

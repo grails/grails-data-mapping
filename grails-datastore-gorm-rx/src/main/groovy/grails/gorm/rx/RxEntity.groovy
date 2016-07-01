@@ -1,6 +1,9 @@
 package grails.gorm.rx
 
+import grails.gorm.rx.api.RxGormAllOperations
+import grails.gorm.rx.api.RxGormInstanceOperations
 import grails.gorm.rx.api.RxGormOperations
+import grails.gorm.rx.api.RxGormStaticOperations
 import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormValidateable
@@ -376,6 +379,26 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     }
 
     /**
+     * Batch saves all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    static Observable<List<Serializable>> insertAll(Iterable<D> objects, Map arguments = Collections.emptyMap()) {
+        currentRxGormStaticApi().insertAll(objects, arguments)
+    }
+
+    /**
+     * Batch saves all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    static Observable<List<Serializable>> insertAll(D... objects) {
+        insertAll((Iterable<D>)Arrays.asList(objects))
+    }
+
+    /**
      * Check whether an entity exists for the given id
      *
      * @param id
@@ -625,6 +648,31 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     static Observable withCriteria(Map builderArgs, @DelegatesTo(CriteriaBuilder) Closure callable) {
         currentRxGormStaticApi().withCriteria builderArgs, callable
     }
+
+    /**
+     * Perform operations with the given connection
+     *
+     * @param connectionName The name of the connection
+     * @return The {@link RxGormStaticOperations}    instance
+     */
+    RxGormInstanceOperations<D> withConnection(String connectionName) {
+        return (RxGormInstanceOperations<D>)RxGormEnhancer.findInstanceApi(getClass(), connectionName)
+    }
+
+    /**
+     * Switches to given named connection within the context of the closure. The delegate of the closure is used to resolve
+     * operations against the connection.
+     *
+     * @param connectionName The name of the connection
+     * @param callable The closure
+     * @return
+     */
+    static <T> T withConnection(String connectionName, @DelegatesTo(RxGormAllOperations) Closure<T> callable ) {
+        def staticOperations = (RxGormAllOperations<D>) RxGormEnhancer.findStaticApi(this, connectionName)
+        callable.setDelegate(staticOperations)
+        return callable.call()
+    }
+
     /**
      * Handles dynamic finders
      *

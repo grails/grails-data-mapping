@@ -21,6 +21,7 @@ import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.orm.hibernate.cfg.Mapping
@@ -59,7 +60,7 @@ class HibernateGormEnhancer extends GormEnhancer {
         if(datastoreStoreDataSourceName.equals(dataSourceName) ) {
             qualifiers.add(Entity.DEFAULT_DATA_SOURCE)
         }
-        if(allMappedDataSources.contains(datastoreStoreDataSourceName) || allMappedDataSources.contains(Mapping.ALL_DATA_SOURCES)) {
+        if(allMappedDataSources.contains(datastoreStoreDataSourceName) || allMappedDataSources.contains(ConnectionSource.ALL)) {
             qualifiers.add(datastoreStoreDataSourceName)
         }
         return qualifiers
@@ -67,17 +68,17 @@ class HibernateGormEnhancer extends GormEnhancer {
     }
 
 
-    protected <D> GormValidationApi<D> getValidationApi(Class<D> cls) {
+    protected <D> GormValidationApi<D> getValidationApi(Class<D> cls, String qualifier = ConnectionSource.DEFAULT) {
         new HibernateGormValidationApi<D>(cls, (HibernateDatastore)datastore, Thread.currentThread().contextClassLoader)
     }
 
     @Override
-    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
+    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls, String qualifier = ConnectionSource.DEFAULT) {
         new HibernateGormStaticApi<D>(cls, (HibernateDatastore)datastore, getFinders(), Thread.currentThread().contextClassLoader, transactionManager)
     }
 
     @Override
-    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
+    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls, String qualifier = ConnectionSource.DEFAULT) {
         new HibernateGormInstanceApi<D>(cls, (HibernateDatastore)datastore, Thread.currentThread().contextClassLoader)
     }
 

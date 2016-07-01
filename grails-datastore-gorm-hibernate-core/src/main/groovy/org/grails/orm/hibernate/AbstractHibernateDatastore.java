@@ -14,7 +14,7 @@
  */
 package org.grails.orm.hibernate;
 
-import org.grails.datastore.mapping.config.GormSettings;
+import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.orm.hibernate.cfg.Mapping;
@@ -33,7 +33,7 @@ import java.util.concurrent.Callable;
  * @author Graeme Rocher
  * @since 2.0
  */
-public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, GormSettings {
+public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings {
 
     public static final String CONFIG_PROPERTY_CACHE_QUERIES = "grails.hibernate.cache.queries";
     public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";

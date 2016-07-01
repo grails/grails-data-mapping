@@ -121,6 +121,32 @@ interface RxGormStaticOperations<D> {
     Observable<List<Serializable>> saveAll(D... objects)
 
     /**
+     * Batch saves all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    Observable<List<Serializable>> insertAll(Iterable<D> objects)
+
+    /**
+     * Batch saves all of the given objects
+     *
+     * @param objects The objects to save
+     * @params arguments The arguments to save
+     *
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    Observable<List<Serializable>> insertAll(Iterable<D> objects, Map arguments)
+
+    /**
+     * Batch saves all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    Observable<List<Serializable>> insertAll(D... objects)
+
+    /**
      * Check whether an entity exists for the given id
      *
      * @param id

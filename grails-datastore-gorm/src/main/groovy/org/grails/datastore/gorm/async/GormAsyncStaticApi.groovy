@@ -18,8 +18,10 @@ import grails.async.Promise
 import grails.async.Promises
 import grails.async.decorator.PromiseDecorator
 import grails.async.decorator.PromiseDecoratorProvider
+import grails.gorm.api.GormStaticOperations
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.async.transform.DelegateAsync
 
 /**
  * Transforms the GormStaticApi into an asynchronous API
@@ -28,7 +30,8 @@ import org.grails.datastore.gorm.GormStaticApi
  * @since 2.3
  */
 class GormAsyncStaticApi<D> implements PromiseDecoratorProvider{
-    @grails.async.DelegateAsync GormStaticApi<D> staticApi
+
+    @DelegateAsync GormStaticOperations<D> staticApi
 
     /**
      * Wraps each promise in a new persistence session

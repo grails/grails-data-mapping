@@ -1,0 +1,3 @@
+dependencies {
+    compile "org.grails:grails-async:$grailsVersion"
+}

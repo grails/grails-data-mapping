@@ -18,6 +18,7 @@ package org.grails.orm.hibernate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -76,7 +77,7 @@ public abstract class AbstractEventTriggeringInterceptor extends AbstractPersist
         }
 
         for (String dataSource : dataSourceNames) {
-            if (Mapping.ALL_DATA_SOURCES.equals(dataSource)) {
+            if (ConnectionSource.ALL.equals(dataSource)) {
                 return true;
             }
             boolean isDefault = dataSource.equals(Mapping.DEFAULT_DATA_SOURCE);

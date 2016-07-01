@@ -5,6 +5,11 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
+import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
+import org.grails.datastore.mapping.core.connections.ConnectionSources
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesSupport
+import org.grails.datastore.mapping.core.exceptions.ConfigurationException
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection
 import org.grails.datastore.mapping.engine.EntityAccess
@@ -44,16 +49,21 @@ import javax.persistence.CascadeType
  * @since 6.0
  */
 @CompileStatic
-abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxDatastoreClientImplementor {
+abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxDatastoreClientImplementor<T> {
 
     protected MappingContext mappingContext
     ConfigurableApplicationEventPublisher eventPublisher = new DefaultApplicationEventPublisher()
     final ProxyFactory proxyFactory
+    final ConnectionSources<T, ConnectionSourceSettings> connectionSources
+    final Map<String, RxDatastoreClient<T>> datastoreClients = [:]
 
-    AbstractRxDatastoreClient(MappingContext mappingContext) {
+    AbstractRxDatastoreClient(ConnectionSources<T, ConnectionSourceSettings> connectionSources, MappingContext mappingContext) {
         this.mappingContext = mappingContext
         this.proxyFactory = new RxJavassistProxyFactory()
+        this.connectionSources = connectionSources
+        this.datastoreClients.put(ConnectionSource.DEFAULT, this)
         mappingContext.setProxyFactory(new RxJavassistProxyFactory())
+
     }
 
     ConfigurableApplicationEventPublisher getEventPublisher() {
@@ -434,18 +444,33 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
     abstract void doClose()
 
     @Override
-    RxGormStaticApi createStaticApi(PersistentEntity entity) {
-        return new RxGormStaticApi(entity, this)
+    final RxGormStaticApi createStaticApi(PersistentEntity entity) {
+        return createStaticApi(entity, ConnectionSourcesSupport.getDefaultConnectionSourceName(entity))
     }
 
     @Override
-    RxGormInstanceApi createInstanceApi(PersistentEntity entity) {
-        return new RxGormInstanceApi(entity, this)
+    final RxGormInstanceApi createInstanceApi(PersistentEntity entity) {
+        return createInstanceApi(entity, ConnectionSourcesSupport.getDefaultConnectionSourceName(entity))
     }
 
     @Override
-    RxGormValidationApi createValidationApi(PersistentEntity entity) {
-        return new RxGormValidationApi(entity, this)
+    final RxGormValidationApi createValidationApi(PersistentEntity entity) {
+        return createValidationApi(entity, ConnectionSourcesSupport.getDefaultConnectionSourceName(entity))
+    }
+
+    @Override
+    RxGormStaticApi createStaticApi(PersistentEntity entity, String connectionSourceName) {
+        return new RxGormStaticApi(entity,  getDatastoreClient(connectionSourceName))
+    }
+
+    @Override
+    RxGormInstanceApi createInstanceApi(PersistentEntity entity, String connectionSourceName) {
+        return new RxGormInstanceApi(entity, getDatastoreClient(connectionSourceName))
+    }
+
+    @Override
+    RxGormValidationApi createValidationApi(PersistentEntity entity, String connectionSourceName) {
+        return new RxGormValidationApi(entity, getDatastoreClient(connectionSourceName))
     }
 
     /**
@@ -496,4 +521,13 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
      * @return The query object
      */
     abstract Query createEntityQuery(PersistentEntity entity, QueryState queryState, Map arguments)
+
+    @Override
+    RxDatastoreClient getDatastoreClient(String connectionSourceName) {
+        def datastoreClient = this.datastoreClients.get(connectionSourceName)
+        if(datastoreClient == null) {
+            throw new ConfigurationException("No connection source configured for name [$connectionSourceName]. Check your configuration.")
+        }
+        return datastoreClient
+    }
 }

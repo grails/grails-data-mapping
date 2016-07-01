@@ -29,6 +29,7 @@ import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
@@ -107,12 +108,12 @@ class GormEnhancer implements Closeable {
             def cls = entity.javaClass
             Set<String> qualifiers = allQualifiers(this.datastore, entity)
             for (qualifier in qualifiers) {
-                def staticApi = getStaticApi(cls)
+                def staticApi = getStaticApi(cls, qualifier)
                 def name = entity.name
                 STATIC_APIS.get(qualifier).put(name, staticApi)
-                def instanceApi = getInstanceApi(cls)
+                def instanceApi = getInstanceApi(cls, qualifier)
                 INSTANCE_APIS.get(qualifier).put(name, instanceApi)
-                def validationApi = getValidationApi(cls)
+                def validationApi = getValidationApi(cls, qualifier)
                 VALIDATION_APIS.get(qualifier).put(name, validationApi)
                 DATASTORES.get(qualifier).put(name, this.datastore)
             }
@@ -370,19 +371,19 @@ class GormEnhancer implements Closeable {
     }
 
     @CompileStatic
-    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
+    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls, String qualifier = ConnectionSource.DEFAULT) {
         new GormStaticApi<D>(cls, datastore, getFinders(), transactionManager)
     }
 
     @CompileStatic
-    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
+    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls, String qualifier = ConnectionSource.DEFAULT) {
         def instanceApi = new GormInstanceApi<D>(cls, datastore)
         instanceApi.failOnError = failOnError
         return instanceApi
     }
 
     @CompileStatic
-    protected <D> GormValidationApi<D> getValidationApi(Class<D> cls) {
+    protected <D> GormValidationApi<D> getValidationApi(Class<D> cls, String qualifier = ConnectionSource.DEFAULT) {
         new GormValidationApi(cls, datastore)
     }
 

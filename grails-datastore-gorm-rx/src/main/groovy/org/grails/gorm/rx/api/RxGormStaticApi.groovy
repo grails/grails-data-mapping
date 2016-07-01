@@ -3,6 +3,7 @@ package org.grails.gorm.rx.api
 import grails.gorm.rx.CriteriaBuilder
 import grails.gorm.rx.DetachedCriteria
 import grails.gorm.rx.RxEntity
+import grails.gorm.rx.api.RxGormAllOperations
 import grails.gorm.rx.api.RxGormStaticOperations
 import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileDynamic
@@ -28,7 +29,7 @@ import rx.Subscriber
  * @since 6.0
  */
 @CompileStatic
-class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
+class RxGormStaticApi<D> implements RxGormAllOperations<D> {
 
     final PersistentEntity entity
     final RxDatastoreClient datastoreClient
@@ -167,17 +168,41 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
                 throw new ValidationException("Validation error occurred during call to save() for entity [$firstInvalid]", ((GormValidateable)firstInvalid).errors)
             }
             else {
-                return datastoreClient.persistAll(objects)
+                return datastoreClient.persistAll(objects, arguments)
             }
         }
         else {
-            return datastoreClient.persistAll(objects)
+            return datastoreClient.persistAll(objects, arguments)
         }
     }
 
     @Override
     Observable<List<Serializable>> saveAll(D... objects) {
         saveAll(Arrays.asList(objects))
+    }
+
+    @Override
+    Observable<List<Serializable>> insertAll(Iterable<D> objects, Map arguments = [:]) {
+        boolean shouldValidate = arguments?.containsKey("validate") ? arguments.validate : true
+        if(shouldValidate) {
+            def firstInvalid = objects.find() {
+                (it instanceof GormValidateable) && !((GormValidateable)it).validate()
+            }
+            if(firstInvalid != null) {
+                throw new ValidationException("Validation error occurred during call to save() for entity [$firstInvalid]", ((GormValidateable)firstInvalid).errors)
+            }
+            else {
+                return datastoreClient.insertAll(objects, arguments)
+            }
+        }
+        else {
+            return datastoreClient.insertAll(objects, arguments)
+        }
+    }
+
+    @Override
+    Observable<List<Serializable>> insertAll(D... objects) {
+        return insertAll(Arrays.asList(objects))
     }
 
     @Override
@@ -472,5 +497,47 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
     @Override
     ObservableProxy<D> proxy(DetachedCriteria<D> query, Map queryArgs) {
         datastoreClient.proxy(query.toQuery(queryArgs))
+    }
+
+    @Override
+    Serializable ident(D instance) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).ident(instance)
+    }
+
+    @Override
+    Observable<D> save(D instance) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).save(instance)
+    }
+
+    @Override
+    Observable<D> save(D instance, Map arguments) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).save(instance, arguments)
+    }
+
+    @Override
+    Observable<D> insert(D instance) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).insert(instance)
+    }
+
+    @Override
+    Observable<D> insert(D instance, Map arguments) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).save(instance, arguments)
+    }
+
+    @Override
+    Observable<Boolean> delete(D instance) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).delete(instance)
+    }
+
+    @Override
+    Observable<Boolean> delete(D instance, Map arguments) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).delete(instance, arguments)
     }
 }
