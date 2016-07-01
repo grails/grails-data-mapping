@@ -6,11 +6,16 @@ EXIT_STATUS=0
 if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
     echo "Tagged Release Skipping Tests for Publish"
 else
-    ./gradlew compileGroovy
+    ./gradlew compileGroovy || EXIT_STATUS=$?
     ./gradlew --stop
-    ./gradlew compileTestGroovy
-    ./gradlew --stop
-    ./gradlew --refresh-dependencies grails-datastore-gorm-hibernate4:test || EXIT_STATUS=$?
+    if [[ $EXIT_STATUS -eq 0 ]]; then
+        ./gradlew compileTestGroovy || EXIT_STATUS=$?
+        ./gradlew --stop
+    fi
+    if [[ $EXIT_STATUS -eq 0 ]]; then
+        ./gradlew --refresh-dependencies grails-datastore-gorm-hibernate4:test || EXIT_STATUS=$?
+        ./gradlew --stop
+    fi
 
     if [[ $EXIT_STATUS -eq 0 ]]; then
         ./gradlew --stop
