@@ -28,7 +28,7 @@ import org.grails.datastore.gorm.GormStaticApi
  * @since 2.3
  */
 class GormAsyncStaticApi<D> implements PromiseDecoratorProvider{
-    @grails.async.DelegateAsync GormStaticApi<D> staticApi
+    @DelegateAsync GormStaticApi<D> staticApi
 
     /**
      * Wraps each promise in a new persistence session

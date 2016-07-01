@@ -20,7 +20,7 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import org.grails.datastore.gorm.GormEntity;
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
-import org.grails.datastore.mapping.config.GormSettings;
+import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.model.*;
@@ -44,18 +44,18 @@ public class HibernateMappingContext extends AbstractMappingContext {
     private final MappingConfigurationStrategy syntaxStrategy;
 
     public HibernateMappingContext(PropertyResolver configuration, Object contextObject, Class...persistentClasses) {
-        this(configuration.getProperty(GormSettings.SETTING_DEFAULT_MAPPING, Closure.class, null), contextObject);
+        this(configuration.getProperty(Settings.SETTING_DEFAULT_MAPPING, Closure.class, null), contextObject);
         addPersistentEntities(persistentClasses);
     }
 
     public HibernateMappingContext(PropertyResolver configuration, Object contextObject, Closure defaultConstraints, Class...persistentClasses) {
-        this(configuration.getProperty(GormSettings.SETTING_DEFAULT_MAPPING, Closure.class, null), contextObject);
+        this(configuration.getProperty(Settings.SETTING_DEFAULT_MAPPING, Closure.class, null), contextObject);
         setDefaultConstraints(defaultConstraints);
         addPersistentEntities(persistentClasses);
     }
 
     public HibernateMappingContext(PropertyResolver configuration, Object contextObject) {
-        this(configuration.getProperty(GormSettings.SETTING_DEFAULT_MAPPING, Closure.class, null), contextObject);
+        this(configuration.getProperty(Settings.SETTING_DEFAULT_MAPPING, Closure.class, null), contextObject);
     }
 
     public HibernateMappingContext() {

@@ -17,6 +17,8 @@ package org.grails.datastore.gorm
 import grails.gorm.CriteriaBuilder
 import grails.gorm.DetachedCriteria
 import grails.gorm.PagedResultList
+import grails.gorm.api.GormAllOperations
+import grails.gorm.api.GormStaticOperations
 import grails.gorm.transactions.GrailsTransactionTemplate
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
@@ -25,12 +27,15 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.mapping.core.AbstractDatastore
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.core.StatelessDatastore
+import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
@@ -53,11 +58,12 @@ import org.springframework.validation.Errors
  * @param <D> the entity/domain class
  */
 @CompileStatic
-class GormStaticApi<D> extends AbstractGormApi<D> {
+class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D> {
 
     protected final List<FinderMethod> gormDynamicFinders
 
     protected final PlatformTransactionManager transactionManager
+    protected final String defaultQualifier
 
     GormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
         this(persistentClass, datastore, finders, null)
@@ -67,6 +73,11 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         super(persistentClass, datastore)
         gormDynamicFinders = finders
         this.transactionManager = transactionManager
+        String qualifier = ConnectionSource.DEFAULT
+        if(datastore instanceof ConnectionSourcesProvider) {
+            qualifier = ((ConnectionSourcesProvider)datastore).connectionSources.defaultConnectionSource.name
+        }
+        this.defaultQualifier = qualifier
     }
 
     /**
@@ -86,7 +97,12 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @param name The name of the property
      */
     def propertyMissing(String name) {
-        throw new MissingPropertyException(name, persistentClass)
+        if(datastore instanceof ConnectionSourcesProvider) {
+            return GormEnhancer.findStaticApi(persistentClass, name)
+        }
+        else {
+            throw new MissingPropertyException(name, persistentClass)
+        }
     }
 
     /**
@@ -94,7 +110,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      *
      * @param name The name of the property
      */
-    def propertyMissing(String name, value) {
+    void propertyMissing(String name, value) {
         throw new MissingPropertyException(name, persistentClass)
     }
 
@@ -392,6 +408,46 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @param d The object to merge
      * @return The instance
      */
+    @Override
+    def propertyMissing(D instance, String name) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).propertyMissing(instance, name)
+    }
+
+    @Override
+    boolean instanceOf(D instance, Class cls) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).instanceOf(instance,cls)
+    }
+
+    @Override
+    D lock(D instance) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).lock(instance)
+    }
+
+    @Override
+    def <T> T mutex(D instance, Closure<T> callable) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).mutex(instance, callable)
+    }
+
+    @Override
+    D refresh(D instance) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).refresh(instance)
+    }
+
+    @Override
+    D save(D instance) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).save(instance)
+    }
+
+    @Override
+    D insert(D instance) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).insert(instance)
+    }
+
+    @Override
+    D insert(D instance, Map params) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).insert(instance, params)
+    }
+
     D merge(D d) {
         execute ({ Session session ->
             session.persist(d)
@@ -399,6 +455,50 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         } as SessionCallback)
     }
 
+    @Override
+    D merge(D instance, Map params) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).merge(instance, params)
+    }
+
+    @Override
+    D save(D instance, boolean validate) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).save(instance, validate)
+    }
+
+    @Override
+    D save(D instance, Map params) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).save(instance, params)
+    }
+
+    @Override
+    Serializable ident(D instance) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).ident(instance)
+    }
+
+    @Override
+    D attach(D instance) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).attach(instance)
+    }
+
+    @Override
+    boolean isAttached(D instance) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).isAttached(instance)
+    }
+
+    @Override
+    void discard(D instance) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).discard(instance)
+    }
+
+    @Override
+    void delete(D instance) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).delete(instance)
+    }
+
+    @Override
+    void delete(D instance, Map params) {
+        GormEnhancer.findInstanceApi(persistentClass, defaultQualifier).delete(instance, params)
+    }
     /**
      * Counts the number of persisted entities
      * @return The number of persisted entities
@@ -561,7 +661,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         last(sort: propertyName)
     }
 
-    /**
+/**
      * Finds the last object.  If queryParams includes 'sort', that will
      * dictate the sort order, otherwise natural sort order will be used.
      * queryParams may include any of the same parameters that might be passed
@@ -581,21 +681,6 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         }
         def resultList = list(queryParams)
         resultList ? resultList[0] : null
-    }
-
-    private Map createQueryMapForExample(PersistentEntity persistentEntity, D example) {
-        def props = persistentEntity.persistentProperties.findAll { PersistentProperty prop ->
-            !(prop instanceof Association)
-        }
-
-        def queryMap = [:]
-        for (PersistentProperty prop in props) {
-            def val = example[prop.name]
-            if (val != null) {
-                queryMap[prop.name] = val
-            }
-        }
-        return queryMap
     }
 
     /**
@@ -623,7 +708,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
             Map<String, Object> processedQueryMap = [:]
             queryMap.each{ key, value -> processedQueryMap[key.toString()] = value }
             q.allEq(processedQueryMap)
-            
+
             DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
             q.list()
         } as SessionCallback<List>)
@@ -708,18 +793,6 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         internalFindOrCreate(queryMap, true)
     }
 
-    private D internalFindOrCreate(Map queryMap, boolean shouldSave) {
-        D result = findWhere(queryMap)
-        if (!result) {
-            def persistentMetaClass = GroovySystem.metaClassRegistry.getMetaClass(persistentClass)
-            result = (D)persistentMetaClass.invokeConstructor(queryMap)
-            if (shouldSave) {
-                InvokerHelper.invokeMethod(result, "save", null)
-            }
-        }
-        result
-    }
-
     /**
      * Execute a closure whose first argument is a reference to the current session.
      *
@@ -776,7 +849,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * configured with the properties contained in transactionProperties.
      * transactionProperties may contain any properties supported by
      * {@link DefaultTransactionDefinition}.
-     * 
+     *
      * <blockquote>
      * <pre>
      * SomeEntity.withTransaction([propagationBehavior: TransactionDefinition.PROPAGATION_REQUIRES_NEW,
@@ -901,6 +974,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
     List<D> executeQuery(String query, Map params, Map args) {
         unsupported("executeQuery")
+        return null
     }
 
     List<D> executeQuery(String query, Collection params) {
@@ -913,6 +987,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
     List<D> executeQuery(String query, Collection params, Map args) {
         unsupported("executeQuery")
+        return null
     }
 
     Integer executeUpdate(String query) {
@@ -925,6 +1000,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
     Integer executeUpdate(String query, Map params, Map args) {
         unsupported("executeUpdate")
+        return null
     }
 
     Integer executeUpdate(String query, Collection params) {
@@ -937,6 +1013,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
     Integer executeUpdate(String query, Collection params, Map args) {
         unsupported("executeUpdate")
+        return null
     }
 
     D find(String query) {
@@ -949,6 +1026,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
     D find(String query, Map params, Map args) {
         unsupported("find")
+        return null
     }
 
     D find(String query, Collection params) {
@@ -961,6 +1039,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
     D find(String query, Collection params, Map args) {
         unsupported("find")
+        return null
     }
 
     List<D> findAll(String query) {
@@ -973,6 +1052,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
     List<D> findAll(String query, Map params, Map args) {
         unsupported("findAll")
+        return null
     }
 
     List<D> findAll(String query, Collection params) {
@@ -985,9 +1065,37 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
     List<D> findAll(String query, Collection params, Map args) {
         unsupported("findAll")
+        return null
     }
 
     protected void unsupported(method) {
         throw new UnsupportedOperationException("String-based queries like [$method] are currently not supported in this implementation of GORM. Use criteria instead.")
+    }
+
+    private Map createQueryMapForExample(PersistentEntity persistentEntity, D example) {
+        def props = persistentEntity.persistentProperties.findAll { PersistentProperty prop ->
+            !(prop instanceof Association)
+        }
+
+        def queryMap = [:]
+        for (PersistentProperty prop in props) {
+            def val = example[prop.name]
+            if (val != null) {
+                queryMap[prop.name] = val
+            }
+        }
+        return queryMap
+    }
+
+    private D internalFindOrCreate(Map queryMap, boolean shouldSave) {
+        D result = findWhere(queryMap)
+        if (!result) {
+            def persistentMetaClass = GroovySystem.metaClassRegistry.getMetaClass(persistentClass)
+            result = (D)persistentMetaClass.invokeConstructor(queryMap)
+            if (shouldSave) {
+                InvokerHelper.invokeMethod(result, "save", null)
+            }
+        }
+        result
     }
 }

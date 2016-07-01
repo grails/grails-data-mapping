@@ -1,6 +1,5 @@
 package org.grails.datastore.mapping.core.connections;
 
-import org.springframework.core.env.PropertyResolver;
 
 /**
  * Represents a connection source, which could be a SQL DataSource, a MongoClient etc.
@@ -8,11 +7,17 @@ import org.springframework.core.env.PropertyResolver;
  * @author Graeme Rocher
  * @since 6.0
  */
-public interface ConnectionSource<T> {
+public interface ConnectionSource<T, S extends ConnectionSourceSettings> {
     /**
      * The name of the default connection source
      */
     String DEFAULT = "DEFAULT";
+
+    /**
+     * Constance for a mapping to all connection sources
+     */
+    String ALL = "ALL";
+
     /**
      * @return The name of the connection source
      */
@@ -24,7 +29,8 @@ public interface ConnectionSource<T> {
     T getSource();
 
     /**
-     * @return The configuration used to create the connection source
+     * @return The settings for the {@link ConnectionSource}
      */
-    PropertyResolver getConfiguration();
+    S getSettings();
+
 }

@@ -1,6 +1,9 @@
 package org.grails.datastore.mapping.core.connections;
 
+import org.grails.datastore.mapping.config.Settings;
 import org.springframework.core.env.PropertyResolver;
+
+import java.io.Serializable;
 
 /**
  * A factory for creating new {@link ConnectionSource} instances
@@ -8,7 +11,7 @@ import org.springframework.core.env.PropertyResolver;
  * @author Graeme Rocher
  * @since 6.0
  */
-public interface ConnectionSourceFactory<T> {
+public interface ConnectionSourceFactory<T, S extends ConnectionSourceSettings> extends Settings {
 
     /**
      * Creates a new {@link ConnectionSource} for the given name and configuration
@@ -19,5 +22,10 @@ public interface ConnectionSourceFactory<T> {
      *
      * @throws org.grails.datastore.mapping.core.exceptions.ConfigurationException If there is an issue with the configuration
      */
-    ConnectionSource<T> create(String name, PropertyResolver configuration);
+    ConnectionSource<T, S> create(String name, PropertyResolver configuration);
+
+    /**
+     * @return Obtain the prefix used to obtain the default configuration. For example "grails.mongodb" or "grails.neo4j"
+     */
+    Serializable getConnectionSourcesConfigurationKey();
 }

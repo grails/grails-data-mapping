@@ -2,6 +2,8 @@ package org.grails.datastore.mapping.core.connections;
 
 import org.springframework.core.env.PropertyResolver;
 
+import java.io.Closeable;
+
 /**
  * Models multiple connection sources
  *
@@ -10,17 +12,21 @@ import org.springframework.core.env.PropertyResolver;
  *
  * @param <T> The underlying native type of the {@link ConnectionSource}, for example a SQL {@link javax.sql.DataSource}
  */
-public interface ConnectionSources<T> extends Iterable<ConnectionSource<T>> {
+public interface ConnectionSources<T, S extends ConnectionSourceSettings> extends Iterable<ConnectionSource<T, S>>, Closeable {
 
+    /**
+     * @return Obtains the base configuration
+     */
+    PropertyResolver getBaseConfiguration();
     /**
      * @return The factory used to create new connections
      */
-    ConnectionSourceFactory getFactory();
+    ConnectionSourceFactory<T, S> getFactory();
 
     /**
      * @return An iterable containing all {@link ConnectionSource} instances
      */
-    Iterable<ConnectionSource<T>> getAllConnectionSources();
+    Iterable<ConnectionSource<T, S>> getAllConnectionSources();
 
     /**
      * Obtain a {@link ConnectionSource} by name
@@ -29,14 +35,14 @@ public interface ConnectionSources<T> extends Iterable<ConnectionSource<T>> {
      *
      * @return A {@link ConnectionSource} or null if it doesn't exist
      */
-    ConnectionSource<T> getConnectionSource(String name);
+    ConnectionSource<T, S> getConnectionSource(String name);
 
     /**
      * Obtains the default {@link ConnectionSource}
      *
      * @return The default {@link ConnectionSource}
      */
-    ConnectionSource<T> getDefaultConnectSource();
+    ConnectionSource<T, S> getDefaultConnectionSource();
 
     /**
      * Adds a new {@link ConnectionSource}
@@ -47,5 +53,7 @@ public interface ConnectionSources<T> extends Iterable<ConnectionSource<T>> {
      *
      * @throws org.grails.datastore.mapping.core.exceptions.ConfigurationException if the configuration is invalid
      */
-    ConnectionSource<T> addConnectionSource(String name, PropertyResolver configuration);
+    ConnectionSource<T, S> addConnectionSource(String name, PropertyResolver configuration);
+
+
 }

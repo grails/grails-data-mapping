@@ -16,6 +16,7 @@ package org.grails.orm.hibernate;
 
 import org.grails.datastore.mapping.core.ConnectionNotFoundException;
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.orm.hibernate.cfg.Mapping;
 import org.hibernate.SessionFactory;
@@ -35,11 +36,11 @@ import java.util.concurrent.Callable;
 public class HibernateDatastore extends AbstractHibernateDatastore  {
 
     public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {
-        super(mappingContext, sessionFactory, config, null, Mapping.DEFAULT_DATA_SOURCE);
+        super(mappingContext, sessionFactory, config, null, ConnectionSource.DEFAULT);
     }
 
     public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext) {
-        super(mappingContext, sessionFactory, config, applicationContext, Mapping.DEFAULT_DATA_SOURCE);
+        super(mappingContext, sessionFactory, config, applicationContext, ConnectionSource.DEFAULT);
     }
 
     public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, String dataSourceName) {

@@ -1,5 +1,6 @@
 package org.grails.compiler.gorm
 import grails.gorm.annotation.Entity
+import org.codehaus.groovy.ast.ClassNode
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
@@ -24,6 +25,20 @@ import spock.lang.Specification
  * @author graemerocher
  */
 class GormEntityTransformSpec extends Specification{
+
+    void "Test parse GORM entity"() {
+        when:"A gorm entity is parsed"
+        def cls = new GroovyClassLoader().parseClass('''
+import grails.gorm.annotation.Entity
+
+@Entity
+class Foo {
+    String name
+}
+''')
+        then:"It is a valid class"
+        new ClassNode(cls).methods
+    }
 
     void "Test GORM entity transformation implements"() {
         expect:

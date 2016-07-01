@@ -1,10 +1,15 @@
 package org.grails.datastore.rx
 
 import grails.gorm.rx.proxy.ObservableProxy
+import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
+import org.grails.datastore.mapping.core.connections.ConnectionSources
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.QueryCreator
 import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher
+import org.grails.gorm.rx.config.Settings
 import rx.Observable
 
 /**
@@ -15,12 +20,7 @@ import rx.Observable
  *
  * @param The native client interface
  */
-interface RxDatastoreClient<T> extends Closeable, QueryCreator {
-
-    /**
-     * Whether blocking operations are allowed
-     */
-    String SETTING_ALLOW_BLOCKING = "grails.gorm.rx.allowBlocking"
+interface RxDatastoreClient<T> extends Closeable, QueryCreator, Settings, ConnectionSourcesProvider<T, ConnectionSourceSettings> {
 
     /**
      * Obtains a single instance for the given type and id
@@ -171,4 +171,17 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
      * @return The event publisher
      */
     ConfigurableApplicationEventPublisher getEventPublisher()
+
+    /**
+     * @return Obtain the connection sources
+     */
+    ConnectionSources<T, ConnectionSourceSettings> getConnectionSources()
+
+    /**
+     * Obtain another {@link RxDatastoreClient} for the given {@link ConnectionSource} name
+     *
+     * @param connectionSourceName The name of the client
+     * @return The {@link RxDatastoreClient} instance
+     */
+    RxDatastoreClient getDatastoreClient(String connectionSourceName)
 }
