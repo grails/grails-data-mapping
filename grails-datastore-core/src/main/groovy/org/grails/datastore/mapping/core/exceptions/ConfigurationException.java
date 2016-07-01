@@ -3,7 +3,7 @@ package org.grails.datastore.mapping.core.exceptions;
 /**
  * An exception thrown if a configuration error occurs
  *
- * @aurhor Graeme Rocher
+ * @author Graeme Rocher
  * @since 6.0
  */
 public class ConfigurationException extends RuntimeException {

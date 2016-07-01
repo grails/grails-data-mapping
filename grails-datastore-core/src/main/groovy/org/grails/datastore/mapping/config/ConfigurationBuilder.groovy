@@ -2,11 +2,13 @@ package org.grails.datastore.mapping.config
 
 import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
+import groovy.transform.builder.SimpleStrategy
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.reflect.NameUtils
 import org.springframework.core.env.PropertyResolver
 import org.springframework.util.ReflectionUtils
 
+import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
@@ -128,6 +130,15 @@ abstract class ConfigurationBuilder<B, C> {
                         else {
                             method.invoke(builder, newBuilder )
                         }
+                        continue
+                    }
+
+                    Builder builderAnnotation = argType.getAnnotation(Builder)
+                    if(builderAnnotation != null && builderAnnotation.builderStrategy() == SimpleStrategy) {
+                        def newBuilder = argType.newInstance()
+                        newChildBuilder(newBuilder, propertyPath)
+                        buildRecurse(newBuilder, propertyPath)
+                        method.invoke(builder, newBuilder)
                         continue
                     }
 
