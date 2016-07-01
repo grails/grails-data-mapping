@@ -9,7 +9,7 @@ else
     ./gradlew compileGroovy || EXIT_STATUS=$?
     ./gradlew --stop
     if [[ $EXIT_STATUS -eq 0 ]]; then
-        ./gradlew compileTestGroovy || EXIT_STATUS=$?
+        ./gradlew compileTestGroovy -x grails2-plugins/hibernate4:compileTestGroovy || EXIT_STATUS=$?
         ./gradlew --stop
     fi
     if [[ $EXIT_STATUS -eq 0 ]]; then
