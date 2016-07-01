@@ -1,6 +1,5 @@
 package grails.gorm.validation
 
-import grails.gorm.annotation.Entity
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.grails.datastore.mapping.model.MappingContext
@@ -8,6 +7,8 @@ import org.grails.datastore.mapping.validation.ValidationErrors
 import org.grails.datastore.mapping.validation.ValidatorRegistry
 import org.springframework.validation.Validator
 import spock.lang.Specification
+
+import javax.persistence.Entity
 
 /**
  * Created by graemerocher on 09/06/16.
@@ -36,7 +37,8 @@ class ValidatorRegistrySpec extends Specification {
 
 @Entity
 class Person {
-
+    Long id
+    Long version
     String town
     Integer age
     String country
