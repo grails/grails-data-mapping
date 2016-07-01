@@ -17,10 +17,10 @@ else
         ./gradlew --stop
     fi
 
-    if [[ $EXIT_STATUS -eq 0 ]]; then
-        ./gradlew --stop
-        ./gradlew check -x grails-datastore-gorm-hibernate4:test || EXIT_STATUS=$?
-    fi
+    #if [[ $EXIT_STATUS -eq 0 ]]; then
+    #    ./gradlew --stop
+    #    ./gradlew check -x grails-datastore-gorm-hibernate4:test || EXIT_STATUS=$?
+    #fi
 fi
 
 if [[ $EXIT_STATUS -eq 0 ]]; then
