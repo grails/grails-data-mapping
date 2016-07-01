@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -87,7 +87,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
     <div class="subTitle">Package: <strong>org.grails.datastore.mapping.config</strong></div>
 
-    <h2 title="[Java] Class Entity" class="title">[Java] Class Entity</h2>
+    <h2 title="[Groovy] Class Entity" class="title">[Groovy] Class Entity</h2>
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
@@ -149,6 +149,52 @@ if (location.href.indexOf('is-external=true') == -1) {
 
         <!-- =========== PROPERTY SUMMARY =========== -->
         
+         <ul class="blockList">
+                <li class="blockList"><a name="property_summary"><!--   --></a>
+                    <h3>Properties Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Properties Summary table, listing nested classes, and an explanation">
+                        <caption><span>Properties</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colLast" scope="col">Name and description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#autoTimestamp">autoTimestamp</a></code><br>@return Whether automatic time stamps should be applied to 'lastUpdate' and 'dateCreated' properties</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#autowire">autowire</a></code><br>@return Whether the entity should be autowired</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.util.List&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#datasources">datasources</a></code><br>Get the datasource names that this domain class works with.</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>java.lang.Object</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#defaultSort">defaultSort</a></code><br>@return The default sort order definition, could be a string or a map</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#stateless">stateless</a></code><br>@return Whether the entity state should be held in the session or not</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#version">version</a></code><br>@return Whether the entity is versioned</td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+            </ul>
+        
 
         <!-- =========== ELEMENT SUMMARY =========== -->
         
@@ -170,53 +216,33 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#connection(java.lang.String)">connection</a></strong>(java.lang.String name)</code><br>Sets the datastore to use</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#connections(java.lang.String)">connections</a></strong>(java.lang.String... names)</code><br>Sets the datastore to use</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#datasource(java.lang.String)">datasource</a></strong>(java.lang.String name)</code><br>Sets the datastore to use</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getSort()">getSort</a></strong>()</code><br>@return The default sort order definition, could be a string or a map</td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code>boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isAutoTimestamp()">isAutoTimestamp</a></strong>()</code><br>@return Whether automatic time stamps should be applied to 'lastUpdate' and 'dateCreated' properties</td>
+                            <td class="colLast"><code><strong><a href="#getSort()">getSort</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isAutowire()">isAutowire</a></strong>()</code><br>@return Whether the entity should be autowired</td>
+                            <td class="colLast"><code><strong><a href="#isVersioned()">isVersioned</a></strong>()</code><br>@return Whether this entity is versioned</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isStateless()">isStateless</a></strong>()</code><br>@return Whether the entity state should be held in the session or not</td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code>boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isVersioned()">isVersioned</a></strong>()</code><br>@return Whether the entity is versioned</td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setAutoTimestamp(boolean)">setAutoTimestamp</a></strong>(boolean autoTimestamp)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setAutowire(boolean)">setAutowire</a></strong>(boolean autowire)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#setSort(java.lang.Object)">setSort</a></strong>(java.lang.Object defaultSort)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setStateless(boolean)">setStateless</a></strong>(boolean stateless)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setVersion(boolean)">setVersion</a></strong>(boolean version)</code><br></td>
                         </tr>
                         
                     </table>
@@ -281,6 +307,70 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
             
+            <!-- =========== PROPERTY DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="prop_detail">
+                    <!--   -->
+                </a>
+                    <h3>Property Detail</h3>
+                    
+                        <a name="autoTimestamp"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>boolean <strong>autoTimestamp</strong></h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Whether automatic time stamps should be applied to 'lastUpdate' and 'dateCreated' properties</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="autowire"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>boolean <strong>autowire</strong></h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Whether the entity should be autowired</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="datasources"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.List&lt;java.lang.String&gt; <strong>datasources</strong></h4>
+                                <p> Get the datasource names that this domain class works with.
+     <DL><DT><B>Returns:</B></DT><DD>the datasource names</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="defaultSort"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.Object <strong>defaultSort</strong></h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>The default sort order definition, could be a string or a map</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="stateless"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>boolean <strong>stateless</strong></h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Whether the entity state should be held in the session or not</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="version"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>boolean <strong>version</strong></h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Whether the entity is versioned</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
+            
 
             
 
@@ -295,87 +385,51 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="connection(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>connection</strong>(java.lang.String name)</h4>
+                                <p> Sets the datastore to use <DL><DT><B>Returns:</B></DT><DD></DD></DL><DL><DT><B>Parameters:</B></DT><DD>name</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="connections(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>connections</strong>(java.lang.String... names)</h4>
+                                <p> Sets the datastore to use <DL><DT><B>Returns:</B></DT><DD></DD></DL><DL><DT><B>Parameters:</B></DT><DD>name</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="datasource(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>datasource</strong>(java.lang.String name)</h4>
+                                <p> Sets the datastore to use <DL><DT><B>Returns:</B></DT><DD></DD></DL><DL><DT><B>Parameters:</B></DT><DD>name</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getSort()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;java.lang.Object <strong>getSort</strong>()</h4>
-                                <p>
-     <DL><DT><B>Returns:</B></DT><DD>The default sort order definition, could be a string or a map</DD></DL></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="isAutoTimestamp()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>public&nbsp;boolean <strong>isAutoTimestamp</strong>()</h4>
-                                <p>
-     <DL><DT><B>Returns:</B></DT><DD>Whether automatic time stamps should be applied to 'lastUpdate' and 'dateCreated' properties</DD></DL></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="isAutowire()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>public&nbsp;boolean <strong>isAutowire</strong>()</h4>
-                                <p>
-     <DL><DT><B>Returns:</B></DT><DD>Whether the entity should be autowired</DD></DL></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="isStateless()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>public&nbsp;boolean <strong>isStateless</strong>()</h4>
-                                <p>
-     <DL><DT><B>Returns:</B></DT><DD>Whether the entity state should be held in the session or not</DD></DL></p>
+                                <h4>java.lang.Object <strong>getSort</strong>()</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
                         <a name="isVersioned()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;boolean <strong>isVersioned</strong>()</h4>
+                                <h4>boolean <strong>isVersioned</strong>()</h4>
                                 <p>
-     <DL><DT><B>Returns:</B></DT><DD>Whether the entity is versioned</DD></DL></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setAutoTimestamp(boolean)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>public&nbsp;void <strong>setAutoTimestamp</strong>(boolean autoTimestamp)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setAutowire(boolean)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>public&nbsp;void <strong>setAutowire</strong>(boolean autowire)</h4>
-                                <p></p>
+     <DL><DT><B>Returns:</B></DT><DD>Whether this entity is versioned</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="setSort(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>setSort</strong>(java.lang.Object defaultSort)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setStateless(boolean)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>public&nbsp;void <strong>setStateless</strong>(boolean stateless)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setVersion(boolean)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>public&nbsp;void <strong>setVersion</strong>(boolean version)</h4>
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>setSort</strong>(java.lang.Object defaultSort)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -414,11 +468,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     

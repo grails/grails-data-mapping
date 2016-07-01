@@ -146,22 +146,27 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;<a href='../../../../../org/grails/gorm/rx/api/RxGormInstanceApi.html' title='RxGormInstanceApi'>RxGormInstanceApi</a>&lt;T&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findInstanceApi(Class<T>, java.lang.String)">findInstanceApi</a></strong>(java.lang.Class&lt;T&gt; type, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findInstanceApi(Class<T>, java.lang.String)">findInstanceApi</a></strong>(java.lang.Class&lt;T&gt; type, java.lang.String qualifier = ConnectionSource.DEFAULT)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;<a href='../../../../../org/grails/gorm/rx/api/RxGormStaticApi.html' title='RxGormStaticApi'>RxGormStaticApi</a>&lt;T&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findStaticApi(Class<T>, java.lang.String)">findStaticApi</a></strong>(java.lang.Class&lt;T&gt; type, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findStaticApi(Class<T>, java.lang.String)">findStaticApi</a></strong>(java.lang.Class&lt;T&gt; type, java.lang.String qualifier = ConnectionSource.DEFAULT)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;<a href='../../../../../org/grails/gorm/rx/api/RxGormValidationApi.html' title='RxGormValidationApi'>RxGormValidationApi</a>&lt;T&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findValidationApi(Class<T>, java.lang.String)">findValidationApi</a></strong>(java.lang.Class&lt;T&gt; type, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findValidationApi(Class<T>, java.lang.String)">findValidationApi</a></strong>(java.lang.Class&lt;T&gt; type, java.lang.String qualifier = ConnectionSource.DEFAULT)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#registerEntity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.RxDatastoreClient, java.lang.String)">registerEntity</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> client, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#registerEntity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.RxDatastoreClient)">registerEntity</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> client)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>protected&nbsp;static&nbsp;void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#registerEntityWithConnectionSource(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String, java.lang.String, org.grails.datastore.rx.internal.RxDatastoreClientImplementor)">registerEntityWithConnectionSource</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String qualifierName, java.lang.String connectionSourceName, <a href='../../../../../org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html'>RxDatastoreClientImplementor</a> rxDatastoreClientImplementor)</code><br></td>
                         </tr>
                         
                     </table>
@@ -225,7 +230,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="findInstanceApi(Class<T>, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../../org/grails/gorm/rx/api/RxGormInstanceApi.html' title='RxGormInstanceApi'>RxGormInstanceApi</a>&lt;T&gt; <strong>findInstanceApi</strong>(java.lang.Class&lt;T&gt; type, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</h4>
+                                <h4>static&nbsp;<a href='../../../../../org/grails/gorm/rx/api/RxGormInstanceApi.html' title='RxGormInstanceApi'>RxGormInstanceApi</a>&lt;T&gt; <strong>findInstanceApi</strong>(java.lang.Class&lt;T&gt; type, java.lang.String qualifier = ConnectionSource.DEFAULT)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -233,7 +238,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="findStaticApi(Class<T>, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../../org/grails/gorm/rx/api/RxGormStaticApi.html' title='RxGormStaticApi'>RxGormStaticApi</a>&lt;T&gt; <strong>findStaticApi</strong>(java.lang.Class&lt;T&gt; type, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</h4>
+                                <h4>static&nbsp;<a href='../../../../../org/grails/gorm/rx/api/RxGormStaticApi.html' title='RxGormStaticApi'>RxGormStaticApi</a>&lt;T&gt; <strong>findStaticApi</strong>(java.lang.Class&lt;T&gt; type, java.lang.String qualifier = ConnectionSource.DEFAULT)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -241,15 +246,23 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="findValidationApi(Class<T>, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../../org/grails/gorm/rx/api/RxGormValidationApi.html' title='RxGormValidationApi'>RxGormValidationApi</a>&lt;T&gt; <strong>findValidationApi</strong>(java.lang.Class&lt;T&gt; type, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</h4>
+                                <h4>static&nbsp;<a href='../../../../../org/grails/gorm/rx/api/RxGormValidationApi.html' title='RxGormValidationApi'>RxGormValidationApi</a>&lt;T&gt; <strong>findValidationApi</strong>(java.lang.Class&lt;T&gt; type, java.lang.String qualifier = ConnectionSource.DEFAULT)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="registerEntity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.RxDatastoreClient, java.lang.String)"><!-- --></a>
+                        <a name="registerEntity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.RxDatastoreClient)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>registerEntity</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> client, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</h4>
+                                <h4>static&nbsp;void <strong>registerEntity</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> client)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="registerEntityWithConnectionSource(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String, java.lang.String, org.grails.datastore.rx.internal.RxDatastoreClientImplementor)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;static&nbsp;void <strong>registerEntityWithConnectionSource</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String qualifierName, java.lang.String connectionSourceName, <a href='../../../../../org/grails/datastore/rx/internal/RxDatastoreClientImplementor.html'>RxDatastoreClientImplementor</a> rxDatastoreClientImplementor)</h4>
                                 <p></p>
                             </li>
                         </ul>

@@ -1,5 +1,6 @@
 grails.gorm
 grails.gorm.annotation
+grails.gorm.api
 grails.gorm.dirty.checking
 grails.gorm.rx
 grails.gorm.rx.api
@@ -44,6 +45,8 @@ org.grails.datastore.mapping.config
 org.grails.datastore.mapping.config.groovy
 org.grails.datastore.mapping.config.utils
 org.grails.datastore.mapping.core
+org.grails.datastore.mapping.core.connections
+org.grails.datastore.mapping.core.exceptions
 org.grails.datastore.mapping.core.impl
 org.grails.datastore.mapping.dirty.checking
 org.grails.datastore.mapping.document
@@ -85,10 +88,12 @@ org.grails.datastore.rx.rest
 org.grails.datastore.rx.rest.api
 org.grails.datastore.rx.rest.codecs
 org.grails.datastore.rx.rest.config
+org.grails.datastore.rx.rest.connections
 org.grails.datastore.rx.rest.json
 org.grails.datastore.rx.rest.query
 org.grails.datastore.rx.rest.test
 org.grails.gorm.rx.api
+org.grails.gorm.rx.config
 org.grails.gorm.rx.events
 org.grails.gorm.rx.finders
 org.grails.plugins.gorm.rx.rest

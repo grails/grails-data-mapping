@@ -168,6 +168,16 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong><a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;T, <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html' title='ConnectionSourceSettings'>ConnectionSourceSettings</a>&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#connectionSources">connectionSources</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>java.util.Map&lt;java.lang.String, <a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html' title='RxDatastoreClient'>RxDatastoreClient</a>&lt;T&gt;&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#datastoreClients">datastoreClients</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong><a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#eventPublisher">eventPublisher</a></code><br></td>
                         </tr>
@@ -200,8 +210,8 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#AbstractRxDatastoreClient(org.grails.datastore.mapping.model.MappingContext)">AbstractRxDatastoreClient</a></strong>
-                                (<a href='../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> mappingContext)</code><br></td>
+                                <code><a href="#AbstractRxDatastoreClient(ConnectionSources<T, ConnectionSourceSettings>, org.grails.datastore.mapping.model.MappingContext)">AbstractRxDatastoreClient</a></strong>
+                                (<a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;T, <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html' title='ConnectionSourceSettings'>ConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> mappingContext)</code><br></td>
                         </tr>
                         
                     </table>
@@ -260,28 +270,38 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/gorm/rx/api/RxGormInstanceApi.html'>RxGormInstanceApi</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createInstanceApi(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)">createInstanceApi</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState)">createQuery</a></strong>(java.lang.Class type, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState, java.util.Map)">createQuery</a></strong>(java.lang.Class type, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createQuery(java.lang.Class, java.util.Map)">createQuery</a></strong>(java.lang.Class type, java.util.Map arguments)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createQuery(java.lang.Class)">createQuery</a></strong>(java.lang.Class type)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/gorm/rx/api/RxGormStaticApi.html'>RxGormStaticApi</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createStaticApi(org.grails.datastore.mapping.model.PersistentEntity)">createStaticApi</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/gorm/rx/api/RxGormStaticApi.html'>RxGormStaticApi</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createStaticApi(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)">createStaticApi</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -290,43 +310,53 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/gorm/rx/api/RxGormValidationApi.html'>RxGormValidationApi</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createValidationApi(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)">createValidationApi</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.lang.Boolean&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#delete(java.lang.Object)">delete</a></strong>(java.lang.Object instance)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.lang.Boolean&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#delete(java.lang.Object, Map<String, Object>)">delete</a></strong>(java.lang.Object instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.lang.Number&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#deleteAll(java.lang.Iterable)">deleteAll</a></strong>(java.lang.Iterable instances)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.lang.Number&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#deleteAll(java.lang.Iterable, Map<String, Object>)">deleteAll</a></strong>(java.lang.Iterable instances, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#doClose()">doClose</a></strong>()</code><br>Close the client</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.io.Serializable</strong></code></td>
                             <td class="colLast"><code><strong><a href="#generateIdentifier(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object, org.grails.datastore.mapping.reflect.EntityReflector)">generateIdentifier</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.Object instance, <a href='../../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> reflector)</code><br>Generates an identifier for the given entity and instance</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable</strong></code></td>
                             <td class="colLast"><code><strong><a href="#get(Class<T>, java.io.Serializable, org.grails.datastore.rx.query.QueryState)">get</a></strong>(java.lang.Class&lt;T&gt; type, java.io.Serializable id, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#get(Class<T1>, java.io.Serializable)">get</a></strong>(java.lang.Class&lt;T1&gt; type, java.io.Serializable id)</code><br>Retrieve and instance of the given type and id</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getDatastoreClient(java.lang.String)">getDatastoreClient</a></strong>(java.lang.String connectionSourceName)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -490,6 +520,22 @@ extends java.lang.Object
                 </a>
                     <h3>Property Detail</h3>
                     
+                        <a name="connectionSources"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;<a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;T, <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html' title='ConnectionSourceSettings'>ConnectionSourceSettings</a>&gt; <strong>connectionSources</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="datastoreClients"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;java.util.Map&lt;java.lang.String, <a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html' title='RxDatastoreClient'>RxDatastoreClient</a>&lt;T&gt;&gt; <strong>datastoreClients</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="eventPublisher"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -520,10 +566,10 @@ extends java.lang.Object
                 </a>
                     <h3>Constructor Detail</h3>
                     
-                        <a name="AbstractRxDatastoreClient(org.grails.datastore.mapping.model.MappingContext)"><!-- --></a>
+                        <a name="AbstractRxDatastoreClient(ConnectionSources<T, ConnectionSourceSettings>, org.grails.datastore.mapping.model.MappingContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>AbstractRxDatastoreClient</strong>(<a href='../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> mappingContext)</h4>
+                                <h4><strong>AbstractRxDatastoreClient</strong>(<a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;T, <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html' title='ConnectionSourceSettings'>ConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> mappingContext)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -598,7 +644,16 @@ final&nbsp;void <strong>close</strong>()</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../../../org/grails/gorm/rx/api/RxGormInstanceApi.html'>RxGormInstanceApi</a> <strong>createInstanceApi</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+final&nbsp;<a href='../../../../org/grails/gorm/rx/api/RxGormInstanceApi.html'>RxGormInstanceApi</a> <strong>createInstanceApi</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="createInstanceApi(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../org/grails/gorm/rx/api/RxGormInstanceApi.html'>RxGormInstanceApi</a> <strong>createInstanceApi</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -643,7 +698,16 @@ final&nbsp;<a href='../../../../org/grails/datastore/mapping/query/Query.html'>Q
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../../../org/grails/gorm/rx/api/RxGormStaticApi.html'>RxGormStaticApi</a> <strong>createStaticApi</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+final&nbsp;<a href='../../../../org/grails/gorm/rx/api/RxGormStaticApi.html'>RxGormStaticApi</a> <strong>createStaticApi</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="createStaticApi(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../org/grails/gorm/rx/api/RxGormStaticApi.html'>RxGormStaticApi</a> <strong>createStaticApi</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -652,7 +716,16 @@ final&nbsp;<a href='../../../../org/grails/datastore/mapping/query/Query.html'>Q
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../../../org/grails/gorm/rx/api/RxGormValidationApi.html'>RxGormValidationApi</a> <strong>createValidationApi</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+final&nbsp;<a href='../../../../org/grails/gorm/rx/api/RxGormValidationApi.html'>RxGormValidationApi</a> <strong>createValidationApi</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="createValidationApi(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../org/grails/gorm/rx/api/RxGormValidationApi.html'>RxGormValidationApi</a> <strong>createValidationApi</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -727,6 +800,15 @@ java.util.Observable <strong>get</strong>(java.lang.Class&lt;T&gt; type, java.io
 final&nbsp;java.util.Observable&lt;T1&gt; <strong>get</strong>(java.lang.Class&lt;T1&gt; type, java.io.Serializable id)</h4>
                                 <p> Retrieve and instance of the given type and id
      <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>id</code> -  The id</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getDatastoreClient(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> <strong>getDatastoreClient</strong>(java.lang.String connectionSourceName)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     

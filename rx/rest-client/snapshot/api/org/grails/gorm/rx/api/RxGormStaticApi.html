@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Implemented Interfaces and Traits:</dt>
-                <dd><a href='../../../../../grails/gorm/rx/api/RxGormStaticOperations.html'>RxGormStaticOperations</a></dd>
+                <dd><a href='../../../../../grails/gorm/rx/api/RxGormAllOperations.html'>RxGormAllOperations</a></dd>
             </dl>
             <!-- todo: direct known subclasses -->
             <hr>
@@ -231,6 +231,16 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;java.lang.Boolean&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#delete(D)">delete</a></strong>(D instance)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;java.lang.Boolean&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#delete(D, java.util.Map)">delete</a></strong>(D instance, java.util.Map arguments)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.lang.Number&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#deleteAll(D)">deleteAll</a></strong>(D... objects)</code><br></td>
                         </tr>
@@ -306,91 +316,126 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>java.io.Serializable</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#ident(D)">ident</a></strong>(D instance)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#insert(D)">insert</a></strong>(D instance)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#insert(D, java.util.Map)">insert</a></strong>(D instance, java.util.Map arguments)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#insertAll(Iterable<D>, java.util.Map)">insertAll</a></strong>(java.lang.Iterable&lt;D&gt; objects, java.util.Map arguments = [:])</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#insertAll(D)">insertAll</a></strong>(D... objects)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#last(java.lang.String)">last</a></strong>(java.lang.String property)</code><br>Finds the last object sorted by propertyName</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#last(java.util.Map)">last</a></strong>(java.util.Map params = Collections.emptyMap()</code><br>Finds the last object.  </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;D&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#list(java.util.Map)">list</a></strong>(java.util.Map params = Collections.emptyMap()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#methodMissing(java.lang.String, def)">methodMissing</a></strong>(java.lang.String methodName, java.lang.Object args)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#propertyMissing(java.lang.String)">propertyMissing</a></strong>(java.lang.String name)</code><br>Property missing handler</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(java.io.Serializable)">proxy</a></strong>(java.io.Serializable id)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(java.io.Serializable, java.util.Map)">proxy</a></strong>(java.io.Serializable id, java.util.Map queryArgs)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(DetachedCriteria<D>)">proxy</a></strong>(<a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; query)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(DetachedCriteria<D>, java.util.Map)">proxy</a></strong>(<a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; query, java.util.Map queryArgs)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
-                            <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#saveAll(Iterable<D>, java.util.Map)">saveAll</a></strong>(java.lang.Iterable&lt;D&gt; objects, java.util.Map arguments = Collections.emptyMap()</code><br>Batch saves all of the given objects</td>
-                        </tr>
-                        
                         <tr class="rowColor">
-                            <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#saveAll(D)">saveAll</a></strong>(D... objects)</code><br></td>
+                            <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#save(D)">save</a></strong>(D instance)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#staticMethodMissing(java.lang.String, java.lang.Object)">staticMethodMissing</a></strong>(java.lang.String methodName, java.lang.Object arg)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#save(D, java.util.Map)">save</a></strong>(D instance, java.util.Map arguments)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#saveAll(Iterable<D>, java.util.Map)">saveAll</a></strong>(java.lang.Iterable&lt;D&gt; objects, java.util.Map arguments = Collections.emptyMap()</code><br>Batch saves all of the given objects</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#saveAll(D)">saveAll</a></strong>(D... objects)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.Observable&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#staticMethodMissing(java.lang.String, java.lang.Object)">staticMethodMissing</a></strong>(java.lang.String methodName, java.lang.Object arg)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#staticPropertyMissing(java.lang.String)">staticPropertyMissing</a></strong>(java.lang.String property)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#where(groovy.lang.Closure)">where</a></strong>(groovy.lang.Closure callable)</code><br>@param callable Callable closure containing detached criteria definition</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#whereAny(groovy.lang.Closure)">whereAny</a></strong>(groovy.lang.Closure callable)</code><br>@param callable Callable closure containing detached criteria definition</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#whereLazy(groovy.lang.Closure)">whereLazy</a></strong>(groovy.lang.Closure callable)</code><br>@param callable Callable closure containing detached criteria definition</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withCriteria(groovy.lang.Closure)">withCriteria</a></strong>(groovy.lang.Closure callable)</code><br>Creates a criteria builder instance</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withCriteria(java.util.Map, groovy.lang.Closure)">withCriteria</a></strong>(java.util.Map builderArgs, groovy.lang.Closure callable)</code><br>Creates a criteria builder instance</td>
                         </tr>
@@ -541,6 +586,24 @@ D <strong>create</strong>()</h4>
                             </li>
                         </ul>
                     
+                        <a name="delete(D)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;java.lang.Boolean&gt; <strong>delete</strong>(D instance)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="delete(D, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;java.lang.Boolean&gt; <strong>delete</strong>(D instance, java.util.Map arguments)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="deleteAll(D)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -681,6 +744,51 @@ java.util.Observable&lt;D&gt; <strong>get</strong>(java.io.Serializable id, java
                             </li>
                         </ul>
                     
+                        <a name="ident(D)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.io.Serializable <strong>ident</strong>(D instance)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="insert(D)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;D&gt; <strong>insert</strong>(D instance)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="insert(D, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;D&gt; <strong>insert</strong>(D instance, java.util.Map arguments)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="insertAll(Iterable<D>, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>insertAll</strong>(java.lang.Iterable&lt;D&gt; objects, java.util.Map arguments = [:])</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="insertAll(D)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>insertAll</strong>(D... objects)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="last(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -761,6 +869,24 @@ java.util.Observable&lt;D&gt; <strong>methodMissing</strong>(java.lang.String me
                             <li class="blockList">
                                 <h4>@java.lang.Override
 <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;D&gt; <strong>proxy</strong>(<a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; query, java.util.Map queryArgs)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="save(D)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;D&gt; <strong>save</strong>(D instance)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="save(D, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Observable&lt;D&gt; <strong>save</strong>(D instance, java.util.Map arguments)</h4>
                                 <p></p>
                             </li>
                         </ul>
