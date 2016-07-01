@@ -26,21 +26,34 @@ public class ConfigurationUtils {
      * @return A list of services
      */
     public static <T> Iterable<T> findServices(PropertyResolver configuration, String configurationKey, Class<T> serviceType) {
+        List servicesList = configuration.getProperty(configurationKey, List.class, Collections.emptyList());
+        return findServices(servicesList, serviceType);
+    }
 
-        List customTypes = configuration.getProperty(configurationKey, List.class, Collections.emptyList());
+    /**
+     * Finds services of the given type from the given list or via {@link ServiceLoader}
+     *
+     * @param servicesList The list of services
+     * @param serviceType The type of service
+     * @param <T> The service type
+     * @return A list of services
+     */
+    public static <T> Iterable<T> findServices(List servicesList, Class<T> serviceType) {
         List<T> services = new ArrayList<>();
 
-        for (Object customType : customTypes) {
-            Class serviceTypeClass = null;
-            if(customType instanceof Class) {
-                serviceTypeClass = (Class) customType;
-            }
-            else if(customType instanceof CharSequence) {
-                serviceTypeClass = ReflectionUtils.forName(customType.toString(),ConfigurationUtils.class.getClassLoader());
-            }
-            if(serviceTypeClass != null && serviceType.isAssignableFrom(serviceTypeClass)) {
-                T serviceInstance = (T) ReflectionUtils.instantiate(serviceTypeClass);
-                services.add(serviceInstance);
+        if(servicesList != null) {
+            for (Object serviceObject : servicesList) {
+                Class serviceTypeClass = null;
+                if(serviceObject instanceof Class) {
+                    serviceTypeClass = (Class) serviceObject;
+                }
+                else if(serviceObject instanceof CharSequence) {
+                    serviceTypeClass = ReflectionUtils.forName(serviceObject.toString(),ConfigurationUtils.class.getClassLoader());
+                }
+                if(serviceTypeClass != null && serviceType.isAssignableFrom(serviceTypeClass)) {
+                    T serviceInstance = (T) ReflectionUtils.instantiate(serviceTypeClass);
+                    services.add(serviceInstance);
+                }
             }
         }
 
