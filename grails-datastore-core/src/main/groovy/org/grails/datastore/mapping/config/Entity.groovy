@@ -43,7 +43,7 @@ public class Entity {
     /**
      * @return Whether the entity should be autowired
      */
-    boolean autowire = false
+    boolean autowire = true
 
     /**
      * @return The default sort order definition, could be a string or a map
