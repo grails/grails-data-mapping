@@ -45,10 +45,12 @@ class GlobalTraitRepairTransformation implements ASTTransformation {
     }
     @Override
     void visit(ASTNode[] nodes, SourceUnit source) {
-        ModuleNode ast = source.getAST();
-        List<ClassNode> classes = ast.getClasses();
-        for (ClassNode aClass : classes) {
-            visitClass(aClass)
+        if(ENABLED) {
+            ModuleNode ast = source.getAST();
+            List<ClassNode> classes = ast.getClasses();
+            for (ClassNode aClass : classes) {
+                visitClass(aClass)
+            }
         }
     }
 
