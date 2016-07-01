@@ -2,6 +2,7 @@ grails.cassandra
 grails.cassandra.bootstrap
 grails.gorm
 grails.gorm.annotation
+grails.gorm.api
 grails.gorm.dirty.checking
 grails.gorm.transactions
 grails.plugins.cassandra
@@ -44,6 +45,8 @@ org.grails.datastore.mapping.config
 org.grails.datastore.mapping.config.groovy
 org.grails.datastore.mapping.config.utils
 org.grails.datastore.mapping.core
+org.grails.datastore.mapping.core.connections
+org.grails.datastore.mapping.core.exceptions
 org.grails.datastore.mapping.core.impl
 org.grails.datastore.mapping.dirty.checking
 org.grails.datastore.mapping.document

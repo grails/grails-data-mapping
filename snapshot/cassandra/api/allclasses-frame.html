@@ -34,6 +34,7 @@
         <ul>
         <li><a href="org/grails/datastore/mapping/core/AbstractAttributeStoringSession.html" title="class in org.grails.datastore.mapping.core" target="classFrame">AbstractAttributeStoringSession</a></li>
 <li><a href="org/grails/datastore/mapping/model/AbstractClassMapping.html" title="class in org.grails.datastore.mapping.model" target="classFrame">AbstractClassMapping</a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/AbstractConnectionSources.html" title="class in org.grails.datastore.mapping.core.connections" target="classFrame">AbstractConnectionSources</a></li>
 <li><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html" title="class in org.grails.datastore.gorm.query.criteria" target="classFrame">AbstractCriteriaBuilder</a></li>
 <li><a href="org/grails/datastore/mapping/core/AbstractDatastore.html" title="class in org.grails.datastore.mapping.core" target="classFrame">AbstractDatastore</a></li>
 <li><a href="org/grails/datastore/gorm/AbstractDatastoreApi.html" title="class in org.grails.datastore.gorm" target="classFrame">AbstractDatastoreApi</a></li>
@@ -111,7 +112,17 @@
 <li><a href="org/grails/datastore/mapping/config/utils/ConfigUtils.html" title="class in org.grails.datastore.mapping.config.utils" target="classFrame">ConfigUtils</a></li>
 <li><a href="org/grails/datastore/gorm/events/ConfigurableApplicationContextEventPublisher.html" title="class in org.grails.datastore.gorm.events" target="classFrame">ConfigurableApplicationContextEventPublisher</a></li>
 <li><a href="org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html" title="interface in org.grails.datastore.gorm.events" target="classFrame"><I>ConfigurableApplicationEventPublisher</I></a></li>
+<li><a href="org/grails/datastore/mapping/config/ConfigurationBuilder.html" title="class in org.grails.datastore.mapping.config" target="classFrame">ConfigurationBuilder</a></li>
+<li><a href="org/grails/datastore/mapping/core/exceptions/ConfigurationException.html" title="class in org.grails.datastore.mapping.core.exceptions" target="classFrame">ConfigurationException</a></li>
 <li><a href="org/grails/datastore/mapping/core/ConnectionNotFoundException.html" title="class in org.grails.datastore.mapping.core" target="classFrame">ConnectionNotFoundException</a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/ConnectionSource.html" title="interface in org.grails.datastore.mapping.core.connections" target="classFrame"><I>ConnectionSource</I></a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/ConnectionSourceFactory.html" title="interface in org.grails.datastore.mapping.core.connections" target="classFrame"><I>ConnectionSourceFactory</I></a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html" title="class in org.grails.datastore.mapping.core.connections" target="classFrame">ConnectionSourceSettings</a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.Defaults.html" title="class in org.grails.datastore.mapping.core.connections.ConnectionSourceSettings" target="classFrame">ConnectionSourceSettings.Defaults</a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/ConnectionSources.html" title="interface in org.grails.datastore.mapping.core.connections" target="classFrame"><I>ConnectionSources</I></a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/ConnectionSourcesInitializer.html" title="class in org.grails.datastore.mapping.core.connections" target="classFrame">ConnectionSourcesInitializer</a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html" title="interface in org.grails.datastore.mapping.core.connections" target="classFrame"><I>ConnectionSourcesProvider</I></a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/ConnectionSourcesSupport.html" title="class in org.grails.datastore.mapping.core.connections" target="classFrame">ConnectionSourcesSupport</a></li>
 <li><a href="org/grails/datastore/gorm/finders/CountByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">CountByFinder</a></li>
 <li><a href="org/grails/datastore/mapping/query/api/Criteria.html" title="interface in org.grails.datastore.mapping.query.api" target="classFrame"><I>Criteria</I></a></li>
 <li><a href="grails/gorm/CriteriaBuilder.html" title="class in grails.gorm" target="classFrame">CriteriaBuilder</a></li>
@@ -119,12 +130,12 @@
 <li><a href="org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html" title="interface in org.grails.datastore.mapping.engine.types" target="classFrame"><I>CustomTypeMarshaller</I></a></li>
 <li><a href="org/grails/datastore/mapping/core/Datastore.html" title="interface in org.grails.datastore.mapping.core" target="classFrame"><I>Datastore</I></a></li>
 <li><a href="org/grails/datastore/mapping/core/DatastoreAware.html" title="interface in org.grails.datastore.mapping.core" target="classFrame"><I>DatastoreAware</I></a></li>
-<li><a href="org/grails/datastore/mapping/config/DatastoreConfigurationBuilder.html" title="class in org.grails.datastore.mapping.config" target="classFrame">DatastoreConfigurationBuilder</a></li>
 <li><a href="org/grails/datastore/mapping/model/DatastoreConfigurationException.html" title="class in org.grails.datastore.mapping.model" target="classFrame">DatastoreConfigurationException</a></li>
 <li><a href="org/grails/datastore/mapping/core/DatastoreException.html" title="class in org.grails.datastore.mapping.core" target="classFrame">DatastoreException</a></li>
 <li><a href="org/grails/datastore/mapping/engine/event/DatastoreInitializedEvent.html" title="class in org.grails.datastore.mapping.engine.event" target="classFrame">DatastoreInitializedEvent</a></li>
 <li><a href="org/grails/datastore/mapping/transactions/DatastoreTransactionManager.html" title="class in org.grails.datastore.mapping.transactions" target="classFrame">DatastoreTransactionManager</a></li>
 <li><a href="org/grails/datastore/gorm/events/DefaultApplicationEventPublisher.html" title="class in org.grails.datastore.gorm.events" target="classFrame">DefaultApplicationEventPublisher</a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/DefaultConnectionSource.html" title="class in org.grails.datastore.mapping.core.connections" target="classFrame">DefaultConnectionSource</a></li>
 <li><a href="org/grails/datastore/mapping/model/types/conversion/DefaultConversionService.html" title="class in org.grails.datastore.mapping.model.types.conversion" target="classFrame">DefaultConversionService</a></li>
 <li><a href="org/grails/datastore/mapping/config/groovy/DefaultMappingConfigurationBuilder.html" title="class in org.grails.datastore.mapping.config.groovy" target="classFrame">DefaultMappingConfigurationBuilder</a></li>
 <li><a href="org/grails/datastore/gorm/cassandra/bean/factory/DefaultMappingHolder.html" title="class in org.grails.datastore.gorm.cassandra.bean.factory" target="classFrame">DefaultMappingHolder</a></li>
@@ -185,6 +196,8 @@
 <li><a href="org/grails/datastore/gorm/finders/FinderMethod.html" title="interface in org.grails.datastore.gorm.finders" target="classFrame"><I>FinderMethod</I></a></li>
 <li><a href="org/grails/datastore/mapping/query/criteria/FunctionCallingCriterion.html" title="class in org.grails.datastore.mapping.query.criteria" target="classFrame">FunctionCallingCriterion</a></li>
 <li><a href="org/grails/datastore/gorm/query/transform/GlobalDetachedCriteriaASTTransformation.html" title="class in org.grails.datastore.gorm.query.transform" target="classFrame">GlobalDetachedCriteriaASTTransformation</a></li>
+<li><a href="org/grails/compiler/gorm/GlobalTraitRepairTransformation.html" title="class in org.grails.compiler.gorm" target="classFrame">GlobalTraitRepairTransformation</a></li>
+<li><a href="grails/gorm/api/GormAllOperations.html" title="interface in grails.gorm.api" target="classFrame"><I>GormAllOperations</I></a></li>
 <li><a href="org/grails/datastore/gorm/async/GormAsyncStaticApi.html" title="class in org.grails.datastore.gorm.async" target="classFrame">GormAsyncStaticApi</a></li>
 <li><a href="org/grails/datastore/mapping/cassandra/config/GormCassandraMappingFactory.html" title="class in org.grails.datastore.mapping.cassandra.config" target="classFrame">GormCassandraMappingFactory</a></li>
 <li><a href="org/grails/datastore/mapping/cassandra/GormCassandraSessionFactoryBean.html" title="class in org.grails.datastore.mapping.cassandra" target="classFrame">GormCassandraSessionFactoryBean</a></li>
@@ -195,13 +208,14 @@
 <li><a href="org/grails/compiler/gorm/GormEntityTraitProvider.html" title="interface in org.grails.compiler.gorm" target="classFrame"><I>GormEntityTraitProvider</I></a></li>
 <li><a href="org/grails/compiler/gorm/GormEntityTransformation.html" title="class in org.grails.compiler.gorm" target="classFrame">GormEntityTransformation</a></li>
 <li><a href="org/grails/datastore/gorm/GormInstanceApi.html" title="class in org.grails.datastore.gorm" target="classFrame">GormInstanceApi</a></li>
+<li><a href="grails/gorm/api/GormInstanceOperations.html" title="interface in grails.gorm.api" target="classFrame"><I>GormInstanceOperations</I></a></li>
 <li><a href="org/grails/datastore/mapping/keyvalue/mapping/config/GormKeyValueMappingFactory.html" title="class in org.grails.datastore.mapping.keyvalue.mapping.config" target="classFrame">GormKeyValueMappingFactory</a></li>
 <li><a href="org/grails/datastore/mapping/model/config/GormMappingConfigurationStrategy.html" title="class in org.grails.datastore.mapping.model.config" target="classFrame">GormMappingConfigurationStrategy</a></li>
 <li><a href="org/grails/datastore/gorm/query/GormOperations.html" title="interface in org.grails.datastore.gorm.query" target="classFrame"><I>GormOperations</I></a></li>
 <li><a href="org/grails/datastore/mapping/model/config/GormProperties.html" title="interface in org.grails.datastore.mapping.model.config" target="classFrame"><I>GormProperties</I></a></li>
 <li><a href="org/grails/datastore/gorm/query/GormQueryOperations.html" title="interface in org.grails.datastore.gorm.query" target="classFrame"><I>GormQueryOperations</I></a></li>
-<li><a href="org/grails/datastore/mapping/config/GormSettings.html" title="interface in org.grails.datastore.mapping.config" target="classFrame"><I>GormSettings</I></a></li>
 <li><a href="org/grails/datastore/gorm/GormStaticApi.html" title="class in org.grails.datastore.gorm" target="classFrame">GormStaticApi</a></li>
+<li><a href="grails/gorm/api/GormStaticOperations.html" title="interface in grails.gorm.api" target="classFrame"><I>GormStaticOperations</I></a></li>
 <li><a href="org/grails/compiler/GormToCassandraTransform.html" title="class in org.grails.compiler" target="classFrame">GormToCassandraTransform</a></li>
 <li><a href="org/grails/datastore/gorm/GormValidateable.html" title="trait in org.grails.datastore.gorm" target="classFrame"><I>GormValidateable</I></a></li>
 <li><a href="org/grails/datastore/gorm/GormValidationApi.html" title="class in org.grails.datastore.gorm" target="classFrame">GormValidationApi</a></li>
@@ -401,7 +415,10 @@
 <li><a href="org/grails/datastore/mapping/transactions/SessionHolder.html" title="class in org.grails.datastore.mapping.transactions" target="classFrame">SessionHolder</a></li>
 <li><a href="org/grails/datastore/mapping/core/SessionImplementor.html" title="interface in org.grails.datastore.mapping.core" target="classFrame"><I>SessionImplementor</I></a></li>
 <li><a href="org/grails/datastore/mapping/transactions/SessionOnlyTransaction.html" title="class in org.grails.datastore.mapping.transactions" target="classFrame">SessionOnlyTransaction</a></li>
+<li><a href="org/grails/datastore/mapping/config/Settings.html" title="interface in org.grails.datastore.mapping.config" target="classFrame"><I>Settings</I></a></li>
 <li><a href="org/grails/datastore/mapping/model/types/Simple.html" title="class in org.grails.datastore.mapping.model.types" target="classFrame">Simple</a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/SingletonConnectionSources.html" title="class in org.grails.datastore.mapping.core.connections" target="classFrame">SingletonConnectionSources</a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/SingletonConnectionSources.NullConnectionFactory.html" title="class in org.grails.datastore.mapping.core.connections.SingletonConnectionSources" target="classFrame">SingletonConnectionSources.NullConnectionFactory</a></li>
 <li><a href="org/grails/datastore/mapping/core/SoftThreadLocalMap.html" title="class in org.grails.datastore.mapping.core" target="classFrame">SoftThreadLocalMap</a></li>
 <li><a href="org/grails/datastore/gorm/plugin/support/SpringConfigurer.html" title="class in org.grails.datastore.gorm.plugin.support" target="classFrame">SpringConfigurer</a></li>
 <li><a href="org/grails/datastore/mapping/transactions/support/SpringSessionSynchronization.html" title="class in org.grails.datastore.mapping.transactions.support" target="classFrame">SpringSessionSynchronization</a></li>
