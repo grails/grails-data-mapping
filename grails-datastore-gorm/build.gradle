@@ -1,9 +1,9 @@
 dependencies {
 
     compile project(":grails-datastore-core")
+    compile project(":grails-datastore-async")
     compile project(":grails-datastore-gorm-validation")
 
-    compile "org.grails:grails-async:$grailsVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
 
     compileOnly "org.springframework:spring-web:$springVersion"
