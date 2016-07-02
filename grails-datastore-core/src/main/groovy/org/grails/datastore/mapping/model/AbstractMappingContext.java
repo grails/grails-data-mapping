@@ -19,7 +19,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
 import org.grails.datastore.mapping.config.ConfigurationUtils;
+import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings;
 import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
@@ -31,7 +33,6 @@ import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.grails.datastore.mapping.reflect.FieldEntityAccess;
-import org.grails.datastore.mapping.reflect.ReflectionUtils;
 import org.grails.datastore.mapping.validation.ValidatorRegistry;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.ConversionService;
@@ -55,17 +56,42 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     public static final String GROOVY_PROXY_FACTORY_NAME = "org.grails.datastore.gorm.proxy.GroovyProxyFactory";
     public static final String JAVASIST_PROXY_FACTORY = "javassist.util.proxy.ProxyFactory";
     public static final String CONFIGURATION_PREFIX = "grails.gorm.";
-    protected Collection<PersistentEntity> persistentEntities = new ConcurrentLinkedQueue<PersistentEntity>();
-    protected Map<String,PersistentEntity>  persistentEntitiesByName = new ConcurrentHashMap<String,PersistentEntity>();
-    protected Map<PersistentEntity,Map<String,PersistentEntity>>  persistentEntitiesByDiscriminator = new ConcurrentHashMap<PersistentEntity,Map<String,PersistentEntity>>();
-    protected Map<PersistentEntity,Collection<PersistentEntity>>  persistentEntitiesByParent = new ConcurrentHashMap<PersistentEntity,Collection<PersistentEntity>>();
-    protected Map<PersistentEntity,Validator>  entityValidators = new ConcurrentHashMap<PersistentEntity, Validator>();
-    protected Collection<Listener> eventListeners = new ConcurrentLinkedQueue<Listener>();
+    protected Collection<PersistentEntity> persistentEntities = new ConcurrentLinkedQueue<>();
+    protected Map<String,PersistentEntity>  persistentEntitiesByName = new ConcurrentHashMap<>();
+    protected Map<PersistentEntity,Map<String,PersistentEntity>>  persistentEntitiesByDiscriminator = new ConcurrentHashMap<>();
+    protected Map<PersistentEntity,Collection<PersistentEntity>>  persistentEntitiesByParent = new ConcurrentHashMap<>();
+    protected Map<PersistentEntity,Validator>  entityValidators = new ConcurrentHashMap<>();
+    protected Collection<Listener> eventListeners = new ConcurrentLinkedQueue<>();
     protected GenericConversionService conversionService = new DefaultConversionService();
     protected ProxyFactory proxyFactory;
     protected ValidatorRegistry validatorRegistry;
     private boolean canInitializeEntities = true;
     private boolean initialized;
+
+    public AbstractMappingContext() {
+    }
+
+    public AbstractMappingContext(ConnectionSourceSettings settings) {
+        initialize(settings);
+    }
+
+    protected void initialize(ConnectionSourceSettings settings) {
+        // initialize custom type marshallers
+        MappingFactory mappingFactory = getMappingFactory();
+        Iterable<CustomTypeMarshaller> customTypeMarshallers = ConfigurationUtils.findServices(settings.getCustom().getTypes(), CustomTypeMarshaller.class);
+        for (CustomTypeMarshaller customTypeMarshaller : customTypeMarshallers) {
+            if(customTypeMarshaller.supports(this)) {
+                mappingFactory.registerCustomType(customTypeMarshaller);
+            }
+        }
+
+        // default constraints and mapping
+        if(mappingFactory instanceof AbstractGormMappingFactory) {
+            AbstractGormMappingFactory gormMappingFactory = (AbstractGormMappingFactory) mappingFactory;
+            gormMappingFactory.setDefaultConstraints(settings.getDefault().getConstraints());
+            gormMappingFactory.setDefaultMapping(settings.getDefault().getMapping());
+        }
+    }
 
     public ConversionService getConversionService() {
         return conversionService;
@@ -317,7 +343,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
             PersistentEntity root = entity.getRootEntity();
             Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
             if (children == null) {
-                children = new ConcurrentHashMap<String,PersistentEntity>();
+                children = new ConcurrentHashMap<>();
                 persistentEntitiesByDiscriminator.put(root, children);
             }
             children.put(entity.getDiscriminator(), entity);
@@ -325,7 +351,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
             PersistentEntity directParent = entity.getParentEntity();
             Collection<PersistentEntity> directChildren = persistentEntitiesByParent.get(directParent);
             if (directChildren == null) {
-                directChildren = new HashSet<PersistentEntity>();
+                directChildren = new HashSet<>();
                 persistentEntitiesByParent.put(directParent, directChildren);
             }
             directChildren.add(entity);
@@ -383,7 +409,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
 
     protected PersistentEntity createPersistentEntity(Class javaClass, boolean external) {
         return createPersistentEntity(javaClass);
-    };
+    }
 
     public PersistentEntity createEmbeddedEntity(Class type) {
         EmbeddedPersistentEntity embedded = new EmbeddedPersistentEntity(type, this);

@@ -27,4 +27,12 @@ public interface Settings {
      * The default mapping
      */
     String SETTING_DEFAULT_MAPPING = PREFIX + '.' + "default.mapping";
+    /**
+     * The default constraints
+     */
+    String SETTING_DEFAULT_CONSTRAINTS = PREFIX + '.' + "default.constraints";
+    /**
+     * The custom types
+     */
+    String SETTING_CUSTOM_TYPES = PREFIX + '.' + "custom.constraints";
 }

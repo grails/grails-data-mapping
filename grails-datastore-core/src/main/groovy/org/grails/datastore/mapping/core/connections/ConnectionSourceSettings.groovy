@@ -3,6 +3,7 @@ package org.grails.datastore.mapping.core.connections
 import groovy.transform.AutoClone
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
+import org.grails.datastore.mapping.config.Settings
 
 import javax.persistence.FlushModeType
 
@@ -14,7 +15,7 @@ import javax.persistence.FlushModeType
  */
 @Builder(builderStrategy = SimpleStrategy, prefix = '')
 @AutoClone
-class ConnectionSourceSettings {
+class ConnectionSourceSettings implements Settings {
 
     /**
      * The class used to create
@@ -36,20 +37,31 @@ class ConnectionSourceSettings {
      */
     boolean failOnError = false
 
-    private final Defaults defaults = new Defaults()
+    /**
+     * Custom settings
+     */
+    CustomSettings custom = new CustomSettings()
 
     /**
      * @return Any defaults
      */
-    Defaults getDefault() {
+    DefaultSettings defaults = new DefaultSettings()
+
+    /**
+     * @return Any defaults
+     */
+    DefaultSettings getDefault() {
         return this.defaults
     }
 
+    void setDefaults(DefaultSettings defaults) {
+        this.defaults = defaults
+    }
     /**
      * Represents the default settings
      */
     @Builder(builderStrategy = SimpleStrategy, prefix = '')
-    static class Defaults {
+    static class DefaultSettings {
         /**
          * The default mapping
          */
@@ -59,6 +71,17 @@ class ConnectionSourceSettings {
          * The default constraints
          */
         Closure constraints
+    }
+
+    /**
+     * Any custom settings
+     */
+    @Builder(builderStrategy = SimpleStrategy, prefix = '')
+    static class CustomSettings {
+        /**
+         * custom types
+         */
+        List types = []
     }
 }
 
