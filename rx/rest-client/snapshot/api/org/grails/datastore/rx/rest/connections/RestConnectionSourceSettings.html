@@ -145,6 +145,12 @@ extends <a href='../../../../../../org/grails/datastore/mapping/core/connections
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;class</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.PoolSettings.html'>RestConnectionSourceSettings.PoolSettings</a></code></td>
+                            <td class="colLast"></code></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>static&nbsp;class</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.QuerySettings.html'>RestConnectionSourceSettings.QuerySettings</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
@@ -209,18 +215,18 @@ extends <a href='../../../../../../org/grails/datastore/mapping/core/connections
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong><a href='../../../../../../org/grails/datastore/rx/rest/config/PoolConfigBuilder.html'>PoolConfigBuilder</a></strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#options">options</a></code><br>Pool config options</td>
-                        </tr>
-                        
-                        <tr class="altColor">
                             <td class="colFirst"><code><strong><a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.ParameterSettings.html'>RestConnectionSourceSettings.ParameterSettings</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#parameters">parameters</a></code><br>Parameter settings</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#password">password</a></code><br>The password to use for BASIC auth</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong><a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.PoolSettings.html'>RestConnectionSourceSettings.PoolSettings</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#pool">pool</a></code><br>Settings for the connection pool</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -234,36 +240,31 @@ extends <a href='../../../../../../org/grails/datastore/mapping/core/connections
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>java.lang.Class&lt;? extends <a href='../../../../../../org/grails/datastore/rx/rest/query/SimpleRxRestQuery.html' title='SimpleRxRestQuery'>SimpleRxRestQuery</a>&gt;</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#queryType">queryType</a></code><br>The query type to use</td>
-                        </tr>
-                        
-                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.Integer</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#readTimeout">readTimeout</a></code><br>The default read timeout</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>io.netty.handler.ssl.SslProvider</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sslProvider">sslProvider</a></code><br>The SSL provider</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.Long</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sslSessionCacheSize">sslSessionCacheSize</a></code><br>The default session cache size</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.Long</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sslSessionTimeout">sslSessionTimeout</a></code><br>The SSL timeout period</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>javax.net.ssl.TrustManagerFactory</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sslTrustManagerFactory">sslTrustManagerFactory</a></code><br>The trust manager factory</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#username">username</a></code><br>The username to use for BASIC auth</td>
                         </tr>
@@ -413,15 +414,6 @@ extends <a href='../../../../../../org/grails/datastore/mapping/core/connections
                             </li>
                         </ul>
                     
-                        <a name="options"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><a href='../../../../../../org/grails/datastore/rx/rest/config/PoolConfigBuilder.html'>PoolConfigBuilder</a> <strong>options</strong></h4>
-                                <p> Pool config options
-     </p>
-                            </li>
-                        </ul>
-                    
                         <a name="parameters"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -440,6 +432,15 @@ extends <a href='../../../../../../org/grails/datastore/mapping/core/connections
                             </li>
                         </ul>
                     
+                        <a name="pool"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.PoolSettings.html'>RestConnectionSourceSettings.PoolSettings</a> <strong>pool</strong></h4>
+                                <p> Settings for the connection pool
+     </p>
+                            </li>
+                        </ul>
+                    
                         <a name="proxies"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -454,15 +455,6 @@ extends <a href='../../../../../../org/grails/datastore/mapping/core/connections
                             <li class="blockList">
                                 <h4><a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.QuerySettings.html'>RestConnectionSourceSettings.QuerySettings</a> <strong>query</strong></h4>
                                 <p> Parameter settings
-     </p>
-                            </li>
-                        </ul>
-                    
-                        <a name="queryType"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.lang.Class&lt;? extends <a href='../../../../../../org/grails/datastore/rx/rest/query/SimpleRxRestQuery.html' title='SimpleRxRestQuery'>SimpleRxRestQuery</a>&gt; <strong>queryType</strong></h4>
-                                <p> The query type to use
      </p>
                             </li>
                         </ul>
