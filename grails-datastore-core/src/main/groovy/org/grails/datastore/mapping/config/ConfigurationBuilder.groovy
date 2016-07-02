@@ -4,12 +4,11 @@ import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 import groovy.util.logging.Slf4j
+import org.grails.datastore.mapping.core.exceptions.ConfigurationException
 import org.grails.datastore.mapping.reflect.NameUtils
 import org.springframework.core.env.PropertyResolver
 import org.springframework.util.ReflectionUtils
 
-import java.lang.annotation.Annotation
-import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 /**
@@ -23,6 +22,7 @@ import java.lang.reflect.Modifier
 @CompileStatic
 @Slf4j
 abstract class ConfigurationBuilder<B, C> {
+    private static final Set<String> IGNORE_METHODS = ['seProperty', 'propertyMissing'] as Set
     final PropertyResolver propertyResolver
     final String configurationPrefix
     final String builderMethodPrefix
@@ -91,7 +91,7 @@ abstract class ConfigurationBuilder<B, C> {
             def methods = builderClass.declaredMethods
             for (method in methods) {
                 def methodName = method.name
-                if (!Modifier.isPublic(method.modifiers)) {
+                if (!Modifier.isPublic(method.modifiers) || method.isSynthetic() || IGNORE_METHODS.contains(methodName)) {
                     continue
                 }
                 def parameterTypes = method.parameterTypes
@@ -142,6 +142,17 @@ abstract class ConfigurationBuilder<B, C> {
                         continue
                     }
 
+                    if(ConfigurationBuilder.isAssignableFrom(argType)) {
+                        try {
+                            ConfigurationBuilder newBuilder = (ConfigurationBuilder)argType.newInstance(this.propertyResolver, propertyPath)
+                            newChildBuilder(newBuilder, propertyPath)
+                            method.invoke(builder, newBuilder)
+                        } catch (Throwable e) {
+                            throw new ConfigurationException("Cannot read configuration for path $propertyPath: $e.message", e)
+                        }
+                        continue
+                    }
+
                     def valueOfMethod = ReflectionUtils.findMethod(argType, 'valueOf')
                     if (valueOfMethod != null && Modifier.isStatic(valueOfMethod.modifiers)) {
                         try {
@@ -150,8 +161,8 @@ abstract class ConfigurationBuilder<B, C> {
                                 def converted = valueOfMethod.invoke(argType, value)
                                 method.invoke(builder, converted)
                             }
-                        } catch (e) {
-                            log.warn("Error occurred reading setting [$propertyPath]: ${e.message}", e)
+                        } catch (Throwable e) {
+                            throw new ConfigurationException("Cannot read configuration for path $propertyPath: $e.message", e)
                         }
                     }
                     else {
