@@ -97,6 +97,20 @@ if (location.href.indexOf('is-external=true') == -1) {
     <ul class="blockList">
         <li class="blockList">
 
+            <dl>
+                <dt>All Implemented Interfaces and Traits:</dt>
+                <dd><a href='../../../../../../org/grails/datastore/mapping/config/Settings.html'>Settings</a></dd>
+            </dl>
+            <!-- todo: direct known subclasses -->
+            <hr>
+            <br>
+<pre>@groovy.transform.builder.Builder(builderStrategy = SimpleStrategy, prefix = '')
+@groovy.transform.AutoClone
+class ConnectionSourceSettings
+extends java.lang.Object
+
+</pre>
+
 
 
     <p> Default settings shared across all implementations
@@ -125,7 +139,13 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;class</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.Defaults.html'>ConnectionSourceSettings.Defaults</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.CustomSettings.html'>ConnectionSourceSettings.CustomSettings</a></code></td>
+                            <td class="colLast">Any custom settings</code></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>static&nbsp;class</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.DefaultSettings.html'>ConnectionSourceSettings.DefaultSettings</a></code></td>
                             <td class="colLast">Represents the default settings</code></td>
                         </tr>
                         
@@ -164,6 +184,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.CustomSettings.html'>ConnectionSourceSettings.CustomSettings</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#custom">custom</a></code><br>Custom settings</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.DefaultSettings.html'>ConnectionSourceSettings.DefaultSettings</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#defaults">defaults</a></code><br>@return Any defaults</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#failOnError">failOnError</a></code><br>Whether to fail on a validation error</td>
                         </tr>
@@ -199,8 +229,13 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.Defaults.html'>ConnectionSourceSettings.Defaults</a></strong></code></td>
+                            <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.DefaultSettings.html'>ConnectionSourceSettings.DefaultSettings</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getDefault()">getDefault</a></strong>()</code><br>@return Any defaults</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#setDefaults(org.grails.datastore.mapping.core.connections.ConnectionSourceSettings.DefaultSettings)">setDefaults</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.DefaultSettings.html'>ConnectionSourceSettings.DefaultSettings</a> defaults)</code><br></td>
                         </tr>
                         
                     </table>
@@ -264,6 +299,24 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="custom"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.CustomSettings.html'>ConnectionSourceSettings.CustomSettings</a> <strong>custom</strong></h4>
+                                <p> Custom settings
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="defaults"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.DefaultSettings.html'>ConnectionSourceSettings.DefaultSettings</a> <strong>defaults</strong></h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Any defaults</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="failOnError"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -302,9 +355,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="getDefault()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.Defaults.html'>ConnectionSourceSettings.Defaults</a> <strong>getDefault</strong>()</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.DefaultSettings.html'>ConnectionSourceSettings.DefaultSettings</a> <strong>getDefault</strong>()</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>Any defaults</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="setDefaults(org.grails.datastore.mapping.core.connections.ConnectionSourceSettings.DefaultSettings)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>void <strong>setDefaults</strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.DefaultSettings.html'>ConnectionSourceSettings.DefaultSettings</a> defaults)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
