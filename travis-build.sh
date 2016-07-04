@@ -9,18 +9,12 @@ else
     ./gradlew compileGroovy || EXIT_STATUS=$?
     ./gradlew --stop
     if [[ $EXIT_STATUS -eq 0 ]]; then
-        ./gradlew compileTestGroovy -x grails2-plugins/hibernate4:compileTestGroovy || EXIT_STATUS=$?
+        ./gradlew compileTestGroovy|| EXIT_STATUS=$?
         ./gradlew --stop
     fi
     if [[ $EXIT_STATUS -eq 0 ]]; then
-        ./gradlew --refresh-dependencies grails-datastore-gorm-hibernate4:test || EXIT_STATUS=$?
-        ./gradlew --stop
+        ./gradlew --refresh-dependencies check || EXIT_STATUS=$?
     fi
-
-    #if [[ $EXIT_STATUS -eq 0 ]]; then
-    #    ./gradlew --stop
-    #    ./gradlew check -x grails-datastore-gorm-hibernate4:test || EXIT_STATUS=$?
-    #fi
 fi
 
 if [[ $EXIT_STATUS -eq 0 ]]; then

@@ -1,9 +1,0 @@
-
-Hibernate3 and Hibernate4 modules should be kept up-to-date manually.
-Code has been copy&pasted.
-
-Here is an example of patching hibernate4 with changes from hibernate3 module:
-git diff 114b02...master ../grails-datastore-gorm-hibernate | sed -e 's/hibernate3/hibernate4/g' | patch -p2 -f
-
-114b02 is the last merge point in this example
-
