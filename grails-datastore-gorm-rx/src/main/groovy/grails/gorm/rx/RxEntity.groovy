@@ -655,8 +655,8 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param connectionName The name of the connection
      * @return The {@link RxGormStaticOperations}    instance
      */
-    RxGormInstanceOperations<D> withConnection(String connectionName) {
-        return (RxGormInstanceOperations<D>)RxGormEnhancer.findInstanceApi(getClass(), connectionName)
+    RxGormAllOperations<D> withConnection(String connectionName) {
+        return (RxGormAllOperations<D>)RxGormEnhancer.findStaticApi(getClass(), connectionName)
     }
 
     /**
