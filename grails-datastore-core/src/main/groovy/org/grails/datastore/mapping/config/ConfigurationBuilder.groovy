@@ -9,6 +9,7 @@ import org.grails.datastore.mapping.reflect.NameUtils
 import org.springframework.core.env.PropertyResolver
 import org.springframework.util.ReflectionUtils
 
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 /**
@@ -26,7 +27,7 @@ abstract class ConfigurationBuilder<B, C> {
     final PropertyResolver propertyResolver
     final String configurationPrefix
     final String builderMethodPrefix
-
+    final C fallBackConfiguration
     protected B rootBuilder
 
     /**
@@ -35,10 +36,24 @@ abstract class ConfigurationBuilder<B, C> {
      * @param builderMethodPrefix The prefix to builder method calls. Default is null which results in builder methods like "foo(...)". Seting a prefix of "with" results in "withFoo(..)"
      *
      */
-    ConfigurationBuilder(PropertyResolver propertyResolver, String configurationPrefix, String builderMethodPrefix = null) {
+    ConfigurationBuilder(PropertyResolver propertyResolver, String configurationPrefix, String builderMethodPrefix) {
         this.propertyResolver = propertyResolver
         this.configurationPrefix = configurationPrefix
         this.builderMethodPrefix = builderMethodPrefix
+        this.fallBackConfiguration = null
+    }
+
+    /**
+     * @param propertyResolver The property resolver
+     * @param configurationPrefix The prefix to resolve settings from within the configuration. Example "grails.gorm.neo4j" or "grails.gorm.mongodb"
+     * @param builderMethodPrefix The prefix to builder method calls. Default is null which results in builder methods like "foo(...)". Seting a prefix of "with" results in "withFoo(..)"
+     * @param fallBackConfiguration An object to read the fallback configuration from
+     */
+    ConfigurationBuilder(PropertyResolver propertyResolver, String configurationPrefix, C fallBackConfiguration = null, String builderMethodPrefix = null) {
+        this.propertyResolver = propertyResolver
+        this.configurationPrefix = configurationPrefix
+        this.builderMethodPrefix = builderMethodPrefix
+        this.fallBackConfiguration = fallBackConfiguration
     }
 
 
@@ -63,7 +78,7 @@ abstract class ConfigurationBuilder<B, C> {
     protected abstract C toConfiguration(B builder)
 
     private C buildInternal(B builder, String startingPrefix) {
-        buildRecurse(builder, startingPrefix)
+        buildRecurse(builder, this.fallBackConfiguration, startingPrefix)
 
         return toConfiguration(builder)
     }
@@ -80,7 +95,7 @@ abstract class ConfigurationBuilder<B, C> {
         return classes.reverse()
     }
 
-    protected void buildRecurse(Object builder, String startingPrefix) {
+    protected void buildRecurse(Object builder, Object fallBackConfig, String startingPrefix) {
 
         List<Class> hierarchy = toHierarchy(builder.getClass())
 
@@ -119,10 +134,13 @@ abstract class ConfigurationBuilder<B, C> {
                     def builderMethod = ReflectionUtils.findMethod(argType, 'builder')
                     String propertyPath = "${startingPrefix}.${settingName}"
                     if (builderMethod != null && Modifier.isStatic(builderMethod.modifiers)) {
-
-                        def newBuilder = builderMethod.invoke(argType)
+                        Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
+                        def newBuilder = existingGetter != null ? existingGetter.invoke(builder) : builderMethod.invoke(argType)
                         newChildBuilder(newBuilder, propertyPath)
-                        buildRecurse(newBuilder, propertyPath)
+
+                        Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
+                        buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
+
                         def buildMethod = ReflectionUtils.findMethod(newBuilder.getClass(), 'build')
                         if(buildMethod != null) {
                             method.invoke(builder, buildMethod.invoke(newBuilder))
@@ -135,16 +153,21 @@ abstract class ConfigurationBuilder<B, C> {
 
                     Builder builderAnnotation = argType.getAnnotation(Builder)
                     if(builderAnnotation != null && builderAnnotation.builderStrategy() == SimpleStrategy) {
-                        def newBuilder = argType.newInstance()
+                        Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
+                        def newBuilder = existingGetter != null ? existingGetter.invoke(builder) : argType.newInstance()
                         newChildBuilder(newBuilder, propertyPath)
-                        buildRecurse(newBuilder, propertyPath)
+
+                        Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
+                        buildRecurse(newBuilder,fallBackChildConfig, propertyPath)
                         method.invoke(builder, newBuilder)
                         continue
                     }
 
                     if(ConfigurationBuilder.isAssignableFrom(argType)) {
                         try {
-                            ConfigurationBuilder newBuilder = (ConfigurationBuilder)argType.newInstance(this.propertyResolver, propertyPath)
+                            Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
+                            ConfigurationBuilder newBuilder = (ConfigurationBuilder)(existingGetter != null ? existingGetter.invoke(builder) : argType.newInstance(this.propertyResolver, propertyPath))
+
                             newChildBuilder(newBuilder, propertyPath)
                             method.invoke(builder, newBuilder)
                         } catch (Throwable e) {
@@ -166,7 +189,9 @@ abstract class ConfigurationBuilder<B, C> {
                         }
                     }
                     else {
-                        def value = propertyResolver.getProperty("${startingPrefix}.${settingName}", argType, null)
+                        Object fallBackValue = getFallBackValue(fallBackConfig, methodName)
+
+                        def value = propertyResolver.getProperty("${startingPrefix}.${settingName}", argType, fallBackValue)
                         if (value != null) {
                             ReflectionUtils.makeAccessible(method)
                             ReflectionUtils.invokeMethod(method, builder, value)
@@ -177,7 +202,8 @@ abstract class ConfigurationBuilder<B, C> {
                     if (method.returnType.getAnnotation(Builder)) {
                         def childBuilder = method.invoke(builder)
                         if(childBuilder != null) {
-                            buildRecurse(childBuilder, "${startingPrefix}.${NameUtils.getPropertyNameForGetterOrSetter(methodName)}")
+                            Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
+                            buildRecurse(childBuilder, fallBackChildConfig, "${startingPrefix}.${NameUtils.getPropertyNameForGetterOrSetter(methodName)}")
                         }
                     }
                 }
@@ -185,6 +211,17 @@ abstract class ConfigurationBuilder<B, C> {
 
         }
 
+    }
+
+    private Object getFallBackValue(fallBackConfig, String methodName) {
+        Object fallBackValue = null
+        if (fallBackConfig != null) {
+            Method fallbackGetter = ReflectionUtils.findMethod(fallBackConfig.getClass(), NameUtils.getGetterName(methodName))
+            if (fallbackGetter != null) {
+                fallBackValue = fallbackGetter.invoke(fallBackConfig)
+            }
+        }
+        fallBackValue
     }
 
     /**

@@ -54,7 +54,7 @@ class ConnectionSourceSettings implements Settings {
         return this.defaults
     }
 
-    void setDefaults(DefaultSettings defaults) {
+    void setDefault(DefaultSettings defaults) {
         this.defaults = defaults
     }
     /**
