@@ -166,9 +166,11 @@ abstract class ConfigurationBuilder<B, C> {
 
                         if( existingGetter != null ) {
                             newBuilder = existingGetter.invoke(builder)
-                            newChildBuilder(newBuilder, propertyPath)
                             Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
+
+                            newBuilder = newChildBuilderForFallback(newBuilder, fallBackChildConfig)
                             buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
+                            newChildBuilder(newBuilder, propertyPath)
                             method.invoke(builder, newBuilder )
                         }
                         continue
@@ -202,8 +204,8 @@ abstract class ConfigurationBuilder<B, C> {
                             }
                             if(newBuilder == null) {
                                 newBuilder = (ConfigurationBuilder)argType.newInstance(this.propertyResolver, propertyPath)
-                            }
 
+                            }
                             newChildBuilder(newBuilder, propertyPath)
                             method.invoke(builder, newBuilder)
                         } catch (Throwable e) {
@@ -238,7 +240,13 @@ abstract class ConfigurationBuilder<B, C> {
                     if (method.returnType.getAnnotation(Builder)) {
                         def childBuilder = method.invoke(builder)
                         if(childBuilder != null) {
-                            Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
+                            Object fallBackChildConfig = null
+                            if (fallBackConfig != null) {
+                                Method fallbackGetter = ReflectionUtils.findMethod(fallBackConfig.getClass(), methodName)
+                                if (fallbackGetter != null) {
+                                    fallBackChildConfig = fallbackGetter.invoke(fallBackConfig)
+                                }
+                            }
                             buildRecurse(childBuilder, fallBackChildConfig, "${startingPrefix}.${NameUtils.getPropertyNameForGetterOrSetter(methodName)}")
                         }
                     }
@@ -249,6 +257,10 @@ abstract class ConfigurationBuilder<B, C> {
 
     }
 
+    protected Object newChildBuilderForFallback(Object childBuilder, Object fallbackConfig) {
+        return childBuilder
+    }
+
     private Object getFallBackValue(fallBackConfig, String methodName) {
         Object fallBackValue = null
         if (fallBackConfig != null) {
@@ -257,7 +269,7 @@ abstract class ConfigurationBuilder<B, C> {
                 fallBackValue = fallbackGetter.invoke(fallBackConfig)
             }
         }
-        fallBackValue
+        return fallBackValue
     }
 
     /**

@@ -24,7 +24,7 @@ public class InMemoryConnectionSources<T, S extends ConnectionSourceSettings> ex
         this.connectionSourceMap.put(ConnectionSource.DEFAULT, defaultConnectionSource);
 
         for(String name : getConnectionSourceNames(connectionSourceFactory, configuration)) {
-            ConnectionSource<T, S> connectionSource = connectionSourceFactory.create(name, configuration);
+            ConnectionSource<T, S> connectionSource = connectionSourceFactory.create(name, configuration, defaultConnectionSource.getSettings());
             if(connectionSource != null) {
                 this.connectionSourceMap.put(name, connectionSource);
             }
