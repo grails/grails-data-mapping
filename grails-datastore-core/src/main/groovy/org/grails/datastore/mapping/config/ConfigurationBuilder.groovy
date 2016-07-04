@@ -166,14 +166,16 @@ abstract class ConfigurationBuilder<B, C> {
 
                         if( existingGetter != null ) {
                             newBuilder = existingGetter.invoke(builder)
-                            Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
 
-                            newBuilder = newChildBuilderForFallback(newBuilder, fallBackChildConfig)
-                            buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
-                            newChildBuilder(newBuilder, propertyPath)
-                            method.invoke(builder, newBuilder )
+                            if(newBuilder != null) {
+                                Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
+                                newBuilder = newChildBuilderForFallback(newBuilder, fallBackChildConfig)
+                                buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
+                                newChildBuilder(newBuilder, propertyPath)
+                                method.invoke(builder, newBuilder )
+                                continue
+                            }
                         }
-                        continue
                     }
 
                     Builder builderAnnotation = argType.getAnnotation(Builder)
