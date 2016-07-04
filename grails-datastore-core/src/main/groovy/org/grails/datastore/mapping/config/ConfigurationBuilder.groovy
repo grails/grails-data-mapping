@@ -135,7 +135,15 @@ abstract class ConfigurationBuilder<B, C> {
                     String propertyPath = "${startingPrefix}.${settingName}"
                     if (builderMethod != null && Modifier.isStatic(builderMethod.modifiers)) {
                         Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
-                        def newBuilder = existingGetter != null ? existingGetter.invoke(builder) : builderMethod.invoke(argType)
+                        def newBuilder
+
+                        if( existingGetter != null ) {
+                            newBuilder = existingGetter.invoke(builder)
+                        }
+                        if(newBuilder == null) {
+                            newBuilder = builderMethod.invoke(argType)
+                        }
+
                         newChildBuilder(newBuilder, propertyPath)
 
                         Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
@@ -151,10 +159,32 @@ abstract class ConfigurationBuilder<B, C> {
                         continue
                     }
 
+                    def buildMethod = ReflectionUtils.findMethod(argType, 'build')
+                    if(buildMethod != null) {
+                        Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
+                        def newBuilder
+
+                        if( existingGetter != null ) {
+                            newBuilder = existingGetter.invoke(builder)
+                            newChildBuilder(newBuilder, propertyPath)
+                            Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
+                            buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
+                            method.invoke(builder, newBuilder )
+                        }
+                        continue
+                    }
+
                     Builder builderAnnotation = argType.getAnnotation(Builder)
                     if(builderAnnotation != null && builderAnnotation.builderStrategy() == SimpleStrategy) {
                         Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
-                        def newBuilder = existingGetter != null ? existingGetter.invoke(builder) : argType.newInstance()
+                        def newBuilder
+                        if( existingGetter != null ) {
+                            newBuilder = existingGetter.invoke(builder)
+                        }
+                        if(newBuilder == null) {
+                            newBuilder = argType.newInstance()
+                        }
+
                         newChildBuilder(newBuilder, propertyPath)
 
                         Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
@@ -166,7 +196,13 @@ abstract class ConfigurationBuilder<B, C> {
                     if(ConfigurationBuilder.isAssignableFrom(argType)) {
                         try {
                             Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
-                            ConfigurationBuilder newBuilder = (ConfigurationBuilder)(existingGetter != null ? existingGetter.invoke(builder) : argType.newInstance(this.propertyResolver, propertyPath))
+                            ConfigurationBuilder newBuilder
+                            if( existingGetter != null ) {
+                                newBuilder = (ConfigurationBuilder)existingGetter.invoke(builder)
+                            }
+                            if(newBuilder == null) {
+                                newBuilder = (ConfigurationBuilder)argType.newInstance(this.propertyResolver, propertyPath)
+                            }
 
                             newChildBuilder(newBuilder, propertyPath)
                             method.invoke(builder, newBuilder)
