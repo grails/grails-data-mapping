@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.core.connections
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.springframework.core.env.PropertyResolver
 
@@ -9,6 +10,7 @@ import org.springframework.core.env.PropertyResolver
  * @author Graeme Rocher
  * @since 6.0
  */
+@CompileStatic
 abstract class AbstractConnectionSources <T, S extends ConnectionSourceSettings> implements ConnectionSources<T, S> {
 
     protected final ConnectionSource<T, S> defaultConnectionSource;
@@ -64,8 +66,7 @@ abstract class AbstractConnectionSources <T, S extends ConnectionSourceSettings>
     }
 
     @Override
-    public Iterator<ConnectionSource<T, S>> iterator() {
-        return getAllConnectionSources().iterator();
+    Iterator<ConnectionSource<T, S>> iterator() {
+        allConnectionSources.iterator()
     }
-
 }

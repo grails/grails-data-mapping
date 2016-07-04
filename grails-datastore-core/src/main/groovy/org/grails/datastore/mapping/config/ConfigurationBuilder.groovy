@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.config
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
@@ -36,6 +37,7 @@ abstract class ConfigurationBuilder<B, C> {
      * @param builderMethodPrefix The prefix to builder method calls. Default is null which results in builder methods like "foo(...)". Seting a prefix of "with" results in "withFoo(..)"
      *
      */
+    @CompileDynamic
     ConfigurationBuilder(PropertyResolver propertyResolver, String configurationPrefix, String builderMethodPrefix) {
         this.propertyResolver = propertyResolver
         this.configurationPrefix = configurationPrefix
@@ -49,12 +51,14 @@ abstract class ConfigurationBuilder<B, C> {
      * @param builderMethodPrefix The prefix to builder method calls. Default is null which results in builder methods like "foo(...)". Seting a prefix of "with" results in "withFoo(..)"
      * @param fallBackConfiguration An object to read the fallback configuration from
      */
+    @CompileDynamic
     ConfigurationBuilder(PropertyResolver propertyResolver, String configurationPrefix, C fallBackConfiguration = null, String builderMethodPrefix = null) {
         this.propertyResolver = propertyResolver
         this.configurationPrefix = configurationPrefix
         this.builderMethodPrefix = builderMethodPrefix
         this.fallBackConfiguration = fallBackConfiguration != null ? fallBackConfiguration.clone() : null
     }
+
 
 
     C build() {
