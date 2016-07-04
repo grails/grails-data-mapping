@@ -43,5 +43,12 @@ public class DefaultConnectionSource<T, S extends ConnectionSourceSettings> impl
         if(source instanceof Closeable) {
             ((Closeable)source).close();
         }
+        else if(source instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable)source).close();
+            } catch (Exception e) {
+                throw new IOException("Error closing connection source ["+name+"]:" + e.getMessage(), e);
+            }
+        }
     }
 }
