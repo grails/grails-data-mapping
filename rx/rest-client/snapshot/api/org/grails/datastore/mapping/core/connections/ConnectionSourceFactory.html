@@ -91,7 +91,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li>org.grails.datastore.mapping.core.connections.ConnectionSourceFactory
+<li><ul class="inheritance"></ul></li><li>org.grails.datastore.mapping.config.Settings
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -168,6 +168,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;T, S&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#create(java.lang.String, org.springframework.core.env.PropertyResolver, S)">create</a></strong>(java.lang.String name, org.springframework.core.env.PropertyResolver configuration, S fallbackSettings)</code><br>Creates a new <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a> for the given name and configuration</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.io.Serializable</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getConnectionSourcesConfigurationKey()">getConnectionSourcesConfigurationKey</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>Obtain the prefix used to obtain the default configuration.</DD></DL></td>
                         </tr>
@@ -210,6 +215,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>public&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;T, S&gt; <strong>create</strong>(java.lang.String name, org.springframework.core.env.PropertyResolver configuration)</h4>
                                 <p> Creates a new <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a> for the given name and configuration<DL><DT><B>throws:</B></DT><DD>org.grails.datastore.mapping.core.exceptions.ConfigurationException If there is an issue with the configuration</DD></DL>
      <DL><DT><B>Returns:</B></DT><DD>The <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a></DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name</DD><DD><code>configuration</code> -  The configuration</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="create(java.lang.String, org.springframework.core.env.PropertyResolver, S)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;T, S&gt; <strong>create</strong>(java.lang.String name, org.springframework.core.env.PropertyResolver configuration, S fallbackSettings)</h4>
+                                <p> Creates a new <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a> for the given name and configuration<DL><DT><B>throws:</B></DT><DD>org.grails.datastore.mapping.core.exceptions.ConfigurationException If there is an issue with the configuration</DD></DL>
+     <DL><DT><B>Returns:</B></DT><DD>The <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a></DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name</DD><DD><code>configuration</code> -  The configuration</DD><DD><code>fallbackSettings</code> -  The settings to fallback to if none are specified</DD></DL></p>
                             </li>
                         </ul>
                     

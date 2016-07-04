@@ -193,6 +193,30 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 (java.lang.Class... classes)</code><br></td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#TestRxRestDatastoreClient(Iterable<String>, org.springframework.core.env.PropertyResolver, java.lang.Class)">TestRxRestDatastoreClient</a></strong>
+                                (java.lang.Iterable&lt;java.lang.String&gt; connectionSourceNames, org.springframework.core.env.PropertyResolver configuration, java.lang.Class... classes)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst">
+                                <code><a href="#TestRxRestDatastoreClient(Iterable<String>, java.lang.Class)">TestRxRestDatastoreClient</a></strong>
+                                (java.lang.Iterable&lt;java.lang.String&gt; connectionSourceNames, java.lang.Class... classes)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code>protected&nbsp;<a href="#TestRxRestDatastoreClient(ConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>, java.lang.Class)">TestRxRestDatastoreClient</a></strong>
+                                (<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class... classes)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst">
+                                <code>protected&nbsp;<a href="#TestRxRestDatastoreClient(ConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>, org.grails.datastore.rx.rest.config.RestClientMappingContext)">TestRxRestDatastoreClient</a></strong>
+                                (<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</code><br></td>
+                        </tr>
+                        
                     </table>
                    </ul>
               </li>
@@ -214,8 +238,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#doClose()">doClose</a></strong>()</code><br></td>
+                            <td class="colFirst"><code>protected&nbsp;<a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html'>RxRestDatastoreClient</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createChildClient(SingletonConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>)">createChildClient</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/SingletonConnectionSources.html' title='SingletonConnectionSources'>SingletonConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; singletonConnectionSources)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -224,16 +248,21 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/rx/rest/test/TestRxRestDatastoreClient.html'>TestRxRestDatastoreClient</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getDatastoreClient(java.lang.String)">getDatastoreClient</a></strong>(java.lang.String connectionSourceName)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../../grails/http/client/test/HttpTestServer.html'>HttpTestServer</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getHttpTestServer()">getHttpTestServer</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
-                            <td class="colFirst"><code>protected&nbsp;static&nbsp;java.lang.String</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#initializeTestClient()">initializeTestClient</a></strong>()</code><br></td>
+                        <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;static&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#initializeConnectionSources(Iterable<String>, org.springframework.core.env.PropertyResolver)">initializeConnectionSources</a></strong>(java.lang.Iterable&lt;java.lang.String&gt; connectionSourceNames, org.springframework.core.env.PropertyResolver configuration)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#reset()">reset</a></strong>()</code><br>Reset the state of the mock</td>
                         </tr>
@@ -254,7 +283,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html'>RxRestDatastoreClient</a></strong></code></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#batchDelete(org.grails.datastore.rx.batch.BatchOperation)'>batchDelete</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#batchWrite(org.grails.datastore.rx.batch.BatchOperation)'>batchWrite</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#configureProxy(HttpClient<ByteBuf, ByteBuf>)'>configureProxy</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createContentWriteObservable(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, org.bson.codecs.Codec, org.grails.datastore.rx.batch.BatchOperation.EntityOperation)'>createContentWriteObservable</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createDefaultConnectionSourcesForHosts(Iterable<String>, org.springframework.core.env.PropertyResolver)'>createDefaultConnectionSourcesForHosts</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createEntityQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.query.QueryState)'>createEntityQuery</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createEntityQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.query.QueryState, java.util.Map)'>createEntityQuery</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createHttpClient(Map<String, Object>)'>createHttpClient</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createMappingContext(org.springframework.core.env.PropertyResolver, java.lang.Class)'>createMappingContext</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createQuery(java.lang.Class, com.damnhandy.uri.template.UriTemplate, org.grails.datastore.rx.query.QueryState, java.util.Map)'>createQuery</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createServerSocketAddresses(org.springframework.core.env.PropertyResolver)'>createServerSocketAddresses</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createStaticApi(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)'>createStaticApi</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#doClose()'>doClose</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#expandUri(com.damnhandy.uri.template.UriTemplate, org.grails.datastore.mapping.reflect.EntityReflector, def)'>expandUri</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#generateIdentifier(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object, org.grails.datastore.mapping.reflect.EntityReflector)'>generateIdentifier</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#get(Class<T>, org.bson.codecs.configuration.CodecRegistry)'>get</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#getMappingContext()'>getMappingContext</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#getNativeInterface()'>getNativeInterface</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#initDefaultConverters(org.grails.datastore.rx.rest.config.RestClientMappingContext)'>initDefaultConverters</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#initialize(org.grails.datastore.rx.rest.config.RestClientMappingContext)'>initialize</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#isAllowBlockingOperations()'>isAllowBlockingOperations</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#prepareRequest(HttpClientRequest<ByteBuf, ByteBuf>, grails.gorm.rx.rest.interceptor.InterceptorContext)'>prepareRequest</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#batchDelete(org.grails.datastore.rx.batch.BatchOperation)'>batchDelete</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#batchWrite(org.grails.datastore.rx.batch.BatchOperation)'>batchWrite</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#configureProxy(HttpClient<ByteBuf, ByteBuf>)'>configureProxy</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createChildClient(SingletonConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>)'>createChildClient</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createContentWriteObservable(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, org.bson.codecs.Codec, org.grails.datastore.rx.batch.BatchOperation.EntityOperation)'>createContentWriteObservable</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createDefaultConnectionSourcesForHosts(Iterable<String>, org.springframework.core.env.PropertyResolver)'>createDefaultConnectionSourcesForHosts</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createEntityQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.query.QueryState)'>createEntityQuery</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createEntityQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.query.QueryState, java.util.Map)'>createEntityQuery</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createHttpClient(Map<String, Object>)'>createHttpClient</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createInstanceApi(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)'>createInstanceApi</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createMappingContext(org.springframework.core.env.PropertyResolver, java.lang.Class)'>createMappingContext</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createQuery(java.lang.Class, com.damnhandy.uri.template.UriTemplate, org.grails.datastore.rx.query.QueryState, java.util.Map)'>createQuery</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createServerSocketAddresses(org.springframework.core.env.PropertyResolver)'>createServerSocketAddresses</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#createStaticApi(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)'>createStaticApi</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#doClose()'>doClose</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#expandUri(com.damnhandy.uri.template.UriTemplate, org.grails.datastore.mapping.reflect.EntityReflector, def)'>expandUri</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#generateIdentifier(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object, org.grails.datastore.mapping.reflect.EntityReflector)'>generateIdentifier</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#get(Class<T>, org.bson.codecs.configuration.CodecRegistry)'>get</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#getMappingContext()'>getMappingContext</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#getNativeInterface()'>getNativeInterface</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#initDefaultConverters(org.grails.datastore.rx.rest.config.RestClientMappingContext)'>initDefaultConverters</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#initialize(org.grails.datastore.rx.rest.config.RestClientMappingContext)'>initialize</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#isAllowBlockingOperations()'>isAllowBlockingOperations</a>, <a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html#prepareRequest(HttpClientRequest<ByteBuf, ByteBuf>, grails.gorm.rx.rest.interceptor.InterceptorContext)'>prepareRequest</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/rx/AbstractRxDatastoreClient.html'>AbstractRxDatastoreClient</a></strong></code></td>
@@ -310,6 +339,41 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="TestRxRestDatastoreClient(Iterable<String>, org.springframework.core.env.PropertyResolver, java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>TestRxRestDatastoreClient</strong>(java.lang.Iterable&lt;java.lang.String&gt; connectionSourceNames, org.springframework.core.env.PropertyResolver configuration, java.lang.Class... classes)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="TestRxRestDatastoreClient(Iterable<String>, java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@groovy.transform.CompileDynamic
+<strong>TestRxRestDatastoreClient</strong>(java.lang.Iterable&lt;java.lang.String&gt; connectionSourceNames, java.lang.Class... classes)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="TestRxRestDatastoreClient(ConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>, java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@groovy.transform.CompileDynamic
+protected&nbsp;<strong>TestRxRestDatastoreClient</strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class... classes)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="TestRxRestDatastoreClient(ConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>, org.grails.datastore.rx.rest.config.RestClientMappingContext)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@groovy.transform.CompileDynamic
+protected&nbsp;<strong>TestRxRestDatastoreClient</strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                 </li>
             </ul>
             
@@ -323,11 +387,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="doClose()"><!-- --></a>
+                        <a name="createChildClient(SingletonConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-void <strong>doClose</strong>()</h4>
+protected&nbsp;<a href='../../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html'>RxRestDatastoreClient</a> <strong>createChildClient</strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/SingletonConnectionSources.html' title='SingletonConnectionSources'>SingletonConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; singletonConnectionSources)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -341,6 +405,15 @@ void <strong>doClose</strong>()</h4>
                             </li>
                         </ul>
                     
+                        <a name="getDatastoreClient(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../../../org/grails/datastore/rx/rest/test/TestRxRestDatastoreClient.html'>TestRxRestDatastoreClient</a> <strong>getDatastoreClient</strong>(java.lang.String connectionSourceName)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getHttpTestServer()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -349,10 +422,10 @@ void <strong>doClose</strong>()</h4>
                             </li>
                         </ul>
                     
-                        <a name="initializeTestClient()"><!-- --></a>
+                        <a name="initializeConnectionSources(Iterable<String>, org.springframework.core.env.PropertyResolver)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;static&nbsp;java.lang.String <strong>initializeTestClient</strong>()</h4>
+                                <h4>protected&nbsp;static&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; <strong>initializeConnectionSources</strong>(java.lang.Iterable&lt;java.lang.String&gt; connectionSourceNames, org.springframework.core.env.PropertyResolver configuration)</h4>
                                 <p></p>
                             </li>
                         </ul>

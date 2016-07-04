@@ -343,8 +343,8 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#RxRestDatastoreClient(ConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>, org.springframework.core.env.PropertyResolver, org.grails.datastore.rx.rest.config.RestClientMappingContext)">RxRestDatastoreClient</a></strong>
-                                (<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; connectionSources, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</code><br></td>
+                                <code><a href="#RxRestDatastoreClient(ConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>, org.grails.datastore.rx.rest.config.RestClientMappingContext)">RxRestDatastoreClient</a></strong>
+                                (<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -425,28 +425,38 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>protected&nbsp;<a href='../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html'>RxRestDatastoreClient</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createChildClient(SingletonConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>)">createChildClient</a></strong>(<a href='../../../../../org/grails/datastore/mapping/core/connections/SingletonConnectionSources.html' title='SingletonConnectionSources'>SingletonConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; singletonConnectionSources)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.util.Observable&lt;io.netty.buffer.ByteBuf&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#createContentWriteObservable(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, org.bson.codecs.Codec, org.grails.datastore.rx.batch.BatchOperation.EntityOperation)">createContentWriteObservable</a></strong>(org.grails.datastore.rx.rest.RestEndpointPersistentEntity restEndpointPersistentEntity, org.bson.codecs.Codec codec, <a href='../../../../../org/grails/datastore/rx/batch/BatchOperation.EntityOperation.html'>EntityOperation</a> entityOp)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;static&nbsp;org.grails.datastore.mapping.core.connections.InMemoryConnectionSources&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#createDefaultConnectionSourcesForHosts(Iterable<String>, org.springframework.core.env.PropertyResolver)">createDefaultConnectionSourcesForHosts</a></strong>(java.lang.Iterable&lt;java.lang.String&gt; hosts, org.springframework.core.env.PropertyResolver configuration)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createEntityQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.query.QueryState)">createEntityQuery</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createEntityQuery(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.rx.query.QueryState, java.util.Map)">createEntityQuery</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>io.reactivex.netty.protocol.http.client.HttpClient&lt;io.netty.buffer.ByteBuf, io.netty.buffer.ByteBuf&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#createHttpClient(Map<String, Object>)">createHttpClient</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/rx/rest/api/RxRestGormInstanceApi.html'>RxRestGormInstanceApi</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createInstanceApi(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)">createInstanceApi</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -465,7 +475,7 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><a href='../../../../../org/grails/gorm/rx/api/RxGormStaticApi.html'>RxGormStaticApi</a></strong></code></td>
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/rx/rest/api/RxRestGormStaticApi.html'>RxRestGormStaticApi</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createStaticApi(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)">createStaticApi</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</code><br></td>
                         </tr>
                         
@@ -839,10 +849,10 @@ extends <a href='../../../../../org/grails/datastore/rx/AbstractRxDatastoreClien
                 </a>
                     <h3>Constructor Detail</h3>
                     
-                        <a name="RxRestDatastoreClient(ConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>, org.springframework.core.env.PropertyResolver, org.grails.datastore.rx.rest.config.RestClientMappingContext)"><!-- --></a>
+                        <a name="RxRestDatastoreClient(ConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>, org.grails.datastore.rx.rest.config.RestClientMappingContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>RxRestDatastoreClient</strong>(<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; connectionSources, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</h4>
+                                <h4><strong>RxRestDatastoreClient</strong>(<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/rx/rest/config/RestClientMappingContext.html'>RestClientMappingContext</a> mappingContext)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -943,6 +953,14 @@ java.util.Observable&lt;java.lang.Number&gt; <strong>batchWrite</strong>(<a href
                             </li>
                         </ul>
                     
+                        <a name="createChildClient(SingletonConnectionSources<ConnectionProviderFactory, RestConnectionSourceSettings>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;<a href='../../../../../org/grails/datastore/rx/rest/RxRestDatastoreClient.html'>RxRestDatastoreClient</a> <strong>createChildClient</strong>(<a href='../../../../../org/grails/datastore/mapping/core/connections/SingletonConnectionSources.html' title='SingletonConnectionSources'>SingletonConnectionSources</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; singletonConnectionSources)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="createContentWriteObservable(org.grails.datastore.rx.rest.RestEndpointPersistentEntity, org.bson.codecs.Codec, org.grails.datastore.rx.batch.BatchOperation.EntityOperation)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -985,6 +1003,15 @@ java.util.Observable&lt;java.lang.Number&gt; <strong>batchWrite</strong>(<a href
                             </li>
                         </ul>
                     
+                        <a name="createInstanceApi(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../../org/grails/datastore/rx/rest/api/RxRestGormInstanceApi.html'>RxRestGormInstanceApi</a> <strong>createInstanceApi</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="createMappingContext(org.springframework.core.env.PropertyResolver, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -1013,7 +1040,7 @@ java.util.Observable&lt;java.lang.Number&gt; <strong>batchWrite</strong>(<a href
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../../../../org/grails/gorm/rx/api/RxGormStaticApi.html'>RxGormStaticApi</a> <strong>createStaticApi</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</h4>
+<a href='../../../../../org/grails/datastore/rx/rest/api/RxRestGormStaticApi.html'>RxRestGormStaticApi</a> <strong>createStaticApi</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</h4>
                                 <p></p>
                             </li>
                         </ul>

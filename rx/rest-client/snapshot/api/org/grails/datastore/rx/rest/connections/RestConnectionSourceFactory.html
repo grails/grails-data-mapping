@@ -154,7 +154,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#create(java.lang.String, org.springframework.core.env.PropertyResolver)">create</a></strong>(java.lang.String name, org.springframework.core.env.PropertyResolver configuration)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#create(java.lang.String, org.springframework.core.env.PropertyResolver, org.grails.datastore.rx.rest.connections.RestConnectionSourceSettings)">create</a></strong>(java.lang.String name, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html'>RestConnectionSourceSettings</a> fallback = null)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -163,6 +163,11 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/DefaultConnectionSource.html' title='DefaultConnectionSource'>DefaultConnectionSource</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#create(java.lang.String, io.reactivex.netty.client.ConnectionProviderFactory, org.grails.datastore.rx.rest.connections.RestConnectionSourceSettings)">create</a></strong>(java.lang.String name, io.reactivex.netty.client.ConnectionProviderFactory connectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html'>RestConnectionSourceSettings</a> settings)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.io.Serializable</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getConnectionSourcesConfigurationKey()">getConnectionSourcesConfigurationKey</a></strong>()</code><br></td>
                         </tr>
@@ -217,11 +222,11 @@ extends java.lang.Object
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="create(java.lang.String, org.springframework.core.env.PropertyResolver)"><!-- --></a>
+                        <a name="create(java.lang.String, org.springframework.core.env.PropertyResolver, org.grails.datastore.rx.rest.connections.RestConnectionSourceSettings)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; <strong>create</strong>(java.lang.String name, org.springframework.core.env.PropertyResolver configuration)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; <strong>create</strong>(java.lang.String name, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html'>RestConnectionSourceSettings</a> fallback = null)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -230,6 +235,14 @@ extends java.lang.Object
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; <strong>create</strong>(java.lang.String name, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html'>RestConnectionSourceSettings</a> settings)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="create(java.lang.String, io.reactivex.netty.client.ConnectionProviderFactory, org.grails.datastore.rx.rest.connections.RestConnectionSourceSettings)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/DefaultConnectionSource.html' title='DefaultConnectionSource'>DefaultConnectionSource</a>&lt;io.reactivex.netty.client.ConnectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html' title='RestConnectionSourceSettings'>RestConnectionSourceSettings</a>&gt; <strong>create</strong>(java.lang.String name, io.reactivex.netty.client.ConnectionProviderFactory connectionProviderFactory, <a href='../../../../../../org/grails/datastore/rx/rest/connections/RestConnectionSourceSettings.html'>RestConnectionSourceSettings</a> settings)</h4>
                                 <p></p>
                             </li>
                         </ul>

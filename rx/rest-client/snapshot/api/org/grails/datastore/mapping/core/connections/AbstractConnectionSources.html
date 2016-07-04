@@ -210,23 +210,33 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#close()">close</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>org.springframework.core.env.PropertyResolver</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getBaseConfiguration()">getBaseConfiguration</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.Iterable&lt;java.lang.String&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getConnectionSourceNames(ConnectionSourceFactory<T, S>, org.springframework.core.env.PropertyResolver)">getConnectionSourceNames</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceFactory.html' title='ConnectionSourceFactory'>ConnectionSourceFactory</a>&lt;T, S&gt; connectionSourceFactory, org.springframework.core.env.PropertyResolver configuration)</code><br>Implementors should provide a method to lookup the data source names, which could be read from a database, configuration etc.</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;T, S&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getDefaultConnectionSource()">getDefaultConnectionSource</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceFactory.html' title='ConnectionSourceFactory'>ConnectionSourceFactory</a>&lt;T, S&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getFactory()">getFactory</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.Iterator&lt;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;T, S&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#iterator()">iterator</a></strong>()</code><br></td>
                         </tr>
                         
                     </table>
@@ -331,6 +341,15 @@ extends java.lang.Object
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="close()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+void <strong>close</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getBaseConfiguration()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -363,6 +382,15 @@ org.springframework.core.env.PropertyResolver <strong>getBaseConfiguration</stro
                             <li class="blockList">
                                 <h4>@java.lang.Override
 <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceFactory.html' title='ConnectionSourceFactory'>ConnectionSourceFactory</a>&lt;T, S&gt; <strong>getFactory</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="iterator()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.Iterator&lt;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;T, S&gt;&gt; <strong>iterator</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>

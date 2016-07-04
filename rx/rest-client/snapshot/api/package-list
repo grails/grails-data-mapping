@@ -7,6 +7,7 @@ grails.gorm.rx.api
 grails.gorm.rx.collection
 grails.gorm.rx.proxy
 grails.gorm.rx.rest
+grails.gorm.rx.rest.api
 grails.gorm.rx.rest.interceptor
 grails.gorm.transactions
 grails.http
