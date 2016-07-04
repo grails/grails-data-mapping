@@ -53,7 +53,7 @@ abstract class ConfigurationBuilder<B, C> {
         this.propertyResolver = propertyResolver
         this.configurationPrefix = configurationPrefix
         this.builderMethodPrefix = builderMethodPrefix
-        this.fallBackConfiguration = fallBackConfiguration
+        this.fallBackConfiguration = fallBackConfiguration != null ? fallBackConfiguration.clone() : null
     }
 
 
