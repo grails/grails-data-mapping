@@ -24,6 +24,20 @@ public interface ConnectionSourceFactory<T, S extends ConnectionSourceSettings> 
      */
     ConnectionSource<T, S> create(String name, PropertyResolver configuration);
 
+
+    /**
+     * Creates a new {@link ConnectionSource} for the given name and configuration
+     *
+     * @param name The name
+     * @param configuration The configuration
+     * @param fallbackSettings The settings to fallback to if none are specified
+     *
+     * @return The {@link ConnectionSource}
+     *
+     * @throws org.grails.datastore.mapping.core.exceptions.ConfigurationException If there is an issue with the configuration
+     */
+    ConnectionSource<T, S> create(String name, PropertyResolver configuration, S fallbackSettings);
+
     /**
      * @return Obtain the prefix used to obtain the default configuration. For example "grails.mongodb" or "grails.neo4j"
      */

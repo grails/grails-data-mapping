@@ -56,7 +56,7 @@ public class InMemoryConnectionSources<T, S extends ConnectionSourceSettings> ex
             throw new IllegalArgumentException("Argument [configuration] cannot be null");
         }
 
-        ConnectionSource<T, S> connectionSource = connectionSourceFactory.create(name, configuration);
+        ConnectionSource<T, S> connectionSource = connectionSourceFactory.create(name, configuration, this.defaultConnectionSource.getSettings());
         if(connectionSource == null) {
             throw new IllegalStateException("ConnectionSource factory returned null");
         }

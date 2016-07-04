@@ -57,6 +57,11 @@ class SingletonConnectionSources<T, S extends ConnectionSourceSettings> extends 
         }
 
         @Override
+        ConnectionSource<T, S> create(String name, PropertyResolver configuration, S fallbackSettings) {
+            throw new UnsupportedOperationException("Cannot add a connection source it a SingletonConnectionSources")
+        }
+
+        @Override
         Serializable getConnectionSourcesConfigurationKey() {
             throw new UnsupportedOperationException("Cannot add a connection source it a SingletonConnectionSources")
         }
