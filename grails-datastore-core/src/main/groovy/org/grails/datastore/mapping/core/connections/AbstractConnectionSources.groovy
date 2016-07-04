@@ -55,4 +55,17 @@ abstract class AbstractConnectionSources <T, S extends ConnectionSourceSettings>
     ConnectionSource<T, S> getDefaultConnectionSource() {
         return this.defaultConnectionSource;
     }
+
+    @Override
+    public void close() throws IOException {
+        for(ConnectionSource connectionSource : allConnectionSources) {
+            connectionSource.close()
+        }
+    }
+
+    @Override
+    public Iterator<ConnectionSource<T, S>> iterator() {
+        return getAllConnectionSources().iterator();
+    }
+
 }

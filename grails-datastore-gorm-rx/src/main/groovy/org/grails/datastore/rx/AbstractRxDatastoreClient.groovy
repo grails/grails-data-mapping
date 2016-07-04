@@ -54,7 +54,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
     protected MappingContext mappingContext
     ConfigurableApplicationEventPublisher eventPublisher = new DefaultApplicationEventPublisher()
     final ProxyFactory proxyFactory
-    final ConnectionSources<T, ConnectionSourceSettings> connectionSources
+    final ConnectionSources<T, ? extends ConnectionSourceSettings> connectionSources
     final Map<String, RxDatastoreClient<T>> datastoreClients = [:]
 
     AbstractRxDatastoreClient(ConnectionSources<T, ConnectionSourceSettings> connectionSources, MappingContext mappingContext) {

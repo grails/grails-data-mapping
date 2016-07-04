@@ -35,20 +35,6 @@ class SingletonConnectionSources<T, S extends ConnectionSourceSettings> extends 
         throw new UnsupportedOperationException("Cannot add a connection source it a SingletonConnectionSources")
     }
 
-    @Override
-    void close() throws IOException {
-
-        def source = defaultConnectionSource.source
-        if(source instanceof Closeable) {
-            ((Closeable)source).close()
-        }
-    }
-
-    @Override
-    Iterator<ConnectionSource<T, S>> iterator() {
-        return allConnectionSources.iterator()
-    }
-
     static class NullConnectionFactory<T, S extends ConnectionSourceSettings> implements ConnectionSourceFactory<T,S> {
 
         @Override

@@ -64,18 +64,5 @@ public class InMemoryConnectionSources<T, S extends ConnectionSourceSettings> ex
         return connectionSource;
     }
 
-    @Override
-    public Iterator<ConnectionSource<T, S>> iterator() {
-        return getAllConnectionSources().iterator();
-    }
 
-    @Override
-    public void close() throws IOException {
-        for(ConnectionSource connectionSource : this.connectionSourceMap.values()) {
-            Object source = connectionSource.getSource();
-            if(source instanceof Closeable) {
-                ((Closeable)source).close();
-            }
-        }
-    }
 }

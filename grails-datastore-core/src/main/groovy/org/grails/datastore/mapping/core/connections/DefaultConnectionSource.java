@@ -2,6 +2,9 @@ package org.grails.datastore.mapping.core.connections;
 
 import org.springframework.core.env.PropertyResolver;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 /**
  * Abstract implementation of the {@link ConnectionSource} interface
  *
@@ -33,5 +36,12 @@ public class DefaultConnectionSource<T, S extends ConnectionSourceSettings> impl
     @Override
     public S getSettings() {
         return this.settings;
+    }
+
+    @Override
+    public void close() throws IOException {
+        if(source instanceof Closeable) {
+            ((Closeable)source).close();
+        }
     }
 }
