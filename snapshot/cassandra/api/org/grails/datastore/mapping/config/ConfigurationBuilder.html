@@ -165,6 +165,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>C</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#fallBackConfiguration">fallBackConfiguration</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>org.springframework.core.env.PropertyResolver</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#propertyResolver">propertyResolver</a></code><br></td>
                         </tr>
@@ -193,7 +198,13 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#ConfigurationBuilder(org.springframework.core.env.PropertyResolver, java.lang.String, java.lang.String)">ConfigurationBuilder</a></strong>
-                                (org.springframework.core.env.PropertyResolver propertyResolver, java.lang.String configurationPrefix, java.lang.String builderMethodPrefix = null)</code><br>@param propertyResolver The property resolver</td>
+                                (org.springframework.core.env.PropertyResolver propertyResolver, java.lang.String configurationPrefix, java.lang.String builderMethodPrefix)</code><br>@param propertyResolver The property resolver</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst">
+                                <code><a href="#ConfigurationBuilder(org.springframework.core.env.PropertyResolver, java.lang.String, C, java.lang.String)">ConfigurationBuilder</a></strong>
+                                (org.springframework.core.env.PropertyResolver propertyResolver, java.lang.String configurationPrefix, C fallBackConfiguration = null, java.lang.String builderMethodPrefix = null)</code><br>@param propertyResolver The property resolver</td>
                         </tr>
                         
                     </table>
@@ -223,7 +234,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#buildRecurse(java.lang.Object, java.lang.String)">buildRecurse</a></strong>(java.lang.Object builder, java.lang.String startingPrefix)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#buildRecurse(java.lang.Object, java.lang.Object, java.lang.String)">buildRecurse</a></strong>(java.lang.Object builder, java.lang.Object fallBackConfig, java.lang.String startingPrefix)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -237,11 +248,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;java.lang.Object</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#newChildBuilderForFallback(java.lang.Object, java.lang.Object)">newChildBuilderForFallback</a></strong>(java.lang.Object childBuilder, java.lang.Object fallbackConfig)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#startBuild(java.lang.Object, java.lang.String)">startBuild</a></strong>(java.lang.Object builder, java.lang.String configurationPath)</code><br>Subclasses can override for when building starts for the given builder</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;C</strong></code></td>
                             <td class="colLast"><code><strong><a href="#toConfiguration(B)">toConfiguration</a></strong>(B builder)</code><br>Convert the builder to the final configuration</td>
                         </tr>
@@ -323,6 +339,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="fallBackConfiguration"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;C <strong>fallBackConfiguration</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="propertyResolver"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -348,10 +372,19 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="ConfigurationBuilder(org.springframework.core.env.PropertyResolver, java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>ConfigurationBuilder</strong>(org.springframework.core.env.PropertyResolver propertyResolver, java.lang.String configurationPrefix, java.lang.String builderMethodPrefix = null)</h4>
+                                <h4><strong>ConfigurationBuilder</strong>(org.springframework.core.env.PropertyResolver propertyResolver, java.lang.String configurationPrefix, java.lang.String builderMethodPrefix)</h4>
                                 <p>
 
      <DL><DT><B>Parameters:</B></DT><DD><code>propertyResolver</code> -  The property resolver</DD><DD><code>configurationPrefix</code> -  The prefix to resolve settings from within the configuration. Example "grails.gorm.neo4j" or "grails.gorm.mongodb"</DD><DD><code>builderMethodPrefix</code> -  The prefix to builder method calls. Default is null which results in builder methods like "foo(...)". Seting a prefix of "with" results in "withFoo(..)"</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="ConfigurationBuilder(org.springframework.core.env.PropertyResolver, java.lang.String, C, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>ConfigurationBuilder</strong>(org.springframework.core.env.PropertyResolver propertyResolver, java.lang.String configurationPrefix, C fallBackConfiguration = null, java.lang.String builderMethodPrefix = null)</h4>
+                                <p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>propertyResolver</code> -  The property resolver</DD><DD><code>configurationPrefix</code> -  The prefix to resolve settings from within the configuration. Example "grails.gorm.neo4j" or "grails.gorm.mongodb"</DD><DD><code>builderMethodPrefix</code> -  The prefix to builder method calls. Default is null which results in builder methods like "foo(...)". Seting a prefix of "with" results in "withFoo(..)"</DD><DD><code>fallBackConfiguration</code> -  An object to read the fallback configuration from</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -376,10 +409,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="buildRecurse(java.lang.Object, java.lang.String)"><!-- --></a>
+                        <a name="buildRecurse(java.lang.Object, java.lang.Object, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>buildRecurse</strong>(java.lang.Object builder, java.lang.String startingPrefix)</h4>
+                                <h4>protected&nbsp;void <strong>buildRecurse</strong>(java.lang.Object builder, java.lang.Object fallBackConfig, java.lang.String startingPrefix)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -399,6 +432,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>protected&nbsp;void <strong>newChildBuilder</strong>(java.lang.Object builder, java.lang.String configurationPath)</h4>
                                 <p> Subclasses can override for when a new child builder is created
      <DL><DT><B>Parameters:</B></DT><DD><code>builder</code> -  The builder</DD><DD><code>configurationPath</code> -  The configuration path</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="newChildBuilderForFallback(java.lang.Object, java.lang.Object)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;java.lang.Object <strong>newChildBuilderForFallback</strong>(java.lang.Object childBuilder, java.lang.Object fallbackConfig)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
