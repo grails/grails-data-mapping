@@ -55,7 +55,7 @@ class GlobalTraitRepairTransformation implements ASTTransformation {
     }
 
     void visitClass(ClassNode aClass) {
-        if (aClass.getNodeMetaData(TRANSFORM_APPLIED_MARKER) == null) {
+        if (ENABLED && aClass.getNodeMetaData(TRANSFORM_APPLIED_MARKER) == null) {
 
             if (AstUtils.implementsInterface(aClass, "org.grails.datastore.gorm.GormEntity") || AstUtils.implementsInterface(aClass, "grails.gorm.rx.RxEntity")) {
                 aClass.putNodeMetaData(TRANSFORM_APPLIED_MARKER, Boolean.TRUE)
