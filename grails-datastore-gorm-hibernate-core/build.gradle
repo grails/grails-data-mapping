@@ -76,7 +76,7 @@ dependencies {
         exclude group: 'commons-logging', module:'commons-logging'
     }
 
-    testRuntime("org.hibernate:hibernate-core:$hibVersion") {
+    testCompile("org.hibernate:hibernate-core:$hibVersion") {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'dom4j', module:'dom4j'
         exclude group:'commons-collections', module:'commons-collections'
