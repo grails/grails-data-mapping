@@ -16,6 +16,7 @@ public class DefaultConnectionSource<T, S extends ConnectionSourceSettings> impl
     protected final String name;
     protected final T source;
     protected final S settings;
+    protected boolean closed = false;
 
     public DefaultConnectionSource(String name, T source, S settings) {
         this.name = name;
@@ -41,13 +42,20 @@ public class DefaultConnectionSource<T, S extends ConnectionSourceSettings> impl
     @Override
     public void close() throws IOException {
         if(source instanceof Closeable) {
-            ((Closeable)source).close();
+            try {
+                ((Closeable)source).close();
+            } finally {
+                this.closed = true;
+            }
         }
         else if(source instanceof AutoCloseable) {
             try {
                 ((AutoCloseable)source).close();
             } catch (Exception e) {
                 throw new IOException("Error closing connection source ["+name+"]:" + e.getMessage(), e);
+            }
+            finally {
+                this.closed = true;
             }
         }
     }

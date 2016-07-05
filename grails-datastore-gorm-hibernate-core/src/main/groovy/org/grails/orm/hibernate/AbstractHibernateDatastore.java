@@ -16,8 +16,8 @@ package org.grails.orm.hibernate;
 
 import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.AbstractDatastore;
+import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.orm.hibernate.cfg.Mapping;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.ApplicationContext;
@@ -94,7 +94,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     }
 
     public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {
-        this(mappingContext, sessionFactory, config, null, Mapping.DEFAULT_DATA_SOURCE);
+        this(mappingContext, sessionFactory, config, null, ConnectionSource.DEFAULT);
     }
 
     /**

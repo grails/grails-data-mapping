@@ -48,7 +48,7 @@ import java.util.Map;
  * @since 1.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class AbstractDatastore implements Datastore, StatelessDatastore, DisposableBean {
+public abstract class AbstractDatastore implements Datastore, StatelessDatastore {
     protected static final Logger LOG = LoggerFactory.getLogger(AbstractDatastore.class);
 
     private ApplicationContext applicationContext;
@@ -212,7 +212,6 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     public ApplicationEventPublisher getApplicationEventPublisher() {
         return getApplicationContext();
     }
-
 
 
     protected void initializeConverters(MappingContext mappingContext) {

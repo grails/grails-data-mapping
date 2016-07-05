@@ -28,7 +28,7 @@ abstract class ConfigurationBuilder<B, C> {
     final PropertyResolver propertyResolver
     final String configurationPrefix
     final String builderMethodPrefix
-    final C fallBackConfiguration
+    final Object fallBackConfiguration
     protected B rootBuilder
 
     /**
@@ -52,7 +52,7 @@ abstract class ConfigurationBuilder<B, C> {
      * @param fallBackConfiguration An object to read the fallback configuration from
      */
     @CompileDynamic
-    ConfigurationBuilder(PropertyResolver propertyResolver, String configurationPrefix, C fallBackConfiguration = null, String builderMethodPrefix = null) {
+    ConfigurationBuilder(PropertyResolver propertyResolver, String configurationPrefix, Object fallBackConfiguration = null, String builderMethodPrefix = null) {
         this.propertyResolver = propertyResolver
         this.configurationPrefix = configurationPrefix
         this.builderMethodPrefix = builderMethodPrefix
@@ -136,7 +136,7 @@ abstract class ConfigurationBuilder<B, C> {
                     }
 
                     def builderMethod = ReflectionUtils.findMethod(argType, 'builder')
-                    String propertyPath = "${startingPrefix}.${settingName}"
+                    String propertyPath = startingPrefix ? "${startingPrefix}.${settingName}" : settingName
                     if (builderMethod != null && Modifier.isStatic(builderMethod.modifiers)) {
                         Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
                         def newBuilder
@@ -191,6 +191,13 @@ abstract class ConfigurationBuilder<B, C> {
                         }
                         if(newBuilder == null) {
                             newBuilder = argType.newInstance()
+                        }
+
+                        if(newBuilder instanceof Map) {
+                            Map subMap = propertyResolver.getProperty(propertyPath, Map, Collections.emptyMap())
+                            if(!subMap.isEmpty()) {
+                                ((Map)newBuilder).putAll(subMap)
+                            }
                         }
 
                         newChildBuilder(newBuilder, propertyPath)

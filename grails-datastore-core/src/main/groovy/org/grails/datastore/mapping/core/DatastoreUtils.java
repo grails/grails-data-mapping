@@ -23,6 +23,8 @@ import groovy.util.ConfigSlurper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.NamedThreadLocal;
+import org.springframework.core.convert.ConversionException;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
@@ -32,6 +34,7 @@ import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.grails.datastore.mapping.transactions.support.SpringSessionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Helper class for obtaining Datastore sessions. Based on similar work
@@ -418,6 +421,16 @@ public abstract class DatastoreUtils {
         }
         else {
             StandardEnvironment env = new StandardEnvironment();
+            env.getConversionService().addConverter(new Converter<String, Class>() {
+                @Override
+                public Class convert(String source) {
+                    try {
+                        return ClassUtils.forName(source, getClass().getClassLoader());
+                    } catch (ClassNotFoundException e) {
+                        throw new ConversionException("Cannot convert String ["+source+"] to class. The class was not found.", e) {};
+                    }
+                }
+            });
             if(configuration != null) {
                 MutablePropertySources propertySources = env.getPropertySources();
 

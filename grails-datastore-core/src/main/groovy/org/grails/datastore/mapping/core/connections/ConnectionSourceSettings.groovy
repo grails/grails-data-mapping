@@ -1,6 +1,7 @@
 package org.grails.datastore.mapping.core.connections
 
 import groovy.transform.AutoClone
+import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 import org.grails.datastore.mapping.config.Settings
@@ -15,6 +16,7 @@ import javax.persistence.FlushModeType
  */
 @Builder(builderStrategy = SimpleStrategy, prefix = '')
 @AutoClone
+@CompileStatic
 class ConnectionSourceSettings implements Settings {
 
     /**

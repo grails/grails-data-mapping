@@ -43,7 +43,7 @@ class SingletonConnectionSources<T, S extends ConnectionSourceSettings> extends 
         }
 
         @Override
-        ConnectionSource<T, S> create(String name, PropertyResolver configuration, S fallbackSettings) {
+        def <F extends ConnectionSourceSettings> ConnectionSource<T, S> create(String name, PropertyResolver configuration, F fallbackSettings) {
             throw new UnsupportedOperationException("Cannot add a connection source it a SingletonConnectionSources")
         }
 
