@@ -20,6 +20,18 @@ import java.io.Serializable;
  * @since 6.0
  */
 public abstract class AbstractHibernateConnectionSourceFactory implements ConnectionSourceFactory<SessionFactory, HibernateConnectionSourceSettings> {
+
+    protected DataSourceConnectionSourceFactory dataSourceConnectionSourceFactory = new DataSourceConnectionSourceFactory();
+
+    /**
+     * Sets the factory for creating SQL {@link DataSource} connection sources
+     *
+     * @param dataSourceConnectionSourceFactory
+     */
+    public void setDataSourceConnectionSourceFactory(DataSourceConnectionSourceFactory dataSourceConnectionSourceFactory) {
+        this.dataSourceConnectionSourceFactory = dataSourceConnectionSourceFactory;
+    }
+
     @Override
     public ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> create(String name, PropertyResolver configuration) {
         ConnectionSourceSettingsBuilder builder = new ConnectionSourceSettingsBuilder(configuration);
@@ -46,7 +58,7 @@ public abstract class AbstractHibernateConnectionSourceFactory implements Connec
     public ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> create(String name, HibernateConnectionSourceSettings settings) {
         DataSourceSettings dataSourceSettings = settings.getDataSource();
 
-        ConnectionSource<DataSource, DataSourceSettings> dataSourceConnectionSource = new DataSourceConnectionSourceFactory().create(name, dataSourceSettings);
+        ConnectionSource<DataSource, DataSourceSettings> dataSourceConnectionSource = dataSourceConnectionSourceFactory.create(name, dataSourceSettings);
 
 
         return create(name, dataSourceConnectionSource, settings);
