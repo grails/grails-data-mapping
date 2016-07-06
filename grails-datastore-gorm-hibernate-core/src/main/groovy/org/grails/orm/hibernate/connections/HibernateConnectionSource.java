@@ -31,7 +31,9 @@ public class HibernateConnectionSource extends DefaultConnectionSource<SessionFa
             SessionFactory sessionFactory = getSource();
             sessionFactory.close();
         } finally {
-            dataSource.close();
+            if(dataSource != null) {
+                dataSource.close();
+            }
         }
     }
 

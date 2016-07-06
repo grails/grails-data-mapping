@@ -17,17 +17,10 @@ package org.grails.orm.hibernate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.grails.datastore.mapping.core.Datastore;
-import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder;
-import org.grails.orm.hibernate.cfg.Mapping;
+import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
 import org.grails.orm.hibernate.support.SoftKey;
-import org.hibernate.SessionFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 import java.util.Collections;
@@ -45,59 +38,18 @@ import java.util.concurrent.ConcurrentMap;
  */
 public abstract class AbstractEventTriggeringInterceptor extends AbstractPersistenceEventListener {
 
-    protected transient ConcurrentMap<SoftKey<Class<?>>, Boolean> cachedShouldTrigger =
+    protected final transient ConcurrentMap<SoftKey<Class<?>>, Boolean> cachedShouldTrigger =
             new ConcurrentHashMap<SoftKey<Class<?>>, Boolean>();
-    protected boolean failOnError;
-    protected List<?> failOnErrorPackages = Collections.emptyList();
-    protected Log log = LogFactory.getLog(getClass());
+    protected final boolean failOnError;
+    protected final List<?> failOnErrorPackages;
+    protected final Log log = LogFactory.getLog(getClass());
 
-    protected AbstractEventTriggeringInterceptor(Datastore datastore) {
+    protected AbstractEventTriggeringInterceptor(AbstractHibernateDatastore datastore) {
         super(datastore);
+        HibernateConnectionSourceSettings settings = datastore.getConnectionSources().getDefaultConnectionSource().getSettings();
+        this.failOnError = settings.isFailOnError();
+        this.failOnErrorPackages = settings.getFailOnErrorPackages();
     }
-
-    protected boolean isDefinedByCurrentDataStore(Object entity, AbstractGrailsDomainBinder binder) {
-        SessionFactory currentDataStoreSessionFactory = ((AbstractHibernateDatastore) datastore).getSessionFactory();
-        ApplicationContext applicationContext = datastore.getApplicationContext();
-        final MappingContext hibernateMappingContext = datastore.getMappingContext();
-
-        Mapping mapping = binder.getMapping(entity.getClass());
-        List<String> dataSourceNames = null;
-        if (mapping == null) {
-            final PersistentEntity dc = hibernateMappingContext.getPersistentEntity(entity.getClass().getName());
-            if (dc != null) {
-                dataSourceNames = getDatasourceNames(dc);
-            }
-        }
-        else {
-            dataSourceNames = mapping.getDatasources();
-        }
-
-        if (dataSourceNames == null) {
-            return false;
-        }
-
-        for (String dataSource : dataSourceNames) {
-            if (ConnectionSource.ALL.equals(dataSource)) {
-                return true;
-            }
-            boolean isDefault = dataSource.equals(Mapping.DEFAULT_DATA_SOURCE);
-            String suffix = isDefault ? "" : "_" + dataSource;
-            String sessionFactoryBeanName = "sessionFactory" + suffix;
-
-            if (applicationContext.containsBean(sessionFactoryBeanName)) {
-                SessionFactory sessionFactory = applicationContext.getBean(sessionFactoryBeanName, SessionFactory.class);
-                if (currentDataStoreSessionFactory == sessionFactory) {
-                    return true;
-                }
-            }
-            else {
-                log.warn("Cannot resolve SessionFactory for dataSource ["+dataSource+"] and entity ["+entity.getClass().getName()+"]");
-            }
-        }
-        return false;
-    }
-
-    protected abstract List<String> getDatasourceNames(PersistentEntity dc);
 
     /**
      * {@inheritDoc}

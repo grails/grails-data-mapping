@@ -107,6 +107,18 @@ class GormEnhancer implements Closeable {
         if (appliesToDatastore(datastore, entity)) {
             def cls = entity.javaClass
             Set<String> qualifiers = allQualifiers(this.datastore, entity)
+            if(!qualifiers.contains(ConnectionSource.DEFAULT)) {
+                def firstQualifier = qualifiers.first()
+                def staticApi = getStaticApi(cls, firstQualifier)
+                def name = entity.name
+                STATIC_APIS.get(ConnectionSource.DEFAULT).put(name, staticApi)
+                def instanceApi = getInstanceApi(cls, firstQualifier)
+                INSTANCE_APIS.get(ConnectionSource.DEFAULT).put(name, instanceApi)
+                def validationApi = getValidationApi(cls, firstQualifier)
+                VALIDATION_APIS.get(ConnectionSource.DEFAULT).put(name, validationApi)
+                DATASTORES.get(ConnectionSource.DEFAULT).put(name, this.datastore)
+
+            }
             for (qualifier in qualifiers) {
                 def staticApi = getStaticApi(cls, qualifier)
                 def name = entity.name

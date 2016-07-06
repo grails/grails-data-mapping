@@ -4,6 +4,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
+import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -86,85 +87,8 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     }
 
     AbstractDatastoreInitializer(Map configuration, Collection<Class> persistentClasses) {
-        this(createPropertyResolverForConfig(configuration), persistentClasses)
+        this(DatastoreUtils.createPropertyResolver(configuration), persistentClasses)
         this.originalConfiguration = configuration
-    }
-
-    protected static PropertyResolver createPropertyResolverForConfig(Map configuration) {
-        // Grails 3.x has better support for property resolving from configuration so we should
-        // if the config is a PropertyResolver
-        PropertyResolver finalConfiguration
-        if (configuration instanceof PropertyResolver) {
-            finalConfiguration = (PropertyResolver) configuration;
-        } else {
-            // this is to support Grails 2.x
-            def env = new StandardEnvironment()
-            env.conversionService.addConverter(new Converter<ConfigObject, Object>() {
-                @Override
-                Object convert(ConfigObject source) {
-                    return null
-                }
-            })
-            def config = new ConfigObject()
-            if (configuration instanceof ConfigObject) {
-                config = (ConfigObject) configuration
-            } else if (configuration != null) {
-                def properties = new Properties()
-                properties.putAll(configuration)
-                config.merge(new ConfigSlurper().parse(properties))
-                config.putAll(config.flatten())
-            }
-            env.propertySources.addFirst(new MapPropertySource("gormConfig", config) {
-                @Override
-                boolean containsProperty(String name) {
-                    def value = getProperty(name)
-                    if(value == null) {
-                        return false
-                    }
-                    else if(value instanceof ConfigObject) {
-                        return !((ConfigObject)value).isEmpty()
-                    }
-                    else {
-                        return true
-                    }
-                }
-
-                @Override
-                Object getProperty(String name) {
-                    def v = super.getProperty(name)
-                    if (v != null) {
-                        return valueOrNull(v)
-                    } else if (name.contains('.')) {
-                        def map = getSource()
-                        def tokens = name.split(/\./)
-                        int i = 0
-                        v = map.get(tokens[i])
-                        while (v instanceof Map && i < tokens.length - 1) {
-                            Map co = (Map) v
-                            v = co.get(tokens[++i])
-                        }
-
-                        return valueOrNull(v)
-
-                    }
-                }
-
-                protected Object valueOrNull(v) {
-                    if (v instanceof ConfigObject) {
-                        def co = (ConfigObject) v
-                        if (co.isEmpty()) {
-                            return null
-                        } else {
-                            return co
-                        }
-                    } else {
-                        return v
-                    }
-                }
-            })
-            finalConfiguration = env
-        }
-        finalConfiguration
     }
 
     AbstractDatastoreInitializer(Map configuration, Class... persistentClasses) {

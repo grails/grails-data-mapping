@@ -40,6 +40,11 @@ class ConnectionSourceSettings implements Settings {
     boolean failOnError = false
 
     /**
+     * Package names that should fail on error
+     */
+    List<String> failOnErrorPackages = Collections.emptyList()
+
+    /**
      * Custom settings
      */
     CustomSettings custom = new CustomSettings()

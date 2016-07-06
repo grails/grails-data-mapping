@@ -37,6 +37,10 @@ public abstract class AbstractPersistenceEventListener implements PersistenceEve
         if(e instanceof AbstractPersistenceEvent) {
 
             AbstractPersistenceEvent event = (AbstractPersistenceEvent)e;
+            if(!isValidSource(event)) {
+                return;
+            }
+
             if (event.isCancelled()) {
                 return;
             }
@@ -47,6 +51,11 @@ public abstract class AbstractPersistenceEventListener implements PersistenceEve
             onPersistenceEvent(event);
         }
 
+    }
+
+    protected boolean isValidSource(AbstractPersistenceEvent event) {
+        Object source = event.getSource();
+        return (source instanceof Datastore) && source.equals(datastore);
     }
 
     protected abstract void onPersistenceEvent(AbstractPersistenceEvent event);

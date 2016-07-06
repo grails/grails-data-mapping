@@ -2,7 +2,7 @@ package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
 import grails.persistence.Entity
-
+import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener
@@ -25,7 +25,7 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
 
     def setup() {
         listener = new SpecPersistenceListener(session.datastore)
-        session.datastore.applicationContext.addApplicationListener(listener)
+        ((ConfigurableApplicationEventPublisher)session.datastore.applicationEventPublisher).addApplicationListener(listener)
     }
 
     void "Test delete events"() {

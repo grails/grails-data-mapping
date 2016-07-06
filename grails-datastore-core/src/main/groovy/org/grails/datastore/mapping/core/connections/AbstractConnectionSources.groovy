@@ -46,7 +46,25 @@ abstract class AbstractConnectionSources <T, S extends ConnectionSourceSettings>
      * @param configuration The root configuration
      * @return An iterable of connection source names. Should never return null.
      */
-    protected abstract Iterable<String> getConnectionSourceNames(ConnectionSourceFactory<T, S> connectionSourceFactory, PropertyResolver configuration);
+    protected Iterable<String> getConnectionSourceNames(ConnectionSourceFactory<T, S> connectionSourceFactory, PropertyResolver configuration) {
+        Map<String, Object> allConnectionSources = configuration.getProperty(connectionSourceFactory.getConnectionSourcesConfigurationKey().toString(), Map.class, Collections.emptyMap());
+        return toValidConnectionSourceNames(allConnectionSources);
+    }
+
+    public static Set<String> toValidConnectionSourceNames(Map<String, Object> allConnectionSources) {
+        Set<String> names = allConnectionSources.keySet();
+        Set<String> newNames = new LinkedHashSet<>();
+        for (String name : names) {
+            int i = name.indexOf('.');
+            if(i > -1) {
+                newNames.add( name.substring(0,i) );
+            }
+            else {
+                newNames.add(name);
+            }
+        }
+        return newNames;
+    }
 
     @Override
     ConnectionSourceFactory<T, S> getFactory() {

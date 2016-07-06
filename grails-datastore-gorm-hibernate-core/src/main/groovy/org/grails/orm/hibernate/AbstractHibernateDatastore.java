@@ -16,8 +16,11 @@ package org.grails.orm.hibernate;
 
 import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.AbstractDatastore;
-import org.grails.datastore.mapping.core.connections.ConnectionSource;
+import org.grails.datastore.mapping.core.connections.*;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.orm.hibernate.cfg.HibernateMappingContext;
+import org.grails.orm.hibernate.connections.HibernateConnectionSource;
+import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.ApplicationContext;
@@ -33,12 +36,13 @@ import java.util.concurrent.Callable;
  * @author Graeme Rocher
  * @since 2.0
  */
-public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings {
+public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, ConnectionSourcesProvider<SessionFactory, HibernateConnectionSourceSettings> {
 
     public static final String CONFIG_PROPERTY_CACHE_QUERIES = "grails.hibernate.cache.queries";
     public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";
     public static final String CONFIG_PROPERTY_PASS_READONLY_TO_HIBERNATE = "grails.hibernate.pass.readonly";
     protected final SessionFactory sessionFactory;
+    protected final ConnectionSources<SessionFactory, HibernateConnectionSourceSettings> connectionSources;
     protected AbstractEventTriggeringInterceptor eventTriggeringInterceptor;
     private final boolean osivReadOnly;
     private final boolean passReadOnlyToHibernate;
@@ -47,9 +51,24 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     private final boolean failOnError;
     private final String dataSourceName;
 
+    protected AbstractHibernateDatastore(ConnectionSources<SessionFactory, HibernateConnectionSourceSettings> connectionSources, HibernateMappingContext mappingContext) {
+        super(mappingContext, connectionSources.getBaseConfiguration(), null);
+        this.connectionSources = connectionSources;
+        ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> defaultConnectionSource = connectionSources.getDefaultConnectionSource();
+        this.dataSourceName = defaultConnectionSource.getName();
+        this.sessionFactory = defaultConnectionSource.getSource();
+        HibernateConnectionSourceSettings settings = defaultConnectionSource.getSettings();
+        HibernateConnectionSourceSettings.HibernateSettings hibernateSettings = settings.getHibernate();
+        this.osivReadOnly = hibernateSettings.getOsiv().isReadonly();
+        this.passReadOnlyToHibernate = hibernateSettings.isReadOnly();
+        this.isCacheQueries = hibernateSettings.getCache().isQueries();
+        this.failOnError = settings.isFailOnError();
+        this.defaultFlushMode = FlushMode.valueOf(hibernateSettings.getFlush().getMode().name()).getLevel();
+    }
 
     protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext, String dataSourceName) {
         super(mappingContext, config, (ConfigurableApplicationContext) applicationContext);
+        this.connectionSources = new SingletonConnectionSources<>(new HibernateConnectionSource(dataSourceName, sessionFactory, null, null ), config);
         this.sessionFactory = sessionFactory;
         this.dataSourceName = dataSourceName;
         initializeConverters(mappingContext);
@@ -67,6 +86,11 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
             defaultFlushMode = config.getProperty(SETTING_FLUSH_MODE, Integer.class, FlushMode.COMMIT.level);
         }
         failOnError = config.getProperty(SETTING_FAIL_ON_ERROR, Boolean.class, false);
+    }
+
+    @Override
+    public ConnectionSources<SessionFactory, HibernateConnectionSourceSettings> getConnectionSources() {
+        return this.connectionSources;
     }
 
     public boolean isAutoFlush() {

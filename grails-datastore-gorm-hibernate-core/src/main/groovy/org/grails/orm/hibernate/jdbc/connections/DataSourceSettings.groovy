@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
+import org.hibernate.dialect.H2Dialect
 
 /**
  * DataSource settings
@@ -15,9 +16,9 @@ import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
 @AutoClone
 class DataSourceSettings extends ConnectionSourceSettings {
     /**
-     * The data source URL
+     * The data source URL, defaults to an H2 in-memory database
      */
-    String url
+    String url = "jdbc:h2:mem:grailsDB;MVCC=TRUE;LOCK_TIMEOUT=10000"
 
     /**
      * The driver class name
@@ -49,7 +50,7 @@ class DataSourceSettings extends ConnectionSourceSettings {
     /**
      * The dialect to use
      */
-    Class dialect = null
+    Class dialect = H2Dialect
     /**
      * Whether to log SQL
      */

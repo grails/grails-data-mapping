@@ -2,6 +2,8 @@ package org.grails.orm.hibernate.connections
 
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.hibernate.dialect.Oracle8iDialect
+import org.springframework.core.io.FileSystemResource
+import org.springframework.core.io.UrlResource
 import spock.lang.Specification
 
 /**
@@ -17,7 +19,8 @@ class HibernateConnectionSourceSettingsSpec extends Specification {
                 'dataSource.formatSql': 'true',
                 'hibernate.flush.mode': 'COMMIT',
                 'hibernate.cache.queries': 'true',
-                'hibernate.hbm2ddl.auto': 'create'
+                'hibernate.hbm2ddl.auto': 'create',
+                'hibernate.configLocations':'file:hibernate.cfg.xml'
         ]
         HibernateConnectionSourceSettingsBuilder builder = new HibernateConnectionSourceSettingsBuilder(DatastoreUtils.createPropertyResolver(config))
         HibernateConnectionSourceSettings settings = builder.build()
@@ -32,6 +35,8 @@ class HibernateConnectionSourceSettingsSpec extends Specification {
         expectedHibernateProperties.put('hibernate.hbm2ddl.auto', 'create')
         expectedHibernateProperties.put('hibernate.cache.queries', 'true')
         expectedHibernateProperties.put('hibernate.flush.mode', 'COMMIT')
+        expectedHibernateProperties.put('hibernate.naming_strategy','org.hibernate.cfg.ImprovedNamingStrategy')
+        expectedHibernateProperties.put('hibernate.configLocations','file:hibernate.cfg.xml')
 
         def expectedCombinedProperties = new Properties()
         expectedCombinedProperties.putAll(expectedDataSourceProperties)
@@ -47,6 +52,8 @@ class HibernateConnectionSourceSettingsSpec extends Specification {
         settings.hibernate.getFlush().mode == HibernateConnectionSourceSettings.HibernateSettings.FlushSettings.FlushMode.COMMIT
         settings.hibernate.getCache().queries
         settings.hibernate.get('hbm2ddl.auto') == 'create'
+        settings.hibernate.getConfigLocations().size() == 1
+        settings.hibernate.getConfigLocations()[0] instanceof UrlResource
         settings.hibernate.toProperties() == expectedHibernateProperties
     }
 }

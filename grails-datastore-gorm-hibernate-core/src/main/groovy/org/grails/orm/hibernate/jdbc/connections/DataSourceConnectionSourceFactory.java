@@ -7,6 +7,7 @@ import org.grails.datastore.mapping.core.connections.DefaultConnectionSource;
 import org.grails.orm.hibernate.cfg.Settings;
 import org.grails.orm.hibernate.jdbc.DataSourceBuilder;
 import org.springframework.core.env.PropertyResolver;
+import org.springframework.jndi.JndiObjectFactoryBean;
 
 import javax.sql.DataSource;
 import java.io.Serializable;
@@ -33,28 +34,39 @@ public class DataSourceConnectionSourceFactory implements ConnectionSourceFactor
     }
 
     public ConnectionSource<DataSource, DataSourceSettings> create(String name, DataSourceSettings settings) {
-        DataSourceBuilder dataSourceBuilder = new DataSourceBuilder(getClass().getClassLoader());
 
-        String driverClassName = settings.getDriverClassName();
-        String username = settings.getUsername();
-        String password = settings.getPassword();
-        Map properties = settings.getProperties();
-        String url = settings.getUrl();
+        if(settings.getJndiName() != null) {
+            JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
+            jndiObjectFactoryBean.setExpectedType(DataSource.class);
+            jndiObjectFactoryBean.setJndiName(settings.getJndiName());
 
-        if(properties != null && !properties.isEmpty()) {
-            dataSourceBuilder.properties(settings.toProperties());
+            return new DefaultConnectionSource<>(name, (DataSource)jndiObjectFactoryBean.getObject(), settings);
         }
-        dataSourceBuilder.url(url);
+        else {
 
-        if(driverClassName != null) {
-            dataSourceBuilder.driverClassName(driverClassName);
-        }
-        if(username != null && password != null) {
-            dataSourceBuilder.username(username);
-            dataSourceBuilder.password(password);
-        }
+            DataSourceBuilder dataSourceBuilder = new DataSourceBuilder(getClass().getClassLoader());
 
-        return new DefaultConnectionSource<>(name, dataSourceBuilder.build(), settings);
+            String driverClassName = settings.getDriverClassName();
+            String username = settings.getUsername();
+            String password = settings.getPassword();
+            Map properties = settings.getProperties();
+            String url = settings.getUrl();
+
+            if(properties != null && !properties.isEmpty()) {
+                dataSourceBuilder.properties(settings.toProperties());
+            }
+            dataSourceBuilder.url(url);
+
+            if(driverClassName != null) {
+                dataSourceBuilder.driverClassName(driverClassName);
+            }
+            if(username != null && password != null) {
+                dataSourceBuilder.username(username);
+                dataSourceBuilder.password(password);
+            }
+
+            return new DefaultConnectionSource<>(name, dataSourceBuilder.build(), settings);
+        }
     }
 
     @Override

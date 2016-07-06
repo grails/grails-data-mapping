@@ -1,6 +1,7 @@
 package org.grails.gorm.rx.events
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent
 import org.grails.datastore.rx.RxDatastoreClient
 
 /**
@@ -17,6 +18,12 @@ class DomainEventListener extends org.grails.datastore.gorm.events.DomainEventLi
     DomainEventListener(RxDatastoreClient datastoreClient) {
         super(datastoreClient.mappingContext)
         this.datastoreClient = datastoreClient
+    }
+
+    @Override
+    protected boolean isValidSource(AbstractPersistenceEvent event) {
+        Object source = event.getSource();
+        return (source instanceof RxDatastoreClient) && source.equals(datastoreClient);
     }
 
     @Override

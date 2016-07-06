@@ -129,7 +129,7 @@ abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D
     private void fireEvent(Object target, List<?> validatedFieldsList) {
         ValidationEvent event = new ValidationEvent(datastore, target);
         event.setValidatedFields(validatedFieldsList);
-        datastore.getApplicationContext().publishEvent(event);
+        datastore.getApplicationEventPublisher().publishEvent(event);
     }
 
     @SuppressWarnings("rawtypes")

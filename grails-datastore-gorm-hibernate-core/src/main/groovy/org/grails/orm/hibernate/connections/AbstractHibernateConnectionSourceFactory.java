@@ -7,11 +7,14 @@ import org.grails.datastore.mapping.core.connections.ConnectionSourceSettingsBui
 import org.grails.orm.hibernate.cfg.Settings;
 import org.grails.orm.hibernate.jdbc.connections.DataSourceConnectionSourceFactory;
 import org.grails.orm.hibernate.jdbc.connections.DataSourceSettings;
+import org.grails.orm.hibernate.jdbc.connections.DataSourceSettingsBuilder;
 import org.hibernate.SessionFactory;
 import org.springframework.core.env.PropertyResolver;
 
 import javax.sql.DataSource;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Constructs a Hibernate {@link SessionFactory}
@@ -44,13 +47,31 @@ public abstract class AbstractHibernateConnectionSourceFactory implements Connec
     public <F extends ConnectionSourceSettings> ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> create(String name, PropertyResolver configuration, F fallbackSettings) {
 
         HibernateConnectionSourceSettingsBuilder builder;
-        if(ConnectionSource.DEFAULT.equals(name)) {
+        boolean isDefaultDataSource = ConnectionSource.DEFAULT.equals(name);
+        HibernateConnectionSourceSettings settings;
+        if(isDefaultDataSource) {
             builder = new HibernateConnectionSourceSettingsBuilder(configuration, "", fallbackSettings);
+            settings = builder.build();
         }
         else {
-            builder = new HibernateConnectionSourceSettingsBuilder(configuration, Settings.PREFIX + "." + name, fallbackSettings);
+            String prefix = Settings.SETTING_DATASOURCES + "." + name;
+            builder = new HibernateConnectionSourceSettingsBuilder(configuration, prefix, fallbackSettings);
+
+            DataSourceSettings dsfallbackSettings = null;
+            if(fallbackSettings instanceof HibernateConnectionSourceSettings) {
+                dsfallbackSettings = ((HibernateConnectionSourceSettings)fallbackSettings).getDataSource();
+            }
+            else if(fallbackSettings instanceof DataSourceSettings) {
+                dsfallbackSettings = (DataSourceSettings) fallbackSettings;
+            }
+
+            settings = builder.build();
+            if(configuration.getProperty(prefix + ".dataSource", Map.class, Collections.emptyMap()).isEmpty()) {
+                DataSourceSettingsBuilder dataSourceSettingsBuilder = new DataSourceSettingsBuilder(configuration, prefix, dsfallbackSettings);
+                DataSourceSettings dataSourceSettings = dataSourceSettingsBuilder.build();
+                settings.setDataSource(dataSourceSettings);
+            }
         }
-        HibernateConnectionSourceSettings settings = builder.build();
 
         return create(name, settings);
     }

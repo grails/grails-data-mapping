@@ -13,8 +13,8 @@ import org.springframework.core.env.PropertyResolver
  */
 @CompileStatic
 class DataSourceSettingsBuilder extends ConfigurationBuilder<DataSourceSettings, DataSourceSettings> {
-    DataSourceSettingsBuilder(PropertyResolver propertyResolver, String configurationPrefix = Settings.SETTING_DATASOURCE) {
-        super(propertyResolver, configurationPrefix)
+    DataSourceSettingsBuilder(PropertyResolver propertyResolver, String configurationPrefix = Settings.SETTING_DATASOURCE, Object fallBackSettings = null) {
+        super(propertyResolver, configurationPrefix, fallBackSettings)
     }
 
     @Override

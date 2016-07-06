@@ -29,6 +29,8 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.grails.datastore.mapping.transactions.support.SpringSessionSynchronization;
@@ -429,6 +431,12 @@ public abstract class DatastoreUtils {
                     } catch (ClassNotFoundException e) {
                         throw new ConversionException("Cannot convert String ["+source+"] to class. The class was not found.", e) {};
                     }
+                }
+            });
+            env.getConversionService().addConverter(new Converter<String, Resource>() {
+                @Override
+                public Resource convert(String source) {
+                    return new PathMatchingResourcePatternResolver().getResource(source);
                 }
             });
             if(configuration != null) {

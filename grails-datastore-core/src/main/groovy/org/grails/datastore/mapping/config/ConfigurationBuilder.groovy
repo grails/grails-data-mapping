@@ -91,7 +91,7 @@ abstract class ConfigurationBuilder<B, C> {
         List<Class> classes = [cls]
         while(cls != Object) {
             def superClass = cls.getSuperclass()
-            if(superClass == Object) break
+            if(superClass == Object || superClass == LinkedHashMap) break
 
             classes.add(superClass)
             cls = superClass
@@ -111,6 +111,9 @@ abstract class ConfigurationBuilder<B, C> {
             for (method in methods) {
                 def methodName = method.name
                 if (!Modifier.isPublic(method.modifiers) || method.isSynthetic() || IGNORE_METHODS.contains(methodName)) {
+                    continue
+                }
+                if(method.declaringClass != builderClass) {
                     continue
                 }
                 def parameterTypes = method.parameterTypes
@@ -260,7 +263,9 @@ abstract class ConfigurationBuilder<B, C> {
                                     fallBackChildConfig = fallbackGetter.invoke(fallBackConfig)
                                 }
                             }
-                            buildRecurse(childBuilder, fallBackChildConfig, "${startingPrefix}.${NameUtils.getPropertyNameForGetterOrSetter(methodName)}")
+
+                            String propertyPath = startingPrefix ? "${startingPrefix}.${NameUtils.getPropertyNameForGetterOrSetter(methodName)}" : NameUtils.getPropertyNameForGetterOrSetter(methodName)
+                            buildRecurse(childBuilder, fallBackChildConfig, propertyPath)
                         }
                     }
                 }

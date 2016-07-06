@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.springframework.context.ApplicationEvent;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -60,9 +61,15 @@ public abstract class AbstractPersistenceEvent extends ApplicationEvent {
 
     protected AbstractPersistenceEvent(final Datastore source, final Object entity) {
         super(source);
-        entityObject = entity;
-        this.entity = null;
-        this.entityAccess = null;
+        MappingContext mappingContext = source.getMappingContext();
+        entityObject = mappingContext.getProxyHandler().unwrap(entity);
+        this.entity = mappingContext.getPersistentEntity(entityObject.getClass().getName());
+        if(this.entity != null) {
+            this.entityAccess = mappingContext.createEntityAccess(this.entity, entityObject);
+        }
+        else {
+            this.entityAccess = null;
+        }
     }
 
     public Object getEntityObject() {

@@ -4,9 +4,7 @@ import org.springframework.core.env.PropertyResolver;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -29,12 +27,6 @@ public class InMemoryConnectionSources<T, S extends ConnectionSourceSettings> ex
                 this.connectionSourceMap.put(name, connectionSource);
             }
         }
-    }
-
-    @Override
-    protected Iterable<String> getConnectionSourceNames(ConnectionSourceFactory<T, S> connectionSourceFactory, PropertyResolver configuration) {
-        Map<String, Object> allConnectionSources = configuration.getProperty(connectionSourceFactory.getConnectionSourcesConfigurationKey().toString(), Map.class, Collections.emptyMap());
-        return allConnectionSources.keySet();
     }
 
     @Override
