@@ -80,6 +80,11 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
         Class<? extends NamingStrategy> naming_strategy
 
         /**
+         * Any additional event listeners
+         */
+        Map<String, Object> eventListeners = Collections.emptyMap()
+
+        /**
          * Convert to Hibernate properties
          *
          * @return The hibernate properties
