@@ -26,6 +26,7 @@ import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.config.GormProperties;
+import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.validation.Errors;
 
@@ -43,27 +44,62 @@ public class HibernateMappingContext extends AbstractMappingContext {
     private final HibernateMappingFactory mappingFactory;
     private final MappingConfigurationStrategy syntaxStrategy;
 
+    /**
+     * Construct a HibernateMappingContext for the given arguments
+     *
+     * @param settings The {@link HibernateConnectionSourceSettings} settings
+     * @param contextObject The context object (for example a Spring ApplicationContext)
+     * @param persistentClasses The persistent classes
+     */
+    public HibernateMappingContext(HibernateConnectionSourceSettings settings, Object contextObject, Class...persistentClasses) {
+        this.mappingFactory = new HibernateMappingFactory();
+
+        if(settings != null) {
+            this.mappingFactory.setDefaultMapping(settings.getDefault().getMapping());
+            this.mappingFactory.setDefaultConstraints(settings.getDefault().getConstraints());
+        }
+        this.mappingFactory.setContextObject(contextObject);
+        this.syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory) {
+            @Override
+            protected boolean supportsCustomType(Class<?> propertyType) {
+                return !Errors.class.isAssignableFrom(propertyType);
+            }
+        };
+        addPersistentEntities(persistentClasses);
+    }
+    public HibernateMappingContext() {
+        this((HibernateConnectionSourceSettings)null);
+    }
+
+    public HibernateMappingContext(HibernateConnectionSourceSettings settings, Class...persistentClasses) {
+        this(settings, null, persistentClasses);
+    }
+
+    @Deprecated
     public HibernateMappingContext(PropertyResolver configuration, Object contextObject, Class...persistentClasses) {
         this(configuration.getProperty(Settings.SETTING_DEFAULT_MAPPING, Closure.class, null), contextObject);
         addPersistentEntities(persistentClasses);
     }
 
+    @Deprecated
     public HibernateMappingContext(PropertyResolver configuration, Object contextObject, Closure defaultConstraints, Class...persistentClasses) {
         this(configuration.getProperty(Settings.SETTING_DEFAULT_MAPPING, Closure.class, null), contextObject);
         setDefaultConstraints(defaultConstraints);
         addPersistentEntities(persistentClasses);
     }
 
+
+    @Deprecated
     public HibernateMappingContext(PropertyResolver configuration, Object contextObject) {
         this(configuration.getProperty(Settings.SETTING_DEFAULT_MAPPING, Closure.class, null), contextObject);
     }
 
-    public HibernateMappingContext() {
-        this(null);
-    }
+    @Deprecated
     public HibernateMappingContext(Closure defaultMapping) {
         this(defaultMapping, null);
     }
+
+    @Deprecated
     public HibernateMappingContext(Closure defaultMapping, Object contextObject) {
         this.mappingFactory = new HibernateMappingFactory();
         if(defaultMapping != null) {
