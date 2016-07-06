@@ -15,7 +15,6 @@
  */
 package org.grails.orm.hibernate.cfg
 
-import groovy.transform.AutoClone
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.config.Property
 import org.hibernate.FetchMode
@@ -32,12 +31,12 @@ import javax.persistence.FetchType
 @CompileStatic
 class PropertyConfig extends Property {
 
+    PropertyConfig() {
+        setFetchStrategy(null)
+    }
+
     boolean explicitSaveUpdateCascade;
 
-    /**
-     * Whether the property is derived
-     */
-    boolean derived = false
     /**
      * The Hibernate type or user type of the property. This can be
      * a string or a class.
@@ -55,7 +54,6 @@ class PropertyConfig extends Property {
      */
     String sort
 
-    String formula
 
     /**
      * The default sort order
@@ -67,15 +65,6 @@ class PropertyConfig extends Property {
      */
     Integer batchSize
 
-    /**
-     * Cascading strategy for this property. Only makes sense if the
-     * property is an association or collection.
-     */
-    String cascade
-    /**
-     * The fetch strategy for this property.
-     */
-    FetchMode fetch = FetchMode.DEFAULT
 
     /**
      * Whether to ignore ObjectNotFoundException
@@ -97,15 +86,34 @@ class PropertyConfig extends Property {
     CacheConfig cache
     JoinTable joinTable = new JoinTable()
 
+    /**
+     * @param fetch The Hibernate {@link FetchMode}
+     */
     void setFetch(FetchMode fetch) {
         if(FetchMode.JOIN.equals(fetch)) {
             super.setFetchStrategy(FetchType.EAGER)
         }
-        this.fetch = fetch
+        else {
+            super.setFetchStrategy(FetchType.LAZY)
+        }
     }
 
-    FetchMode getFetch() {
-        return fetch
+    /**
+     * @return The Hibernate {@link FetchMode}
+     */
+    FetchMode getFetchMode() {
+        FetchType strategy = super.getFetchStrategy()
+        if(strategy == null) {
+            return FetchMode.DEFAULT
+        }
+        switch (strategy) {
+            case FetchType.EAGER:
+                return FetchMode.JOIN
+            case FetchType.LAZY:
+                return FetchMode.SELECT
+            default:
+                return FetchMode.DEFAULT
+        }
     }
     /**
      * The column used to produce the index for index based collections (lists and maps)
@@ -227,7 +235,7 @@ class PropertyConfig extends Property {
     PropertyConfig clone() throws CloneNotSupportedException {
         PropertyConfig pc = (PropertyConfig)super.clone()
 
-        pc.fetch = fetch
+        pc.fetch = fetchMode
         pc.indexColumn = indexColumn != null ? (PropertyConfig)indexColumn.clone() : null
         pc.cache = cache != null ? cache.clone() : cache
         pc.joinTable = joinTable.clone()

@@ -34,6 +34,7 @@ import org.codehaus.groovy.grails.compiler.injection.AstTransformer;
 import org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils;
 import org.codehaus.groovy.grails.compiler.injection.GrailsArtefactClassInjector;
 import org.codehaus.groovy.grails.io.support.GrailsResourceUtils;
+import org.grails.compiler.gorm.GlobalTraitRepairTransformation;
 import org.grails.compiler.gorm.GormEntityTransformation;
 import org.grails.datastore.mapping.reflect.AstUtils;
 
@@ -69,6 +70,7 @@ public class GormTransformer implements GrailsArtefactClassInjector {
         new GormEntityTransformation().visit(classNode, source);
         final CompileUnit compileUnit = source.getAST().getUnit();
         org.codehaus.groovy.transform.trait.TraitComposer.doExtendTraits(classNode, source, new CompilationUnit(compileUnit.getConfig(), compileUnit.getCodeSource(), compileUnit.getClassLoader()));
+        new GlobalTraitRepairTransformation().visitClass(classNode);
     }
 
 

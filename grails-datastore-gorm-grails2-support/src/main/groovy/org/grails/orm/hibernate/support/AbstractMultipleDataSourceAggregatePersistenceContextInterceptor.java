@@ -27,6 +27,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.env.PropertyResolver;
 
 /**
  * Abstract implementation of the {@link PersistenceContextInterceptor} interface that supports multiple data sources
@@ -34,7 +35,7 @@ import org.springframework.context.ApplicationContextAware;
  * @author Graeme Rocher
  * @since 2.0.7
  */
-public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInterceptor implements PersistenceContextInterceptor, InitializingBean, ApplicationContextAware, GrailsConfigurationAware {
+public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInterceptor implements PersistenceContextInterceptor, InitializingBean, ApplicationContextAware {
 
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory";
     public static final String DEFAULT_DATA_SOURCE_NAME = "dataSource";
@@ -42,11 +43,14 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
 
     protected List<PersistenceContextInterceptor> interceptors = new ArrayList<PersistenceContextInterceptor>();
     protected ApplicationContext applicationContext;
-    protected ConfigObject config;
+    protected PropertyResolver config;
+    protected Set<String> dataSourceNames;
 
+    public void setDataSourceNames(Set<String> dataSourceNames) {
+        this.dataSourceNames = dataSourceNames;
+    }
 
-    @Override
-    public void setConfiguration(ConfigObject co) {
+    public void setConfiguration(PropertyResolver co) {
         this.config = co;
     }
 
@@ -124,7 +128,7 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
         // looks for instances of PersistenceContextInterceptor and picks one assuming
         // there's only one, so this one has to be the only one
         for (String name : aggregateDataSourceNames()) {
-            String suffix = name.equals( Mapping.DEFAULT_DATA_SOURCE ) ? "" : "_" + name;
+            String suffix = name.equals(Mapping.DEFAULT_DATA_SOURCE) ? "" : "_" + name;
             String beanName = "sessionFactory" + suffix;
             if (applicationContext.containsBean(beanName)) {
                 SessionFactoryAwarePersistenceContextInterceptor interceptor = createPersistenceContextInterceptor(name);
@@ -136,48 +140,15 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
 
     protected abstract SessionFactoryAwarePersistenceContextInterceptor createPersistenceContextInterceptor(String dataSourceName);
 
-    @Deprecated
-    public void setDataSourceNames(List<String> dataSourceNames) {
-        // noop, here for compatibility
-    }
 
     private Set<String> aggregateDataSourceNames() {
-        if(applicationContext == null) return Collections.emptySet();
+        if (applicationContext == null) return Collections.emptySet();
         Set<String> resolvedDataSourceNames = new HashSet<String>();
-        Set<String> dataSourceNames = calculateDataSourceNames(applicationContext.getBean(GrailsApplication.class));
         for (String dataSourceName : dataSourceNames) {
             if (applicationContext.containsBean(dataSourceName.equals(Mapping.DEFAULT_DATA_SOURCE) ? "dataSource" : "dataSource_" + dataSourceName)) {
                 resolvedDataSourceNames.add(dataSourceName);
             }
         }
         return resolvedDataSourceNames;
-    }
-
-    private static Set<String> datasourceNames = null;
-    public static Set<String> calculateDataSourceNames(GrailsApplication grailsApplication) {
-        if(datasourceNames != null) return datasourceNames;
-
-        datasourceNames = new HashSet<String>();
-
-
-        ConfigObject config = grailsApplication.getConfig();
-        Map dataSources = (Map)config.get(DATA_SOURCES);
-
-        if (dataSources != null && !dataSources.isEmpty()) {
-            for (Object name : dataSources.keySet()) {
-                String nameAsString = name.toString();
-                if (nameAsString.equals( DEFAULT_DATA_SOURCE_NAME) ) {
-                    datasourceNames.add( Mapping.DEFAULT_DATA_SOURCE );
-                } else {
-                    datasourceNames.add( nameAsString );
-                }
-            }
-        } else {
-            Map dataSource = (Map)config.get(DEFAULT_DATA_SOURCE_NAME);
-            if (dataSource != null && !dataSource.isEmpty()) {
-                datasourceNames.add( Mapping.DEFAULT_DATA_SOURCE);
-            }
-        }
-        return datasourceNames;
     }
 }

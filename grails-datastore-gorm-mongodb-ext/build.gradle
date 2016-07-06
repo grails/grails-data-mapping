@@ -1,4 +1,0 @@
-dependencies {
-    compile "org.mongodb:mongodb-driver:$mongoVersion"
-    compile project(":grails-datastore-gorm-mongodb")
-}

@@ -103,12 +103,12 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             "org.bson.types.ObjectId")));
     }
 
-    private static Map<Class, Collection<CustomTypeMarshaller>> typeConverterMap = new ConcurrentHashMap<Class, Collection<CustomTypeMarshaller>>();
+    private Map<Class, Collection<CustomTypeMarshaller>> typeConverterMap = new ConcurrentHashMap<>();
 
-    public static void registerCustomType(CustomTypeMarshaller marshallerCustom) {
+    public void registerCustomType(CustomTypeMarshaller marshallerCustom) {
         Collection<CustomTypeMarshaller> marshallers = typeConverterMap.get(marshallerCustom.getTargetType());
         if(marshallers == null) {
-            marshallers = new ConcurrentLinkedQueue<CustomTypeMarshaller>();
+            marshallers = new ConcurrentLinkedQueue<>();
             typeConverterMap.put(marshallerCustom.getTargetType(), marshallers);
         }
         marshallers.add(marshallerCustom);
@@ -196,7 +196,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
         return false;
     }
 
-    protected static CustomTypeMarshaller findCustomType(MappingContext context, Class<?> propertyType) {
+    protected CustomTypeMarshaller findCustomType(MappingContext context, Class<?> propertyType) {
         final Collection<CustomTypeMarshaller> allMarshallers = typeConverterMap.get(propertyType);
         if(allMarshallers != null) {
             for (CustomTypeMarshaller marshaller : allMarshallers) {
@@ -409,7 +409,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
         return createBasicCollection(entity, context, property, null);
     }
 
-    public static boolean isCustomType(Class<?> propertyType) {
+    public boolean isCustomType(Class<?> propertyType) {
         if(typeConverterMap.containsKey(propertyType)) {
             return true;
         }
@@ -428,7 +428,19 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
         return new IdentityMapping() {
 
             public String[] getIdentifierName() {
-                return new String[] { IDENTITY_PROPERTY };
+                PersistentProperty identity = classMapping.getEntity().getIdentity();
+                String propertyName = identity != null ? identity.getMapping().getMappedForm().getName() : null;
+                if(propertyName != null) {
+                    return new String[] { propertyName };
+                }
+                else {
+                    return new String[] { IDENTITY_PROPERTY };
+                }
+            }
+
+            @Override
+            public ValueGenerator getGenerator() {
+                return ValueGenerator.AUTO;
             }
 
             public ClassMapping getClassMapping() {
@@ -436,8 +448,36 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             }
 
             public Property getMappedForm() {
-                // no custom mapping
-                return null;
+                return classMapping.getEntity().getIdentity().getMapping().getMappedForm();
+            }
+        };
+    }
+
+    protected IdentityMapping createDefaultIdentityMapping(final ClassMapping classMapping, final T property) {
+        final String targetName = property != null ? property.getName() : null;
+        final String generator = property != null ? property.getGenerator() : null;
+        return new IdentityMapping() {
+
+            public String[] getIdentifierName() {
+                if(targetName != null) {
+                    return new String[] { targetName };
+                }
+                else {
+                    return new String[] { IDENTITY_PROPERTY };
+                }
+            }
+
+            @Override
+            public ValueGenerator getGenerator() {
+                return generator != null ? ValueGenerator.valueOf(generator) : ValueGenerator.AUTO;
+            }
+
+            public ClassMapping getClassMapping() {
+                return classMapping;
+            }
+
+            public Property getMappedForm() {
+                return property;
             }
         };
     }

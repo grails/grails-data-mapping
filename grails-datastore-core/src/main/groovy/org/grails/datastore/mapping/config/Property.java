@@ -33,6 +33,7 @@ public class Property implements Cloneable {
     private boolean index = false;
     private boolean nullable = false;
     private boolean unique = false;
+    private boolean reference = false;
     private FetchType fetchStrategy = FetchType.LAZY;
     private Boolean lazy = null;
     private String targetName;
@@ -46,10 +47,59 @@ public class Property implements Cloneable {
     private int scale = -1;
     private List<String> inList = null;
     private List<String> uniquenessGroup = new ArrayList<String>();
+    private boolean derived;
+    private String cascade;
+    private String formula;
+
 
     @Override
     public Property clone() throws CloneNotSupportedException {
         return (Property) super.clone();
+    }
+
+    /**
+     * @return Whether this property is a database reference such as a foreign key
+     */
+    public boolean isReference() {
+        return reference;
+    }
+
+    public void setReference(boolean reference) {
+        this.reference = reference;
+    }
+
+    /**
+     * The formula used to build the property
+     */
+    public String getFormula() {
+        return formula;
+    }
+
+    public void setFormula(String formula) {
+        this.formula = formula;
+    }
+
+    /**
+     * Cascading strategy for this property. Only makes sense if the
+     * property is an association or collection.
+     */
+    public String getCascade() {
+        return cascade;
+    }
+
+    public void setCascade(String cascade) {
+        this.cascade = cascade;
+    }
+
+    /**
+     * @return Whether the property is derived or not
+     */
+    public boolean isDerived() {
+        return formula != null || derived;
+    }
+
+    public void setDerived(boolean derived) {
+        this.derived = derived;
     }
 
     /**
@@ -194,6 +244,12 @@ public class Property implements Cloneable {
      */
     public void setFetch(String name) {
         if(FetchType.EAGER.name().equalsIgnoreCase(name)) {
+            setFetchStrategy(FetchType.EAGER);
+        }
+        else if("select".equalsIgnoreCase(name)) {
+            setFetchStrategy(FetchType.LAZY);
+        }
+        else if("join".equalsIgnoreCase(name)) {
             setFetchStrategy(FetchType.EAGER);
         }
         else {

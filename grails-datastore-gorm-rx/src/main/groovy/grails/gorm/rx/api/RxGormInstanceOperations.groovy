@@ -32,7 +32,7 @@ interface RxGormInstanceOperations<D> {
      *
      * @return An {@link Observable} with the result of the operation
      */
-    Observable<D> save(D instance, Map<String, Object> arguments)
+    Observable<D> save(D instance, Map arguments)
 
 
     /**
@@ -49,7 +49,7 @@ interface RxGormInstanceOperations<D> {
      *
      * @return An {@link Observable} with the result of the operation
      */
-    Observable<D> insert(D instance, Map<String, Object> arguments)
+    Observable<D> insert(D instance, Map arguments)
 
     /**
      * Deletes an entity
@@ -57,4 +57,14 @@ interface RxGormInstanceOperations<D> {
      * @return An observable that returns a boolean true if successful
      */
     Observable<Boolean> delete(D instance)
+
+    /**
+     * Deletes an entity
+     *
+     * @param instance The instance
+     * @param arguments The arguments
+     *
+     * @return An observable that returns a boolean true if successful
+     */
+    Observable<Boolean> delete(D instance, Map arguments)
 }

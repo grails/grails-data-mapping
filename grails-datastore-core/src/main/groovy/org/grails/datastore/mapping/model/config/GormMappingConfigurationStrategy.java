@@ -214,7 +214,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     }
 
     protected boolean supportsCustomType(Class<?> propertyType) {
-        return MappingFactory.isCustomType(propertyType);
+        return propertyFactory.isCustomType(propertyType);
     }
 
     private List getCollectionStaticProperty(ClassPropertyFetcher cpf, String property) {
@@ -315,7 +315,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 return association;
             }
         }
-        else if (!isPersistentEntity(relatedClassType)) {
+        else if (!isPersistentEntity(relatedClassType) && !relatedClassType.equals(entity.getJavaClass())) {
             // otherwise set it to not persistent as you can't persist
             // relationships to non-domain classes
             return propertyFactory.createBasicCollection(entity, context, property, relatedClassType);

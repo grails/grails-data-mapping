@@ -23,11 +23,7 @@ import java.util.Map;
 
 import org.grails.datastore.mapping.config.groovy.DefaultMappingConfigurationBuilder;
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
-import org.grails.datastore.mapping.model.ClassMapping;
-import org.grails.datastore.mapping.model.IdentityMapping;
-import org.grails.datastore.mapping.model.MappingFactory;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.springframework.beans.BeanUtils;
@@ -45,6 +41,7 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
     private Closure defaultMapping;
     private Object contextObject;
     protected Closure defaultConstraints;
+    protected boolean versionByDefault = true;
 
     /**
      * @param contextObject Context object to be passed to mapping blocks
@@ -57,6 +54,14 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
         this.defaultConstraints = defaultConstraints;
     }
 
+    /**
+     * Whether the version entities using optimistic locking by default
+     *
+     * @param versionByDefault True if objects should be versioned by default
+     */
+    public void setVersionByDefault(boolean versionByDefault) {
+        this.versionByDefault = versionByDefault;
+    }
 
     @Override
     public R createMappedForm(PersistentEntity entity) {
@@ -101,6 +106,7 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
     }
 
     protected MappingConfigurationBuilder createConfigurationBuilder(PersistentEntity entity, R family) {
+        family.setVersion(versionByDefault);
         return new DefaultMappingConfigurationBuilder(family, getPropertyMappedFormType());
     }
 
@@ -125,8 +131,13 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
         return super.createIdentityMapping(classMapping);
     }
 
-    protected IdentityMapping getIdentityMappedForm(ClassMapping classMapping, T property) {
-        return null;
+    protected IdentityMapping getIdentityMappedForm(final ClassMapping classMapping, T property) {
+        if(property != null) {
+            return createDefaultIdentityMapping(classMapping, property);
+        }
+        else {
+            return createDefaultIdentityMapping(classMapping);
+        }
     }
 
     @Override

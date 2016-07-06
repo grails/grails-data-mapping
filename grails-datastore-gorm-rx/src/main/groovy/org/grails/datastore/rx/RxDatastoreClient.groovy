@@ -1,13 +1,16 @@
 package org.grails.datastore.rx
 
 import grails.gorm.rx.proxy.ObservableProxy
+import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
+import org.grails.datastore.mapping.core.connections.ConnectionSources
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.QueryCreator
-import org.grails.gorm.rx.events.ConfigurableApplicationEventPublisher
-import org.springframework.context.ApplicationEventPublisher
+import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher
+import org.grails.gorm.rx.config.Settings
 import rx.Observable
-import rx.Single
 
 /**
  * Represents a client connection pool that can be used to interact with a backing implementation in RxGORM
@@ -17,7 +20,7 @@ import rx.Single
  *
  * @param The native client interface
  */
-interface RxDatastoreClient<T> extends Closeable, QueryCreator {
+interface RxDatastoreClient<T> extends Closeable, QueryCreator, Settings, ConnectionSourcesProvider<T, ConnectionSourceSettings> {
 
     /**
      * Obtains a single instance for the given type and id
@@ -74,6 +77,22 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
     Observable<Number> deleteAll(Iterable instances)
 
     /**
+     * Deletes an instance
+     *
+     * @param instance The object to delete
+     * @return An observable that returns a boolean true if successful
+     */
+    Observable<Boolean> delete(Object instance, Map<String, Object> arguments)
+
+    /**
+     * Deletes a number of instances
+     *
+     * @param instances The objects to delete
+     * @return An observable that returns the actual number of objects deleted
+     */
+    Observable<Number> deleteAll(Iterable instances, Map<String, Object> arguments)
+
+    /**
      * Obtain an {@link ObservableProxy} for the given type and id
      *
      * @param type The type
@@ -107,12 +126,36 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
     Observable<List<Serializable>> insertAll(Iterable objects)
 
     /**
+     * Batch saves all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    Observable<List<Serializable>> persistAll(Iterable objects, Map<String, Object> arguments)
+
+    /**
+     * Batch insert all all of the given objects
+     *
+     * @param objects The objects to save
+     * @return An observable that emits the identifiers of the saved objects
+     */
+    Observable<List<Serializable>> insertAll(Iterable objects, Map<String, Object> arguments)
+
+    /**
      * Creates a query for the given type
      *
      * @param type The type
      * @return The query
      */
     Query createQuery(Class type)
+
+    /**
+     * Creates a query for the given type
+     *
+     * @param type The type
+     * @return The query
+     */
+    Query createQuery(Class type, Map arguments)
 
     /**
      * @return The native interface to the datastore
@@ -128,4 +171,17 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator {
      * @return The event publisher
      */
     ConfigurableApplicationEventPublisher getEventPublisher()
+
+    /**
+     * @return Obtain the connection sources
+     */
+    ConnectionSources<T, ConnectionSourceSettings> getConnectionSources()
+
+    /**
+     * Obtain another {@link RxDatastoreClient} for the given {@link ConnectionSource} name
+     *
+     * @param connectionSourceName The name of the client
+     * @return The {@link RxDatastoreClient} instance
+     */
+    RxDatastoreClient getDatastoreClient(String connectionSourceName)
 }

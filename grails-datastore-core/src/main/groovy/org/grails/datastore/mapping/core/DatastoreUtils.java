@@ -16,19 +16,25 @@ package org.grails.datastore.mapping.core;
 
 import groovy.lang.Closure;
 
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import groovy.util.ConfigObject;
+import groovy.util.ConfigSlurper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.NamedThreadLocal;
+import org.springframework.core.convert.ConversionException;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertyResolver;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.grails.datastore.mapping.transactions.support.SpringSessionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Helper class for obtaining Datastore sessions. Based on similar work
@@ -40,7 +46,7 @@ import org.springframework.util.Assert;
 @SuppressWarnings("rawtypes")
 public abstract class DatastoreUtils {
 
-     public static final Log logger = LogFactory.getLog(DatastoreUtils.class);
+     public static final Logger logger = LoggerFactory.getLogger(DatastoreUtils.class);
      private static final ThreadLocal<Map<Datastore, Set<Session>>> deferredCloseHolder =
             new NamedThreadLocal<Map<Datastore, Set<Session>>>(
                     "Datastore Sessions registered for deferred close");
@@ -401,5 +407,106 @@ public abstract class DatastoreUtils {
         }
 
         closeSessionOrRegisterDeferredClose(session, session.getDatastore());
+    }
+
+    /**
+     * Creates a {@link PropertyResolver} from the given configuration
+     * @param configuration The configuration
+     *
+     * @return A {@link PropertyResolver} instance
+     */
+    public static PropertyResolver createPropertyResolver(Map<String, Object> configuration) {
+        if(configuration instanceof PropertyResolver) {
+            return (PropertyResolver)configuration;
+        }
+        else {
+            StandardEnvironment env = new StandardEnvironment();
+            env.getConversionService().addConverter(new Converter<String, Class>() {
+                @Override
+                public Class convert(String source) {
+                    try {
+                        return ClassUtils.forName(source, getClass().getClassLoader());
+                    } catch (ClassNotFoundException e) {
+                        throw new ConversionException("Cannot convert String ["+source+"] to class. The class was not found.", e) {};
+                    }
+                }
+            });
+            if(configuration != null) {
+                MutablePropertySources propertySources = env.getPropertySources();
+
+                if(configuration instanceof ConfigObject) {
+                    propertySources.addFirst(new ConfigObjectPropertySource(configuration));
+                    propertySources.addFirst(new ConfigObjectPropertySource(createFlatConfig((ConfigObject) configuration)));
+                }
+                else {
+                    ConfigSlurper configSlurper = new ConfigSlurper();
+                    Properties properties = new Properties();
+                    properties.putAll(configuration);
+                    ConfigObject configObject = configSlurper.parse(properties);
+                    propertySources.addFirst(new ConfigObjectPropertySource(configObject));
+                    propertySources.addFirst(new ConfigObjectPropertySource(createFlatConfig(configObject)));
+                }
+            }
+            return env;
+        }
+    }
+
+    private static Map<String, Object> createFlatConfig(ConfigObject configuration) {
+        Map<String, Object> flatConfig = new LinkedHashMap<>();
+        String prefix = "";
+
+        createFlatConfig(configuration, flatConfig, prefix);
+        return flatConfig;
+    }
+
+    private static void createFlatConfig(ConfigObject currentConfigObject, Map<String, Object> rootConfig, String prefix) {
+        Set keySet = currentConfigObject.keySet();
+        for (Object key : keySet) {
+            Object value = currentConfigObject.get(key);
+            if(value instanceof ConfigObject) {
+                ConfigObject sub = (ConfigObject) value;
+                String fullPath = prefix + key;
+                if(!sub.isEmpty()) {
+                    Map flattened = sub.flatten();
+                    sub.putAll(flattened);
+                    createFlatConfig(sub, rootConfig, fullPath + ".");
+                    if(!rootConfig.containsKey(fullPath)) {
+                        rootConfig.put(fullPath, sub);
+                    }
+                }
+            }
+            else {
+                rootConfig.put(prefix + key, value);
+            }
+        }
+    }
+
+    private static class ConfigObjectPropertySource extends MapPropertySource {
+        public ConfigObjectPropertySource(Map configObject) {
+            super("datastoreConfig", configObject);
+        }
+
+        @Override
+        public Object getProperty(String name) {
+            Object value = super.getProperty(name);
+            if(value instanceof Map) {
+                Map map = (Map) value;
+                if(map.isEmpty()) {
+                    return null;
+                }
+                else {
+                    Map newMap = new LinkedHashMap();
+                    for (Object key : map.keySet()) {
+                        Object v = map.get(key);
+                        if( !(v instanceof ConfigObject)) {
+                            newMap.put(key, v);
+                        }
+
+                    }
+                    return newMap;
+                }
+            }
+            return value;
+        }
     }
 }

@@ -9,6 +9,109 @@ import spock.lang.Ignore
  */
 class NamedQuerySpec extends GormDatastoreSpec {
 
+
+    void "Test findWhere method after chaining named queries"() {
+        given:
+        def now = new Date()
+
+        new Publication(title: "Book 1",
+                datePublished: now - 10, paperback: false).save()
+        new Publication(title: "Book 2",
+                datePublished: now - 1000, paperback: true).save()
+        new Publication(title: "Book 3",
+                datePublished: now - 10, paperback: true).save()
+
+        new Publication(title: "Some Title",
+                datePublished: now - 10, paperback: false).save()
+        new Publication(title: "Some Title",
+                datePublished: now - 1000, paperback: false).save()
+        new Publication(title: "Some Title",
+                datePublished: now - 10, paperback: true).save(flush:true)
+        session.clear()
+
+        when:
+        def results = Publication.recentPublications().publicationsWithBookInTitle().findAllWhere(paperback: true)
+
+        then:
+        1 == results?.size()
+    }
+
+    void "Test chaining named queries"() {
+
+        given:
+        def now = new Date()
+        [true, false].each { isPaperback ->
+            4.times {
+                Publication.newInstance(
+                        title: "Book Some",
+                        datePublished: now - 10, paperback: isPaperback).save()
+                Publication.newInstance(
+                        title: "Book Some Other",
+                        datePublished: now - 10, paperback: isPaperback).save()
+                Publication.newInstance(
+                        title: "Some Other Title",
+                        datePublished: now - 10, paperback: isPaperback).save()
+                Publication.newInstance(
+                        title: "Book Some",
+                        datePublished: now - 1000, paperback: isPaperback).save()
+                Publication.newInstance(
+                        title: "Book Some Other",
+                        datePublished: now - 1000, paperback: isPaperback).save()
+                Publication.newInstance(
+                        title: "Some Other Title",
+                        datePublished: now - 1000, paperback: isPaperback).save()
+            }
+        }
+        session.flush()
+        session.clear()
+
+        when:
+        def results = Publication.recentPublications().publicationsWithBookInTitle().list()
+
+        then: "The result size should be 16 when returned from chained queries"
+        16 == results?.size()
+
+        when:
+        results = Publication.recentPublications().publicationsWithBookInTitle().count()
+        then:
+        16 == results
+
+        when:
+        results = Publication.recentPublications.publicationsWithBookInTitle.list()
+        then:"The result size should be 16 when returned from chained queries"
+        16 == results?.size()
+
+        when:
+        results = Publication.recentPublications.publicationsWithBookInTitle.count()
+        then:
+        16 == results
+
+        when:
+        results = Publication.paperbacks().recentPublications().publicationsWithBookInTitle().list()
+        then: "The result size should be 8 when returned from chained queries"
+        8 ==  results?.size()
+
+        when:
+        results = Publication.paperbacks().recentPublications().publicationsWithBookInTitle().count()
+        then:
+        8 == results
+
+        when:
+        results = Publication.recentPublications().publicationsWithBookInTitle().findAllByPaperback(true)
+        then: "The result size should be 8"
+        8 == results?.size()
+
+        when:
+        results = Publication.paperbacks.recentPublications.publicationsWithBookInTitle.list()
+        then:"The result size should be 8 when returned from chained queries"
+        8 == results?.size()
+
+        when:
+        results = Publication.paperbacks.recentPublications.publicationsWithBookInTitle.count()
+        then:
+        8 == results
+    }
+
     void "Test named query with disjunction"() {
         given:
             def now = new Date()
@@ -419,31 +522,6 @@ class NamedQuerySpec extends GormDatastoreSpec {
             'One Hundred Day Old Paperback' == result?.title
     }
 
-    void "Test findWhere method after chaining named queries"() {
-        given:
-            def now = new Date()
-
-            new Publication(title: "Book 1",
-                            datePublished: now - 10, paperback: false).save()
-            new Publication(title: "Book 2",
-                            datePublished: now - 1000, paperback: true).save()
-            new Publication(title: "Book 3",
-                            datePublished: now - 10, paperback: true).save()
-
-            new Publication(title: "Some Title",
-                            datePublished: now - 10, paperback: false).save()
-            new Publication(title: "Some Title",
-                            datePublished: now - 1000, paperback: false).save()
-            new Publication(title: "Some Title",
-                            datePublished: now - 10, paperback: true).save(flush:true)
-            session.clear()
-
-        when:
-            def results = Publication.recentPublications().publicationsWithBookInTitle().findAllWhere(paperback: true)
-
-        then:
-            1 == results?.size()
-    }
 
     void "Test named query passing multiple parameters to a nested query"() {
         given:
@@ -471,81 +549,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             2 == results?.size()
     }
 
-    void "Test chaining named queries"() {
 
-        given:
-            def now = new Date()
-            [true, false].each { isPaperback ->
-                4.times {
-                    Publication.newInstance(
-                        title: "Book Some",
-                        datePublished: now - 10, paperback: isPaperback).save()
-                    Publication.newInstance(
-                        title: "Book Some Other",
-                        datePublished: now - 10, paperback: isPaperback).save()
-                    Publication.newInstance(
-                        title: "Some Other Title",
-                        datePublished: now - 10, paperback: isPaperback).save()
-                    Publication.newInstance(
-                        title: "Book Some",
-                        datePublished: now - 1000, paperback: isPaperback).save()
-                    Publication.newInstance(
-                        title: "Book Some Other",
-                        datePublished: now - 1000, paperback: isPaperback).save()
-                    Publication.newInstance(
-                        title: "Some Other Title",
-                        datePublished: now - 1000, paperback: isPaperback).save()
-                }
-            }
-            session.flush()
-            session.clear()
-
-        when:
-            def results = Publication.recentPublications().publicationsWithBookInTitle().list()
-
-        then: "The result size should be 16 when returned from chained queries"
-            16 == results?.size()
-
-        when:
-            results = Publication.recentPublications().publicationsWithBookInTitle().count()
-        then:
-            16 == results
-
-        when:
-            results = Publication.recentPublications.publicationsWithBookInTitle.list()
-        then:"The result size should be 16 when returned from chained queries"
-            16 == results?.size()
-
-        when:
-            results = Publication.recentPublications.publicationsWithBookInTitle.count()
-        then:
-            16 == results
-
-        when:
-            results = Publication.paperbacks().recentPublications().publicationsWithBookInTitle().list()
-        then: "The result size should be 8 when returned from chained queries"
-            8 ==  results?.size()
-
-        when:
-            results = Publication.paperbacks().recentPublications().publicationsWithBookInTitle().count()
-        then:
-            8 == results
-
-        when:
-            results = Publication.recentPublications().publicationsWithBookInTitle().findAllByPaperback(true)
-        then: "The result size should be 8"
-            8 == results?.size()
-
-        when:
-            results = Publication.paperbacks.recentPublications.publicationsWithBookInTitle.list()
-        then:"The result size should be 8 when returned from chained queries"
-            8 == results?.size()
-
-        when:
-            results = Publication.paperbacks.recentPublications.publicationsWithBookInTitle.count()
-        then:
-            8 == results
-    }
 
     void testChainingQueriesWithParams() {
         def Publication = ga.getDomainClass("Publication").clazz
@@ -787,6 +791,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             publication == null
     }
 
+    @Ignore
     void "Test count method following named criteria"() {
 
         given:

@@ -316,6 +316,11 @@ public class FieldEntityAccess implements EntityAccess {
         }
 
         @Override
+        public Iterable<String> getPropertyNames() {
+            return readerMap.keySet();
+        }
+
+        @Override
         public Object getProperty(Object object, int index) {
             return readers[index].read(object);
         }
@@ -379,6 +384,7 @@ public class FieldEntityAccess implements EntityAccess {
 
             public FieldReader(Field field) {
                 this.field = field;
+                ReflectionUtils.makeAccessible(field);
             }
 
             @Override
@@ -388,7 +394,11 @@ public class FieldEntityAccess implements EntityAccess {
 
             @Override
             public Object read(Object object) {
-                return ReflectionUtils.getField(field, object);
+                try {
+                    return field.get(object);
+                } catch (Throwable e) {
+                    throw new IllegalArgumentException("Cannot read field ["+field+"] from object ["+object+"] of type ["+object.getClass()+"]");
+                }
             }
         }
 
@@ -397,6 +407,7 @@ public class FieldEntityAccess implements EntityAccess {
 
             public FieldWriter(Field field) {
                 this.field = field;
+                ReflectionUtils.makeAccessible(field);
             }
 
             @Override
@@ -406,7 +417,11 @@ public class FieldEntityAccess implements EntityAccess {
 
             @Override
             public void write(Object object, Object value) {
-                ReflectionUtils.setField(field, object, value);
+                try {
+                    field.set(object, value);
+                } catch (Throwable e) {
+                    throw new IllegalArgumentException("Cannot write field ["+field+"] to object ["+object+"] of type ["+object.getClass()+"]");
+                }
             }
         }
     }

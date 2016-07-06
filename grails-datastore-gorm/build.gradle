@@ -1,16 +1,12 @@
 dependencies {
 
     compile project(":grails-datastore-core")
-    compile("org.grails:grails-validation:$grailsVersion") {
-        exclude group:'org.grails',module:'grails-core'
-    }
+    compile project(":grails-datastore-async")
+    compile project(":grails-datastore-gorm-validation")
 
-
-    compile "org.grails:grails-async:$grailsVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
-    compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
 
-    provided "org.springframework:spring-web:$springVersion"
+    compileOnly "org.springframework:spring-web:$springVersion"
 
     testCompile "org.grails:grails-spring:$grailsVersion"
     testCompile "org.grails:grails-core:$grailsVersion"

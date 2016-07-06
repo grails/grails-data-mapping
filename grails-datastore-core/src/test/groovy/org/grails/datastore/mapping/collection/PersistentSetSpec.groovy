@@ -25,13 +25,4 @@ class PersistentSetSpec extends Specification {
 
     }
 
-    def "will throw exception if non-initialized serialized collection is accessed"() {
-        given:
-        PersistentSet pset = new PersistentSet(String, null, ['a','b','c'] as Set)
-        def psetSerialized = SerializationUtils.deserialize(SerializationUtils.serialize(pset))
-        when:
-        psetSerialized.iterator()
-        then:
-        thrown IllegalStateException
-    }
 }

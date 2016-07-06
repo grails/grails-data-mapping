@@ -244,16 +244,20 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      */
     Serializable getAssociationId(String associationName) {
         PersistentEntity entity = getGormPersistentEntity()
+        MappingContext mappingContext = entity.mappingContext
+        EntityReflector entityReflector = mappingContext.getEntityReflector(entity)
         def association = entity.getPropertyByName(associationName)
         if(association instanceof ToOne) {
-            def datastore = currentGormStaticApi().datastore
-            def proxyHandler = datastore.mappingContext.getProxyHandler()
-            def value = ClassPropertyFetcher.forClass(getClass()).getPropertyValue(this, associationName)
+            def proxyHandler = mappingContext.getProxyHandler()
+            def value = entityReflector.getProperty(this, associationName)
             if(proxyHandler.isProxy(value)) {
                 return proxyHandler.getIdentifier(value)
             }
             else {
-                return datastore.currentSession.getObjectIdentifier(value)
+                PersistentEntity associatedEntity = ((ToOne)association).getAssociatedEntity()
+                if(associatedEntity != null) {
+                    return associatedEntity.getReflector().getIdentifier(value)
+                }
             }
         }
         return null

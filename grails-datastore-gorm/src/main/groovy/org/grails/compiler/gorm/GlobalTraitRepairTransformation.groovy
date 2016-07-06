@@ -27,17 +27,35 @@ import org.grails.datastore.mapping.reflect.AstUtils
 class GlobalTraitRepairTransformation implements ASTTransformation {
 
     private static final Object TRANSFORM_APPLIED_MARKER = new Object()
+
+    private static final boolean ENABLED
+
+    static {
+        String groovyVersion = GroovySystem.version
+        if(groovyVersion.startsWith("2.4.")) {
+            try {
+                ENABLED = groovyVersion.split(/\./)[2].toInteger() < 7
+            } catch (Throwable e) {
+                ENABLED = false
+            }
+        }
+        else {
+            ENABLED = false
+        }
+    }
     @Override
     void visit(ASTNode[] nodes, SourceUnit source) {
-        ModuleNode ast = source.getAST();
-        List<ClassNode> classes = ast.getClasses();
-        for (ClassNode aClass : classes) {
-            visitClass(aClass)
+        if(ENABLED) {
+            ModuleNode ast = source.getAST();
+            List<ClassNode> classes = ast.getClasses();
+            for (ClassNode aClass : classes) {
+                visitClass(aClass)
+            }
         }
     }
 
     void visitClass(ClassNode aClass) {
-        if (aClass.getNodeMetaData(TRANSFORM_APPLIED_MARKER) == null) {
+        if (ENABLED && aClass.getNodeMetaData(TRANSFORM_APPLIED_MARKER) == null) {
 
             if (AstUtils.implementsInterface(aClass, "org.grails.datastore.gorm.GormEntity") || AstUtils.implementsInterface(aClass, "grails.gorm.rx.RxEntity")) {
                 aClass.putNodeMetaData(TRANSFORM_APPLIED_MARKER, Boolean.TRUE)

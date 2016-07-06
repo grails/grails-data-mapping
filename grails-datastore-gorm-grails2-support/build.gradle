@@ -24,13 +24,13 @@ dependencies {
         exclude group:'antlr', module: 'antlr'
     }
 
-    compile("org.grails:grails-validation") {
+    compile("org.grails:grails-validation:$grails2Version") {
         exclude group:'org.grails',module:'grails-core'
     }
-    compile("org.grails:grails-async") {
+    compile("org.grails:grails-async:$grails2Version") {
         exclude group:'org.grails',module:'grails-core'
     }
-    compile("org.grails:grails-core") {
+    compile("org.grails:grails-core:$grails2Version") {
         exclude group:'aopalliance',module:'aopalliance'
         exclude group:'commons-logging',module:'commons-logging'
         exclude group:'commons-lang',module:'commons-lang'
@@ -57,7 +57,7 @@ dependencies {
         exclude group:'commons-validator',module:'commons-validator'
         exclude group:'com.googlecode.concurrentlinkedhashmap',module:'concurrentlinkedhashmap-lru'
     }
-    compile("org.grails:grails-bootstrap") {
+    compile("org.grails:grails-bootstrap:$grails2Version") {
         exclude group:'org.apache.ant',module:'ant'
         exclude group:'org.apache.ant',module:'ant-launcher'
         exclude group:'org.apache.ant',module:'ant-trax'

@@ -185,10 +185,9 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
      *
      * @param name The name of the property to sort by
      */
-    @CompileStatic
     void sort(String name) {
         if (name) {
-            mapping.sort.name = name
+            mapping.getSort().name = name
         }
     }
 
@@ -218,10 +217,9 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
      *
      * @param namesAndDirections The names and directions of the property to sort by
      */
-    @CompileStatic
     void sort(Map namesAndDirections) {
         if (namesAndDirections) {
-            mapping.sort.namesAndDirections = namesAndDirections
+            mapping.getSort().namesAndDirections = namesAndDirections
         }
     }
 
@@ -242,10 +240,9 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
      *
      * @param name The name of the property to sort by
      */
-    @CompileStatic
     void order(String direction) {
         if ("desc".equalsIgnoreCase(direction) || "asc".equalsIgnoreCase(direction)) {
-            mapping.sort.direction = direction
+            mapping.getSort().direction = direction
         }
     }
 

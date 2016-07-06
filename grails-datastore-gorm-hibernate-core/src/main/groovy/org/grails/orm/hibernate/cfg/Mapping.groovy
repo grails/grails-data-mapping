@@ -142,15 +142,10 @@ class Mapping extends Entity {
     boolean dynamicInsert = false
 
     /**
-     * Get the datasource names that this domain class works with.
-     * @return the datasource names
-     */
-    List<String> datasources = [ DEFAULT_DATA_SOURCE ]
-
-    /**
      * DDL comment.
      */
     String comment
+
 
     boolean isTablePerConcreteClass() {
         return tablePerConcreteClass

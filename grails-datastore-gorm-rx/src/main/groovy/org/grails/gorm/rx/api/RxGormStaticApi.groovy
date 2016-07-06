@@ -3,7 +3,9 @@ package org.grails.gorm.rx.api
 import grails.gorm.rx.CriteriaBuilder
 import grails.gorm.rx.DetachedCriteria
 import grails.gorm.rx.RxEntity
+import grails.gorm.rx.api.RxGormAllOperations
 import grails.gorm.rx.api.RxGormStaticOperations
+import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -27,7 +29,7 @@ import rx.Subscriber
  * @since 6.0
  */
 @CompileStatic
-class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
+class RxGormStaticApi<D> implements RxGormAllOperations<D> {
 
     final PersistentEntity entity
     final RxDatastoreClient datastoreClient
@@ -54,13 +56,13 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
     }
 
     @Override
-    Observable<D> get(Serializable id, Map<String, Object> args = Collections.emptyMap()) {
+    Observable<D> get(Serializable id, Map args = Collections.emptyMap()) {
         def clazz = entity.javaClass
-        def query = datastoreClient.createQuery(clazz)
+        def query = datastoreClient.createQuery(clazz, args)
         query.idEq(id)
         query.max(1)
         DynamicFinder.populateArgumentsForCriteria(clazz, query, args)
-        return ((RxQuery<D>)query).singleResult()
+        return ((RxQuery<D>)query).singleResult(args)
     }
 
     /**
@@ -83,13 +85,13 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
      *
      * @return A single that will emit the first object, if it exists
      */
-    Observable<D> first(Map<String,Object> params = Collections.emptyMap()) {
-        def q = datastoreClient.createQuery(persistentClass)
+    Observable<D> first(Map params = Collections.emptyMap()) {
+        def q = datastoreClient.createQuery(persistentClass, params)
         Map<String,Object> newParams = new LinkedHashMap<>(params)
         newParams.remove('order')
         DynamicFinder.populateArgumentsForCriteria(persistentClass, q, newParams)
         q.max(1)
-        ((RxQuery)q).singleResult()
+        ((RxQuery)q).singleResult(newParams)
     }
 
 
@@ -113,8 +115,8 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
      *
      * @return A single that will emit the last object, if it exists
      */
-    Observable<D> last(Map<String,Object> params = Collections.emptyMap()) {
-        def q = datastoreClient.createQuery(persistentClass)
+    Observable<D> last(Map params = Collections.emptyMap()) {
+        def q = datastoreClient.createQuery(persistentClass, params)
         Map<String,Object> newParams = new LinkedHashMap<>(params)
         newParams.put('order', 'desc')
         if(!newParams.containsKey('sort')) {
@@ -122,7 +124,7 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
         }
         DynamicFinder.populateArgumentsForCriteria(persistentClass, q, newParams)
         q.max(1)
-        ((RxQuery)q).singleResult()
+        ((RxQuery)q).singleResult(newParams)
     }
 
     /**
@@ -156,7 +158,7 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
      * @return An observable that emits the identifiers of the saved objects
      */
     @Override
-    Observable<List<Serializable>> saveAll(Iterable<D> objects, Map<String,Object> arguments = Collections.emptyMap()) {
+    Observable<List<Serializable>> saveAll(Iterable<D> objects, Map arguments = Collections.emptyMap()) {
         boolean shouldValidate = arguments?.containsKey("validate") ? arguments.validate : true
         if(shouldValidate) {
             def firstInvalid = objects.find() {
@@ -166,11 +168,11 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
                 throw new ValidationException("Validation error occurred during call to save() for entity [$firstInvalid]", ((GormValidateable)firstInvalid).errors)
             }
             else {
-                return datastoreClient.persistAll(objects)
+                return datastoreClient.persistAll(objects, arguments)
             }
         }
         else {
-            return datastoreClient.persistAll(objects)
+            return datastoreClient.persistAll(objects, arguments)
         }
     }
 
@@ -180,20 +182,44 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
     }
 
     @Override
+    Observable<List<Serializable>> insertAll(Iterable<D> objects, Map arguments = [:]) {
+        boolean shouldValidate = arguments?.containsKey("validate") ? arguments.validate : true
+        if(shouldValidate) {
+            def firstInvalid = objects.find() {
+                (it instanceof GormValidateable) && !((GormValidateable)it).validate()
+            }
+            if(firstInvalid != null) {
+                throw new ValidationException("Validation error occurred during call to save() for entity [$firstInvalid]", ((GormValidateable)firstInvalid).errors)
+            }
+            else {
+                return datastoreClient.insertAll(objects, arguments)
+            }
+        }
+        else {
+            return datastoreClient.insertAll(objects, arguments)
+        }
+    }
+
+    @Override
+    Observable<List<Serializable>> insertAll(D... objects) {
+        return insertAll(Arrays.asList(objects))
+    }
+
+    @Override
     Observable<Boolean> exists(Serializable id) {
         get(id).map { it != null }.defaultIfEmpty(false)
     }
 
     Observable<List<D>> list(Map params = Collections.emptyMap()) {
-        def query = datastoreClient.createQuery(entity.javaClass)
+        def query = datastoreClient.createQuery(entity.javaClass, params)
         DynamicFinder.populateArgumentsForCriteria(entity.javaClass, query, params)
-        return ((RxQuery<D>) query).findAll().toList()
+        return ((RxQuery<D>) query).findAll(params).toList()
     }
 
     Observable<D> findAll(Map params = Collections.emptyMap()) {
-        def query = datastoreClient.createQuery(entity.javaClass)
+        def query = datastoreClient.createQuery(entity.javaClass, params)
         DynamicFinder.populateArgumentsForCriteria(entity.javaClass, query, params)
-        return ((RxQuery<D>) query).findAll()
+        return ((RxQuery<D>) query).findAll(params)
     }
 
     /**
@@ -202,7 +228,7 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
      * @param queryMap The map of conditions
      * @return A single result
      */
-    Observable<D> findWhere(Map<String, Object> queryMap) {
+    Observable<D> findWhere(Map queryMap) {
         findWhere(queryMap, Collections.emptyMap())
     }
 
@@ -214,12 +240,12 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
      *
      * @return A single result
      */
-    Observable<D> findWhere(Map<String, Object> queryMap, Map args) {
-        def query = datastoreClient.createQuery(entity.javaClass)
+    Observable<D> findWhere(Map queryMap, Map args) {
+        def query = datastoreClient.createQuery(entity.javaClass, args)
         DynamicFinder.populateArgumentsForCriteria(entity.javaClass, query, args)
         query.allEq(queryMap)
         query.max(1)
-        ((RxQuery<D>)query).singleResult()
+        ((RxQuery<D>)query).singleResult(args)
     }
 
 
@@ -230,7 +256,7 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
      * @param queryMap The map of conditions
      * @return A single result
      */
-    Observable<D> findOrCreateWhere(Map<String, Object> queryMap) {
+    Observable<D> findOrCreateWhere(Map queryMap) {
         findWhere(queryMap)
             .switchIfEmpty(Observable.create({ Subscriber s ->
             s.onNext(entity.javaClass.newInstance(queryMap))
@@ -247,7 +273,7 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
      * @return A single result
      */
 
-    Observable<D> findOrSaveWhere(Map<String, Object> queryMap) {
+    Observable<D> findOrSaveWhere(Map queryMap) {
         findWhere(queryMap)
                 .switchIfEmpty(Observable.create({ Subscriber s ->
             Thread.start {
@@ -278,7 +304,7 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
      * @param queryMap The map of conditions
      * @return A single result
      */
-    Observable<D> findAllWhere(Map<String, Object> queryMap) {
+    Observable<D> findAllWhere(Map queryMap) {
         findAllWhere(queryMap, Collections.emptyMap())
     }
 
@@ -290,11 +316,11 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
      *
      * @return A single result
      */
-    Observable<D> findAllWhere(Map<String, Object> queryMap, Map args) {
-        def query = datastoreClient.createQuery(entity.javaClass)
+    Observable<D> findAllWhere(Map queryMap, Map args) {
+        def query = datastoreClient.createQuery(entity.javaClass, args)
         DynamicFinder.populateArgumentsForCriteria(entity.javaClass, query, args)
         query.allEq(queryMap)
-        ((RxQuery<D>)query).findAll()
+        ((RxQuery<D>)query).findAll(args)
     }
 
     /**
@@ -450,7 +476,68 @@ class RxGormStaticApi<D> implements RxGormStaticOperations<D> {
          new FindAllByFinder(datastoreClient),
          new CountByFinder(datastoreClient),
          new FindByBooleanFinder(datastoreClient),
-         new FindAllByBooleanFinder(datastoreClient)]
+         new FindAllByBooleanFinder(datastoreClient)] as List<FinderMethod>
     }
 
+    @Override
+    ObservableProxy<D> proxy(Serializable id) {
+        datastoreClient.proxy(entity.javaClass, id)
+    }
+
+    @Override
+    ObservableProxy<D> proxy(Serializable id, Map queryArgs) {
+        datastoreClient.proxy(entity.javaClass, id)
+    }
+
+    @Override
+    ObservableProxy<D> proxy(DetachedCriteria<D> query) {
+        datastoreClient.proxy(query.toQuery())
+    }
+
+    @Override
+    ObservableProxy<D> proxy(DetachedCriteria<D> query, Map queryArgs) {
+        datastoreClient.proxy(query.toQuery(queryArgs))
+    }
+
+    @Override
+    Serializable ident(D instance) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).ident(instance)
+    }
+
+    @Override
+    Observable<D> save(D instance) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).save(instance)
+    }
+
+    @Override
+    Observable<D> save(D instance, Map arguments) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).save(instance, arguments)
+    }
+
+    @Override
+    Observable<D> insert(D instance) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).insert(instance)
+    }
+
+    @Override
+    Observable<D> insert(D instance, Map arguments) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).save(instance, arguments)
+    }
+
+    @Override
+    Observable<Boolean> delete(D instance) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).delete(instance)
+    }
+
+    @Override
+    Observable<Boolean> delete(D instance, Map arguments) {
+        String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
+        RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).delete(instance, arguments)
+    }
 }

@@ -536,7 +536,7 @@ public abstract class AbstractHibernateQuery extends Query {
 
     @Override
     public Query cache(boolean cache) {
-        criteria.setCacheable(true);
+        criteria.setCacheable(cache);
 
         return super.cache(cache);
     }

@@ -15,12 +15,7 @@
  */
 package org.grails.orm.hibernate.cfg;
 
-import org.grails.datastore.mapping.config.Property;
-import org.grails.datastore.mapping.document.config.Collection;
 import org.grails.datastore.mapping.model.*;
-import org.grails.datastore.mapping.model.config.GormProperties;
-
-import java.util.List;
 
 /**
  * Persistent entity implementation for Hibernate

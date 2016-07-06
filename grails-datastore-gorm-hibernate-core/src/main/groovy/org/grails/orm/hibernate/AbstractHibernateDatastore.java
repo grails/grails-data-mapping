@@ -14,9 +14,10 @@
  */
 package org.grails.orm.hibernate;
 
+import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.AbstractDatastore;
+import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.orm.hibernate.cfg.Mapping;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.ApplicationContext;
@@ -32,15 +33,11 @@ import java.util.concurrent.Callable;
  * @author Graeme Rocher
  * @since 2.0
  */
-public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware {
+public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings {
 
     public static final String CONFIG_PROPERTY_CACHE_QUERIES = "grails.hibernate.cache.queries";
     public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";
     public static final String CONFIG_PROPERTY_PASS_READONLY_TO_HIBERNATE = "grails.hibernate.pass.readonly";
-    public static final String CONFIG_PROPERTY_AUTO_FLUSH = "grails.gorm.autoFlush";
-    public static final String CONFIG_PROPERTY_FLUSH_MODE = "grails.gorm.flushMode";
-    public static final String CONFIG_PROPERTY_FAIL_ON_ERROR = "grails.gorm.failOnError";
-    public static final String CONFIG_PROPERTY_DEFAULT_MAPPING = "grails.gorm.default.mapping";
     protected final SessionFactory sessionFactory;
     protected AbstractEventTriggeringInterceptor eventTriggeringInterceptor;
     private final boolean osivReadOnly;
@@ -63,13 +60,13 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         osivReadOnly = config.getProperty(CONFIG_PROPERTY_OSIV_READONLY, Boolean.class, false);
         passReadOnlyToHibernate = config.getProperty(CONFIG_PROPERTY_PASS_READONLY_TO_HIBERNATE, Boolean.class, false);
         isCacheQueries = config.getProperty(CONFIG_PROPERTY_CACHE_QUERIES, Boolean.class, false);
-        if( config.getProperty(CONFIG_PROPERTY_AUTO_FLUSH, Boolean.class, false) ) {
+        if( config.getProperty(SETTING_AUTO_FLUSH, Boolean.class, false) ) {
             defaultFlushMode = FlushMode.AUTO.level;
         }
         else {
-            defaultFlushMode = config.getProperty(CONFIG_PROPERTY_FLUSH_MODE, Integer.class, FlushMode.COMMIT.level);
+            defaultFlushMode = config.getProperty(SETTING_FLUSH_MODE, Integer.class, FlushMode.COMMIT.level);
         }
-        failOnError = config.getProperty(CONFIG_PROPERTY_FAIL_ON_ERROR, Boolean.class, false);
+        failOnError = config.getProperty(SETTING_FAIL_ON_ERROR, Boolean.class, false);
     }
 
     public boolean isAutoFlush() {
@@ -97,7 +94,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     }
 
     public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {
-        this(mappingContext, sessionFactory, config, null, Mapping.DEFAULT_DATA_SOURCE);
+        this(mappingContext, sessionFactory, config, null, ConnectionSource.DEFAULT);
     }
 
     /**

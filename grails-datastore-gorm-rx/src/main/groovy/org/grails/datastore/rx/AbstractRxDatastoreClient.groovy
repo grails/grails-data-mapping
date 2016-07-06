@@ -4,6 +4,12 @@ import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.config.Property
+import org.grails.datastore.mapping.core.IdentityGenerationException
+import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
+import org.grails.datastore.mapping.core.connections.ConnectionSources
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesSupport
+import org.grails.datastore.mapping.core.exceptions.ConfigurationException
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckableCollection
 import org.grails.datastore.mapping.engine.EntityAccess
@@ -12,6 +18,7 @@ import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.PropertyMapping
+import org.grails.datastore.mapping.model.ValueGenerator
 import org.grails.datastore.mapping.model.types.ToMany
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.Query
@@ -26,12 +33,12 @@ import org.grails.gorm.rx.api.RxGormInstanceApi
 import org.grails.gorm.rx.api.RxGormStaticApi
 import org.grails.gorm.rx.api.RxGormValidationApi
 import org.grails.gorm.rx.events.AutoTimestampEventListener
-import org.grails.gorm.rx.events.ConfigurableApplicationEventPublisher
-import org.grails.gorm.rx.events.DefaultApplicationEventPublisher
+import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher
+import org.grails.datastore.gorm.events.DefaultApplicationEventPublisher
 import org.grails.gorm.rx.events.DomainEventListener
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.context.event.ApplicationEventMulticaster
+import org.springframework.core.env.PropertyResolver
 import rx.Observable
 
 import javax.persistence.CascadeType
@@ -42,15 +49,19 @@ import javax.persistence.CascadeType
  * @since 6.0
  */
 @CompileStatic
-abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxDatastoreClientImplementor {
+abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxDatastoreClientImplementor<T> {
 
     protected MappingContext mappingContext
     ConfigurableApplicationEventPublisher eventPublisher = new DefaultApplicationEventPublisher()
     final ProxyFactory proxyFactory
+    final ConnectionSources<T, ? extends ConnectionSourceSettings> connectionSources
+    final Map<String, RxDatastoreClient<T>> datastoreClients = [:]
 
-    AbstractRxDatastoreClient(MappingContext mappingContext) {
+    AbstractRxDatastoreClient(ConnectionSources<T, ConnectionSourceSettings> connectionSources, MappingContext mappingContext) {
         this.mappingContext = mappingContext
         this.proxyFactory = new RxJavassistProxyFactory()
+        this.connectionSources = connectionSources
+        this.datastoreClients.put(ConnectionSource.DEFAULT, this)
         mappingContext.setProxyFactory(new RxJavassistProxyFactory())
 
     }
@@ -90,7 +101,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     def <T> Observable get(Class<T> type, Serializable id, QueryState queryState) {
-        return (Observable<T>)createQuery(type)
+        return (Observable<T>)createQuery(type, queryState)
                 .idEq(id)
                 .max(1)
                 .singleResult()
@@ -108,32 +119,52 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     final Query createQuery(Class type, QueryState queryState) {
+        return createQuery(type, queryState, [:])
+    }
+
+    @Override
+    final Query createQuery(Class type, QueryState queryState, Map arguments) {
         def entity = mappingContext.getPersistentEntity(type.name)
         if(entity == null) {
             throw new IllegalArgumentException("Type [$type.name] is not a persistent type")
         }
 
-        return createEntityQuery(entity, queryState)
+        return createEntityQuery(entity, queryState, arguments)
     }
 
     @Override
-    final Query createQuery(Class type) {
+    final Query createQuery(Class type, Map arguments) {
         return createQuery(type, new QueryState())
     }
 
     @Override
+    final Query createQuery(Class type) {
+        return createQuery(type, [:])
+    }
+
+    @Override
     final Observable<Boolean> delete(Object instance) {
-        deleteAll((Iterable)Arrays.asList(instance)).map { Number deleteCount ->
+        delete(instance, Collections.emptyMap())
+    }
+
+    @Override
+    Observable<Number> deleteAll(Iterable instances) {
+        deleteAll(instances, Collections.emptyMap())
+    }
+
+    @Override
+    Observable<Boolean> delete(Object instance, Map<String, Object> arguments) {
+        deleteAll((Iterable)Arrays.asList(instance), arguments).map { Number deleteCount ->
             deleteCount > 0
         }
     }
 
     @Override
-    Observable<Number> deleteAll(Iterable instances) {
+    Observable<Number> deleteAll(Iterable instances, Map<String, Object> arguments) {
         def ctx = this.mappingContext
         def proxyHandler = ctx.getProxyHandler()
         if(instances != null) {
-            def batchOperation = new BatchOperation()
+            def batchOperation = new BatchOperation(arguments)
             List<ApplicationEvent> postEvents = []
             for(o in instances) {
                 Class type = proxyHandler.getProxiedClass(o)
@@ -142,7 +173,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
                     throw new IllegalArgumentException("Type [$type.name] of instance [$o] is not a persistent type")
                 }
                 def reflector = mappingContext.getEntityReflector(entity)
-                def id = reflector.getIdentifier(o)
+                def id = proxyHandler.getIdentifier(o) ?: reflector.getIdentifier(o)
                 if(id != null) {
 
                     def ea = ctx.createEntityAccess(entity, o)
@@ -167,7 +198,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
             }.defaultIfEmpty(0)
         }
         else {
-            return Observable.just(0)
+            return Observable.just((Number)0)
         }
     }
 
@@ -179,7 +210,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
      */
     @Override
     final <T1> Observable<T1> persist(T1 instance, Map<String, Object> arguments) {
-        persistAll((Iterable<T1>)Arrays.asList(instance)).map { List<Serializable> identifiers ->
+        persistAll((Iterable<T1>)Arrays.asList(instance), arguments).map { List<Serializable> identifiers ->
             if(!identifiers.isEmpty()) {
                 return instance
             }
@@ -191,7 +222,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     final <T1> Observable<T1> insert(T1 instance, Map<String, Object> arguments) {
-        insertAll((Iterable<T1>)Arrays.asList(instance)).map { List<Serializable> identifiers ->
+        insertAll((Iterable<T1>)Arrays.asList(instance), arguments).map { List<Serializable> identifiers ->
             if(!identifiers.isEmpty()) {
                 return instance
             }
@@ -208,21 +239,31 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     Observable<List<Serializable>> insertAll(Iterable instances) {
-        return persistAllInternal(instances, true)
+        return persistAllInternal(instances, true, Collections.emptyMap())
     }
 
     @Override
     Observable<List<Serializable>> persistAll(Iterable instances) {
-        return persistAllInternal(instances, false)
+        return persistAllInternal(instances, false, Collections.emptyMap())
     }
 
-    private Observable<List<Serializable>> persistAllInternal(Iterable instances, boolean isInsert) {
+    @Override
+    Observable<List<Serializable>> persistAll(Iterable instances, Map<String, Object> arguments) {
+        return persistAllInternal(instances, false, arguments)
+    }
+
+    @Override
+    Observable<List<Serializable>> insertAll(Iterable instances, Map<String, Object> arguments) {
+        return persistAllInternal(instances, true, arguments)
+    }
+
+    protected Observable<List<Serializable>> persistAllInternal(Iterable instances, boolean isInsert, Map<String, Object> arguments) {
         MappingContext ctx = this.mappingContext
         ApplicationEventPublisher eventPublisher = this.eventPublisher
 
         def proxyHandler = ctx.getProxyHandler()
         if (instances != null) {
-            def batchOperation = new BatchOperation()
+            def batchOperation = new BatchOperation(arguments)
             List<Serializable> identifiers = []
             List<ApplicationEvent> postEvents = []
             for (o in instances) {
@@ -246,7 +287,19 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
                     }
                 } else {
                     if(!hasId) {
-                        id = generateIdentifier(entity, o, entityReflector)
+                        ValueGenerator valueGenerator = entity.getMapping().getIdentifier().generator
+                        if(valueGenerator == ValueGenerator.NATIVE) {
+                            // if the identifier is generated natively then use the hash code to identity the entity since the
+                            // identifiers themselves will be generated from the insert operation
+                            id = o.hashCode()
+                        }
+                        else if(valueGenerator == ValueGenerator.ASSIGNED) {
+                            throw new IdentityGenerationException("Id generator is set to assigned but not identifier was provided for entity $o")
+                        }
+                        else {
+                            id = generateIdentifier(entity, o, entityReflector)
+                        }
+
                     }
                     def preInsertEvent = new PreInsertEvent(this, entity, entityAccess)
                     eventPublisher?.publishEvent(preInsertEvent)
@@ -328,8 +381,17 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
     }
 
     protected void scheduleInsert(PersistentEntity associatedEntity, DirtyCheckable associatedObject, EntityReflector associationReflector, EntityAccess associationAccess, BatchOperation operation, List<ApplicationEvent> postEvents) {
+        ValueGenerator valueGenerator = associatedEntity.getMapping().getIdentifier().generator
         def associatedId
-        associatedId = generateIdentifier(associatedEntity, associatedObject, associationReflector)
+        if(valueGenerator == ValueGenerator.NATIVE) {
+            // if the identifier is generated natively then use the hash code to identity the entity since the
+            // identifiers themselves will be generated from the insert operation
+            associatedId = associatedObject.hashCode()
+        }
+        else {
+            associatedId = generateIdentifier(associatedEntity, associatedObject, associationReflector)
+        }
+
         def preInsertEvent = new PreInsertEvent(this, associatedEntity, associationAccess)
         eventPublisher?.publishEvent(preInsertEvent)
         if (!preInsertEvent.isCancelled()) {
@@ -382,18 +444,33 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
     abstract void doClose()
 
     @Override
-    RxGormStaticApi createStaticApi(PersistentEntity entity) {
-        return new RxGormStaticApi(entity, this)
+    final RxGormStaticApi createStaticApi(PersistentEntity entity) {
+        return createStaticApi(entity, ConnectionSourcesSupport.getDefaultConnectionSourceName(entity))
     }
 
     @Override
-    RxGormInstanceApi createInstanceApi(PersistentEntity entity) {
-        return new RxGormInstanceApi(entity, this)
+    final RxGormInstanceApi createInstanceApi(PersistentEntity entity) {
+        return createInstanceApi(entity, ConnectionSourcesSupport.getDefaultConnectionSourceName(entity))
     }
 
     @Override
-    RxGormValidationApi createValidationApi(PersistentEntity entity) {
-        return new RxGormValidationApi(entity, this)
+    final RxGormValidationApi createValidationApi(PersistentEntity entity) {
+        return createValidationApi(entity, ConnectionSourcesSupport.getDefaultConnectionSourceName(entity))
+    }
+
+    @Override
+    RxGormStaticApi createStaticApi(PersistentEntity entity, String connectionSourceName) {
+        return new RxGormStaticApi(entity,  getDatastoreClient(connectionSourceName))
+    }
+
+    @Override
+    RxGormInstanceApi createInstanceApi(PersistentEntity entity, String connectionSourceName) {
+        return new RxGormInstanceApi(entity, getDatastoreClient(connectionSourceName))
+    }
+
+    @Override
+    RxGormValidationApi createValidationApi(PersistentEntity entity, String connectionSourceName) {
+        return new RxGormValidationApi(entity, getDatastoreClient(connectionSourceName))
     }
 
     /**
@@ -432,5 +509,25 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
      *
      * @return The query object
      */
-    abstract Query createEntityQuery(PersistentEntity entity, QueryState queryState)
+    Query createEntityQuery(PersistentEntity entity, QueryState queryState) {
+        return createEntityQuery(entity, queryState, [:])
+    }
+
+    /**
+     * Creates a query for the given entity
+     *
+     * @param entity The entity
+     *
+     * @return The query object
+     */
+    abstract Query createEntityQuery(PersistentEntity entity, QueryState queryState, Map arguments)
+
+    @Override
+    RxDatastoreClient getDatastoreClient(String connectionSourceName) {
+        def datastoreClient = this.datastoreClients.get(connectionSourceName)
+        if(datastoreClient == null) {
+            throw new ConfigurationException("No connection source configured for name [$connectionSourceName]. Check your configuration.")
+        }
+        return datastoreClient
+    }
 }

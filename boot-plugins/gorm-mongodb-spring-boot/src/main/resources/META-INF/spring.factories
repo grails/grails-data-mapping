@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.grails.datastore.gorm.mongodb.boot.autoconfigure.MongoDbGormAutoConfiguration

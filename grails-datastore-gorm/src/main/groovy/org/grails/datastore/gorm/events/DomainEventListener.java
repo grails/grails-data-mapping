@@ -31,6 +31,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -226,8 +227,11 @@ public class DomainEventListener extends AbstractPersistenceEventListener
     }
 
     protected void autowireBeanProperties(final Object entity) {
-        datastore.getApplicationContext().getAutowireCapableBeanFactory().autowireBeanProperties(
-              entity, AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, false);
+        ConfigurableApplicationContext applicationContext = datastore.getApplicationContext();
+        if(applicationContext != null) {
+            applicationContext.getAutowireCapableBeanFactory().autowireBeanProperties(
+                    entity, AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, false);
+        }
     }
 
     /**

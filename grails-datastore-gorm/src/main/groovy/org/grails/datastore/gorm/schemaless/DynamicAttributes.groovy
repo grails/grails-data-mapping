@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.schemaless
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 
 /**
  * A trait that adds support for defining dynamic attributes for databases that support it
@@ -13,12 +14,39 @@ trait DynamicAttributes {
 
     private transient Map<String, Object> dynamicAttributes = [:]
 
+    /**
+     * Sets a dynamic attribute
+     *
+     * @param name The name of the attribute
+     * @param value The value of the attribute
+     */
     void putAt(String name, value) {
-        dynamicAttributes.put name, value
+        if(this.hasProperty(name)) {
+            ((GroovyObject)this).setProperty(name, value)
+        }
+        else {
+            def oldValue = dynamicAttributes.put(name, value)
+            if(oldValue != value) {
+                if(this instanceof DirtyCheckable) {
+                    ((DirtyCheckable)this).markDirty(name, value, oldValue)
+                }
+            }
+        }
     }
 
+    /**
+     * Obtains a dynamic attribute
+     *
+     * @param name The name of the attribute
+     * @return The value of the attribute
+     */
     def getAt(String name) {
-        dynamicAttributes.get(name)
+        if(this.hasProperty(name)) {
+            return ((GroovyObject)this).getProperty(name)
+        }
+        else {
+            dynamicAttributes.get(name)
+        }
     }
 
     /**

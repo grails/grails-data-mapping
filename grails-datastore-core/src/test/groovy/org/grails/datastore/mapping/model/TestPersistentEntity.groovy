@@ -12,11 +12,11 @@ class TestPersistentEntity extends AbstractPersistentEntity {
 
     TestPersistentEntity(Class type, MappingContext ctx) {
         super(type, ctx)
-        classMapping = new TestClassMapping(this, ctx)
+
     }
 
     @Override
-    ClassMapping getMapping() { classMapping }
+    ClassMapping getMapping() { new TestClassMapping(this, context) }
 
     public class TestClassMapping extends AbstractClassMapping<Entity> {
         private Entity mappedForm;

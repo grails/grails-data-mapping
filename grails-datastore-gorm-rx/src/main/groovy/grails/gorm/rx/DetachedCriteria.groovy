@@ -45,7 +45,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
     Observable<T> find(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
         query.max(1)
-        return ((RxQuery)query).findAll()
+        return ((RxQuery)query).findAll(args)
     }
 
     /**
@@ -59,7 +59,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
      */
     Observable<T> findAll(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
-        return ((RxQuery)query).findAll()
+        return ((RxQuery)query).findAll(args)
     }
 
     /**
@@ -70,7 +70,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
     Observable<T> get(Map args, @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
         query.max(1)
-        return ((RxQuery)query).singleResult()
+        return ((RxQuery)query).singleResult(args)
     }
 
     /**
@@ -93,7 +93,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
      */
     Observable<List<T>> toList(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
-        return ((RxQuery)query).findAll().toList()
+        return ((RxQuery)query).findAll(args).toList()
     }
 
     /**
@@ -105,7 +105,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
      */
     Observable<List<T>> list(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
-        return ((RxQuery)query).findAll().toList()
+        return ((RxQuery)query).findAll(args).toList()
     }
 
     /**
@@ -118,7 +118,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
     Observable<Number> getCount(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
         query.projections().count()
-        return ((RxQuery)query).singleResult()
+        return ((RxQuery)query).singleResult(args)
     }
 
     /**
@@ -150,6 +150,16 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
     Observable<Number> deleteAll() {
         Query query = prepareQuery(Collections.emptyMap(), null)
         return ((RxQuery)query).deleteAll()
+    }
+
+    /**
+     * Convert this {@link DetachedCriteria} to a query implementation
+     *
+     * @param args The arguments
+     * @return The query
+     */
+    Query toQuery(Map args = Collections.emptyMap()) {
+        return prepareQuery(args, null)
     }
 
     @Override
@@ -605,7 +615,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
     protected Query prepareQuery(Map args, Closure additionalCriteria) {
         def staticApi = RxGormEnhancer.findStaticApi(targetClass)
         applyLazyCriteria()
-        def query = staticApi.datastoreClient.createQuery(targetClass)
+        def query = staticApi.datastoreClient.createQuery(targetClass, args)
 
         if (defaultMax != null) {
             query.max(defaultMax)

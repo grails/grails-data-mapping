@@ -27,6 +27,7 @@ import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.types.*;
+import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.springframework.validation.Validator;
 
 import javax.persistence.FetchType;
@@ -71,6 +72,11 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
                     @Override
                     public String[] getIdentifierName() {
                         return new String[]{identifier.getName()};
+                    }
+
+                    @Override
+                    public ValueGenerator getGenerator() {
+                        return ValueGenerator.AUTO;
                     }
 
                     @Override
@@ -389,5 +395,10 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
 
     public void setExternal(boolean external) {
         // do nothing
+    }
+
+    @Override
+    public EntityReflector getReflector() {
+        return getMappingContext().getEntityReflector(this);
     }
 }

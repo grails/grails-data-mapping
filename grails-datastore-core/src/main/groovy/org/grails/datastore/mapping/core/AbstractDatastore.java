@@ -17,8 +17,6 @@ package org.grails.datastore.mapping.core;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
 import groovy.util.ConfigObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -29,17 +27,18 @@ import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 import org.grails.datastore.mapping.transactions.SessionHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.annotation.PreDestroy;
 import java.util.Map;
 
 /**
@@ -49,8 +48,8 @@ import java.util.Map;
  * @since 1.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class AbstractDatastore implements Datastore, StatelessDatastore, DisposableBean {
-    protected static final Log LOG = LogFactory.getLog(AbstractDatastore.class);
+public abstract class AbstractDatastore implements Datastore, StatelessDatastore {
+    protected static final Logger LOG = LoggerFactory.getLogger(AbstractDatastore.class);
 
     private ApplicationContext applicationContext;
 
@@ -87,22 +86,10 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     }
 
     protected static PropertyResolver mapToPropertyResolver(Map<String,Object> connectionDetails) {
-        if(connectionDetails instanceof PropertyResolver) {
-            return (PropertyResolver)connectionDetails;
-        }
-        else {
-            StandardEnvironment env = new StandardEnvironment();
-            if(connectionDetails != null) {
-                MutablePropertySources propertySources = env.getPropertySources();
-                propertySources.addFirst(new MapPropertySource("datastoreConfig", connectionDetails));
-                if(connectionDetails instanceof ConfigObject) {
-                    propertySources.addFirst(new MapPropertySource("datastoreConfigFlat", ((ConfigObject)connectionDetails).flatten()));
-                }
-            }
-            return env;
-        }
+        return DatastoreUtils.createPropertyResolver(connectionDetails);
     }
 
+    @PreDestroy
     public void destroy() throws Exception {
         FieldEntityAccess.clearReflectors();
         final MetaClassRegistry registry = GroovySystem.getMetaClassRegistry();
@@ -213,14 +200,18 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         return mappingContext;
     }
 
+    /**
+     * @deprecated  Deprecated, will be removed in a future version of GORM
+     */
+    @Deprecated
     public ConfigurableApplicationContext getApplicationContext() {
         return (ConfigurableApplicationContext)applicationContext;
     }
 
+
     public ApplicationEventPublisher getApplicationEventPublisher() {
         return getApplicationContext();
     }
-
 
 
     protected void initializeConverters(MappingContext mappingContext) {

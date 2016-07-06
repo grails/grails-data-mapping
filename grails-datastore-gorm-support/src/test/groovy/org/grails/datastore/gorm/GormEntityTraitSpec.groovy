@@ -146,12 +146,12 @@ class SubMember extends Member {
     }
 }
 
-//@Artefact('Domain')
-//class QueryMethodArtefactDomain {
-//    String name
-//}
-//
-//@Entity
-//class QueryMethodEntityDomain {
-//    String name
-//}
+@Artefact('Domain')
+class QueryMethodArtefactDomain {
+    String name
+}
+
+@Entity
+class QueryMethodEntityDomain {
+    String name
+}

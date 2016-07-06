@@ -3,18 +3,6 @@ cache:
   directories:
   - $HOME/.gradle
 language: groovy
-services:
-- redis
-- mongodb
-- cassandra
-addons:
-  apt:
-    sources:
-      - mongodb-upstart
-      - mongodb-3.0-precise
-    packages:
-      - mongodb-org-server
-      - mongodb-org-shell
 jdk:
 - oraclejdk7
 env:
@@ -37,41 +25,12 @@ env:
   - secure: D604qHBpW7UuFuxkhu/cqVzpEESkkipWTKyz3j75i2k+ocQXcYXSj3zDMk4Hmo/iTHszwCgXk1w/5aj+mxRVecewmXmpFk3Q63qPvJprAjcvatmxp82aBmmpPd9GHjKbyLmu6Gn3R8QtX6yAT75T9lf4Y1FMi9mVwFPOtLiSEs0=
   - secure: TNZ8oWsN+E1gkvxhyTHjguyakIWm+T9KxoZVNq+OoHv2kuyWTIbTJUtP3JVyXX+P+B9F9o+8Kkxp5jomgW0cRdjWxQebceeGlrNAzTVvvOm7tVFFxLjzjRnUPsWKfGXkIzSagvFdSgHIpinDqrtERD10pbym2ZDwqRCejCMjz0U=
   - secure: io7oNZbf/aYRn+a73x6B/8yjg27CYVVdwRobQ+vZBNwBzS31bBcC/8pMtIpsBFqSEtE8GrSM4dYtMSFSj5PasiMg6PgYG/frsbtgGmRqTBkmENfv2EIO+Ex0pgycL+hCUVtPqD9j3mwhfPWkim9vPdmpYe2BbQuTYs0spJuu6PQ=
-  matrix:
-  - GORM_IMPL=test
-  - GORM_IMPL=neo4j
-  - GORM_IMPL=cassandra
-  - GORM_IMPL=testgrails2
-  - GORM_IMPL=hibernate
-  - GORM_IMPL=hibernate4
-  - GORM_IMPL=hibernate5
-  - GORM_IMPL=mongodb
-  - GORM_IMPL=rx-mongodb
-  - GORM_IMPL=redis
-  - GORM_IMPL=restclient
-before_script:
-- sudo service postgresql stop || true
-- sudo service mysql stop || true
-- sudo service memcached stop || true
-- sudo service bootlogd stop || true
-- sudo service elasticsearch stop || true
-- sudo service cassandra stop || true
-- sudo service rsync stop || true
-- sudo service x11-common stop || true
 before_install:
 - ./openssl-setup.sh
 matrix:
   fast_finish: true
 script: ./travis-build.sh
 install: true
-after_success:
-- python ./travis/travis_after_all.py
-- export $(cat .to_export_back)
-- ./travis-publish.sh
-after_failure:
-- python ./travis/travis_after_all.py
-- export $(cat .to_export_back)
-- ./travis-after-failure.sh
 notifications:
   slack:
     secure: eSyvdf/vA0KGAyiITwe7ooD6BCX94PCy7o35HSkbfUbHB5XPJq/SkqRjjIeiwrgywVph+qGBPYmzIdep4BQwH+JFEfPu0gQoNWKeGAVmJ9LeFaP4vaXWvuRugunO9zUla4JT2cfmsxKVEoTfI1NIfT15hYBMHi+8CfgFlx2zOdk=

@@ -1,5 +1,6 @@
 package grails.test.mixin.mongodb
 
+import grails.mongodb.MongoEntity
 import grails.persistence.Entity
 import grails.test.mixin.TestMixin
 
@@ -24,7 +25,7 @@ class MongoMixinSpec extends Specification{
 }
 
 @Entity
-class Person {
+class Person implements MongoEntity<Person> {
     ObjectId id
     Long version
     String name

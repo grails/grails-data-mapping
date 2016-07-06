@@ -90,7 +90,7 @@ class CriteriaBuilder<T> extends AbstractCriteriaBuilder {
     Observable<T> findAll(Map args = Collections.emptyMap(), @DelegatesTo(CriteriaBuilder) Closure additionalCriteria = null) {
         prepareQuery(args, additionalCriteria)
 
-        return ((RxQuery) query).findAll()
+        return ((RxQuery) query).findAll(args)
     }
 
     /**
@@ -124,7 +124,7 @@ class CriteriaBuilder<T> extends AbstractCriteriaBuilder {
     Observable<Number> count(Map args, @DelegatesTo(CriteriaBuilder) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
         query.projections().count()
-        return ((RxQuery)query).singleResult()
+        return ((RxQuery)query).singleResult(args)
     }
 
 
@@ -143,7 +143,7 @@ class CriteriaBuilder<T> extends AbstractCriteriaBuilder {
         prepareQuery(args, additionalCriteria)
         query.projections().distinct();
 
-        ((RxQuery)query).findAll().toList()
+        ((RxQuery)query).findAll(args).toList()
     }
 
     Observable<List> listDistinct(@DelegatesTo(CriteriaBuilder) Closure callable) {

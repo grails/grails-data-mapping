@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.support.GenericApplicationContext
+import org.springframework.core.convert.converter.Converter
 import org.springframework.core.convert.support.ConfigurableConversionService
 import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.core.env.MapPropertySource
@@ -46,6 +47,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     Collection<String> packages = []
     PropertyResolver configuration = new StandardEnvironment()
     boolean registerApplicationIfNotPresent = true
+    Object originalConfiguration
 
     protected ClassLoader classLoader = Thread.currentThread().contextClassLoader
     protected boolean secondaryDatastore = false
@@ -75,8 +77,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     }
 
     AbstractDatastoreInitializer(PropertyResolver configuration, Class...persistentClasses) {
-        this.configuration = configuration
-        this.persistentClasses = Arrays.asList(persistentClasses)
+        this(configuration, Arrays.asList(persistentClasses))
     }
 
     AbstractDatastoreInitializer(PropertyResolver configuration, String...packages) {
@@ -85,53 +86,85 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     }
 
     AbstractDatastoreInitializer(Map configuration, Collection<Class> persistentClasses) {
+        this(createPropertyResolverForConfig(configuration), persistentClasses)
+        this.originalConfiguration = configuration
+    }
+
+    protected static PropertyResolver createPropertyResolverForConfig(Map configuration) {
         // Grails 3.x has better support for property resolving from configuration so we should
         // if the config is a PropertyResolver
-        if(configuration instanceof PropertyResolver) {
-            this.configuration = (PropertyResolver)configuration;
-        }
-        else {
+        PropertyResolver finalConfiguration
+        if (configuration instanceof PropertyResolver) {
+            finalConfiguration = (PropertyResolver) configuration;
+        } else {
             // this is to support Grails 2.x
             def env = new StandardEnvironment()
+            env.conversionService.addConverter(new Converter<ConfigObject, Object>() {
+                @Override
+                Object convert(ConfigObject source) {
+                    return null
+                }
+            })
             def config = new ConfigObject()
-            if(configuration instanceof ConfigObject) {
+            if (configuration instanceof ConfigObject) {
                 config = (ConfigObject) configuration
-            }
-            else if(configuration != null) {
+            } else if (configuration != null) {
                 def properties = new Properties()
                 properties.putAll(configuration)
                 config.merge(new ConfigSlurper().parse(properties))
-                config.putAll( config.flatten() )
+                config.putAll(config.flatten())
             }
-            env.propertySources.addFirst(new MapPropertySource("datastoreConfig", config) {
+            env.propertySources.addFirst(new MapPropertySource("gormConfig", config) {
                 @Override
                 boolean containsProperty(String name) {
-                    getProperty(name) != null
+                    def value = getProperty(name)
+                    if(value == null) {
+                        return false
+                    }
+                    else if(value instanceof ConfigObject) {
+                        return !((ConfigObject)value).isEmpty()
+                    }
+                    else {
+                        return true
+                    }
                 }
 
                 @Override
                 Object getProperty(String name) {
                     def v = super.getProperty(name)
-                    if(v != null) {
-                        return v
-                    } else if(name.contains('.')) {
+                    if (v != null) {
+                        return valueOrNull(v)
+                    } else if (name.contains('.')) {
                         def map = getSource()
                         def tokens = name.split(/\./)
                         int i = 0
                         v = map.get(tokens[i])
-                        while(v instanceof Map && i < tokens.length -1) {
-                            Map co = (Map)v
+                        while (v instanceof Map && i < tokens.length - 1) {
+                            Map co = (Map) v
                             v = co.get(tokens[++i])
                         }
 
-                        return v
+                        return valueOrNull(v)
 
                     }
                 }
+
+                protected Object valueOrNull(v) {
+                    if (v instanceof ConfigObject) {
+                        def co = (ConfigObject) v
+                        if (co.isEmpty()) {
+                            return null
+                        } else {
+                            return co
+                        }
+                    } else {
+                        return v
+                    }
+                }
             })
-            this.configuration = env
+            finalConfiguration = env
         }
-        this.persistentClasses = persistentClasses
+        finalConfiguration
     }
 
     AbstractDatastoreInitializer(Map configuration, Class... persistentClasses) {
@@ -232,13 +265,17 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
             GrailsBeanBuilderInit.registerBeans(beanDefinitionRegistry, getBeanDefinitions(beanDefinitionRegistry))
         }
         else {
-            throw new IllegalStateException("Neither Spring 4.0 nor grails-spring dependency found on classpath to enable GORM configuration. If you are using an earlier version of Spring please add the grails-spring dependency to your classpath.")
+            throw new IllegalStateException("Neither Spring 4.0+ nor grails-spring dependency found on classpath to enable GORM configuration. If you are using an earlier version of Spring please add the grails-spring dependency to your classpath.")
         }
     }
 
     @CompileDynamic
     Closure getCommonConfiguration(BeanDefinitionRegistry registry, String type) {
         return {
+            if(!isGrailsPresent()) {
+                return
+            }
+
             if(!registry.containsBeanDefinition("grailsApplication") && registerApplicationIfNotPresent) {
                 grailsApplication(getGrailsApplicationClass(), persistentClasses as Class[], Thread.currentThread().contextClassLoader) { bean ->
                     bean.initMethod = 'initialise'
@@ -276,7 +313,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     }
 
     protected boolean isMappedClass(String datastoreType, Class cls) {
-        datastoreType.equals(ClassPropertyFetcher.forClass(cls).getStaticPropertyValue(GormProperties.MAPPING_STRATEGY, cls))
+        datastoreType.equals(ClassPropertyFetcher.forClass(cls).getStaticPropertyValue(GormProperties.MAPPING_STRATEGY, String))
     }
 
 
@@ -330,7 +367,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     @CompileStatic
     protected Class getGrailsApplicationClass() {
-        ClassLoader cl = Thread.currentThread().contextClassLoader
+        ClassLoader cl = getClass().getClassLoader()
         if(ClassUtils.isPresent("grails.core.DefaultGrailsApplication", cl)) {
             return ClassUtils.forName("grails.core.DefaultGrailsApplication", cl)
         }
@@ -341,9 +378,20 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     }
 
+    protected boolean isGrailsPresent() {
+        ClassLoader cl = getClass().getClassLoader()
+        if(ClassUtils.isPresent("grails.core.DefaultGrailsApplication", cl) && ClassUtils.isPresent("grails.validation.CascadingValidator", cl)) {
+            return true
+        }
+        else if(ClassUtils.isPresent("org.codehaus.groovy.grails.commons.DefaultGrailsApplication", cl) && ClassUtils.isPresent("org.codehaus.groovy.grails.validation.CascadingValidator", cl)) {
+            return true
+        }
+        return false
+    }
+
     @CompileStatic
     protected Class getGrailsValidatorClass() {
-        ClassLoader cl = Thread.currentThread().contextClassLoader
+        ClassLoader cl = getClass().getClassLoader()
         if(ClassUtils.isPresent("org.grails.datastore.gorm.validation.DefaultDomainClassValidator", cl)) {
             return ClassUtils.forName("org.grails.datastore.gorm.validation.DefaultDomainClassValidator", cl)
         }

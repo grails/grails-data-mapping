@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm
 
+import grails.gorm.api.GormInstanceOperations
 import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -24,7 +25,6 @@ import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.proxy.EntityProxy
 import org.grails.datastore.mapping.validation.ValidationException
-import org.springframework.util.ClassUtils
 
 /**
  * Instance methods of the GORM API.
@@ -33,9 +33,7 @@ import org.springframework.util.ClassUtils
  * @param <D> the entity/domain class
  */
 @CompileStatic
-class GormInstanceApi<D> extends AbstractGormApi<D> {
-
-
+class GormInstanceApi<D> extends AbstractGormApi<D> implements GormInstanceOperations<D> {
 
     Class<? extends Exception> validationException = ValidationException
     boolean failOnError = false
@@ -45,7 +43,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
         validationException = ValidationException.VALIDATION_EXCEPTION_TYPE
     }
 
-    protected Object propertyMissing(D instance, String name) {
+    Object propertyMissing(D instance, String name) {
         try {
 
             def instanceApi = GormEnhancer.findInstanceApi(persistentClass, name)
@@ -58,7 +56,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
     /**
      * Proxy aware instanceOf implementation.
      */
-    protected boolean instanceOf(D o, Class cls) {
+    boolean instanceOf(D o, Class cls) {
         if (o instanceof EntityProxy) {
             o = (D)((EntityProxy)o).getTarget()
         }
@@ -69,7 +67,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * Upgrades an existing persistence instance to a write lock
      * @return The instance
      */
-    protected D lock(D instance) {
+    D lock(D instance) {
         execute({ Session session ->
             session.lock(instance)
             return instance
@@ -82,7 +80,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param callable The closure
      * @return The result of the closure
      */
-    protected def mutex(D instance, Closure callable) {
+    public <T> T mutex(D instance, Closure<T> callable) {
         execute({ Session session ->
             try {
                 session.lock(instance)
@@ -99,7 +97,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return The instance
      */
-    protected D refresh(D instance) {
+    D refresh(D instance) {
         execute({ Session session ->
             session.refresh instance
             return instance
@@ -111,7 +109,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return Returns the instance
      */
-    protected D save(D instance) {
+    D save(D instance) {
         save(instance, Collections.emptyMap())
     }
 
@@ -120,7 +118,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return Returns the instance
      */
-    protected D insert(D instance) {
+    D insert(D instance) {
         insert(instance, Collections.emptyMap())
     }
 
@@ -129,7 +127,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return Returns the instance
      */
-    protected D insert(D instance, Map params) {
+    D insert(D instance, Map params) {
         execute({ Session session ->
             doSave instance, params, session, true
         } as SessionCallback)
@@ -140,7 +138,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return Returns the instance
      */
-    protected D merge(D instance) {
+    D merge(D instance) {
         save(instance, Collections.emptyMap())
     }
 
@@ -149,7 +147,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return Returns the instance
      */
-    protected D merge(D instance, Map params) {
+    D merge(D instance, Map params) {
         save(instance, params)
     }
 
@@ -161,7 +159,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      *
      * @return The instance or null if validation fails
      */
-    protected D save(D instance, boolean validate) {
+    D save(D instance, boolean validate) {
         save(instance, [validate: validate])
     }
 
@@ -171,10 +169,122 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param params The parameters
      * @return The instance
      */
-    protected D save(D instance, Map params) {
+    D save(D instance, Map params) {
         execute({ Session session ->
             doSave instance, params, session
         } as SessionCallback)
+    }
+
+    /**
+     * Returns the objects identifier
+     */
+    Serializable ident(D instance) {
+        (Serializable)instance[persistentEntity.getIdentity().name]
+    }
+
+    /**
+     * Attaches an instance to an existing session. Requries a session-based model
+     * @param instance The instance
+     * @return
+     */
+    D attach(D instance) {
+        execute({ Session session ->
+            session.attach(instance)
+            instance
+        } as SessionCallback)
+    }
+
+    /**
+     * No concept of session-based model so defaults to true
+     */
+    boolean isAttached(D instance) {
+        execute({ Session session ->
+            session.contains(instance)
+        } as SessionCallback)
+    }
+
+    /**
+     * Discards any pending changes. Requires a session-based model.
+     */
+    void discard(D instance) {
+        execute({ Session session ->
+            session.clear(instance)
+        } as SessionCallback)
+    }
+
+    /**
+     * Deletes an instance from the datastore
+     * @param instance The instance to delete
+     */
+    void delete(D instance) {
+        delete(instance, Collections.emptyMap())
+    }
+
+    /**
+     * Deletes an instance from the datastore
+     * @param instance The instance to delete
+     */
+    void delete(D instance, Map params) {
+        execute({ Session session ->
+            session.delete(instance)
+            if (params?.flush) {
+                session.flush()
+            }
+        } as SessionCallback)
+    }
+
+    /**
+     * Checks whether a field is dirty
+     *
+     * @param instance The instance
+     * @param fieldName The name of the field
+     *
+     * @return true if the field is dirty
+     */
+    boolean isDirty(D instance, String fieldName) {
+        if(instance instanceof DirtyCheckable) {
+            return ((DirtyCheckable)instance).hasChanged(fieldName)
+        }
+        return true
+    }
+
+    /**
+     * Checks whether an entity is dirty
+     *
+     * @param instance The instance
+     * @return true if it is dirty
+     */
+    boolean isDirty(D instance) {
+        if(instance instanceof DirtyCheckable) {
+            return ((DirtyCheckable)instance).hasChanged() || (datastore.hasCurrentSession() && DirtyCheckingSupport.areAssociationsDirty(datastore.currentSession, persistentEntity, instance))
+        }
+        return true
+    }
+
+    /**
+     * Obtains a list of property names that are dirty
+     *
+     * @param instance The instance
+     * @return A list of property names that are dirty
+     */
+    List getDirtyPropertyNames(D instance) {
+        if(instance instanceof DirtyCheckable) {
+            return ((DirtyCheckable)instance).listDirtyPropertyNames()
+        }
+        return []
+    }
+
+    /**
+     * Gets the original persisted value of a field.
+     *
+     * @param fieldName The field name
+     * @return The original persisted value
+     */
+    Object getPersistentValue(D instance, String fieldName) {
+        if(instance instanceof DirtyCheckable) {
+            return ((DirtyCheckable)instance).getOriginalValue(fieldName)
+        }
+        return null
     }
 
     protected D doSave(D instance, Map params, Session session, boolean isInsert = false) {
@@ -212,117 +322,5 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
             session.flush()
         }
         return instance
-    }
-
-    /**
-     * Returns the objects identifier
-     */
-    protected Serializable ident(D instance) {
-        (Serializable)instance[persistentEntity.getIdentity().name]
-    }
-
-    /**
-     * Attaches an instance to an existing session. Requries a session-based model
-     * @param instance The instance
-     * @return
-     */
-    protected D attach(D instance) {
-        execute({ Session session ->
-            session.attach(instance)
-            instance
-        } as SessionCallback)
-    }
-
-    /**
-     * No concept of session-based model so defaults to true
-     */
-    protected boolean isAttached(D instance) {
-        execute({ Session session ->
-            session.contains(instance)
-        } as SessionCallback)
-    }
-
-    /**
-     * Discards any pending changes. Requires a session-based model.
-     */
-    protected void discard(D instance) {
-        execute({ Session session ->
-            session.clear(instance)
-        } as SessionCallback)
-    }
-
-    /**
-     * Deletes an instance from the datastore
-     * @param instance The instance to delete
-     */
-    protected void delete(D instance) {
-        delete(instance, Collections.emptyMap())
-    }
-
-    /**
-     * Deletes an instance from the datastore
-     * @param instance The instance to delete
-     */
-    protected void delete(D instance, Map params) {
-        execute({ Session session ->
-            session.delete(instance)
-            if (params?.flush) {
-                session.flush()
-            }
-        } as SessionCallback)
-    }
-
-    /**
-     * Checks whether a field is dirty
-     *
-     * @param instance The instance
-     * @param fieldName The name of the field
-     *
-     * @return true if the field is dirty
-     */
-    protected boolean isDirty(D instance, String fieldName) {
-        if(instance instanceof DirtyCheckable) {
-            return ((DirtyCheckable)instance).hasChanged(fieldName)
-        }
-        return true
-    }
-
-    /**
-     * Checks whether an entity is dirty
-     *
-     * @param instance The instance
-     * @return true if it is dirty
-     */
-    protected boolean isDirty(D instance) {
-        if(instance instanceof DirtyCheckable) {
-            return ((DirtyCheckable)instance).hasChanged() || (datastore.hasCurrentSession() && DirtyCheckingSupport.areAssociationsDirty(datastore.currentSession, persistentEntity, instance))
-        }
-        return true
-    }
-
-    /**
-     * Obtains a list of property names that are dirty
-     *
-     * @param instance The instance
-     * @return A list of property names that are dirty
-     */
-    protected List getDirtyPropertyNames(D instance) {
-        if(instance instanceof DirtyCheckable) {
-            return ((DirtyCheckable)instance).listDirtyPropertyNames()
-        }
-        return []
-    }
-
-    /**
-     * Gets the original persisted value of a field.
-     *
-     * @param fieldName The field name
-     * @return The original persisted value
-     */
-    protected Object getPersistentValue(D instance, String fieldName) {
-        if(instance instanceof DirtyCheckable) {
-            return ((DirtyCheckable)instance).getOriginalValue(fieldName)
-        }
-        return null
     }
 }

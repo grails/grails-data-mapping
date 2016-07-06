@@ -14,9 +14,9 @@
  */
 package org.grails.datastore.gorm.async
 
-import grails.async.DelegateAsync
 import grails.async.decorator.PromiseDecorator
 import grails.async.decorator.PromiseDecoratorProvider
+import org.grails.datastore.gorm.async.transform.DelegateAsync
 import org.grails.datastore.gorm.query.GormOperations
 
 /**

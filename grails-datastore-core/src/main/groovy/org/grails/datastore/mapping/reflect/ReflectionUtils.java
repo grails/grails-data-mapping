@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.grails.datastore.mapping.model.DatastoreConfigurationException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 
@@ -230,4 +231,11 @@ public class ReflectionUtils {
         return false;
     }
 
+    public static Class forName(String className, ClassLoader classLoader) {
+        try {
+            return Class.forName(className, false, classLoader);
+        } catch (ClassNotFoundException e) {
+            throw new DatastoreConfigurationException("Class not found loading GORM: " + e.getMessage(), e);
+        }
+    }
 }

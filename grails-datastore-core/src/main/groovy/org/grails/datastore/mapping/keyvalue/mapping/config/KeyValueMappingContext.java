@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.mapping.keyvalue.mapping.config;
 
+import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings;
 import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.MappingFactory;
@@ -51,6 +52,21 @@ public class KeyValueMappingContext extends AbstractMappingContext {
         initializeDefaultMappingFactory(keyspace);
 
         syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
+    }
+
+    /**
+     * Constructs a context using the given keyspace
+     *
+     * @param keyspace The keyspace, this is typically the application name
+     */
+    public KeyValueMappingContext(String keyspace, ConnectionSourceSettings settings) {
+        Assert.notNull(keyspace, "Argument [keyspace] cannot be null");
+        this.keyspace = keyspace;
+        initializeDefaultMappingFactory(keyspace);
+        GormKeyValueMappingFactory mappingFactory = (GormKeyValueMappingFactory) getMappingFactory();
+        mappingFactory.setDefaultConstraints(settings.getDefault().getConstraints());
+        mappingFactory.setDefaultMapping(settings.getDefault().getMapping());
+        syntaxStrategy = new GormMappingConfigurationStrategy(this.mappingFactory);
     }
 
     public String getKeyspace() {

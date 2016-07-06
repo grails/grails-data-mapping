@@ -29,6 +29,7 @@ import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
@@ -68,6 +69,7 @@ class GormEnhancer implements Closeable {
     PlatformTransactionManager transactionManager
     List<FinderMethod> finders
     boolean failOnError
+
     /**
      * Whether to include external entities
      */
@@ -81,8 +83,9 @@ class GormEnhancer implements Closeable {
         this(datastore, null)
     }
 
-    GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager, boolean dynamicEnhance = false) {
+    GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager, boolean failOnError = false, boolean dynamicEnhance = false) {
         this.datastore = datastore
+        this.failOnError = failOnError
         this.transactionManager = transactionManager
         this.dynamicEnhance = dynamicEnhance
         if(datastore != null) {
@@ -90,19 +93,29 @@ class GormEnhancer implements Closeable {
         }
         NAMED_QUERIES.clear()
         for(entity in datastore.mappingContext.persistentEntities) {
-            if(appliesToDatastore(datastore, entity)) {
-                def cls = entity.javaClass
-                Set<String> qualifiers = allQualifiers(datastore, entity)
-                for(qualifier in qualifiers) {
-                    def staticApi = getStaticApi(cls)
-                    def name = entity.name
-                    STATIC_APIS.get(qualifier).put(name, staticApi)
-                    def instanceApi = getInstanceApi(cls)
-                    INSTANCE_APIS.get(qualifier).put(name, instanceApi)
-                    def validationApi = getValidationApi(cls)
-                    VALIDATION_APIS.get(qualifier).put(name, validationApi)
-                    DATASTORES.get(qualifier).put(name, datastore)
-                }
+            registerEntity(entity)
+        }
+    }
+
+    /**
+     * Registers a new entity with the GORM enhancer
+     *
+     * @param entity The entity
+     */
+    void registerEntity(PersistentEntity entity) {
+        Datastore datastore = this.datastore
+        if (appliesToDatastore(datastore, entity)) {
+            def cls = entity.javaClass
+            Set<String> qualifiers = allQualifiers(this.datastore, entity)
+            for (qualifier in qualifiers) {
+                def staticApi = getStaticApi(cls, qualifier)
+                def name = entity.name
+                STATIC_APIS.get(qualifier).put(name, staticApi)
+                def instanceApi = getInstanceApi(cls, qualifier)
+                INSTANCE_APIS.get(qualifier).put(name, instanceApi)
+                def validationApi = getValidationApi(cls, qualifier)
+                VALIDATION_APIS.get(qualifier).put(name, validationApi)
+                DATASTORES.get(qualifier).put(name, this.datastore)
             }
         }
     }
@@ -148,6 +161,7 @@ class GormEnhancer implements Closeable {
     }
 
 
+    @CompileDynamic
     static <D> GormStaticApi<D> findStaticApi(Class<D> entity, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
         def staticApi = STATIC_APIS.get(qualifier)?.get(NameUtils.getClassName(entity))
         if(staticApi == null) {
@@ -257,6 +271,8 @@ class GormEnhancer implements Closeable {
      */
     @CompileStatic
     void enhance(PersistentEntity e, boolean onlyExtendedMethods = false) {
+        registerEntity(e)
+
         if(!(GroovyObject.isAssignableFrom(e.javaClass) ) || dynamicEnhance) {
             addInstanceMethods(e, onlyExtendedMethods)
 
@@ -292,8 +308,8 @@ class GormEnhancer implements Closeable {
 
 
 
-    @CompileStatic
-    protected <D> List<AbstractGormApi<D>> getInstanceMethodApiProviders(Class cls) {
+    @CompileDynamic
+    protected <D> List<AbstractGormApi<D>> getInstanceMethodApiProviders(Class<D> cls) {
         [getInstanceApi(cls), getValidationApi(cls)]
     }
 
@@ -355,19 +371,19 @@ class GormEnhancer implements Closeable {
     }
 
     @CompileStatic
-    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
+    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls, String qualifier = ConnectionSource.DEFAULT) {
         new GormStaticApi<D>(cls, datastore, getFinders(), transactionManager)
     }
 
     @CompileStatic
-    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
+    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls, String qualifier = ConnectionSource.DEFAULT) {
         def instanceApi = new GormInstanceApi<D>(cls, datastore)
         instanceApi.failOnError = failOnError
         return instanceApi
     }
 
     @CompileStatic
-    protected <D> GormValidationApi<D> getValidationApi(Class<D> cls) {
+    protected <D> GormValidationApi<D> getValidationApi(Class<D> cls, String qualifier = ConnectionSource.DEFAULT) {
         new GormValidationApi(cls, datastore)
     }
 
@@ -380,6 +396,6 @@ class GormEnhancer implements Closeable {
          new FindAllByBooleanFinder(datastore),
          new FindByBooleanFinder(datastore),
          new CountByFinder(datastore),
-         new ListOrderByFinder(datastore)]
+         new ListOrderByFinder(datastore)] as List<FinderMethod>
     }
 }

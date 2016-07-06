@@ -7,7 +7,9 @@ import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.collection.PersistentList
 import org.grails.datastore.mapping.collection.PersistentSet
 import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.rx.RxDatastoreClient
+import org.grails.datastore.rx.exceptions.BlockingOperationException
 import org.grails.datastore.rx.internal.RxDatastoreClientImplementor
 import org.grails.datastore.rx.query.QueryState
 import org.grails.datastore.rx.query.RxQuery
@@ -23,18 +25,18 @@ import rx.Subscription
  */
 @CompileStatic
 @Slf4j
-class RxPersistentList extends PersistentList implements RxPersistentCollection, RxUnidirectionalCollection {
+class RxPersistentList extends PersistentList implements RxPersistentCollection, RxUnidirectionalCollection , RxCollection{
     final RxDatastoreClient datastoreClient
     final Association association
 
-    Observable observable
-    private QueryState queryState
+    protected final QueryState queryState
 
     RxPersistentList( RxDatastoreClient datastoreClient, Association association, Serializable associationKey, QueryState queryState = null) {
         super(association, associationKey, null)
         this.datastoreClient = datastoreClient
         this.association = association
         this.queryState = queryState
+        this.observable = resolveObservable()
     }
 
     RxPersistentList( RxDatastoreClient datastoreClient, Association association, List<Serializable> entitiesKeys, QueryState queryState = null) {
@@ -42,6 +44,15 @@ class RxPersistentList extends PersistentList implements RxPersistentCollection,
         this.datastoreClient = datastoreClient
         this.association = association
         this.queryState = queryState
+        this.observable = resolveObservable()
+    }
+
+    RxPersistentList( RxDatastoreClient datastoreClient, Association association, Query initializerQuery, QueryState queryState = null) {
+        super(association, null, null)
+        this.datastoreClient = datastoreClient
+        this.association = association
+        this.queryState = queryState
+        this.observable = resolveObservable(initializerQuery)
     }
 
     @Override
@@ -49,43 +60,38 @@ class RxPersistentList extends PersistentList implements RxPersistentCollection,
         if(initializing != null) return
         initializing = true
 
-
         try {
             def observable = toListObservable()
 
-            log.warn("Association $association initialised using blocking operation. Consider using subscribe(..) or an eager query instead")
+            if(((RxDatastoreClientImplementor)datastoreClient).isAllowBlockingOperations()) {
+                log.warn("Association $association initialised using blocking operation. Consider using subscribe(..) or an eager query instead")
 
-            addAll observable.toBlocking().first()
+                addAll observable.toBlocking().first()
+            }
+            else {
+                throw new BlockingOperationException("Cannot initialize $association using a blocking operation. Use subscribe(..) instead.")
+            }
         } finally {
             initializing = false
             initialized = true
         }
     }
 
-    @Override
-    Observable<List> toListObservable() {
-        toObservable().toList()
-    }
-
-    @Override
-    Observable toObservable() {
-        if(observable == null) {
-            def query = ((RxDatastoreClientImplementor)datastoreClient).createQuery(childType, queryState)
-            if(associationKey != null) {
-                query.eq( association.inverseSide.name, associationKey )
-            }
-            else {
-                query.in(association.associatedEntity.identity.name, keys.toList())
-            }
-            observable = ((RxQuery)query).findAll()
+    protected Observable resolveObservable() {
+        def query = ((RxDatastoreClientImplementor)datastoreClient).createQuery(childType, queryState)
+        if(associationKey != null) {
+            query.eq( association.inverseSide.name, associationKey )
         }
-        return observable
+        else {
+            query.in(association.associatedEntity.identity.name, keys.toList())
+        }
+        return resolveObservable(query)
     }
 
-    @Override
-    Subscription subscribe(Subscriber subscriber) {
-        return toObservable().subscribe(subscriber)
+    protected Observable resolveObservable(Query query) {
+        ((RxQuery) query).findAll()
     }
+
 
     @Override
     List<Serializable> getAssociationKeys() {

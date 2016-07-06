@@ -50,7 +50,7 @@ public class RxJavassistProxyFactory implements ProxyFactory, org.grails.datasto
     }
 
     protected MethodHandler createMethodHandler(Class proxyClass, RxDatastoreClient client, Query query, QueryState queryState) {
-        return new QueryObservableProxyMethodHandler(proxyClass, query, queryState, client);
+        return new IdQueryObservableProxyMethodHandler(proxyClass, query, queryState, client);
     }
 
     protected <T> MethodHandler createMethodHandler(RxDatastoreClient client, Class<T> type, Class proxyClass, Serializable key, QueryState queryState) {

@@ -20,17 +20,16 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import org.grails.datastore.gorm.GormEntity;
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
+import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.config.GormProperties;
-import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.validation.Errors;
 
 import java.lang.annotation.Annotation;
-import java.util.Map;
 
 /**
  * A Mapping context for Hibernate
@@ -45,18 +44,18 @@ public class HibernateMappingContext extends AbstractMappingContext {
     private final MappingConfigurationStrategy syntaxStrategy;
 
     public HibernateMappingContext(PropertyResolver configuration, Object contextObject, Class...persistentClasses) {
-        this(configuration.getProperty(AbstractHibernateDatastore.CONFIG_PROPERTY_DEFAULT_MAPPING, Closure.class, null), contextObject);
+        this(configuration.getProperty(Settings.SETTING_DEFAULT_MAPPING, Closure.class, null), contextObject);
         addPersistentEntities(persistentClasses);
     }
 
     public HibernateMappingContext(PropertyResolver configuration, Object contextObject, Closure defaultConstraints, Class...persistentClasses) {
-        this(configuration.getProperty(AbstractHibernateDatastore.CONFIG_PROPERTY_DEFAULT_MAPPING, Closure.class, null), contextObject);
+        this(configuration.getProperty(Settings.SETTING_DEFAULT_MAPPING, Closure.class, null), contextObject);
         setDefaultConstraints(defaultConstraints);
         addPersistentEntities(persistentClasses);
     }
 
     public HibernateMappingContext(PropertyResolver configuration, Object contextObject) {
-        this(configuration.getProperty(AbstractHibernateDatastore.CONFIG_PROPERTY_DEFAULT_MAPPING, Closure.class, null), contextObject);
+        this(configuration.getProperty(Settings.SETTING_DEFAULT_MAPPING, Closure.class, null), contextObject);
     }
 
     public HibernateMappingContext() {
@@ -207,6 +206,24 @@ public class HibernateMappingContext extends AbstractMappingContext {
         public IdentityMapping createIdentityMapping(final ClassMapping classMapping) {
             final Mapping mappedForm = createMappedForm(classMapping.getEntity());
             final Object identity = mappedForm.getIdentity();
+            final ValueGenerator generator;
+            if(identity instanceof Identity) {
+                Identity id = (Identity) identity;
+                String generatorName = id.getGenerator();
+                if(generatorName != null) {
+                    try {
+                        generator = ValueGenerator.valueOf(generatorName.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        throw new DatastoreConfigurationException("Invalid id generation strategy for entity ["+classMapping.getEntity().getName()+"]: " + generatorName);
+                    }
+                }
+                else {
+                    generator = ValueGenerator.AUTO;
+                }
+            }
+            else {
+                generator = ValueGenerator.AUTO;
+            }
             return new IdentityMapping() {
                 @Override
                 public String[] getIdentifierName() {
@@ -223,6 +240,12 @@ public class HibernateMappingContext extends AbstractMappingContext {
                         return ((CompositeIdentity) identity).getPropertyNames();
                     }
                     return DEFAULT_IDENTITY_MAPPING;
+                }
+
+                @Override
+                public ValueGenerator getGenerator() {
+
+                    return generator;
                 }
 
                 @Override

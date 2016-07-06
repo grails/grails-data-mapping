@@ -825,7 +825,7 @@ public abstract class AbstractGrailsDomainBinder {
             manyToOne.setLazy(true);
         } else {
             manyToOne.setIgnoreNotFound(config.getIgnoreNotFound());
-            final FetchMode fetch = config.getFetch();
+            final FetchMode fetch = config.getFetchMode();
             if(!fetch.equals(FetchMode.JOIN) && !fetch.equals(FetchMode.EAGER)) {
                 manyToOne.setLazy(true);
             }
@@ -845,7 +845,7 @@ public abstract class AbstractGrailsDomainBinder {
             collection.setLazy(true);
             collection.setExtraLazy(false);
         } else {
-            final FetchMode fetch = config.getFetch();
+            final FetchMode fetch = config.getFetchMode();
             if(!fetch.equals(FetchMode.JOIN) && !fetch.equals(FetchMode.EAGER)) {
                 collection.setLazy(true);
             }
@@ -1052,12 +1052,12 @@ public abstract class AbstractGrailsDomainBinder {
 
         PropertyConfig pc = getPropertyConfig(property);
         // configure eager fetching
-        final FetchMode fetchMode = pc.getFetch();
+        final FetchMode fetchMode = pc.getFetchMode();
         if (fetchMode == FetchMode.JOIN) {
             collection.setFetchMode(FetchMode.JOIN);
         }
-        else if (pc.getFetch() != null) {
-            collection.setFetchMode(pc.getFetch());
+        else if (pc.getFetchMode() != null) {
+            collection.setFetchMode(pc.getFetchMode());
         }
         else {
             collection.setFetchMode(FetchMode.DEFAULT);
@@ -2373,8 +2373,8 @@ public abstract class AbstractGrailsDomainBinder {
                                    ForeignKeyDirection.FOREIGN_KEY_TO_PARENT);
         oneToOne.setAlternateUniqueKey(true);
 
-        if (config != null && config.getFetch() != null) {
-            oneToOne.setFetchMode(config.getFetch());
+        if (config != null && config.getFetchMode() != null) {
+            oneToOne.setFetchMode(config.getFetchMode());
         }
         else {
             oneToOne.setFetchMode(FetchMode.DEFAULT);
@@ -2403,8 +2403,8 @@ public abstract class AbstractGrailsDomainBinder {
     protected void bindManyToOneValues(org.grails.datastore.mapping.model.types.Association property, ManyToOne manyToOne) {
         PropertyConfig config = getPropertyConfig(property);
 
-        if (config != null && config.getFetch() != null) {
-            manyToOne.setFetchMode(config.getFetch());
+        if (config != null && config.getFetchMode() != null) {
+            manyToOne.setFetchMode(config.getFetchMode());
         }
         else {
             manyToOne.setFetchMode(FetchMode.DEFAULT);

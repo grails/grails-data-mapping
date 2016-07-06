@@ -9,7 +9,7 @@ buildscript {
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
-        classpath "com.github.adrianbk:gradle-travisci-trigger-plugin:1.0.0"
+        classpath "io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1"
     }
 }
 
@@ -22,11 +22,12 @@ project.ext {
     grails2Version = '2.5.3'
     slf4jVersion = "1.7.10"
     junitVersion = "4.12"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.5'
+    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.7'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectMajorVersion = "6"
     projectMinorVersion = "0"
+
     projectPatchVersion = "0"
 //    releaseType = "RELEASE"
 //    releaseType = "M1"
@@ -41,7 +42,7 @@ project.ext {
     mongoVersion = '3.2.1'
 
     // plugin versions
-    hibernateVersion = "4.3.10"
+    hibernateVersion = "4.3.11"
     hibernate5Version = "5.1.0"
 
     def defaultPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
@@ -69,9 +70,7 @@ def groovyProjects() {
 }
 
 def isGroovyProject(project) {
-    def isGrailsPlugin = project.name.contains("grails-plugins")
-    def isDocumentation = project.name.contains("documentation")
-    !isGrailsPlugin && !isDocumentation
+    !project.name.contains("grails-plugins")
 }
 
 configurations {
@@ -84,36 +83,19 @@ group = "org.grails"
 
 apply plugin: 'idea'
 apply plugin: 'project-report'
-apply plugin: "com.github.adrianbk.tcitrigger"
 apply plugin: 'io.codearte.nexus-staging'
 
 nexusStaging {
     delayBetweenRetriesInMillis = 5000
 }
 
-tciTrigger {
-    gitHubRepo 'grails/grails-data-mapping-functional-tests'
-    travisVariable {
-        name = "GORM_VERSION"
-        value = "${projectVersion}.${releaseType}"
-    }
-}
-
 ext {
     isCiBuild = project.hasProperty("isCiBuild")
 }
+
 allprojects {
     repositories {
         mavenLocal()
-        if(System.getProperty('useJbossNexus')) {
-            // jboss-nexus contains Hibernate source code archives which aren't in maven central
-            // usefull with eclipse and idea tasks, for example
-            // ./gradlew -PuseJbossNexus cleanEclipse eclipse
-            maven {
-                name 'jboss-nexus'
-                url "https://repository.jboss.org/nexus/content/groups/public/"
-            }
-        }
         maven { url "https://repo.grails.org/grails/core" }
         if(isBuildSnapshot) {
             maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
@@ -123,19 +105,11 @@ allprojects {
     configurations {
         all {
             resolutionStrategy {
-                    force "org.codehaus.groovy:groovy:$groovyVersion"
-                    force "org.codehaus.groovy:groovy-xml:$groovyVersion"
-
-//                def cacheHours = isCiBuild ? 1 : 24
-//                cacheDynamicVersionsFor cacheHours, 'hours'
-//                cacheChangingModulesFor cacheHours, 'hours'
+                force "org.codehaus.groovy:groovy:$groovyVersion"
+                force "org.codehaus.groovy:groovy-xml:$groovyVersion"
             }
         }
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.8'
 }
 
 apply from: "gradle/idea.gradle"
@@ -164,6 +138,7 @@ subprojects {
 
     if(project.name.endsWith("spring-boot")) return
     if(project.name.contains("grails2-plugins")) return
+
    afterEvaluate { project ->
         if (isGroovyProject(project)) {
             def hasSnapshotVersion = project.version.endsWith("-SNAPSHOT")
@@ -218,6 +193,7 @@ subprojects {
 
     if (isStandardGroovyMavenProject) {
         apply plugin: 'groovy'
+        apply plugin: "io.github.groovylang.groovydoc"
         apply plugin: 'eclipse'
         apply plugin: 'com.bmuschko.nexus'
         apply plugin: 'maven-publish'
@@ -232,11 +208,10 @@ subprojects {
                                 !project.name.endsWith("tck") &&
                                 !project.name.endsWith("-support") &&
                                 !project.name.endsWith("-core") &&
+                                !project.name.endsWith("-gorm-validation") &&
                                 !project.name.contains("-rx") &&
             project.name != 'grails-datastore-gorm-rest-client'
 
-
-    def isDocumentationProject = project.name.startsWith("grails-documentation")
 
     dependencies {
         if (isStandardGroovyMavenProject) {
@@ -261,46 +236,6 @@ subprojects {
                 exclude group:'org.hamcrest',module:'hamcrest-core'
                 transitive = false
             }
-        }
-    }
-
-    if (isDocumentationProject) {
-
-        dependencies {
-            documentation group: 'org.grails', name: 'grails-docs', version: grailsVersion
-            documentation group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
-            project(":grails-datastore-core")
-            documentation "org.slf4j:jcl-over-slf4j:$slf4jVersion"
-            documentation "org.slf4j:slf4j-api:$slf4jVersion"
-            documentation "org.slf4j:slf4j-simple:$slf4jVersion"
-        }
-        task docs << {
-            ant.taskdef (name: 'docs', classname : 'grails.doc.ant.DocPublisherTask') {
-                classpath {
-                    configurations.documentation.resolve().each { f ->
-                        pathelement(location:f)
-                    }
-                }
-
-            }
-            def props = new Properties()
-            project.file("src/docs/doc.properties").withReader {
-                props.load(it)
-            }
-
-            props['version'] = project.version.toString()
-            def f = new File(File.createTempDir(), "${project.name}-docs.properties")
-            f.withWriter {
-                props.store(it, "Generated")
-            }
-            f.deleteOnExit()
-            ant.docs(src:"src/docs", dest:destinationDir, properties:f.canonicalPath)
-        }
-        docs.ext.destinationDir = "${buildDir}/docs"
-
-
-        task clean << {
-            ant.delete(dir:buildDir)
         }
     }
 
@@ -340,8 +275,8 @@ subprojects {
             }
             if (isTravisBuild) {
                 maxParallelForks = 2
-                jvmArgs = ['-server', '-Xmx512M', '-XX:MaxPermSize=128m']
-                forkEvery = 10
+                jvmArgs = ['-server', '-Xmx1024M', '-XX:MaxPermSize=128m']
+                forkEvery = 20
                 afterSuite {
                     System.out.print('.')
                     System.out.flush()
@@ -394,7 +329,8 @@ subprojects {
         }
 
         configure([groovydoc]) {
-            groovyClasspath += configurations.documentation
+            classpath += configurations.documentation
+            jvmArgs "-Xmx512M"
         }
 
         modifyPom {
@@ -462,89 +398,6 @@ dependencies {
 
 task install(dependsOn: subprojects*.tasks*.withType(PublishToMavenLocal))
 
-task coreApiDocs(type: Groovydoc) {
-   def coreDocs = [ 'grails-datastore-core',
-                    'grails-datastore-gorm',
-                    'grails-datastore-gorm-hibernate-core',
-                    'grails-datastore-gorm-hibernate4',
-                    'grails-datastore-simple',
-                    'grails-datastore-web',
-                    'grails-datastore-gorm-test']
-   def projs = subprojects.findAll { project -> coreDocs.contains(project.name) }
-   source projs.collect { project -> project.sourceSets.main.allGroovy } + projs.collect { project -> project.sourceSets.main.allJava }
-   destinationDir = new File(buildDir, 'docs/api')
-   // Might need a classpath
-    docTitle = "GORM ${projectVersion}"
-   classpath = files(projs.collect {project -> project.sourceSets.main.compileClasspath + project.configurations.documentation})
-   groovyClasspath = files(projs.collect {project -> project.sourceSets.main.compileClasspath + project.configurations.documentation})
-}
-
-
-task allDocs(dependsOn: [getTasksByName("docs", true),coreApiDocs]) << {
-    def docTasks = getTasksByName("docs", true)
-    def groovydocTasks = getTasksByName("groovydoc", true)
-    def allDocsDir = "$buildDir/docs"
-    mkdir allDocsDir
-    def stores = []
-    for(task in docTasks) {
-        def dir = task.destinationDir
-        def projectName = task.project.name
-        if (projectName.endsWith("-core")) {
-            mkdir "$allDocsDir/manual"
-
-            copy {
-                from dir
-                into "$allDocsDir/manual"
-            }
-        }
-        else {
-            def storeName = projectName["grails-documentation-".size()..-1]
-
-            // for the moment skip REST client
-            if(storeName != 'rest-client') {
-
-                stores << storeName
-                def docsDir = "$allDocsDir/$storeName"
-                mkdir docsDir
-                def groovydocTask = groovydocTasks.find { it.project.name == "grails-datastore-$storeName" }
-                if (groovydocTask == null) groovydocTask = groovydocTasks.find { it.project.name == "grails-datastore-gorm-$storeName" }
-                if (groovydocTask != null) {
-                    mkdir "$docsDir/api"
-                    groovydocTask.actions.each { it.execute(groovydocTask) }
-                    copy {
-                        from groovydocTask.destinationDir
-                        into "$docsDir/api"
-                    }
-                }
-                mkdir "$docsDir/manual"
-                copy {
-                    from dir
-                    into "$docsDir/manual"
-                }
-            }
-        }
-
-        def engine = new groovy.text.SimpleTemplateEngine()
-        def binding = [
-            datastores:stores.collect { "<li><a href=\"$it/index.html\">GORM for ${it[0].toUpperCase()}${it[1..-1]}</a></li>" }.join(System.getProperty("line.separator"))
-        ]
-        def template = engine.createTemplate(new File("src/docs/resources/core.template")).make(binding)
-        new File("$allDocsDir/index.html").text = template.toString()
-        copy {
-            from "src/docs/resources/assets"
-            into allDocsDir
-        }
-        for(store in stores) {
-            def index = "$allDocsDir/$store/index.html"
-            def storeName = "${store[0].toUpperCase()}${store[1..-1]}".toString()
-            binding = [
-                datastore:storeName
-            ]
-            template = engine.createTemplate(new File("src/docs/resources/datastore.template")).make( binding )
-            new File(index).text = template.toString()
-        }
-    }
-}
 
 task test(dependsOn: getTasksByName("test", true)) << {
     def reportsDir = "${buildDir}/reports"
@@ -574,23 +427,4 @@ task test(dependsOn: getTasksByName("test", true)) << {
         report(todir: testReportsDir)
     }
 
-    // Aggregate the coverage results
-    if (project.hasProperty("withClover")) {
-        def db = "clover/clover.db"
-        def mergedDb = "${buildDir}/${db}"
-        def cloverReportsDir = "${reportsDir}/clover"
-        ant.taskdef(resource: "cloverlib.xml", classpath: configurations.build.asPath)
-        ant."clover-merge"(initstring: mergedDb) {
-            subprojects.each {
-                def projectCloverDb = "${it.buildDir}/${db}"
-                if (new File(projectCloverDb).exists()) {
-                    cloverdb(initstring: projectCloverDb)
-                }
-            }
-        }
-        ant."clover-report"(initstring: mergedDb) {
-            current(outfile:"${cloverReportsDir}/clover.xml")
-        }
-        ant."clover-html-report"(initstring: mergedDb, outdir:"${cloverReportsDir}/html")
-    }
 }

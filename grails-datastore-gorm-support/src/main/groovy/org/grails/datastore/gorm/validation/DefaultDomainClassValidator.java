@@ -29,7 +29,7 @@ import java.util.ArrayList;
  * @author Graeme Rocher
  * @since 5.0
  */
-public class DefaultDomainClassValidator extends GrailsDomainClassValidator implements MessageSourceAware, CascadingValidator, ApplicationContextAware {
+public class DefaultDomainClassValidator extends GrailsDomainClassValidator implements MessageSourceAware, CascadingValidator, grails.validation.CascadingValidator, ApplicationContextAware {
 
     private final BeforeValidateHelper beforeValidateHelper = new BeforeValidateHelper();
     private ProxyFactory proxyHandler = new JavassistProxyFactory();

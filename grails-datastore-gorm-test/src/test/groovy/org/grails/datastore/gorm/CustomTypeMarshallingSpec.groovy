@@ -114,10 +114,14 @@ class CustomTypeMarshallingSpec extends GormDatastoreSpec {
 
 @Entity
 class Person {
+
+
+
     Long id
     Integer version
     String name
     Birthday birthday
+
 }
 
 class Birthday implements Comparable {

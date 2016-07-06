@@ -21,6 +21,8 @@ import org.grails.datastore.mapping.reflect.NameUtils
 import org.springframework.beans.MutablePropertyValues
 import org.springframework.validation.DataBinder
 
+import java.lang.reflect.Constructor
+
 /**
  * @author Graeme Rocher
  * @since 1.0
@@ -82,9 +84,10 @@ class DefaultMappingConfigurationBuilder implements MappingConfigurationBuilder 
         }
 
         def originalDelegate = callable.delegate
+
         try {
             callable.delegate = this
-            callable.resolveStrategy = Closure.DELEGATE_FIRST
+            callable.resolveStrategy = Closure.DELEGATE_ONLY
             callable.call(context)
         } finally {
             callable.delegate = originalDelegate

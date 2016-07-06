@@ -4,6 +4,7 @@ if(!isGrailsPlugin) {
 
     project.archivesBaseName = project.name.substring(project.name.indexOf('/')+1, project.name.length())
     apply plugin: 'com.bmuschko.nexus'
+    apply plugin: "io.github.groovylang.groovydoc"
 }
 
 class PublishingConvention {
