@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 import org.grails.datastore.mapping.config.Settings
+import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 
 import javax.persistence.FlushModeType
 
@@ -55,6 +56,11 @@ class ConnectionSourceSettings implements Settings {
     DefaultSettings defaults = new DefaultSettings()
 
     /**
+     * The settings for Multi Tenancy
+     */
+    MultiTenancySettings multiTenancy = new MultiTenancySettings()
+
+    /**
      * @return Any defaults
      */
     DefaultSettings getDefault() {
@@ -64,6 +70,8 @@ class ConnectionSourceSettings implements Settings {
     void setDefault(DefaultSettings defaults) {
         this.defaults = defaults
     }
+
+
     /**
      * Represents the default settings
      */
