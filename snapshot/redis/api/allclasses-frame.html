@@ -34,6 +34,7 @@
         <ul>
         <li><a href="org/grails/datastore/mapping/core/AbstractAttributeStoringSession.html" title="class in org.grails.datastore.mapping.core" target="classFrame">AbstractAttributeStoringSession</a></li>
 <li><a href="org/grails/datastore/mapping/model/AbstractClassMapping.html" title="class in org.grails.datastore.mapping.model" target="classFrame">AbstractClassMapping</a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/AbstractConnectionSourceFactory.html" title="class in org.grails.datastore.mapping.core.connections" target="classFrame">AbstractConnectionSourceFactory</a></li>
 <li><a href="org/grails/datastore/mapping/core/connections/AbstractConnectionSources.html" title="class in org.grails.datastore.mapping.core.connections" target="classFrame">AbstractConnectionSources</a></li>
 <li><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html" title="class in org.grails.datastore.gorm.query.criteria" target="classFrame">AbstractCriteriaBuilder</a></li>
 <li><a href="org/grails/datastore/mapping/core/AbstractDatastore.html" title="class in org.grails.datastore.mapping.core" target="classFrame">AbstractDatastore</a></li>
@@ -173,6 +174,7 @@
 <li><a href="org/grails/datastore/gorm/finders/FindOrCreateByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindOrCreateByFinder</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindOrSaveByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindOrSaveByFinder</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FinderMethod.html" title="interface in org.grails.datastore.gorm.finders" target="classFrame"><I>FinderMethod</I></a></li>
+<li><a href="org/grails/datastore/mapping/multitenancy/resolvers/FixedTenantResolver.html" title="class in org.grails.datastore.mapping.multitenancy.resolvers" target="classFrame">FixedTenantResolver</a></li>
 <li><a href="org/grails/datastore/mapping/query/criteria/FunctionCallingCriterion.html" title="class in org.grails.datastore.mapping.query.criteria" target="classFrame">FunctionCallingCriterion</a></li>
 <li><a href="org/grails/datastore/gorm/query/transform/GlobalDetachedCriteriaASTTransformation.html" title="class in org.grails.datastore.gorm.query.transform" target="classFrame">GlobalDetachedCriteriaASTTransformation</a></li>
 <li><a href="org/grails/compiler/gorm/GlobalTraitRepairTransformation.html" title="class in org.grails.compiler.gorm" target="classFrame">GlobalTraitRepairTransformation</a></li>
@@ -255,11 +257,15 @@
 <li><a href="org/grails/datastore/gorm/finders/MethodExpression.NotEqual.html" title="class in org.grails.datastore.gorm.finders.MethodExpression" target="classFrame">MethodExpression.NotEqual</a></li>
 <li><a href="org/grails/datastore/gorm/finders/MethodExpression.Rlike.html" title="class in org.grails.datastore.gorm.finders.MethodExpression" target="classFrame">MethodExpression.Rlike</a></li>
 <li><a href="org/grails/datastore/gorm/internal/MethodInvokingClosure.html" title="class in org.grails.datastore.gorm.internal" target="classFrame">MethodInvokingClosure</a></li>
+<li><a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html" title="class in org.grails.datastore.mapping.multitenancy" target="classFrame">MultiTenancySettings</a></li>
+<li><a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html" title="enum in org.grails.datastore.mapping.multitenancy.MultiTenancySettings" target="classFrame">MultiTenancySettings.MultiTenancyMode</a></li>
+<li><a href="grails/gorm/MultiTenant.html" title="trait in grails.gorm" target="classFrame"><I>MultiTenant</I></a></li>
 <li><a href="org/grails/datastore/mapping/reflect/NameUtils.html" title="class in org.grails.datastore.mapping.reflect" target="classFrame">NameUtils</a></li>
 <li><a href="org/grails/datastore/gorm/query/NamedCriteriaProxy.html" title="class in org.grails.datastore.gorm.query" target="classFrame">NamedCriteriaProxy</a></li>
 <li><a href="org/grails/datastore/gorm/query/NamedQueriesBuilder.html" title="class in org.grails.datastore.gorm.query" target="classFrame">NamedQueriesBuilder</a></li>
 <li><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html" title="class in org.grails.datastore.mapping.engine" target="classFrame">NativeEntryEntityPersister</a></li>
 <li><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.NativeEntryModifyingEntityAccess.html" title="class in org.grails.datastore.mapping.engine.NativeEntryEntityPersister" target="classFrame">NativeEntryEntityPersister.NativeEntryModifyingEntityAccess</a></li>
+<li><a href="org/grails/datastore/mapping/multitenancy/resolvers/NoTenantResolver.html" title="class in org.grails.datastore.mapping.multitenancy.resolvers" target="classFrame">NoTenantResolver</a></li>
 <li><a href="org/grails/datastore/mapping/engine/NonPersistentTypeException.html" title="class in org.grails.datastore.mapping.engine" target="classFrame">NonPersistentTypeException</a></li>
 <li><a href="org/grails/datastore/gorm/plugin/support/OnChangeHandler.html" title="class in org.grails.datastore.gorm.plugin.support" target="classFrame">OnChangeHandler</a></li>
 <li><a href="org/grails/datastore/mapping/model/types/OneToMany.html" title="class in org.grails.datastore.mapping.model.types" target="classFrame">OneToMany</a></li>
@@ -433,6 +439,8 @@
 <li><a href="org/grails/datastore/mapping/cache/TPCacheAdapter.html" title="interface in org.grails.datastore.mapping.cache" target="classFrame"><I>TPCacheAdapter</I></a></li>
 <li><a href="org/grails/datastore/mapping/cache/TPCacheAdapterRepository.html" title="interface in org.grails.datastore.mapping.cache" target="classFrame"><I>TPCacheAdapterRepository</I></a></li>
 <li><a href="org/grails/datastore/mapping/cache/impl/TPCacheAdapterRepositoryImpl.html" title="class in org.grails.datastore.mapping.cache.impl" target="classFrame">TPCacheAdapterRepositoryImpl</a></li>
+<li><a href="org/grails/datastore/mapping/multitenancy/exceptions/TenantNotFoundException.html" title="class in org.grails.datastore.mapping.multitenancy.exceptions" target="classFrame">TenantNotFoundException</a></li>
+<li><a href="org/grails/datastore/mapping/multitenancy/TenantResolver.html" title="interface in org.grails.datastore.mapping.multitenancy" target="classFrame"><I>TenantResolver</I></a></li>
 <li><a href="org/grails/datastore/mapping/engine/ThirdPartyCacheEntityPersister.html" title="class in org.grails.datastore.mapping.engine" target="classFrame">ThirdPartyCacheEntityPersister</a></li>
 <li><a href="org/grails/datastore/gorm/timestamp/TimestampProvider.html" title="interface in org.grails.datastore.gorm.timestamp" target="classFrame"><I>TimestampProvider</I></a></li>
 <li><a href="org/grails/datastore/mapping/model/types/ToMany.html" title="class in org.grails.datastore.mapping.model.types" target="classFrame">ToMany</a></li>
