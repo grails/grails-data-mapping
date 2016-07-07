@@ -14,7 +14,10 @@ class MultiTenancySettings {
      */
     MultiTenancyMode mode = MultiTenancyMode.NONE
 
-
+    /**
+     * The tenant resolver class
+     */
+    Class<? extends TenantResolver> tenantResolverClass
 
     static enum MultiTenancyMode {
         /**

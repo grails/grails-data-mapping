@@ -14,12 +14,11 @@
  */
 package org.grails.datastore.gorm
 
+import grails.gorm.MultiTenant
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import groovy.transform.Memoized
 import groovy.util.logging.Commons
 import org.codehaus.groovy.reflection.CachedMethod
-import org.codehaus.groovy.runtime.InvokerHelper
 import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import org.grails.datastore.gorm.finders.*
@@ -27,13 +26,17 @@ import org.grails.datastore.gorm.internal.InstanceMethodInvokingClosure
 import org.grails.datastore.gorm.internal.StaticMethodInvokingClosure
 import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
-import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.DatastoreAware
 import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
 import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider
 import org.grails.datastore.mapping.core.connections.ConnectionSourcesSupport
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.datastore.mapping.multitenancy.TenantResolver
+import org.grails.datastore.mapping.multitenancy.resolvers.FixedTenantResolver
+import org.grails.datastore.mapping.multitenancy.resolvers.NoTenantResolver
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.MetaClassUtils
 import org.grails.datastore.mapping.reflect.NameUtils
@@ -65,6 +68,9 @@ class GormEnhancer implements Closeable {
     }
     private static final Map<String, Map<String, Datastore>> DATASTORES = new ConcurrentHashMap<String, Map<String, Datastore>>().withDefault { String key ->
         return new ConcurrentHashMap<String, Datastore>()
+    }
+    private static final Map<String, TenantResolver> TENANT_RESOLVERS = new ConcurrentHashMap<String, TenantResolver>().withDefault { String key ->
+        return new NoTenantResolver()
     }
 
     final Datastore datastore
@@ -100,14 +106,41 @@ class GormEnhancer implements Closeable {
     }
 
     /**
+     * Construct a new GormEnhancer for the given arguments
+     *
+     * @param datastore The datastore
+     * @param transactionManager The transaction manager
+     * @param settings The settings
+     */
+    GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager, ConnectionSourceSettings settings) {
+        this.datastore = datastore
+        this.failOnError = settings.isFailOnError()
+        this.transactionManager = transactionManager
+        this.dynamicEnhance = false
+        if(datastore != null) {
+            registerConstraints(datastore)
+        }
+        NAMED_QUERIES.clear()
+        TenantResolver tenantResolver = settings.multiTenancy.tenantResolverClass?.newInstance() ?: new FixedTenantResolver()
+        if(tenantResolver instanceof DatastoreAware) {
+            ((DatastoreAware)tenantResolver).setDatastore(datastore)
+        }
+        for(entity in datastore.mappingContext.persistentEntities) {
+            registerEntity(entity, tenantResolver)
+        }
+    }
+
+    /**
      * Registers a new entity with the GORM enhancer
      *
      * @param entity The entity
      */
-    void registerEntity(PersistentEntity entity) {
+    void registerEntity(PersistentEntity entity, TenantResolver tenantResolver = new FixedTenantResolver()) {
         Datastore datastore = this.datastore
         if (appliesToDatastore(datastore, entity)) {
             def cls = entity.javaClass
+            TENANT_RESOLVERS.put(cls.name, tenantResolver)
+
             Set<String> qualifiers = allQualifiers(this.datastore, entity)
             if(!qualifiers.contains(ConnectionSource.DEFAULT)) {
                 def firstQualifier = qualifiers.first()
@@ -137,7 +170,7 @@ class GormEnhancer implements Closeable {
     Set<String> allQualifiers(Datastore datastore, PersistentEntity entity) {
         Set<String> qualifiers = new LinkedHashSet<>()
         qualifiers.addAll ConnectionSourcesSupport.getConnectionSourceNames(entity)
-        if(qualifiers.contains(ConnectionSource.ALL) && (datastore instanceof ConnectionSourcesProvider)) {
+        if((MultiTenant.isAssignableFrom(entity.javaClass) || qualifiers.contains(ConnectionSource.ALL)) && (datastore instanceof ConnectionSourcesProvider)) {
             qualifiers.clear()
             def allConnectionSourceNames = ((ConnectionSourcesProvider) datastore).getConnectionSources().allConnectionSources.collect() { ConnectionSource connectionSource -> connectionSource.name }
             qualifiers.addAll allConnectionSourceNames
@@ -181,10 +214,37 @@ class GormEnhancer implements Closeable {
         return null
     }
 
+    /**
+     * Find the {@link TenantResolver} for the given entity
+     *
+     * @param entity The entity
+     * @return The {@link TenantResolver}
+     */
+    static TenantResolver findTenantResolver(Class entity) {
+        String className = NameUtils.getClassName(entity)
+        return TENANT_RESOLVERS.get(className)
+    }
+
+    /**
+     * Find the tenant id for the given entity
+     *
+     * @param entity
+     * @return
+     */
+    static String findTenantId(Class entity) {
+        if(MultiTenant.isAssignableFrom(entity)) {
+            return findTenantResolver(entity).resolveTenantIdentifier(entity)
+        }
+        else {
+            return ConnectionSource.DEFAULT
+        }
+    }
+
 
     @CompileDynamic
-    static <D> GormStaticApi<D> findStaticApi(Class<D> entity, String qualifier = ConnectionSource.DEFAULT) {
-        def staticApi = STATIC_APIS.get(qualifier)?.get(NameUtils.getClassName(entity))
+    static <D> GormStaticApi<D> findStaticApi(Class<D> entity, String qualifier = findTenantId(entity)) {
+        String className = NameUtils.getClassName(entity)
+        def staticApi = STATIC_APIS.get(qualifier)?.get(className)
         if(staticApi == null) {
             throw stateException(entity)
         }
@@ -195,7 +255,7 @@ class GormEnhancer implements Closeable {
         new IllegalStateException("Either class [$entity.name] is not a domain class or GORM has not been initialized correctly or has already been shutdown. If you are unit testing your entities using the mocking APIs")
     }
 
-    static GormInstanceApi findInstanceApi(Class entity, String qualifier = ConnectionSource.DEFAULT) {
+    static GormInstanceApi findInstanceApi(Class entity, String qualifier = findTenantId(entity)) {
         def instanceApi = INSTANCE_APIS.get(qualifier)?.get(NameUtils.getClassName(entity))
         if(instanceApi == null) {
             throw stateException(entity)
@@ -203,7 +263,7 @@ class GormEnhancer implements Closeable {
         return instanceApi
     }
 
-    static  GormValidationApi findValidationApi(Class entity, String qualifier = ConnectionSource.DEFAULT) {
+    static  GormValidationApi findValidationApi(Class entity, String qualifier = findTenantId(entity)) {
         def instanceApi = VALIDATION_APIS.get(qualifier)?.get(NameUtils.getClassName(entity))
         if(instanceApi == null) {
             throw stateException(entity)
@@ -211,7 +271,7 @@ class GormEnhancer implements Closeable {
         return instanceApi
     }
 
-    static Datastore findDatastore(Class entity, String qualifier = ConnectionSource.DEFAULT) {
+    static Datastore findDatastore(Class entity, String qualifier = findTenantId(entity)) {
         def datastore = DATASTORES.get(qualifier)?.get(entity.name)
         if(datastore == null) {
             throw stateException(entity)
@@ -233,6 +293,7 @@ class GormEnhancer implements Closeable {
             Set<String> qualifiers = allQualifiers(datastore, entity)
             def cls = entity.javaClass
             def className = cls.name
+            TENANT_RESOLVERS.remove(className)
             for(q in qualifiers) {
                 NAMED_QUERIES.remove(className)
                 STATIC_APIS.get(q)?.remove(className)
