@@ -17,7 +17,7 @@ class HibernateConnectionSourceSettingsSpec extends Specification {
                 'dataSource.dbCreate': 'update',
                 'dataSource.dialect': Oracle8iDialect.name,
                 'dataSource.formatSql': 'true',
-                'hibernate.flush.mode': 'COMMIT',
+                'hibernate.flush.mode': 'commit',
                 'hibernate.cache.queries': 'true',
                 'hibernate.hbm2ddl.auto': 'create',
                 'hibernate.configLocations':'file:hibernate.cfg.xml'
@@ -34,7 +34,7 @@ class HibernateConnectionSourceSettingsSpec extends Specification {
         def expectedHibernateProperties = new Properties()
         expectedHibernateProperties.put('hibernate.hbm2ddl.auto', 'create')
         expectedHibernateProperties.put('hibernate.cache.queries', 'true')
-        expectedHibernateProperties.put('hibernate.flush.mode', 'COMMIT')
+        expectedHibernateProperties.put('hibernate.flush.mode', 'commit')
         expectedHibernateProperties.put('hibernate.naming_strategy','org.hibernate.cfg.ImprovedNamingStrategy')
         expectedHibernateProperties.put('hibernate.configLocations','file:hibernate.cfg.xml')
 

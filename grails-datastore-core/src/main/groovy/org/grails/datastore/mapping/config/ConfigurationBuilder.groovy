@@ -7,6 +7,7 @@ import groovy.transform.builder.SimpleStrategy
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.core.exceptions.ConfigurationException
 import org.grails.datastore.mapping.reflect.NameUtils
+import org.springframework.core.convert.ConversionFailedException
 import org.springframework.core.env.PropertyResolver
 import org.springframework.util.ReflectionUtils
 
@@ -245,7 +246,28 @@ abstract class ConfigurationBuilder<B, C> {
                     else {
                         Object fallBackValue = getFallBackValue(fallBackConfig, methodName)
 
-                        def value = propertyResolver.getProperty("${startingPrefix}.${settingName}", argType, fallBackValue)
+                        def value
+                        try {
+                            value = propertyResolver.getProperty(propertyPath, argType, fallBackValue)
+                        } catch (ConversionFailedException e) {
+                            if(argType.isEnum()) {
+                                value = propertyResolver.getProperty(propertyPath, String)
+                                if(value != null) {
+                                    try {
+                                        value = Enum.valueOf((Class)argType, value.toUpperCase())
+                                    } catch (Throwable e2) {
+                                        // ignore e2 and throw original
+                                        throw new ConfigurationException("Invalid value for setting [$propertyPath]: $e.message", e)
+                                    }
+                                }
+                                else {
+                                    throw new ConfigurationException("Invalid value for setting [$propertyPath]: $e.message", e)
+                                }
+                            }
+                            else {
+                                throw new ConfigurationException("Invalid value for setting [$propertyPath]: $e.message", e)
+                            }
+                        }
                         if (value != null) {
                             ReflectionUtils.makeAccessible(method)
                             ReflectionUtils.invokeMethod(method, builder, value)
