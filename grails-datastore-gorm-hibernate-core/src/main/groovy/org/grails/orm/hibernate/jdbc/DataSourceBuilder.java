@@ -16,6 +16,8 @@
 package org.grails.orm.hibernate.jdbc;
 
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -25,6 +27,7 @@ import javax.sql.DataSource;
 import org.grails.datastore.mapping.core.exceptions.ConfigurationException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -39,6 +42,8 @@ import org.springframework.util.ClassUtils;
  * {@code @ConfigurationProperties}.
  *
  * @author Dave Syer
+ * @author Graeme Rocher
+ *
  * @since 1.1.0
  */
 public class DataSourceBuilder {
@@ -55,6 +60,8 @@ public class DataSourceBuilder {
     private ClassLoader classLoader;
 
     private Map<String, String> properties = new HashMap<>();
+    private boolean pooled = true;
+    private boolean readOnly = false;
 
     public static DataSourceBuilder create() {
         return new DataSourceBuilder(null);
@@ -124,9 +131,19 @@ public class DataSourceBuilder {
 
     @SuppressWarnings("unchecked")
     public Class<? extends DataSource> findType() {
+
         if (this.type != null) {
             return this.type;
         }
+        else if(!pooled) {
+            if(this.readOnly) {
+                return ReadOnlyDriverManagerDataSource.class;
+            }
+            else {
+                return org.springframework.jdbc.datasource.DriverManagerDataSource.class;
+            }
+        }
+
         for (String name : DATA_SOURCE_TYPE_NAMES) {
             try {
                 return (Class<? extends DataSource>) ClassUtils.forName(name,
@@ -147,4 +164,21 @@ public class DataSourceBuilder {
         throw new IllegalStateException("No supported DataSource type found");
     }
 
+    public void setPooled(boolean pooled) {
+        this.pooled = pooled;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
+    protected static class ReadOnlyDriverManagerDataSource extends DriverManagerDataSource {
+
+        @Override
+        protected Connection getConnectionFromDriverManager(final String url, final Properties props) throws SQLException {
+            Connection connection = super.getConnectionFromDriverManager(url, props);
+            connection.setReadOnly(true);
+            return connection;
+        }
+    }
 }

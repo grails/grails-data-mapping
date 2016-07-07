@@ -1,12 +1,11 @@
 package org.grails.orm.hibernate.jdbc.connections;
 
-import org.grails.datastore.mapping.core.connections.ConnectionSource;
-import org.grails.datastore.mapping.core.connections.ConnectionSourceFactory;
-import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings;
-import org.grails.datastore.mapping.core.connections.DefaultConnectionSource;
+import org.grails.datastore.mapping.core.connections.*;
 import org.grails.orm.hibernate.cfg.Settings;
 import org.grails.orm.hibernate.jdbc.DataSourceBuilder;
 import org.springframework.core.env.PropertyResolver;
+import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.jndi.JndiObjectFactoryBean;
 
 import javax.sql.DataSource;
@@ -19,33 +18,31 @@ import java.util.Map;
  * @author Graeme Rocher
  * @since 6.0
  */
-public class DataSourceConnectionSourceFactory implements ConnectionSourceFactory<DataSource, DataSourceSettings> {
+public class DataSourceConnectionSourceFactory extends AbstractConnectionSourceFactory<DataSource, DataSourceSettings> {
     @Override
-    public ConnectionSource<DataSource, DataSourceSettings> create(String name, PropertyResolver configuration) {
-        return create(name, configuration, null);
-    }
-
-    @Override
-    public <F extends ConnectionSourceSettings> ConnectionSource<DataSource, DataSourceSettings> create(String name, PropertyResolver configuration, F fallbackSettings) {
+    protected <F extends ConnectionSourceSettings> DataSourceSettings buildSettings(String name, PropertyResolver configuration, F fallbackSettings, boolean isDefaultDataSource) {
         DataSourceSettingsBuilder builder = new DataSourceSettingsBuilder(configuration, ConnectionSource.DEFAULT.equals(name) ? Settings.SETTING_DATASOURCE : Settings.SETTING_DATASOURCES  + '.' + name);
         DataSourceSettings settings = builder.build();
-
-        return create(name, settings);
+        return settings;
     }
 
     public ConnectionSource<DataSource, DataSourceSettings> create(String name, DataSourceSettings settings) {
 
+        DataSource dataSource;
         if(settings.getJndiName() != null) {
             JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
             jndiObjectFactoryBean.setExpectedType(DataSource.class);
             jndiObjectFactoryBean.setJndiName(settings.getJndiName());
 
-            return new DefaultConnectionSource<>(name, (DataSource)jndiObjectFactoryBean.getObject(), settings);
+            dataSource = (DataSource)jndiObjectFactoryBean.getObject();
+            dataSource = proxy(dataSource, settings);
+            return new DefaultConnectionSource<>(name, dataSource, settings);
         }
         else {
 
             DataSourceBuilder dataSourceBuilder = new DataSourceBuilder(getClass().getClassLoader());
-
+            dataSourceBuilder.setPooled(settings.isPooled());
+            dataSourceBuilder.setReadOnly(settings.isReadOnly());
             String driverClassName = settings.getDriverClassName();
             String username = settings.getUsername();
             String password = settings.getPassword();
@@ -65,8 +62,20 @@ public class DataSourceConnectionSourceFactory implements ConnectionSourceFactor
                 dataSourceBuilder.password(password);
             }
 
-            return new DataSourceConnectionSource(name, dataSourceBuilder.build(), settings);
+            dataSource = dataSourceBuilder.build();
+            dataSource = proxy(dataSource, settings);
+            return new DataSourceConnectionSource(name, dataSource, settings);
         }
+    }
+
+    protected DataSource proxy(DataSource dataSource, DataSourceSettings settings) {
+        if(settings.isLazy()) {
+            dataSource = new LazyConnectionDataSourceProxy(dataSource);
+        }
+        if(settings.isTransactionAware()) {
+            dataSource = new TransactionAwareDataSourceProxy(dataSource);
+        }
+        return dataSource;
     }
 
     @Override

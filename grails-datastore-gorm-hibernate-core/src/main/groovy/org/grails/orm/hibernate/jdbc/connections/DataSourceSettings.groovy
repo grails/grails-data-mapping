@@ -44,6 +44,16 @@ class DataSourceSettings extends ConnectionSourceSettings {
     boolean pooled = true
 
     /**
+     * Whether the data source is lazy
+     */
+    boolean lazy = true
+
+    /**
+     * Whether the data source is aware of an ongoing Spring transaction
+     */
+    boolean transactionAware = true
+
+    /**
      * Whether the connection is readonly
      */
     boolean readOnly = false
