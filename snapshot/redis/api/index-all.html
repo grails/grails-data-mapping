@@ -1206,8 +1206,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/redis/RedisSession.html#createPersister(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)" title="Method in RedisSession">createPersister(Class, MappingContext)</a></span> - Method in <a href="org/grails/datastore/mapping/redis/RedisSession.html">RedisSession</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html#createPropertyResolverForConfig(java.util.Map)" title="Method in AbstractDatastoreInitializer">createPropertyResolverForConfig(Map)</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html">AbstractDatastoreInitializer</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/JavassistProxyFactory.html#createProxiedInstance(org.grails.datastore.mapping.core.Session, java.lang.Class, java.lang.Class, java.io.Serializable)" title="Method in JavassistProxyFactory">createProxiedInstance(Session, Class, Class, Serializable)</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/JavassistProxyFactory.html">JavassistProxyFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/proxy/GroovyProxyFactory.html#createProxy(org.grails.datastore.mapping.core.Session, AssociationQueryExecutor<K, T>, K)" title="Method in GroovyProxyFactory">createProxy(Session, AssociationQueryExecutor&lt;K, T&gt;, K)</a></span> - Method in <a href="org/grails/datastore/gorm/proxy/GroovyProxyFactory.html">GroovyProxyFactory</a>
@@ -4197,6 +4195,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">@return Whether the property should be unique</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#isUniqueWithinGroup()" title="Method in Property">isUniqueWithinGroup()</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
 </dt><dd> <div class="block">@return Whether the property is unique within a group</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html#isValidSource(org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent)" title="Method in AbstractPersistenceEventListener">isValidSource(AbstractPersistenceEvent)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html">AbstractPersistenceEventListener</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#isVersioned()" title="Method in AbstractPersistentEntity">isVersioned()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Entity.html#isVersioned()" title="Method in Entity">isVersioned()</a></span> - Method in <a href="org/grails/datastore/mapping/config/Entity.html">Entity</a>
@@ -6746,8 +6746,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/async/GormAsyncStaticApi.html#task(Closure<T>)" title="Method in GormAsyncStaticApi">task(Closure&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/async/GormAsyncStaticApi.html">GormAsyncStaticApi</a>
 </dt><dd> <div class="block">Used to perform a sequence of operations asynchronously</div></dd>
-<dt><span class="strong"><a href="grails/gorm/TestCriteriaBuilder.html" title="Class in grails.gorm">TestCriteriaBuilder</a></span> - Class in <a href="./grails/gorm/package-summary.html">grails.gorm</a>
-</dt><dd><div class="block">A CriteriaBuilder for unit testing</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/ThirdPartyCacheEntityPersister.html" title="Class in org.grails.datastore.mapping.engine">ThirdPartyCacheEntityPersister</a></span> - Class in <a href="./org/grails/datastore/mapping/engine/package-summary.html">org.grails.datastore.mapping.engine</a>
 </dt><dd><div class="block">An <a href='../../../../../org/grails/datastore/mapping/engine/EntityPersister.html' title='EntityPersister'>EntityPersister</a> that supports third party cache adapters</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/ThirdPartyCacheEntityPersister.html#ThirdPartyCacheEntityPersister(org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.core.Session, org.springframework.context.ApplicationEventPublisher, TPCacheAdapterRepository<T>)" title="Constructor in ThirdPartyCacheEntityPersister">ThirdPartyCacheEntityPersister(MappingContext, PersistentEntity, Session, ApplicationEventPublisher, TPCacheAdapterRepository&lt;T&gt;)</a></span> - Constructor in <a href="org/grails/datastore/mapping/engine/ThirdPartyCacheEntityPersister.html">ThirdPartyCacheEntityPersister</a>
@@ -6786,6 +6784,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/redis/collection/RedisValue.html#toString()" title="Method in RedisValue">toString()</a></span> - Method in <a href="org/grails/datastore/mapping/redis/collection/RedisValue.html">RedisValue</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/PagedResultList.html#totalCount" title="Field in PagedResultList">totalCount</a></span> - Field in <a href="grails/gorm/PagedResultList.html">PagedResultList</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/AbstractConnectionSources.html#toValidConnectionSourceNames(Map<String, Object>)" title="Method in AbstractConnectionSources">toValidConnectionSourceNames(Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/core/connections/AbstractConnectionSources.html">AbstractConnectionSources</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/cache/TPCacheAdapter.html" title="Interface in org.grails.datastore.mapping.cache">TPCacheAdapter</a></span> - Interface in <a href="./org/grails/datastore/mapping/cache/package-summary.html">org.grails.datastore.mapping.cache</a>
 </dt><dd><div class="block"></div></dd>
