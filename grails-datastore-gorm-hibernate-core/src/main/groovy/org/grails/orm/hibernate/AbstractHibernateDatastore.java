@@ -17,6 +17,7 @@ package org.grails.orm.hibernate;
 import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.connections.*;
+import org.grails.datastore.mapping.core.exceptions.ConfigurationException;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.orm.hibernate.cfg.HibernateMappingContext;
 import org.grails.orm.hibernate.connections.HibernateConnectionSource;
@@ -43,13 +44,14 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     public static final String CONFIG_PROPERTY_PASS_READONLY_TO_HIBERNATE = "grails.hibernate.pass.readonly";
     protected final SessionFactory sessionFactory;
     protected final ConnectionSources<SessionFactory, HibernateConnectionSourceSettings> connectionSources;
+    protected final String defaultFlushModeName;
     protected AbstractEventTriggeringInterceptor eventTriggeringInterceptor;
-    private final boolean osivReadOnly;
-    private final boolean passReadOnlyToHibernate;
-    private final boolean isCacheQueries;
-    private final int defaultFlushMode;
-    private final boolean failOnError;
-    private final String dataSourceName;
+    protected final boolean osivReadOnly;
+    protected final boolean passReadOnlyToHibernate;
+    protected final boolean isCacheQueries;
+    protected final int defaultFlushMode;
+    protected final boolean failOnError;
+    protected final String dataSourceName;
 
     protected AbstractHibernateDatastore(ConnectionSources<SessionFactory, HibernateConnectionSourceSettings> connectionSources, HibernateMappingContext mappingContext) {
         super(mappingContext, connectionSources.getBaseConfiguration(), null);
@@ -63,7 +65,9 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         this.passReadOnlyToHibernate = hibernateSettings.isReadOnly();
         this.isCacheQueries = hibernateSettings.getCache().isQueries();
         this.failOnError = settings.isFailOnError();
-        this.defaultFlushMode = FlushMode.valueOf(hibernateSettings.getFlush().getMode().name()).getLevel();
+        FlushMode flushMode = FlushMode.valueOf(hibernateSettings.getFlush().getMode().name());
+        this.defaultFlushModeName = flushMode.name();
+        this.defaultFlushMode = flushMode.getLevel();
     }
 
     protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext, String dataSourceName) {
@@ -79,11 +83,15 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         osivReadOnly = config.getProperty(CONFIG_PROPERTY_OSIV_READONLY, Boolean.class, false);
         passReadOnlyToHibernate = config.getProperty(CONFIG_PROPERTY_PASS_READONLY_TO_HIBERNATE, Boolean.class, false);
         isCacheQueries = config.getProperty(CONFIG_PROPERTY_CACHE_QUERIES, Boolean.class, false);
+
         if( config.getProperty(SETTING_AUTO_FLUSH, Boolean.class, false) ) {
+            this.defaultFlushModeName = FlushMode.AUTO.name();
             defaultFlushMode = FlushMode.AUTO.level;
         }
         else {
-            defaultFlushMode = config.getProperty(SETTING_FLUSH_MODE, Integer.class, FlushMode.COMMIT.level);
+            FlushMode flushMode = config.getProperty(SETTING_FLUSH_MODE, FlushMode.class, FlushMode.COMMIT);
+            this.defaultFlushModeName = flushMode.name();
+            defaultFlushMode = flushMode.level;
         }
         failOnError = config.getProperty(SETTING_FAIL_ON_ERROR, Boolean.class, false);
     }
@@ -97,8 +105,18 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         return defaultFlushMode == FlushMode.AUTO.level;
     }
 
+    /**
+     * @return Obtains the default flush mode level
+     */
     public int getDefaultFlushMode() {
         return defaultFlushMode;
+    }
+
+    /**
+     * @return The name of the default value flush
+     */
+    public String getDefaultFlushModeName() {
+        return defaultFlushModeName;
     }
 
     public boolean isFailOnError() {

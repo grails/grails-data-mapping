@@ -30,6 +30,8 @@ import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesSupport
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
@@ -133,7 +135,14 @@ class GormEnhancer implements Closeable {
     }
 
     Set<String> allQualifiers(Datastore datastore, PersistentEntity entity) {
-        return [Entity.DEFAULT_DATA_SOURCE] as Set
+        Set<String> qualifiers = new LinkedHashSet<>()
+        qualifiers.addAll ConnectionSourcesSupport.getConnectionSourceNames(entity)
+        if(qualifiers.contains(ConnectionSource.ALL) && (datastore instanceof ConnectionSourcesProvider)) {
+            qualifiers.clear()
+            def allConnectionSourceNames = ((ConnectionSourcesProvider) datastore).getConnectionSources().allConnectionSources.collect() { ConnectionSource connectionSource -> connectionSource.name }
+            qualifiers.addAll allConnectionSourceNames
+        }
+        return qualifiers
     }
 
     protected boolean appliesToDatastore(Datastore datastore, PersistentEntity entity) {

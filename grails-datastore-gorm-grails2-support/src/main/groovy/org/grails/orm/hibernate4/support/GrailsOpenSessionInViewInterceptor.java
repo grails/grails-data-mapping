@@ -40,7 +40,7 @@ import org.springframework.web.context.request.WebRequest;
 public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
     protected static final String IS_FLOW_REQUEST_ATTRIBUTE = "org.codehaus.groovy.grails.webflow.flow_request";
 
-    protected AbstractHibernateDatastore.FlushMode flushMode = AbstractHibernateDatastore.FlushMode.AUTO;
+    protected FlushMode hibernateFlushMode = FlushMode.MANUAL;
 
     @Override
     public void preHandle(WebRequest request) throws DataAccessException {
@@ -68,21 +68,6 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
     }
 
     protected void applyFlushMode(Session session) {
-        FlushMode hibernateFlushMode = FlushMode.AUTO;
-        switch (flushMode) {
-            case AUTO:
-                hibernateFlushMode = FlushMode.AUTO;
-                break;
-            case MANUAL:
-                hibernateFlushMode = FlushMode.MANUAL;
-                break;
-            case COMMIT:
-                hibernateFlushMode = FlushMode.COMMIT;
-                break;
-            case ALWAYS:
-                hibernateFlushMode = FlushMode.ALWAYS;
-                break;
-        }
         session.setFlushMode(hibernateFlushMode);
     }
 
@@ -97,7 +82,8 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
         Session session = sessionHolder != null ? sessionHolder.getSession() : null;
         try {
             super.postHandle(request, model);
-            if (session != null && flushMode != AbstractHibernateDatastore.FlushMode.MANUAL && !FlushMode.isManualFlushMode(session.getFlushMode())) {
+            boolean isNotManual = session.getFlushMode() != FlushMode.MANUAL || session.getFlushMode() != FlushMode.COMMIT;
+            if (session != null && isNotManual) {
                 logger.debug("Eagerly flushing Hibernate session");
                 session.flush();
             }
@@ -119,22 +105,14 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
         super.afterCompletion(request, ex);
     }
 
-
-    public void setFlushMode(int flushMode) {
-        if(AbstractHibernateDatastore.FlushMode.AUTO.getLevel() == flushMode) {
-            this.flushMode = AbstractHibernateDatastore.FlushMode.AUTO;
+    public void setHibernateDatastore(AbstractHibernateDatastore hibernateDatastore) {
+        String defaultFlushModeName = hibernateDatastore.getDefaultFlushModeName();
+        if(hibernateDatastore.isOsivReadOnly()) {
+            this.hibernateFlushMode = FlushMode.MANUAL;
         }
-        else if(AbstractHibernateDatastore.FlushMode.MANUAL.getLevel() == flushMode) {
-            this.flushMode = AbstractHibernateDatastore.FlushMode.MANUAL;
+        else {
+            this.hibernateFlushMode = FlushMode.valueOf(defaultFlushModeName);
         }
-        else if(AbstractHibernateDatastore.FlushMode.COMMIT.getLevel() == flushMode) {
-            this.flushMode = AbstractHibernateDatastore.FlushMode.COMMIT;
-        }
-        else if(AbstractHibernateDatastore.FlushMode.ALWAYS.getLevel() == flushMode) {
-            this.flushMode = AbstractHibernateDatastore.FlushMode.ALWAYS;
-        }
-    }
-    public int getFlushMode() {
-        return flushMode.getLevel();
+        setSessionFactory(hibernateDatastore.getSessionFactory());
     }
 }

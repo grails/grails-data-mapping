@@ -65,7 +65,7 @@ public class DataSourceConnectionSourceFactory implements ConnectionSourceFactor
                 dataSourceBuilder.password(password);
             }
 
-            return new DefaultConnectionSource<>(name, dataSourceBuilder.build(), settings);
+            return new DataSourceConnectionSource(name, dataSourceBuilder.build(), settings);
         }
     }
 

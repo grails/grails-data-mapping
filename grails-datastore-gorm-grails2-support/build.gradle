@@ -15,7 +15,7 @@ dependencies {
     provided project(':grails-datastore-gorm-hibernate-core')
     provided "org.grails:grails-web-url-mappings:$grailsVersion"
 
-    provided('org.hibernate:hibernate-core:3.6.10.Final') {
+    provided("org.hibernate:hibernate-core:${hibernateVersion}.Final") {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'org.slf4j', module:'slf4j-api'

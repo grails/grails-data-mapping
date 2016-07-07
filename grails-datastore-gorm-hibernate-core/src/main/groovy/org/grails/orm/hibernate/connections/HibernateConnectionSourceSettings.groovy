@@ -226,7 +226,7 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
             /**
              * The default flush mode
              */
-            FlushMode mode = FlushMode.AUTO
+            FlushMode mode = FlushMode.MANUAL
 
             /**
              * We use a separate enum here because the classes differ between Hibernate 3 and 4
