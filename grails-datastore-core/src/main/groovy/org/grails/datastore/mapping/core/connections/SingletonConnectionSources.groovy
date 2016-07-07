@@ -35,15 +35,15 @@ class SingletonConnectionSources<T, S extends ConnectionSourceSettings> extends 
         throw new UnsupportedOperationException("Cannot add a connection source it a SingletonConnectionSources")
     }
 
-    static class NullConnectionFactory<T, S extends ConnectionSourceSettings> implements ConnectionSourceFactory<T,S> {
+    static class NullConnectionFactory<T, S extends ConnectionSourceSettings> extends AbstractConnectionSourceFactory<T,S> {
 
         @Override
-        ConnectionSource<T, S> create(String name, PropertyResolver configuration) {
+        protected <F extends ConnectionSourceSettings> S buildSettings(String name, PropertyResolver configuration, F fallbackSettings, boolean isDefaultDataSource) {
             throw new UnsupportedOperationException("Cannot add a connection source it a SingletonConnectionSources")
         }
 
         @Override
-        def <F extends ConnectionSourceSettings> ConnectionSource<T, S> create(String name, PropertyResolver configuration, F fallbackSettings) {
+        ConnectionSource<T, S> create(String name, S settings) {
             throw new UnsupportedOperationException("Cannot add a connection source it a SingletonConnectionSources")
         }
 
