@@ -11,6 +11,8 @@ import org.grails.datastore.mapping.engine.event.PostDeleteEvent
 import org.grails.datastore.mapping.engine.event.PreDeleteEvent
 import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.springframework.context.ApplicationEvent
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.ConfigurableApplicationContext
 
 /**
  * @author Tom Widmer
@@ -25,7 +27,14 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
 
     def setup() {
         listener = new SpecPersistenceListener(session.datastore)
-        ((ConfigurableApplicationEventPublisher)session.datastore.applicationEventPublisher).addApplicationListener(listener)
+
+        def publisher = session.datastore.applicationEventPublisher
+        if(publisher instanceof ConfigurableApplicationEventPublisher) {
+            ((ConfigurableApplicationEventPublisher) publisher).addApplicationListener(listener)
+        }
+        else if(publisher instanceof ConfigurableApplicationContext) {
+            ((ConfigurableApplicationContext) publisher).addApplicationListener(listener)
+        }
     }
 
     void "Test delete events"() {
