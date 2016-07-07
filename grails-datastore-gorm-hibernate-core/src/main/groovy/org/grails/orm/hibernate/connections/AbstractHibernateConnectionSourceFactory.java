@@ -1,9 +1,6 @@
 package org.grails.orm.hibernate.connections;
 
-import org.grails.datastore.mapping.core.connections.ConnectionSource;
-import org.grails.datastore.mapping.core.connections.ConnectionSourceFactory;
-import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings;
-import org.grails.datastore.mapping.core.connections.ConnectionSourceSettingsBuilder;
+import org.grails.datastore.mapping.core.connections.*;
 import org.grails.orm.hibernate.cfg.Settings;
 import org.grails.orm.hibernate.jdbc.connections.DataSourceConnectionSourceFactory;
 import org.grails.orm.hibernate.jdbc.connections.DataSourceSettings;
@@ -22,7 +19,7 @@ import java.util.Map;
  * @author Graeme Rocher
  * @since 6.0
  */
-public abstract class AbstractHibernateConnectionSourceFactory implements ConnectionSourceFactory<SessionFactory, HibernateConnectionSourceSettings> {
+public abstract class AbstractHibernateConnectionSourceFactory extends AbstractConnectionSourceFactory<SessionFactory, HibernateConnectionSourceSettings> {
 
     protected DataSourceConnectionSourceFactory dataSourceConnectionSourceFactory = new DataSourceConnectionSourceFactory();
 
@@ -35,19 +32,22 @@ public abstract class AbstractHibernateConnectionSourceFactory implements Connec
         this.dataSourceConnectionSourceFactory = dataSourceConnectionSourceFactory;
     }
 
-    @Override
-    public ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> create(String name, PropertyResolver configuration) {
-        ConnectionSourceSettingsBuilder builder = new ConnectionSourceSettingsBuilder(configuration);
-        ConnectionSourceSettings fallbackSettings = builder.build();
-
-        return create(name, configuration, fallbackSettings);
+    public ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> create(String name, HibernateConnectionSourceSettings settings) {
+        DataSourceSettings dataSourceSettings = settings.getDataSource();
+        ConnectionSource<DataSource, DataSourceSettings> dataSourceConnectionSource = dataSourceConnectionSourceFactory.create(name, dataSourceSettings);
+        return create(name, dataSourceConnectionSource, settings);
     }
 
-    @Override
-    public <F extends ConnectionSourceSettings> ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> create(String name, PropertyResolver configuration, F fallbackSettings) {
 
+    @Override
+    public Serializable getConnectionSourcesConfigurationKey() {
+        return Settings.SETTING_DATASOURCES;
+    }
+
+    protected abstract ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> create(String name, ConnectionSource<DataSource, DataSourceSettings> dataSourceConnectionSource,  HibernateConnectionSourceSettings settings);
+
+    protected <F extends ConnectionSourceSettings> HibernateConnectionSourceSettings buildSettings(String name, PropertyResolver configuration, F fallbackSettings, boolean isDefaultDataSource) {
         HibernateConnectionSourceSettingsBuilder builder;
-        boolean isDefaultDataSource = ConnectionSource.DEFAULT.equals(name);
         HibernateConnectionSourceSettings settings;
         if(isDefaultDataSource) {
             builder = new HibernateConnectionSourceSettingsBuilder(configuration, "", fallbackSettings);
@@ -72,23 +72,6 @@ public abstract class AbstractHibernateConnectionSourceFactory implements Connec
                 settings.setDataSource(dataSourceSettings);
             }
         }
-
-        return create(name, settings);
-    }
-
-    public ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> create(String name, HibernateConnectionSourceSettings settings) {
-        DataSourceSettings dataSourceSettings = settings.getDataSource();
-
-        ConnectionSource<DataSource, DataSourceSettings> dataSourceConnectionSource = dataSourceConnectionSourceFactory.create(name, dataSourceSettings);
-
-
-        return create(name, dataSourceConnectionSource, settings);
-    }
-
-    public abstract ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> create(String name, ConnectionSource<DataSource, DataSourceSettings> dataSourceConnectionSource,  HibernateConnectionSourceSettings settings);
-
-    @Override
-    public Serializable getConnectionSourcesConfigurationKey() {
-        return Settings.SETTING_DATASOURCES;
+        return settings;
     }
 }
