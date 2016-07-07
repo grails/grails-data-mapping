@@ -2,9 +2,12 @@ package org.grails.gorm.rx.api
 
 import grails.gorm.MultiTenant
 import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.core.DatastoreAware
 import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
 import org.grails.datastore.mapping.core.connections.ConnectionSourcesSupport
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 import org.grails.datastore.mapping.multitenancy.TenantResolver
 import org.grails.datastore.mapping.multitenancy.resolvers.FixedTenantResolver
 import org.grails.datastore.mapping.multitenancy.resolvers.NoTenantResolver
@@ -55,15 +58,22 @@ class RxGormEnhancer {
      * @param client The client
      * @param tenantResolver The tenant resolver
      */
-    static void registerEntity(PersistentEntity entity, RxDatastoreClient client, TenantResolver tenantResolver = new FixedTenantResolver()) {
+    static void registerEntity(PersistentEntity entity, RxDatastoreClient client) {
         List<String> connectionSourceNames = ConnectionSourcesSupport.getConnectionSourceNames(entity)
         String defaultConnectionSource = ConnectionSourcesSupport.getDefaultConnectionSourceName(entity)
         RxDatastoreClientImplementor rxDatastoreClientImplementor = (RxDatastoreClientImplementor) client
 
-        if(tenantResolver instanceof RxDatastoreClientAware) {
-            ((RxDatastoreClientAware)tenantResolver).setRxDatastoreClient(client)
+        ConnectionSourceSettings settings = client.connectionSources.defaultConnectionSource.settings
+        MultiTenancySettings multiTenancySettings = settings.multiTenancy
+        if(multiTenancySettings.mode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+            TenantResolver tenantResolver = multiTenancySettings.tenantResolverClass?.newInstance() ?: new NoTenantResolver()
+            if(tenantResolver instanceof RxDatastoreClientAware) {
+                ((RxDatastoreClientAware)tenantResolver).setRxDatastoreClient(client)
+            }
+
+            TENANT_RESOLVERS.put(entity.javaClass.name, tenantResolver)
         }
-        TENANT_RESOLVERS.put(entity.javaClass.name, tenantResolver)
+
 
         if(MultiTenant.isAssignableFrom(entity.javaClass) || defaultConnectionSource == ConnectionSource.ALL) {
             for(ConnectionSource cs in client.getConnectionSources()) {

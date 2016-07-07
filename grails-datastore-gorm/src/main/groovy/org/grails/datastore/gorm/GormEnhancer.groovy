@@ -34,6 +34,7 @@ import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider
 import org.grails.datastore.mapping.core.connections.ConnectionSourcesSupport
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 import org.grails.datastore.mapping.multitenancy.TenantResolver
 import org.grails.datastore.mapping.multitenancy.resolvers.FixedTenantResolver
 import org.grails.datastore.mapping.multitenancy.resolvers.NoTenantResolver
@@ -121,12 +122,26 @@ class GormEnhancer implements Closeable {
             registerConstraints(datastore)
         }
         NAMED_QUERIES.clear()
-        TenantResolver tenantResolver = settings.multiTenancy.tenantResolverClass?.newInstance() ?: new FixedTenantResolver()
-        if(tenantResolver instanceof DatastoreAware) {
-            ((DatastoreAware)tenantResolver).setDatastore(datastore)
+
+        MultiTenancySettings multiTenancySettings = settings.multiTenancy
+        if(multiTenancySettings.mode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+            TenantResolver tenantResolver = multiTenancySettings.tenantResolverClass?.newInstance() ?: new NoTenantResolver()
+            if(tenantResolver instanceof DatastoreAware) {
+                ((DatastoreAware)tenantResolver).setDatastore(datastore)
+            }
+            for(entity in datastore.mappingContext.persistentEntities) {
+                if(MultiTenant.isAssignableFrom(entity.javaClass)) {
+                    registerEntity(entity, tenantResolver)
+                }
+                else {
+                    registerEntity(entity)
+                }
+            }
         }
-        for(entity in datastore.mappingContext.persistentEntities) {
-            registerEntity(entity, tenantResolver)
+        else {
+            for(entity in datastore.mappingContext.persistentEntities) {
+                registerEntity(entity)
+            }
         }
     }
 

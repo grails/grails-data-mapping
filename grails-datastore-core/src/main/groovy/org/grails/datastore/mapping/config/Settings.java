@@ -34,5 +34,15 @@ public interface Settings {
     /**
      * The custom types
      */
-    String SETTING_CUSTOM_TYPES = PREFIX + '.' + "custom.constraints";
+    String SETTING_CUSTOM_TYPES = PREFIX + '.' + "custom.types";
+
+    /**
+     * The multi tenancy mode
+     */
+    String SETTING_MULTI_TENANCY_MODE = PREFIX + '.' + "multiTenancy.mode";
+
+    /**
+     * The multi tenancy resolver class
+     */
+    String SETTING_MULTI_TENANT_RESOLVER_CLASS = PREFIX + '.' + "multiTenancy.tenantResolverClass";
 }
