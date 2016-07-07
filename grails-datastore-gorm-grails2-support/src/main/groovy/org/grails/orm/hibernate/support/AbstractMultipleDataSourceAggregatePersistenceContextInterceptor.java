@@ -22,6 +22,7 @@ import groovy.util.ConfigObject;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsConfigurationAware;
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
+import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.orm.hibernate.cfg.Mapping;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -128,7 +129,7 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
         // looks for instances of PersistenceContextInterceptor and picks one assuming
         // there's only one, so this one has to be the only one
         for (String name : aggregateDataSourceNames()) {
-            String suffix = name.equals(Mapping.DEFAULT_DATA_SOURCE) ? "" : "_" + name;
+            String suffix = name.equals(ConnectionSource.DEFAULT) ? "" : "_" + name;
             String beanName = "sessionFactory" + suffix;
             if (applicationContext.containsBean(beanName)) {
                 SessionFactoryAwarePersistenceContextInterceptor interceptor = createPersistenceContextInterceptor(name);
@@ -145,7 +146,7 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
         if (applicationContext == null) return Collections.emptySet();
         Set<String> resolvedDataSourceNames = new HashSet<String>();
         for (String dataSourceName : dataSourceNames) {
-            if (applicationContext.containsBean(dataSourceName.equals(Mapping.DEFAULT_DATA_SOURCE) ? "dataSource" : "dataSource_" + dataSourceName)) {
+            if (applicationContext.containsBean(dataSourceName.equals(ConnectionSource.DEFAULT) ? "dataSource" : "dataSource_" + dataSourceName)) {
                 resolvedDataSourceNames.add(dataSourceName);
             }
         }

@@ -5,6 +5,7 @@ import grails.validation.DeferredBindingActions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.core.lifecycle.ShutdownOperations;
+import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.grails.orm.hibernate.cfg.Mapping;
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils;
@@ -62,7 +63,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
 
 
     public HibernatePersistenceContextInterceptor() {
-        this.dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
+        this.dataSourceName = ConnectionSource.DEFAULT;
     }
 
     /**

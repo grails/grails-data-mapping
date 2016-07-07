@@ -20,8 +20,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.lifecycle.ShutdownOperations;
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
+import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
-import org.grails.orm.hibernate.cfg.Mapping;
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils;
 import org.grails.orm.hibernate.support.SessionFactoryAwarePersistenceContextInterceptor;
 import org.hibernate.FlushMode;
@@ -36,7 +36,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author Graeme Rocher
@@ -51,14 +50,14 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
     private static ThreadLocal<Map<String, Boolean>> participate = new ThreadLocal<Map<String, Boolean>>() {
         @Override
         protected Map<String, Boolean> initialValue() {
-            return new HashMap<String, Boolean>();
+            return new HashMap<>();
         }
     };
 
     private static ThreadLocal<Map<String, Integer>> nestingCount = new ThreadLocal<Map<String, Integer>>() {
         @Override
         protected Map<String, Integer> initialValue() {
-            return new HashMap<String, Integer>();
+            return new HashMap<>();
         }
     };
 
@@ -74,11 +73,11 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
         });
     }
 
-    private Deque<Connection> disconnected = new ConcurrentLinkedDeque<Connection>();
+    private Deque<Connection> disconnected = new ConcurrentLinkedDeque<>();
 
 
     public HibernatePersistenceContextInterceptor() {
-        this.dataSourceName = Mapping.DEFAULT_DATA_SOURCE;
+        this.dataSourceName = ConnectionSource.DEFAULT;
     }
 
     /**

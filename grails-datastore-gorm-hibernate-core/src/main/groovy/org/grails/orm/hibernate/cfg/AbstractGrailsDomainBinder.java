@@ -18,6 +18,7 @@ import groovy.lang.Closure;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.*;
@@ -88,7 +89,7 @@ public abstract class AbstractGrailsDomainBinder {
      */
     public static Map<String, NamingStrategy> NAMING_STRATEGIES = new HashMap<String, NamingStrategy>();
     static {
-       NAMING_STRATEGIES.put(Mapping.DEFAULT_DATA_SOURCE, ImprovedNamingStrategy.INSTANCE);
+       NAMING_STRATEGIES.put(ConnectionSource.DEFAULT, ImprovedNamingStrategy.INSTANCE);
     }
 
     private PersistentEntityNamingStrategy namingStrategy;
@@ -226,7 +227,7 @@ public abstract class AbstractGrailsDomainBinder {
      * @throws IllegalAccessException
      */
     public static void configureNamingStrategy(final Object strategy) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        configureNamingStrategy(Mapping.DEFAULT_DATA_SOURCE, strategy);
+        configureNamingStrategy(ConnectionSource.DEFAULT, strategy);
     }
 
     /**
@@ -1262,7 +1263,7 @@ public abstract class AbstractGrailsDomainBinder {
 
     protected NamingStrategy getNamingStrategy(String sessionFactoryBeanName) {
         String key = "sessionFactory".equals(sessionFactoryBeanName) ?
-                Mapping.DEFAULT_DATA_SOURCE :
+                ConnectionSource.DEFAULT :
                     sessionFactoryBeanName.substring("sessionFactory_".length());
         NamingStrategy namingStrategy = NAMING_STRATEGIES.get(key);
         return namingStrategy != null ? namingStrategy : new ImprovedNamingStrategy();

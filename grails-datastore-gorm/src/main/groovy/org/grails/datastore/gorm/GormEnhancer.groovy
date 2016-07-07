@@ -183,7 +183,7 @@ class GormEnhancer implements Closeable {
 
 
     @CompileDynamic
-    static <D> GormStaticApi<D> findStaticApi(Class<D> entity, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
+    static <D> GormStaticApi<D> findStaticApi(Class<D> entity, String qualifier = ConnectionSource.DEFAULT) {
         def staticApi = STATIC_APIS.get(qualifier)?.get(NameUtils.getClassName(entity))
         if(staticApi == null) {
             throw stateException(entity)
@@ -195,7 +195,7 @@ class GormEnhancer implements Closeable {
         new IllegalStateException("Either class [$entity.name] is not a domain class or GORM has not been initialized correctly or has already been shutdown. If you are unit testing your entities using the mocking APIs")
     }
 
-    static GormInstanceApi findInstanceApi(Class entity, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
+    static GormInstanceApi findInstanceApi(Class entity, String qualifier = ConnectionSource.DEFAULT) {
         def instanceApi = INSTANCE_APIS.get(qualifier)?.get(NameUtils.getClassName(entity))
         if(instanceApi == null) {
             throw stateException(entity)
@@ -203,7 +203,7 @@ class GormEnhancer implements Closeable {
         return instanceApi
     }
 
-    static  GormValidationApi findValidationApi(Class entity, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
+    static  GormValidationApi findValidationApi(Class entity, String qualifier = ConnectionSource.DEFAULT) {
         def instanceApi = VALIDATION_APIS.get(qualifier)?.get(NameUtils.getClassName(entity))
         if(instanceApi == null) {
             throw stateException(entity)
@@ -211,7 +211,7 @@ class GormEnhancer implements Closeable {
         return instanceApi
     }
 
-    static Datastore findDatastore(Class entity, String qualifier = Entity.DEFAULT_DATA_SOURCE) {
+    static Datastore findDatastore(Class entity, String qualifier = ConnectionSource.DEFAULT) {
         def datastore = DATASTORES.get(qualifier)?.get(entity.name)
         if(datastore == null) {
             throw stateException(entity)
