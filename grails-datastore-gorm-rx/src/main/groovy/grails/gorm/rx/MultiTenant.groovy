@@ -1,20 +1,20 @@
-package grails.gorm
+package grails.gorm.rx
 
 import grails.gorm.api.GormAllOperations
+import grails.gorm.rx.api.RxGormAllOperations
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.gorm.rx.api.RxGormEnhancer
 
 /**
- * A trait for domain classes to implement that should be treated as multi tenant
+ * A trait for domain classes that should be treated as multi tenant
  *
  * @author Graeme Rocher
  * @since 6.0
  */
 @CompileStatic
-trait MultiTenant<D> extends GormEntity<D> {
-
+trait MultiTenant<D> extends RxEntity<D> {
     /**
      * Execute the closure with the given tenantId
      *
@@ -22,8 +22,8 @@ trait MultiTenant<D> extends GormEntity<D> {
      * @param callable The closure
      * @return The result of the closure
      */
-    static <T> T withTenant(Serializable tenantId, Closure<T> callable) {
-        GormEnhancer.findStaticApi(this).withTenant tenantId, callable
+    static <T> T withTenant(Serializable tenantId, @DelegatesTo(RxGormAllOperations) Closure<T> callable) {
+        RxGormEnhancer.findStaticApi(this).withTenant tenantId, callable
     }
 
     /**
@@ -32,8 +32,8 @@ trait MultiTenant<D> extends GormEntity<D> {
      * @param callable The closure
      * @return The result of the closure
      */
-    static GormAllOperations<D> eachTenant(Closure callable) {
-        GormEnhancer.findStaticApi(this, ConnectionSource.DEFAULT).eachTenant callable
+    static RxGormAllOperations<D> eachTenant( @DelegatesTo(RxGormAllOperations) Closure callable) {
+        RxGormEnhancer.findStaticApi(this, ConnectionSource.DEFAULT).eachTenant callable
     }
 
     /**
@@ -42,7 +42,7 @@ trait MultiTenant<D> extends GormEntity<D> {
      * @param tenantId The tenant id
      * @return The operations
      */
-    static GormAllOperations<D> withTenant(Serializable tenantId) {
-        (GormAllOperations<D>)GormEnhancer.findStaticApi(this).withTenant(tenantId)
+    static RxGormAllOperations<D> withTenant(Serializable tenantId) {
+        (RxGormAllOperations<D>)RxGormEnhancer.findStaticApi(this).withTenant(tenantId)
     }
 }

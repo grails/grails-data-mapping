@@ -9,10 +9,15 @@ import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.grails.datastore.gorm.CurrentTenant
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.datastore.mapping.core.connections.ConnectionSources
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.mapping.validation.ValidationException
@@ -37,11 +42,16 @@ class RxGormStaticApi<D> implements RxGormAllOperations<D> {
 
     final List<FinderMethod> gormDynamicFinders
 
+    protected final MultiTenancySettings.MultiTenancyMode multiTenancyMode
+    protected final ConnectionSources connectionSources
+
     RxGormStaticApi(PersistentEntity entity, RxDatastoreClient datastoreClient) {
         this.entity = entity
         this.persistentClass = entity.getJavaClass()
         this.datastoreClient = datastoreClient
         this.gormDynamicFinders = createDynamicFinders()
+        this.connectionSources = datastoreClient.connectionSources
+        this.multiTenancyMode = connectionSources.defaultConnectionSource.settings.multiTenancy.mode
     }
 
     /**
@@ -539,5 +549,53 @@ class RxGormStaticApi<D> implements RxGormAllOperations<D> {
     Observable<Boolean> delete(D instance, Map arguments) {
         String connectionSourceName = datastoreClient.connectionSources.defaultConnectionSource.name
         RxGormEnhancer.findInstanceApi(persistentClass, connectionSourceName).delete(instance, arguments)
+    }
+
+    @Override
+    def <T> T withTenant(Serializable tenantId, @DelegatesTo(RxGormAllOperations) Closure<T> callable) {
+        if(multiTenancyMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+
+            def staticApi = RxGormEnhancer.findStaticApi(persistentClass, tenantId.toString())
+            callable.setDelegate(staticApi)
+
+            def argLength = callable.parameterTypes.length
+            switch (argLength) {
+                case 0:
+                    return callable.call(tenantId)
+                case 1:
+                    return callable.call(tenantId)
+                default:
+                    throw new IllegalArgumentException("Closure accepts too many arguments. Expected 0 or 1, but were $argLength")
+            }
+        }
+        else {
+            throw new UnsupportedOperationException("Method not supported in multi tenancy mode $multiTenancyMode")
+        }
+    }
+
+    @Override
+    RxGormAllOperations<D> eachTenant(@DelegatesTo(RxGormAllOperations) Closure callable) {
+        if(multiTenancyMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+            for(ConnectionSource connectionSource in connectionSources.allConnectionSources) {
+                def tenantId = connectionSource.name
+                if(tenantId != ConnectionSource.DEFAULT) {
+                    RxGormEnhancer.findStaticApi(persistentClass, tenantId).withTenant(tenantId, callable)
+                }
+            }
+            return this
+        }
+        else {
+            throw new UnsupportedOperationException("Method not supported in multi tenancy mode $multiTenancyMode")
+        }
+    }
+
+    @Override
+    RxGormAllOperations<D> withTenant(Serializable tenantId) {
+        if(multiTenancyMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+            return RxGormEnhancer.findStaticApi(persistentClass, tenantId.toString())
+        }
+        else {
+            throw new UnsupportedOperationException("Method not supported in multi tenancy mode $multiTenancyMode")
+        }
     }
 }

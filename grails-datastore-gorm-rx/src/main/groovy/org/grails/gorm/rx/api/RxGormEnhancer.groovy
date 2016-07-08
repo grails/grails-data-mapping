@@ -1,6 +1,6 @@
 package org.grails.gorm.rx.api
 
-import grails.gorm.MultiTenant
+import grails.gorm.rx.MultiTenant
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.core.DatastoreAware
 import org.grails.datastore.mapping.core.connections.ConnectionSource

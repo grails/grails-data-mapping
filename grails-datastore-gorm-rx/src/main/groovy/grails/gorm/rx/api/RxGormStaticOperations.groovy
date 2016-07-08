@@ -1,5 +1,6 @@
 package grails.gorm.rx.api
 
+import grails.gorm.api.GormAllOperations
 import grails.gorm.rx.CriteriaBuilder
 import grails.gorm.rx.DetachedCriteria
 import grails.gorm.rx.proxy.ObservableProxy
@@ -360,4 +361,30 @@ interface RxGormStaticOperations<D> {
      */
     Object staticPropertyMissing(String property)
 
+
+    /**
+     * Execute the closure with the given tenantId
+     *
+     * @param tenantId The tenant id
+     * @param callable The closure
+     * @return The result of the closure
+     */
+    def <T> T withTenant(Serializable tenantId, @DelegatesTo(RxGormAllOperations) Closure<T> callable)
+
+
+    /**
+     * Execute the closure for each tenant
+     *
+     * @param callable The closure
+     * @return The result of the closure
+     */
+    RxGormAllOperations<D> eachTenant(@DelegatesTo(RxGormAllOperations) Closure callable)
+
+    /**
+     * Return the {@link GormAllOperations} for the given tenant id
+     *
+     * @param tenantId The tenant id
+     * @return The operations
+     */
+    RxGormAllOperations<D> withTenant(Serializable tenantId)
 }
