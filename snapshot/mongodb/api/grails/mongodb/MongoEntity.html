@@ -222,18 +222,18 @@ trait MongoEntity
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withCollection(java.lang.String, groovy.lang.Closure)">withCollection</a></strong>(java.lang.String collectionName, groovy.lang.Closure callable)</code><br>Use the given collection for this entity for the scope of the closure call</td>
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withCollection(java.lang.String, Closure<T>)">withCollection</a></strong>(java.lang.String collectionName, groovy.lang.Closure&lt;T&gt; callable)</code><br>Use the given collection for this entity for the scope of the closure call</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withDatabase(java.lang.String, groovy.lang.Closure)">withDatabase</a></strong>(java.lang.String databaseName, groovy.lang.Closure callable)</code><br>Use the given database for this entity for the scope of the closure call</td>
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withConnection(java.lang.String, groovy.lang.Closure)">withConnection</a></strong>(java.lang.String connectionName, groovy.lang.Closure callable)</code><br>Perform an operation with the given connection</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withSession(groovy.lang.Closure)">withSession</a></strong>(groovy.lang.Closure callable)</code><br>Execute a closure whose first argument is a reference to the current session.</td>
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withDatabase(java.lang.String, Closure<T>)">withDatabase</a></strong>(java.lang.String databaseName, groovy.lang.Closure&lt;T&gt; callable)</code><br>Use the given database for this entity for the scope of the closure call</td>
                         </tr>
                         
                     </table>
@@ -395,30 +395,30 @@ java.lang.Object <strong>propertyMissing</strong>(java.lang.String name)</h4>
                             </li>
                         </ul>
                     
-                        <a name="withCollection(java.lang.String, groovy.lang.Closure)"><!-- --></a>
+                        <a name="withCollection(java.lang.String, Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>withCollection</strong>(java.lang.String collectionName, groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;T <strong>withCollection</strong>(java.lang.String collectionName, groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Use the given collection for this entity for the scope of the closure call
      <DL><DT><B>Parameters:</B></DT><DD><code>collectionName</code> -  The collection name</DD><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="withDatabase(java.lang.String, groovy.lang.Closure)"><!-- --></a>
+                        <a name="withConnection(java.lang.String, groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>withDatabase</strong>(java.lang.String databaseName, groovy.lang.Closure callable)</h4>
-                                <p> Use the given database for this entity for the scope of the closure call
-     <DL><DT><B>Parameters:</B></DT><DD><code>databaseName</code> -  The collection name</DD><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
+                                <h4>static&nbsp;T <strong>withConnection</strong>(java.lang.String connectionName, @groovy.lang.DelegatesTo(MongoAllOperations) groovy.lang.Closure callable)</h4>
+                                <p> Perform an operation with the given connection
+     <DL><DT><B>Parameters:</B></DT><DD><code>connectionName</code> -  The name of the connection</DD><DD><code>callable</code> -  The operation</DD></DL><DL><DT><B>Returns:</B></DT><DD>The return value of the closure</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="withSession(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withDatabase(java.lang.String, Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>withSession</strong>(groovy.lang.Closure callable)</h4>
-                                <p> Execute a closure whose first argument is a reference to the current session.
-     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  the closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
+                                <h4>static&nbsp;T <strong>withDatabase</strong>(java.lang.String databaseName, groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <p> Use the given database for this entity for the scope of the closure call
+     <DL><DT><B>Parameters:</B></DT><DD><code>databaseName</code> -  The collection name</DD><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
                     

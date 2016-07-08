@@ -1,8 +1,10 @@
 grails.gorm
 grails.gorm.annotation
+grails.gorm.api
 grails.gorm.dirty.checking
 grails.gorm.transactions
 grails.mongodb
+grails.mongodb.api
 grails.mongodb.bootstrap
 grails.mongodb.geo
 grails.plugins.mongodb
@@ -21,6 +23,7 @@ org.grails.datastore.gorm.events
 org.grails.datastore.gorm.finders
 org.grails.datastore.gorm.internal
 org.grails.datastore.gorm.mongo
+org.grails.datastore.gorm.mongo.api
 org.grails.datastore.gorm.mongo.bean.factory
 org.grails.datastore.gorm.mongo.extensions
 org.grails.datastore.gorm.mongo.geo
@@ -47,6 +50,8 @@ org.grails.datastore.mapping.config
 org.grails.datastore.mapping.config.groovy
 org.grails.datastore.mapping.config.utils
 org.grails.datastore.mapping.core
+org.grails.datastore.mapping.core.connections
+org.grails.datastore.mapping.core.exceptions
 org.grails.datastore.mapping.core.impl
 org.grails.datastore.mapping.dirty.checking
 org.grails.datastore.mapping.document
@@ -65,9 +70,13 @@ org.grails.datastore.mapping.model.types
 org.grails.datastore.mapping.model.types.conversion
 org.grails.datastore.mapping.mongo
 org.grails.datastore.mapping.mongo.config
+org.grails.datastore.mapping.mongo.connections
 org.grails.datastore.mapping.mongo.engine
 org.grails.datastore.mapping.mongo.engine.codecs
 org.grails.datastore.mapping.mongo.query
+org.grails.datastore.mapping.multitenancy
+org.grails.datastore.mapping.multitenancy.exceptions
+org.grails.datastore.mapping.multitenancy.resolvers
 org.grails.datastore.mapping.proxy
 org.grails.datastore.mapping.query
 org.grails.datastore.mapping.query.api

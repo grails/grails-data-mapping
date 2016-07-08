@@ -658,53 +658,53 @@ trait GormEntity
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withDatastoreSession(groovy.lang.Closure)">withDatastoreSession</a></strong>(groovy.lang.Closure callable)</code><br>Same as withSession, but present for the case where withSession is overridden to use the Hibernate session</td>
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withDatastoreSession(Closure<T>)">withDatastoreSession</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Same as withSession, but present for the case where withSession is overridden to use the Hibernate session</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withNewSession(groovy.lang.Closure)">withNewSession</a></strong>(groovy.lang.Closure callable)</code><br>Creates and binds a new session for the scope of the given closure</td>
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withNewSession(Closure<T>)">withNewSession</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Creates and binds a new session for the scope of the given closure</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withNewTransaction(groovy.lang.Closure)">withNewTransaction</a></strong>(groovy.lang.Closure callable)</code><br>Executes the closure within the context of a new transaction</td>
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withNewTransaction(Closure<T>)">withNewTransaction</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the closure within the context of a new transaction</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withNewTransaction(java.util.Map, groovy.lang.Closure)">withNewTransaction</a></strong>(java.util.Map transactionProperties, groovy.lang.Closure callable)</code><br>Executes the closure within the context of a new transaction which is
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withNewTransaction(java.util.Map, Closure<T>)">withNewTransaction</a></strong>(java.util.Map transactionProperties, groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the closure within the context of a new transaction which is
  configured with the properties contained in transactionProperties.
  </td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withSession(groovy.lang.Closure)">withSession</a></strong>(groovy.lang.Closure callable)</code><br>Execute a closure whose first argument is a reference to the current session.</td>
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withSession(Closure<T>)">withSession</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute a closure whose first argument is a reference to the current session.</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withStatelessSession(groovy.lang.Closure)">withStatelessSession</a></strong>(groovy.lang.Closure callable)</code><br>Creates and binds a new session for the scope of the given closure</td>
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withStatelessSession(Closure<T>)">withStatelessSession</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Creates and binds a new session for the scope of the given closure</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withTransaction(groovy.lang.Closure)">withTransaction</a></strong>(groovy.lang.Closure callable)</code><br>Executes the closure within the context of a transaction, creating one if none is present or joining
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withTransaction(Closure<T>)">withTransaction</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the closure within the context of a transaction, creating one if none is present or joining
  an existing transaction if one is already present.</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withTransaction(java.util.Map, groovy.lang.Closure)">withTransaction</a></strong>(java.util.Map transactionProperties, groovy.lang.Closure callable)</code><br>Executes the closure within the context of a transaction which is
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withTransaction(java.util.Map, Closure<T>)">withTransaction</a></strong>(java.util.Map transactionProperties, groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the closure within the context of a transaction which is
  configured with the properties contained in transactionProperties.
  </td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withTransaction(org.springframework.transaction.TransactionDefinition, groovy.lang.Closure)">withTransaction</a></strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure callable)</code><br>Executes the closure within the context of a transaction for the given org.springframework.transaction.TransactionDefinition</td>
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withTransaction(org.springframework.transaction.TransactionDefinition, Closure<T>)">withTransaction</a></strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the closure within the context of a transaction for the given org.springframework.transaction.TransactionDefinition</td>
                         </tr>
                         
                     </table>
@@ -1671,37 +1671,37 @@ static&nbsp;<a href='../../../../org/grails/datastore/gorm/query/GormQueryOperat
                             </li>
                         </ul>
                     
-                        <a name="withDatastoreSession(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withDatastoreSession(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>withDatastoreSession</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;T <strong>withDatastoreSession</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Same as withSession, but present for the case where withSession is overridden to use the Hibernate session
      <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  the closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="withNewSession(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withNewSession(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>withNewSession</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;T <strong>withNewSession</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Creates and binds a new session for the scope of the given closure
      </p>
                             </li>
                         </ul>
                     
-                        <a name="withNewTransaction(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withNewTransaction(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>withNewTransaction</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;T <strong>withNewTransaction</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the closure within the context of a new transaction
      <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure to call</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure execution</DD></DL><DL><DT><B>See Also:</B></DT><DD><a href='#withTransaction(groovy.lang.Closure)'>withTransaction(Closure)</a></DD><DD><a href='#withTransaction(java.util.Map, groovy.lang.Closure)'>withTransaction(Map, Closure)</a></DD><DD><a href='#withNewTransaction(java.util.Map, groovy.lang.Closure)'>withNewTransaction(Map, Closure)</a></DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="withNewTransaction(java.util.Map, groovy.lang.Closure)"><!-- --></a>
+                        <a name="withNewTransaction(java.util.Map, Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>withNewTransaction</strong>(java.util.Map transactionProperties, groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;T <strong>withNewTransaction</strong>(java.util.Map transactionProperties, groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the closure within the context of a new transaction which is
  configured with the properties contained in transactionProperties.
  transactionProperties may contain any properties supported by
@@ -1721,38 +1721,38 @@ static&nbsp;<a href='../../../../org/grails/datastore/gorm/query/GormQueryOperat
                             </li>
                         </ul>
                     
-                        <a name="withSession(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withSession(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>withSession</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;T <strong>withSession</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Execute a closure whose first argument is a reference to the current session.
      <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  the closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="withStatelessSession(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withStatelessSession(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>withStatelessSession</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;T <strong>withStatelessSession</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Creates and binds a new session for the scope of the given closure
      </p>
                             </li>
                         </ul>
                     
-                        <a name="withTransaction(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withTransaction(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>withTransaction</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;T <strong>withTransaction</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the closure within the context of a transaction, creating one if none is present or joining
  an existing transaction if one is already present.
      <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure to call</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure execution</DD></DL><DL><DT><B>See Also:</B></DT><DD><a href='#withTransaction(java.util.Map, groovy.lang.Closure)'>withTransaction(Map, Closure)</a></DD><DD><a href='#withNewTransaction(groovy.lang.Closure)'>withNewTransaction(Closure)</a></DD><DD><a href='#withNewTransaction(java.util.Map, groovy.lang.Closure)'>withNewTransaction(Map, Closure)</a></DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="withTransaction(java.util.Map, groovy.lang.Closure)"><!-- --></a>
+                        <a name="withTransaction(java.util.Map, Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>withTransaction</strong>(java.util.Map transactionProperties, groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;T <strong>withTransaction</strong>(java.util.Map transactionProperties, groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the closure within the context of a transaction which is
  configured with the properties contained in transactionProperties.
  transactionProperties may contain any properties supported by
@@ -1770,10 +1770,10 @@ static&nbsp;<a href='../../../../org/grails/datastore/gorm/query/GormQueryOperat
                             </li>
                         </ul>
                     
-                        <a name="withTransaction(org.springframework.transaction.TransactionDefinition, groovy.lang.Closure)"><!-- --></a>
+                        <a name="withTransaction(org.springframework.transaction.TransactionDefinition, Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>withTransaction</strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;T <strong>withTransaction</strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the closure within the context of a transaction for the given org.springframework.transaction.TransactionDefinition
      <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure to call</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure execution</DD></DL></p>
                             </li>
