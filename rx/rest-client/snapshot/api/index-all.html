@@ -990,6 +990,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Models multiple connection sources</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#connectionSources" title="Field in GormStaticApi">connectionSources</a></span> - Field in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#connectionSources" title="Field in RxGormStaticApi">connectionSources</a></span> - Field in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html" title="Class in org.grails.datastore.mapping.core.connections">ConnectionSourceSettings</a></span> - Class in <a href="./org/grails/datastore/mapping/core/connections/package-summary.html">org.grails.datastore.mapping.core.connections</a>
 </dt><dd><div class="block">Default settings shared across all implementations</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.CustomSettings.html" title="Class in org.grails.datastore.mapping.core.connections.ConnectionSourceSettings">ConnectionSourceSettings.CustomSettings</a></span> - Class in <a href="./org/grails/datastore/mapping/core/connections/package-summary.html">org.grails.datastore.mapping.core.connections</a>
@@ -1848,7 +1850,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/api/GormStaticOperations.html#eachTenant(groovy.lang.Closure)" title="Method in GormStaticOperations">eachTenant(Closure)</a></span> - Method in <a href="grails/gorm/api/GormStaticOperations.html">GormStaticOperations</a>
 </dt><dd> <div class="block">Execute the closure for each tenant</div></dd>
-<dt><span class="strong"><a href="grails/gorm/MultiTenant.html#eachTenant(groovy.lang.Closure)" title="Method in MultiTenant">eachTenant(Closure)</a></span> - Method in <a href="grails/gorm/MultiTenant.html">MultiTenant</a>
+<dt><span class="strong"><a href="grails/gorm/rx/MultiTenant.html#eachTenant(groovy.lang.Closure)" title="Method in MultiTenant">eachTenant(Closure)</a></span> - Method in <a href="grails/gorm/rx/MultiTenant.html">MultiTenant</a>
+</dt><dd> <div class="block">Execute the closure for each tenant</div></dd>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#eachTenant(groovy.lang.Closure)" title="Method in RxGormStaticApi">eachTenant(Closure)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#eachTenant(groovy.lang.Closure)" title="Method in RxGormStaticOperations">eachTenant(Closure)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
 </dt><dd> <div class="block">Execute the closure for each tenant</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Embedded.html" title="Class in org.grails.datastore.mapping.model.types">Embedded</a></span> - Class in <a href="./org/grails/datastore/mapping/model/types/package-summary.html">org.grails.datastore.mapping.model.types</a>
 </dt><dd><div class="block">Models an embedded component</div></dd>
@@ -5327,12 +5333,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Builds a multipart form</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#multiTenancyMode" title="Field in GormStaticApi">multiTenancyMode</a></span> - Field in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#multiTenancyMode" title="Field in RxGormStaticApi">multiTenancyMode</a></span> - Field in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html" title="Class in org.grails.datastore.mapping.multitenancy">MultiTenancySettings</a></span> - Class in <a href="./org/grails/datastore/mapping/multitenancy/package-summary.html">org.grails.datastore.mapping.multitenancy</a>
 </dt><dd><div class="block">Represents the multi tenancy settings</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html" title="Enum in org.grails.datastore.mapping.multitenancy.MultiTenancySettings">MultiTenancySettings.MultiTenancyMode</a></span> - Enum in <a href="./org/grails/datastore/mapping/multitenancy/package-summary.html">org.grails.datastore.mapping.multitenancy</a>
 </dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/gorm/MultiTenant.html" title="Trait in grails.gorm">MultiTenant</a></span> - Trait in <a href="./grails/gorm/package-summary.html">grails.gorm</a>
-</dt><dd><div class="block">A trait for domain classes to implement that should be treated as multi tenant</div></dd>
+<dt><span class="strong"><a href="grails/gorm/rx/MultiTenant.html" title="Trait in grails.gorm.rx">MultiTenant</a></span> - Trait in <a href="./grails/gorm/rx/package-summary.html">grails.gorm.rx</a>
+</dt><dd><div class="block">A trait for domain classes that should be treated as multi tenant</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/DelegatingGormEntityApi.html#mutex(groovy.lang.Closure)" title="Method in DelegatingGormEntityApi">mutex(Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/DelegatingGormEntityApi.html">DelegatingGormEntityApi</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#mutex(groovy.lang.Closure)" title="Method in GormEntity">mutex(Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
@@ -7906,8 +7914,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/api/GormStaticOperations.html#withTenant(java.io.Serializable)" title="Method in GormStaticOperations">withTenant(Serializable)</a></span> - Method in <a href="grails/gorm/api/GormStaticOperations.html">GormStaticOperations</a>
 </dt><dd> <div class="block">Return the <a href='../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a> for the given tenant id</div></dd>
-<dt><span class="strong"><a href="grails/gorm/MultiTenant.html#withTenant(java.io.Serializable)" title="Method in MultiTenant">withTenant(Serializable)</a></span> - Method in <a href="grails/gorm/MultiTenant.html">MultiTenant</a>
-</dt><dd> <div class="block">Return the <a href='../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a> for the given tenant id</div></dd>
+<dt><span class="strong"><a href="grails/gorm/rx/MultiTenant.html#withTenant(java.io.Serializable)" title="Method in MultiTenant">withTenant(Serializable)</a></span> - Method in <a href="grails/gorm/rx/MultiTenant.html">MultiTenant</a>
+</dt><dd> <div class="block">Return the <a href='../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a> for the given tenant id</div></dd>
+<dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormStaticApi.html#withTenant(java.io.Serializable)" title="Method in RxGormStaticApi">withTenant(Serializable)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormStaticApi.html">RxGormStaticApi</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/gorm/rx/api/RxGormStaticOperations.html#withTenant(java.io.Serializable)" title="Method in RxGormStaticOperations">withTenant(Serializable)</a></span> - Method in <a href="grails/gorm/rx/api/RxGormStaticOperations.html">RxGormStaticOperations</a>
+</dt><dd> <div class="block">Return the <a href='../../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a> for the given tenant id</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#withTransaction(org.springframework.transaction.TransactionDefinition, Closure<T>)" title="Method in GormEntity">withTransaction(TransactionDefinition, Closure&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Executes the closure within the context of a transaction for the given org.springframework.transaction.TransactionDefinition</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#withTransaction(org.springframework.transaction.TransactionDefinition, Closure<T>)" title="Method in GormStaticApi">withTransaction(TransactionDefinition, Closure&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
