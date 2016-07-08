@@ -104,7 +104,7 @@ if (location.href.indexOf('is-external=true') == -1) {
             <!-- todo: direct known subclasses -->
             <hr>
             <br>
-<pre>@groovy.util.logging.Commons
+<pre>@groovy.util.logging.Slf4j
 @groovy.transform.CompileStatic
 class GormEnhancer
 extends java.lang.Object
@@ -170,6 +170,11 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><strong><a href='../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#tenantResolver">tenantResolver</a></code><br>The tenant resolver</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>org.springframework.transaction.PlatformTransactionManager</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#transactionManager">transactionManager</a></code><br></td>
                         </tr>
@@ -244,7 +249,7 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>java.util.Set&lt;java.lang.String&gt;</strong></code></td>
+                            <td class="colFirst"><code>java.util.List&lt;java.lang.String&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#allQualifiers(org.grails.datastore.mapping.core.Datastore, org.grails.datastore.mapping.model.PersistentEntity)">allQualifiers</a></strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, <a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
@@ -458,6 +463,15 @@ extends java.lang.Object
                             </li>
                         </ul>
                     
+                        <a name="tenantResolver"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;<a href='../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a> <strong>tenantResolver</strong></h4>
+                                <p> The tenant resolver
+     </p>
+                            </li>
+                        </ul>
+                    
                         <a name="transactionManager"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -539,7 +553,7 @@ protected&nbsp;void <strong>addStaticMethods</strong>(<a href='../../../../org/g
                         <a name="allQualifiers(org.grails.datastore.mapping.core.Datastore, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Set&lt;java.lang.String&gt; <strong>allQualifiers</strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, <a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>java.util.List&lt;java.lang.String&gt; <strong>allQualifiers</strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, <a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
