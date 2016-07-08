@@ -17,7 +17,7 @@ package org.grails.datastore.gorm
 import grails.gorm.MultiTenant
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import groovy.util.logging.Commons
+import groovy.util.logging.Slf4j
 import org.codehaus.groovy.reflection.CachedMethod
 import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
@@ -52,7 +52,7 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * @author Graeme Rocher
  */
-@Commons
+@Slf4j
 @CompileStatic
 class GormEnhancer implements Closeable {
 
@@ -154,7 +154,7 @@ class GormEnhancer implements Closeable {
             def cls = entity.javaClass
             TENANT_RESOLVERS.put(cls.name, tenantResolver)
 
-            Set<String> qualifiers = allQualifiers(this.datastore, entity)
+            List<String> qualifiers = allQualifiers(this.datastore, entity)
             if(!qualifiers.contains(ConnectionSource.DEFAULT)) {
                 def firstQualifier = qualifiers.first()
                 def staticApi = getStaticApi(cls, firstQualifier)
@@ -180,12 +180,16 @@ class GormEnhancer implements Closeable {
         }
     }
 
-    Set<String> allQualifiers(Datastore datastore, PersistentEntity entity) {
-        Set<String> qualifiers = new LinkedHashSet<>()
+    List<String> allQualifiers(Datastore datastore, PersistentEntity entity) {
+        List<String> qualifiers = new ArrayList<>()
         qualifiers.addAll ConnectionSourcesSupport.getConnectionSourceNames(entity)
         if((MultiTenant.isAssignableFrom(entity.javaClass) || qualifiers.contains(ConnectionSource.ALL)) && (datastore instanceof ConnectionSourcesProvider)) {
             qualifiers.clear()
-            def allConnectionSourceNames = ((ConnectionSourcesProvider) datastore).getConnectionSources().allConnectionSources.collect() { ConnectionSource connectionSource -> connectionSource.name }
+            qualifiers.add(ConnectionSource.DEFAULT)
+
+            Iterable<ConnectionSource> allConnectionSources = ((ConnectionSourcesProvider) datastore).getConnectionSources().allConnectionSources
+            Collection<String> allConnectionSourceNames = allConnectionSources.findAll() { ConnectionSource connectionSource -> connectionSource.name != ConnectionSource.DEFAULT }
+                                                                              .collect() { ((ConnectionSource)it).name }
             qualifiers.addAll allConnectionSourceNames
         }
         return qualifiers
@@ -248,13 +252,18 @@ class GormEnhancer implements Closeable {
         if(MultiTenant.isAssignableFrom(entity)) {
             def tenantId = CurrentTenant.get()
             if(tenantId != null) {
+                log.debug "Found tenant id [$tenantId] bound to thread local"
                 return tenantId
             }
             else {
-                return findTenantResolver(entity).resolveTenantIdentifier(entity)
+                TenantResolver tenantResolver = findTenantResolver(entity)
+                def tenantIdentifier = tenantResolver.resolveTenantIdentifier(entity)
+                log.debug "Resolved tenant id [$tenantIdentifier] from resolver [${tenantResolver.getClass().simpleName}] for class [$entity]"
+                return tenantIdentifier
             }
         }
         else {
+            log.debug "Returning default tenant id for non-multitenant class [$entity]"
             return ConnectionSource.DEFAULT
         }
     }
@@ -309,7 +318,7 @@ class GormEnhancer implements Closeable {
         def registry = GroovySystem.metaClassRegistry
         for(entity in datastore.mappingContext.persistentEntities) {
 
-            Set<String> qualifiers = allQualifiers(datastore, entity)
+            List<String> qualifiers = allQualifiers(datastore, entity)
             def cls = entity.javaClass
             def className = cls.name
             TENANT_RESOLVERS.remove(className)

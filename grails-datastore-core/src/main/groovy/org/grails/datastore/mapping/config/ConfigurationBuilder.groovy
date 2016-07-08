@@ -269,6 +269,7 @@ abstract class ConfigurationBuilder<B, C> {
                             }
                         }
                         if (value != null) {
+                            log.debug("Resolved value [$value] for setting [$propertyPath]")
                             ReflectionUtils.makeAccessible(method)
                             ReflectionUtils.invokeMethod(method, builder, value)
                         }

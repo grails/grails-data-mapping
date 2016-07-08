@@ -853,39 +853,32 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
     @Override
     GormAllOperations<D> eachTenant(Closure callable) {
         if(multiTenancyMode == MultiTenancyMode.SINGLE) {
-            Datastore rootDatastore = GormEnhancer.findDatastore(persistentClass, ConnectionSource.DEFAULT)
-            if(rootDatastore instanceof ConnectionSourcesProvider) {
-                ConnectionSources connectionSources = ((ConnectionSourcesProvider)rootDatastore).getConnectionSources()
-                for(ConnectionSource connectionSource in connectionSources.allConnectionSources) {
-                    def tenantId = connectionSource.name
-                    if(tenantId != ConnectionSource.DEFAULT) {
-                        CurrentTenant.withTenant(tenantId) {
-                            GormEnhancer.findStaticApi(persistentClass, tenantId).withNewSession {
+            for(ConnectionSource connectionSource in connectionSources.allConnectionSources) {
+                def tenantId = connectionSource.name
+                if(tenantId != ConnectionSource.DEFAULT) {
+                    CurrentTenant.withTenant(tenantId) {
+                        GormEnhancer.findStaticApi(persistentClass, tenantId).withNewSession {
 
-                                def i = callable.parameterTypes.length
-                                switch (i) {
-                                    case 0:
-                                        return callable.call()
-                                        break
-                                    case 1:
-                                        return callable.call(tenantId)
-                                        break
-                                    case 2:
-                                        return callable.call(tenantId, it)
-                                    default:
-                                        throw new IllegalArgumentException("Provided closure accepts too many arguments")
-                                }
-
+                            def i = callable.parameterTypes.length
+                            switch (i) {
+                                case 0:
+                                    return callable.call()
+                                    break
+                                case 1:
+                                    return callable.call(tenantId)
+                                    break
+                                case 2:
+                                    return callable.call(tenantId, it)
+                                default:
+                                    throw new IllegalArgumentException("Provided closure accepts too many arguments")
                             }
 
                         }
+
                     }
                 }
-                return this
             }
-            else {
-                throw new UnsupportedOperationException("Current GORM implementation does not support single database multi tenancy")
-            }
+            return this
         }
         else {
             throw new UnsupportedOperationException("Method not supported in multi tenancy mode $multiTenancyMode")
