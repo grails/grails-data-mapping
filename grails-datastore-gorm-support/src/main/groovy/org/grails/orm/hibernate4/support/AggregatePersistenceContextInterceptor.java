@@ -29,23 +29,15 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class AggregatePersistenceContextInterceptor extends AbstractMultipleDataSourceAggregatePersistenceContextInterceptor {
 
-    private AbstractHibernateDatastore[] hibernateDatastores;
+    public AggregatePersistenceContextInterceptor(AbstractHibernateDatastore hibernateDatastore) {
+        super(hibernateDatastore);
+    }
 
     @Override
     protected SessionFactoryAwarePersistenceContextInterceptor createPersistenceContextInterceptor(String dataSourceName) {
         HibernatePersistenceContextInterceptor interceptor = new HibernatePersistenceContextInterceptor(dataSourceName);
-        if(hibernateDatastores != null) {
-            for (AbstractHibernateDatastore hibernateDatastore : hibernateDatastores) {
-                if(dataSourceName.equals(hibernateDatastore.getDataSourceName())) {
-                    interceptor.setHibernateDatastore(hibernateDatastore);
-                }
-            }
-        }
+        AbstractHibernateDatastore datastoreForConnection = hibernateDatastore.getDatastoreForConnection(dataSourceName);
+        interceptor.setHibernateDatastore(datastoreForConnection);
         return interceptor;
-    }
-
-    @Autowired
-    public void setHibernateDatastores(AbstractHibernateDatastore[] hibernateDatastores) {
-        this.hibernateDatastores = hibernateDatastores;
     }
 }

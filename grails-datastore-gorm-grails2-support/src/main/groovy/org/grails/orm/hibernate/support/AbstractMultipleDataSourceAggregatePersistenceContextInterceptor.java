@@ -16,19 +16,15 @@
 package org.grails.orm.hibernate.support;
 
 
-import java.util.*;
-
-import groovy.util.ConfigObject;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.plugins.support.aware.GrailsConfigurationAware;
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
 import org.grails.datastore.mapping.core.connections.ConnectionSource;
-import org.grails.orm.hibernate.cfg.Mapping;
+import org.grails.datastore.mapping.core.connections.ConnectionSources;
+import org.grails.orm.hibernate.AbstractHibernateDatastore;
+import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.env.PropertyResolver;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract implementation of the {@link PersistenceContextInterceptor} interface that supports multiple data sources
@@ -36,23 +32,19 @@ import org.springframework.core.env.PropertyResolver;
  * @author Graeme Rocher
  * @since 2.0.7
  */
-public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInterceptor implements PersistenceContextInterceptor, InitializingBean, ApplicationContextAware {
+public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInterceptor implements PersistenceContextInterceptor {
 
-    public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory";
-    public static final String DEFAULT_DATA_SOURCE_NAME = "dataSource";
-    public static final String DATA_SOURCES = "dataSources";
+    protected final List<PersistenceContextInterceptor> interceptors = new ArrayList<PersistenceContextInterceptor>();
+    protected final AbstractHibernateDatastore hibernateDatastore;
 
-    protected List<PersistenceContextInterceptor> interceptors = new ArrayList<PersistenceContextInterceptor>();
-    protected ApplicationContext applicationContext;
-    protected PropertyResolver config;
-    protected Set<String> dataSourceNames;
-
-    public void setDataSourceNames(Set<String> dataSourceNames) {
-        this.dataSourceNames = dataSourceNames;
-    }
-
-    public void setConfiguration(PropertyResolver co) {
-        this.config = co;
+    public AbstractMultipleDataSourceAggregatePersistenceContextInterceptor(AbstractHibernateDatastore hibernateDatastore) {
+        this.hibernateDatastore = hibernateDatastore;
+        ConnectionSources<SessionFactory, HibernateConnectionSourceSettings> connectionSources = hibernateDatastore.getConnectionSources();
+        Iterable<ConnectionSource<SessionFactory, HibernateConnectionSourceSettings>> allConnectionSources = connectionSources.getAllConnectionSources();
+        for (ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> connectionSource : allConnectionSources) {
+            SessionFactoryAwarePersistenceContextInterceptor interceptor = createPersistenceContextInterceptor(connectionSource.getName());
+            this.interceptors.add(interceptor);
+        }
     }
 
     public boolean isOpen() {
@@ -119,37 +111,6 @@ public abstract class AbstractMultipleDataSourceAggregatePersistenceContextInter
         }
     }
 
-    public void setApplicationContext(ApplicationContext ctx) {
-        applicationContext = ctx;
-    }
+    protected abstract  SessionFactoryAwarePersistenceContextInterceptor createPersistenceContextInterceptor(String dataSourceName);
 
-    @Override
-    public void afterPropertiesSet() {
-        // need to lazily create these instead of registering as beans since GrailsPageFilter
-        // looks for instances of PersistenceContextInterceptor and picks one assuming
-        // there's only one, so this one has to be the only one
-        for (String name : aggregateDataSourceNames()) {
-            String suffix = name.equals(ConnectionSource.DEFAULT) ? "" : "_" + name;
-            String beanName = "sessionFactory" + suffix;
-            if (applicationContext.containsBean(beanName)) {
-                SessionFactoryAwarePersistenceContextInterceptor interceptor = createPersistenceContextInterceptor(name);
-                interceptor.setSessionFactory((SessionFactory) applicationContext.getBean(beanName));
-                interceptors.add(interceptor);
-            }
-        }
-    }
-
-    protected abstract SessionFactoryAwarePersistenceContextInterceptor createPersistenceContextInterceptor(String dataSourceName);
-
-
-    private Set<String> aggregateDataSourceNames() {
-        if (applicationContext == null) return Collections.emptySet();
-        Set<String> resolvedDataSourceNames = new HashSet<String>();
-        for (String dataSourceName : dataSourceNames) {
-            if (applicationContext.containsBean(dataSourceName.equals(ConnectionSource.DEFAULT) ? "dataSource" : "dataSource_" + dataSourceName)) {
-                resolvedDataSourceNames.add(dataSourceName);
-            }
-        }
-        return resolvedDataSourceNames;
-    }
 }

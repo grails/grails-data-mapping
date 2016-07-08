@@ -96,10 +96,22 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         failOnError = config.getProperty(SETTING_FAIL_ON_ERROR, Boolean.class, false);
     }
 
+    public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {
+        this(mappingContext, sessionFactory, config, null, ConnectionSource.DEFAULT);
+    }
+
     @Override
     public ConnectionSources<SessionFactory, HibernateConnectionSourceSettings> getConnectionSources() {
         return this.connectionSources;
     }
+
+    /**
+     * Obtain a child datastore for the given connection name
+     *
+     * @param connectionName The name of the connection
+     * @return The child data store
+     */
+    public abstract  AbstractHibernateDatastore getDatastoreForConnection(String connectionName);
 
     public boolean isAutoFlush() {
         return defaultFlushMode == FlushMode.AUTO.level;
@@ -133,10 +145,6 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
 
     public boolean isCacheQueries() {
         return isCacheQueries;
-    }
-
-    public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {
-        this(mappingContext, sessionFactory, config, null, ConnectionSource.DEFAULT);
     }
 
     /**
