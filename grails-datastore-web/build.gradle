@@ -1,5 +1,6 @@
 dependencies {
     compile project(":grails-datastore-core")
+    compileOnly('javax.servlet:javax.servlet-api:3.0.1')
     compile "org.springframework:spring-web:$springVersion", {
         exclude group:'commons-logging',module:'commons-logging'
         exclude group:'org.springframework', module:'spring-context'
@@ -15,4 +16,7 @@ dependencies {
         exclude group:'org.springframework', module:'spring-beans'
         exclude group:'org.springframework', module:'spring-asm'
     }
+
+    testCompile 'javax.servlet:javax.servlet-api:3.0.1'
+    testCompile "org.springframework:spring-test:$springVersion"
 }
