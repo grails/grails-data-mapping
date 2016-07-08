@@ -63,6 +63,9 @@ org.grails.datastore.mapping.model.config
 org.grails.datastore.mapping.model.lifecycle
 org.grails.datastore.mapping.model.types
 org.grails.datastore.mapping.model.types.conversion
+org.grails.datastore.mapping.multitenancy
+org.grails.datastore.mapping.multitenancy.exceptions
+org.grails.datastore.mapping.multitenancy.resolvers
 org.grails.datastore.mapping.proxy
 org.grails.datastore.mapping.query
 org.grails.datastore.mapping.query.api

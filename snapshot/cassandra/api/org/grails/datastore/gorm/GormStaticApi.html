@@ -142,14 +142,26 @@ extends <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html'>Abs
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html'>ConnectionSources</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#connectionSources">connectionSources</a></code></td>
+                            <td class="colLast"></code></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>protected&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#defaultQualifier">defaultQualifier</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#gormDynamicFinders">gormDynamicFinders</a></code></td>
+                            <td class="colLast"></code></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../MultiTenancyMode.html'>MultiTenancyMode</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#multiTenancyMode">multiTenancyMode</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
@@ -283,473 +295,488 @@ extends <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html'>Abs
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#eachTenant(groovy.lang.Closure)">eachTenant</a></strong>(groovy.lang.Closure callable)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeQuery(java.lang.String)">executeQuery</a></strong>(java.lang.String query)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeQuery(java.lang.String, java.util.Map)">executeQuery</a></strong>(java.lang.String query, java.util.Map args)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeQuery(java.lang.String, java.util.Map, java.util.Map)">executeQuery</a></strong>(java.lang.String query, java.util.Map params, java.util.Map args)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeQuery(java.lang.String, java.util.Collection)">executeQuery</a></strong>(java.lang.String query, java.util.Collection params)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeQuery(java.lang.String, java.lang.Object)">executeQuery</a></strong>(java.lang.String query, java.lang.Object... params)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeQuery(java.lang.String, java.util.Collection, java.util.Map)">executeQuery</a></strong>(java.lang.String query, java.util.Collection params, java.util.Map args)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Integer</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeUpdate(java.lang.String)">executeUpdate</a></strong>(java.lang.String query)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Integer</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeUpdate(java.lang.String, java.util.Map)">executeUpdate</a></strong>(java.lang.String query, java.util.Map args)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Integer</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeUpdate(java.lang.String, java.util.Map, java.util.Map)">executeUpdate</a></strong>(java.lang.String query, java.util.Map params, java.util.Map args)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Integer</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeUpdate(java.lang.String, java.util.Collection)">executeUpdate</a></strong>(java.lang.String query, java.util.Collection params)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Integer</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeUpdate(java.lang.String, java.lang.Object)">executeUpdate</a></strong>(java.lang.String query, java.lang.Object... params)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Integer</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeUpdate(java.lang.String, java.util.Collection, java.util.Map)">executeUpdate</a></strong>(java.lang.String query, java.util.Collection params, java.util.Map args)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#exists(java.io.Serializable)">exists</a></strong>(java.io.Serializable id)</code><br>Checks whether an entity exists</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#find(groovy.lang.Closure)">find</a></strong>(groovy.lang.Closure callable)</code><br>Uses detached criteria to build a query and then execute it returning a list</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#find(D)">find</a></strong>(D example)</code><br>Finds an object by example</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#find(D, java.util.Map)">find</a></strong>(D example, java.util.Map args)</code><br>Finds an object by example using the given arguments for pagination</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#find(java.lang.String)">find</a></strong>(java.lang.String query)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#find(java.lang.String, java.util.Map)">find</a></strong>(java.lang.String query, java.util.Map params)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#find(java.lang.String, java.util.Map, java.util.Map)">find</a></strong>(java.lang.String query, java.util.Map params, java.util.Map args)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#find(java.lang.String, java.util.Collection)">find</a></strong>(java.lang.String query, java.util.Collection params)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#find(java.lang.String, java.lang.Object)">find</a></strong>(java.lang.String query, java.lang.Object[] params)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#find(java.lang.String, java.util.Collection, java.util.Map)">find</a></strong>(java.lang.String query, java.util.Collection params, java.util.Map args)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(groovy.lang.Closure)">findAll</a></strong>(groovy.lang.Closure callable)</code><br>Uses detached criteria to build a query and then execute it returning a list</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(java.util.Map, groovy.lang.Closure)">findAll</a></strong>(java.util.Map args, groovy.lang.Closure callable)</code><br>Uses detached criteria to build a query and then execute it returning a list</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(java.util.Map)">findAll</a></strong>(java.util.Map params = Collections.emptyMap()</code><br>The same as <a href='#list()'>list()</a></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(D)">findAll</a></strong>(D example)</code><br>Finds an object by example</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(D, java.util.Map)">findAll</a></strong>(D example, java.util.Map args)</code><br>Finds an object by example using the given arguments for pagination</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(java.lang.String)">findAll</a></strong>(java.lang.String query)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(java.lang.String, java.util.Map)">findAll</a></strong>(java.lang.String query, java.util.Map params)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(java.lang.String, java.util.Map, java.util.Map)">findAll</a></strong>(java.lang.String query, java.util.Map params, java.util.Map args)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(java.lang.String, java.util.Collection)">findAll</a></strong>(java.lang.String query, java.util.Collection params)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(java.lang.String, java.lang.Object)">findAll</a></strong>(java.lang.String query, java.lang.Object[] params)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(java.lang.String, java.util.Collection, java.util.Map)">findAll</a></strong>(java.lang.String query, java.util.Collection params, java.util.Map args)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAllWhere(java.util.Map)">findAllWhere</a></strong>(java.util.Map queryMap)</code><br>Finds all results matching all of the given conditions. </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAllWhere(java.util.Map, java.util.Map)">findAllWhere</a></strong>(java.util.Map queryMap, java.util.Map args)</code><br>Finds all results matching all of the given conditions. </td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findOrCreateWhere(java.util.Map)">findOrCreateWhere</a></strong>(java.util.Map queryMap)</code><br>Finds a single result matching all of the given conditions. </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findOrSaveWhere(java.util.Map)">findOrSaveWhere</a></strong>(java.util.Map queryMap)</code><br>Finds a single result matching all of the given conditions. </td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findWhere(java.util.Map)">findWhere</a></strong>(java.util.Map queryMap)</code><br>Finds a single result matching all of the given conditions. </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findWhere(java.util.Map, java.util.Map)">findWhere</a></strong>(java.util.Map queryMap, java.util.Map args)</code><br>Finds a single result matching all of the given conditions. </td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#first()">first</a></strong>()</code><br>Finds the first object using the natural sort order</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#first(java.lang.String)">first</a></strong>(java.lang.String propertyName)</code><br>Finds the first object sorted by propertyName</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#first(java.util.Map)">first</a></strong>(java.util.Map queryParams)</code><br>Finds the first object.  </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#get(java.io.Serializable)">get</a></strong>(java.io.Serializable id)</code><br>Retrieves and object from the datastore. eg. </td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getAll(Iterable<Serializable>)">getAll</a></strong>(java.lang.Iterable&lt;java.io.Serializable&gt; ids)</code><br>Retrieve all the objects for the given identifiers</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getAll(java.io.Serializable)">getAll</a></strong>(java.io.Serializable... ids)</code><br>Retrieve all the objects for the given identifiers</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getAll()">getAll</a></strong>()</code><br>@return Synonym for <a href='#list()'>list()</a></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/gorm/async/GormAsyncStaticApi.html' title='GormAsyncStaticApi'>GormAsyncStaticApi</a>&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getAsync()">getAsync</a></strong>()</code><br>@return The async version of the GORM static API</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Integer</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getCount()">getCount</a></strong>()</code><br>Same as <a href='#count()'>count()</a> but allows property-style syntax (Foo.count)</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getGormDynamicFinders()">getGormDynamicFinders</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getGormPersistentEntity()">getGormPersistentEntity</a></strong>()</code><br>@return The PersistentEntity for this class</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.io.Serializable</strong></code></td>
                             <td class="colLast"><code><strong><a href="#ident(D)">ident</a></strong>(D instance)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insert(D)">insert</a></strong>(D instance)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insert(D, java.util.Map)">insert</a></strong>(D instance, java.util.Map params)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#instanceOf(D, java.lang.Class)">instanceOf</a></strong>(D instance, java.lang.Class cls)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isAttached(D)">isAttached</a></strong>(D instance)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#last()">last</a></strong>()</code><br>Finds the last object using the natural sort order</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#last(java.lang.String)">last</a></strong>(java.lang.String propertyName)</code><br>Finds the last object sorted by propertyName</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#last(java.util.Map)">last</a></strong>(java.util.Map queryParams)</code><br>Finds the last object.  </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#list(java.util.Map)">list</a></strong>(java.util.Map params)</code><br>Lists objects in the datastore. eg. </td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#list()">list</a></strong>()</code><br>List all entities</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#load(java.io.Serializable)">load</a></strong>(java.io.Serializable id)</code><br>Retrieves and object from the datastore as a proxy. eg. </td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#lock(java.io.Serializable)">lock</a></strong>(java.io.Serializable id)</code><br>Locks an instance for an update</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#lock(D)">lock</a></strong>(D instance)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#merge(D)">merge</a></strong>(D d)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#merge(D, java.util.Map)">merge</a></strong>(D instance, java.util.Map params)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#methodMissing(java.lang.String, java.lang.Object)">methodMissing</a></strong>(java.lang.String methodName, java.lang.Object args)</code><br>Method missing handler that deals with the invocation of dynamic finders</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>T</strong></code></td>
                             <td class="colLast"><code><strong><a href="#mutex(D, Closure<T>)">mutex</a></strong>(D instance, groovy.lang.Closure&lt;T&gt; callable)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#propertyMissing(java.lang.String)">propertyMissing</a></strong>(java.lang.String name)</code><br>Property missing handler</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#propertyMissing(java.lang.String, def)">propertyMissing</a></strong>(java.lang.String name, java.lang.Object value)</code><br>Property missing handler</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#propertyMissing(D, java.lang.String)">propertyMissing</a></strong>(D instance, java.lang.String name)</code><br>Merges an instance with the current session</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(java.io.Serializable)">proxy</a></strong>(java.io.Serializable id)</code><br>Retrieves and object from the datastore as a proxy. eg. </td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#read(java.io.Serializable)">read</a></strong>(java.io.Serializable id)</code><br>Retrieves and object from the datastore. eg. </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#refresh(D)">refresh</a></strong>(D instance)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#save(D)">save</a></strong>(D instance)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#save(D, boolean)">save</a></strong>(D instance, boolean validate)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#save(D, java.util.Map)">save</a></strong>(D instance, java.util.Map params)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;java.io.Serializable&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#saveAll(java.lang.Object)">saveAll</a></strong>(java.lang.Object... objectsToSave)</code><br>Saves a list of objects in one go</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;java.io.Serializable&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#saveAll(Iterable<?>)">saveAll</a></strong>(java.lang.Iterable&lt;?&gt; objectsToSave)</code><br>Saves a list of objects in one go</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#unsupported(def)">unsupported</a></strong>(java.lang.Object method)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#where(groovy.lang.Closure)">where</a></strong>(groovy.lang.Closure callable)</code><br>@param callable Callable closure containing detached criteria definition</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#whereAny(groovy.lang.Closure)">whereAny</a></strong>(groovy.lang.Closure callable)</code><br>@param callable Callable closure containing detached criteria definition</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#whereLazy(groovy.lang.Closure)">whereLazy</a></strong>(groovy.lang.Closure callable)</code><br>@param callable Callable closure containing detached criteria definition</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withCriteria(groovy.lang.Closure)">withCriteria</a></strong>(groovy.lang.Closure callable)</code><br>Creates a criteria builder instance</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withCriteria(java.util.Map, groovy.lang.Closure)">withCriteria</a></strong>(java.util.Map builderArgs, groovy.lang.Closure callable)</code><br>Creates a criteria builder instance</td>
                         </tr>
                         
-                        <tr class="rowColor">
-                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withDatastoreSession(groovy.lang.Closure)">withDatastoreSession</a></strong>(groovy.lang.Closure callable)</code><br>Same as withSession, but present for the case where withSession is overridden to use the Hibernate session</td>
-                        </tr>
-                        
                         <tr class="altColor">
-                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withNewSession(groovy.lang.Closure)">withNewSession</a></strong>(groovy.lang.Closure callable)</code><br>Creates and binds a new session for the scope of the given closure</td>
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withDatastoreSession(Closure<T>)">withDatastoreSession</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Same as withSession, but present for the case where withSession is overridden to use the Hibernate session</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withNewTransaction(groovy.lang.Closure)">withNewTransaction</a></strong>(groovy.lang.Closure callable)</code><br>Executes the closure within the context of a new transaction</td>
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withNewSession(Closure<T>)">withNewSession</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Creates and binds a new session for the scope of the given closure</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withNewTransaction(java.util.Map, groovy.lang.Closure)">withNewTransaction</a></strong>(java.util.Map transactionProperties, groovy.lang.Closure callable)</code><br>Executes the closure within the context of a new transaction which is
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withNewTransaction(Closure<T>)">withNewTransaction</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the closure within the context of a new transaction</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withNewTransaction(java.util.Map, Closure<T>)">withNewTransaction</a></strong>(java.util.Map transactionProperties, groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the closure within the context of a new transaction which is
  configured with the properties contained in transactionProperties.
  </td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withSession(Closure<T>)">withSession</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute a closure whose first argument is a reference to the current session.</td>
+                        </tr>
+                        
                         <tr class="rowColor">
-                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withSession(groovy.lang.Closure)">withSession</a></strong>(groovy.lang.Closure callable)</code><br>Execute a closure whose first argument is a reference to the current session.</td>
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withStatelessSession(Closure<T>)">withStatelessSession</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Creates and binds a new session for the scope of the given closure</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withStatelessSession(groovy.lang.Closure)">withStatelessSession</a></strong>(groovy.lang.Closure callable)</code><br>Creates and binds a new session for the scope of the given closure</td>
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withTenant(java.io.Serializable, Closure<T>)">withTenant</a></strong>(java.io.Serializable tenantId, groovy.lang.Closure&lt;T&gt; callable)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withTransaction(groovy.lang.Closure)">withTransaction</a></strong>(groovy.lang.Closure callable)</code><br>Executes the closure within the context of a transaction, creating one if none is present or joining
+                            <td class="colFirst"><code><a href='../../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withTenant(java.io.Serializable)">withTenant</a></strong>(java.io.Serializable tenantId)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withTransaction(Closure<T>)">withTransaction</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the closure within the context of a transaction, creating one if none is present or joining
  an existing transaction if one is already present.</td>
                         </tr>
                         
-                        <tr class="altColor">
-                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withTransaction(java.util.Map, groovy.lang.Closure)">withTransaction</a></strong>(java.util.Map transactionProperties, groovy.lang.Closure callable)</code><br>Executes the closure within the context of a transaction which is
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withTransaction(java.util.Map, Closure<T>)">withTransaction</a></strong>(java.util.Map transactionProperties, groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the closure within the context of a transaction which is
  configured with the properties contained in transactionProperties.
  </td>
                         </tr>
                         
-                        <tr class="rowColor">
-                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withTransaction(org.springframework.transaction.TransactionDefinition, groovy.lang.Closure)">withTransaction</a></strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure callable)</code><br>Executes the closure within the context of a transaction for the given org.springframework.transaction.TransactionDefinition</td>
+                        <tr class="altColor">
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withTransaction(org.springframework.transaction.TransactionDefinition, Closure<T>)">withTransaction</a></strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the closure within the context of a transaction for the given org.springframework.transaction.TransactionDefinition</td>
                         </tr>
                         
                     </table>
@@ -801,6 +828,14 @@ extends <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html'>Abs
                 </a>
                     <h3>Field Detail</h3>
                     
+                        <a name="connectionSources"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;final&nbsp;<a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html'>ConnectionSources</a> <strong>connectionSources</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="defaultQualifier"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -813,6 +848,14 @@ extends <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html'>Abs
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;final&nbsp;java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt; <strong>gormDynamicFinders</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="multiTenancyMode"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;final&nbsp;<a href='../../../../MultiTenancyMode.html'>MultiTenancyMode</a> <strong>multiTenancyMode</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -948,6 +991,15 @@ void <strong>delete</strong>(D instance, java.util.Map params)</h4>
                             <li class="blockList">
                                 <h4>@java.lang.Override
 void <strong>discard</strong>(D instance)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="eachTenant(groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt; <strong>eachTenant</strong>(groovy.lang.Closure callable)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1696,37 +1748,37 @@ D <strong>save</strong>(D instance, java.util.Map params)</h4>
                             </li>
                         </ul>
                     
-                        <a name="withDatastoreSession(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withDatastoreSession(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Object <strong>withDatastoreSession</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>T <strong>withDatastoreSession</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Same as withSession, but present for the case where withSession is overridden to use the Hibernate session
      <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  the closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="withNewSession(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withNewSession(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Object <strong>withNewSession</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>T <strong>withNewSession</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Creates and binds a new session for the scope of the given closure
      </p>
                             </li>
                         </ul>
                     
-                        <a name="withNewTransaction(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withNewTransaction(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Object <strong>withNewTransaction</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>T <strong>withNewTransaction</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the closure within the context of a new transaction
      <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure to call</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure execution</DD></DL><DL><DT><B>See Also:</B></DT><DD><a href='#withTransaction(groovy.lang.Closure)'>withTransaction(Closure)</a></DD><DD><a href='#withTransaction(java.util.Map, groovy.lang.Closure)'>withTransaction(Map, Closure)</a></DD><DD><a href='#withNewTransaction(java.util.Map, groovy.lang.Closure)'>withNewTransaction(Map, Closure)</a></DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="withNewTransaction(java.util.Map, groovy.lang.Closure)"><!-- --></a>
+                        <a name="withNewTransaction(java.util.Map, Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Object <strong>withNewTransaction</strong>(java.util.Map transactionProperties, groovy.lang.Closure callable)</h4>
+                                <h4>T <strong>withNewTransaction</strong>(java.util.Map transactionProperties, groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the closure within the context of a new transaction which is
  configured with the properties contained in transactionProperties.
  transactionProperties may contain any properties supported by
@@ -1746,38 +1798,56 @@ D <strong>save</strong>(D instance, java.util.Map params)</h4>
                             </li>
                         </ul>
                     
-                        <a name="withSession(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withSession(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Object <strong>withSession</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>T <strong>withSession</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Execute a closure whose first argument is a reference to the current session.
      <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  the closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="withStatelessSession(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withStatelessSession(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Object <strong>withStatelessSession</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>T <strong>withStatelessSession</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Creates and binds a new session for the scope of the given closure
      </p>
                             </li>
                         </ul>
                     
-                        <a name="withTransaction(groovy.lang.Closure)"><!-- --></a>
+                        <a name="withTenant(java.io.Serializable, Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Object <strong>withTransaction</strong>(groovy.lang.Closure callable)</h4>
+                                <h4>@java.lang.Override
+T <strong>withTenant</strong>(java.io.Serializable tenantId, groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="withTenant(java.io.Serializable)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt; <strong>withTenant</strong>(java.io.Serializable tenantId)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="withTransaction(Closure<T>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>T <strong>withTransaction</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the closure within the context of a transaction, creating one if none is present or joining
  an existing transaction if one is already present.
      <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure to call</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure execution</DD></DL><DL><DT><B>See Also:</B></DT><DD><a href='#withTransaction(java.util.Map, groovy.lang.Closure)'>withTransaction(Map, Closure)</a></DD><DD><a href='#withNewTransaction(groovy.lang.Closure)'>withNewTransaction(Closure)</a></DD><DD><a href='#withNewTransaction(java.util.Map, groovy.lang.Closure)'>withNewTransaction(Map, Closure)</a></DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="withTransaction(java.util.Map, groovy.lang.Closure)"><!-- --></a>
+                        <a name="withTransaction(java.util.Map, Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Object <strong>withTransaction</strong>(java.util.Map transactionProperties, groovy.lang.Closure callable)</h4>
+                                <h4>T <strong>withTransaction</strong>(java.util.Map transactionProperties, groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the closure within the context of a transaction which is
  configured with the properties contained in transactionProperties.
  transactionProperties may contain any properties supported by
@@ -1795,10 +1865,10 @@ D <strong>save</strong>(D instance, java.util.Map params)</h4>
                             </li>
                         </ul>
                     
-                        <a name="withTransaction(org.springframework.transaction.TransactionDefinition, groovy.lang.Closure)"><!-- --></a>
+                        <a name="withTransaction(org.springframework.transaction.TransactionDefinition, Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Object <strong>withTransaction</strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure callable)</h4>
+                                <h4>T <strong>withTransaction</strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the closure within the context of a transaction for the given org.springframework.transaction.TransactionDefinition
      <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure to call</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure execution</DD></DL></p>
                             </li>
