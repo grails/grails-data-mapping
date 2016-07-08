@@ -48,10 +48,12 @@ import org.springframework.util.ClassUtils;
 @SuppressWarnings("rawtypes")
 public abstract class DatastoreUtils {
 
-     public static final Logger logger = LoggerFactory.getLogger(DatastoreUtils.class);
-     private static final ThreadLocal<Map<Datastore, Set<Session>>> deferredCloseHolder =
+    private static final Logger logger = LoggerFactory.getLogger(DatastoreUtils.class);
+    private static final String DATASTORE_CONFIG_FLAT = "datastoreConfigFlat";
+    private static final ThreadLocal<Map<Datastore, Set<Session>>> deferredCloseHolder =
             new NamedThreadLocal<Map<Datastore, Set<Session>>>(
                     "Datastore Sessions registered for deferred close");
+    private static final String DATASTORE_CONFIG = "datastoreConfig";
 
     /**
      * Get a Datastore Session for the given Datastore. Is aware of and will
@@ -443,16 +445,19 @@ public abstract class DatastoreUtils {
                 MutablePropertySources propertySources = env.getPropertySources();
 
                 if(configuration instanceof ConfigObject) {
-                    propertySources.addFirst(new ConfigObjectPropertySource(configuration));
-                    propertySources.addFirst(new ConfigObjectPropertySource(createFlatConfig((ConfigObject) configuration)));
+                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG, configuration));
+                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG_FLAT, createFlatConfig((ConfigObject) configuration)));
                 }
                 else {
                     ConfigSlurper configSlurper = new ConfigSlurper();
                     Properties properties = new Properties();
                     properties.putAll(configuration);
                     ConfigObject configObject = configSlurper.parse(properties);
-                    propertySources.addFirst(new ConfigObjectPropertySource(configObject));
-                    propertySources.addFirst(new ConfigObjectPropertySource(createFlatConfig(configObject)));
+                    ConfigObject flatConfigObject = new ConfigObject();
+                    configObject.flatten(flatConfigObject);
+                    flatConfigObject.merge(configObject);
+                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG, configObject));
+                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG_FLAT, createFlatConfig(flatConfigObject)));
                 }
             }
             return env;
@@ -490,8 +495,8 @@ public abstract class DatastoreUtils {
     }
 
     private static class ConfigObjectPropertySource extends MapPropertySource {
-        public ConfigObjectPropertySource(Map configObject) {
-            super("datastoreConfig", configObject);
+        public ConfigObjectPropertySource(String id, Map configObject) {
+            super(id, configObject);
         }
 
         @Override
