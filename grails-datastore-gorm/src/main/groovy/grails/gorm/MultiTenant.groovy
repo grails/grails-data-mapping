@@ -3,7 +3,6 @@ package grails.gorm
 import grails.gorm.api.GormAllOperations
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.core.connections.ConnectionSource
 
 /**
@@ -13,7 +12,7 @@ import org.grails.datastore.mapping.core.connections.ConnectionSource
  * @since 6.0
  */
 @CompileStatic
-trait MultiTenant<D> extends GormEntity<D> {
+trait MultiTenant<D> extends Entity {
 
     /**
      * Execute the closure with the given tenantId
