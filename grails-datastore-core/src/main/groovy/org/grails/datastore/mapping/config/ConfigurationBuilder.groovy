@@ -57,7 +57,18 @@ abstract class ConfigurationBuilder<B, C> {
         this.propertyResolver = propertyResolver
         this.configurationPrefix = configurationPrefix
         this.builderMethodPrefix = builderMethodPrefix
-        this.fallBackConfiguration = fallBackConfiguration != null ? fallBackConfiguration.clone() : null
+        if(fallBackConfiguration != null) {
+            def cloned
+            try {
+                cloned = fallBackConfiguration.clone()
+            } catch (CloneNotSupportedException e) {
+                cloned = fallBackConfiguration
+            }
+            this.fallBackConfiguration = cloned
+        }
+        else {
+            this.fallBackConfiguration = null
+        }
     }
 
 
@@ -154,7 +165,7 @@ abstract class ConfigurationBuilder<B, C> {
 
                         newChildBuilder(newBuilder, propertyPath)
 
-                        Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
+                        Object fallBackChildConfig = getFallBackValue(fallBackConfig, settingName)
                         buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
 
                         def buildMethod = ReflectionUtils.findMethod(newBuilder.getClass(), 'build')
@@ -176,7 +187,7 @@ abstract class ConfigurationBuilder<B, C> {
                             newBuilder = existingGetter.invoke(builder)
 
                             if(newBuilder != null) {
-                                Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
+                                Object fallBackChildConfig = getFallBackValue(fallBackConfig, settingName)
                                 newBuilder = newChildBuilderForFallback(newBuilder, fallBackChildConfig)
                                 buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
                                 newChildBuilder(newBuilder, propertyPath)
@@ -220,7 +231,21 @@ abstract class ConfigurationBuilder<B, C> {
                                 newBuilder = (ConfigurationBuilder)existingGetter.invoke(builder)
                             }
                             if(newBuilder == null) {
-                                newBuilder = (ConfigurationBuilder)argType.newInstance(this.propertyResolver, propertyPath)
+
+                                if(fallBackConfig != null && builderClass.isInstance(fallBackConfig)) {
+
+                                    ConfigurationBuilder fallbackBuilder = (ConfigurationBuilder)existingGetter.invoke(fallBackConfig)
+                                    if(fallbackBuilder != null) {
+                                        newBuilder = (ConfigurationBuilder)argType.newInstance(this.propertyResolver, propertyPath, fallbackBuilder.build())
+                                    }
+                                    else {
+                                        newBuilder = (ConfigurationBuilder)argType.newInstance(this.propertyResolver, propertyPath)
+                                    }
+                                }
+                                else {
+                                    newBuilder = (ConfigurationBuilder)argType.newInstance(this.propertyResolver, propertyPath)
+                                }
+
 
                             }
                             newChildBuilder(newBuilder, propertyPath)
@@ -244,7 +269,7 @@ abstract class ConfigurationBuilder<B, C> {
                         }
                     }
                     else {
-                        Object fallBackValue = getFallBackValue(fallBackConfig, methodName)
+                        Object fallBackValue = getFallBackValue(fallBackConfig, settingName)
 
                         def value
                         try {
@@ -302,11 +327,11 @@ abstract class ConfigurationBuilder<B, C> {
         return childBuilder
     }
 
-    private Object getFallBackValue(fallBackConfig, String methodName) {
+    protected Object getFallBackValue(fallBackConfig, String methodName) {
         Object fallBackValue = null
         if (fallBackConfig != null) {
             Method fallbackGetter = ReflectionUtils.findMethod(fallBackConfig.getClass(), NameUtils.getGetterName(methodName))
-            if (fallbackGetter != null) {
+            if (fallbackGetter != null && Modifier.isPublic(fallbackGetter.getModifiers())) {
                 fallBackValue = fallbackGetter.invoke(fallBackConfig)
             }
         }
