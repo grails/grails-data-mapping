@@ -885,7 +885,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @param callable the closure
      * @return The result of the closure
      */
-    static withSession(Closure callable) {
+    static <T> T withSession(Closure<T> callable) {
         currentGormStaticApi().withSession callable
     }
 
@@ -895,7 +895,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @param callable the closure
      * @return The result of the closure
      */
-    static withDatastoreSession(Closure callable) {
+    static <T> T withDatastoreSession(Closure<T> callable) {
         currentGormStaticApi().withDatastoreSession callable
     }
 
@@ -909,7 +909,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @see #withNewTransaction(Closure)
      * @see #withNewTransaction(Map, Closure)
      */
-    static withTransaction(Closure callable) {
+    static <T> T withTransaction(Closure<T> callable) {
         currentGormStaticApi().withTransaction callable
     }
 
@@ -922,7 +922,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @see #withTransaction(Map, Closure)
      * @see #withNewTransaction(Map, Closure)
      */
-    static withNewTransaction(Closure callable) {
+    static <T> T withNewTransaction(Closure<T> callable) {
         currentGormStaticApi().withNewTransaction callable
     }
 
@@ -949,7 +949,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @see #withNewTransaction(Map, Closure)
      * @see #withTransaction(Closure)
      */
-    static withTransaction(Map transactionProperties, Closure callable) {
+    static <T> T withTransaction(Map transactionProperties, Closure<T> callable) {
         currentGormStaticApi().withTransaction transactionProperties, callable
     }
 
@@ -978,7 +978,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @see #withTransaction(Closure)
      * @see #withTransaction(Map, Closure)
      */
-    static withNewTransaction(Map transactionProperties, Closure callable) {
+    static <T> T withNewTransaction(Map transactionProperties, Closure<T> callable) {
         currentGormStaticApi().withNewTransaction transactionProperties, callable
     }
 
@@ -988,21 +988,21 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @param callable The closure to call
      * @return The result of the closure execution
      */
-    static withTransaction(TransactionDefinition definition, Closure callable) {
+    static <T> T withTransaction(TransactionDefinition definition, Closure<T> callable) {
         currentGormStaticApi().withTransaction definition, callable
     }
 
     /**
      * Creates and binds a new session for the scope of the given closure
      */
-    static withNewSession(Closure callable) {
+    static <T> T withNewSession(Closure<T> callable) {
         currentGormStaticApi().withNewSession callable
     }
 
     /**
      * Creates and binds a new session for the scope of the given closure
      */
-    static withStatelessSession(Closure callable) {
+    static <T> T withStatelessSession(Closure<T> callable) {
         currentGormStaticApi().withStatelessSession callable
     }
 

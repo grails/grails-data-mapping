@@ -14,6 +14,6 @@ import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundExcept
 class NoTenantResolver implements TenantResolver {
     @Override
     Serializable resolveTenantIdentifier(Class persistentClass) {
-        throw new TenantNotFoundException("No tenantId found for persistent class [$persistentClass.name]")
+        throw new TenantNotFoundException(persistentClass)
     }
 }

@@ -1,5 +1,7 @@
 package org.grails.datastore.mapping.multitenancy
 
+import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException
+
 /**
  * An interface for applications that implement Multi Tenancy to implement in order to resolve the current identifier
  *
@@ -20,5 +22,5 @@ interface TenantResolver {
      * @return The tenant identifier
      *
      */
-    public Serializable resolveTenantIdentifier(Class persistentClass)
+    public Serializable resolveTenantIdentifier(Class persistentClass) throws TenantNotFoundException
 }

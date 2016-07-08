@@ -2,6 +2,7 @@ package org.grails.datastore.mapping.core.connections;
 
 import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.springframework.util.ClassUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -53,8 +54,24 @@ public class ConnectionSourcesSupport {
      * @return Whether the given connection source is used
      */
     public static boolean usesConnectionSource(PersistentEntity entity, String connectionSourceName) {
-        List<String> names = getConnectionSourceNames(entity);
-        return names.contains(connectionSourceName) ||
-                names.contains(ConnectionSource.ALL);
+        Class[] interfaces = ClassUtils.getAllInterfacesForClass(entity.getJavaClass());
+        if(isMultiTenant(interfaces)) {
+            return true;
+        }
+        else {
+            List<String> names = getConnectionSourceNames(entity);
+            return names.contains(connectionSourceName) ||
+                    names.contains(ConnectionSource.ALL);
+        }
+    }
+
+    protected static boolean isMultiTenant(Class[] interfaces) {
+        for (Class anInterface : interfaces) {
+            String name = anInterface.getName();
+            if(name.startsWith("grails.gorm") && name.endsWith(".MultiTenant")) {
+                return true;
+            }
+        }
+        return false;
     }
 }

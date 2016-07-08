@@ -753,4 +753,30 @@ interface GormStaticOperations<D> {
      */
     List<D> findAll(String query, Collection params, Map args)
 
+
+    /**
+     * Execute the closure with the given tenantId
+     *
+     * @param tenantId The tenant id
+     * @param callable The closure
+     * @return The result of the closure
+     */
+    def <T> T withTenant(Serializable tenantId, Closure<T> callable)
+
+
+    /**
+     * Execute the closure for each tenant
+     *
+     * @param callable The closure
+     * @return The result of the closure
+     */
+    GormAllOperations<D> eachTenant(Closure callable)
+
+    /**
+     * Return the {@link GormAllOperations} for the given tenant id
+     *
+     * @param tenantId The tenant id
+     * @return The operations
+     */
+    GormAllOperations<D> withTenant(Serializable tenantId)
 }

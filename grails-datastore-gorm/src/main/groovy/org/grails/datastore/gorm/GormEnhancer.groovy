@@ -88,22 +88,17 @@ class GormEnhancer implements Closeable {
      */
     final boolean dynamicEnhance
 
+    /**
+     * The tenant resolver
+     */
+    final TenantResolver tenantResolver
+
     GormEnhancer(Datastore datastore) {
         this(datastore, null)
     }
 
     GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager, boolean failOnError = false, boolean dynamicEnhance = false) {
-        this.datastore = datastore
-        this.failOnError = failOnError
-        this.transactionManager = transactionManager
-        this.dynamicEnhance = dynamicEnhance
-        if(datastore != null) {
-            registerConstraints(datastore)
-        }
-        NAMED_QUERIES.clear()
-        for(entity in datastore.mappingContext.persistentEntities) {
-            registerEntity(entity)
-        }
+        this(datastore, transactionManager, new ConnectionSourceSettings().failOnError(failOnError))
     }
 
     /**
@@ -118,14 +113,17 @@ class GormEnhancer implements Closeable {
         this.failOnError = settings.isFailOnError()
         this.transactionManager = transactionManager
         this.dynamicEnhance = false
+        MultiTenancySettings multiTenancySettings = settings.multiTenancy
+        this.tenantResolver = multiTenancySettings.tenantResolverClass?.newInstance() ?: new NoTenantResolver()
+
         if(datastore != null) {
             registerConstraints(datastore)
         }
         NAMED_QUERIES.clear()
 
-        MultiTenancySettings multiTenancySettings = settings.multiTenancy
+
         if(multiTenancySettings.mode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
-            TenantResolver tenantResolver = multiTenancySettings.tenantResolverClass?.newInstance() ?: new NoTenantResolver()
+
             if(tenantResolver instanceof DatastoreAware) {
                 ((DatastoreAware)tenantResolver).setDatastore(datastore)
             }
@@ -248,7 +246,13 @@ class GormEnhancer implements Closeable {
      */
     static String findTenantId(Class entity) {
         if(MultiTenant.isAssignableFrom(entity)) {
-            return findTenantResolver(entity).resolveTenantIdentifier(entity)
+            def tenantId = CurrentTenant.get()
+            if(tenantId != null) {
+                return tenantId
+            }
+            else {
+                return findTenantResolver(entity).resolveTenantIdentifier(entity)
+            }
         }
         else {
             return ConnectionSource.DEFAULT

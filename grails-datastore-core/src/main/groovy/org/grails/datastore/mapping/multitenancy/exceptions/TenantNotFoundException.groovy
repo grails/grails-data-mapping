@@ -13,6 +13,10 @@ class TenantNotFoundException extends DatastoreException {
         super(s)
     }
 
+    TenantNotFoundException(Class type) {
+        super("No tenantId found for persistent class [$type.name]".toString())
+    }
+
     TenantNotFoundException(String s, Throwable throwable) {
         super(s, throwable)
     }
