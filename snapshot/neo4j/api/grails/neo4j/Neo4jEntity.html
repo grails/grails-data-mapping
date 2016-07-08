@@ -231,6 +231,11 @@ trait Neo4jEntity
                             <td class="colLast"><code><strong><a href="#propertyMissing(java.lang.String, def)">propertyMissing</a></strong>(java.lang.String name, java.lang.Object val)</code><br>Allows setting a dynamic property via the dot operator</td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withConnection(java.lang.String, groovy.lang.Closure)">withConnection</a></strong>(java.lang.String connectionName, groovy.lang.Closure callable)</code><br>Perform an operation with the given connection</td>
+                        </tr>
+                        
                     </table>
                    </ul>
               </li>
@@ -398,6 +403,15 @@ trait Neo4jEntity
                                 <h4>java.lang.Object <strong>propertyMissing</strong>(java.lang.String name, java.lang.Object val)</h4>
                                 <p> Allows setting a dynamic property via the dot operator
      <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>name</code> -  The property name</DD><DD><code>val</code> -  The value</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="withConnection(java.lang.String, groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;T <strong>withConnection</strong>(java.lang.String connectionName, @groovy.lang.DelegatesTo(GormAllOperations) groovy.lang.Closure callable)</h4>
+                                <p> Perform an operation with the given connection
+     <DL><DT><B>Returns:</B></DT><DD>The return value of the closure</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>connectionName</code> -  The name of the connection</DD><DD><code>callable</code> -  The operation</DD></DL></p>
                             </li>
                         </ul>
                     
