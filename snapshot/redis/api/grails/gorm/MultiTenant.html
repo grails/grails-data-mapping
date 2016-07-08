@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Method&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Method&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -87,7 +87,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
     <div class="subTitle">Package: <strong>grails.gorm</strong></div>
 
-    <h2 title="[Groovy] Trait MultiTenant" class="title">[Groovy] Trait MultiTenant</h2>
+    <h2 title="[Groovy] Trait MultiTenant&lt;D&gt;" class="title">[Groovy] Trait MultiTenant&lt;D&gt;</h2>
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
@@ -126,6 +126,40 @@ if (location.href.indexOf('is-external=true') == -1) {
         
 
         
+        <!-- ========== METHOD SUMMARY =========== -->
+        <ul class="blockList">
+            
+            <li class="blockList"><a name="method_summary"><!--   --></a>
+                    <h3>Methods Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Methods Summary table">
+                        <caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colLast" scope="col">Name and description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;<a href='../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#eachTenant(groovy.lang.Closure)">eachTenant</a></strong>(groovy.lang.Closure callable)</code><br>Execute the closure for each tenant</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withTenant(java.io.Serializable, Closure<T>)">withTenant</a></strong>(java.io.Serializable tenantId, groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the closure with the given tenantId</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;<a href='../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withTenant(java.io.Serializable)">withTenant</a></strong>(java.io.Serializable tenantId)</code><br>Return the <a href='../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a> for the given tenant id</td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+              </li>
+            
+        </ul>
+        
     </li>
     </ul>
 </div>
@@ -144,6 +178,43 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
 
+            
+            <!-- =========== METHOD DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="method_detail">
+                    <!--   -->
+                </a>
+                    <h3>Method Detail</h3>
+                    
+                        <a name="eachTenant(groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;<a href='../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt; <strong>eachTenant</strong>(groovy.lang.Closure callable)</h4>
+                                <p> Execute the closure for each tenant
+     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="withTenant(java.io.Serializable, Closure<T>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;T <strong>withTenant</strong>(java.io.Serializable tenantId, groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <p> Execute the closure with the given tenantId
+     <DL><DT><B>Parameters:</B></DT><DD><code>tenantId</code> -  The tenant id</DD><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="withTenant(java.io.Serializable)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;<a href='../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt; <strong>withTenant</strong>(java.io.Serializable tenantId)</h4>
+                                <p> Return the <a href='../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a> for the given tenant id
+     <DL><DT><B>Parameters:</B></DT><DD><code>tenantId</code> -  The tenant id</DD></DL><DL><DT><B>Returns:</B></DT><DD>The operations</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
             
         </li>
     </ul>
@@ -176,11 +247,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Method&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Method&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     
