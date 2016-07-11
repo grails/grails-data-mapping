@@ -18,6 +18,7 @@ import grails.gorm.CriteriaBuilder
 import grails.gorm.DetachedCriteria
 import grails.gorm.PagedResultList
 import grails.gorm.api.GormAllOperations
+import grails.gorm.multitenancy.Tenants
 import grails.gorm.transactions.GrailsTransactionTemplate
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
@@ -841,9 +842,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
     @Override
     def <T> T withTenant(Serializable tenantId, Closure<T> callable) {
         if(multiTenancyMode == MultiTenancyMode.SINGLE) {
-            return CurrentTenant.withTenant(tenantId) {
-                return GormEnhancer.findStaticApi(persistentClass, tenantId.toString()).withNewSession(callable)
-            }
+            Tenants.withId((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, tenantId.toString()).getClass(), tenantId, callable)
         }
         else {
             throw new UnsupportedOperationException("Method not supported in multi tenancy mode $multiTenancyMode")
@@ -853,31 +852,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
     @Override
     GormAllOperations<D> eachTenant(Closure callable) {
         if(multiTenancyMode == MultiTenancyMode.SINGLE) {
-            for(ConnectionSource connectionSource in connectionSources.allConnectionSources) {
-                def tenantId = connectionSource.name
-                if(tenantId != ConnectionSource.DEFAULT) {
-                    CurrentTenant.withTenant(tenantId) {
-                        GormEnhancer.findStaticApi(persistentClass, tenantId).withNewSession {
-
-                            def i = callable.parameterTypes.length
-                            switch (i) {
-                                case 0:
-                                    return callable.call()
-                                    break
-                                case 1:
-                                    return callable.call(tenantId)
-                                    break
-                                case 2:
-                                    return callable.call(tenantId, it)
-                                default:
-                                    throw new IllegalArgumentException("Provided closure accepts too many arguments")
-                            }
-
-                        }
-
-                    }
-                }
-            }
+            Tenants.eachTenant callable
             return this
         }
         else {

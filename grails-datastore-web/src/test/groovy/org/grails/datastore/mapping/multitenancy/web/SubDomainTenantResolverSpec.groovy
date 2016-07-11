@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.multitenancy.web
 
+import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.context.request.RequestContextHolder
@@ -13,7 +14,7 @@ class SubDomainTenantResolverSpec extends Specification {
 
     void "Test subdomain resolver throws an exception outside a web request"() {
         when:
-        new SubDomainTenantResolver().resolveTenantIdentifier(null)
+        new SubDomainTenantResolver().resolveTenantIdentifier()
 
         then:
         def e = thrown(TenantNotFoundException)
@@ -27,14 +28,14 @@ class SubDomainTenantResolverSpec extends Specification {
         RequestContextHolder.setRequestAttributes(new ServletWebRequest(request))
 
         when:
-        def tenantId = new SubDomainTenantResolver().resolveTenantIdentifier(null)
+        def tenantId = new SubDomainTenantResolver().resolveTenantIdentifier()
 
         then:
-        tenantId == SubDomainTenantResolver.DEFAULT_SUB_DOMAIN
+        tenantId == ConnectionSource.DEFAULT
 
         when:
         request.setServerName("foo.mycompany.com")
-        tenantId = new SubDomainTenantResolver().resolveTenantIdentifier(null)
+        tenantId = new SubDomainTenantResolver().resolveTenantIdentifier()
 
         then:
         tenantId == "foo"

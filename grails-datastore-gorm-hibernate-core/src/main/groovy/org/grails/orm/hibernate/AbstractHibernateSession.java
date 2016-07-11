@@ -196,4 +196,6 @@ public abstract class AbstractHibernateSession extends AbstractAttributeStoringS
     public void setSynchronizedWithTransaction(boolean synchronizedWithTransaction) {
         // no-op
     }
+
+
 }

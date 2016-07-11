@@ -67,4 +67,6 @@ public interface IHibernateTemplate {
     SessionFactory getSessionFactory();
 
     <T> T execute(Closure<T> callable);
+
+    <T> T executeWithNewSession(Closure<T> callable);
 }

@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.mapping.core;
 
+import groovy.lang.Closure;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
 import groovy.util.ConfigObject;
@@ -230,4 +231,14 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         return false;
     }
 
+
+    @Override
+    public <T> T withSession(final Closure<T> callable) {
+        return DatastoreUtils.execute(this, new SessionCallback<T>() {
+            @Override
+            public T doInSession(Session session) {
+                return callable.call(session);
+            }
+        });
+    }
 }

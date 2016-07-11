@@ -1,11 +1,14 @@
 package org.grails.datastore.rx
 
 import grails.gorm.rx.proxy.ObservableProxy
+import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
 import org.grails.datastore.mapping.core.connections.ConnectionSources
 import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider
 import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
+import org.grails.datastore.mapping.multitenancy.TenantResolver
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.QueryCreator
 import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher
@@ -184,4 +187,25 @@ interface RxDatastoreClient<T> extends Closeable, QueryCreator, Settings, Connec
      * @return The {@link RxDatastoreClient} instance
      */
     RxDatastoreClient getDatastoreClient(String connectionSourceName)
+
+
+    /**
+     * @return The multi tenancy mode
+     */
+    MultiTenancySettings.MultiTenancyMode getMultiTenancyMode();
+
+    /**
+     * @return Obtain the tenant resolver
+     */
+    TenantResolver getTenantResolver();
+
+    /**
+     * Obtains the datastore for the given tenant id. In SINGLE mode
+     * this will be a unique datastore for each tenant. For MULTI mode
+     * a single datastore is used for all tenants
+     *
+     * @param tenantId The tenant id
+     * @return The datastore
+     */
+    RxDatastoreClient getDatastoreClientForTenantId(Serializable tenantId);
 }

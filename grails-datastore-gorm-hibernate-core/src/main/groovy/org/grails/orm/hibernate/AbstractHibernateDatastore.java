@@ -14,11 +14,17 @@
  */
 package org.grails.orm.hibernate;
 
+import groovy.lang.Closure;
 import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.AbstractDatastore;
+import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.core.DatastoreAware;
 import org.grails.datastore.mapping.core.connections.*;
-import org.grails.datastore.mapping.core.exceptions.ConfigurationException;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
+import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore;
+import org.grails.datastore.mapping.multitenancy.TenantResolver;
+import org.grails.datastore.mapping.multitenancy.resolvers.FixedTenantResolver;
 import org.grails.orm.hibernate.cfg.HibernateMappingContext;
 import org.grails.orm.hibernate.connections.HibernateConnectionSource;
 import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
@@ -29,6 +35,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.PropertyResolver;
 
+import java.io.Serializable;
 import java.util.concurrent.Callable;
 
 /**
@@ -37,7 +44,7 @@ import java.util.concurrent.Callable;
  * @author Graeme Rocher
  * @since 2.0
  */
-public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, ConnectionSourcesProvider<SessionFactory, HibernateConnectionSourceSettings> {
+public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, MultiTenantCapableDatastore<SessionFactory, HibernateConnectionSourceSettings> {
 
     public static final String CONFIG_PROPERTY_CACHE_QUERIES = "grails.hibernate.cache.queries";
     public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";
@@ -45,6 +52,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     protected final SessionFactory sessionFactory;
     protected final ConnectionSources<SessionFactory, HibernateConnectionSourceSettings> connectionSources;
     protected final String defaultFlushModeName;
+    protected final MultiTenancySettings.MultiTenancyMode multiTenantMode;
     protected AbstractEventTriggeringInterceptor eventTriggeringInterceptor;
     protected final boolean osivReadOnly;
     protected final boolean passReadOnlyToHibernate;
@@ -52,6 +60,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     protected final int defaultFlushMode;
     protected final boolean failOnError;
     protected final String dataSourceName;
+    protected final TenantResolver tenantResolver;
 
     protected AbstractHibernateDatastore(ConnectionSources<SessionFactory, HibernateConnectionSourceSettings> connectionSources, HibernateMappingContext mappingContext) {
         super(mappingContext, connectionSources.getBaseConfiguration(), null);
@@ -68,6 +77,13 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         FlushMode flushMode = FlushMode.valueOf(hibernateSettings.getFlush().getMode().name());
         this.defaultFlushModeName = flushMode.name();
         this.defaultFlushMode = flushMode.getLevel();
+
+        MultiTenancySettings multiTenancySettings = settings.getMultiTenancy();
+        this.tenantResolver = multiTenancySettings.getTenantResolver();
+        if(tenantResolver instanceof DatastoreAware) {
+            ((DatastoreAware)tenantResolver).setDatastore(this);
+        }
+        this.multiTenantMode = multiTenancySettings.getMode();
     }
 
     protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext, String dataSourceName) {
@@ -94,10 +110,32 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
             defaultFlushMode = flushMode.level;
         }
         failOnError = config.getProperty(SETTING_FAIL_ON_ERROR, Boolean.class, false);
+        this.tenantResolver = new FixedTenantResolver();
+        this.multiTenantMode = MultiTenancySettings.MultiTenancyMode.NONE;
     }
 
     public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {
         this(mappingContext, sessionFactory, config, null, ConnectionSource.DEFAULT);
+    }
+
+    @Override
+    public MultiTenancySettings.MultiTenancyMode getMultiTenancyMode() {
+        return this.multiTenantMode;
+    }
+
+    @Override
+    public Datastore getDatastoreForTenantId(Serializable tenantId) {
+        if(multiTenantMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+            return getDatastoreForConnection(tenantId.toString());
+        }
+        else {
+            return this;
+        }
+    }
+
+    @Override
+    public TenantResolver getTenantResolver() {
+        return this.tenantResolver;
     }
 
     @Override
@@ -220,4 +258,18 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
      */
     public abstract Session openSession();
 
+    @Override
+    public <T> T withSession(Closure<T> callable) {
+        return getHibernateTemplate().executeWithNewSession(callable);
+    }
+
+    @Override
+    public <T1> T1 withNewSession(Serializable tenantId, Closure<T1> callable) {
+        if(getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+            return getDatastoreForConnection(tenantId.toString()).withSession(callable);
+        }
+        else {
+            return withSession(callable);
+        }
+    }
 }

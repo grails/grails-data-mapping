@@ -1,7 +1,11 @@
 package org.grails.gorm.rx.api
 
 import grails.gorm.rx.MultiTenant
+import grails.gorm.rx.multitenancy.Tenants
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
+import org.grails.datastore.gorm.CurrentTenant
+import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.DatastoreAware
 import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
@@ -24,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 6.0
  */
 @CompileStatic
+@Slf4j
 class RxGormEnhancer {
 
     private static final Map<String, Map<String,RxGormStaticApi>> STATIC_APIS = new ConcurrentHashMap<String, Map<String,RxGormStaticApi>>().withDefault { String key ->
@@ -35,10 +40,8 @@ class RxGormEnhancer {
     private static final Map<String, Map<String, RxGormValidationApi>> VALIDATION_APIS = new ConcurrentHashMap<String, Map<String, RxGormValidationApi>>().withDefault { String key ->
         return new ConcurrentHashMap<String, RxGormValidationApi>()
     }
+    private static final Map<Class<? extends RxDatastoreClient>, RxDatastoreClient> DATASTORE_CLIENTS = new ConcurrentHashMap<Class<? extends RxDatastoreClient>, RxDatastoreClient>()
 
-    private static final Map<String, TenantResolver> TENANT_RESOLVERS = new ConcurrentHashMap<String, TenantResolver>().withDefault { String key ->
-        return new NoTenantResolver()
-    }
 
 
     private RxGormEnhancer() {
@@ -48,7 +51,6 @@ class RxGormEnhancer {
         STATIC_APIS.clear()
         INSTANCE_APIS.clear()
         VALIDATION_APIS.clear()
-        TENANT_RESOLVERS.clear()
     }
 
     /**
@@ -63,17 +65,9 @@ class RxGormEnhancer {
         String defaultConnectionSource = ConnectionSourcesSupport.getDefaultConnectionSourceName(entity)
         RxDatastoreClientImplementor rxDatastoreClientImplementor = (RxDatastoreClientImplementor) client
 
-        ConnectionSourceSettings settings = client.connectionSources.defaultConnectionSource.settings
-        MultiTenancySettings multiTenancySettings = settings.multiTenancy
-        if(multiTenancySettings.mode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
-            TenantResolver tenantResolver = multiTenancySettings.tenantResolverClass?.newInstance() ?: new NoTenantResolver()
-            if(tenantResolver instanceof RxDatastoreClientAware) {
-                ((RxDatastoreClientAware)tenantResolver).setRxDatastoreClient(client)
-            }
-
-            TENANT_RESOLVERS.put(entity.javaClass.name, tenantResolver)
+        if(!DATASTORE_CLIENTS.containsKey(client.getClass())) {
+            DATASTORE_CLIENTS.put( (Class<? extends RxDatastoreClient>)client.getClass(), client)
         }
-
 
         if(MultiTenant.isAssignableFrom(entity.javaClass) || defaultConnectionSource == ConnectionSource.ALL) {
             for(ConnectionSource cs in client.getConnectionSources()) {
@@ -90,14 +84,37 @@ class RxGormEnhancer {
     }
 
     /**
-     * Find the {@link TenantResolver} for the given entity
+     * Finds a datastore by type
      *
-     * @param entity The entity
-     * @return The {@link TenantResolver}
+     * @param datastoreType The datastore type
+     * @return The datastore
+     *
+     * @throws IllegalStateException If no datastore is found for the type
      */
-    static TenantResolver findTenantResolver(Class entity) {
-        String className = NameUtils.getClassName(entity)
-        return TENANT_RESOLVERS.get(className)
+    static RxDatastoreClient findDatastoreClientByType(Class<? extends RxDatastoreClient> datastoreType) {
+        RxDatastoreClient client = DATASTORE_CLIENTS.get(datastoreType)
+        if(client == null) {
+            throw new IllegalStateException("No RxGORM implementation configured for type [$datastoreType]. Ensure RxGORM has been initialized correctly")
+        }
+        return client
+    }
+
+    /**
+     * Finds a single datastore
+     *
+     * @throws IllegalStateException If no datastore is found or more than one is configured
+     */
+    static RxDatastoreClient findSingleDatastoreClient() {
+        Collection<RxDatastoreClient> allDatastores = DATASTORE_CLIENTS.values()
+        if(allDatastores.isEmpty()) {
+            throw new IllegalStateException("No RxGORM implementations configured. Ensure RxGORM has been initialized correctly")
+        }
+        else if(allDatastores.size() > 1) {
+            throw new IllegalStateException("More than one RxGORM implementation is configured. Specific the client type!")
+        }
+        else {
+            return allDatastores.first()
+        }
     }
 
     /**
@@ -108,9 +125,10 @@ class RxGormEnhancer {
      */
     static String findTenantId(Class entity) {
         if(MultiTenant.isAssignableFrom(entity)) {
-            return findTenantResolver(entity).resolveTenantIdentifier(entity)
+            return Tenants.currentId( (Class<? extends RxDatastoreClient>) findStaticApi(entity, ConnectionSource.DEFAULT).datastoreClient.getClass() )
         }
         else {
+            log.debug "Returning default tenant id for non-multitenant class [$entity]"
             return ConnectionSource.DEFAULT
         }
     }

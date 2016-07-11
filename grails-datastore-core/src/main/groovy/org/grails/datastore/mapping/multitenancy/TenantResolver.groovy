@@ -22,5 +22,5 @@ interface TenantResolver {
      * @return The tenant identifier
      *
      */
-    public Serializable resolveTenantIdentifier(Class persistentClass) throws TenantNotFoundException
+    public Serializable resolveTenantIdentifier() throws TenantNotFoundException
 }

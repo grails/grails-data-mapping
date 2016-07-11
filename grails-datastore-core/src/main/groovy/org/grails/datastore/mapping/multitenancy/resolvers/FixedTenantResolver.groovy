@@ -29,7 +29,7 @@ class FixedTenantResolver implements TenantResolver {
     }
 
     @Override
-    Serializable resolveTenantIdentifier(Class persistentClass) {
+    Serializable resolveTenantIdentifier() {
         return tenantId
     }
 }

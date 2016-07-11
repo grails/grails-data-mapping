@@ -13,13 +13,13 @@ class SystemPropertyTenantResolver implements TenantResolver {
     public static final String PROPERTY_NAME = "gorm.tenantId"
 
     @Override
-    Serializable resolveTenantIdentifier(Class persistentClass) throws TenantNotFoundException {
+    Serializable resolveTenantIdentifier() throws TenantNotFoundException {
         def value = System.getProperty(PROPERTY_NAME)
         if(value) {
             return value
         }
         else {
-            throw new TenantNotFoundException(persistentClass)
+            throw new TenantNotFoundException()
         }
     }
 }

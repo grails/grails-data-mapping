@@ -21,6 +21,8 @@ import org.grails.datastore.mapping.model.PropertyMapping
 import org.grails.datastore.mapping.model.ValueGenerator
 import org.grails.datastore.mapping.model.types.ToMany
 import org.grails.datastore.mapping.model.types.ToOne
+import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
+import org.grails.datastore.mapping.multitenancy.TenantResolver
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.rx.batch.BatchOperation
@@ -56,6 +58,8 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
     final ProxyFactory proxyFactory
     final ConnectionSources<T, ? extends ConnectionSourceSettings> connectionSources
     final Map<String, RxDatastoreClient<T>> datastoreClients = [:]
+    final MultiTenancySettings.MultiTenancyMode multiTenancyMode
+    final TenantResolver tenantResolver
 
     AbstractRxDatastoreClient(ConnectionSources<T, ConnectionSourceSettings> connectionSources, MappingContext mappingContext) {
         this.mappingContext = mappingContext
@@ -64,6 +68,33 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
         this.datastoreClients.put(ConnectionSource.DEFAULT, this)
         mappingContext.setProxyFactory(new RxJavassistProxyFactory())
 
+        ConnectionSourceSettings connectionSourceSettings = connectionSources.defaultConnectionSource.settings
+        MultiTenancySettings multiTenancySettings = connectionSourceSettings.multiTenancy
+        this.multiTenancyMode = multiTenancySettings.getMode()
+        this.tenantResolver = multiTenancySettings.getTenantResolver()
+        if(this.tenantResolver instanceof RxDatastoreClientAware) {
+            ((RxDatastoreClientAware)tenantResolver).setRxDatastoreClient(this)
+        }
+    }
+
+    @Override
+    MultiTenancySettings.MultiTenancyMode getMultiTenancyMode() {
+        return this.multiTenancyMode
+    }
+
+    @Override
+    TenantResolver getTenantResolver() {
+        return this.tenantResolver
+    }
+
+    @Override
+    RxDatastoreClient getDatastoreClientForTenantId(Serializable tenantId) {
+        if(multiTenancyMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+            return getDatastoreClient(tenantId.toString())
+        }
+        else {
+            return this
+        }
     }
 
     ConfigurableApplicationEventPublisher getEventPublisher() {

@@ -2,12 +2,16 @@ package org.grails.datastore.mapping.multitenancy
 
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
+import org.grails.datastore.mapping.multitenancy.resolvers.NoTenantResolver
+import org.springframework.beans.BeanUtils
 
 /**
  * Represents the multi tenancy settings
  */
 @Builder(builderStrategy = SimpleStrategy, prefix = '')
 class MultiTenancySettings {
+
+    private TenantResolver tenantResolver
 
     /**
      * The default multi tenancy mode
@@ -17,7 +21,25 @@ class MultiTenancySettings {
     /**
      * The tenant resolver class
      */
+
     Class<? extends TenantResolver> tenantResolverClass
+
+    /**
+     * @return The tenant resolver
+     */
+    TenantResolver getTenantResolver() {
+        if(tenantResolver != null) {
+            return tenantResolver
+        }
+        else if(tenantResolverClass != null) {
+            return BeanUtils.instantiate(tenantResolverClass)
+        }
+        return new NoTenantResolver()
+    }
+
+    void setTenantResolver(TenantResolver tenantResolver) {
+        this.tenantResolver = tenantResolver
+    }
 
     static enum MultiTenancyMode {
         /**

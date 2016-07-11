@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.mapping.core;
 
+import groovy.lang.Closure;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -78,5 +79,14 @@ public interface Datastore {
      * @return True if it does
      */
     boolean isSchemaless();
+
+    /**
+     * Execute the given closure with a session
+     *
+     * @param callable The callable
+     * @param <T> The return type
+     * @return An instance of the return type
+     */
+    public <T> T withSession(Closure<T> callable);
 
 }
