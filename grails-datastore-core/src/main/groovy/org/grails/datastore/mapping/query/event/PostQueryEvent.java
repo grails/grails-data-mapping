@@ -18,6 +18,11 @@ public class PostQueryEvent extends AbstractQueryEvent {
         this.results = results;
     }
 
+    public PostQueryEvent(Object source, Query query, List results) {
+        super(source, query);
+        this.results = results;
+    }
+
     /**
      * @return The results of the query. Note that this list is usually non-modifiable.
      */

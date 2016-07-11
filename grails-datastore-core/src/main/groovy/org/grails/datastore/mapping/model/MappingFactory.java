@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.*;
 
 /**
@@ -56,7 +57,7 @@ import org.grails.datastore.mapping.model.types.*;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class MappingFactory<R extends Entity,T extends Property> {
 
-    public static final String IDENTITY_PROPERTY = "id";
+    public static final String IDENTITY_PROPERTY = GormProperties.IDENTITY;
     public static final Set<String> SIMPLE_TYPES;
 
     static {
@@ -167,6 +168,33 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
     }
 
     /**
+     * Creates the tenant identifier property
+     *
+     * @param owner The owner
+     * @param context The context
+     * @param pd The PropertyDescriptor
+     * @return An Identity instance
+     */
+    public TenantId<T> createTenantId(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
+        return new TenantId<T>(owner, context, pd) {
+            PropertyMapping<T> propertyMapping = createDerivedPropertyMapping(this, owner);
+            public PropertyMapping<T> getMapping() {
+                return propertyMapping;
+            }
+        };
+    }
+
+    /**
+     * Return whether the given property descriptor is the tenant id
+     *
+     * @param entity The entity
+     * @param context The context
+     * @param descriptor The descriptor
+     * @return True if it is
+     */
+    public abstract boolean isTenantId(PersistentEntity entity, MappingContext context, PropertyDescriptor descriptor);
+
+    /**
      * Creates a custom prpoerty type
      *
      * @param owner The owner
@@ -236,6 +264,21 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             }
         };
     }
+
+    private PropertyMapping<T> createDerivedPropertyMapping(final PersistentProperty<T> property, final PersistentEntity owner) {
+        final T mappedFormObject = createMappedForm(property);
+        mappedFormObject.setDerived(true);
+        return new PropertyMapping<T>() {
+            private T mappedForm = mappedFormObject;
+            public ClassMapping getClassMapping() {
+                return owner.getMapping();
+            }
+            public T getMappedForm() {
+                return mappedForm;
+            }
+        };
+    }
+
 
     /**
      * Creates a one-to-one association type used for mapping a one-to-one association between entities
@@ -486,4 +529,6 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
     public static String associationtoString(String desc, Association a) {
         return desc + a.getOwner().getName() + "-> " + a.getName() + " ->" + a.getAssociatedEntity().getName();
     }
+
+
 }

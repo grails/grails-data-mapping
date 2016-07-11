@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.model;
 import java.util.Collection;
 
 import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.springframework.core.convert.ConversionService;
@@ -46,11 +47,9 @@ import org.springframework.validation.Validator;
 public interface MappingContext {
 
     /**
-     * Configures the MappingContext
-     *
-     * @param configuration The configuration
+     * @return The multi tenancy mode
      */
-    void configure(PropertyResolver configuration);
+    MultiTenancySettings.MultiTenancyMode getMultiTenancyMode();
 
     /**
      * Obtains a list of PersistentEntity instances

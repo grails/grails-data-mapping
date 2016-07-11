@@ -22,6 +22,7 @@ package org.grails.datastore.mapping.model.config;
  */
 public interface GormProperties {
     String IDENTITY = "id";
+    String TENANT_IDENTITY = "tenantId";
     String ERRORS = "errors";
     String ATTACHED = "attached";
     String CLASS = "class";

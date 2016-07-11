@@ -14,8 +14,6 @@
  */
 package org.grails.datastore.mapping.model;
 
-import groovy.lang.Closure;
-
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
@@ -23,11 +21,13 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 import org.grails.datastore.mapping.config.Entity;
-import org.grails.datastore.mapping.config.groovy.DefaultMappingConfigurationBuilder;
 import org.grails.datastore.mapping.core.EntityCreationException;
+import org.grails.datastore.mapping.core.exceptions.ConfigurationException;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.OneToMany;
+import org.grails.datastore.mapping.model.types.TenantId;
+import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.springframework.beans.BeanUtils;
@@ -62,21 +62,33 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     private final String mappingStrategy;
     private final boolean isAbstract;
     private EntityReflector entityReflector;
+    private final boolean isMultiTenant;
+    private TenantId tenantId;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         Assert.notNull(javaClass, "The argument [javaClass] cannot be null");
         this.javaClass = javaClass;
         this.context = context;
         this.isAbstract = Modifier.isAbstract(javaClass.getModifiers());
+        this.isMultiTenant = org.grails.datastore.mapping.reflect.ClassUtils.isMultiTenant(javaClass);
         decapitalizedName = Introspector.decapitalize(javaClass.getSimpleName());
         String classSpecified = ClassPropertyFetcher.forClass(javaClass).getStaticPropertyValue(GormProperties.MAPPING_STRATEGY, String.class);
         this.mappingStrategy = classSpecified != null ? classSpecified : GormProperties.DEFAULT_MAPPING_STRATEGY;
     }
 
-
     public PersistentProperty[] getCompositeIdentity() {
         return compositeIdentity;
     }
+
+    public TenantId getTenantId() {
+        return tenantId;
+    }
+
+    @Override
+    public boolean isMultiTenant() {
+        return this.isMultiTenant;
+    }
+
 
     public boolean isExternal() {
         return external;
@@ -85,10 +97,10 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     public boolean isAbstract() {
         return isAbstract;
     }
+
     public String getMappingStrategy() {
         return this.mappingStrategy;
     }
-
     public void setExternal(boolean external) {
         this.external = external;
     }
@@ -121,12 +133,17 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
 
             persistentProperties = mappingSyntaxStrategy.getPersistentProperties(this, context, mapping, includeIdentifiers());
             identity = resolveIdentifier();
-            persistentPropertyNames = new ArrayList<String>();
+
+            persistentPropertyNames = new ArrayList<>();
             associations = new ArrayList();
 
 
+            boolean multiTenancyEnabled = isMultiTenant && context.getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.MULTI;
             for (PersistentProperty persistentProperty : persistentProperties) {
+                if(multiTenancyEnabled && persistentProperty instanceof TenantId) {
+                    this.tenantId = (TenantId) persistentProperty;
 
+                }
                 if (!(persistentProperty instanceof OneToMany)) {
                     persistentPropertyNames.add(persistentProperty.getName());
                 }
@@ -140,6 +157,10 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
                 if(targetName != null) {
                     mappedPropertiesByName.put(targetName, persistentProperty);
                 }
+            }
+
+            if(multiTenancyEnabled && tenantId == null) {
+                throw new ConfigurationException("Class ["+javaClass.getName()+"] is multi tenant but does not specify a tenant identifier property");
             }
 
             if(!isExternal()) {
@@ -326,12 +347,12 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
         return mappedPropertiesByName.get(name);
     }
 
-
-
     private static class MappingProperties {
+
+
+
         private Boolean version = true;
         private boolean intialized = false;
-
         public boolean isIntialized() {
             return intialized;
         }
@@ -347,8 +368,8 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
         public boolean isVersioned() {
             return version == null ? true : version;
         }
-    }
 
+    }
     @Override
     public int hashCode() {
         return javaClass.hashCode();
@@ -367,4 +388,5 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     public String toString() {
         return javaClass.getName();
     }
+
 }

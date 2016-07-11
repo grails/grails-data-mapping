@@ -27,6 +27,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.multitenancy.TenantDelegatingGormOperations
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.Session
@@ -844,6 +845,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
         if(multiTenancyMode == MultiTenancyMode.SINGLE) {
             Tenants.withId((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, tenantId.toString()).getClass(), tenantId, callable)
         }
+        else if(multiTenancyMode == MultiTenancyMode.MULTI) {
+            Tenants.withId((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, ConnectionSource.DEFAULT).getClass(), tenantId, callable)
+        }
         else {
             throw new UnsupportedOperationException("Method not supported in multi tenancy mode $multiTenancyMode")
         }
@@ -864,6 +868,10 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
     GormAllOperations<D> withTenant(Serializable tenantId) {
         if(multiTenancyMode == MultiTenancyMode.SINGLE) {
             return GormEnhancer.findStaticApi(persistentClass, tenantId.toString())
+        }
+        else if(multiTenancyMode == MultiTenancyMode.MULTI) {
+            def staticApi = GormEnhancer.findStaticApi(persistentClass, ConnectionSource.DEFAULT)
+            return new TenantDelegatingGormOperations<D>(datastore, tenantId, staticApi)
         }
         else {
             throw new UnsupportedOperationException("Method not supported in multi tenancy mode $multiTenancyMode")

@@ -14,29 +14,13 @@
  */
 package org.grails.datastore.mapping.query;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import javax.persistence.FetchType;
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-
 import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.core.SessionImplementor;
-import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.Embedded;
 import org.grails.datastore.mapping.query.api.AssociationCriteria;
-import org.grails.datastore.mapping.query.api.ProjectionList;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.query.event.PostQueryEvent;
 import org.grails.datastore.mapping.query.event.PreQueryEvent;
@@ -44,6 +28,13 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import javax.persistence.FetchType;
+import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
+import java.io.Serializable;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Models a query that can be executed against a data store.

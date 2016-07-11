@@ -27,6 +27,7 @@ import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.lifecycle.Initializable;
 import org.grails.datastore.mapping.model.types.conversion.DefaultConversionService;
+import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
 import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
@@ -67,15 +68,24 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     protected ValidatorRegistry validatorRegistry;
     private boolean canInitializeEntities = true;
     private boolean initialized;
+    private MultiTenancySettings.MultiTenancyMode multiTenancyMode;
 
     public AbstractMappingContext() {
+        this.multiTenancyMode = MultiTenancySettings.MultiTenancyMode.NONE;
     }
 
     public AbstractMappingContext(ConnectionSourceSettings settings) {
         initialize(settings);
     }
 
+    @Override
+    public MultiTenancySettings.MultiTenancyMode getMultiTenancyMode() {
+        return this.multiTenancyMode;
+    }
+
     protected void initialize(ConnectionSourceSettings settings) {
+        this.multiTenancyMode = settings.getMultiTenancy().getMode();
+
         // initialize custom type marshallers
         MappingFactory mappingFactory = getMappingFactory();
         Iterable<CustomTypeMarshaller> customTypeMarshallers = ConfigurationUtils.findServices(settings.getCustom().getTypes(), CustomTypeMarshaller.class);
@@ -107,7 +117,6 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
 
     public abstract MappingFactory getMappingFactory();
 
-    @Override
     public void configure(PropertyResolver configuration) {
         if(configuration == null) {
             return;

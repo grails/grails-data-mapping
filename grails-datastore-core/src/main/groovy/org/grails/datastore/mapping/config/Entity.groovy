@@ -29,7 +29,15 @@ import org.grails.datastore.mapping.core.connections.ConnectionSource;
 @Builder(builderStrategy = SimpleStrategy, prefix = '')
 public class Entity {
 
+    /**
+     * @deprecated Use {@link ConnectionSource#DEFAULT} instead
+     */
+    @Deprecated
     public static final String ALL_DATA_SOURCES = ConnectionSource.ALL
+    /**
+     * @deprecated Use {@link ConnectionSource#ALL} instead
+     */
+    @Deprecated
     public static final String DEFAULT_DATA_SOURCE = ConnectionSource.DEFAULT
 
     /**

@@ -147,4 +147,20 @@ public class ClassUtils {
         return false;
 
     }
+
+    /**
+     * Whether the class is multi tenant
+     *
+     * @param clazz The class
+     * @return True if it is
+     */
+    public static boolean isMultiTenant(Class clazz) {
+        Class<?>[] allInterfacesForClass = org.springframework.util.ClassUtils.getAllInterfacesForClass(clazz);
+        for (Class anInterface : allInterfacesForClass) {
+            if(anInterface.getSimpleName().equals("MultiTenant")) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

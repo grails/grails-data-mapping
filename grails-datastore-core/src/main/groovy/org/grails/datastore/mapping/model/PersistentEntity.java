@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.grails.datastore.mapping.model.lifecycle.Initializable;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.TenantId;
 import org.grails.datastore.mapping.reflect.EntityReflector;
 
 /**
@@ -42,6 +43,16 @@ public interface PersistentEntity extends Initializable {
      * @return true if this entity is externally mapped
      */
     boolean isExternal();
+
+    /**
+     * @return Whether the entity is multi tenant
+     */
+    boolean isMultiTenant();
+
+    /**
+     * @return The tenant id
+     */
+    TenantId getTenantId();
 
     /**
      * Whether this PersistentEntity is mapped using a different store. Used for cross store persistence.

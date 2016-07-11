@@ -405,6 +405,16 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
         return false;
     }
 
+    @Override
+    public boolean isMultiTenant() {
+        return false;
+    }
+
+    @Override
+    public TenantId getTenantId() {
+        return null;
+    }
+
     public void setExternal(boolean external) {
         // do nothing
     }

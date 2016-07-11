@@ -94,6 +94,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         this.canExpandMappingContext = canExpandMappingContext;
     }
 
+
     /**
      * Tests whether an class is a persistent entity
      *
@@ -202,6 +203,9 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     configureOwningSide(association);
                     persistentProperties.add(association);
                 }
+            }
+            else if(propertyFactory.isTenantId(entity, context, descriptor)) {
+                persistentProperties.add(propertyFactory.createTenantId(entity, context, descriptor));
             }
             else if (propertyFactory.isSimpleType(propertyType)) {
                 persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
@@ -883,6 +887,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         }
         return null;
     }
+
     public static boolean isAbstract(PersistentEntity entity) {
         return Modifier.isAbstract(entity.getJavaClass().getModifiers());
     }

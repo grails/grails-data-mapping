@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.config;
 
 import groovy.lang.Closure;
 
+import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.grails.datastore.mapping.config.groovy.DefaultMappingConfigurationBui
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.config.GormProperties;
+import org.grails.datastore.mapping.model.types.TenantId;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.springframework.beans.BeanUtils;
 
@@ -117,6 +119,24 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
     protected abstract Class<T> getPropertyMappedFormType();
 
     protected abstract Class<R> getEntityMappedFormType();
+
+    @Override
+    public boolean isTenantId(PersistentEntity entity, MappingContext context, PropertyDescriptor descriptor) {
+        if(entity.isMultiTenant()) {
+            Map<String, T> props = entityToPropertyMap.get(entity);
+            if(props != null && props.containsKey(GormProperties.TENANT_IDENTITY)) {
+                T tenantIdProp = props.get(GormProperties.TENANT_IDENTITY);
+                String propertyName = tenantIdProp.getName();
+                if(descriptor.getName().equals(propertyName)) {
+                    return true;
+                }
+            }
+            else {
+                return descriptor.getName().equals(GormProperties.TENANT_IDENTITY);
+            }
+        }
+        return false;
+    }
 
     @Override
     public IdentityMapping createIdentityMapping(ClassMapping classMapping) {

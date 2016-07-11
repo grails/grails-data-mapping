@@ -1,5 +1,7 @@
 package org.grails.datastore.mapping.model;
 
+import org.grails.datastore.mapping.model.types.TenantId;
+
 import java.util.List;
 import java.util.Set;
 
@@ -100,4 +102,5 @@ public interface MappingConfigurationStrategy {
      * Whether the strategy can add new entities to the mapping context
      */
     void setCanExpandMappingContext(boolean canExpandMappingContext);
+
 }
