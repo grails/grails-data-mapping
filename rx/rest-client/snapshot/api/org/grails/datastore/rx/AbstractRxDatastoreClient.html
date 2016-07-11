@@ -183,8 +183,18 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><strong><a href='../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#multiTenancyMode">multiTenancyMode</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong><a href='../../../../org/grails/datastore/rx/proxy/ProxyFactory.html'>ProxyFactory</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#proxyFactory">proxyFactory</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong><a href='../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#tenantResolver">tenantResolver</a></code><br></td>
                         </tr>
                         
                     </table>
@@ -360,101 +370,116 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getDatastoreClientForTenantId(java.io.Serializable)">getDatastoreClientForTenantId</a></strong>(java.io.Serializable tenantId)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getEventPublisher()">getEventPublisher</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getMappingContext()">getMappingContext</a></strong>()</code><br></td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getMultiTenancyMode()">getMultiTenancyMode</a></strong>()</code><br></td>
+                        </tr>
+                        
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getTenantResolver()">getTenantResolver</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#initDefaultEventListeners(org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)">initDefaultEventListeners</a></strong>(<a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> configurableApplicationEventPublisher)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insert(T1, Map<String, Object>)">insert</a></strong>(<a href='../../../../T1.html'>T1</a> instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insertAll(java.lang.Iterable)">insertAll</a></strong>(java.lang.Iterable instances)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insertAll(java.lang.Iterable, Map<String, Object>)">insertAll</a></strong>(java.lang.Iterable instances, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isIndexed(org.grails.datastore.mapping.model.PersistentProperty)">isIndexed</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isSchemaless()">isSchemaless</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persist(T1, Map<String, Object>)">persist</a></strong>(<a href='../../../../T1.html'>T1</a> instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Persist an instance</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persist(T1)">persist</a></strong>(<a href='../../../../T1.html'>T1</a> instance)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persistAll(java.lang.Iterable)">persistAll</a></strong>(java.lang.Iterable instances)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persistAll(java.lang.Iterable, Map<String, Object>)">persistAll</a></strong>(java.lang.Iterable instances, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persistAllInternal(java.lang.Iterable, boolean, Map<String, Object>)">persistAllInternal</a></strong>(java.lang.Iterable instances, boolean isInsert, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#processAssociations(org.grails.datastore.mapping.model.PersistentEntity, java.io.Serializable, java.lang.Object, org.grails.datastore.mapping.reflect.EntityReflector, org.grails.datastore.rx.batch.BatchOperation, List<ApplicationEvent>)">processAssociations</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.io.Serializable id, java.lang.Object instance, <a href='../../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> entityReflector, <a href='../../../../org/grails/datastore/rx/batch/BatchOperation.html'>BatchOperation</a> operation, java.util.List&lt;org.springframework.context.ApplicationEvent&gt; postEvents)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(Class<T1>, java.io.Serializable, org.grails.datastore.rx.query.QueryState)">proxy</a></strong>(java.lang.Class&lt;T1&gt; type, java.io.Serializable id, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState = new QueryState()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../grails/gorm/rx/proxy/ObservableProxy.html'>ObservableProxy</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState)">proxy</a></strong>(<a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState = new QueryState()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#scheduleInsert(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.dirty.checking.DirtyCheckable, org.grails.datastore.mapping.reflect.EntityReflector, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.rx.batch.BatchOperation, List<ApplicationEvent>)">scheduleInsert</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> associatedEntity, <a href='../../../../org/grails/datastore/mapping/dirty/checking/DirtyCheckable.html'>DirtyCheckable</a> associatedObject, <a href='../../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> associationReflector, <a href='../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> associationAccess, <a href='../../../../org/grails/datastore/rx/batch/BatchOperation.html'>BatchOperation</a> operation, java.util.List&lt;org.springframework.context.ApplicationEvent&gt; postEvents)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#scheduleInsertOrUpdate(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.dirty.checking.DirtyCheckable, org.grails.datastore.rx.batch.BatchOperation, List<ApplicationEvent>)">scheduleInsertOrUpdate</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> associatedEntity, <a href='../../../../org/grails/datastore/mapping/dirty/checking/DirtyCheckable.html'>DirtyCheckable</a> associatedObject, <a href='../../../../org/grails/datastore/rx/batch/BatchOperation.html'>BatchOperation</a> operation, java.util.List&lt;org.springframework.context.ApplicationEvent&gt; postEvents)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#scheduleUpdate(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, java.io.Serializable, org.grails.datastore.mapping.dirty.checking.DirtyCheckable, org.grails.datastore.mapping.reflect.EntityReflector, org.grails.datastore.rx.batch.BatchOperation, List<ApplicationEvent>)">scheduleUpdate</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> associatedEntity, <a href='../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> associationAccess, java.io.Serializable associatedId, <a href='../../../../org/grails/datastore/mapping/dirty/checking/DirtyCheckable.html'>DirtyCheckable</a> associatedObject, <a href='../../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> associationReflector, <a href='../../../../org/grails/datastore/rx/batch/BatchOperation.html'>BatchOperation</a> operation, java.util.List&lt;org.springframework.context.ApplicationEvent&gt; postEvents)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setEventPublisher(org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)">setEventPublisher</a></strong>(<a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</code><br></td>
                         </tr>
@@ -544,10 +569,26 @@ extends java.lang.Object
                             </li>
                         </ul>
                     
+                        <a name="multiTenancyMode"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;<a href='../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a> <strong>multiTenancyMode</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="proxyFactory"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>final&nbsp;<a href='../../../../org/grails/datastore/rx/proxy/ProxyFactory.html'>ProxyFactory</a> <strong>proxyFactory</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="tenantResolver"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;<a href='../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a> <strong>tenantResolver</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -812,6 +853,15 @@ final&nbsp;java.util.Observable&lt;T1&gt; <strong>get</strong>(java.lang.Class&l
                             </li>
                         </ul>
                     
+                        <a name="getDatastoreClientForTenantId(java.io.Serializable)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> <strong>getDatastoreClientForTenantId</strong>(java.io.Serializable tenantId)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getEventPublisher()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -824,6 +874,24 @@ final&nbsp;java.util.Observable&lt;T1&gt; <strong>get</strong>(java.lang.Class&l
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> <strong>getMappingContext</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getMultiTenancyMode()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a> <strong>getMultiTenancyMode</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getTenantResolver()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a> <strong>getTenantResolver</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>

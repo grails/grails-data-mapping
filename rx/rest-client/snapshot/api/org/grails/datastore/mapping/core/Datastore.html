@@ -178,6 +178,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <td class="colLast"><code><strong><a href="#isSchemaless()">isSchemaless</a></strong>()</code><br>Whether the datastore is schema-less. </td>
                         </tr>
                         
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withSession(Closure<T>)">withSession</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure with a session</td>
+                        </tr>
+                        
                     </table>
                    </ul>
               </li>
@@ -270,6 +275,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>public&nbsp;boolean <strong>isSchemaless</strong>()</h4>
                                 <p> Whether the datastore is schema-less. That is it allows changes to the schema runtime, dynamic attributes etc.
      <DL><DT><B>Returns:</B></DT><DD>True if it does</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="withSession(Closure<T>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;T <strong>withSession</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <p> Execute the given closure with a session
+     <DL><DT><B>Returns:</B></DT><DD>An instance of the return type</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD><DD><code><T></code> -  The return type</DD></DL></p>
                             </li>
                         </ul>
                     

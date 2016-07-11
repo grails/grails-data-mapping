@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Superinterfaces:</dt>
-                <dd><a href='../../../../org/grails/datastore/mapping/query/QueryCreator.html'>QueryCreator</a>, <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html'>ConnectionSourcesProvider</a>, <a href='../../../../org/grails/gorm/rx/config/Settings.html'>Settings</a>, java.lang.AutoCloseable</dd>
+                <dd><a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html'>ConnectionSourcesProvider</a>, <a href='../../../../org/grails/gorm/rx/config/Settings.html'>Settings</a>, <a href='../../../../org/grails/datastore/mapping/query/QueryCreator.html'>QueryCreator</a>, java.lang.AutoCloseable</dd>
             </dl>
 
     <p> Represents a client connection pool that can be used to interact with a backing implementation in RxGORM
@@ -208,13 +208,23 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getDatastoreClientForTenantId(java.io.Serializable)">getDatastoreClientForTenantId</a></strong>(java.io.Serializable tenantId)</code><br>Obtains the datastore for the given tenant id. </td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getEventPublisher()">getEventPublisher</a></strong>()</code><br>@return The event publisher</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getMappingContext()">getMappingContext</a></strong>()</code><br>@return The mapping context</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getMultiTenancyMode()">getMultiTenancyMode</a></strong>()</code><br>@return The multi tenancy mode</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -223,46 +233,51 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getTenantResolver()">getTenantResolver</a></strong>()</code><br>@return Obtain the tenant resolver</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insert(T1, Map<String, Object>)">insert</a></strong>(<a href='../../../../T1.html'>T1</a> instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Force an insert of an instance and return the observable</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insertAll(java.lang.Iterable)">insertAll</a></strong>(java.lang.Iterable objects)</code><br>Batch insert all all of the given objects</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insertAll(java.lang.Iterable, Map<String, Object>)">insertAll</a></strong>(java.lang.Iterable objects, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Batch insert all all of the given objects</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persist(T1, Map<String, Object>)">persist</a></strong>(<a href='../../../../T1.html'>T1</a> instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Persist and instance and return the observable</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persist(T1)">persist</a></strong>(<a href='../../../../T1.html'>T1</a> instance)</code><br>Persist and instance and return the observable</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persistAll(java.lang.Iterable)">persistAll</a></strong>(java.lang.Iterable objects)</code><br>Batch saves all of the given objects</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persistAll(java.lang.Iterable, Map<String, Object>)">persistAll</a></strong>(java.lang.Iterable objects, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Batch saves all of the given objects</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(Class<T1>, java.io.Serializable)">proxy</a></strong>(java.lang.Class&lt;T1&gt; type, java.io.Serializable id)</code><br>Obtain an <a href='../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> for the given type and id</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../grails/gorm/rx/proxy/ObservableProxy.html'>ObservableProxy</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(org.grails.datastore.mapping.query.Query)">proxy</a></strong>(<a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query)</code><br>Obtain an <a href='../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> that executes the given query to initialize</td>
                         </tr>
@@ -406,6 +421,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="getDatastoreClientForTenantId(java.io.Serializable)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> <strong>getDatastoreClientForTenantId</strong>(java.io.Serializable tenantId)</h4>
+                                <p> Obtains the datastore for the given tenant id. In SINGLE mode
+ this will be a unique datastore for each tenant. For MULTI mode
+ a single datastore is used for all tenants
+     <DL><DT><B>Returns:</B></DT><DD>The datastore</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>tenantId</code> -  The tenant id</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getEventPublisher()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -424,12 +450,30 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="getMultiTenancyMode()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a> <strong>getMultiTenancyMode</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>The multi tenancy mode</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getNativeInterface()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>T <strong>getNativeInterface</strong>()</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>The native interface to the datastore</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getTenantResolver()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a> <strong>getTenantResolver</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Obtain the tenant resolver</DD></DL></p>
                             </li>
                         </ul>
                     
