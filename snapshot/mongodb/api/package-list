@@ -2,6 +2,7 @@ grails.gorm
 grails.gorm.annotation
 grails.gorm.api
 grails.gorm.dirty.checking
+grails.gorm.multitenancy
 grails.gorm.transactions
 grails.mongodb
 grails.mongodb.api
