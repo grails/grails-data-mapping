@@ -27,6 +27,7 @@ import org.grails.datastore.mapping.reflect.NameUtils;
 import org.hibernate.FetchMode;
 import org.hibernate.MappingException;
 import org.hibernate.cfg.*;
+import org.hibernate.engine.spi.FilterDefinition;
 import org.hibernate.id.PersistentIdentifierGenerator;
 import org.hibernate.mapping.*;
 import org.hibernate.mapping.Collection;
@@ -425,9 +426,9 @@ public abstract class AbstractGrailsDomainBinder {
         }
 
         // Configure one-to-many
+        PersistentEntity referenced = property.getAssociatedEntity();
         if (collection.isOneToMany()) {
 
-            PersistentEntity referenced = property.getAssociatedEntity();
             Mapping m = getRootMapping(referenced);
             boolean tablePerSubclass = m != null && !m.getTablePerHierarchy();
 
@@ -466,6 +467,13 @@ public abstract class AbstractGrailsDomainBinder {
             }
 
             bindCollectionForPropertyConfig(collection, propConfig);
+        }
+
+        if(referenced != null && referenced.isMultiTenant()) {
+            String filterCondition = getMultiTenantFilterCondition(sessionFactoryBeanName, referenced);
+            if(filterCondition != null) {
+                collection.addFilter(GormProperties.TENANT_IDENTITY, filterCondition, true, Collections.<String, String>emptyMap(), Collections.<String, String>emptyMap());
+            }
         }
 
         if (isSorted(property)) {
@@ -1452,8 +1460,34 @@ public abstract class AbstractGrailsDomainBinder {
         if (root.getEntityPersisterClass() == null) {
             root.setEntityPersisterClass(getGroovyAwareSingleTableEntityPersisterClass());
         }
+
+        if(entity.isMultiTenant()) {
+            TenantId tenantId = entity.getTenantId();
+            if(tenantId != null) {
+                String filterCondition = getMultiTenantFilterCondition(sessionFactoryBeanName, entity);
+                root.addFilter(GormProperties.TENANT_IDENTITY,filterCondition, true, Collections.<String, String>emptyMap(), Collections.<String, String>emptyMap());
+                mappings.addFilterDefinition(new FilterDefinition(
+                        GormProperties.TENANT_IDENTITY,
+                        filterCondition,
+                        Collections.singletonMap(GormProperties.TENANT_IDENTITY, root.getProperty(tenantId.getName()).getType())
+                ));
+            }
+
+        }
         mappings.addClass(root);
     }
+
+    private String getMultiTenantFilterCondition(String sessionFactoryBeanName, PersistentEntity referenced) {
+        TenantId tenantId = referenced.getTenantId();
+        if(tenantId != null) {
+            String defaultColumnName = getDefaultColumnName(tenantId, sessionFactoryBeanName);
+            return ":tenantId = " + defaultColumnName;
+        }
+        else {
+            return null;
+        }
+    }
+
 
     /**
      * Binds the sub classes of a root class using table-per-heirarchy inheritance mapping
@@ -2685,7 +2719,7 @@ public abstract class AbstractGrailsDomainBinder {
             String path, PropertyConfig propertyConfig, String sessionFactoryBeanName) {
         setTypeForPropertyConfig(grailsProp, simpleValue, propertyConfig);
         final PropertyConfig mappedForm = (PropertyConfig) grailsProp.getMapping().getMappedForm();
-        if (mappedForm.isDerived()) {
+        if (mappedForm.isDerived() && !(grailsProp instanceof TenantId)) {
             Formula formula = new Formula();
             formula.setFormula(propertyConfig.getFormula());
             simpleValue.addFormula(formula);
