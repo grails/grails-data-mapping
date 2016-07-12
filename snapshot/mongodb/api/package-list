@@ -30,6 +30,7 @@ org.grails.datastore.gorm.mongo.extensions
 org.grails.datastore.gorm.mongo.geo
 org.grails.datastore.gorm.mongo.simple
 org.grails.datastore.gorm.mongodb.boot.autoconfigure
+org.grails.datastore.gorm.multitenancy
 org.grails.datastore.gorm.plugin.support
 org.grails.datastore.gorm.proxy
 org.grails.datastore.gorm.query
