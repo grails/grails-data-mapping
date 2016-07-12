@@ -1368,6 +1368,16 @@ public abstract class AbstractGrailsDomainBinder {
     /**
      * Obtains a mapping object for the given domain class nam
      *
+     * @param theClass The domain class in question
+     * @return A Mapping object or null
+     */
+    static void cacheMapping(Class<?> theClass, Mapping mapping) {
+        MAPPING_CACHE.put(theClass, mapping);
+    }
+
+    /**
+     * Obtains a mapping object for the given domain class nam
+     *
      * @param domainClass The domain class in question
      * @return A Mapping object or null
      */
