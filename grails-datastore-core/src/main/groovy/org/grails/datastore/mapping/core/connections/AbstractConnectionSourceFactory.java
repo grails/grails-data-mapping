@@ -38,7 +38,6 @@ public abstract class AbstractConnectionSourceFactory<T, S extends ConnectionSou
 
     @Override
     public final <F extends ConnectionSourceSettings> ConnectionSource<T, S> create(String name, PropertyResolver configuration, F fallbackSettings) {
-
         boolean isDefaultDataSource = ConnectionSource.DEFAULT.equals(name);
         S settings = buildSettings(name, configuration, fallbackSettings, isDefaultDataSource);
         return create(name, settings);

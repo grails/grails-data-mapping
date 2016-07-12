@@ -50,8 +50,23 @@ public abstract class AbstractHibernateConnectionSourceFactory extends AbstractC
         HibernateConnectionSourceSettingsBuilder builder;
         HibernateConnectionSourceSettings settings;
         if(isDefaultDataSource) {
+            String qualified = Settings.SETTING_DATASOURCES + '.' + Settings.SETTING_DATASOURCE;
             builder = new HibernateConnectionSourceSettingsBuilder(configuration, "", fallbackSettings);
+            Map config = configuration.getProperty(qualified, Map.class, Collections.emptyMap());
             settings = builder.build();
+            if(!config.isEmpty()) {
+
+                DataSourceSettings dsfallbackSettings = null;
+                if(fallbackSettings instanceof HibernateConnectionSourceSettings) {
+                    dsfallbackSettings = ((HibernateConnectionSourceSettings)fallbackSettings).getDataSource();
+                }
+                else if(fallbackSettings instanceof DataSourceSettings) {
+                    dsfallbackSettings = (DataSourceSettings) fallbackSettings;
+                }
+                DataSourceSettingsBuilder dataSourceSettingsBuilder = new DataSourceSettingsBuilder(configuration, qualified, dsfallbackSettings);
+                DataSourceSettings dataSourceSettings = dataSourceSettingsBuilder.build();
+                settings.setDataSource(dataSourceSettings);
+            }
         }
         else {
             String prefix = Settings.SETTING_DATASOURCES + "." + name;

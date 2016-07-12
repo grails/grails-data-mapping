@@ -10,6 +10,7 @@ import org.springframework.jndi.JndiObjectFactoryBean;
 
 import javax.sql.DataSource;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -21,7 +22,22 @@ import java.util.Map;
 public class DataSourceConnectionSourceFactory extends AbstractConnectionSourceFactory<DataSource, DataSourceSettings> {
     @Override
     protected <F extends ConnectionSourceSettings> DataSourceSettings buildSettings(String name, PropertyResolver configuration, F fallbackSettings, boolean isDefaultDataSource) {
-        DataSourceSettingsBuilder builder = new DataSourceSettingsBuilder(configuration, ConnectionSource.DEFAULT.equals(name) ? Settings.SETTING_DATASOURCE : Settings.SETTING_DATASOURCES  + '.' + name);
+        String configurationPrefix = isDefaultDataSource ? Settings.SETTING_DATASOURCE : Settings.SETTING_DATASOURCES + '.' + name;
+        DataSourceSettingsBuilder builder;
+        if(isDefaultDataSource) {
+            String qualified = Settings.SETTING_DATASOURCES + '.' + Settings.SETTING_DATASOURCE;
+            Map config = configuration.getProperty(qualified, Map.class, Collections.emptyMap());
+            if(!config.isEmpty()) {
+                builder = new DataSourceSettingsBuilder(configuration, qualified);
+            }
+            else {
+                builder = new DataSourceSettingsBuilder(configuration, configurationPrefix);
+            }
+        }
+        else {
+            builder = new DataSourceSettingsBuilder(configuration, configurationPrefix);
+        }
+
         DataSourceSettings settings = builder.build();
         return settings;
     }
