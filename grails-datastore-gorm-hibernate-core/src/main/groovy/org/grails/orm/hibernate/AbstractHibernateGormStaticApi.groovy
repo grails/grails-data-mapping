@@ -215,7 +215,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             populateQueryArguments(q, queryNamedArgs)
             populateQueryArguments(q, args)
             populateQueryWithNamedArguments(q, queryNamedArgs)
-            createHqlQuery(session, q).singleResult()
+            proxyHandler.unwrap( createHqlQuery(session, q).singleResult() )
         }
     }
 
@@ -243,7 +243,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
                 }
             }
             populateQueryArguments(q, args)
-            createHqlQuery(session, q).singleResult()
+            proxyHandler.unwrap( createHqlQuery(session, q).singleResult() )
         }
     }
 

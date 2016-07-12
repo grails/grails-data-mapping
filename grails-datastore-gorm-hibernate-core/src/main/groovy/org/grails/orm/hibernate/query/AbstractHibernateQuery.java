@@ -99,6 +99,9 @@ public abstract class AbstractHibernateQuery extends Query {
         super(null, entity);
         this.detachedCriteria = criteria;
         this.abstractHibernateCriterionAdapter = createHibernateCriterionAdapter();
+        if(entity != null) {
+            initializeJoinStatus();
+        }
     }
 
     @Override
@@ -107,7 +110,7 @@ public abstract class AbstractHibernateQuery extends Query {
         return value;
     }
 
-    private void initializeJoinStatus() {
+    protected void initializeJoinStatus() {
         Boolean cachedStatus = JOIN_STATUS_CACHE.get(entity.getName());
         if(cachedStatus != null) hasJoins = cachedStatus;
         else {
@@ -668,6 +671,10 @@ public abstract class AbstractHibernateQuery extends Query {
         applyDefaultSortOrderAndCaching();
         applyFetchStrategies();
 
+        return listForCriteria();
+    }
+
+    public List listForCriteria() {
         Datastore datastore = session.getDatastore();
         ApplicationEventPublisher publisher = datastore.getApplicationEventPublisher();
         if(publisher != null) {
