@@ -26,6 +26,7 @@ public class SpringDataSourceConnectionSourceFactory extends DataSourceConnectio
     @Override
     public ConnectionSource<DataSource, DataSourceSettings> create(String name, DataSourceSettings settings) {
         String dataSourceName = ConnectionSource.DEFAULT.equals(name) ? Settings.SETTING_DATASOURCE : Settings.SETTING_DATASOURCE + "_" + name;
+        dataSourceName = Settings.SETTING_DATASOURCE.equals(name) ? Settings.SETTING_DATASOURCE : dataSourceName;
         DataSource springDataSource;
         try {
             springDataSource = applicationContext.getBean(dataSourceName, DataSource.class);
