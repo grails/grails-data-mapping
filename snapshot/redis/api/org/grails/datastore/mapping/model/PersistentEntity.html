@@ -214,28 +214,38 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/model/types/TenantId.html'>TenantId</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getTenantId()">getTenantId</a></strong>()</code><br>@return The tenant id</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getVersion()">getVersion</a></strong>()</code><br>Returns the version property.</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#hasProperty(java.lang.String, java.lang.Class)">hasProperty</a></strong>(java.lang.String name, java.lang.Class type)</code><br>Checks whether an entity has a bean property of the given name and type</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isExternal()">isExternal</a></strong>()</code><br>Whether this PersistentEntity is mapped using a different store. </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isIdentityName(java.lang.String)">isIdentityName</a></strong>(java.lang.String propertyName)</code><br>True if the given property is the identifier</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isInstance(java.lang.Object)">isInstance</a></strong>(java.lang.Object obj)</code><br>Tests whether the given instance is an instance of this persistent entity</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isMultiTenant()">isMultiTenant</a></strong>()</code><br>@return Whether the entity is multi tenant</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -442,6 +452,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="getTenantId()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/types/TenantId.html'>TenantId</a> <strong>getTenantId</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>The tenant id</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getVersion()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -484,6 +503,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>public&nbsp;boolean <strong>isInstance</strong>(java.lang.Object obj)</h4>
                                 <p> Tests whether the given instance is an instance of this persistent entity
      <DL><DT><B>Parameters:</B></DT><DD><code>obj</code> -  The object</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isMultiTenant()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;boolean <strong>isMultiTenant</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Whether the entity is multi tenant</DD></DL></p>
                             </li>
                         </ul>
                     
