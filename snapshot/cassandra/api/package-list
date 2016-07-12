@@ -20,6 +20,7 @@ org.grails.datastore.gorm.cassandra.mapping
 org.grails.datastore.gorm.events
 org.grails.datastore.gorm.finders
 org.grails.datastore.gorm.internal
+org.grails.datastore.gorm.multitenancy
 org.grails.datastore.gorm.plugin.support
 org.grails.datastore.gorm.proxy
 org.grails.datastore.gorm.query
