@@ -14,6 +14,7 @@ org.grails.datastore.gorm.bootstrap.support
 org.grails.datastore.gorm.events
 org.grails.datastore.gorm.finders
 org.grails.datastore.gorm.internal
+org.grails.datastore.gorm.multitenancy
 org.grails.datastore.gorm.neo4j
 org.grails.datastore.gorm.neo4j.bean.factory
 org.grails.datastore.gorm.neo4j.boot.autoconfigure
