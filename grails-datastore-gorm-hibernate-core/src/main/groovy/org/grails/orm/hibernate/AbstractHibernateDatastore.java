@@ -14,6 +14,7 @@
  */
 package org.grails.orm.hibernate;
 
+import grails.gorm.multitenancy.Tenants;
 import groovy.lang.Closure;
 import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.AbstractDatastore;
@@ -21,6 +22,8 @@ import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.DatastoreAware;
 import org.grails.datastore.mapping.core.connections.*;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
 import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore;
 import org.grails.datastore.mapping.multitenancy.TenantResolver;
@@ -35,6 +38,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.PropertyResolver;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
 
@@ -44,7 +49,7 @@ import java.util.concurrent.Callable;
  * @author Graeme Rocher
  * @since 2.0
  */
-public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, MultiTenantCapableDatastore<SessionFactory, HibernateConnectionSourceSettings> {
+public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, MultiTenantCapableDatastore<SessionFactory, HibernateConnectionSourceSettings>, Closeable {
 
     public static final String CONFIG_PROPERTY_CACHE_QUERIES = "grails.hibernate.cache.queries";
     public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";
@@ -239,6 +244,16 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     public void destroy() throws Exception {
         super.destroy();
         AbstractHibernateGormInstanceApi.resetInsertActive();
+        connectionSources.close();
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            destroy();
+        } catch (Exception e) {
+            throw new IOException("Error closing hibernate datastore: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -259,17 +274,70 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     public abstract Session openSession();
 
     @Override
-    public <T> T withSession(Closure<T> callable) {
-        return getHibernateTemplate().executeWithNewSession(callable);
+    public <T> T withSession(final Closure<T> callable) {
+        Closure<T> multiTenantCallable = prepareMultiTenantClosure(callable);
+        return getHibernateTemplate().execute(multiTenantCallable);
+    }
+
+    public <T> T withNewSession(final Closure<T> callable) {
+        Closure<T> multiTenantCallable = prepareMultiTenantClosure(callable);
+        return getHibernateTemplate().executeWithNewSession(multiTenantCallable);
     }
 
     @Override
     public <T1> T1 withNewSession(Serializable tenantId, Closure<T1> callable) {
         if(getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.SINGLE) {
-            return getDatastoreForConnection(tenantId.toString()).withSession(callable);
+            return getDatastoreForConnection(tenantId.toString()).withNewSession(callable);
         }
         else {
-            return withSession(callable);
+            return withNewSession(callable);
         }
+    }
+
+    /**
+     * Enable the tenant id filter for the given datastore and entity
+     *
+     */
+    public void enableMultiTenancyFilter() {
+        Serializable currentId = Tenants.currentId(getClass());
+        if(!ConnectionSource.DEFAULT.equals(currentId)) {
+            getHibernateTemplate()
+                    .getSessionFactory()
+                    .getCurrentSession()
+                    .enableFilter(GormProperties.TENANT_IDENTITY)
+                    .setParameter(GormProperties.TENANT_IDENTITY, currentId);
+        }
+    }
+
+    /**
+     * Disable the tenant id filter for the given datastore and entity
+     */
+    public void disableMultiTenancyFilter() {
+        getHibernateTemplate()
+            .getSessionFactory()
+            .getCurrentSession()
+            .disableFilter(GormProperties.TENANT_IDENTITY);
+    }
+
+    protected <T> Closure<T> prepareMultiTenantClosure(final Closure<T> callable) {
+        final boolean isMultiTenant = getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.MULTI;
+        Closure<T> multiTenantCallable;
+        if(isMultiTenant) {
+            multiTenantCallable = new Closure<T>(this) {
+                @Override
+                public T call(Object... args) {
+                    enableMultiTenancyFilter();
+                    try {
+                        return callable.call(args);
+                    } finally {
+                        disableMultiTenancyFilter();
+                    }
+                }
+            };
+        }
+        else {
+            multiTenantCallable = callable;
+        }
+        return multiTenantCallable;
     }
 }

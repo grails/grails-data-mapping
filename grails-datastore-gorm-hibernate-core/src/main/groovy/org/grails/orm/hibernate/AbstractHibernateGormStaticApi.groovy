@@ -6,6 +6,7 @@ import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder
 import org.grails.orm.hibernate.cfg.CompositeIdentity
 import org.grails.orm.hibernate.exceptions.GrailsQueryException
+
 import org.grails.orm.hibernate.query.GrailsHibernateQueryUtils
 import org.grails.orm.hibernate.query.HibernateHqlQuery
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils
@@ -51,6 +52,19 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         this.conversionService = datastore.mappingContext.conversionService
         this.proxyHandler = datastore.mappingContext.proxyHandler
     }
+
+    @Override
+    public <T> T withNewSession(Closure<T> callable) {
+        AbstractHibernateDatastore hibernateDatastore = (AbstractHibernateDatastore) datastore
+        hibernateDatastore.withNewSession(callable)
+    }
+
+    @Override
+    def <T> T withSession(Closure<T> callable) {
+        AbstractHibernateDatastore hibernateDatastore = (AbstractHibernateDatastore) datastore
+        hibernateDatastore.withSession(callable)
+    }
+
 
     @Override
     D get(Serializable id) {

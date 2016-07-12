@@ -1,5 +1,7 @@
 package org.grails.datastore.mapping.core.connections;
 
+import org.grails.datastore.mapping.multitenancy.TenantResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.PropertyResolver;
 
 import java.io.Serializable;
@@ -11,11 +13,21 @@ import java.io.Serializable;
  * @since 6.0
  */
 public abstract class AbstractConnectionSourceFactory<T, S extends ConnectionSourceSettings> implements ConnectionSourceFactory<T, S> {
+
+    private TenantResolver tenantResolver;
+
+    @Autowired(required = false)
+    void setTenantResolver(TenantResolver tenantResolver) {
+        this.tenantResolver = tenantResolver;
+    }
+
     @Override
     public ConnectionSource<T, S> create(String name, PropertyResolver configuration) {
         ConnectionSourceSettingsBuilder builder = new ConnectionSourceSettingsBuilder(configuration);
         ConnectionSourceSettings fallbackSettings = builder.build();
-
+        if(tenantResolver != null) {
+            fallbackSettings.getMultiTenancy().setTenantResolver(tenantResolver);
+        }
         return create(name, configuration, fallbackSettings);
     }
 

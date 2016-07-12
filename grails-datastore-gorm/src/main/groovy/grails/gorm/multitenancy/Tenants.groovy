@@ -6,8 +6,11 @@ import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.core.connections.ConnectionSources
+import org.grails.datastore.mapping.multitenancy.AllTenantsResolver
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore
+import org.grails.datastore.mapping.multitenancy.TenantResolver
+
 /**
  * Helper methods for working with multi tenancy
  *
@@ -25,25 +28,17 @@ class Tenants {
      */
     static void eachTenant(Closure callable) {
         Datastore datastore = GormEnhancer.findSingleDatastore()
-        if(datastore instanceof MultiTenantCapableDatastore) {
-            MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
-            MultiTenancySettings.MultiTenancyMode multiTenancyMode = multiTenantCapableDatastore.multiTenancyMode
-            ConnectionSources connectionSources = multiTenantCapableDatastore.connectionSources
-            if(multiTenancyMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
-                for(ConnectionSource connectionSource in connectionSources.allConnectionSources) {
-                    def tenantId = connectionSource.name
-                    if(tenantId != ConnectionSource.DEFAULT) {
-                        withTenantIdInternal(multiTenantCapableDatastore, tenantId, callable)
-                    }
-                }
-            }
-            else {
-                throw new UnsupportedOperationException("Method not supported in multi tenancy mode $multiTenancyMode")
-            }
-        }
-        else {
-            throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
-        }
+        eachTenantInternal(datastore, callable)
+    }
+
+    /**
+     * Execute the given closure for each tenant.
+     *
+     * @param callable The closure
+     * @return The result of the closure
+     */
+    static void eachTenant(Class<? extends Datastore> datastoreClass, Closure callable) {
+        eachTenantInternal(GormEnhancer.findDatastoreByType(datastoreClass), callable)
     }
 
     /**
@@ -91,6 +86,24 @@ class Tenants {
     }
 
     /**
+     * Execute the given closure without any tenant id. In Multi tenancy mode SINGLE this will execute against the default data source. If multi tenancy mode
+     * MULTI this will execute without including the "tenantId" on any query. Use with caution.
+     *
+     * @param callable The closure
+     * @return The result of the closure
+     */
+    static <T> T withoutId(Closure<T> callable) {
+        Datastore datastore = GormEnhancer.findSingleDatastore()
+        if(datastore instanceof MultiTenantCapableDatastore) {
+            MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
+            return withTenantIdInternal(multiTenantCapableDatastore, ConnectionSource.DEFAULT, callable)
+        }
+        else {
+            throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
+        }
+    }
+
+    /**
      * Execute the given closure with the current tenant
      *
      * @param callable The closure
@@ -126,6 +139,7 @@ class Tenants {
             throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
         }
     }
+
     /**
      * Execute the given closure with given tenant id
      * @param tenantId The tenant id
@@ -142,7 +156,6 @@ class Tenants {
             throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
         }
     }
-
     /**
      * Execute the given closure with given tenant id
      * @param tenantId The tenant id
@@ -178,6 +191,36 @@ class Tenants {
                 }
 
             }
+        }
+    }
+
+    private static void eachTenantInternal(Datastore datastore, Closure callable) {
+        if (datastore instanceof MultiTenantCapableDatastore) {
+            MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore) datastore
+            MultiTenancySettings.MultiTenancyMode multiTenancyMode = multiTenantCapableDatastore.multiTenancyMode
+            if (multiTenancyMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+                ConnectionSources connectionSources = multiTenantCapableDatastore.connectionSources
+                for (ConnectionSource connectionSource in connectionSources.allConnectionSources) {
+                    def tenantId = connectionSource.name
+                    if (tenantId != ConnectionSource.DEFAULT) {
+                        withTenantIdInternal(multiTenantCapableDatastore, tenantId, callable)
+                    }
+                }
+            }
+            else if (multiTenancyMode == MultiTenancySettings.MultiTenancyMode.MULTI) {
+                TenantResolver tenantResolver = multiTenantCapableDatastore.tenantResolver
+                if (tenantResolver instanceof AllTenantsResolver) {
+                    for (tenantId in ((AllTenantsResolver) tenantResolver).resolveTenantIds()) {
+                        withTenantIdInternal(multiTenantCapableDatastore, tenantId, callable)
+                    }
+                } else {
+                    throw new UnsupportedOperationException("Multi tenancy mode $multiTenancyMode is configured, but the configured TenantResolver does not implement the [org.grails.datastore.mapping.multitenancy.AllTenantsResolver] interface")
+                }
+            } else {
+                throw new UnsupportedOperationException("Method not supported in multi tenancy mode $multiTenancyMode")
+            }
+        } else {
+            throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
         }
     }
 

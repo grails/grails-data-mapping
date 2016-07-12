@@ -855,7 +855,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
 
     @Override
     GormAllOperations<D> eachTenant(Closure callable) {
-        if(multiTenancyMode == MultiTenancyMode.SINGLE) {
+        if(multiTenancyMode != MultiTenancyMode.NONE) {
             Tenants.eachTenant callable
             return this
         }

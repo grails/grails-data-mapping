@@ -15,11 +15,7 @@
 package org.grails.orm.hibernate.query;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.FetchType;
@@ -738,16 +734,27 @@ public abstract class AbstractHibernateQuery extends Query {
         applyDefaultSortOrderAndCaching();
         applyFetchStrategies();
 
+        Datastore datastore = session.getDatastore();
+        ApplicationEventPublisher publisher = datastore.getApplicationEventPublisher();
+        if(publisher != null) {
+            publisher.publishEvent(new PreQueryEvent(datastore, this));
+        }
+
+        Object result;
         if(hasJoins) {
             try {
-                return proxyHandler.unwrap(criteria.uniqueResult());
+                result = proxyHandler.unwrap(criteria.uniqueResult());;
             } catch (NonUniqueResultException e) {
-                return singleResultViaListCall();
+                result = singleResultViaListCall();
             }
         }
         else {
-            return singleResultViaListCall();
+            result = singleResultViaListCall();
         }
+        if(publisher != null) {
+            publisher.publishEvent(new PostQueryEvent(datastore, this, Collections.singletonList(result)));
+        }
+        return result;
     }
 
     private Object singleResultViaListCall() {

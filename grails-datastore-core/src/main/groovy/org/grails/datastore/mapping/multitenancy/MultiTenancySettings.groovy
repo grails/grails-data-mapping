@@ -37,6 +37,11 @@ class MultiTenancySettings {
         return new NoTenantResolver()
     }
 
+    /**
+     * Sets the tenant resolver to use
+     *
+     * @param tenantResolver The tenant resolver to use
+     */
     void setTenantResolver(TenantResolver tenantResolver) {
         this.tenantResolver = tenantResolver
     }
