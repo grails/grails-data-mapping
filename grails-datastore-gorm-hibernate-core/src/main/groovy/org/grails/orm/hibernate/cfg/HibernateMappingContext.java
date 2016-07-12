@@ -71,12 +71,12 @@ public class HibernateMappingContext extends AbstractMappingContext {
         this.proxyFactory = new SimpleHibernateProxyHandler();
         addPersistentEntities(persistentClasses);
     }
-    public HibernateMappingContext() {
-        this((HibernateConnectionSourceSettings)null);
-    }
-
     public HibernateMappingContext(HibernateConnectionSourceSettings settings, Class...persistentClasses) {
         this(settings, null, persistentClasses);
+    }
+
+    public HibernateMappingContext() {
+        this(new HibernateConnectionSourceSettings());
     }
 
     @Deprecated
