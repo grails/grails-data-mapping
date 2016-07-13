@@ -1,7 +1,9 @@
 package org.grails.datastore.gorm.events
 
+import groovy.transform.CompileStatic
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationListener
+import org.springframework.context.event.SmartApplicationListener
 
 /**
  * Simple implementation that just iterates over a sequence of listeners
@@ -9,12 +11,22 @@ import org.springframework.context.ApplicationListener
  * @author Graeme Rocher
  * @since 6.0
  */
+@CompileStatic
 class DefaultApplicationEventPublisher implements ConfigurableApplicationEventPublisher {
 
     private List<ApplicationListener> applicationListeners = []
     @Override
     void publishEvent(ApplicationEvent event) {
         for(listener in applicationListeners) {
+            if(listener instanceof SmartApplicationListener) {
+                SmartApplicationListener smartApplicationListener = (SmartApplicationListener) listener
+                if( !smartApplicationListener.supportsEventType((Class<ApplicationEvent>)event.getClass()) ) {
+                    continue
+                }
+                else if(!smartApplicationListener.supportsSourceType(event.source.getClass())) {
+                    continue
+                }
+            }
             listener.onApplicationEvent(event)
         }
     }
