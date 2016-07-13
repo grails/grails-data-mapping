@@ -5041,6 +5041,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/validation/ValidatingEventListener.html#onPersistenceEvent(org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent)" title="Method in ValidatingEventListener">onPersistenceEvent(AbstractPersistenceEvent)</a></span> - Method in <a href="org/grails/datastore/mapping/validation/ValidatingEventListener.html">ValidatingEventListener</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/listener/ValidationEventListener.html#onPersistenceEvent(org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent)" title="Method in ValidationEventListener">onPersistenceEvent(AbstractPersistenceEvent)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/listener/ValidationEventListener.html">ValidationEventListener</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/AbstractFindByFinder.html#OPERATOR_AND" title="Field in AbstractFindByFinder">OPERATOR_AND</a></span> - Field in <a href="org/grails/datastore/gorm/finders/AbstractFindByFinder.html">AbstractFindByFinder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/AbstractFindByFinder.html#OPERATOR_OR" title="Field in AbstractFindByFinder">OPERATOR_OR</a></span> - Field in <a href="org/grails/datastore/gorm/finders/AbstractFindByFinder.html">AbstractFindByFinder</a>
@@ -6658,6 +6660,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/validation/ValidatingEventListener.html#supportsEventType(Class<? extends ApplicationEvent>)" title="Method in ValidatingEventListener">supportsEventType(Class&lt;? extends ApplicationEvent&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/validation/ValidatingEventListener.html">ValidatingEventListener</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/listener/ValidationEventListener.html#supportsEventType(Class<? extends ApplicationEvent>)" title="Method in ValidationEventListener">supportsEventType(Class&lt;? extends ApplicationEvent&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/listener/ValidationEventListener.html">ValidationEventListener</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html#supportsSourceType(Class<?>)" title="Method in AbstractPersistenceEventListener">supportsSourceType(Class&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html">AbstractPersistenceEventListener</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/multitenancy/MultiTenantEventListener.html#supportsSourceType(Class<?>)" title="Method in MultiTenantEventListener">supportsSourceType(Class&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/multitenancy/MultiTenantEventListener.html">MultiTenantEventListener</a>
@@ -6891,6 +6895,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/ValidationEvent.html" title="Class in org.grails.datastore.mapping.engine.event">ValidationEvent</a></span> - Class in <a href="./org/grails/datastore/mapping/engine/event/package-summary.html">org.grails.datastore.mapping.engine.event</a>
 </dt><dd><div class="block">@author Burt Beckwith</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/ValidationEvent.html#ValidationEvent(java.lang.Object, org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess)" title="Constructor in ValidationEvent">ValidationEvent(Object, PersistentEntity, EntityAccess)</a></span> - Constructor in <a href="org/grails/datastore/mapping/engine/event/ValidationEvent.html">ValidationEvent</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/listener/ValidationEventListener.html" title="Class in org.grails.datastore.gorm.validation.listener">ValidationEventListener</a></span> - Class in <a href="./org/grails/datastore/gorm/validation/listener/package-summary.html">org.grails.datastore.gorm.validation.listener</a>
+</dt><dd><div class="block">An event listener for ensuring entities are valid before saving or updating</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/listener/ValidationEventListener.html#ValidationEventListener(org.grails.datastore.mapping.core.Datastore)" title="Constructor in ValidationEventListener">ValidationEventListener(Datastore)</a></span> - Constructor in <a href="org/grails/datastore/gorm/validation/listener/ValidationEventListener.html">ValidationEventListener</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/validation/ValidationException.html" title="Class in org.grails.datastore.mapping.validation">ValidationException</a></span> - Class in <a href="./org/grails/datastore/mapping/validation/package-summary.html">org.grails.datastore.mapping.validation</a>
 </dt><dd><div class="block">Exception thrown when a validation error occurs</div></dd>
