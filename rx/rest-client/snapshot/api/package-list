@@ -40,6 +40,7 @@ org.grails.datastore.gorm.utils
 org.grails.datastore.gorm.validation
 org.grails.datastore.gorm.validation.constraints
 org.grails.datastore.gorm.validation.constraints.builtin
+org.grails.datastore.gorm.validation.listener
 org.grails.datastore.mapping.cache
 org.grails.datastore.mapping.cache.exception
 org.grails.datastore.mapping.cache.impl
