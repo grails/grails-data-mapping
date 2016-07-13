@@ -51,6 +51,7 @@ class RxGormEnhancer {
         STATIC_APIS.clear()
         INSTANCE_APIS.clear()
         VALIDATION_APIS.clear()
+        DATASTORE_CLIENTS.clear()
     }
 
     /**

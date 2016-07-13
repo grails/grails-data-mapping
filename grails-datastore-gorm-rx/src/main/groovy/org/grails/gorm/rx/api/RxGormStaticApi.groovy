@@ -593,8 +593,8 @@ class RxGormStaticApi<D> implements RxGormAllOperations<D> {
 
     @Override
     RxGormAllOperations<D> eachTenant(@DelegatesTo(RxGormAllOperations) Closure callable) {
-        def staticApi = RxGormEnhancer.findStaticApi(persistentClass)
-        Tenants.eachTenant((Class<RxDatastoreClient>)datastoreClient.getClass()) { tenantId ->
+        Tenants.eachTenant((Class<RxDatastoreClient>)datastoreClient.getClass()) { Serializable tenantId ->
+            def staticApi = multiTenancyMode == MultiTenancySettings.MultiTenancyMode.SINGLE ? RxGormEnhancer.findStaticApi(persistentClass, tenantId.toString()) : RxGormEnhancer.findStaticApi(persistentClass, ConnectionSource.DEFAULT)
             callable.setDelegate(staticApi)
             callable.call(tenantId)
         }
