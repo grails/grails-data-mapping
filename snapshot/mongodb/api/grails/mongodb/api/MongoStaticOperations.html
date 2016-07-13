@@ -91,7 +91,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li>grails.gorm.api.GormStaticOperations
+<li><ul class="inheritance"></ul></li><li>grails.mongodb.api.MongoStaticOperations
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -168,61 +168,66 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>com.mongodb.client.FindIterable&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#find(org.bson.conversions.Bson)">find</a></strong>(org.bson.conversions.Bson filter)</code><br>Find an entity for the given filter</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getCollection()">getCollection</a></strong>()</code><br>The actual collection that this entity maps to.</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.String</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getCollectionName()">getCollectionName</a></strong>()</code><br>@return The name of the Mongo collection that entity maps to</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>com.mongodb.client.MongoDatabase</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getDB()">getDB</a></strong>()</code><br>@return The database for this domain class</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#search(java.lang.String)">search</a></strong>(java.lang.String query)</code><br>Search for entities using the given query</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#search(java.lang.String, java.util.Map)">search</a></strong>(java.lang.String query, java.util.Map options)</code><br>Search for entities using the given query</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#searchTop(java.lang.String)">searchTop</a></strong>(java.lang.String query)</code><br>Searches for the top results ordered by the MongoDB score</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#searchTop(java.lang.String, int)">searchTop</a></strong>(java.lang.String query, int limit)</code><br>Searches for the top results ordered by the MongoDB score</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#searchTop(java.lang.String, int, java.util.Map)">searchTop</a></strong>(java.lang.String query, int limit, java.util.Map options)</code><br>Searches for the top results ordered by the MongoDB score</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.String</strong></code></td>
                             <td class="colLast"><code><strong><a href="#useCollection(java.lang.String)">useCollection</a></strong>(java.lang.String collectionName)</code><br>Use the given collection for this entity for the scope of the session</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.String</strong></code></td>
                             <td class="colLast"><code><strong><a href="#useDatabase(java.lang.String)">useDatabase</a></strong>(java.lang.String databaseName)</code><br>Use the given database for this entity for the scope of the session</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>T</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withCollection(java.lang.String, Closure<T>)">withCollection</a></strong>(java.lang.String collectionName, groovy.lang.Closure&lt;T&gt; callable)</code><br>Use the given collection for this entity for the scope of the closure call</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>T</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withDatabase(java.lang.String, Closure<T>)">withDatabase</a></strong>(java.lang.String databaseName, groovy.lang.Closure&lt;T&gt; callable)</code><br>Use the given database for this entity for the scope of the closure call</td>
                         </tr>
@@ -319,6 +324,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4><a href='../../../org/grails/datastore/gorm/mongo/MongoCriteriaBuilder.html'>MongoCriteriaBuilder</a> <strong>createCriteria</strong>()</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>Custom MongoDB criteria builder</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="find(org.bson.conversions.Bson)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>com.mongodb.client.FindIterable&lt;D&gt; <strong>find</strong>(org.bson.conversions.Bson filter)</h4>
+                                <p> Find an entity for the given filter
+     <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  The filter</DD></DL><DL><DT><B>Returns:</B></DT><DD>The FindIterable</DD></DL></p>
                             </li>
                         </ul>
                     

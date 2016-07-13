@@ -172,66 +172,71 @@ trait MongoEntity
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;com.mongodb.client.FindIterable&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#find(org.bson.conversions.Bson)">find</a></strong>(org.bson.conversions.Bson filter)</code><br>Finds all of the entities in the collection.</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getCollection()">getCollection</a></strong>()</code><br>The actual collection that this entity maps to.</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;java.lang.String</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getCollectionName()">getCollectionName</a></strong>()</code><br>@return The name of the Mongo collection that entity maps to</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;com.mongodb.client.MongoDatabase</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getDB()">getDB</a></strong>()</code><br>@return The database for this domain class</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>org.bson.Document</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getDbo()">getDbo</a></strong>()</code><br>Return the DBObject instance for the entity</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#propertyMissing(java.lang.String)">propertyMissing</a></strong>(java.lang.String name)</code><br>Allows accessing to dynamic properties with the dot operator</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#propertyMissing(java.lang.String, def)">propertyMissing</a></strong>(java.lang.String name, java.lang.Object val)</code><br>Allows setting a dynamic property via the dot operator</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#search(java.lang.String, java.util.Map)">search</a></strong>(java.lang.String query, java.util.Map options = Collections.emptyMap()</code><br>Search for entities using the given query</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#searchTop(java.lang.String, int, java.util.Map)">searchTop</a></strong>(java.lang.String query, int limit = 5, java.util.Map options = Collections.emptyMap()</code><br>Searches for the top results ordered by the MongoDB score</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;java.lang.String</strong></code></td>
                             <td class="colLast"><code><strong><a href="#useCollection(java.lang.String)">useCollection</a></strong>(java.lang.String collectionName)</code><br>Use the given collection for this entity for the scope of the session</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;java.lang.String</strong></code></td>
                             <td class="colLast"><code><strong><a href="#useDatabase(java.lang.String)">useDatabase</a></strong>(java.lang.String databaseName)</code><br>Use the given database for this entity for the scope of the session</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;T</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withCollection(java.lang.String, Closure<T>)">withCollection</a></strong>(java.lang.String collectionName, groovy.lang.Closure&lt;T&gt; callable)</code><br>Use the given collection for this entity for the scope of the closure call</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;T</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withConnection(java.lang.String, groovy.lang.Closure)">withConnection</a></strong>(java.lang.String connectionName, groovy.lang.Closure callable)</code><br>Perform an operation with the given connection</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;T</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withDatabase(java.lang.String, Closure<T>)">withDatabase</a></strong>(java.lang.String databaseName, groovy.lang.Closure&lt;T&gt; callable)</code><br>Use the given database for this entity for the scope of the closure call</td>
                         </tr>
@@ -301,6 +306,15 @@ trait MongoEntity
                                 <h4>static&nbsp;<a href='../../org/grails/datastore/gorm/mongo/MongoCriteriaBuilder.html'>MongoCriteriaBuilder</a> <strong>createCriteria</strong>()</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>Custom MongoDB criteria builder</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="find(org.bson.conversions.Bson)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;com.mongodb.client.FindIterable&lt;D&gt; <strong>find</strong>(org.bson.conversions.Bson filter)</h4>
+                                <p> Finds all of the entities in the collection.<DL><DT><B>mongodb.driver.manual:</B></DT><DD>tutorial/query-documents/ Find</DD></DL>
+     <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  the query filter</DD></DL><DL><DT><B>Returns:</B></DT><DD>the find iterable interface</DD></DL></p>
                             </li>
                         </ul>
                     

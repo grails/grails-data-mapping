@@ -203,23 +203,33 @@ extends <a href='../../../../../../org/grails/datastore/gorm/GormStaticApi.html'
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;com.mongodb.client.FindIterable&lt;FT&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#addMultiTenantFilterIfNecessary(FindIterable<FT>)">addMultiTenantFilterIfNecessary</a></strong>(com.mongodb.client.FindIterable&lt;FT&gt; findIterable)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#aggregate(java.util.List, com.mongodb.AggregationOptions)">aggregate</a></strong>(java.util.List pipeline, com.mongodb.AggregationOptions options = AggregationOptions.builder()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#aggregate(java.util.List, com.mongodb.AggregationOptions, com.mongodb.ReadPreference)">aggregate</a></strong>(java.util.List pipeline, com.mongodb.AggregationOptions options, com.mongodb.ReadPreference readPreference)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>int</strong></code></td>
                             <td class="colLast"><code><strong><a href="#countHits(java.lang.String)">countHits</a></strong>(java.lang.String query)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/gorm/mongo/MongoCriteriaBuilder.html'>MongoCriteriaBuilder</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#createCriteria()">createCriteria</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>com.mongodb.client.FindIterable&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#find(org.bson.conversions.Bson)">find</a></strong>(org.bson.conversions.Bson filter)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -352,6 +362,14 @@ extends <a href='../../../../../../org/grails/datastore/gorm/GormStaticApi.html'
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="addMultiTenantFilterIfNecessary(FindIterable<FT>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;com.mongodb.client.FindIterable&lt;FT&gt; <strong>addMultiTenantFilterIfNecessary</strong>(com.mongodb.client.FindIterable&lt;FT&gt; findIterable)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="aggregate(java.util.List, com.mongodb.AggregationOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -384,6 +402,14 @@ int <strong>countHits</strong>(java.lang.String query)</h4>
                             <li class="blockList">
                                 <h4>@java.lang.Override
 <a href='../../../../../../org/grails/datastore/gorm/mongo/MongoCriteriaBuilder.html'>MongoCriteriaBuilder</a> <strong>createCriteria</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="find(org.bson.conversions.Bson)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>com.mongodb.client.FindIterable&lt;D&gt; <strong>find</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p></p>
                             </li>
                         </ul>
