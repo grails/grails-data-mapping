@@ -155,6 +155,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#eachTenant(Class<? extends RxDatastoreClient>, groovy.lang.Closure)">eachTenant</a></strong>(java.lang.Class&lt;? extends <a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html' title='RxDatastoreClient'>RxDatastoreClient</a>&gt; datastoreClass, groovy.lang.Closure callable)</code><br>Execute the given closure for each tenant.</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;static&nbsp;void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#eachTenantInternal(org.grails.datastore.rx.RxDatastoreClient, groovy.lang.Closure)">eachTenantInternal</a></strong>(<a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> datastoreClient, groovy.lang.Closure callable)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;T</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withCurrent(Closure<T>)">withCurrent</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure with the current tenant</td>
                         </tr>
@@ -252,6 +262,23 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>static&nbsp;void <strong>eachTenant</strong>(@groovy.lang.DelegatesTo(RxDatastoreClient) groovy.lang.Closure callable)</h4>
                                 <p> Execute the given closure for each tenant.
      <DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="eachTenant(Class<? extends RxDatastoreClient>, groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;void <strong>eachTenant</strong>(java.lang.Class&lt;? extends <a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html' title='RxDatastoreClient'>RxDatastoreClient</a>&gt; datastoreClass, @groovy.lang.DelegatesTo(RxDatastoreClient) groovy.lang.Closure callable)</h4>
+                                <p> Execute the given closure for each tenant.
+     <DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="eachTenantInternal(org.grails.datastore.rx.RxDatastoreClient, groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;static&nbsp;void <strong>eachTenantInternal</strong>(<a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> datastoreClient, groovy.lang.Closure callable)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     

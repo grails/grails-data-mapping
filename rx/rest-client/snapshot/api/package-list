@@ -101,6 +101,7 @@ org.grails.datastore.rx.rest.json
 org.grails.datastore.rx.rest.query
 org.grails.datastore.rx.rest.test
 org.grails.gorm.rx.api
+org.grails.gorm.rx.api.multitenancy
 org.grails.gorm.rx.config
 org.grails.gorm.rx.events
 org.grails.gorm.rx.finders
