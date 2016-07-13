@@ -125,7 +125,13 @@ class RxGormEnhancer {
      */
     static String findTenantId(Class entity) {
         if(MultiTenant.isAssignableFrom(entity)) {
-            return Tenants.currentId( (Class<? extends RxDatastoreClient>) findStaticApi(entity, ConnectionSource.DEFAULT).datastoreClient.getClass() )
+            RxDatastoreClient datastoreClient = findStaticApi(entity, ConnectionSource.DEFAULT).datastoreClient
+            if(datastoreClient.multiTenancyMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+                return Tenants.currentId( (Class<? extends RxDatastoreClient>) datastoreClient.getClass() )
+            }
+            else {
+                return ConnectionSource.DEFAULT
+            }
         }
         else {
             log.debug "Returning default tenant id for non-multitenant class [$entity]"

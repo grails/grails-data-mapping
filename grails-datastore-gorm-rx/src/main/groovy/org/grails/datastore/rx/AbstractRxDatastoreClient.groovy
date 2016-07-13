@@ -2,6 +2,7 @@ package org.grails.datastore.rx
 
 import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.validation.listener.ValidationEventListener
 import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
@@ -38,6 +39,7 @@ import org.grails.gorm.rx.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher
 import org.grails.datastore.gorm.events.DefaultApplicationEventPublisher
 import org.grails.gorm.rx.events.DomainEventListener
+import org.grails.gorm.rx.events.MultiTenantEventListener
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.env.PropertyResolver
@@ -109,6 +111,10 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
     protected void initDefaultEventListeners(ConfigurableApplicationEventPublisher configurableApplicationEventPublisher) {
         configurableApplicationEventPublisher.addApplicationListener(new AutoTimestampEventListener(this))
         configurableApplicationEventPublisher.addApplicationListener(new DomainEventListener(this))
+
+        if(multiTenancyMode == MultiTenancySettings.MultiTenancyMode.MULTI) {
+            configurableApplicationEventPublisher.addApplicationListener(new MultiTenantEventListener(this))
+        }
     }
 
     MappingContext getMappingContext() {
