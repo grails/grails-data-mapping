@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Implemented Interfaces and Traits:</dt>
-                <dd><a href='../../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a>, <a href='../../../../../org/grails/datastore/mapping/core/StatelessDatastore.html'>StatelessDatastore</a>, org.springframework.beans.factory.DisposableBean</dd>
+                <dd><a href='../../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a>, <a href='../../../../../org/grails/datastore/mapping/core/StatelessDatastore.html'>StatelessDatastore</a></dd>
             </dl>
             <!-- todo: direct known subclasses -->
             <hr>
@@ -328,6 +328,11 @@ extends java.lang.Object
                         <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setApplicationContext(org.springframework.context.ApplicationContext)">setApplicationContext</a></strong>(org.springframework.context.ApplicationContext ctx)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withSession(Closure<T>)">withSession</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br></td>
                         </tr>
                         
                     </table>
@@ -620,6 +625,15 @@ public&nbsp;org.springframework.context.ConfigurableApplicationContext <strong>g
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;void <strong>setApplicationContext</strong>(org.springframework.context.ApplicationContext ctx)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="withSession(Closure<T>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+public&nbsp;T <strong>withSession</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p></p>
                             </li>
                         </ul>

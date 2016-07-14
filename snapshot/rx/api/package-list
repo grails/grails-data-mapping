@@ -1,9 +1,12 @@
 grails.gorm
 grails.gorm.annotation
+grails.gorm.api
 grails.gorm.dirty.checking
+grails.gorm.multitenancy
 grails.gorm.rx
 grails.gorm.rx.api
 grails.gorm.rx.collection
+grails.gorm.rx.multitenancy
 grails.gorm.rx.proxy
 grails.gorm.transactions
 org.grails.compiler.gorm
@@ -14,6 +17,7 @@ org.grails.datastore.gorm.bootstrap.support
 org.grails.datastore.gorm.events
 org.grails.datastore.gorm.finders
 org.grails.datastore.gorm.internal
+org.grails.datastore.gorm.multitenancy
 org.grails.datastore.gorm.plugin.support
 org.grails.datastore.gorm.proxy
 org.grails.datastore.gorm.query
@@ -26,6 +30,7 @@ org.grails.datastore.gorm.utils
 org.grails.datastore.gorm.validation
 org.grails.datastore.gorm.validation.constraints
 org.grails.datastore.gorm.validation.constraints.builtin
+org.grails.datastore.gorm.validation.listener
 org.grails.datastore.mapping.cache
 org.grails.datastore.mapping.cache.exception
 org.grails.datastore.mapping.cache.impl
@@ -35,6 +40,8 @@ org.grails.datastore.mapping.config
 org.grails.datastore.mapping.config.groovy
 org.grails.datastore.mapping.config.utils
 org.grails.datastore.mapping.core
+org.grails.datastore.mapping.core.connections
+org.grails.datastore.mapping.core.exceptions
 org.grails.datastore.mapping.core.impl
 org.grails.datastore.mapping.dirty.checking
 org.grails.datastore.mapping.document
@@ -51,6 +58,10 @@ org.grails.datastore.mapping.model.config
 org.grails.datastore.mapping.model.lifecycle
 org.grails.datastore.mapping.model.types
 org.grails.datastore.mapping.model.types.conversion
+org.grails.datastore.mapping.multitenancy
+org.grails.datastore.mapping.multitenancy.exceptions
+org.grails.datastore.mapping.multitenancy.resolvers
+org.grails.datastore.mapping.multitenancy.web
 org.grails.datastore.mapping.proxy
 org.grails.datastore.mapping.query
 org.grails.datastore.mapping.query.api
@@ -77,6 +88,8 @@ org.grails.datastore.rx.proxy
 org.grails.datastore.rx.query
 org.grails.datastore.rx.query.event
 org.grails.gorm.rx.api
+org.grails.gorm.rx.api.multitenancy
+org.grails.gorm.rx.config
 org.grails.gorm.rx.events
 org.grails.gorm.rx.finders
 org.grails.plugins.web.rx.mvc

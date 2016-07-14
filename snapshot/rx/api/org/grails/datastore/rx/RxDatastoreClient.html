@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -91,7 +91,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>java.lang.AutoCloseable
+<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>java.lang.AutoCloseable
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Superinterfaces:</dt>
-                <dd><a href='../../../../org/grails/datastore/mapping/query/QueryCreator.html'>QueryCreator</a>, java.lang.AutoCloseable</dd>
+                <dd><a href='../../../../org/grails/datastore/mapping/query/QueryCreator.html'>QueryCreator</a>, <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html'>ConnectionSourcesProvider</a>, <a href='../../../../org/grails/gorm/rx/config/Settings.html'>Settings</a>, java.lang.AutoCloseable</dd>
             </dl>
 
     <p> Represents a client connection pool that can be used to interact with a backing implementation in RxGORM
@@ -119,29 +119,28 @@ if (location.href.indexOf('is-external=true') == -1) {
         
         <!-- =========== FIELD SUMMARY =========== -->
         
+            <ul class="blockList">
+                <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited fields summary table">
+                        <caption><span>Inherited fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Fields inherited from class</th>
+                            <th class="colLast" scope="col">Fields</th>
+                        </tr>
+                                                <tr class="altColor">
+                            <td class="colFirst"><strong><code>interface <a href='../../../../org/grails/datastore/mapping/config/Settings.html'>Settings</a></code></strong></td>
+                            <td class="colLast"><code><a href='../../../../org/grails/datastore/mapping/config/Settings.html#PREFIX'>PREFIX</a>, <a href='../../../../org/grails/datastore/mapping/config/Settings.html#SETTING_AUTO_FLUSH'>SETTING_AUTO_FLUSH</a>, <a href='../../../../org/grails/datastore/mapping/config/Settings.html#SETTING_CUSTOM_TYPES'>SETTING_CUSTOM_TYPES</a>, <a href='../../../../org/grails/datastore/mapping/config/Settings.html#SETTING_DEFAULT_CONSTRAINTS'>SETTING_DEFAULT_CONSTRAINTS</a>, <a href='../../../../org/grails/datastore/mapping/config/Settings.html#SETTING_DEFAULT_MAPPING'>SETTING_DEFAULT_MAPPING</a>, <a href='../../../../org/grails/datastore/mapping/config/Settings.html#SETTING_FAIL_ON_ERROR'>SETTING_FAIL_ON_ERROR</a>, <a href='../../../../org/grails/datastore/mapping/config/Settings.html#SETTING_FLUSH_MODE'>SETTING_FLUSH_MODE</a>, <a href='../../../../org/grails/datastore/mapping/config/Settings.html#SETTING_MULTI_TENANCY_MODE'>SETTING_MULTI_TENANCY_MODE</a>, <a href='../../../../org/grails/datastore/mapping/config/Settings.html#SETTING_MULTI_TENANT_RESOLVER_CLASS'>SETTING_MULTI_TENANT_RESOLVER_CLASS</a></code></td>
+                        </tr>
+
+                    </table>
+                    </ul>
+                </li>
+                
+            </ul>
+        
 
         <!-- =========== PROPERTY SUMMARY =========== -->
-        
-         <ul class="blockList">
-                <li class="blockList"><a name="property_summary"><!--   --></a>
-                    <h3>Properties Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Properties Summary table, listing nested classes, and an explanation">
-                        <caption><span>Properties</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Type</th>
-                            <th class="colLast" scope="col">Name and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#SETTING_ALLOW_BLOCKING">SETTING_ALLOW_BLOCKING</a></code><br>Whether blocking operations are allowed</td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-                </li>
-            </ul>
         
 
         <!-- =========== ELEMENT SUMMARY =========== -->
@@ -199,13 +198,33 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;T, <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html' title='ConnectionSourceSettings'>ConnectionSourceSettings</a>&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getConnectionSources()">getConnectionSources</a></strong>()</code><br>@return Obtain the connection sources</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getDatastoreClient(java.lang.String)">getDatastoreClient</a></strong>(java.lang.String connectionSourceName)</code><br>Obtain another <a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html' title='RxDatastoreClient'>RxDatastoreClient</a> for the given <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a> name</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getDatastoreClientForTenantId(java.io.Serializable)">getDatastoreClientForTenantId</a></strong>(java.io.Serializable tenantId)</code><br>Obtains the datastore for the given tenant id. </td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getEventPublisher()">getEventPublisher</a></strong>()</code><br>@return The event publisher</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getMappingContext()">getMappingContext</a></strong>()</code><br>@return The mapping context</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getMultiTenancyMode()">getMultiTenancyMode</a></strong>()</code><br>@return The multi tenancy mode</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -214,46 +233,51 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getTenantResolver()">getTenantResolver</a></strong>()</code><br>@return Obtain the tenant resolver</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insert(T1, Map<String, Object>)">insert</a></strong>(<a href='../../../../T1.html'>T1</a> instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Force an insert of an instance and return the observable</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insertAll(java.lang.Iterable)">insertAll</a></strong>(java.lang.Iterable objects)</code><br>Batch insert all all of the given objects</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#insertAll(java.lang.Iterable, Map<String, Object>)">insertAll</a></strong>(java.lang.Iterable objects, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Batch insert all all of the given objects</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persist(T1, Map<String, Object>)">persist</a></strong>(<a href='../../../../T1.html'>T1</a> instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Persist and instance and return the observable</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persist(T1)">persist</a></strong>(<a href='../../../../T1.html'>T1</a> instance)</code><br>Persist and instance and return the observable</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persistAll(java.lang.Iterable)">persistAll</a></strong>(java.lang.Iterable objects)</code><br>Batch saves all of the given objects</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#persistAll(java.lang.Iterable, Map<String, Object>)">persistAll</a></strong>(java.lang.Iterable objects, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</code><br>Batch saves all of the given objects</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;T1&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(Class<T1>, java.io.Serializable)">proxy</a></strong>(java.lang.Class&lt;T1&gt; type, java.io.Serializable id)</code><br>Obtain an <a href='../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> for the given type and id</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../grails/gorm/rx/proxy/ObservableProxy.html'>ObservableProxy</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#proxy(org.grails.datastore.mapping.query.Query)">proxy</a></strong>(<a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query)</code><br>Obtain an <a href='../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> that executes the given query to initialize</td>
                         </tr>
@@ -277,6 +301,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <td class="colLast"><code>java.io.Closeable#close()</code></td>
                         </tr>
                         <tr class="rowColor">
+                            <td class="colFirst"><code>interface <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html'>ConnectionSourcesProvider</a></strong></code></td>
+                            <td class="colLast"><code><a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html#getConnectionSources()'>getConnectionSources</a></code></td>
+                        </tr>
+                        <tr class="altColor">
                             <td class="colFirst"><code>interface <a href='../../../../org/grails/datastore/mapping/query/QueryCreator.html'>QueryCreator</a></strong></code></td>
                             <td class="colLast"><code><a href='../../../../org/grails/datastore/mapping/query/QueryCreator.html#createQuery(java.lang.Class)'>createQuery</a>, <a href='../../../../org/grails/datastore/mapping/query/QueryCreator.html#isSchemaless()'>isSchemaless</a></code></td>
                         </tr>
@@ -297,25 +325,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             
 
-            
-            <!-- =========== PROPERTY DETAIL =========== -->
-            <ul class="blockList">
-                <li class="blockList"><a name="prop_detail">
-                    <!--   -->
-                </a>
-                    <h3>Property Detail</h3>
-                    
-                        <a name="SETTING_ALLOW_BLOCKING"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>java.lang.String <strong>SETTING_ALLOW_BLOCKING</strong></h4>
-                                <p> Whether blocking operations are allowed
-     </p>
-                            </li>
-                        </ul>
-                    
-                </li>
-            </ul>
             
 
             
@@ -394,6 +403,35 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="getConnectionSources()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;T, <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html' title='ConnectionSourceSettings'>ConnectionSourceSettings</a>&gt; <strong>getConnectionSources</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Obtain the connection sources</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getDatastoreClient(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> <strong>getDatastoreClient</strong>(java.lang.String connectionSourceName)</h4>
+                                <p> Obtain another <a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html' title='RxDatastoreClient'>RxDatastoreClient</a> for the given <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a> name
+     <DL><DT><B>Returns:</B></DT><DD>The <a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html' title='RxDatastoreClient'>RxDatastoreClient</a> instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>connectionSourceName</code> -  The name of the client</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getDatastoreClientForTenantId(java.io.Serializable)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> <strong>getDatastoreClientForTenantId</strong>(java.io.Serializable tenantId)</h4>
+                                <p> Obtains the datastore for the given tenant id. In SINGLE mode
+ this will be a unique datastore for each tenant. For MULTI mode
+ a single datastore is used for all tenants
+     <DL><DT><B>Returns:</B></DT><DD>The datastore</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>tenantId</code> -  The tenant id</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getEventPublisher()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -412,12 +450,30 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="getMultiTenancyMode()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a> <strong>getMultiTenancyMode</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>The multi tenancy mode</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getNativeInterface()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>T <strong>getNativeInterface</strong>()</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>The native interface to the datastore</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getTenantResolver()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a> <strong>getTenantResolver</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Obtain the tenant resolver</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -536,11 +592,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     

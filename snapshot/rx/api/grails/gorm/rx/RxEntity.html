@@ -287,6 +287,16 @@ trait RxEntity
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#insertAll(Iterable<D>, java.util.Map)">insertAll</a></strong>(java.lang.Iterable&lt;D&gt; objects, java.util.Map arguments = Collections.emptyMap()</code><br>Batch saves all of the given objects</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#insertAll(D)">insertAll</a></strong>(D... objects)</code><br>Batch saves all of the given objects</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isDirty(java.lang.String)">isDirty</a></strong>(java.lang.String fieldName)</code><br>Checks whether a field is dirty</td>
                         </tr>
@@ -394,6 +404,16 @@ trait RxEntity
                         <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;<a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#whereLazy(groovy.lang.Closure)">whereLazy</a></strong>(groovy.lang.Closure callable)</code><br>@param callable Callable closure containing detached criteria definition</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../grails/gorm/rx/api/RxGormAllOperations.html' title='RxGormAllOperations'>RxGormAllOperations</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withConnection(java.lang.String)">withConnection</a></strong>(java.lang.String connectionName)</code><br>Perform operations with the given connection</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withConnection(java.lang.String, Closure<T>)">withConnection</a></strong>(java.lang.String connectionName, groovy.lang.Closure&lt;T&gt; callable)</code><br>Switches to given named connection within the context of the closure. </td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -686,6 +706,24 @@ java.util.Observable&lt;D&gt; <strong>insert</strong>(java.util.Map arguments = 
                             </li>
                         </ul>
                     
+                        <a name="insertAll(Iterable<D>, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>insertAll</strong>(java.lang.Iterable&lt;D&gt; objects, java.util.Map arguments = Collections.emptyMap()</h4>
+                                <p> Batch saves all of the given objects
+     <DL><DT><B>Returns:</B></DT><DD>An observable that emits the identifiers of the saved objects</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>objects</code> -  The objects to save</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="insertAll(D)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>insertAll</strong>(D... objects)</h4>
+                                <p> Batch saves all of the given objects
+     <DL><DT><B>Returns:</B></DT><DD>An observable that emits the identifiers of the saved objects</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>objects</code> -  The objects to save</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="isDirty(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -884,6 +922,24 @@ boolean <strong>validate</strong>()</h4>
                                 <h4>static&nbsp;<a href='../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>whereLazy</strong>(@groovy.lang.DelegatesTo(DetachedCriteria) groovy.lang.Closure callable)</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance that is lazily initialized</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="withConnection(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../grails/gorm/rx/api/RxGormAllOperations.html' title='RxGormAllOperations'>RxGormAllOperations</a>&lt;D&gt; <strong>withConnection</strong>(java.lang.String connectionName)</h4>
+                                <p> Perform operations with the given connection
+     <DL><DT><B>Returns:</B></DT><DD>The <a href='../../../grails/gorm/rx/api/RxGormStaticOperations.html' title='RxGormStaticOperations'>RxGormStaticOperations</a>    instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>connectionName</code> -  The name of the connection</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="withConnection(java.lang.String, Closure<T>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;T <strong>withConnection</strong>(java.lang.String connectionName, @groovy.lang.DelegatesTo(RxGormAllOperations) groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <p> Switches to given named connection within the context of the closure. The delegate of the closure is used to resolve
+ operations against the connection. <DL><DT><B>Returns:</B></DT><DD></DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>connectionName</code> -  The name of the connection</DD><DD><code>callable</code> -  The closure</DD></DL></p>
                             </li>
                         </ul>
                     

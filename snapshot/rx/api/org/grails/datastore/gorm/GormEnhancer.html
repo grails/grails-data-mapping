@@ -104,7 +104,7 @@ if (location.href.indexOf('is-external=true') == -1) {
             <!-- todo: direct known subclasses -->
             <hr>
             <br>
-<pre>@groovy.util.logging.Commons
+<pre>@groovy.util.logging.Slf4j
 @groovy.transform.CompileStatic
 class GormEnhancer
 extends java.lang.Object
@@ -207,6 +207,12 @@ extends java.lang.Object
                                 (<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, org.springframework.transaction.PlatformTransactionManager transactionManager, boolean failOnError = false, boolean dynamicEnhance = false)</code><br></td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#GormEnhancer(org.grails.datastore.mapping.core.Datastore, org.springframework.transaction.PlatformTransactionManager, org.grails.datastore.mapping.core.connections.ConnectionSourceSettings)">GormEnhancer</a></strong>
+                                (<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, org.springframework.transaction.PlatformTransactionManager transactionManager, <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html'>ConnectionSourceSettings</a> settings)</code><br>Construct a new GormEnhancer for the given arguments</td>
+                        </tr>
+                        
                     </table>
                    </ul>
               </li>
@@ -238,8 +244,8 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>java.util.Set&lt;java.lang.String&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#allQualifiers(org.grails.datastore.mapping.core.Datastore, org.grails.datastore.mapping.model.PersistentEntity)">allQualifiers</a></strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, <a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colFirst"><code>java.util.List&lt;java.lang.String&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#allQualifiers(org.grails.datastore.mapping.core.Datastore, org.grails.datastore.mapping.model.PersistentEntity)">allQualifiers</a></strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, <a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br>Obtain all of the qualifiers (typically the connection names) for the datastore and entity</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -249,7 +255,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#close()">close</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#close()">close</a></strong>()</code><br>Closes the enhancer clearing any stored static state</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -274,85 +280,100 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findDatastore(java.lang.Class, java.lang.String)">findDatastore</a></strong>(java.lang.Class entity, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findDatastore(java.lang.Class, java.lang.String)">findDatastore</a></strong>(java.lang.Class entity, java.lang.String qualifier = findTenantId(entity)</code><br>Find a datastore for the give entity type and qualifier (the connection name)</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findEntity(java.lang.Class)">findEntity</a></strong>(java.lang.Class entity)</code><br></td>
+                            <td class="colFirst"><code>static&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findDatastoreByType(Class<? extends Datastore>)">findDatastoreByType</a></strong>(java.lang.Class&lt;? extends <a href='../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreType)</code><br>Finds a datastore by type</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html'>GormInstanceApi</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findInstanceApi(java.lang.Class, java.lang.String)">findInstanceApi</a></strong>(java.lang.Class entity, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</code><br></td>
+                            <td class="colFirst"><code>static&nbsp;<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findEntity(java.lang.Class, java.lang.String)">findEntity</a></strong>(java.lang.Class entity, java.lang.String qualifier = findTenantId(entity)</code><br>Find the entity for the given type</td>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html' title='GormInstanceApi'>GormInstanceApi</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findInstanceApi(Class<D>, java.lang.String)">findInstanceApi</a></strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier = findTenantId(entity)</code><br>Find an instance API for the give entity type and qualifier (the connection name)</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;<a href='../../../../org/grails/datastore/gorm/query/GormQueryOperations.html'>GormQueryOperations</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#findNamedQuery(java.lang.Class, java.lang.String)">findNamedQuery</a></strong>(java.lang.Class entity, java.lang.String queryName)</code><br>Finds a named query for the given entity</td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findSingleDatastore()">findSingleDatastore</a></strong>()</code><br>Finds a single datastore</td>
+                        </tr>
+                        
                         <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormStaticApi.html' title='GormStaticApi'>GormStaticApi</a>&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findStaticApi(Class<D>, java.lang.String)">findStaticApi</a></strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findStaticApi(Class<D>, java.lang.String)">findStaticApi</a></strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier = findTenantId(entity)</code><br>Find a static API for the give entity type and qualifier (the connection name)</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormValidationApi.html'>GormValidationApi</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findValidationApi(java.lang.Class, java.lang.String)">findValidationApi</a></strong>(java.lang.Class entity, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</code><br></td>
+                            <td class="colFirst"><code>protected&nbsp;static&nbsp;java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findTenantId(java.lang.Class)">findTenantId</a></strong>(java.lang.Class entity)</code><br>Find the tenant id for the given entity</td>
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormValidationApi.html' title='GormValidationApi'>GormValidationApi</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findValidationApi(Class<D>, java.lang.String)">findValidationApi</a></strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier = findTenantId(entity)</code><br>Find a validation API for the give entity type and qualifier (the connection name)</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getFinders()">getFinders</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html' title='GormInstanceApi'>GormInstanceApi</a>&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getInstanceApi(Class<D>)">getInstanceApi</a></strong>(java.lang.Class&lt;D&gt; cls)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getInstanceApi(Class<D>, java.lang.String)">getInstanceApi</a></strong>(java.lang.Class&lt;D&gt; cls, java.lang.String qualifier = ConnectionSource.DEFAULT)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html' title='AbstractGormApi'>AbstractGormApi</a>&lt;D&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getInstanceMethodApiProviders(Class<D>)">getInstanceMethodApiProviders</a></strong>(java.lang.Class&lt;D&gt; cls)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormStaticApi.html' title='GormStaticApi'>GormStaticApi</a>&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getStaticApi(Class<D>)">getStaticApi</a></strong>(java.lang.Class&lt;D&gt; cls)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getStaticApi(Class<D>, java.lang.String)">getStaticApi</a></strong>(java.lang.Class&lt;D&gt; cls, java.lang.String qualifier = ConnectionSource.DEFAULT)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormValidationApi.html' title='GormValidationApi'>GormValidationApi</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getValidationApi(Class<D>, java.lang.String)">getValidationApi</a></strong>(java.lang.Class&lt;D&gt; cls, java.lang.String qualifier = ConnectionSource.DEFAULT)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormValidationApi.html' title='GormValidationApi'>GormValidationApi</a>&lt;D&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getValidationApi(Class<D>)">getValidationApi</a></strong>(java.lang.Class&lt;D&gt; cls)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isRealMethod(groovy.lang.MetaMethod)">isRealMethod</a></strong>(groovy.lang.MetaMethod existingMethod)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#registerConstraints(org.grails.datastore.mapping.core.Datastore)">registerConstraints</a></strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#registerEntity(org.grails.datastore.mapping.model.PersistentEntity)">registerEntity</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br>Registers a new entity with the GORM enhancer</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#registerInstanceMethod(java.lang.Class, groovy.lang.ExpandoMetaClass, org.grails.datastore.gorm.AbstractGormApi, java.lang.String, java.lang.Class)">registerInstanceMethod</a></strong>(java.lang.Class cls, groovy.lang.ExpandoMetaClass mc, <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html'>AbstractGormApi</a> apiProvider, java.lang.String methodName, java.lang.Class[] parameterTypes)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#registerStaticMethod(groovy.lang.ExpandoMetaClass, java.lang.String, Class<?>, org.grails.datastore.gorm.GormStaticApi)">registerStaticMethod</a></strong>(groovy.lang.ExpandoMetaClass mc, java.lang.String methodName, java.lang.Class&lt;?&gt;[] parameterTypes, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html'>GormStaticApi</a> staticApiProvider)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#removeConstraints()">removeConstraints</a></strong>()</code><br></td>
                         </tr>
@@ -480,6 +501,15 @@ extends java.lang.Object
                             </li>
                         </ul>
                     
+                        <a name="GormEnhancer(org.grails.datastore.mapping.core.Datastore, org.springframework.transaction.PlatformTransactionManager, org.grails.datastore.mapping.core.connections.ConnectionSourceSettings)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>GormEnhancer</strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, org.springframework.transaction.PlatformTransactionManager transactionManager, <a href='../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html'>ConnectionSourceSettings</a> settings)</h4>
+                                <p> Construct a new GormEnhancer for the given arguments
+     <DL><DT><B>Parameters:</B></DT><DD><code>datastore</code> -  The datastore</DD><DD><code>transactionManager</code> -  The transaction manager</DD><DD><code>settings</code> -  The settings</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                 </li>
             </ul>
             
@@ -514,8 +544,9 @@ protected&nbsp;void <strong>addStaticMethods</strong>(<a href='../../../../org/g
                         <a name="allQualifiers(org.grails.datastore.mapping.core.Datastore, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Set&lt;java.lang.String&gt; <strong>allQualifiers</strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, <a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
-                                <p></p>
+                                <h4>java.util.List&lt;java.lang.String&gt; <strong>allQualifiers</strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, <a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <p> Obtain all of the qualifiers (typically the connection names) for the datastore and entity
+     <DL><DT><B>Returns:</B></DT><DD>The qualifiers</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>datastore</code> -  The datastore</DD><DD><code>entity</code> -  The entity</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -533,7 +564,8 @@ protected&nbsp;void <strong>addStaticMethods</strong>(<a href='../../../../org/g
                                 <h4>@java.lang.Override
 @groovy.transform.CompileStatic
 void <strong>close</strong>()</h4>
-                                <p></p>
+                                <p> Closes the enhancer clearing any stored static state<DL><DT><B>throws:</B></DT><DD>IOException</DD></DL>
+     </p>
                             </li>
                         </ul>
                     
@@ -578,24 +610,36 @@ void <strong>enhance</strong>(<a href='../../../../org/grails/datastore/mapping/
                         <a name="findDatastore(java.lang.Class, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> <strong>findDatastore</strong>(java.lang.Class entity, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</h4>
-                                <p></p>
+                                <h4>static&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> <strong>findDatastore</strong>(java.lang.Class entity, java.lang.String qualifier = findTenantId(entity)</h4>
+                                <p> Find a datastore for the give entity type and qualifier (the connection name)<DL><DT><B>throws:</B></DT><DD>IllegalStateException if no datastore is found for the type</DD></DL>
+     <DL><DT><B>Returns:</B></DT><DD>A datastore</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity class</DD><DD><code>qualifier</code> -  The qualifier</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="findEntity(java.lang.Class)"><!-- --></a>
+                        <a name="findDatastoreByType(Class<? extends Datastore>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>findEntity</strong>(java.lang.Class entity)</h4>
-                                <p></p>
+                                <h4>static&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> <strong>findDatastoreByType</strong>(java.lang.Class&lt;? extends <a href='../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreType)</h4>
+                                <p> Finds a datastore by type<DL><DT><B>throws:</B></DT><DD>IllegalStateException If no datastore is found for the type</DD></DL>
+     <DL><DT><B>Returns:</B></DT><DD>The datastore</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>datastoreType</code> -  The datastore type</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="findInstanceApi(java.lang.Class, java.lang.String)"><!-- --></a>
+                        <a name="findEntity(java.lang.Class, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html'>GormInstanceApi</a> <strong>findInstanceApi</strong>(java.lang.Class entity, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</h4>
-                                <p></p>
+                                <h4>static&nbsp;<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>findEntity</strong>(java.lang.Class entity, java.lang.String qualifier = findTenantId(entity)</h4>
+                                <p> Find the entity for the given type<DL><DT><B>throws:</B></DT><DD>IllegalStateException if no entity is found for the type</DD></DL>
+     <DL><DT><B>Returns:</B></DT><DD>A entity</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity class</DD><DD><code>qualifier</code> -  The qualifier</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findInstanceApi(Class<D>, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html' title='GormInstanceApi'>GormInstanceApi</a>&lt;D&gt; <strong>findInstanceApi</strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier = findTenantId(entity)</h4>
+                                <p> Find an instance API for the give entity type and qualifier (the connection name)<DL><DT><B>throws:</B></DT><DD>IllegalStateException if no instance API is found for the type</DD></DL>
+     <DL><DT><B>Returns:</B></DT><DD>An instance API</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity class</DD><DD><code>qualifier</code> -  The qualifier</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -608,20 +652,38 @@ void <strong>enhance</strong>(<a href='../../../../org/grails/datastore/mapping/
                             </li>
                         </ul>
                     
-                        <a name="findStaticApi(Class<D>, java.lang.String)"><!-- --></a>
+                        <a name="findSingleDatastore()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileDynamic
-static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormStaticApi.html' title='GormStaticApi'>GormStaticApi</a>&lt;D&gt; <strong>findStaticApi</strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</h4>
-                                <p></p>
+                                <h4>static&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> <strong>findSingleDatastore</strong>()</h4>
+                                <p> Finds a single datastore<DL><DT><B>throws:</B></DT><DD>IllegalStateException If no datastore is found or more than one is configured</DD></DL>
+     </p>
                             </li>
                         </ul>
                     
-                        <a name="findValidationApi(java.lang.Class, java.lang.String)"><!-- --></a>
+                        <a name="findStaticApi(Class<D>, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormValidationApi.html'>GormValidationApi</a> <strong>findValidationApi</strong>(java.lang.Class entity, java.lang.String qualifier = Entity.DEFAULT_DATA_SOURCE)</h4>
-                                <p></p>
+                                <h4>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormStaticApi.html' title='GormStaticApi'>GormStaticApi</a>&lt;D&gt; <strong>findStaticApi</strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier = findTenantId(entity)</h4>
+                                <p> Find a static API for the give entity type and qualifier (the connection name)<DL><DT><B>throws:</B></DT><DD>IllegalStateException if no static API is found for the type</DD></DL>
+     <DL><DT><B>Returns:</B></DT><DD>A static API</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity class</DD><DD><code>qualifier</code> -  The qualifier</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findTenantId(java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;static&nbsp;java.lang.String <strong>findTenantId</strong>(java.lang.Class entity)</h4>
+                                <p> Find the tenant id for the given entity <DL><DT><B>Returns:</B></DT><DD></DD></DL><DL><DT><B>Parameters:</B></DT><DD>entity</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findValidationApi(Class<D>, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormValidationApi.html' title='GormValidationApi'>GormValidationApi</a>&lt;D&gt; <strong>findValidationApi</strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier = findTenantId(entity)</h4>
+                                <p> Find a validation API for the give entity type and qualifier (the connection name)<DL><DT><B>throws:</B></DT><DD>IllegalStateException if no validation API is found for the type</DD></DL>
+     <DL><DT><B>Returns:</B></DT><DD>A validation API</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity class</DD><DD><code>qualifier</code> -  The qualifier</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -634,11 +696,11 @@ java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderM
                             </li>
                         </ul>
                     
-                        <a name="getInstanceApi(Class<D>)"><!-- --></a>
+                        <a name="getInstanceApi(Class<D>, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@groovy.transform.CompileStatic
-protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html' title='GormInstanceApi'>GormInstanceApi</a>&lt;D&gt; <strong>getInstanceApi</strong>(java.lang.Class&lt;D&gt; cls)</h4>
+protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html' title='GormInstanceApi'>GormInstanceApi</a>&lt;D&gt; <strong>getInstanceApi</strong>(java.lang.Class&lt;D&gt; cls, java.lang.String qualifier = ConnectionSource.DEFAULT)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -652,20 +714,20 @@ protected&nbsp;java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/
                             </li>
                         </ul>
                     
-                        <a name="getStaticApi(Class<D>)"><!-- --></a>
+                        <a name="getStaticApi(Class<D>, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@groovy.transform.CompileStatic
-protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormStaticApi.html' title='GormStaticApi'>GormStaticApi</a>&lt;D&gt; <strong>getStaticApi</strong>(java.lang.Class&lt;D&gt; cls)</h4>
+protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormStaticApi.html' title='GormStaticApi'>GormStaticApi</a>&lt;D&gt; <strong>getStaticApi</strong>(java.lang.Class&lt;D&gt; cls, java.lang.String qualifier = ConnectionSource.DEFAULT)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="getValidationApi(Class<D>)"><!-- --></a>
+                        <a name="getValidationApi(Class<D>, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@groovy.transform.CompileStatic
-protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormValidationApi.html' title='GormValidationApi'>GormValidationApi</a>&lt;D&gt; <strong>getValidationApi</strong>(java.lang.Class&lt;D&gt; cls)</h4>
+protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormValidationApi.html' title='GormValidationApi'>GormValidationApi</a>&lt;D&gt; <strong>getValidationApi</strong>(java.lang.Class&lt;D&gt; cls, java.lang.String qualifier = ConnectionSource.DEFAULT)</h4>
                                 <p></p>
                             </li>
                         </ul>
