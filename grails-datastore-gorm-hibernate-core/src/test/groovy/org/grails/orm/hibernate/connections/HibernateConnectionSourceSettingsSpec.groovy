@@ -37,6 +37,7 @@ class HibernateConnectionSourceSettingsSpec extends Specification {
         expectedHibernateProperties.put('hibernate.flush.mode', 'commit')
         expectedHibernateProperties.put('hibernate.naming_strategy','org.hibernate.cfg.ImprovedNamingStrategy')
         expectedHibernateProperties.put('hibernate.configLocations','file:hibernate.cfg.xml')
+        expectedHibernateProperties.put('hibernate.use_query_cache','true')
 
         def expectedCombinedProperties = new Properties()
         expectedCombinedProperties.putAll(expectedDataSourceProperties)
