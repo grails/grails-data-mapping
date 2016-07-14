@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;<li><a href="#enum_constant_summary">Enum constants</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Method&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#enum_constant_summary">Enum constants</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            <li><a href="#enum_constant_detail">Enum constants</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Method&nbsp;&nbsp;&nbsp;
+            <li><a href="#enum_constant_detail">Enum constants</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -123,18 +123,23 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong><a href="#MULTI">MULTI</a></strong></code></td>
-                            <td class="colLast">A shared database amongst multiple tenants</td>
+                            <td class="colFirst"><code><strong><a href="#DATABASE">DATABASE</a></strong></code></td>
+                            <td class="colLast">A single database per tenant</td>
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><strong><a href="#DISCRIMINATOR">DISCRIMINATOR</a></strong></code></td>
+                            <td class="colLast">A shared database amongst multiple tenants using a discriminator column</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong><a href="#NONE">NONE</a></strong></code></td>
                             <td class="colLast">No multi tenancy</td>
                         </tr>
                         
-                        <tr class="altColor">
-                            <td class="colFirst"><code><strong><a href="#SINGLE">SINGLE</a></strong></code></td>
-                            <td class="colLast">A single database per tenant</td>
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong><a href="#SCHEMA">SCHEMA</a></strong></code></td>
+                            <td class="colLast">A shared database amongst multiple tenants using a separate schema for each tenant</td>
                         </tr>
                         
                     </table>
@@ -156,6 +161,25 @@ if (location.href.indexOf('is-external=true') == -1) {
         
         <!-- ========== METHOD SUMMARY =========== -->
         <ul class="blockList">
+            
+            <li class="blockList"><a name="method_summary"><!--   --></a>
+                    <h3>Methods Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Methods Summary table">
+                        <caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colLast" scope="col">Name and description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isSharedConnection()">isSharedConnection</a></strong>()</code><br>@return Whether a single shared connection is used</td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+              </li>
             
             <li class="blockList"><a name="method_summary"><!--   --></a>
                     <h3>Inherited Methods Summary</h3>
@@ -192,11 +216,20 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Enum Constant Detail</h3>
                     
-                        <a name="MULTI"><!-- --></a>
+                        <a name="DATABASE"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href="../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html">MultiTenancySettings.MultiTenancyMode</a> <strong>MULTI</strong></h4>
-                                <p> A shared database amongst multiple tenants
+                                <h4><a href="../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html">MultiTenancySettings.MultiTenancyMode</a> <strong>DATABASE</strong></h4>
+                                <p> A single database per tenant
+         </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="DISCRIMINATOR"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href="../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html">MultiTenancySettings.MultiTenancyMode</a> <strong>DISCRIMINATOR</strong></h4>
+                                <p> A shared database amongst multiple tenants using a discriminator column
          </p>
                             </li>
                         </ul>
@@ -210,11 +243,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="SINGLE"><!-- --></a>
+                        <a name="SCHEMA"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href="../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html">MultiTenancySettings.MultiTenancyMode</a> <strong>SINGLE</strong></h4>
-                                <p> A single database per tenant
+                                <h4><a href="../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html">MultiTenancySettings.MultiTenancyMode</a> <strong>SCHEMA</strong></h4>
+                                <p> A shared database amongst multiple tenants using a separate schema for each tenant
          </p>
                             </li>
                         </ul>
@@ -232,6 +265,25 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
 
+            
+            <!-- =========== METHOD DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="method_detail">
+                    <!--   -->
+                </a>
+                    <h3>Method Detail</h3>
+                    
+                        <a name="isSharedConnection()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>boolean <strong>isSharedConnection</strong>()</h4>
+                                <p>
+         <DL><DT><B>Returns:</B></DT><DD>Whether a single shared connection is used</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
             
         </li>
     </ul>
@@ -264,11 +316,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;<li><a href="#enum_constant_summary">Enum constants</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Method&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#enum_constant_summary">Enum constants</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            <li><a href="#enum_constant_detail">Enum constants</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Method&nbsp;&nbsp;&nbsp;
+            <li><a href="#enum_constant_detail">Enum constants</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     
