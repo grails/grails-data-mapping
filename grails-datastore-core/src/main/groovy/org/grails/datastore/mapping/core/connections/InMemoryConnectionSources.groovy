@@ -1,9 +1,8 @@
-package org.grails.datastore.mapping.core.connections;
+package org.grails.datastore.mapping.core.connections
 
+import groovy.transform.CompileStatic;
 import org.springframework.core.env.PropertyResolver;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Graeme Rocher
  * @since 6.0
  */
+@CompileStatic
 public class InMemoryConnectionSources<T, S extends ConnectionSourceSettings> extends AbstractConnectionSources<T, S> {
 
     protected final Map<String, ConnectionSource<T, S>> connectionSourceMap = new ConcurrentHashMap<>();
@@ -49,7 +49,7 @@ public class InMemoryConnectionSources<T, S extends ConnectionSourceSettings> ex
             throw new IllegalArgumentException("Argument [configuration] cannot be null");
         }
 
-        ConnectionSource<T, S> connectionSource = connectionSourceFactory.createRuntime(name, configuration, this.defaultConnectionSource.getSettings());
+        ConnectionSource<T, S> connectionSource = connectionSourceFactory.createRuntime(name, configuration, (S)this.defaultConnectionSource.getSettings());
         if(connectionSource == null) {
             throw new IllegalStateException("ConnectionSource factory returned null");
         }
