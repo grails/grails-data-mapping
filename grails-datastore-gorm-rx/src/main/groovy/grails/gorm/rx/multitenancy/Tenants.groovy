@@ -1,11 +1,9 @@
 package grails.gorm.rx.multitenancy
 
-import grails.gorm.rx.api.RxGormAllOperations
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.core.connections.ConnectionSources
-import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.multitenancy.AllTenantsResolver
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 import org.grails.datastore.mapping.multitenancy.TenantResolver
@@ -141,14 +139,14 @@ class Tenants extends grails.gorm.multitenancy.Tenants {
     protected static void eachTenantInternal(RxDatastoreClient datastoreClient, Closure callable) {
         MultiTenancySettings.MultiTenancyMode multiTenancyMode = datastoreClient.multiTenancyMode
         ConnectionSources connectionSources = datastoreClient.connectionSources
-        if (multiTenancyMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+        if (multiTenancyMode == MultiTenancySettings.MultiTenancyMode.DATABASE) {
             for (ConnectionSource connectionSource in connectionSources.allConnectionSources) {
                 def tenantId = connectionSource.name
                 if (tenantId != ConnectionSource.DEFAULT) {
                     withTenantIdInternal(datastoreClient, tenantId, callable)
                 }
             }
-        } else if (multiTenancyMode == MultiTenancySettings.MultiTenancyMode.MULTI) {
+        } else if (multiTenancyMode.isSharedConnection()) {
             TenantResolver tenantResolver = datastoreClient.tenantResolver
             if (tenantResolver instanceof AllTenantsResolver) {
                 for (tenantId in ((AllTenantsResolver) tenantResolver).resolveTenantIds()) {

@@ -198,7 +198,7 @@ class Tenants {
         if (datastore instanceof MultiTenantCapableDatastore) {
             MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore) datastore
             MultiTenancySettings.MultiTenancyMode multiTenancyMode = multiTenantCapableDatastore.multiTenancyMode
-            if (multiTenancyMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+            if (multiTenancyMode == MultiTenancySettings.MultiTenancyMode.DATABASE) {
                 ConnectionSources connectionSources = multiTenantCapableDatastore.connectionSources
                 for (ConnectionSource connectionSource in connectionSources.allConnectionSources) {
                     def tenantId = connectionSource.name
@@ -207,7 +207,7 @@ class Tenants {
                     }
                 }
             }
-            else if (multiTenancyMode == MultiTenancySettings.MultiTenancyMode.MULTI) {
+            else if (multiTenancyMode.isSharedConnection()) {
                 TenantResolver tenantResolver = multiTenantCapableDatastore.tenantResolver
                 if (tenantResolver instanceof AllTenantsResolver) {
                     for (tenantId in ((AllTenantsResolver) tenantResolver).resolveTenantIds()) {

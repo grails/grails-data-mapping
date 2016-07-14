@@ -2,7 +2,6 @@ package org.grails.datastore.rx
 
 import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.validation.listener.ValidationEventListener
 import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
@@ -42,7 +41,6 @@ import org.grails.gorm.rx.events.DomainEventListener
 import org.grails.gorm.rx.events.MultiTenantEventListener
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.core.env.PropertyResolver
 import rx.Observable
 
 import javax.persistence.CascadeType
@@ -91,7 +89,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     RxDatastoreClient getDatastoreClientForTenantId(Serializable tenantId) {
-        if(multiTenancyMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+        if(multiTenancyMode == MultiTenancySettings.MultiTenancyMode.DATABASE) {
             return getDatastoreClient(tenantId.toString())
         }
         else {
@@ -112,7 +110,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
         configurableApplicationEventPublisher.addApplicationListener(new AutoTimestampEventListener(this))
         configurableApplicationEventPublisher.addApplicationListener(new DomainEventListener(this))
 
-        if(multiTenancyMode == MultiTenancySettings.MultiTenancyMode.MULTI) {
+        if(multiTenancyMode == MultiTenancySettings.MultiTenancyMode.DISCRIMINATOR) {
             configurableApplicationEventPublisher.addApplicationListener(new MultiTenantEventListener(this))
         }
     }

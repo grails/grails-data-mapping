@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationEvent;
 import java.io.Serializable;
 
 /**
- * An event listener that hooks into persistence events to enable discriminator based multi tenancy (ie {@link org.grails.datastore.mapping.multitenancy.MultiTenancySettings.MultiTenancyMode#MULTI}
+ * An event listener that hooks into persistence events to enable discriminator based multi tenancy (ie {@link org.grails.datastore.mapping.multitenancy.MultiTenancySettings.MultiTenancyMode#DISCRIMINATOR}
  *
  * @author Graeme Rocher
  * @since 6.0

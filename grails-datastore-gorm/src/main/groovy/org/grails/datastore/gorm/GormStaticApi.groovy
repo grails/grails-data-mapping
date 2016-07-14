@@ -842,10 +842,10 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
 
     @Override
     def <T> T withTenant(Serializable tenantId, Closure<T> callable) {
-        if(multiTenancyMode == MultiTenancyMode.SINGLE) {
+        if(multiTenancyMode == MultiTenancyMode.DATABASE) {
             Tenants.withId((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, tenantId.toString()).getClass(), tenantId, callable)
         }
-        else if(multiTenancyMode == MultiTenancyMode.MULTI) {
+        else if(multiTenancyMode.isSharedConnection()) {
             Tenants.withId((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, ConnectionSource.DEFAULT).getClass(), tenantId, callable)
         }
         else {
@@ -866,10 +866,10 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
 
     @Override
     GormAllOperations<D> withTenant(Serializable tenantId) {
-        if(multiTenancyMode == MultiTenancyMode.SINGLE) {
+        if(multiTenancyMode == MultiTenancyMode.DATABASE) {
             return GormEnhancer.findStaticApi(persistentClass, tenantId.toString())
         }
-        else if(multiTenancyMode == MultiTenancyMode.MULTI) {
+        else if(multiTenancyMode.isSharedConnection()) {
             def staticApi = GormEnhancer.findStaticApi(persistentClass, ConnectionSource.DEFAULT)
             return new TenantDelegatingGormOperations<D>(datastore, tenantId, staticApi)
         }

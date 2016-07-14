@@ -22,7 +22,6 @@ import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.DatastoreAware;
 import org.grails.datastore.mapping.core.connections.*;
 import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
 import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore;
@@ -130,7 +129,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
 
     @Override
     public Datastore getDatastoreForTenantId(Serializable tenantId) {
-        if(multiTenantMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+        if(multiTenantMode == MultiTenancySettings.MultiTenancyMode.DATABASE) {
             return getDatastoreForConnection(tenantId.toString());
         }
         else {
@@ -286,7 +285,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
 
     @Override
     public <T1> T1 withNewSession(Serializable tenantId, Closure<T1> callable) {
-        if(getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+        if(getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.DATABASE) {
             return getDatastoreForConnection(tenantId.toString()).withNewSession(callable);
         }
         else {
@@ -320,7 +319,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     }
 
     protected <T> Closure<T> prepareMultiTenantClosure(final Closure<T> callable) {
-        final boolean isMultiTenant = getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.MULTI;
+        final boolean isMultiTenant = getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.DISCRIMINATOR;
         Closure<T> multiTenantCallable;
         if(isMultiTenant) {
             multiTenantCallable = new Closure<T>(this) {

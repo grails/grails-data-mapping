@@ -208,6 +208,7 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
             if(configClass != null) {
                 props.put("hibernate.config_class".toString(), configClass.name)
             }
+            props.put('hibernate.use_query_cache', String.valueOf(cache.queries))
             return props
         }
 

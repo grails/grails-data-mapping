@@ -81,6 +81,9 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     }
 
     public TenantId getTenantId() {
+        if(tenantId == null) {
+            throw new ConfigurationException("No tenantId is mapped!");
+        }
         return tenantId;
     }
 
@@ -138,7 +141,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
             associations = new ArrayList();
 
 
-            boolean multiTenancyEnabled = isMultiTenant && context.getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.MULTI;
+            boolean multiTenancyEnabled = isMultiTenant && context.getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.DISCRIMINATOR;
             for (PersistentProperty persistentProperty : persistentProperties) {
                 if(multiTenancyEnabled && persistentProperty instanceof TenantId) {
                     this.tenantId = (TenantId) persistentProperty;
