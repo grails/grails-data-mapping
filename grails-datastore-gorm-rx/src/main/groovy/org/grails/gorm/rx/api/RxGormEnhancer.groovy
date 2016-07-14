@@ -4,20 +4,11 @@ import grails.gorm.rx.MultiTenant
 import grails.gorm.rx.multitenancy.Tenants
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import org.grails.datastore.gorm.CurrentTenant
-import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.core.DatastoreAware
 import org.grails.datastore.mapping.core.connections.ConnectionSource
-import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
 import org.grails.datastore.mapping.core.connections.ConnectionSourcesSupport
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
-import org.grails.datastore.mapping.multitenancy.TenantResolver
-import org.grails.datastore.mapping.multitenancy.resolvers.FixedTenantResolver
-import org.grails.datastore.mapping.multitenancy.resolvers.NoTenantResolver
-import org.grails.datastore.mapping.reflect.NameUtils
 import org.grails.datastore.rx.RxDatastoreClient
-import org.grails.datastore.rx.RxDatastoreClientAware
 import org.grails.datastore.rx.internal.RxDatastoreClientImplementor
 
 import java.util.concurrent.ConcurrentHashMap
@@ -127,7 +118,7 @@ class RxGormEnhancer {
     static String findTenantId(Class entity) {
         if(MultiTenant.isAssignableFrom(entity)) {
             RxDatastoreClient datastoreClient = findStaticApi(entity, ConnectionSource.DEFAULT).datastoreClient
-            if(datastoreClient.multiTenancyMode == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+            if(datastoreClient.multiTenancyMode == MultiTenancySettings.MultiTenancyMode.DATABASE) {
                 return Tenants.currentId( (Class<? extends RxDatastoreClient>) datastoreClient.getClass() )
             }
             else {

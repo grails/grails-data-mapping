@@ -38,7 +38,6 @@ import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore
 import org.grails.datastore.mapping.multitenancy.TenantResolver
 import org.grails.datastore.mapping.multitenancy.resolvers.FixedTenantResolver
-import org.grails.datastore.mapping.multitenancy.resolvers.NoTenantResolver
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.MetaClassUtils
 import org.grails.datastore.mapping.reflect.NameUtils
@@ -223,7 +222,7 @@ class GormEnhancer implements Closeable {
         Datastore defaultDatastore = findDatastore(entity, ConnectionSource.DEFAULT)
         if(MultiTenant.isAssignableFrom(entity) && (defaultDatastore instanceof MultiTenantCapableDatastore)) {
             MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)defaultDatastore
-            if(multiTenantCapableDatastore.getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.SINGLE) {
+            if(multiTenantCapableDatastore.getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.DATABASE) {
                 return Tenants.currentId( (Class<Datastore>) defaultDatastore.getClass() )
             }
             else {

@@ -54,10 +54,22 @@ class MultiTenancySettings {
         /**
          * A single database per tenant
          */
-        SINGLE,
+        DATABASE,
+
         /**
-         * A shared database amongst multiple tenants
+         * A shared database amongst multiple tenants using a separate schema for each tenant
          */
-        MULTI
+        SCHEMA,
+        /**
+         * A shared database amongst multiple tenants using a discriminator column
+         */
+        DISCRIMINATOR
+
+        /**
+         * @return Whether a single shared connection is used
+         */
+        boolean isSharedConnection() {
+            return this == DISCRIMINATOR || this == SCHEMA
+        }
     }
 }
