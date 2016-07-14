@@ -81,9 +81,6 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     }
 
     public TenantId getTenantId() {
-        if(tenantId == null) {
-            throw new ConfigurationException("No tenantId is mapped!");
-        }
         return tenantId;
     }
 
