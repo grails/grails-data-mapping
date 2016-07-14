@@ -78,7 +78,7 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
         if(entity != null) {
 
             properties = entity.getPersistentProperties();
-            if (properties != null && !(constrainedProperties.isEmpty())) {
+            if (properties != null) {
 
                 for (PersistentProperty p : properties) {
                     // assume no formula issues if Hibernate isn't available to avoid CNFE
