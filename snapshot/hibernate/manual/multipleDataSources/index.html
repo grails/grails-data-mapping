@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Configuration Example</title>
+<title>Configuring Multiple Data Sources</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,206 +423,143 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>GORM for Hibernate can be configured with the <code>grails-app/conf/application.yml</code> file when using Grails, the <code>src/main/resources/application.yml</code> file when using Spring Boot or by passing a <code>Map</code> or instanceof the <code>PropertyResolver</code> interface to the <code>org.grails.orm.hibernate.HibernateDatastore</code> class when used standalone.</p>
+<p>GORM supports the notion of multiple data sources where multiple individual SQL <code>DataSource</code> instances can be configured and switched between.</p>
 </div>
+<div class="sect2">
+<h3 id="_configuring_multiple_data_sources">Configuring Multiple Data Sources</h3>
 <div class="paragraph">
-<p>All configuration options are read and materialized into an instance of <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html">HibernateConnectionSourceSettings</a>.</p>
-</div>
-<div class="sect3">
-<h4 id="_configuration_example">Configuration Example</h4>
-<div class="paragraph">
-<p>If you are using Grails or Spring Boot, the following is an example of configuration specified in <code>application.yml</code>:</p>
+<p>To configure multiple data sources you need to use the <code>dataSources</code> setting. For example in <code>application.yml</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-yaml" data-lang="yaml">dataSource:
     pooled: true
     dbCreate: create-drop
-    url: jdbc:h2:mem:devDb
+    url: jdbc:h2:mem:books
     driverClassName: org.h2.Driver
     username: sa
     password:
-hibernate:
-    cache:
-        queries: false
-        use_second_level_cache: true
-        use_query_cache: false
-        region.factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory</code></pre>
+dataSources:
+    moreBooks:
+        url: jdbc:h2:mem:moreBooks
+        hibernate:
+            readOnly: true
+    evenMoreBooks:
+        url: jdbc:h2:mem:evenMoreBooks</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Each one of the settings under the <code>dataSource</code> block is set on the <a href="../api/org/grails/orm/hibernate/jdbc/connections/DataSourceSettings.html">DataSourceSettings</a> property of <code>HibernateConnectionSourceSettings</code>.</p>
+<p>You can configure individual settings for each data source. If a setting is not specified by default the setting is inherited from the default data source, so in the example above there is no need to specify the <code>driverClassName</code> for each data source if the same driver is used for all.</p>
 </div>
-<div class="paragraph">
-<p>Whilst each setting under the <code>hibernate</code> block is set on the <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.HibernateSettings.html">HibernateSettings</a> property.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_configuration_reference">Configuration Reference</h4>
-<div class="paragraph">
-<p>You can refer to the <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html">HibernateConnectionSourceSettings</a> class for all available configuration options, but below is a table of the common ones:</p>
-</div>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
+<div class="admonitionblock tip">
+<table>
 <tr>
-<th class="tableblock halign-left valign-top">name</th>
-<th class="tableblock halign-left valign-top">description</th>
-<th class="tableblock halign-left valign-top">default value</th>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For more information on configuration see the <a href="#configuration">Configuration section</a>.
+</td>
 </tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.flushMode</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The flush mode to use</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>AUTO</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.failOnError</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to throw an exception on validation error</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.default.mapping</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The default mapping to apply to all classes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.default.constraints</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The default constraints to apply to all classes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.multiTenancy.mode</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The multi tenancy mode</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NONE</code></p></td>
-</tr>
-</tbody>
 </table>
-<div class="paragraph">
-<p>The following are common configuration options for the SQL connection:</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">name</th>
-<th class="tableblock halign-left valign-top">description</th>
-<th class="tableblock halign-left valign-top">default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.url</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The JDBC url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jdbc:h2:mem:grailsDB</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.driverClassName</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The class of the JDBC driver</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">detected from URL</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.username</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The JDBC username</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.password</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The JDBC password</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.jndiName</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the JNDI resource for the <code>DataSource</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.pooled</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the connection is pooled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.lazy</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether a <code>LazyConnectionDataSourceProxy</code> should be used</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.transactionAware</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether a <code>TransactionAwareDataSourceProxy</code> should be used</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.readOnly</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the DataSource is read-only</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.options</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A map of options to pass to the underlying JDBC driver</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>And the following are common configuration options for Hibernate:</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">name</th>
-<th class="tableblock halign-left valign-top">description</th>
-<th class="tableblock halign-left valign-top">default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.dialect</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The hibernate dialect to use</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">detected automatically from DataSource</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.readOnly</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether Hibernate should be read-only</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.configClass</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration class to use</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HibernateMappingContextConfiguration</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.hbm2ddl.auto</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to create the tables on startup</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>none</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.cache.queries</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to cache queries</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.use_second_level_cache</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to use the second level cache</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-</tbody>
-</table>
+<div class="sect2">
+<h3 id="_mapping_domain_classes_to_data_sources">Mapping Domain Classes to Data Sources</h3>
 <div class="paragraph">
-<p>In addition, any additional settings that start with <code>hibernate.</code> are passed through to Hibernate, so if there is any specific feature of Hibernate you wish to configure that is possible.</p>
+<p>If a domain class has no <code>DataSource</code> configuration, it defaults to the standard <code>'dataSource'</code>. Set the <code>datasource</code> property in the <code>mapping</code> block to configure a non-default <code>DataSource</code>. For example, if you want to use the <code>ZipCode</code> domain to use a <code>DataSource</code> called <code>'lookup'</code>, configure it like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class ZipCode {
+
+   String code
+
+   static mapping = {
+      datasource 'lookup'
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A domain class can also use two or more <code>DataSource`s. Use the `datasources</code> property with a list of names to configure more than one, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class ZipCode {
+
+   String code
+
+   static mapping = {
+      datasources(['lookup', 'auditing'])
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a domain class uses the default <code>DataSource</code> and one or more others, you can use the <code>ConnectionSource.DEFAULT</code> constant to indicate that:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.grails.datastore.mapping.core.connections.*
+
+class ZipCode {
+
+   String code
+
+   static mapping = {
+      datasources(['lookup', ConnectionSource.DEFAULT])
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a domain class uses all configured <code>DataSource`s use the value `'ALL'</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.grails.datastore.mapping.core.connections.*
+
+class ZipCode {
+
+   String code
+
+   static mapping = {
+      datasource ConnectionSource.ALL
+   }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_data_source_namespaces">Data Source Namespaces</h3>
+<div class="paragraph">
+<p>If a domain class uses more than one <code>DataSource</code> then you can use the namespace implied by each <code>DataSource</code> name to make GORM calls for a particular <code>DataSource</code>. For example, consider this class which uses two `DataSource`s:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class ZipCode {
+
+   String code
+
+   static mapping = {
+      datasources(['lookup', 'auditing'])
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The first <code>DataSource</code> specified is the default when not using an explicit namespace, so in this case we default to <em>lookup</em>. But you can call GORM methods on the <em>auditing</em> <code>DataSource</code> with the <code>DataSource</code> name, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def zipCode = ZipCode.auditing.get(42)
+...
+zipCode.auditing.save()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see, you add the <code>DataSource</code> to the method call in both the static case and the instance case.</p>
 </div>
 </div>
 </div>

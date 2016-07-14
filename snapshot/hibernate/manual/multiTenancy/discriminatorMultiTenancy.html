@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Configuration Example</title>
+<title>Configuration</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,206 +423,113 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>GORM for Hibernate can be configured with the <code>grails-app/conf/application.yml</code> file when using Grails, the <code>src/main/resources/application.yml</code> file when using Spring Boot or by passing a <code>Map</code> or instanceof the <code>PropertyResolver</code> interface to the <code>org.grails.orm.hibernate.HibernateDatastore</code> class when used standalone.</p>
+<p>Partitioned multi-tenancy is when a discriminator column is used each multi-tenant class in order to partition the data.</p>
 </div>
-<div class="paragraph">
-<p>All configuration options are read and materialized into an instance of <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html">HibernateConnectionSourceSettings</a>.</p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+When using a discriminator all data for all tenants is stored in a single database. This is means that, as a developer, you have to take much greater care to ensure that each tenants' data is correctly isolated.
+</td>
+</tr>
+</table>
 </div>
 <div class="sect3">
-<h4 id="_configuration_example">Configuration Example</h4>
+<h4 id="_configuration">Configuration</h4>
 <div class="paragraph">
-<p>If you are using Grails or Spring Boot, the following is an example of configuration specified in <code>application.yml</code>:</p>
+<p>In order to activate discriminator-based multi-tenancy you need to see the multi-tenancy mode to <code>DISCRIMINATOR</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">dataSource:
-    pooled: true
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    gorm:
+        multiTenancy:
+            mode: DISCRIMINATOR
+            tenantResolverClass: foo.bar.MyTenantResolver
+dataSource:
     dbCreate: create-drop
-    url: jdbc:h2:mem:devDb
-    driverClassName: org.h2.Driver
-    username: sa
-    password:
-hibernate:
-    cache:
-        queries: false
-        use_second_level_cache: true
-        use_query_cache: false
-        region.factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory</code></pre>
+    url: jdbc:h2:mem:books</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Each one of the settings under the <code>dataSource</code> block is set on the <a href="../api/org/grails/orm/hibernate/jdbc/connections/DataSourceSettings.html">DataSourceSettings</a> property of <code>HibernateConnectionSourceSettings</code>.</p>
-</div>
-<div class="paragraph">
-<p>Whilst each setting under the <code>hibernate</code> block is set on the <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.HibernateSettings.html">HibernateSettings</a> property.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The specified <code>TenantResolver</code> will also need to implement the <a href="../api/org/grails/datastore/mapping/multitenancy/AllTenantsResolver.html">AllTenantsResolver</a> interface, which has an additional method to resolve all known tenants.
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configuration_reference">Configuration Reference</h4>
+<h4 id="_mapping_domain_classes">Mapping Domain Classes</h4>
 <div class="paragraph">
-<p>You can refer to the <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html">HibernateConnectionSourceSettings</a> class for all available configuration options, but below is a table of the common ones:</p>
+<p>Like the other forms of multi-tenancy you then need to implement the <a href="../api/grails/gorm/MultiTenant.html">MultiTenant</a> trait in the domain classes that are multi-tenant. In addition, you also need to specify a discriminator column. The default discriminator column is called <code>tenantId</code>, for example:</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">name</th>
-<th class="tableblock halign-left valign-top">description</th>
-<th class="tableblock halign-left valign-top">default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.flushMode</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The flush mode to use</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>AUTO</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.failOnError</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to throw an exception on validation error</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.default.mapping</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The default mapping to apply to all classes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.default.constraints</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The default constraints to apply to all classes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.multiTenancy.mode</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The multi tenancy mode</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NONE</code></p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>The following are common configuration options for the SQL connection:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Book implements MultiTenant&lt;Book&gt; {
+    Long tenantId
+    String title
+}</code></pre>
 </div>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">name</th>
-<th class="tableblock halign-left valign-top">description</th>
-<th class="tableblock halign-left valign-top">default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.url</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The JDBC url</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jdbc:h2:mem:grailsDB</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.driverClassName</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The class of the JDBC driver</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">detected from URL</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.username</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The JDBC username</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.password</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The JDBC password</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.jndiName</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the JNDI resource for the <code>DataSource</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.pooled</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the connection is pooled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.lazy</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether a <code>LazyConnectionDataSourceProxy</code> should be used</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.transactionAware</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether a <code>TransactionAwareDataSourceProxy</code> should be used</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.readOnly</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the DataSource is read-only</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.options</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">A map of options to pass to the underlying JDBC driver</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>And the following are common configuration options for Hibernate:</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">name</th>
-<th class="tableblock halign-left valign-top">description</th>
-<th class="tableblock halign-left valign-top">default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.dialect</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The hibernate dialect to use</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">detected automatically from DataSource</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.readOnly</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether Hibernate should be read-only</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.configClass</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration class to use</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HibernateMappingContextConfiguration</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.hbm2ddl.auto</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to create the tables on startup</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>none</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.cache.queries</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to cache queries</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.use_second_level_cache</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to use the second level cache</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-</tr>
-</tbody>
-</table>
 <div class="paragraph">
-<p>In addition, any additional settings that start with <code>hibernate.</code> are passed through to Hibernate, so if there is any specific feature of Hibernate you wish to configure that is possible.</p>
+<p>However, the tenant identifier can be any type or name. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Book implements MultiTenant&lt;Book&gt; {
+    String publisher
+    String title
+
+    static mapping = {
+        tenantId name:'publisher'
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_querying_and_caveats">Querying and Caveats</h4>
+<div class="paragraph">
+<p>The discriminator-based multi-tenancy transparently adds a Hibernate filter that is activated when you query the domain class and you can also use the <a href="../api/grails/gorm/multitenancy/Tenants.html">Tenants</a> API to switch between tenants:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static grails.gorm.multitenancy.Tenants.*
+
+List&lt;Book&gt; books = withCurrent {
+    Book.list()
+}
+...
+List&lt;Book&gt; books = withId("moreBooks") {
+    Book.list()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that this automatic activation of the Hibernate filter using GORM eventing and therefore only works when you use GORM methods, if you perform any raw Hibernate queries on the session factory you will need to activate the filter manually:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static grails.gorm.multitenancy.Tenants.*
+import org.grails.orm.hibernate.*
+
+// get a reference to the datastore and sessionFactory, probably from Spring
+HibernateDatastore datastore = ..
+SessionFactory sessionFactory = ..
+datastore.enableMultiTenancyFilter()
+
+// do work with the session factory
+sessionFactory.openSession()</code></pre>
+</div>
 </div>
 </div>
 </div>
