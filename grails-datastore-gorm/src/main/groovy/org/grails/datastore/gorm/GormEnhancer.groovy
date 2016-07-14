@@ -388,7 +388,7 @@ class GormEnhancer implements Closeable {
         try {
             Thread.currentThread().contextClassLoader.loadClass("org.codehaus.groovy.grails.validation.ConstrainedProperty").removeConstraint('unique')
         } catch (Throwable e) {
-            log.warn("Error removing applied constraints on shutdown. ${e.message}", e)
+            log.debug("Not running in Grails 2 environment, so there was an issue removing applied constraints on shutdown. ${e.message}", e)
         }
     }
 
