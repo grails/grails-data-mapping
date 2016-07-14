@@ -74,9 +74,43 @@ if (location.href.indexOf('is-external=true') == -1) {
         
         <li><a href="#method">Deprecated Method</a></li>
         
+        <li><a href="#field">Deprecated Field</a></li>
+        
     </ul>
 </div>
 <div class="contentContainer">
+
+<!-- Deprecated fields/properties/enum constant types -->
+    <a name="field"><!--   --></a><ul class="blockList">
+    <li class="blockList">
+        <table border="0" cellpadding="3" cellspacing="0" summary="Deprecated Fields table, listing deprecated fields, and an explanation">
+            <caption><span>Deprecated Fields</span><span class="tabEnd">&nbsp;</span></caption>
+            <tr>
+                <th class="colOne" scope="col">Field and Description</th>
+            </tr>
+            <tbody>
+            <tr class="altColor">
+                <td class="colOne">
+                    <strong><a href="org/grails/datastore/mapping/config/Entity.html#ALL_DATA_SOURCES">Entity#ALL_DATA_SOURCES</a></strong>
+                </td>
+                <td>
+                    <div class="block"><i>@deprecated Use <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html#DEFAULT' title='ConnectionSource.DEFAULT'>ConnectionSource.DEFAULT</a> instead</i></div>
+                </td>
+            </tr>
+            <tr class="rowColor">
+                <td class="colOne">
+                    <strong><a href="org/grails/datastore/mapping/config/Entity.html#DEFAULT_DATA_SOURCE">Entity#DEFAULT_DATA_SOURCE</a></strong>
+                </td>
+                <td>
+                    <div class="block"><i>@deprecated Use <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html#ALL' title='ConnectionSource.ALL'>ConnectionSource.ALL</a> instead</i></div>
+                </td>
+            </tr>
+            
+            </tbody>
+        </table>
+    </li>
+</ul>
+
 
 <!-- Deprecated class/interface/enum types -->
     <a name="class"><!--   --></a><ul class="blockList">
@@ -105,11 +139,6 @@ if (location.href.indexOf('is-external=true') == -1) {
             <tr class="rowColor">
                 <td class="colOne"><a href="org/grails/datastore/gorm/plugin/support/SpringConfigurer.html">SpringConfigurer</a>
                     <div class="block"><i>Helper class for use by plugins in configuring Spring.</i></div>
-                </td>
-            </tr>
-            <tr class="altColor">
-                <td class="colOne"><a href="grails/gorm/TestCriteriaBuilder.html">TestCriteriaBuilder</a>
-                    <div class="block"><i>A CriteriaBuilder for unit testing</i></div>
                 </td>
             </tr>
             
@@ -155,6 +184,21 @@ if (location.href.indexOf('is-external=true') == -1) {
             <tr class="altColor">
                 <td class="colOne"><strong><a href="org/grails/datastore/gorm/GormEntity.html#getNamedQuery(java.lang.String)">GormEntity#getNamedQuery</a></strong>(java.lang.String queryName)
                     <div class="block"><i>Looks up a named query</i></div>
+                </td>
+            </tr>
+            <tr class="altColor">
+                <td class="colOne"><strong><a href="org/grails/orm/hibernate/cfg/GrailsHibernateUtil.html#getDatasourceNames(org.grails.datastore.mapping.model.PersistentEntity)">GrailsHibernateUtil#getDatasourceNames</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass)
+                    <div class="block"><i>@deprecated Use <a href='../../../../../org/grails/orm/hibernate/datasource/MultipleDataSourceSupport.html#getDatasourceNames(org.grails.datastore.mapping.model.PersistentEntity)' title='MultipleDataSourceSupport.getDatasourceNames'>MultipleDataSourceSupport.getDatasourceNames</a> instead</i></div>
+                </td>
+            </tr>
+            <tr class="rowColor">
+                <td class="colOne"><strong><a href="org/grails/orm/hibernate/cfg/GrailsHibernateUtil.html#getDefaultDataSource(org.grails.datastore.mapping.model.PersistentEntity)">GrailsHibernateUtil#getDefaultDataSource</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass)
+                    <div class="block"><i>@deprecated Use <a href='../../../../../org/grails/orm/hibernate/datasource/MultipleDataSourceSupport.html#getDefaultDataSource(org.grails.datastore.mapping.model.PersistentEntity)' title='MultipleDataSourceSupport.getDefaultDataSource'>MultipleDataSourceSupport.getDefaultDataSource</a> instead</i></div>
+                </td>
+            </tr>
+            <tr class="altColor">
+                <td class="colOne"><strong><a href="org/grails/orm/hibernate/cfg/GrailsHibernateUtil.html#usesDatasource(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)">GrailsHibernateUtil#usesDatasource</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, java.lang.String dataSourceName)
+                    <div class="block"><i>@deprecated Use <a href='../../../../../org/grails/orm/hibernate/datasource/MultipleDataSourceSupport.html#getDefaultDataSource(org.grails.datastore.mapping.model.PersistentEntity)' title='MultipleDataSourceSupport.getDefaultDataSource'>MultipleDataSourceSupport.getDefaultDataSource</a> instead</i></div>
                 </td>
             </tr>
             

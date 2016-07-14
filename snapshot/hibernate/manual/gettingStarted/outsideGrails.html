@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.3">
+<meta name="generator" content="Asciidoctor 1.5.4">
 <title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -416,14 +416,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-
-</div>
 </div>
 <div id="content">
 <div class="paragraph">
@@ -431,14 +427,27 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate4:VERSION"
-compile "org.springframework:spring-expression:VERSION"
-compile "org.springframework:spring-aop:VERSION"
-compile "com.h2database:h2:VERSION'</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.0.0.BUILD-SNAPSHOT"
+runtime "com.h2database:h2:1.4.192"
+runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
+runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
+runtime "org.slf4j:slf4j-api:1.7.10"</code></pre>
 </div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The above example also uses the <a href="http://www.h2database.com">H2 Database</a> and Tomcat connection pool.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation:</p>
+<p>Then create your entities in the <code>src/main/groovy</code> directory and annotate them with the <code>grails.gorm.annotation.Entity</code> annotation:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -454,72 +463,21 @@ class Person implements GormEntity&lt;Person&gt; {
 </div>
 </div>
 <div class="paragraph">
-<p>Then you need to place the bootstrap logic somewhere in your application which uses <code>HibernateDatastoreSpringInitializer</code>:</p>
+<p>Then you need to place the bootstrap logic somewhere in your application which uses <code>HibernateDatastore</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">def initializer = new HibernateDatastoreSpringInitializer(Person)
-def applicationContext = initializer.configureForDataSource(dataSource)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>For configuration you can either pass a map or an instance of the <code>org.springframework.core.env.PropertyResolver</code> interface:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">def initializer = new HibernateDatastoreSpringInitializer(['hibernate.log_sql':'true'], Person)
-def applicationContext = initializer.configure()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">ApplicationContext myApplicationContext = ...
-def initializer = new HibernateDatastoreSpringInitializer(myApplicationContext.getEnvironment(), Person)
-initializer.configureForBeanDefinitionRegistry(myApplicationContext)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Note in this case GORM expects there to be a bean named <code>dataSource</code> present.</p>
-</div>
-<div class="paragraph">
-<p>There are a couple of things Grails does automaticaly for you that you&#8217;ll have to do it yourself.
-You must define the <code>dataSource</code>, and you have to acquire a new Session via <code>withNewSession</code> for any GORM operation.</p>
-</div>
-<div class="paragraph">
-<p>Below is a full example for using GORM in standalone application</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">def dataSource = new DriverManagerDataSource("jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE", 'sa', '')
-dataSource.setDriverClassName(org.h2.Driver.name)
-
-def initializer = new HibernateDatastoreSpringInitializer(Person)
-def applicationContext = initializer.configureForDataSource(dataSource)
-
-
-Person.withNewSession {
-    def person = new Person(firstName: 'John', lastName: 'Doe').save()
-    println person.count()
-}
-
-@Entity
-class Person implements GormEntity&lt;Person&gt; {
-    String firstName
-    String lastName
-    static constraints = {
-        firstName blank:false
-        lastName blank:false
-    }
-}</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.grails.orm.hibernate.HibernateDatastore
+Map configuration = [
+    'hibernate.hbm2ddl.auto':'create-drop',
+    'dataSource.url':'jdbc:h2:mem:myDB'
+]
+HibernateDatastore datastore = new HibernateDatastore( configuration, Person)</code></pre>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-06-29 09:34:06 UTC
 </div>
 </div>
 </body>
