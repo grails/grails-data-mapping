@@ -13,13 +13,23 @@ import org.springframework.core.env.PropertyResolver
  */
 @CompileStatic
 class HibernateConnectionSourceSettingsBuilder extends ConfigurationBuilder<HibernateConnectionSourceSettings, HibernateConnectionSourceSettings> {
+    HibernateConnectionSourceSettings fallBackHibernateSettings
+
     HibernateConnectionSourceSettingsBuilder(PropertyResolver propertyResolver, String configurationPrefix = "", ConnectionSourceSettings fallBackConfiguration = null) {
         super(propertyResolver, configurationPrefix, fallBackConfiguration)
+
+        if(fallBackConfiguration instanceof HibernateConnectionSourceSettings) {
+            fallBackHibernateSettings = (HibernateConnectionSourceSettings)fallBackConfiguration
+        }
     }
 
     @Override
     protected HibernateConnectionSourceSettings createBuilder() {
-        return new HibernateConnectionSourceSettings()
+        def settings = new HibernateConnectionSourceSettings()
+        if(fallBackHibernateSettings != null) {
+            settings.getHibernate().putAll( fallBackHibernateSettings.getHibernate() )
+        }
+        return settings
     }
 
     @Override
