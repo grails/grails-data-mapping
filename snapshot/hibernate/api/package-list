@@ -8,6 +8,9 @@ grails.orm
 grails.orm.bootstrap
 grails.plugin.hibernate
 grails.plugin.hibernate.commands
+grails.test.hibernate
+grails.test.mixin.gorm
+grails.test.mixin.hibernate
 org.grails.compiler.gorm
 org.grails.datastore.gorm
 org.grails.datastore.gorm.async
