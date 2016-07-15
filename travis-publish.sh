@@ -37,10 +37,6 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
   fi
 
   if [[ $EXIT_STATUS -eq 0 ]]; then
-      echo "Trigger Travis Functional Test build"
-      ./trigger-dependent-build.sh
-
-
         git config --global user.name "$GIT_NAME"
         git config --global user.email "$GIT_EMAIL"
         git config --global credential.helper "store --file=~/.git-credentials"
