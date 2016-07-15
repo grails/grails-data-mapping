@@ -744,12 +744,12 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 6.0.0.BUILD-SNAPSHOT for Hibernate 4 in Grails 3.x you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 6.0.0.BUILD-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate4:6.0.0.BUILD-SNAPSHOT"
+    compile "org.grails.plugins:hibernate5:6.0.0.BUILD-SNAPSHOT"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -772,9 +772,47 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="hibernateVersions">2.1. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>To use Hibernate 5 in Grails 3.0.x the following configuration is needed:</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.0.0.BUILD-SNAPSHOT.</p>
+</div>
+<div class="sect3">
+<h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.1.1. Grails 3.2.x and above with Hibernate 4</h4>
+<div class="paragraph">
+<p>Grails 3.2.x is based on Spring Boot 1.4.x which enforces Hibernate 5.0.x as the default version. If you want to continue to use Hibernate 4 you must explicitly declare the Hibernate 4 dependences in <code>build.gradle</code>.</p>
 </div>
 <div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate4</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-core:4.3.10.Final</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-ehcache:4.3.10.Final</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grails_3_1_x_and_below_with_hibernate_5">2.1.2. Grails 3.1.x and below with Hibernate 5</h4>
+<div class="paragraph">
+<p>Grails 3.1.x and below are based on Spring Boot 1.3.x which enforces Hibernate 4 as the default version of Hibernate:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-core:5.1.0.Final</span><span class="delimiter">&quot;</span></span>
+    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-ehcache:5.1.0.Final</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grails_3_0_x_spring_version_conflicts">2.1.3. Grails 3.0.x Spring Version Conflicts</h4>
+<div class="paragraph">
+<p>Grails 3.0.x enforces Spring 4.1.x as the Spring version, so if you want to use Hibernate 5 you must force an upgrade to Spring 4.2.x in <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// the below is unnecessary in Grails 3.1 and above, but required in Grails 3.0.x</span>
 configurations.all {
@@ -785,18 +823,12 @@ configurations.all {
             }
         }
     }
-}
-
-<span class="comment">// the following is necessary in all versions of Grails 3</span>
-dependencies {
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails.plugins:hibernate5:</span><span class="inline"><span class="inline-delimiter">$</span>gormVersion</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-core:5.1.0.Final</span><span class="delimiter">&quot;</span></span>
-    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-ehcache:5.1.0.Final</span><span class="delimiter">&quot;</span></span>
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>The <code>resolutionStrategy</code> is needed to enforce an upgrade to Spring 4.2.x which is required by Hibernate 5 support. This block is not needed if you are using Grails 3.1 or above.</p>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -806,7 +838,7 @@ dependencies {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate4-spring-boot:6.0.0.BUILD-SNAPSHOT")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.0.0.BUILD-SNAPSHOT")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -910,6 +942,9 @@ The above example also uses the <a href="http://www.h2database.com">H2 Database<
 ]
 HibernateDatastore datastore = <span class="keyword">new</span> HibernateDatastore( configuration, Person)</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>For more information on how to configure GORM see the <a href="#configuration">Configuration</a> section.</p>
 </div>
 </div>
 </div>
