@@ -598,6 +598,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_database_per_tenant">11.2. Database Per Tenant</a></li>
 <li><a href="#_schema_per_tenant">11.3. Schema Per Tenant</a></li>
 <li><a href="#_partitioned_multi_tenancy">11.4. Partitioned Multi-Tenancy</a></li>
+<li><a href="#_understanding_tenant_resolvers">11.5. Understanding Tenant Resolvers</a></li>
 </ul>
 </li>
 <li><a href="#constraints">12. GORM and Constraints</a>
@@ -6771,7 +6772,7 @@ SessionFactory sessionFactory = hibernateDatastore
 </div>
 </div>
 <div class="paragraph">
-<p>The implementation could read the connection sources at startup from another database table and implement logic by overriding the <code>addConnectionSource</code> method to provisioning new databases at runtime.</p>
+<p>The implementation could read the connection sources at startup from another database table and implement logic by overriding the <code>addConnectionSource</code> method to provision a new databases at runtime.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -6909,6 +6910,120 @@ datastore.enableMultiTenancyFilter()
 <span class="comment">// do work with the session factory</span>
 sessionFactory.openSession()</code></pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_understanding_tenant_resolvers">11.5. Understanding Tenant Resolvers</h3>
+<div class="paragraph">
+<p>As mentioned previously the <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a> interface is how you define the value of the <a href="../api/grails/gorm/multitenancy/Tenants.html#currentId()">current tenant</a>.</p>
+</div>
+<div class="paragraph">
+<p>This section will cover a few more details about implementing <code>TenantResolver</code> instances.</p>
+</div>
+<div class="sect3">
+<h4 id="_specifying_the_tenant_resolver">11.5.1. Specifying the Tenant Resolver</h4>
+<div class="paragraph">
+<p>As already mentioned you can specify the <code>TenantResolver</code> via configuration using the <code>grails.gorm.tenantResolverClass</code> setting:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">multiTenancy</span>:
+            <span class="key">mode</span>: <span class="string"><span class="content">DATABASE</span></span>
+            <span class="key">tenantResolverClass</span>: <span class="string"><span class="content">org.grails.datastore.mapping.multitenancy.web.SubDomainTenantResolver</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, if you are using Grails or Spring Boot then the <code>TenantResolver</code> can also be specified as a Spring bean and it will automatically be injected, this allows you to use dependency injection to configure the dependencies of the resolver.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_built_in_tenant_resolvers">11.5.2. Built in Tenant Resolvers</h4>
+<div class="paragraph">
+<p>The following table contains all of the <code>TenantResolver</code> implementations that ship with GORM and are usable out of the box. The package name has been shorted from <code>org.grails.datastore.mapping</code> to <code>o.g.d.m</code> for brevity:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">name</th>
+<th class="tableblock halign-left valign-top">description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.resolvers.FixedTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves against a fixed tenant id</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.resolvers.SystemPropertyTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the tenant id from a system property called <code>gorm.tenantId</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.web.SubDomainTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the tenant id from the subdomain via DNS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.web.CookieTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the current tenant from an HTTP cookie named <code>gorm.tenantId</code> by default</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.web.SessionTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the current tenant from the HTTP session using the attribute <code>gorm.tenantId</code> by default</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The tenant resolvers in the <code>org.grails.datastore.mapping.multitenancy.web</code> package require the <code>grails-datastore-web</code> dependency:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.0.0.BUILD-SNAPSHOT"</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_implementing_web_tenant_resolvers">11.5.3. Implementing Web Tenant Resolvers</h4>
+<div class="paragraph">
+<p>If you wish to implement your own tenant resolver for Grails or Spring Boot then it is possible do so using the <code>RequestContextHolder</code> class without needing to inject any dependencies. For example the <code>SubDomainTenantResolver</code> implementation is as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Serializable</span> resolveTenantIdentifier() {
+
+    RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes()
+    <span class="keyword">if</span>(requestAttributes <span class="keyword">instanceof</span> ServletWebRequest) {
+
+        <span class="predefined-type">String</span> subdomain = ((ServletWebRequest)requestAttributes).getRequest().getRequestURL().toString();
+        subdomain = subdomain.substring(subdomain.indexOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>) + <span class="integer">2</span>);
+        <span class="keyword">if</span>( subdomain.indexOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">.</span><span class="delimiter">&quot;</span></span>) &gt; -<span class="integer">1</span> ) {
+            <span class="keyword">return</span> subdomain.substring(<span class="integer">0</span>, subdomain.indexOf(<span class="string"><span class="delimiter">&quot;</span><span class="content">.</span><span class="delimiter">&quot;</span></span>))
+        }
+        <span class="keyword">else</span> {
+            <span class="keyword">return</span> ConnectionSource.DEFAULT
+        }
+    }
+    <span class="keyword">throw</span> <span class="keyword">new</span> TenantNotFoundException(<span class="string"><span class="delimiter">&quot;</span><span class="content">Tenant could not be resolved outside a web request</span><span class="delimiter">&quot;</span></span>)
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If the tenant id is not found a <code>TenantNotFoundException</code> should be thrown.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
