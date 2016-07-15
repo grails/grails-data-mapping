@@ -45,8 +45,12 @@ public abstract class AbstractConnectionSourceFactory<T, S extends ConnectionSou
 
     @Override
     public ConnectionSource<T, S> createRuntime(String name, PropertyResolver configuration, S fallbackSettings) {
-        S settings = buildSettings(name, configuration, fallbackSettings, false);
+        S settings = buildRuntimeSettings(name, configuration, fallbackSettings);
         return create(name, settings);
+    }
+    
+    public <F extends ConnectionSourceSettings> S buildRuntimeSettings(String name, PropertyResolver configuration, F fallbackSettings) {
+        return buildSettings(name, configuration, fallbackSettings, false);
     }
 
     protected abstract <F extends ConnectionSourceSettings> S buildSettings(String name, PropertyResolver configuration, F fallbackSettings, boolean isDefaultDataSource);

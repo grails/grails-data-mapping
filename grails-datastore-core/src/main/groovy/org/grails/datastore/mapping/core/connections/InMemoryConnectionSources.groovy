@@ -54,6 +54,10 @@ public class InMemoryConnectionSources<T, S extends ConnectionSourceSettings> ex
             throw new IllegalStateException("ConnectionSource factory returned null");
         }
         this.connectionSourceMap.put(name, connectionSource);
+
+        for(listener in listeners) {
+            listener.newConnectionSource(connectionSource)
+        }
         return connectionSource;
     }
 
