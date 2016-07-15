@@ -423,7 +423,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>Partitioned multi-tenancy is when a discriminator column is used each multi-tenant class in order to partition the data.</p>
+<p>Partitioned multi-tenancy is when a discriminator column is used in each multi-tenant class in order to partition the data.</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -440,7 +440,7 @@ When using a discriminator all data for all tenants is stored in a single databa
 <div class="sect3">
 <h4 id="_configuration">Configuration</h4>
 <div class="paragraph">
-<p>In order to activate discriminator-based multi-tenancy you need to see the multi-tenancy mode to <code>DISCRIMINATOR</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
+<p>In order to activate discriminator-based multi-tenancy you need to set the multi-tenancy mode to <code>DISCRIMINATOR</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">

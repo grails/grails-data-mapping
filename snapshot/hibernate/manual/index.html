@@ -589,14 +589,15 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_configuring_multiple_data_sources">10.1. Configuring Multiple Data Sources</a></li>
 <li><a href="#_mapping_domain_classes_to_data_sources">10.2. Mapping Domain Classes to Data Sources</a></li>
 <li><a href="#_data_source_namespaces">10.3. Data Source Namespaces</a></li>
+<li><a href="#connectionSources">10.4. The ConnectionSources API</a></li>
 </ul>
 </li>
-<li><a href="#multiTenancy">11. Multi Tenancy</a>
+<li><a href="#multiTenancy">11. Multi-Tenancy</a>
 <ul class="sectlevel2">
-<li><a href="#_multi_tenancy_modes">11.1. Multi Tenancy Modes</a></li>
+<li><a href="#_multi_tenancy_modes">11.1. Multi-Tenancy Modes</a></li>
 <li><a href="#_database_per_tenant">11.2. Database Per Tenant</a></li>
 <li><a href="#_schema_per_tenant">11.3. Schema Per Tenant</a></li>
-<li><a href="#_partitioned_multi_tenancy">11.4. Partitioned Multi Tenancy</a></li>
+<li><a href="#_partitioned_multi_tenancy">11.4. Partitioned Multi-Tenancy</a></li>
 </ul>
 </li>
 <li><a href="#constraints">12. GORM and Constraints</a>
@@ -6554,21 +6555,41 @@ zipCode.auditing.save()</code></pre>
 <p>As you can see, you add the <code>DataSource</code> to the method call in both the static case and the instance case.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="connectionSources">10.4. The ConnectionSources API</h3>
+<div class="paragraph">
+<p>Introduced in GORM 6.0, the <a href="../api/org/grails/datastore/mapping/core/connections/ConnectionSources.html">ConnectionSources</a> API allows you to introspect the data sources configured for the application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Autowired</span>
+HibernateDatastore hibernateDatastore
+...
+ConnectionSources&lt;SessionFactory, HibernateConnectionSourceSettings&gt; connectionSources
+                                        = hibernateDatastore.getConnectionSources()
+
+<span class="keyword">for</span>(ConnectionSource&lt;SessionFactory, HibernateConnectionSourceSettings&gt; connectionSource <span class="keyword">in</span> connectionSources) {
+        println <span class="string"><span class="delimiter">&quot;</span><span class="content">Name </span><span class="inline"><span class="inline-delimiter">$</span>connectionSource</span><span class="content">.name</span><span class="delimiter">&quot;</span></span>
+        SessionFactory sessionFactory = connectionSource.source
+}</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="multiTenancy">11. Multi Tenancy</h2>
+<h2 id="multiTenancy">11. Multi-Tenancy</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Multitenancy, as it relates to software developments, is when a single instance of an application is used to service multiple clients (tenants) in a way that each tenants data is isolated from the other.</p>
+<p>Multi-Tenancy, as it relates to software developments, is when a single instance of an application is used to service multiple clients (tenants) in a way that each tenants' data is isolated from the other.</p>
 </div>
 <div class="paragraph">
-<p>This type of architecture is highly common in Software as a Service (SaaS) and cloud based architectures. There are a variety of approaches to multitenancy and GORM tries to be flexible in supporting as many as possible.</p>
+<p>This type of architecture is highly common in Software as a Service (SaaS) and Cloud architectures. There are a variety of approaches to multi-tenancy and GORM tries to be flexible in supporting as many as possible.</p>
 </div>
 <div class="sect2">
-<h3 id="_multi_tenancy_modes">11.1. Multi Tenancy Modes</h3>
+<h3 id="_multi_tenancy_modes">11.1. Multi-Tenancy Modes</h3>
 <div class="paragraph">
-<p>GORM supports the following different multi tenancy modes:</p>
+<p>GORM supports the following different multitenancy modes:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -6584,7 +6605,7 @@ zipCode.auditing.save()</code></pre>
 </ul>
 </div>
 <div class="paragraph">
-<p>The above modes are listed from least probable to leak data between tenants to most probable. When using a <code>DISCRIMINATOR</code> approach much greater case needs to be taken to ensure tenants don&#8217;t see each other&#8217;s data.</p>
+<p>The above modes are listed from least probable to leak data between tenants to most probable. When using a <code>DISCRIMINATOR</code> approach much greater care needs to be taken to ensure tenants don&#8217;t see each other&#8217;s data.</p>
 </div>
 </div>
 <div class="sect2">
@@ -6595,7 +6616,7 @@ zipCode.auditing.save()</code></pre>
 <div class="sect3">
 <h4 id="_configuration">11.2.1. Configuration</h4>
 <div class="paragraph">
-<p>In order to activate database-per-tenant multi-tenancy you need to see the multi-tenancy mode to <code>DATABASE</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
+<p>In order to activate database-per-tenant multi-tenancy you need to set the multi-tenancy mode to <code>DATABASE</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -6615,7 +6636,7 @@ zipCode.auditing.save()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The above example uses a built-in tenant <code>TenantResolver</code> implementation that works with Grails or Spring Boot and evaluates the current tenant id from sub-domain in a web application. However, you can implement whatever tenant resolving strategy you choose.</p>
+<p>The above example uses a built-in <code>TenantResolver</code> implementation that works with Grails or Spring Boot and evaluates the current tenant id from the DNS sub-domain in a web application. However, you can implement whatever tenant resolving strategy you choose.</p>
 </div>
 </div>
 <div class="sect3">
@@ -6631,11 +6652,31 @@ zipCode.auditing.save()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>With that done whenever you attempt to execute a method on a domain class the tenant id will be resolved via the <code>TenantResolver</code>. So for example if the <code>TenantResolver</code> returns <code>moreBooks</code> then the <code>moreBooks</code> connection will be used.</p>
+<p>With that done whenever you attempt to execute a method on a domain class the tenant id will be resolved via the <code>TenantResolver</code>. So for example if the <code>TenantResolver</code> returns <code>moreBooks</code> then the <code>moreBooks</code> connection will be used when calling GORM methods such as <code>save()</code>, <code>list()</code> and so on.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_multi_tenancy_with_sessions_and_transactions">11.2.3. Multi Tenancy with Sessions and Transactions</h4>
+<h4 id="_multi_tenancy_and_the_session_factory">11.2.3. Multi Tenancy and the Session Factory</h4>
+<div class="paragraph">
+<p>Note that if you reference the default <code>SessionFactory</code> or <code>PlatformTransactionManager</code> in your classes that are injected via Spring, these will not be tenant aware and will point directly to default data source.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to obtain a specific <code>SessionFactory</code> or <code>PlatformTransactionManager</code> then you can use the <code>getDatastoreForConnection(name)</code> method of the <code>HibernateDatastore</code> class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Autowired</span>
+HibernateDatastore hibernateDatastore
+...
+Serializable tenantId = Tenants.currentId(HibernateDatastore)
+SessionFactory sessionFactory = hibernateDatastore
+                                    .getDatastoreForConnection(tenantId.toString())
+                                    .getSessionFactory()</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_multi_tenancy_with_sessions">11.2.4. Multi Tenancy with Sessions</h4>
 <div class="paragraph">
 <p>When working with GORM typically you need a session bound to the current thread in order for GORM and transactions to work consistently. If you switch to a different tenant then it may be that the session bound to the current thread no longer matches the underlying <code>SessionFactory</code> being used by the tenant. With this in mind you may wants to use the <a href="../api/grails/gorm/multitenancy/Tenants.html">Tenants</a> class to ensure the correct session is bound for the current tenant:</p>
 </div>
@@ -6674,6 +6715,42 @@ zipCode.auditing.save()</code></pre>
 </div>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_adding_tenants_at_runtime">11.2.5. Adding Tenants at Runtime</h4>
+<div class="paragraph">
+<p>Provisioning and creating SQL databases at runtime is non-trivial and beyond the scope of what GORM offers, however the <a href="#connectionSources">ConnectionSources API</a> does provide a way to hook into GORM to make this possible.</p>
+</div>
+<div class="paragraph">
+<p>By default an <a href="../api/org/grails/datastore/mapping/core/connections/InMemoryConnectionSources.html">InMemoryConnectionSources</a> object is used which will read the connection sources from the application configuration and store them in-memory.</p>
+</div>
+<div class="paragraph">
+<p>However, it is possible to configure an alternate implementation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">connectionSourcesClass</span>: <span class="string"><span class="content">com.example.MyConnectionSources</span></span>
+        <span class="key">multiTenancy</span>:
+            <span class="key">mode</span>: <span class="string"><span class="content">DATABASE</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The implementation could read the connection sources at startup from another database table and implement logic by overriding the <code>addConnectionSource</code> method to provisioning new databases at runtime.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you are interested in more examples, an <a href="https://github.com/grails/gorm-mongodb/blob/master/grails-datastore-gorm-mongodb/src/main/groovy/org/grails/datastore/mapping/mongo/connections/MongoConnectionSources.groovy">implementation exists for MongoDB</a> that reads connection sources from a MongoDB collection. However, it doesn&#8217;t implement support for provision MongoDB instances at runtime.
+</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_schema_per_tenant">11.3. Schema Per Tenant</h3>
@@ -6688,9 +6765,9 @@ zipCode.auditing.save()</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_partitioned_multi_tenancy">11.4. Partitioned Multi Tenancy</h3>
+<h3 id="_partitioned_multi_tenancy">11.4. Partitioned Multi-Tenancy</h3>
 <div class="paragraph">
-<p>Partitioned multi-tenancy is when a discriminator column is used each multi-tenant class in order to partition the data.</p>
+<p>Partitioned multi-tenancy is when a discriminator column is used in each multi-tenant class in order to partition the data.</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -6707,7 +6784,7 @@ When using a discriminator all data for all tenants is stored in a single databa
 <div class="sect3">
 <h4 id="_configuration_2">11.4.1. Configuration</h4>
 <div class="paragraph">
-<p>In order to activate discriminator-based multi-tenancy you need to see the multi-tenancy mode to <code>DISCRIMINATOR</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
+<p>In order to activate discriminator-based multi-tenancy you need to set the multi-tenancy mode to <code>DISCRIMINATOR</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">

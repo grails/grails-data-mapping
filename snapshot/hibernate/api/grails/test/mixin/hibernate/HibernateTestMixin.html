@@ -235,31 +235,46 @@ extends <a href='../../../../grails.test.mixin.support.GrailsUnitTestMixin.html'
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>org.hibernate.Session</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getHibernateSession()">getHibernateSession</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>org.hibernate.SessionFactory</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getSessionFactory()">getSessionFactory</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Iterable&lt;TestPluginUsage&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getTestPluginUsages()">getTestPluginUsages</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>org.springframework.transaction.PlatformTransactionManager</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getTransactionManager()">getTransactionManager</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#hibernateDomain(TestRuntime, java.util.Map)">hibernateDomain</a></strong>(<a href='../../../../TestRuntime.html'>TestRuntime</a> runtime, java.util.Map parameters)</code><br>Sets up a GORM for Hibernate domain</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#initTransaction(TestRuntime, java.lang.Object)">initTransaction</a></strong>(<a href='../../../../TestRuntime.html'>TestRuntime</a> runtime, java.lang.Object target)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#onTestEvent(TestEvent)">onTestEvent</a></strong>(<a href='../../../../TestEvent.html'>TestEvent</a> event)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#registerBeans(TestRuntime, grails.core.GrailsApplication)">registerBeans</a></strong>(<a href='../../../../TestRuntime.html'>TestRuntime</a> runtime, grails.core.GrailsApplication grailsApplication)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#registerHibernateDomains(TestRuntime, grails.core.GrailsApplication, Collection<Class<?>>, java.util.Map, boolean)">registerHibernateDomains</a></strong>(<a href='../../../../TestRuntime.html'>TestRuntime</a> runtime, grails.core.GrailsApplication grailsApplication, java.util.Collection&lt;java.lang.Class&lt;?&gt;&gt; persistentClasses, java.util.Map initializerConfig, boolean immediateDelivery)</code><br></td>
                         </tr>
@@ -411,11 +426,38 @@ void <strong>close</strong>(<a href='../../../../TestRuntime.html'>TestRuntime</
                             </li>
                         </ul>
                     
+                        <a name="getHibernateSession()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@groovy.transform.CompileDynamic
+org.hibernate.Session <strong>getHibernateSession</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getSessionFactory()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@groovy.transform.CompileDynamic
+org.hibernate.SessionFactory <strong>getSessionFactory</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getTestPluginUsages()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
 java.lang.Iterable&lt;TestPluginUsage&gt; <strong>getTestPluginUsages</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getTransactionManager()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@groovy.transform.CompileDynamic
+org.springframework.transaction.PlatformTransactionManager <strong>getTransactionManager</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>

@@ -562,6 +562,26 @@ zipCode.auditing.save()</code></pre>
 <p>As you can see, you add the <code>DataSource</code> to the method call in both the static case and the instance case.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="connectionSources">The ConnectionSources API</h3>
+<div class="paragraph">
+<p>Introduced in GORM 6.0, the <a href="../api/org/grails/datastore/mapping/core/connections/ConnectionSources.html">ConnectionSources</a> API allows you to introspect the data sources configured for the application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Autowired
+HibernateDatastore hibernateDatastore
+...
+ConnectionSources&lt;SessionFactory, HibernateConnectionSourceSettings&gt; connectionSources
+					= hibernateDatastore.getConnectionSources()
+
+for(ConnectionSource&lt;SessionFactory, HibernateConnectionSourceSettings&gt; connectionSource in connectionSources) {
+	println "Name $connectionSource.name"
+	SessionFactory sessionFactory = connectionSource.source
+}</code></pre>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
