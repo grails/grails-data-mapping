@@ -159,6 +159,12 @@ extends java.lang.Object
                             <td class="colLast"></code></td>
                         </tr>
                         
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>protected&nbsp;java.util.Collection&lt;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesListener.html' title='ConnectionSourcesListener'>ConnectionSourcesListener</a>&lt;T, S&gt;&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#listeners">listeners</a></code></td>
+                            <td class="colLast"></code></td>
+                        </tr>
+                        
                     </table>
                    </ul>
                 </li>
@@ -208,6 +214,16 @@ extends java.lang.Object
                         <tr>
                             <th class="colFirst" scope="col">Type</th>
                             <th class="colLast" scope="col">Name and description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;T, S&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#addConnectionSource(java.lang.String, Map<String, Object>)">addConnectionSource</a></strong>(java.lang.String name, java.util.Map&lt;java.lang.String, java.lang.Object&gt; configuration)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;T, S&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#addListener(ConnectionSourcesListener<T, S>)">addListener</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesListener.html' title='ConnectionSourcesListener'>ConnectionSourcesListener</a>&lt;T, S&gt; listener)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -310,6 +326,14 @@ extends java.lang.Object
                             </li>
                         </ul>
                     
+                        <a name="listeners"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;final&nbsp;java.util.Collection&lt;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesListener.html' title='ConnectionSourcesListener'>ConnectionSourcesListener</a>&lt;T, S&gt;&gt; <strong>listeners</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                 </li>
             </ul>
             
@@ -346,6 +370,25 @@ extends java.lang.Object
                     <!--   -->
                 </a>
                     <h3>Method Detail</h3>
+                    
+                        <a name="addConnectionSource(java.lang.String, Map<String, Object>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+@groovy.transform.CompileDynamic
+<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;T, S&gt; <strong>addConnectionSource</strong>(java.lang.String name, java.util.Map&lt;java.lang.String, java.lang.Object&gt; configuration)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="addListener(ConnectionSourcesListener<T, S>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;T, S&gt; <strong>addListener</strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesListener.html' title='ConnectionSourcesListener'>ConnectionSourcesListener</a>&lt;T, S&gt; listener)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
                     
                         <a name="close()"><!-- --></a>
                         <ul class="blockListLast">

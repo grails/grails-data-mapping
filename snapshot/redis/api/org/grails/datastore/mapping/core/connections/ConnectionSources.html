@@ -148,6 +148,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;T, S&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#addConnectionSource(java.lang.String, Map<String, Object>)">addConnectionSource</a></strong>(java.lang.String name, java.util.Map&lt;java.lang.String, java.lang.Object&gt; configuration)</code><br>Adds a new <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;T, S&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#addListener(ConnectionSourcesListener<T, S>)">addListener</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesListener.html' title='ConnectionSourcesListener'>ConnectionSourcesListener</a>&lt;T, S&gt; listener)</code><br>Adds a listener</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Iterable&lt;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;T, S&gt;&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getAllConnectionSources()">getAllConnectionSources</a></strong>()</code><br>@return An iterable containing all <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a> instances</td>
                         </tr>
@@ -232,6 +242,24 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>public&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;T, S&gt; <strong>addConnectionSource</strong>(java.lang.String name, org.springframework.core.env.PropertyResolver configuration)</h4>
                                 <p> Adds a new <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a><DL><DT><B>throws:</B></DT><DD>org.grails.datastore.mapping.core.exceptions.ConfigurationException if the configuration is invalid</DD></DL>
      <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the connection source</DD><DD><code>configuration</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a></DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="addConnectionSource(java.lang.String, Map<String, Object>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;T, S&gt; <strong>addConnectionSource</strong>(java.lang.String name, java.util.Map&lt;java.lang.String, java.lang.Object&gt; configuration)</h4>
+                                <p> Adds a new <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a><DL><DT><B>throws:</B></DT><DD>org.grails.datastore.mapping.core.exceptions.ConfigurationException if the configuration is invalid</DD></DL>
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the connection source</DD><DD><code>configuration</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a></DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="addListener(ConnectionSourcesListener<T, S>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;T, S&gt; <strong>addListener</strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesListener.html' title='ConnectionSourcesListener'>ConnectionSourcesListener</a>&lt;T, S&gt; listener)</h4>
+                                <p> Adds a listener
+     <DL><DT><B>Parameters:</B></DT><DD><code>listener</code> -  The listener</DD></DL><DL><DT><B>Returns:</B></DT><DD>This connection sources</DD></DL></p>
                             </li>
                         </ul>
                     
