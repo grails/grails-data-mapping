@@ -17,8 +17,6 @@ interface TenantResolver {
      * <p>In a Multi Tenant setup where a single database is being used amongst multiple tenants this would be the object that is used
      * as the tenantId property for each domain class.</p>
      *
-     * @param persistentClass The class that the resolver is resolving the id for
-     *
      * @return The tenant identifier
      *
      */
