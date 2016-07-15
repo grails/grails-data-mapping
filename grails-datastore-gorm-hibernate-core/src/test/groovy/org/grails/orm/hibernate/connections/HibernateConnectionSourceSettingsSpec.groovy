@@ -20,6 +20,7 @@ class HibernateConnectionSourceSettingsSpec extends Specification {
                 'hibernate.flush.mode': 'commit',
                 'hibernate.cache.queries': 'true',
                 'hibernate.hbm2ddl.auto': 'create',
+                'hibernate.cache':['region.factory_class':'org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory'],
                 'hibernate.configLocations':'file:hibernate.cfg.xml'
         ]
         HibernateConnectionSourceSettingsBuilder builder = new HibernateConnectionSourceSettingsBuilder(DatastoreUtils.createPropertyResolver(config))
@@ -38,6 +39,7 @@ class HibernateConnectionSourceSettingsSpec extends Specification {
         expectedHibernateProperties.put('hibernate.naming_strategy','org.hibernate.cfg.ImprovedNamingStrategy')
         expectedHibernateProperties.put('hibernate.configLocations','file:hibernate.cfg.xml')
         expectedHibernateProperties.put('hibernate.use_query_cache','true')
+        expectedHibernateProperties.put('hibernate.cache.region.factory_class','org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory')
 
         def expectedCombinedProperties = new Properties()
         expectedCombinedProperties.putAll(expectedDataSourceProperties)

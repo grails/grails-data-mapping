@@ -199,9 +199,6 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
         @CompileStatic
         Properties toProperties() {
             Properties props = new Properties()
-            for(String key in keySet()) {
-                props.put("hibernate.$key".toString(), get(key))
-            }
             if(naming_strategy != null) {
                 props.put("hibernate.naming_strategy".toString(), naming_strategy.name)
             }
@@ -209,7 +206,23 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
                 props.put("hibernate.config_class".toString(), configClass.name)
             }
             props.put('hibernate.use_query_cache', String.valueOf(cache.queries))
+
+            String prefix = "hibernate"
+            populateProperties(props, this,prefix)
             return props
+        }
+
+        @CompileStatic
+        protected void populateProperties(Properties props, Map current, String prefix) {
+            for (key in current.keySet()) {
+                def value = current.get(key)
+                if(value instanceof Map) {
+                    populateProperties(props, (Map)value, "${prefix}.$key")
+                }
+                else {
+                    props.put("$prefix.$key".toString(), value)
+                }
+            }
         }
 
         @Builder(builderStrategy = SimpleStrategy, prefix = '')
