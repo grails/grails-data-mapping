@@ -73,8 +73,6 @@ class GormEnhancer implements Closeable {
 
     private static final Map<Class, Datastore> DATASTORES_BY_TYPE = new ConcurrentHashMap<Class, Datastore>()
 
-    private static final TenantResolver DEFAULT_RESOLVER = new FixedTenantResolver()
-
     final Datastore datastore
     PlatformTransactionManager transactionManager
     List<FinderMethod> finders
