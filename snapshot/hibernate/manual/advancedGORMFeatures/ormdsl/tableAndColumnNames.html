@@ -482,7 +482,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>Alternatively if you just wanted to map it to one of Hibernate&#8217;s basic types other than the default chosen by Grails you could use:</p>
+<p>Alternatively if you just wanted to map it to one of Hibernate&#8217;s basic types other than the default chosen by GORM you could use:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -574,7 +574,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect4">
 <h5 id="_many_to_many_mapping">Many-to-Many Mapping</h5>
 <div class="paragraph">
-<p>Grails, by default maps a many-to-many association using a join table. For example consider this many-to-many association:</p>
+<p>GORM, by default maps a many-to-many association using a join table. For example consider this many-to-many association:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -594,7 +594,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>In this case Grails will create a join table called <code>group_person</code> containing foreign keys called <code>person_id</code> and <code>group_id</code> referencing the <code>person</code> and <code>group</code> tables. To change the column names you can specify a column within the mappings for each class.</p>
+<p>In this case GORM will create a join table called <code>group_person</code> containing foreign keys called <code>person_id</code> and <code>group_id</code> referencing the <code>person</code> and <code>group</code> tables. To change the column names you can specify a column within the mappings for each class.</p>
 </div>
 <div class="listingblock">
 <div class="content">

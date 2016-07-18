@@ -426,11 +426,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>You saw in an earlier section that you can use composition (with the <code>embedded</code> property) to break a table into multiple objects. You can achieve a similar effect with Hibernate&#8217;s custom user types. These are not domain classes themselves, but plain Java or Groovy classes. Each of these types also has a corresponding "meta-type" class that implements <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/usertype/UserType.html">org.hibernate.usertype.UserType</a>.</p>
 </div>
 <div class="paragraph">
-<p>The <a href="http://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#_custom_type">Hibernate reference manual</a> has some information on custom types, but here we will focus on how to map them in Grails. Let&#8217;s start by taking a look at a simple domain class that uses an old-fashioned (pre-Java 1.5) type-safe enum class:</p>
+<p>The <a href="http://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#_custom_type">Hibernate reference manual</a> has some information on custom types, but here we will focus on how to map them in GORM. Let&#8217;s start by taking a look at a simple domain class that uses an old-fashioned (pre-Java 1.5) type-safe enum class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">class Book {
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Book {
 
     String title
     String author
@@ -446,7 +446,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>All we have done is declare the <code>rating</code> field the enum type and set the property&#8217;s type in the custom mapping to the corresponding <code>UserType</code> implementation. That&#8217;s all you have to do to start using your custom type. If you want, you can also use the other column settings such as "column" to change the column name and "index" to add it to an index.</p>
 </div>
 <div class="paragraph">
-<p>Custom types aren&#8217;t limited to just a single column - they can be mapped to as many columns as you want. In such cases you explicitly define in the mapping what columns to use, since Hibernate can only use the property name for a single column. Fortunately, Grails lets you map multiple columns to a property using this syntax:</p>
+<p>Custom types aren&#8217;t limited to just a single column - they can be mapped to as many columns as you want. In such cases you explicitly define in the mapping what columns to use, since Hibernate can only use the property name for a single column. Fortunately, GORM lets you map multiple columns to a property using this syntax:</p>
 </div>
 <div class="listingblock">
 <div class="content">

@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Untitled</title>
+<title>Altering the Default Database Mapping</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,23 +423,27 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>A domain class can be created with the <code>create-domain-class</code> command if you are using Grails, or if you are not using Grails you can just create the <code>.groovy</code> file manually:</p>
+<p>The <code>grails.gorm.default.mapping</code> and <code>grails.gorm.default.constraints</code> settings deserve special mention. These define the default <a href="#ormdsl">ORM mapping</a> and the default <a href="#constraints">Validation Constraints</a> used by each entity.</p>
+</div>
+<div class="sect3">
+<h4 id="_altering_the_default_database_mapping">Altering the Default Database Mapping</h4>
+<div class="paragraph">
+<p>You may have reason to want to change how all domain classes map to the database. For example, by default GORM uses the <code>native</code> id generation strategy of the database, whether that be an auto-increment column or a sequence.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to globally change all domain classes to use a <code>uuid</code> strategy then you can specify that in the default mapping:</p>
 </div>
 <div class="listingblock">
+<div class="title">grails-app/conf/application.groovy</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails create-domain-class helloworld.Person</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails.gorm.default.mapping = {
+	cache true
+	id generator:'uuid'
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This will create a class at the location <code>grails-app/domain/helloworld/Person.groovy</code> such as the one below:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">package helloworld
-
-class Person {
-}</code></pre>
-</div>
+<p>As you can see you can assign a closure that is equivalent to the <code>mapping</code> block used to <a href="#ormdsl">customize how a domain class maps to a database table</a>.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -448,65 +452,36 @@ class Person {
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If you have the configured the <code>dataSource.dbCreate</code> property and set it to "update", "create" or "create-drop", GORM will automatically generate/modify the database tables for you.
+Because the setting is Groovy configuration it must go into a Groovy-aware configuration format. This can be <code>grails-app/conf/application.groovy</code> in Grails, or <code>src/main/resources/application.groovy</code> in Spring Boot.
 </td>
 </tr>
 </table>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_altering_the_default_constraints">Altering the Default Constraints</h4>
 <div class="paragraph">
-<p>You can customize the class by adding properties:</p>
+<p>For validation, GORM applies a default set of <a href="#constraints">constraints</a> to all domain classes.</p>
+</div>
+<div class="paragraph">
+<p>For example, by default all properties of GORM classes are not nullable by default. This means a value has to be supplied for each property, otherwise you will get a validation error.</p>
+</div>
+<div class="paragraph">
+<p>In most cases this is what you want, but if you are dealing with a large number of columns, it may prove inconvinient.</p>
+</div>
+<div class="paragraph">
+<p>You can alter the default constraints using Groovy configuration using the <code>grails.gorm.default.constraints</code> setting:</p>
 </div>
 <div class="listingblock">
+<div class="title">grails-app/conf/application.groovy</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Person {
-    String name
-    Integer age
-    Date lastVisit
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails.gorm.default.constraints = {
+    '*'(nullable: true, size: 1..20)
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Once you have a domain class try and manipulate it with <code>console</code> command in Grails by typing:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails console</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This loads an interactive GUI where you can run Groovy commands with access to the Spring ApplicationContext, GORM, etc.</p>
-</div>
-<div class="paragraph">
-<p>Or if you are not using Grails here is a unit test template (using <a href="http://docs.spockframework.org">Spock</a>) that can be run to test out the examples:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import spock.lang.*
-import grails.gorm.annotation.Entity
-import grails.transaction.Rollback
-import org.grails.orm.hibernate.HibernateDatastore
-import org.springframework.transaction.PlatformTransactionManager
-
-class ExampleSpec extends Specification {
-
-    @Shared @AutoCleanup HibernateDatastore hibernateDatastore
-    @Shared PlatformTransactionManager transactionManager
-
-    void setupSpec() {
-       hibernateDatastore = new HibernateDatastore(Person)
-       transactionManager = hibernateDatastore.getTransactionManager()
-    }
-
-    @Rollback
-    void "test execute GORM standalone in a unit test"() {
-       // your logic here
-    }
-}
-
-@Entity
-class Person {
-    ...
-}</code></pre>
+<p>In the above example, all properties are allowed to be <code>nullable</code> by default, but limited to a size of between 1 and 20.</p>
 </div>
 </div>
 </div>

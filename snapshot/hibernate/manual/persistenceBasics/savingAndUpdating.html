@@ -455,7 +455,7 @@ catch (org.springframework.dao.DataIntegrityViolationException e) {
 </div>
 </div>
 <div class="paragraph">
-<p>Another thing to bear in mind is that Grails validates a domain instance every time you save it. If that validation fails the domain instance will <em>not</em> be persisted to the database. By default, <code>save()</code> will simply return <code>null</code> in this case, but if you would prefer it to throw an exception you can use the <code>failOnError</code> argument:</p>
+<p>Another thing to bear in mind is that GORM validates a domain instance every time you save it. If that validation fails the domain instance will <em>not</em> be persisted to the database. By default, <code>save()</code> will simply return <code>null</code> in this case, but if you would prefer it to throw an exception you can use the <code>failOnError</code> argument:</p>
 </div>
 <div class="listingblock">
 <div class="content">

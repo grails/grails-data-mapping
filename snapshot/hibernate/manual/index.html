@@ -538,9 +538,11 @@ table.CodeRay td.code>pre{padding:0}
 </ul>
 </li>
 <li><a href="#configuration">4. Configuration</a>
-<ul class="sectlevel3">
+<ul class="sectlevel2">
 <li><a href="#_configuration_example">4.1. Configuration Example</a></li>
 <li><a href="#_configuration_reference">4.2. Configuration Reference</a></li>
+<li><a href="#_the_default_mapping_constraints">4.3. The Default Mapping &amp; Constraints</a></li>
+<li><a href="#_hibernate_customization">4.4. Hibernate Customization</a></li>
 </ul>
 </li>
 <li><a href="#domainClasses">5. Domain Modelling in GORM</a>
@@ -601,10 +603,12 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_understanding_tenant_resolvers">11.5. Understanding Tenant Resolvers</a></li>
 </ul>
 </li>
-<li><a href="#constraints">12. GORM and Constraints</a>
-<ul class="sectlevel3">
-<li><a href="#_constraints_affecting_string_properties">12.1. Constraints Affecting String Properties</a></li>
-<li><a href="#_constraints_affecting_numeric_properties">12.2. Constraints Affecting Numeric Properties</a></li>
+<li><a href="#constraints">12. Validation and Constraints</a>
+<ul class="sectlevel2">
+<li><a href="#_applying_constraints">12.1. Applying Constraints</a></li>
+<li><a href="#_referencing_instances_in_constraints">12.2. Referencing Instances in Constraints</a></li>
+<li><a href="#_constraints_reference">12.3. Constraints Reference</a></li>
+<li><a href="#_constraints_and_database_mapping">12.4. Constraints and Database Mapping</a></li>
 </ul>
 </li>
 </ul>
@@ -979,7 +983,7 @@ HibernateDatastore datastore = <span class="keyword">new</span> HibernateDatasto
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If you have the configured the <code>dataSource.dbCreate</code> property and set it to "update", "create" or "create-drop", Grails will automatically generate/modify the database tables for you.
+If you have the configured the <code>dataSource.dbCreate</code> property and set it to "update", "create" or "create-drop", GORM will automatically generate/modify the database tables for you.
 </td>
 </tr>
 </table>
@@ -1066,7 +1070,7 @@ p.save()</code></pre>
 <div class="sect3">
 <h4 id="_read">3.1.2. Read</h4>
 <div class="paragraph">
-<p>Grails transparently adds an implicit <code>id</code> property to your domain class which you can use for retrieval:</p>
+<p>GORM transparently adds an implicit <code>id</code> property to your domain class which you can use for retrieval:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1138,8 +1142,8 @@ p.delete()</code></pre>
 <div class="paragraph">
 <p>All configuration options are read and materialized into an instance of <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html">HibernateConnectionSourceSettings</a>.</p>
 </div>
-<div class="sect3">
-<h4 id="_configuration_example">4.1. Configuration Example</h4>
+<div class="sect2">
+<h3 id="_configuration_example">4.1. Configuration Example</h3>
 <div class="paragraph">
 <p>If you are using Grails or Spring Boot, the following is an example of configuration specified in <code>application.yml</code>:</p>
 </div>
@@ -1167,8 +1171,8 @@ p.delete()</code></pre>
 <p>Whilst each setting under the <code>hibernate</code> block is set on the <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.HibernateSettings.html">HibernateSettings</a> property.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_configuration_reference">4.2. Configuration Reference</h4>
+<div class="sect2">
+<h3 id="_configuration_reference">4.2. Configuration Reference</h3>
 <div class="paragraph">
 <p>You can refer to the <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html">HibernateConnectionSourceSettings</a> class for all available configuration options, but below is a table of the common ones:</p>
 </div>
@@ -1335,13 +1339,121 @@ p.delete()</code></pre>
 <p>In addition, any additional settings that start with <code>hibernate.</code> are passed through to Hibernate, so if there is any specific feature of Hibernate you wish to configure that is possible.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_the_default_mapping_constraints">4.3. The Default Mapping &amp; Constraints</h3>
+<div class="paragraph">
+<p>The <code>grails.gorm.default.mapping</code> and <code>grails.gorm.default.constraints</code> settings deserve special mention. These define the default <a href="#ormdsl">ORM mapping</a> and the default <a href="#constraints">Validation Constraints</a> used by each entity.</p>
+</div>
+<div class="sect3">
+<h4 id="_altering_the_default_database_mapping">4.3.1. Altering the Default Database Mapping</h4>
+<div class="paragraph">
+<p>You may have reason to want to change how all domain classes map to the database. For example, by default GORM uses the <code>native</code> id generation strategy of the database, whether that be an auto-increment column or a sequence.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to globally change all domain classes to use a <code>uuid</code> strategy then you can specify that in the default mapping:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails.gorm.default.mapping = {
+        cache <span class="predefined-constant">true</span>
+        id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">uuid</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see you can assign a closure that is equivalent to the <code>mapping</code> block used to <a href="#ormdsl">customize how a domain class maps to a database table</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Because the setting is Groovy configuration it must go into a Groovy-aware configuration format. This can be <code>grails-app/conf/application.groovy</code> in Grails, or <code>src/main/resources/application.groovy</code> in Spring Boot.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_altering_the_default_constraints">4.3.2. Altering the Default Constraints</h4>
+<div class="paragraph">
+<p>For validation, GORM applies a default set of <a href="#constraints">constraints</a> to all domain classes.</p>
+</div>
+<div class="paragraph">
+<p>For example, by default all properties of GORM classes are not nullable by default. This means a value has to be supplied for each property, otherwise you will get a validation error.</p>
+</div>
+<div class="paragraph">
+<p>In most cases this is what you want, but if you are dealing with a large number of columns, it may prove inconvinient.</p>
+</div>
+<div class="paragraph">
+<p>You can alter the default constraints using Groovy configuration using the <code>grails.gorm.default.constraints</code> setting:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails.gorm.default.constraints = {
+    <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span>(<span class="key">nullable</span>: <span class="predefined-constant">true</span>, <span class="key">size</span>: <span class="integer">1</span>..<span class="integer">20</span>)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example, all properties are allowed to be <code>nullable</code> by default, but limited to a size of between 1 and 20.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_hibernate_customization">4.4. Hibernate Customization</h3>
+<div class="paragraph">
+<p>If you want to hook into GORM and customize how Hibernate is configured there are a variety of ways to achieve that when using GORM.</p>
+</div>
+<div class="paragraph">
+<p>Firstly, as mentioned previously, any configuration you specify when configuring GORM for Hibernate will be passed through to Hibernate so you can configure any setting of Hibernate itself.</p>
+</div>
+<div class="paragraph">
+<p>For more advanced configuration you may want to configure or supply a new <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceFactory.html">HibernateConnectionSourceFactory</a> instance or a <a href="../api/org/grails/orm/hibernate/cfg/HibernateMappingContextConfiguration.html">HibernateMappingContextConfiguration</a> or both.</p>
+</div>
+<div class="sect3">
+<h4 id="_the_hibernateconnectionsourcefactory">4.4.1. The HibernateConnectionSourceFactory</h4>
+<div class="paragraph">
+<p>The <code>HibernateConnectionSourceFactory</code> is used to create a new Hibernate <code>SessionFactory</code> on startup.</p>
+</div>
+<div class="paragraph">
+<p>If you are using Spring, it is registered as a Spring bean using the name <code>hibernateConnectionSourceFactory</code> and therefore can be overridden.</p>
+</div>
+<div class="paragraph">
+<p>If you are not using Spring it can be passed to the constructor of the <code>HibernateDatastore</code> class on instantiation.</p>
+</div>
+<div class="paragraph">
+<p>The <code>HibernateConnectionSourceFactory</code> has a few useful setters that allow you to specify a Hibernate <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/Interceptor.html">Interceptor</a> or <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/boot/spi/MetadataContributor.html">MetadataContributor</a> (Hibernate 5+ only).</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_the_hibernatemappingcontextconfiguration">4.4.2. The HibernateMappingContextConfiguration</h4>
+<div class="paragraph">
+<p><a href="../api/org/grails/orm/hibernate/cfg/HibernateMappingContextConfiguration.html">HibernateMappingContextConfiguration</a> is built by the <code>HibernateConnectionSourceFactory</code>, but a customized version can be specified using the <code>hibernate.configClass</code> setting in your configuration:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">hibernate</span>:
+<span class="error">        </span><span class="key">configClass</span>: <span class="string"><span class="content">com.example.MyHibernateMappingContextConfiguration</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The customized version should extend <code>HibernateMappingContextConfiguration</code> and using this class you can add additional classes, packages, <code>hbm.cfg.xml</code> files and so on.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="domainClasses">5. Domain Modelling in GORM</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>When building Grails applications you have to consider the problem domain you are trying to solve. For example if you were building an <a href="http://www.amazon.com/">Amazon</a>-style bookstore you would be thinking about books, authors, customers and publishers to name a few.</p>
+<p>When building applications you have to consider the problem domain you are trying to solve. For example if you were building an <a href="http://www.amazon.com/">Amazon</a>-style bookstore you would be thinking about books, authors, customers and publishers to name a few.</p>
 </div>
 <div class="paragraph">
 <p>These are modeled in GORM as Groovy classes, so a <code>Book</code> class may have a title, a release date, an ISBN number and so on. The next few sections show how to model the domain in GORM.</p>
@@ -1520,7 +1632,7 @@ f.delete() <span class="comment">// both Face and Nose deleted</span></code></pr
 <div class="sect4">
 <h5 id="_controlling_the_ends_of_the_association">Controlling the ends of the association</h5>
 <div class="paragraph">
-<p>Occasionally you may find yourself with domain classes that have multiple properties of the same type. They may even be self-referential, i.e. the association property has the same type as the domain class it&#8217;s in. Such situations can cause problems because Grails may guess incorrectly the type of the association. Consider this simple class:</p>
+<p>Occasionally you may find yourself with domain classes that have multiple properties of the same type. They may even be self-referential, i.e. the association property has the same type as the domain class it&#8217;s in. Such situations can cause problems because GORM may guess incorrectly the type of the association. Consider this simple class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1535,10 +1647,10 @@ f.delete() <span class="comment">// both Face and Nose deleted</span></code></pr
 </div>
 </div>
 <div class="paragraph">
-<p>As far as Grails is concerned, the <code>parent</code> and <code>supervisor</code> properties are two directions of the same association. So when you set the <code>parent</code> property on a <code>Person</code> instance, Grails will automatically set the <code>supervisor</code> property on the other <code>Person</code> instance. This may be what you want, but if you look at the class, what we in fact have are two unidirectional relationships.</p>
+<p>As far as GORM is concerned, the <code>parent</code> and <code>supervisor</code> properties are two directions of the same association. So when you set the <code>parent</code> property on a <code>Person</code> instance, GORM will automatically set the <code>supervisor</code> property on the other <code>Person</code> instance. This may be what you want, but if you look at the class, what we in fact have are two unidirectional relationships.</p>
 </div>
 <div class="paragraph">
-<p>To guide Grails to the correct mapping, you can tell it that a particular association is unidirectional through the <code>mappedBy</code> property:</p>
+<p>To guide GORM to the correct mapping, you can tell it that a particular association is unidirectional through the <code>mappedBy</code> property:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1574,7 +1686,7 @@ If you have a property called "none" on your domain class, this approach won&#82
 <div class="sect3">
 <h4 id="oneToMany">5.1.2. One-to-many</h4>
 <div class="paragraph">
-<p>A one-to-many relationship is when one class, example <code>Author</code>, has many instances of another class, example <code>Book</code>. With Grails you define such a relationship with the <code>hasMany</code> setting:</p>
+<p>A one-to-many relationship is when one class, example <code>Author</code>, has many instances of another class, example <code>Book</code>. With GORM you define such a relationship with the <code>hasMany</code> setting:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1593,7 +1705,7 @@ If you have a property called "none" on your domain class, this approach won&#82
 </div>
 </div>
 <div class="paragraph">
-<p>In this case we have a unidirectional one-to-many. Grails will, by default, map this kind of relationship with a join table.</p>
+<p>In this case we have a unidirectional one-to-many. GORM will, by default, map this kind of relationship with a join table.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1608,7 +1720,7 @@ The <a href="#ormdsl">ORM DSL</a> allows mapping unidirectional relationships us
 </table>
 </div>
 <div class="paragraph">
-<p>Grails will automatically inject a property of type <code>java.util.Set</code> into the domain class based on the <code>hasMany</code> setting. This can be used to iterate over the collection:</p>
+<p>GORM will automatically inject a property of type <code>java.util.Set</code> into the domain class based on the <code>hasMany</code> setting. This can be used to iterate over the collection:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1626,7 +1738,7 @@ The <a href="#ormdsl">ORM DSL</a> allows mapping unidirectional relationships us
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The default fetch strategy used by Grails is "lazy", which means that the collection will be lazily initialized on first access. This can lead to the N+1 if you are not careful.
+The default fetch strategy used by GORM is "lazy", which means that the collection will be lazily initialized on first access. This can lead to the N+1 if you are not careful.
 </td>
 </tr>
 </table>
@@ -1697,7 +1809,7 @@ The default fetch strategy used by Grails is "lazy", which means that the collec
 <div class="sect3">
 <h4 id="manyToMany">5.1.3. Many-to-many</h4>
 <div class="paragraph">
-<p>Grails supports many-to-many relationships by defining a <code>hasMany</code> on both sides of the relationship and having a <code>belongsTo</code> on the owned side of the relationship:</p>
+<p>GORM supports many-to-many relationships by defining a <code>hasMany</code> on both sides of the relationship and having a <code>belongsTo</code> on the owned side of the relationship:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1717,7 +1829,7 @@ The default fetch strategy used by Grails is "lazy", which means that the collec
 </div>
 </div>
 <div class="paragraph">
-<p>Grails maps a many-to-many using a join table at the database level. The owning side of the relationship, in this case <code>Author</code>, takes responsibility for persisting the relationship and is the only side that can cascade saves across.</p>
+<p>GORM maps a many-to-many using a join table at the database level. The owning side of the relationship, in this case <code>Author</code>, takes responsibility for persisting the relationship and is the only side that can cascade saves across.</p>
 </div>
 <div class="paragraph">
 <p>For example this will work and cascade saves:</p>
@@ -1872,7 +1984,7 @@ If you define the <code>Address</code> class in a separate Groovy file in the <c
 <div class="sect3">
 <h4 id="_considerations">5.3.1. Considerations</h4>
 <div class="paragraph">
-<p>At the database level Grails by default uses table-per-hierarchy mapping with a discriminator column called <code>class</code> so the parent class (<code>Content</code>) and its subclasses (<code>BlogEntry</code>, <code>Book</code> etc.), share the <strong>same</strong> table.</p>
+<p>At the database level GORM by default uses table-per-hierarchy mapping with a discriminator column called <code>class</code> so the parent class (<code>Content</code>) and its subclasses (<code>BlogEntry</code>, <code>Book</code> etc.), share the <strong>same</strong> table.</p>
 </div>
 <div class="paragraph">
 <p>Table-per-hierarchy mapping has a down side in that you <strong>cannot</strong> have non-nullable properties with inheritance mapping. An alternative is to use table-per-subclass which can be enabled with the <a href="#ormdsl">ORM DSL</a></p>
@@ -2020,7 +2132,7 @@ author.save()</code></pre>
 }
 
 <span class="keyword">def</span> a = <span class="keyword">new</span> Author()
-a.books = [<span class="string"><span class="delimiter">&quot;</span><span class="content">Grails[1590597583] Book</span><span class="delimiter">&quot;</span></span>]
+a.books = [<span class="string"><span class="delimiter">'</span><span class="content">1590597583</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">My Book</span><span class="delimiter">&quot;</span></span>]
 a.save()</code></pre>
 </div>
 </div>
@@ -2163,7 +2275,7 @@ p.save(<span class="key">flush</span>: <span class="predefined-constant">true</s
 </div>
 </div>
 <div class="paragraph">
-<p>Another thing to bear in mind is that Grails validates a domain instance every time you save it. If that validation fails the domain instance will <em>not</em> be persisted to the database. By default, <code>save()</code> will simply return <code>null</code> in this case, but if you would prefer it to throw an exception you can use the <code>failOnError</code> argument:</p>
+<p>Another thing to bear in mind is that GORM validates a domain instance every time you save it. If that validation fails the domain instance will <em>not</em> be persisted to the database. By default, <code>save()</code> will simply return <code>null</code> in this case, but if you would prefer it to throw an exception you can use the <code>failOnError</code> argument:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2668,7 +2780,7 @@ The <code>version</code> will only be updated after flushing the session.
 <p>Pessimistic locking is equivalent to doing a SQL "SELECT * FOR UPDATE" statement and locking a row in the database. This has the implication that other read operations will be blocking until the lock is released.</p>
 </div>
 <div class="paragraph">
-<p>In Grails pessimistic locking is performed on an existing instance with the <a href="../api/org/grails/datastore/gorm/GormEntity.html#lock()">lock()</a> method:</p>
+<p>In GORM pessimistic locking is performed on an existing instance with the <a href="../api/org/grails/datastore/gorm/GormEntity.html#lock()">lock()</a> method:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2679,7 +2791,7 @@ airport.save()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Grails will automatically deal with releasing the lock for you once the transaction has been committed.</p>
+<p>GORM will automatically deal with releasing the lock for you once the transaction has been committed.</p>
 </div>
 <div class="paragraph">
 <p>However, in the above case what we are doing is "upgrading" from a regular SELECT to a SELECT..FOR UPDATE and another thread could still have updated the record in between the call to <code>get()</code> and the call to <code>lock()</code>.</p>
@@ -5147,7 +5259,7 @@ If you have <code>nullable: false</code> constraints on either <code>dateCreated
 <div class="sect2">
 <h3 id="ormdsl">8.2. Custom ORM Mapping</h3>
 <div class="paragraph">
-<p>Grails domain classes can be mapped onto many legacy schemas with an Object Relational Mapping DSL (domain specific language). The following sections takes you through what is possible with the ORM DSL.</p>
+<p>GORM domain classes can be mapped onto many legacy schemas with an Object Relational Mapping DSL (domain specific language). The following sections takes you through what is possible with the ORM DSL.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -5251,7 +5363,7 @@ None of this is necessary if you are happy to stick to the conventions defined b
 </div>
 </div>
 <div class="paragraph">
-<p>Alternatively if you just wanted to map it to one of Hibernate&#8217;s basic types other than the default chosen by Grails you could use:</p>
+<p>Alternatively if you just wanted to map it to one of Hibernate&#8217;s basic types other than the default chosen by GORM you could use:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -5343,7 +5455,7 @@ None of this is necessary if you are happy to stick to the conventions defined b
 <div class="sect4">
 <h5 id="_many_to_many_mapping">Many-to-Many Mapping</h5>
 <div class="paragraph">
-<p>Grails, by default maps a many-to-many association using a join table. For example consider this many-to-many association:</p>
+<p>GORM, by default maps a many-to-many association using a join table. For example consider this many-to-many association:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -5363,7 +5475,7 @@ None of this is necessary if you are happy to stick to the conventions defined b
 </div>
 </div>
 <div class="paragraph">
-<p>In this case Grails will create a join table called <code>group_person</code> containing foreign keys called <code>person_id</code> and <code>group_id</code> referencing the <code>person</code> and <code>group</code> tables. To change the column names you can specify a column within the mappings for each class.</p>
+<p>In this case GORM will create a join table called <code>group_person</code> containing foreign keys called <code>person_id</code> and <code>group_id</code> referencing the <code>person</code> and <code>group</code> tables. To change the column names you can specify a column within the mappings for each class.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -5629,7 +5741,7 @@ For more information on the different Hibernate generators refer to the <a href=
 </table>
 </div>
 <div class="paragraph">
-<p>Although you don&#8217;t typically specify the <code>id</code> field (Grails adds it for you) you can still configure its mapping like the other properties. For example to customise the column for the id property you can do:</p>
+<p>Although you don&#8217;t typically specify the <code>id</code> field (GORM adds it for you) you can still configure its mapping like the other properties. For example to customise the column for the id property you can do:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -5781,7 +5893,7 @@ If you disable optimistic locking you are essentially on your own with regards t
 <div class="sect4">
 <h5 id="_version_columns_types">Version columns types</h5>
 <div class="paragraph">
-<p>By default Grails maps the <code>version</code> property as a <code>Long</code> that gets incremented by one each time an instance is updated. But Hibernate also supports using a <code>Timestamp</code>, for example:</p>
+<p>By default GORM maps the <code>version</code> property as a <code>Long</code> that gets incremented by one each time an instance is updated. But Hibernate also supports using a <code>Timestamp</code>, for example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -6090,18 +6202,18 @@ Dog pet = Pet.list()[<span class="integer">0</span>]</code></pre>
 <p>You saw in an earlier section that you can use composition (with the <code>embedded</code> property) to break a table into multiple objects. You can achieve a similar effect with Hibernate&#8217;s custom user types. These are not domain classes themselves, but plain Java or Groovy classes. Each of these types also has a corresponding "meta-type" class that implements <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/usertype/UserType.html">org.hibernate.usertype.UserType</a>.</p>
 </div>
 <div class="paragraph">
-<p>The <a href="http://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#_custom_type">Hibernate reference manual</a> has some information on custom types, but here we will focus on how to map them in Grails. Let&#8217;s start by taking a look at a simple domain class that uses an old-fashioned (pre-Java 1.5) type-safe enum class:</p>
+<p>The <a href="http://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#_custom_type">Hibernate reference manual</a> has some information on custom types, but here we will focus on how to map them in GORM. Let&#8217;s start by taking a look at a simple domain class that uses an old-fashioned (pre-Java 1.5) type-safe enum class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="type">class</span> <span class="class">Book</span> {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Book</span> {
 
     <span class="predefined-type">String</span> title
     <span class="predefined-type">String</span> author
     Rating rating
 
     <span class="directive">static</span> mapping = {
-        rating type: RatingUserType
+        rating <span class="key">type</span>: RatingUserType
     }
 }</code></pre>
 </div>
@@ -6110,7 +6222,7 @@ Dog pet = Pet.list()[<span class="integer">0</span>]</code></pre>
 <p>All we have done is declare the <code>rating</code> field the enum type and set the property&#8217;s type in the custom mapping to the corresponding <code>UserType</code> implementation. That&#8217;s all you have to do to start using your custom type. If you want, you can also use the other column settings such as "column" to change the column name and "index" to add it to an index.</p>
 </div>
 <div class="paragraph">
-<p>Custom types aren&#8217;t limited to just a single column - they can be mapped to as many columns as you want. In such cases you explicitly define in the mapping what columns to use, since Hibernate can only use the property name for a single column. Fortunately, Grails lets you map multiple columns to a property using this syntax:</p>
+<p>Custom types aren&#8217;t limited to just a single column - they can be mapped to as many columns as you want. In such cases you explicitly define in the mapping what columns to use, since Hibernate can only use the property name for a single column. Fortunately, GORM lets you map multiple columns to a property using this syntax:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -6267,7 +6379,7 @@ Because the value of a derived property is generated in the database and depends
 <div class="sect3">
 <h4 id="customNamingStrategy">8.2.12. Custom Naming Strategy</h4>
 <div class="paragraph">
-<p>By default Grails uses Hibernate&#8217;s <code>ImprovedNamingStrategy</code> to convert domain class Class and field names to SQL table and column names by converting from camel-cased Strings to ones that use underscores as word separators. You can customize these on a per-class basis in the <code>mapping</code> closure but if there&#8217;s a consistent pattern you can specify a different <code>NamingStrategy</code> class to use.</p>
+<p>By default GORM uses Hibernate&#8217;s <code>ImprovedNamingStrategy</code> to convert domain class Class and field names to SQL table and column names by converting from camel-cased Strings to ones that use underscores as word separators. You can customize these on a per-class basis in the <code>mapping</code> closure but if there&#8217;s a consistent pattern you can specify a different <code>NamingStrategy</code> class to use.</p>
 </div>
 <div class="paragraph">
 <p>Configure the class name to be used in <code>grails-app/conf/application.groovy</code> in the <code>hibernate</code> section, e.g.</p>
@@ -6511,7 +6623,7 @@ For more information on configuration see the <a href="#configuration">Configura
 </div>
 </div>
 <div class="paragraph">
-<p>A domain class can also use two or more <code>DataSource`s. Use the `datasources</code> property with a list of names to configure more than one, for example:</p>
+<p>A domain class can also use two or more configured <code>DataSource</code> instances. Use the <code>datasources</code> property with a list of names to configure more than one, for example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -6543,7 +6655,7 @@ For more information on configuration see the <a href="#configuration">Configura
 </div>
 </div>
 <div class="paragraph">
-<p>If a domain class uses all configured <code>DataSource`s use the value `'ALL'</code>:</p>
+<p>If a domain class uses all configured <code>DataSource</code> instances use the value <code>ALL</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -6563,7 +6675,7 @@ For more information on configuration see the <a href="#configuration">Configura
 <div class="sect2">
 <h3 id="_data_source_namespaces">10.3. Data Source Namespaces</h3>
 <div class="paragraph">
-<p>If a domain class uses more than one <code>DataSource</code> then you can use the namespace implied by each <code>DataSource</code> name to make GORM calls for a particular <code>DataSource</code>. For example, consider this class which uses two `DataSource`s:</p>
+<p>If a domain class uses more than one <code>DataSource</code> then you can use the namespace implied by each <code>DataSource</code> name to make GORM calls for a particular <code>DataSource</code>. For example, consider this class which uses two <code>DataSource</code> instances:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -6940,7 +7052,7 @@ sessionFactory.openSession()</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_built_in_tenant_resolvers">11.5.2. Built in Tenant Resolvers</h4>
+<h4 id="_built_in_tenant_resolvers">11.5.2. Built-in Tenant Resolvers</h4>
 <div class="paragraph">
 <p>The following table contains all of the <code>TenantResolver</code> implementations that ship with GORM and are usable out of the box. The package name has been shorted from <code>org.grails.datastore.mapping</code> to <code>o.g.d.m</code> for brevity:</p>
 </div>
@@ -6989,7 +7101,28 @@ sessionFactory.openSession()</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_implementing_web_tenant_resolvers">11.5.3. Implementing Web Tenant Resolvers</h4>
+<h4 id="_the_alltenantsresolver_interface">11.5.3. The AllTenantsResolver interface</h4>
+<div class="paragraph">
+<p>If you are using discriminator-based multi-tenancy then you may need to implement the <a href="../api/org/grails/datastore/mapping/multitenancy/AllTenantsResolver.html">AllTenantsResolver</a> interface in your <code>TenantResolver</code> implentation if you want to at any point iterate over all available tenants.</p>
+</div>
+<div class="paragraph">
+<p>Typically with discriminator-based multi-tenancy the tenants are identified by some other domain class property. So for example an implementation would look like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Iterable</span>&lt;<span class="predefined-type">Serializable</span>&gt; resolveTenantIds() {
+    <span class="keyword">new</span> DetachedCriteria(Company)
+            .distinct(<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
+            .list()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example uses the distinct names of each <code>Company</code> domain class to resolve all of the tenant identifiers.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_implementing_web_tenant_resolvers">11.5.4. Implementing Web Tenant Resolvers</h4>
 <div class="paragraph">
 <p>If you wish to implement your own tenant resolver for Grails or Spring Boot then it is possible do so using the <code>RequestContextHolder</code> class without needing to inject any dependencies. For example the <code>SubDomainTenantResolver</code> implementation is as follows:</p>
 </div>
@@ -7030,13 +7163,229 @@ If the tenant id is not found a <code>TenantNotFoundException</code> should be t
 </div>
 </div>
 <div class="sect1">
-<h2 id="constraints">12. GORM and Constraints</h2>
+<h2 id="constraints">12. Validation and Constraints</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Constraints are how you define validation when using GORM entities.</p>
+</div>
+<div class="sect2">
+<h3 id="_applying_constraints">12.1. Applying Constraints</h3>
+<div class="paragraph">
+<p>Within a domain class constraints are defined with the constraints property that is assigned a code block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="type">class</span> <span class="class">User</span> {
+    <span class="predefined-type">String</span> login
+    <span class="predefined-type">String</span> password
+    <span class="predefined-type">String</span> email
+    <span class="predefined-type">Integer</span> age
+
+    <span class="directive">static</span> constraints = {
+      ...
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You then use method calls that match the property name for which the constraint applies in combination with named parameters to specify constraints:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="type">class</span> <span class="class">User</span> {
+    ...
+
+    static constraints = {
+        login size: <span class="integer">5</span>.<span class="float">.15</span>, blank: <span class="predefined-constant">false</span>, unique: <span class="predefined-constant">true</span>
+        password size: <span class="integer">5</span>.<span class="float">.15</span>, blank: <span class="predefined-constant">false</span>
+        email email: <span class="predefined-constant">true</span>, blank: <span class="predefined-constant">false</span>
+        age min: <span class="integer">18</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example we&#8217;ve declared that the <code>login</code> property must be between 5 and 15 characters long, it cannot be blank and must be unique. We&#8217;ve also applied other constraints to the <code>password</code>, <code>email</code> and <code>age</code> properties.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+By default, all domain class properties are not nullable (i.e. they have an implicit <code>nullable: false</code> constraint).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note that constraints are only evaluated once which may be relevant for a constraint that relies on a value like an instance of <code>java.util.Date</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="type">class</span> <span class="class">User</span> {
+    ...
+
+    static constraints = {
+        <span class="comment">// this Date object is created when the constraints are evaluated, not</span>
+        <span class="comment">// each time an instance of the User class is validated.</span>
+        birthDate max: <span class="keyword">new</span> <span class="predefined-type">Date</span>()
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_referencing_instances_in_constraints">12.2. Referencing Instances in Constraints</h3>
+<div class="paragraph">
+<p>It&#8217;s very easy to attempt to reference instance variables from the static constraints block, but this isn&#8217;t legal in Groovy (or Java). If you do so, you will get a <code>MissingPropertyException</code> for your trouble. For example, you may try the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Response</span> {
+    Survey survey
+    Answer answer
+
+    <span class="directive">static</span> constraints = {
+        survey <span class="key">blank</span>: <span class="predefined-constant">false</span>
+        answer <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">inList</span>: survey.answers
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See how the <code>inList</code> constraint references the instance property <code>survey</code>? That won&#8217;t work. Instead, use a custom <code>validator</code> constraint:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Response</span> {
+    ...
+    static constraints = {
+        survey <span class="key">blank</span>: <span class="predefined-constant">false</span>
+        answer <span class="key">blank</span>: <span class="predefined-constant">false</span>, <span class="key">validator</span>: { val, Response obj -&gt; val <span class="keyword">in</span> obj.survey.answers }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example, the <code>obj</code> argument to the custom validator is the domain <em>instance</em> that is being validated, so we can access its <code>survey</code> property and return a boolean to indicate whether the new value for the <code>answer</code> property, <code>val</code>, is valid.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_constraints_reference">12.3. Constraints Reference</h3>
+<div class="paragraph">
+<p>The following table summarizes the available constraints with a brief example:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Constraint</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">blank</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is not blank</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(blank:false)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">creditCard</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is a valid credit card number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cardNumber(creditCard: true)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">email</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is a valid email address.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>homeEmail(email: true)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">inList</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value is within a range or collection of constrained values.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name(inList: ["Joe"])</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">matches</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value matches a given regular expression.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(matches: "[a-zA-Z]+")</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">max</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value does not exceed the given maximum value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age(max: new Date())</code> <code>price(max: 999F)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value&#8217;s size does not exceed the given maximum value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>children(maxSize: 25)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">min</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value does not fall below the given minimum value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age(min: new Date())</code> <code>price(min: 0F)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">minSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value&#8217;s size does not fall below the given minimum value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>children(minSize: 25)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">notEqual</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that that a property is not equal to the specified value</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(notEqual: "Bob")</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nullable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows a property to be set to <code>null</code> - defaults to <code>false</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age(nullable: true)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses a Groovy range to ensure that a property&#8217;s value occurs within a specified range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age(range: 18..65)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">scale</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set to the desired scale for floating point numbers (i.e.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the number of digits to the right of the decimal point).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>salary(scale: 2)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">size</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses a Groovy range to restrict the size of a collection or number or the length of a String.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>children(size: 5..15)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">unique</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Constrains a property as unique at the database level</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(unique: true)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is a valid URL.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>homePage(url: true)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">validator</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Adds custom validation to a field.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_constraints_and_database_mapping">12.4. Constraints and Database Mapping</h3>
 <div class="paragraph">
 <p>Although constraints are covered in the <a href="#constraints">Validation</a> section, it is important to mention them here as some of the constraints can affect the way in which the database schema is generated.</p>
 </div>
 <div class="paragraph">
-<p>Where feasible, Grails uses a domain class&#8217;s constraints to influence the database columns generated for the corresponding domain class properties.</p>
+<p>Where feasible, GORM uses a domain class&#8217;s constraints to influence the database columns generated for the corresponding domain class properties.</p>
 </div>
 <div class="paragraph">
 <p>Consider the following example.  Suppose we have a domain model with the following properties:</p>
@@ -7048,7 +7397,7 @@ If the tenant id is not found a <code>TenantNotFoundException</code> should be t
 </div>
 </div>
 <div class="paragraph">
-<p>By default, in MySQL, Grails would define these columns as</p>
+<p>By default, in MySQL, GORM would define these columns as</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
@@ -7094,7 +7443,7 @@ If the tenant id is not found a <code>TenantNotFoundException</code> should be t
 </tbody>
 </table>
 <div class="paragraph">
-<p>Chances are we would also want to have some application-based validation to make sure we don&#8217;t exceed that 1000 character limit <em>before</em> we persist any records.  In Grails, we achieve this validation with <a href="#constraints">constraints</a>.  We would add the following constraint declaration to the domain class.</p>
+<p>Chances are we would also want to have some application-based validation to make sure we don&#8217;t exceed that 1000 character limit <em>before</em> we persist any records.  In GORM, we achieve this validation with <a href="#constraints">constraints</a>.  We would add the following constraint declaration to the domain class.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -7107,7 +7456,7 @@ If the tenant id is not found a <code>TenantNotFoundException</code> should be t
 <p>This constraint would provide both the application-based validation we want and it would also cause the schema to be generated as shown above.  Below is a description of the other constraints that influence schema generation.</p>
 </div>
 <div class="sect3">
-<h4 id="_constraints_affecting_string_properties">12.1. Constraints Affecting String Properties</h4>
+<h4 id="_constraints_affecting_string_properties">12.4.1. Constraints Affecting String Properties</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -7125,14 +7474,14 @@ If the tenant id is not found a <code>TenantNotFoundException</code> should be t
 <p>If either the <code>maxSize</code> or the <code>size</code> constraint is defined, Grails sets the maximum column length based on the constraint value.</p>
 </div>
 <div class="paragraph">
-<p>In general, it&#8217;s not advisable to use both constraints on the same domain class property.  However, if both the <code>maxSize</code> constraint and the <code>size</code> constraint are defined, then Grails sets the column length to the minimum of the <code>maxSize</code> constraint and the upper bound of the size constraint.  (Grails uses the minimum of the two, because any length that exceeds that minimum will result in a validation error.)</p>
+<p>In general, it&#8217;s not advisable to use both constraints on the same domain class property.  However, if both the <code>maxSize</code> constraint and the <code>size</code> constraint are defined, then GORM sets the column length to the minimum of the <code>maxSize</code> constraint and the upper bound of the size constraint.  (GORM uses the minimum of the two, because any length that exceeds that minimum will result in a validation error.)</p>
 </div>
 <div class="paragraph">
-<p>If the <code>inList</code> constraint is defined (and the <code>maxSize</code> and the <code>size</code> constraints are not defined), then Grails sets the maximum column length based on the length of the longest string in the list of valid values.  For example, given a list including values "Java", "Groovy", and "C++", Grails would set the column length to 6 (i.e., the number of characters in the string "Groovy").</p>
+<p>If the <code>inList</code> constraint is defined (and the <code>maxSize</code> and the <code>size</code> constraints are not defined), then GORM sets the maximum column length based on the length of the longest string in the list of valid values.  For example, given a list including values "Java", "Groovy", and "C++", GORM would set the column length to 6 (i.e., the number of characters in the string "Groovy").</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_constraints_affecting_numeric_properties">12.2. Constraints Affecting Numeric Properties</h4>
+<h4 id="_constraints_affecting_numeric_properties">12.4.2. Constraints Affecting Numeric Properties</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -7147,10 +7496,10 @@ If the tenant id is not found a <code>TenantNotFoundException</code> should be t
 </ul>
 </div>
 <div class="paragraph">
-<p>If the <code>max</code>, <code>min</code>, or <code>range</code> constraint is defined, Grails attempts to set the column precision based on the constraint value.  (The success of this attempted influence is largely dependent on how Hibernate interacts with the underlying DBMS.)</p>
+<p>If the <code>max</code>, <code>min</code>, or <code>range</code> constraint is defined, GORM attempts to set the column precision based on the constraint value.  (The success of this attempted influence is largely dependent on how Hibernate interacts with the underlying DBMS.)</p>
 </div>
 <div class="paragraph">
-<p>In general, it&#8217;s not advisable to combine the pair <code>min</code>/<code>max</code> and <code>range</code> constraints together on the same domain class property.  However, if both of these constraints is defined, then Grails uses the minimum precision value from the constraints.  (Grails uses the minimum of the two, because any length that exceeds that minimum precision will result in a validation error.)</p>
+<p>In general, it&#8217;s not advisable to combine the pair <code>min</code>/<code>max</code> and <code>range</code> constraints together on the same domain class property.  However, if both of these constraints is defined, then GORM uses the minimum precision value from the constraints.  (GORM uses the minimum of the two, because any length that exceeds that minimum precision will result in a validation error.)</p>
 </div>
 <div class="ulist">
 <ul>
@@ -7160,10 +7509,10 @@ If the tenant id is not found a <code>TenantNotFoundException</code> should be t
 </ul>
 </div>
 <div class="paragraph">
-<p>If the scale constraint is defined, then Grails attempts to set the column <a href="#ref-constraints-scale">scale</a> based on the constraint value.  This rule only applies to floating point numbers (i.e., <code>java.lang.Float</code>, <code>java.Lang.Double</code>, <code>java.lang.BigDecimal</code>, or subclasses of <code>java.lang.BigDecimal</code>). The success of this attempted influence is largely dependent on how Hibernate interacts with the underlying DBMS.</p>
+<p>If the scale constraint is defined, then GORM attempts to set the column <a href="#ref-constraints-scale">scale</a> based on the constraint value.  This rule only applies to floating point numbers (i.e., <code>java.lang.Float</code>, <code>java.Lang.Double</code>, <code>java.lang.BigDecimal</code>, or subclasses of <code>java.lang.BigDecimal</code>). The success of this attempted influence is largely dependent on how Hibernate interacts with the underlying DBMS.</p>
 </div>
 <div class="paragraph">
-<p>The constraints define the minimum/maximum numeric values, and Grails derives the maximum number of digits for use in the precision. Keep in mind that specifying only one of <code>min</code>/<code>max</code> constraints will not affect schema generation (since there could be large negative value of property with max:100, for example), unless the specified constraint value requires more digits than default Hibernate column precision is (19 at the moment). For example:</p>
+<p>The constraints define the minimum/maximum numeric values, and GORM derives the maximum number of digits for use in the precision. Keep in mind that specifying only one of <code>min</code>/<code>max</code> constraints will not affect schema generation (since there could be large negative value of property with max:100, for example), unless the specified constraint value requires more digits than default Hibernate column precision is (19 at the moment). For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -7208,6 +7557,7 @@ If the tenant id is not found a <code>TenantNotFoundException</code> should be t
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">someFloatValue DECIMAL(<span class="integer">8</span>, <span class="integer">2</span>) <span class="comment">// precision = digits in min + default scale</span></code></pre>
+</div>
 </div>
 </div>
 </div>

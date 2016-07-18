@@ -423,91 +423,169 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>A domain class can be created with the <code>create-domain-class</code> command if you are using Grails, or if you are not using Grails you can just create the <code>.groovy</code> file manually:</p>
+<p>You can refer to the <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html">HibernateConnectionSourceSettings</a> class for all available configuration options, but below is a table of the common ones:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails create-domain-class helloworld.Person</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This will create a class at the location <code>grails-app/domain/helloworld/Person.groovy</code> such as the one below:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">package helloworld
-
-class Person {
-}</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
 <tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-If you have the configured the <code>dataSource.dbCreate</code> property and set it to "update", "create" or "create-drop", GORM will automatically generate/modify the database tables for you.
-</td>
+<th class="tableblock halign-left valign-top">name</th>
+<th class="tableblock halign-left valign-top">description</th>
+<th class="tableblock halign-left valign-top">default value</th>
 </tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.flushMode</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The flush mode to use</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>AUTO</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.failOnError</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to throw an exception on validation error</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.default.mapping</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The default mapping to apply to all classes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.default.constraints</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The default constraints to apply to all classes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.multiTenancy.mode</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The multi tenancy mode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NONE</code></p></td>
+</tr>
+</tbody>
 </table>
-</div>
 <div class="paragraph">
-<p>You can customize the class by adding properties:</p>
+<p>The following are common configuration options for the SQL connection:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Person {
-    String name
-    Integer age
-    Date lastVisit
-}</code></pre>
-</div>
-</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">name</th>
+<th class="tableblock halign-left valign-top">description</th>
+<th class="tableblock halign-left valign-top">default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.url</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The JDBC url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>jdbc:h2:mem:grailsDB</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.driverClassName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The class of the JDBC driver</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">detected from URL</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.username</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The JDBC username</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.password</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The JDBC password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.jndiName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the JNDI resource for the <code>DataSource</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.pooled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the connection is pooled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.lazy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether a <code>LazyConnectionDataSourceProxy</code> should be used</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.transactionAware</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether a <code>TransactionAwareDataSourceProxy</code> should be used</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.readOnly</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether the DataSource is read-only</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dataSource.options</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A map of options to pass to the underlying JDBC driver</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>null</code></p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
-<p>Once you have a domain class try and manipulate it with <code>console</code> command in Grails by typing:</p>
+<p>And the following are common configuration options for Hibernate:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails console</code></pre>
-</div>
-</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">name</th>
+<th class="tableblock halign-left valign-top">description</th>
+<th class="tableblock halign-left valign-top">default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.dialect</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The hibernate dialect to use</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">detected automatically from DataSource</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.readOnly</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether Hibernate should be read-only</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.configClass</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The configuration class to use</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HibernateMappingContextConfiguration</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.hbm2ddl.auto</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to create the tables on startup</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>none</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.cache.queries</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to cache queries</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.use_second_level_cache</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to use the second level cache</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
-<p>This loads an interactive GUI where you can run Groovy commands with access to the Spring ApplicationContext, GORM, etc.</p>
-</div>
-<div class="paragraph">
-<p>Or if you are not using Grails here is a unit test template (using <a href="http://docs.spockframework.org">Spock</a>) that can be run to test out the examples:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import spock.lang.*
-import grails.gorm.annotation.Entity
-import grails.transaction.Rollback
-import org.grails.orm.hibernate.HibernateDatastore
-import org.springframework.transaction.PlatformTransactionManager
-
-class ExampleSpec extends Specification {
-
-    @Shared @AutoCleanup HibernateDatastore hibernateDatastore
-    @Shared PlatformTransactionManager transactionManager
-
-    void setupSpec() {
-       hibernateDatastore = new HibernateDatastore(Person)
-       transactionManager = hibernateDatastore.getTransactionManager()
-    }
-
-    @Rollback
-    void "test execute GORM standalone in a unit test"() {
-       // your logic here
-    }
-}
-
-@Entity
-class Person {
-    ...
-}</code></pre>
-</div>
+<p>In addition, any additional settings that start with <code>hibernate.</code> are passed through to Hibernate, so if there is any specific feature of Hibernate you wish to configure that is possible.</p>
 </div>
 </div>
 <div id="footer">

@@ -423,92 +423,109 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>A domain class can be created with the <code>create-domain-class</code> command if you are using Grails, or if you are not using Grails you can just create the <code>.groovy</code> file manually:</p>
+<p>The following table summarizes the available constraints with a brief example:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails create-domain-class helloworld.Person</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This will create a class at the location <code>grails-app/domain/helloworld/Person.groovy</code> such as the one below:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">package helloworld
-
-class Person {
-}</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
 <tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-If you have the configured the <code>dataSource.dbCreate</code> property and set it to "update", "create" or "create-drop", GORM will automatically generate/modify the database tables for you.
-</td>
+<th class="tableblock halign-left valign-top">Constraint</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
 </tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">blank</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is not blank</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(blank:false)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">creditCard</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is a valid credit card number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cardNumber(creditCard: true)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">email</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is a valid email address.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>homeEmail(email: true)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">inList</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value is within a range or collection of constrained values.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name(inList: ["Joe"])</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">matches</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value matches a given regular expression.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(matches: "[a-zA-Z]+")</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">max</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value does not exceed the given maximum value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age(max: new Date())</code> <code>price(max: 999F)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value&#8217;s size does not exceed the given maximum value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>children(maxSize: 25)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">min</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value does not fall below the given minimum value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age(min: new Date())</code> <code>price(min: 0F)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">minSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value&#8217;s size does not fall below the given minimum value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>children(minSize: 25)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">notEqual</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that that a property is not equal to the specified value</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(notEqual: "Bob")</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nullable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows a property to be set to <code>null</code> - defaults to <code>false</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age(nullable: true)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses a Groovy range to ensure that a property&#8217;s value occurs within a specified range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age(range: 18..65)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">scale</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set to the desired scale for floating point numbers (i.e.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the number of digits to the right of the decimal point).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>salary(scale: 2)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">size</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses a Groovy range to restrict the size of a collection or number or the length of a String.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>children(size: 5..15)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">unique</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Constrains a property as unique at the database level</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(unique: true)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is a valid URL.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>homePage(url: true)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">validator</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Adds custom validation to a field.</p></td>
+</tr>
+</tbody>
 </table>
-</div>
-<div class="paragraph">
-<p>You can customize the class by adding properties:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Person {
-    String name
-    Integer age
-    Date lastVisit
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Once you have a domain class try and manipulate it with <code>console</code> command in Grails by typing:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails console</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This loads an interactive GUI where you can run Groovy commands with access to the Spring ApplicationContext, GORM, etc.</p>
-</div>
-<div class="paragraph">
-<p>Or if you are not using Grails here is a unit test template (using <a href="http://docs.spockframework.org">Spock</a>) that can be run to test out the examples:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import spock.lang.*
-import grails.gorm.annotation.Entity
-import grails.transaction.Rollback
-import org.grails.orm.hibernate.HibernateDatastore
-import org.springframework.transaction.PlatformTransactionManager
-
-class ExampleSpec extends Specification {
-
-    @Shared @AutoCleanup HibernateDatastore hibernateDatastore
-    @Shared PlatformTransactionManager transactionManager
-
-    void setupSpec() {
-       hibernateDatastore = new HibernateDatastore(Person)
-       transactionManager = hibernateDatastore.getTransactionManager()
-    }
-
-    @Rollback
-    void "test execute GORM standalone in a unit test"() {
-       // your logic here
-    }
-}
-
-@Entity
-class Person {
-    ...
-}</code></pre>
-</div>
-</div>
 </div>
 <div id="footer">
 <div id="footer-text">

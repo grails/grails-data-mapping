@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Untitled</title>
+<title>Applying Constraints</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,23 +423,46 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>A domain class can be created with the <code>create-domain-class</code> command if you are using Grails, or if you are not using Grails you can just create the <code>.groovy</code> file manually:</p>
+<p>Constraints are how you define validation when using GORM entities.</p>
+</div>
+<div class="sect2">
+<h3 id="_applying_constraints">Applying Constraints</h3>
+<div class="paragraph">
+<p>Within a domain class constraints are defined with the constraints property that is assigned a code block:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails create-domain-class helloworld.Person</code></pre>
+<pre class="highlight"><code class="language-java" data-lang="java">class User {
+    String login
+    String password
+    String email
+    Integer age
+
+    static constraints = {
+      ...
+    }
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This will create a class at the location <code>grails-app/domain/helloworld/Person.groovy</code> such as the one below:</p>
+<p>You then use method calls that match the property name for which the constraint applies in combination with named parameters to specify constraints:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">package helloworld
+<pre class="highlight"><code class="language-java" data-lang="java">class User {
+    ...
 
-class Person {
+    static constraints = {
+        login size: 5..15, blank: false, unique: true
+        password size: 5..15, blank: false
+        email email: true, blank: false
+        age min: 18
+    }
 }</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>In this example we&#8217;ve declared that the <code>login</code> property must be between 5 and 15 characters long, it cannot be blank and must be unique. We&#8217;ve also applied other constraints to the <code>password</code>, <code>email</code> and <code>age</code> properties.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -448,65 +471,351 @@ class Person {
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If you have the configured the <code>dataSource.dbCreate</code> property and set it to "update", "create" or "create-drop", GORM will automatically generate/modify the database tables for you.
+By default, all domain class properties are not nullable (i.e. they have an implicit <code>nullable: false</code> constraint).
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>You can customize the class by adding properties:</p>
+<p>Note that constraints are only evaluated once which may be relevant for a constraint that relies on a value like an instance of <code>java.util.Date</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Person {
-    String name
-    Integer age
-    Date lastVisit
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Once you have a domain class try and manipulate it with <code>console</code> command in Grails by typing:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails console</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This loads an interactive GUI where you can run Groovy commands with access to the Spring ApplicationContext, GORM, etc.</p>
-</div>
-<div class="paragraph">
-<p>Or if you are not using Grails here is a unit test template (using <a href="http://docs.spockframework.org">Spock</a>) that can be run to test out the examples:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import spock.lang.*
-import grails.gorm.annotation.Entity
-import grails.transaction.Rollback
-import org.grails.orm.hibernate.HibernateDatastore
-import org.springframework.transaction.PlatformTransactionManager
-
-class ExampleSpec extends Specification {
-
-    @Shared @AutoCleanup HibernateDatastore hibernateDatastore
-    @Shared PlatformTransactionManager transactionManager
-
-    void setupSpec() {
-       hibernateDatastore = new HibernateDatastore(Person)
-       transactionManager = hibernateDatastore.getTransactionManager()
-    }
-
-    @Rollback
-    void "test execute GORM standalone in a unit test"() {
-       // your logic here
-    }
-}
-
-@Entity
-class Person {
+<pre class="highlight"><code class="language-java" data-lang="java">class User {
     ...
+
+    static constraints = {
+        // this Date object is created when the constraints are evaluated, not
+        // each time an instance of the User class is validated.
+        birthDate max: new Date()
+    }
 }</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_referencing_instances_in_constraints">Referencing Instances in Constraints</h3>
+<div class="paragraph">
+<p>It&#8217;s very easy to attempt to reference instance variables from the static constraints block, but this isn&#8217;t legal in Groovy (or Java). If you do so, you will get a <code>MissingPropertyException</code> for your trouble. For example, you may try the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Response {
+    Survey survey
+    Answer answer
+
+    static constraints = {
+        survey blank: false
+        answer blank: false, inList: survey.answers
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See how the <code>inList</code> constraint references the instance property <code>survey</code>? That won&#8217;t work. Instead, use a custom <code>validator</code> constraint:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Response {
+    ...
+    static constraints = {
+        survey blank: false
+        answer blank: false, validator: { val, Response obj -&gt; val in obj.survey.answers }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example, the <code>obj</code> argument to the custom validator is the domain <em>instance</em> that is being validated, so we can access its <code>survey</code> property and return a boolean to indicate whether the new value for the <code>answer</code> property, <code>val</code>, is valid.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_constraints_reference">Constraints Reference</h3>
+<div class="paragraph">
+<p>The following table summarizes the available constraints with a brief example:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Constraint</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">blank</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is not blank</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(blank:false)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">creditCard</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is a valid credit card number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cardNumber(creditCard: true)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">email</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is a valid email address.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>homeEmail(email: true)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">inList</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value is within a range or collection of constrained values.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name(inList: ["Joe"])</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">matches</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value matches a given regular expression.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(matches: "[a-zA-Z]+")</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">max</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value does not exceed the given maximum value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age(max: new Date())</code> <code>price(max: 999F)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value&#8217;s size does not exceed the given maximum value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>children(maxSize: 25)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">min</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value does not fall below the given minimum value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age(min: new Date())</code> <code>price(min: 0F)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">minSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a value&#8217;s size does not fall below the given minimum value.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>children(minSize: 25)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">notEqual</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that that a property is not equal to the specified value</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(notEqual: "Bob")</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">nullable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allows a property to be set to <code>null</code> - defaults to <code>false</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age(nullable: true)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses a Groovy range to ensure that a property&#8217;s value occurs within a specified range</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>age(range: 18..65)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">scale</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set to the desired scale for floating point numbers (i.e.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the number of digits to the right of the decimal point).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>salary(scale: 2)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">size</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses a Groovy range to restrict the size of a collection or number or the length of a String.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>children(size: 5..15)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">unique</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Constrains a property as unique at the database level</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(unique: true)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is a valid URL.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>homePage(url: true)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">validator</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Adds custom validation to a field.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_constraints_and_database_mapping">Constraints and Database Mapping</h3>
+<div class="paragraph">
+<p>Although constraints are covered in the <a href="#constraints">Validation</a> section, it is important to mention them here as some of the constraints can affect the way in which the database schema is generated.</p>
+</div>
+<div class="paragraph">
+<p>Where feasible, GORM uses a domain class&#8217;s constraints to influence the database columns generated for the corresponding domain class properties.</p>
+</div>
+<div class="paragraph">
+<p>Consider the following example.  Suppose we have a domain model with the following properties:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">String name
+String description</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By default, in MySQL, GORM would define these columns as</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Column</th>
+<th class="tableblock halign-left valign-top">Data Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">varchar(255)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">description</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">varchar(255)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>But perhaps the business rules for this domain class state that a description can be up to 1000 characters in length.  If that were the case, we would likely define the column as follows <em>if</em> we were creating the table with an SQL script.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Column</th>
+<th class="tableblock halign-left valign-top">Data Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">description</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TEXT</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Chances are we would also want to have some application-based validation to make sure we don&#8217;t exceed that 1000 character limit <em>before</em> we persist any records.  In GORM, we achieve this validation with <a href="#constraints">constraints</a>.  We would add the following constraint declaration to the domain class.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">static constraints = {
+    description maxSize: 1000
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This constraint would provide both the application-based validation we want and it would also cause the schema to be generated as shown above.  Below is a description of the other constraints that influence schema generation.</p>
+</div>
+<div class="sect3">
+<h4 id="_constraints_affecting_string_properties">Constraints Affecting String Properties</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#ref-constraints-inList">inList</a></p>
+</li>
+<li>
+<p><a href="#ref-constraints-maxSize">maxSize</a></p>
+</li>
+<li>
+<p><a href="#ref-constraints-size">size</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If either the <code>maxSize</code> or the <code>size</code> constraint is defined, Grails sets the maximum column length based on the constraint value.</p>
+</div>
+<div class="paragraph">
+<p>In general, it&#8217;s not advisable to use both constraints on the same domain class property.  However, if both the <code>maxSize</code> constraint and the <code>size</code> constraint are defined, then GORM sets the column length to the minimum of the <code>maxSize</code> constraint and the upper bound of the size constraint.  (GORM uses the minimum of the two, because any length that exceeds that minimum will result in a validation error.)</p>
+</div>
+<div class="paragraph">
+<p>If the <code>inList</code> constraint is defined (and the <code>maxSize</code> and the <code>size</code> constraints are not defined), then GORM sets the maximum column length based on the length of the longest string in the list of valid values.  For example, given a list including values "Java", "Groovy", and "C++", GORM would set the column length to 6 (i.e., the number of characters in the string "Groovy").</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_constraints_affecting_numeric_properties">Constraints Affecting Numeric Properties</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#ref-constraints-min">min</a></p>
+</li>
+<li>
+<p><a href="#ref-constraints-max">max</a></p>
+</li>
+<li>
+<p><a href="#ref-constraints-range">range</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If the <code>max</code>, <code>min</code>, or <code>range</code> constraint is defined, GORM attempts to set the column precision based on the constraint value.  (The success of this attempted influence is largely dependent on how Hibernate interacts with the underlying DBMS.)</p>
+</div>
+<div class="paragraph">
+<p>In general, it&#8217;s not advisable to combine the pair <code>min</code>/<code>max</code> and <code>range</code> constraints together on the same domain class property.  However, if both of these constraints is defined, then GORM uses the minimum precision value from the constraints.  (GORM uses the minimum of the two, because any length that exceeds that minimum precision will result in a validation error.)</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#ref-constraints-scale">scale</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If the scale constraint is defined, then GORM attempts to set the column <a href="#ref-constraints-scale">scale</a> based on the constraint value.  This rule only applies to floating point numbers (i.e., <code>java.lang.Float</code>, <code>java.Lang.Double</code>, <code>java.lang.BigDecimal</code>, or subclasses of <code>java.lang.BigDecimal</code>). The success of this attempted influence is largely dependent on how Hibernate interacts with the underlying DBMS.</p>
+</div>
+<div class="paragraph">
+<p>The constraints define the minimum/maximum numeric values, and GORM derives the maximum number of digits for use in the precision. Keep in mind that specifying only one of <code>min</code>/<code>max</code> constraints will not affect schema generation (since there could be large negative value of property with max:100, for example), unless the specified constraint value requires more digits than default Hibernate column precision is (19 at the moment). For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">someFloatValue max: 1000000, scale: 3</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>would yield:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">someFloatValue DECIMAL(19, 3) // precision is default</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>but</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">someFloatValue max: 12345678901234567890, scale: 5</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>would yield:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">someFloatValue DECIMAL(25, 5) // precision = digits in max + scale</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">someFloatValue max: 100, min: -100000</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>would yield:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">someFloatValue DECIMAL(8, 2) // precision = digits in min + default scale</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>

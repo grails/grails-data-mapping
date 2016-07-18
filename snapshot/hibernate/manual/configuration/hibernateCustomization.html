@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Untitled</title>
+<title>The HibernateConnectionSourceFactory</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,90 +423,43 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>A domain class can be created with the <code>create-domain-class</code> command if you are using Grails, or if you are not using Grails you can just create the <code>.groovy</code> file manually:</p>
+<p>If you want to hook into GORM and customize how Hibernate is configured there are a variety of ways to achieve that when using GORM.</p>
+</div>
+<div class="paragraph">
+<p>Firstly, as mentioned previously, any configuration you specify when configuring GORM for Hibernate will be passed through to Hibernate so you can configure any setting of Hibernate itself.</p>
+</div>
+<div class="paragraph">
+<p>For more advanced configuration you may want to configure or supply a new <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceFactory.html">HibernateConnectionSourceFactory</a> instance or a <a href="../api/org/grails/orm/hibernate/cfg/HibernateMappingContextConfiguration.html">HibernateMappingContextConfiguration</a> or both.</p>
+</div>
+<div class="sect3">
+<h4 id="_the_hibernateconnectionsourcefactory">The HibernateConnectionSourceFactory</h4>
+<div class="paragraph">
+<p>The <code>HibernateConnectionSourceFactory</code> is used to create a new Hibernate <code>SessionFactory</code> on startup.</p>
+</div>
+<div class="paragraph">
+<p>If you are using Spring, it is registered as a Spring bean using the name <code>hibernateConnectionSourceFactory</code> and therefore can be overridden.</p>
+</div>
+<div class="paragraph">
+<p>If you are not using Spring it can be passed to the constructor of the <code>HibernateDatastore</code> class on instantiation.</p>
+</div>
+<div class="paragraph">
+<p>The <code>HibernateConnectionSourceFactory</code> has a few useful setters that allow you to specify a Hibernate <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/Interceptor.html">Interceptor</a> or <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/boot/spi/MetadataContributor.html">MetadataContributor</a> (Hibernate 5+ only).</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_the_hibernatemappingcontextconfiguration">The HibernateMappingContextConfiguration</h4>
+<div class="paragraph">
+<p><a href="../api/org/grails/orm/hibernate/cfg/HibernateMappingContextConfiguration.html">HibernateMappingContextConfiguration</a> is built by the <code>HibernateConnectionSourceFactory</code>, but a customized version can be specified using the <code>hibernate.configClass</code> setting in your configuration:</p>
 </div>
 <div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails create-domain-class helloworld.Person</code></pre>
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">hibernate:
+	configClass: com.example.MyHibernateMappingContextConfiguration</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This will create a class at the location <code>grails-app/domain/helloworld/Person.groovy</code> such as the one below:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">package helloworld
-
-class Person {
-}</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-If you have the configured the <code>dataSource.dbCreate</code> property and set it to "update", "create" or "create-drop", GORM will automatically generate/modify the database tables for you.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>You can customize the class by adding properties:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Person {
-    String name
-    Integer age
-    Date lastVisit
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Once you have a domain class try and manipulate it with <code>console</code> command in Grails by typing:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails console</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This loads an interactive GUI where you can run Groovy commands with access to the Spring ApplicationContext, GORM, etc.</p>
-</div>
-<div class="paragraph">
-<p>Or if you are not using Grails here is a unit test template (using <a href="http://docs.spockframework.org">Spock</a>) that can be run to test out the examples:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import spock.lang.*
-import grails.gorm.annotation.Entity
-import grails.transaction.Rollback
-import org.grails.orm.hibernate.HibernateDatastore
-import org.springframework.transaction.PlatformTransactionManager
-
-class ExampleSpec extends Specification {
-
-    @Shared @AutoCleanup HibernateDatastore hibernateDatastore
-    @Shared PlatformTransactionManager transactionManager
-
-    void setupSpec() {
-       hibernateDatastore = new HibernateDatastore(Person)
-       transactionManager = hibernateDatastore.getTransactionManager()
-    }
-
-    @Rollback
-    void "test execute GORM standalone in a unit test"() {
-       // your logic here
-    }
-}
-
-@Entity
-class Person {
-    ...
-}</code></pre>
+<p>The customized version should extend <code>HibernateMappingContextConfiguration</code> and using this class you can add additional classes, packages, <code>hbm.cfg.xml</code> files and so on.</p>
 </div>
 </div>
 </div>

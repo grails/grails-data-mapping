@@ -423,7 +423,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>A one-to-many relationship is when one class, example <code>Author</code>, has many instances of another class, example <code>Book</code>. With Grails you define such a relationship with the <code>hasMany</code> setting:</p>
+<p>A one-to-many relationship is when one class, example <code>Author</code>, has many instances of another class, example <code>Book</code>. With GORM you define such a relationship with the <code>hasMany</code> setting:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -442,7 +442,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>In this case we have a unidirectional one-to-many. Grails will, by default, map this kind of relationship with a join table.</p>
+<p>In this case we have a unidirectional one-to-many. GORM will, by default, map this kind of relationship with a join table.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -457,7 +457,7 @@ The <a href="#ormdsl">ORM DSL</a> allows mapping unidirectional relationships us
 </table>
 </div>
 <div class="paragraph">
-<p>Grails will automatically inject a property of type <code>java.util.Set</code> into the domain class based on the <code>hasMany</code> setting. This can be used to iterate over the collection:</p>
+<p>GORM will automatically inject a property of type <code>java.util.Set</code> into the domain class based on the <code>hasMany</code> setting. This can be used to iterate over the collection:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -475,7 +475,7 @@ for (book in a.books) {
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The default fetch strategy used by Grails is "lazy", which means that the collection will be lazily initialized on first access. This can lead to the N+1 if you are not careful.
+The default fetch strategy used by GORM is "lazy", which means that the collection will be lazily initialized on first access. This can lead to the N+1 if you are not careful.
 </td>
 </tr>
 </table>

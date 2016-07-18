@@ -482,7 +482,7 @@ For more information on configuration see the <a href="#configuration">Configura
 </div>
 </div>
 <div class="paragraph">
-<p>A domain class can also use two or more <code>DataSource`s. Use the `datasources</code> property with a list of names to configure more than one, for example:</p>
+<p>A domain class can also use two or more configured <code>DataSource</code> instances. Use the <code>datasources</code> property with a list of names to configure more than one, for example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -514,7 +514,7 @@ class ZipCode {
 </div>
 </div>
 <div class="paragraph">
-<p>If a domain class uses all configured <code>DataSource`s use the value `'ALL'</code>:</p>
+<p>If a domain class uses all configured <code>DataSource</code> instances use the value <code>ALL</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -534,7 +534,7 @@ class ZipCode {
 <div class="sect2">
 <h3 id="_data_source_namespaces">Data Source Namespaces</h3>
 <div class="paragraph">
-<p>If a domain class uses more than one <code>DataSource</code> then you can use the namespace implied by each <code>DataSource</code> name to make GORM calls for a particular <code>DataSource</code>. For example, consider this class which uses two `DataSource`s:</p>
+<p>If a domain class uses more than one <code>DataSource</code> then you can use the namespace implied by each <code>DataSource</code> name to make GORM calls for a particular <code>DataSource</code>. For example, consider this class which uses two <code>DataSource</code> instances:</p>
 </div>
 <div class="listingblock">
 <div class="content">

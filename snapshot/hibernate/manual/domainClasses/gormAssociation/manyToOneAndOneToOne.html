@@ -545,7 +545,7 @@ f.delete() // both Face and Nose deleted</code></pre>
 <div class="sect4">
 <h5 id="_controlling_the_ends_of_the_association">Controlling the ends of the association</h5>
 <div class="paragraph">
-<p>Occasionally you may find yourself with domain classes that have multiple properties of the same type. They may even be self-referential, i.e. the association property has the same type as the domain class it&#8217;s in. Such situations can cause problems because Grails may guess incorrectly the type of the association. Consider this simple class:</p>
+<p>Occasionally you may find yourself with domain classes that have multiple properties of the same type. They may even be self-referential, i.e. the association property has the same type as the domain class it&#8217;s in. Such situations can cause problems because GORM may guess incorrectly the type of the association. Consider this simple class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -560,10 +560,10 @@ f.delete() // both Face and Nose deleted</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>As far as Grails is concerned, the <code>parent</code> and <code>supervisor</code> properties are two directions of the same association. So when you set the <code>parent</code> property on a <code>Person</code> instance, Grails will automatically set the <code>supervisor</code> property on the other <code>Person</code> instance. This may be what you want, but if you look at the class, what we in fact have are two unidirectional relationships.</p>
+<p>As far as GORM is concerned, the <code>parent</code> and <code>supervisor</code> properties are two directions of the same association. So when you set the <code>parent</code> property on a <code>Person</code> instance, GORM will automatically set the <code>supervisor</code> property on the other <code>Person</code> instance. This may be what you want, but if you look at the class, what we in fact have are two unidirectional relationships.</p>
 </div>
 <div class="paragraph">
-<p>To guide Grails to the correct mapping, you can tell it that a particular association is unidirectional through the <code>mappedBy</code> property:</p>
+<p>To guide GORM to the correct mapping, you can tell it that a particular association is unidirectional through the <code>mappedBy</code> property:</p>
 </div>
 <div class="listingblock">
 <div class="content">

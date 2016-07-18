@@ -423,7 +423,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>By default Grails uses Hibernate&#8217;s <code>ImprovedNamingStrategy</code> to convert domain class Class and field names to SQL table and column names by converting from camel-cased Strings to ones that use underscores as word separators. You can customize these on a per-class basis in the <code>mapping</code> closure but if there&#8217;s a consistent pattern you can specify a different <code>NamingStrategy</code> class to use.</p>
+<p>By default GORM uses Hibernate&#8217;s <code>ImprovedNamingStrategy</code> to convert domain class Class and field names to SQL table and column names by converting from camel-cased Strings to ones that use underscores as word separators. You can customize these on a per-class basis in the <code>mapping</code> closure but if there&#8217;s a consistent pattern you can specify a different <code>NamingStrategy</code> class to use.</p>
 </div>
 <div class="paragraph">
 <p>Configure the class name to be used in <code>grails-app/conf/application.groovy</code> in the <code>hibernate</code> section, e.g.</p>
