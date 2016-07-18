@@ -87,9 +87,10 @@ public trait DirtyCheckable {
      * @return A list of the dirty property names
      */
     List<String> listDirtyPropertyNames() {
+        def className = getClass().name
         if($changedProperties != null) {
             return Collections.unmodifiableList(
-                $changedProperties.keySet().findAll { String n -> n != getClass().name }.toList()
+                $changedProperties.keySet().findAll { String propertyName -> propertyName != className }.toList()
             )
         }
         return Collections.emptyList()
