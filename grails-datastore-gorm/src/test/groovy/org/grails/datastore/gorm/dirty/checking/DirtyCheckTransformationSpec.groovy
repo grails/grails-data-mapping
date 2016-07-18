@@ -213,6 +213,23 @@ class FundProduct {
             b.hasChanged()
             b.hasChanged("age")
     }
+
+    @Issue("https://github.com/grails/grails-data-mapping/issues/744")
+    void "Test that listDirtyPropertyNames does not include the entity name"() {
+        when: "A new book is created"
+            def book = new Book(title: "Book Title", releaseDate: new Date())
+            book.trackChanges()
+        then:"The object has no changes"
+            !book.hasChanged()
+        when: "The title is updated"
+            book.title = "Title (Edited)"
+            book.markDirty()
+        then: "The listDirtyPropertyNames should not include the class name"
+            book.hasChanged()
+            book.hasChanged("title")
+            !(book.class.name in book.listDirtyPropertyNames())
+            book.listDirtyPropertyNames().size() == 1
+    }
 }
 
 @DirtyCheck
