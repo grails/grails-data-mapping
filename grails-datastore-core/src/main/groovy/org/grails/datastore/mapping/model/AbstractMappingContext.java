@@ -175,8 +175,15 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
             this.proxyFactory = factory;
         }
     }
+
+    @Override
     public void setValidatorRegistry(ValidatorRegistry validatorRegistry) {
         this.validatorRegistry = validatorRegistry;
+    }
+
+    @Override
+    public ValidatorRegistry getValidatorRegistry() {
+        return validatorRegistry;
     }
 
     private static class DefaultProxyFactoryCreator {

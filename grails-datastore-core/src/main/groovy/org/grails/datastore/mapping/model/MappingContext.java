@@ -20,6 +20,7 @@ import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.datastore.mapping.reflect.EntityReflector;
+import org.grails.datastore.mapping.validation.ValidatorRegistry;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
@@ -136,6 +137,18 @@ public interface MappingContext {
      * @param validator The validator
      */
     void addEntityValidator(PersistentEntity entity, Validator validator);
+
+    /**
+     * Sets the validator registry used by this mapping context
+     *
+     * @param validatorRegistry The validator registry
+     */
+    void setValidatorRegistry(ValidatorRegistry validatorRegistry);
+
+    /**
+     * @return Gets the validation registry used by this MappingContext
+     */
+    ValidatorRegistry getValidatorRegistry();
 
     /**
      * Add a converter used to convert property values to and from the datastore
