@@ -611,6 +611,12 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_constraints_and_database_mapping">12.4. Constraints and Database Mapping</a></li>
 </ul>
 </li>
+<li><a href="#testing">13. GORM and Testing</a>
+<ul class="sectlevel2">
+<li><a href="#_unit_testing_with_spock">13.1. Unit Testing with Spock</a></li>
+<li><a href="#_unit_testing_with_junit">13.2. Unit Testing with JUnit</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -7559,6 +7565,235 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 <pre class="CodeRay highlight"><code data-lang="groovy">someFloatValue DECIMAL(<span class="integer">8</span>, <span class="integer">2</span>) <span class="comment">// precision = digits in min + default scale</span></code></pre>
 </div>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="testing">13. GORM and Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In previous versions of GORM it was much more difficult to setup a unit test to test your GORM logic.</p>
+</div>
+<div class="paragraph">
+<p>However, since GORM 6.0, this situation has changed and it is relatively trivial to setup GORM for testing.</p>
+</div>
+<div class="sect2">
+<h3 id="_unit_testing_with_spock">13.1. Unit Testing with Spock</h3>
+<div class="paragraph">
+<p><a href="http://docs.spockframework.org">Spock</a> is the recommended tool for writing unit tests with GORM and is trivial to setup.</p>
+</div>
+<div class="sect3">
+<h4 id="_gorm_with_hibernate_and_spock_basics">13.1.1. GORM with Hibernate and Spock Basics</h4>
+<div class="paragraph">
+<p>The following is an example Spock unit test:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">spock.lang.*</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.annotation.Entity</span>
+<span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
+
+<span class="type">class</span> <span class="class">ExampleSpec</span> <span class="directive">extends</span> Specification { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Shared</span> <span class="annotation">@AutoCleanup</span> HibernateDatastore hibernateDatastore <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="type">void</span> setupSpec() {
+       hibernateDatastore = <span class="keyword">new</span> HibernateDatastore(Person) <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test something</span><span class="delimiter">&quot;</span></span>() { <i class="conum" data-value="4"></i><b>(4)</b>
+       <span class="comment">// your logic here</span>
+    }
+}
+
+<span class="annotation">@Entity</span> <i class="conum" data-value="5"></i><b>(5)</b>
+<span class="type">class</span> <span class="class">Person</span> {
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The test should extend <code>spock.lang.Specification</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>Shared</code> annotation is used to indicate to Spock that the <code>HibernateDatastore</code> is shared across all tests. The <code>AutoCleanup</code> annotation makes sure that <code>HibernateDatastore</code> is shutdown when all tests finish executing.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Within the <code>setupSpec</code> method a new <code>HibernateDatastore</code> is constructed with the classes to use as the argument to the constructor.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>You then write your test logic within each method</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>You can inline domain classes within the unit test if you annotate them with <code>@Entity</code></td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_spock_and_transactions">13.1.2. Spock and Transactions</h4>
+<div class="paragraph">
+<p>Note that in general you have to wrap your test execution logic in a session or transaction. The easiet way to do this is with <code>grails.transaction.Transactional</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">...
+import grails.transaction.Rollback
+<span class="keyword">import</span> <span class="include">org.springframework.transaction.PlatformTransactionManager</span>
+
+<span class="type">class</span> <span class="class">ExampleSpec</span> <span class="directive">extends</span> Specification {
+
+    <span class="annotation">@Shared</span> <span class="annotation">@AutoCleanup</span> HibernateDatastore hibernateDatastore
+    <span class="annotation">@Shared</span> PlatformTransactionManager transactionManager <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="type">void</span> setupSpec() {
+        hibernateDatastore = <span class="keyword">new</span> HibernateDatastore(Person)
+        transactionManager = hibernateDatastore.getTransactionManager() <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+    <span class="annotation">@Transactional</span> <i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="keyword">def</span> <span class="function">setup</span>() {
+        <span class="keyword">new</span> Person(<span class="key">firstName</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>).save()
+    }
+
+    <span class="annotation">@Rollback</span> <i class="conum" data-value="4"></i><b>(4)</b>
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test execute GORM standalone in a unit test</span><span class="delimiter">&quot;</span></span>() {
+        <span class="comment">// your logic here</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>PlatformTransactionManager</code> is defined as a <code>Shared</code> field</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>You can obtain the <code>PlatformTransactionManager</code> from the <code>HibernateDatastore</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>Transactional</code> annotation is used to setup test data</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <code>Rollback</code> annotation is used to rollback any changes made within each test</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In the example above, each test method is wrapped in a transaction that rolls back any changes using the <code>grails.transaction.Rollback</code> method.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you want to setup some test data within the <code>setupSpec</code> method that is shared across all tests then you can use <code>withTransaction</code>:
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">...
+void setupSpec() {
+    hibernateDatastore = <span class="keyword">new</span> HibernateDatastore(Person)
+    ...
+    Person.withTransaction {
+        <span class="keyword">new</span> Person(<span class="key">firstName</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>).save()
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_configuring_gorm_in_spock">13.1.3. Configuring GORM in Spock</h4>
+<div class="paragraph">
+<p>If you need to configure GORM within a Spock unit test you can pass a map to the constructor of <code>HibernateDatastore</code>. For example to setup multi-tenancy:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">...
+void setupSpec() {
+    <span class="predefined-type">Map</span> configuration = [
+        <span class="string"><span class="delimiter">'</span><span class="content">grails.gorm.multiTenancy.mode</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">DISCRIMINATOR</span><span class="delimiter">'</span></span>,
+        <span class="string"><span class="delimiter">'</span><span class="content">grails.gorm.multiTenancy.tenantResolverClass</span><span class="delimiter">'</span></span>:SystemPropertyTenantResolver
+    ]
+    hibernateDatastore = <span class="keyword">new</span> HibernateDatastore(configuration, Person)
+    ...
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_unit_testing_with_junit">13.2. Unit Testing with JUnit</h3>
+<div class="paragraph">
+<p>To unit test with <a href="http://junit.org/junit4">JUnit</a> it is largely similar to Spock, just following different idioms.</p>
+</div>
+<div class="paragraph">
+<p>So instead of <code>setupSpec</code> use <code>@BeforeClass</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.junit.*</span>
+<span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
+<span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
+<span class="keyword">import</span> <span class="include">org.springframework.transaction.PlatformTransactionManager</span>
+
+<span class="type">class</span> <span class="class">ExampleTest</span>  {
+
+    <span class="directive">static</span> HibernateDatastore hibernateDatastore
+
+    PlatformTransactionManager transactionManager
+
+    <span class="annotation">@BeforeClass</span>
+    <span class="type">void</span> setupGorm() {
+       hibernateDatastore = <span class="keyword">new</span> HibernateDatastore(Person)
+    }
+
+    <span class="annotation">@AfterClass</span>
+    <span class="type">void</span> shutdownGorm() {
+       hibernateDatastore.close()
+    }
+
+    <span class="annotation">@Before</span>
+    <span class="type">void</span> setup() {
+        transactionManager = hibernateDatastore.getTransactionManager()
+    }
+
+    <span class="annotation">@Rollback</span>
+    <span class="annotation">@Test</span>
+    <span class="type">void</span> testSomething() {
+       <span class="comment">// your logic here</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+JUnit doesn&#8217;t have anything like Spock&#8217;s <code>AutoCleanup</code> so you must call <code>close()</code> on the <code>HibernateDatastore</code> manually!
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
