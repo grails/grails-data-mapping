@@ -442,12 +442,11 @@ class Person {
 </div>
 </div>
 <div class="paragraph">
-<p>Then you need to place the bootstrap logic somewhere in the loading sequence of your application which uses <code>MongoDbDataStoreSpringInitializer</code>:</p>
+<p>Then you need to place the bootstrap logic somewhere in the loading sequence of your application which uses <code>MongoDatastore</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">def initializer = new MongoDbDataStoreSpringInitializer(Person)
-def applicationContext = initializer.configure()
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def datastore = new MongoDatastore(Person)
 
 println Person.count()</code></pre>
 </div>
@@ -457,14 +456,13 @@ println Person.count()</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">def initializer = new MongoDbDataStoreSpringInitializer(['grails.mongodb.url':'http://myserver'], Person)
-def applicationContext = initializer.configure()
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def initializer = new MongoDatastore(['grails.mongodb.url':'http://myserver'], Person)
 
 println Person.count()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:</p>
+<p>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>MongoDbDataStoreSpringInitializer.configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:</p>
 </div>
 <div class="listingblock">
 <div class="content">

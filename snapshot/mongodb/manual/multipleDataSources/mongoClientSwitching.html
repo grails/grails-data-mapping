@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Purpose</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -418,39 +418,22 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_examples">Examples</a></li>
-<li><a href="#_description">Description</a></li>
-</ul>
-</div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Allows switching which collection to use to persist for the domain class for the scope of the given closure</p>
+<p>You can switch to a different connection at runtime with the <code>withConnection</code> method:</p>
 </div>
-</div>
-<div class="sect4">
-<h5 id="_examples">Examples</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.withCollection("non-fiction") {
-    // code here
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.withConnection("moreBooks") {
+    Book.list()
 }</code></pre>
 </div>
 </div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
 <div class="paragraph">
-<p>The <code>useCollection</code> method allows switching, at runtime, the collection used persist and retrieve domain classes. The <code>collectionName</code> property will return the current collection being used. Note that the method switches the collection used for the scope of given closure (ie. it is not permanent). If you wish to permanently change the collection used then you need to configure the mapping of the domain class.</p>
-</div>
+<p>Any logic executed within the body of the closure will use the alternate connection. Once the close finishes execution GORM will switch back to the default connection automatically.</p>
 </div>
 </div>
 <div id="footer">

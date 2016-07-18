@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>collection</title>
+<title>Purpose</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,7 +423,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel4">
-<li><a href="#_collection">collection</a></li>
 <li><a href="#_purpose">Purpose</a></li>
 <li><a href="#_examples">Examples</a></li>
 <li><a href="#_description">Description</a></li>
@@ -432,27 +431,23 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="sect4">
-<h5 id="_collection">collection</h5>
-
-</div>
-<div class="sect4">
 <h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Returns the MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html">collection</a> used for the current domain class</p>
+<p>Returns the MongoDB <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoCollection.html">collection</a> used for the current domain class</p>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_examples">Examples</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">def bookBson = Book.collection.findOne()</code></pre>
+<pre class="highlight"><code class="language-java" data-lang="java">def bookBson = Book.collection.find().first()</code></pre>
 </div>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_description">Description</h5>
 <div class="paragraph">
-<p>The <code>collection</code> property allows access to the underlying MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html">DBCollection</a> object, thus allowing direct access to the low-level MongoDB driver.</p>
+<p>The <code>collection</code> property allows access to the underlying MongoDB <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoCollection.html">MongoCollection</a> object, thus allowing direct access to the low-level MongoDB driver.</p>
 </div>
 </div>
 </div>

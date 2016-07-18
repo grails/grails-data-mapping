@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Purpose</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -418,39 +418,28 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_examples">Examples</a></li>
-<li><a href="#_description">Description</a></li>
-</ul>
-</div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Allows switching which collection to use to persist for the domain class for the scope of the given closure</p>
+<p>To configure multiple Mongo client connections you need to use the <code>grails.mongodb.connections</code> setting. For example in <code>application.yml</code>:</p>
 </div>
-</div>
-<div class="sect4">
-<h5 id="_examples">Examples</h5>
 <div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.withCollection("non-fiction") {
-    // code here
-}</code></pre>
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    mongodb:
+        url: mongodb://localhost/books
+        connections:
+            moreBooks:
+                url: mongodb://localhost/moreBooks
+            evenMoreBooks:
+                url: mongodb://localhost/moreBooks</code></pre>
 </div>
 </div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
 <div class="paragraph">
-<p>The <code>useCollection</code> method allows switching, at runtime, the collection used persist and retrieve domain classes. The <code>collectionName</code> property will return the current collection being used. Note that the method switches the collection used for the scope of given closure (ie. it is not permanent). If you wish to permanently change the collection used then you need to configure the mapping of the domain class.</p>
-</div>
+<p>You can configure individual settings for each Mongo client. If a setting is not specified by default the setting is inherited from the default Mongo client.</p>
 </div>
 </div>
 <div id="footer">

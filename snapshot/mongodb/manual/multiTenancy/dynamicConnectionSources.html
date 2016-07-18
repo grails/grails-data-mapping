@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Purpose</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -418,39 +418,59 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_examples">Examples</a></li>
-<li><a href="#_description">Description</a></li>
-</ul>
-</div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Allows switching which collection to use to persist for the domain class for the scope of the given closure</p>
+<p>If you are using a multi-tenancy mode of <code>DATABASE</code> then by default the expectation is that all tenants are configured in your <code>application.yml</code> file.</p>
 </div>
+<div class="paragraph">
+<p>However, it is possible read your Mongo client connection sources dynamically using <a href="../api/org/grails/datastore/mapping/mongo/connections/MongoConnectionSources.html">MongoConnectionSources</a>.</p>
 </div>
-<div class="sect4">
-<h5 id="_examples">Examples</h5>
+<div class="paragraph">
+<p>The <code>MongoConnectionSources</code> class will read the mongo client configurations from a Mongo collection called <code>mongo.connections</code> by default. To configure it you must specify the <code>connectionSourcesClass</code> in <code>application.yml</code>:</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.withCollection("non-fiction") {
-    // code here
-}</code></pre>
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    mongodb:
+        multiTenancy:
+            mode: DATABASE
+        connectionSourcesClass: org.grails.datastore.mapping.mongo.connections.MongoConnectionSources
+        connectionsCollection: "myconnections"
+...</code></pre>
 </div>
 </div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
 <div class="paragraph">
-<p>The <code>useCollection</code> method allows switching, at runtime, the collection used persist and retrieve domain classes. The <code>collectionName</code> property will return the current collection being used. Note that the method switches the collection used for the scope of given closure (ie. it is not permanent). If you wish to permanently change the collection used then you need to configure the mapping of the domain class.</p>
+<p>You can then even add new connections at runtime using the <code>ConnectionSources</code> API:</p>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.multitenancy.*
+
+@Autowired MongoDatastore mongoDatastore
+...
+def configuration = [url:"mongodb://localhost/moreBooks"]
+MongoClient mongoClient =
+        mongoDatastore.connectionSources
+					  .addConnectionSource("moreBooks", configuration)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All new connection sources will be stored within the specified <code>connectionsCollection</code> and if the application is restarted will read from the <code>connectionsCollection</code>.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+GORM for MongoDB does not implement provisioning of new MongoDB instances at runtime. This is something that would need to be implemented by a cloud services provider for example.
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div id="footer">
