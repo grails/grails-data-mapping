@@ -289,23 +289,33 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/validation/ValidatorRegistry.html'>ValidatorRegistry</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getValidatorRegistry()">getValidatorRegistry</a></strong>()</code><br>@return Gets the validation registry used by this MappingContext</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isInInheritanceHierarchy(org.grails.datastore.mapping.model.PersistentEntity)">isInInheritanceHierarchy</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br>Returns true if the given entity is in an inheritance hierarchy</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isPersistentEntity(java.lang.Class)">isPersistentEntity</a></strong>(java.lang.Class type)</code><br>Returns whether the specified class is a persistent entity</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isPersistentEntity(java.lang.Object)">isPersistentEntity</a></strong>(java.lang.Object value)</code><br>Returns whether the specified value is a persistent entity</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setProxyFactory(org.grails.datastore.mapping.proxy.ProxyFactory)">setProxyFactory</a></strong>(<a href='../../../../../org/grails/datastore/mapping/proxy/ProxyFactory.html'>ProxyFactory</a> factory)</code><br>Factory to use for creating proxies</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#setValidatorRegistry(org.grails.datastore.mapping.validation.ValidatorRegistry)">setValidatorRegistry</a></strong>(<a href='../../../../../org/grails/datastore/mapping/validation/ValidatorRegistry.html'>ValidatorRegistry</a> validatorRegistry)</code><br>Sets the validator registry used by this mapping context</td>
                         </tr>
                         
                     </table>
@@ -548,6 +558,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="getValidatorRegistry()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/validation/ValidatorRegistry.html'>ValidatorRegistry</a> <strong>getValidatorRegistry</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Gets the validation registry used by this MappingContext</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="isInInheritanceHierarchy(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -581,6 +600,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>public&nbsp;void <strong>setProxyFactory</strong>(<a href='../../../../../org/grails/datastore/mapping/proxy/ProxyFactory.html'>ProxyFactory</a> factory)</h4>
                                 <p> Factory to use for creating proxies
      <DL><DT><B>Parameters:</B></DT><DD><code>factory</code> -  The proxy factory</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="setValidatorRegistry(org.grails.datastore.mapping.validation.ValidatorRegistry)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;void <strong>setValidatorRegistry</strong>(<a href='../../../../../org/grails/datastore/mapping/validation/ValidatorRegistry.html'>ValidatorRegistry</a> validatorRegistry)</h4>
+                                <p> Sets the validator registry used by this mapping context
+     <DL><DT><B>Parameters:</B></DT><DD><code>validatorRegistry</code> -  The validator registry</DD></DL></p>
                             </li>
                         </ul>
                     

@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
 <meta name="author" content="Graeme Rocher">
-<title>What&#8217;s new in GORM 6?</title>
+<title>What&#8217;s New in GORM 6?</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -512,7 +512,7 @@ table.CodeRay td.code>pre{padding:0}
 </head>
 <body class="article">
 <div id="header">
-<h1>What&#8217;s new in GORM 6?</h1>
+<h1>What&#8217;s New in GORM 6?</h1>
 <div class="details">
 <span id="author" class="author">Graeme Rocher</span><br>
 <span id="email" class="email"><a href="mailto:graeme.rocher@gmail.com">graeme.rocher@gmail.com</a></span><br>
@@ -520,18 +520,18 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_introduction">1. Introduction</h2>
+<h2 id="_introduction">Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>GORM 6 is a major new release of the GORM toolkit. This guide will take you through the changes and new features in GORM.</p>
 </div>
 <div class="sect2">
-<h3 id="_spring_container_free_bootstrapping">1.1. Spring Container-free Bootstrapping</h3>
+<h3 id="_spring_container_free_bootstrapping">Spring Container-free Bootstrapping</h3>
 <div class="paragraph">
 <p>Previous versions of GORM relied on the Spring container to load and configure GORM. As of GORM 6 the Spring container is no longer required to use GORM. You can trivially load GORM using the constructor of each implementation.</p>
 </div>
 <div class="paragraph">
-<p>For example for given the following GORM entity:</p>
+<p>For example given the following GORM entity:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -544,7 +544,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="paragraph">
-<p>To configure Hibernate you can do:</p>
+<p>To load GORM for Hibernate you can do:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -556,7 +556,7 @@ println Person.count()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>To configure Neo4j:</p>
+<p>To load GORM for Neo4j:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -568,7 +568,7 @@ println Person.count()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>To configure MongoDB:</p>
+<p>To load GORM for MongoDB:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -584,7 +584,7 @@ println Person.count()</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_improved_unit_testing">1.2. Improved Unit Testing</h3>
+<h3 id="_improved_unit_testing">Improved Unit Testing</h3>
 <div class="paragraph">
 <p>Thanks to the improvements around bootstrapping and dropping of the requirement for a Spring container it is much easier to unit test GORM without requiring special framework support.</p>
 </div>
@@ -618,7 +618,7 @@ println Person.count()</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_unified_configuration_model">1.3. Unified Configuration Model</h3>
+<h3 id="_unified_configuration_model">Unified Configuration Model</h3>
 <div class="paragraph">
 <p>In previous versions of GORM each implementation was responsible for implementing the reading of configuration separately. In GORM 6 a new unified configuration model has been introduced to reduce inconsistencies.</p>
 </div>
@@ -637,7 +637,7 @@ HibernateConnectionSourceSettings settings =
 </div>
 </div>
 <div class="sect2">
-<h3 id="_new_connectionsources_api">1.4. New ConnectionSources API</h3>
+<h3 id="_new_connectionsources_api">New ConnectionSources API</h3>
 <div class="paragraph">
 <p>The logic for setting up multiple data sources was previously hardcoded within the Hibernate plugin. This has been abstracted out into the new <a href="../../hibernate/api/org/grails/datastore/mapping/core/connections/ConnectionSources.html">ConnectionSources</a> API which operates in conjuction with the aforementioned configuration API to provide a consistent implementation across all GORM implementations.</p>
 </div>
@@ -685,9 +685,9 @@ HibernateConnectionSourceSettings settings =
 </div>
 </div>
 <div class="sect2">
-<h3 id="_multiple_data_sources_support_in_mongodb_and_neo4j">1.5. Multiple Data Sources support in MongoDB and Neo4j</h3>
+<h3 id="_multiple_data_sources_support_in_mongodb_and_neo4j">Multiple Data Sources support in MongoDB and Neo4j</h3>
 <div class="paragraph">
-<p>GORM for Hibernate has had support multiple data sources for while now.</p>
+<p>GORM for Hibernate has had support for multiple data sources for while now, however this feature was missing in other GORM implementations.</p>
 </div>
 <div class="paragraph">
 <p>Building on the <code>ConnectionSources</code> API multiple data sources support has been implemented in MongoDB and Neo4j. For example for MongoDB:</p>
@@ -706,7 +706,7 @@ HibernateConnectionSourceSettings settings =
 </div>
 </div>
 <div class="paragraph">
-<p>You can then switch to a different connection at runtime with <code>withConnection</code>:</p>
+<p>You can then switch to a different connection at runtime with the <code>withConnection</code> method:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -750,7 +750,7 @@ HibernateConnectionSourceSettings settings =
 </div>
 </div>
 <div class="sect2">
-<h3 id="_multi_tenancy_support">1.6. Multi-Tenancy Support</h3>
+<h3 id="_multi_tenancy_support">Multi-Tenancy Support</h3>
 <div class="paragraph">
 <p>Support for <a href="../../hibernate/manual/index.html#multiTenancy">Multi-Tenancy</a> has been added for GORM for Hibernate, MongoDB and Neo4j.</p>
 </div>
@@ -775,16 +775,16 @@ HibernateConnectionSourceSettings settings =
 </div>
 </div>
 <div class="sect2">
-<h3 id="_gorm_for_neo4j_3_x_bolt_driver">1.7. GORM for Neo4j 3.x Bolt Driver</h3>
+<h3 id="_gorm_for_neo4j_3_x_bolt_driver">GORM for Neo4j 3.x Bolt Driver</h3>
 <div class="paragraph">
-<p>GORM for Neo4j has been upgraded to Neo4j 3.x and the Bolt Java driver. Bolt is a high performance binary protocol for the Neo4j graph and means that GORM for Neo4j is now better suited for applications that require Neo4j to be running in server mode (as oppose to embedded).</p>
+<p>GORM for Neo4j has been upgraded to Neo4j 3.x and the Bolt Java driver. Bolt is a high performance binary protocol for the Neo4j graph, which means that GORM for Neo4j is now better suited for applications that require Neo4j to be running in server mode (as opposed to embedded).</p>
 </div>
 <div class="paragraph">
 <p>See the <a href="../../neo4j/manual/index.html">GORM for Neo4j</a> documentation for more information about GORM and Neo4j 3.x Bolt.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_rxgorm_gorm_for_rxjava">1.8. RxGORM - GORM for RxJava</h3>
+<h3 id="_rxgorm_gorm_for_rxjava">RxGORM - GORM for RxJava</h3>
 <div class="paragraph">
 <p>A new GORM API called RxGORM has been implemented that rethinks how object mapping libraries can be written for Reactive applications.</p>
 </div>
@@ -792,11 +792,11 @@ HibernateConnectionSourceSettings settings =
 <p>RxGORM builds on the hugely popular (and pretty much industry standard), RxJava framework to provide a reactive, stateless, non-blocking implementation of GORM.</p>
 </div>
 <div class="paragraph">
-<p>The initial release of RxGORM includes two backend implementations. RxGORM for MongoDB and RxGORM for REST.</p>
+<p>The initial release of RxGORM includes two backend implementations. RxGORM for MongoDB and RxGORM for REST, with more planned for the future.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_rxgorm_for_mongodb">1.9. RxGORM for MongoDB</h3>
+<h3 id="_rxgorm_for_mongodb">RxGORM for MongoDB</h3>
 <div class="paragraph">
 <p><a href="../../rx/manual/index.html">RxGORM for MongoDB</a> builds on the MongoDB Rx driver and provides a non-blocking RxGORM API for MongoDB.</p>
 </div>
@@ -805,7 +805,7 @@ HibernateConnectionSourceSettings settings =
 </div>
 </div>
 <div class="sect2">
-<h3 id="_rxgorm_for_rest">1.10. RxGORM for REST</h3>
+<h3 id="_rxgorm_for_rest">RxGORM for REST</h3>
 <div class="paragraph">
 <p><a href="../../rx/rest-client/index.html">RxGORM for REST</a> builds on RxNetty and provides an advanced REST client for communicating with backend REST applications.</p>
 </div>
@@ -824,7 +824,7 @@ HibernateConnectionSourceSettings settings =
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-07-18 10:12:08 UTC
+Last updated 2016-07-18 13:32:14 UTC
 </div>
 </div>
 </body>
