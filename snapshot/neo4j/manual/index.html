@@ -550,6 +550,19 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#indexing">Defining the Query Index</a></li>
 </ul>
 </li>
+<li><a href="#multipleDataSources">Multiple Data Sources</a>
+<ul class="sectlevel2">
+<li><a href="#_configuring_multiple_bolt_drivers">Configuring Multiple Bolt Drivers</a></li>
+<li><a href="#_mapping_domain_classes_to_bolt_drivers">Mapping Domain Classes to Bolt Drivers</a></li>
+<li><a href="#_switching_between_bolt_drivers">Switching between Bolt Drivers</a></li>
+</ul>
+</li>
+<li><a href="#multiTenancy">Multi-Tenancy</a>
+<ul class="sectlevel2">
+<li><a href="#_configuring_multi_tenancy">Configuring Multi Tenancy</a></li>
+<li><a href="#_multi_tenancy_modes">Multi Tenancy Modes</a></li>
+</ul>
+</li>
 <li><a href="#neo4jEnhancements">Enhancements to Neo4j Java Driver API</a>
 <ul class="sectlevel3">
 <li><a href="#_getting_properties_from_nodes">Getting Properties from Nodes</a></li>
@@ -599,7 +612,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="compatibility">Compatibility with GORM for Hibernate</h3>
 <div class="paragraph">
-<p>This implementation tries to be as compatible as possible with GORM for Hibernate. In general you can refer to the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html">GORM documentation</a> and the "Domain Classes" section of the <a href="http://grails.org/doc/latest/">reference guide</a> (see the left nav) for usage information.</p>
+<p>This implementation tries to be as compatible as possible with GORM for Hibernate. In general you can refer to the <a href="../../hibernate">GORM for Hibernate documentation</a> as the majority of features are implemented across both.</p>
 </div>
 <div class="paragraph">
 <p>The following key features are supported by GORM for Neo4j:</p>
@@ -666,6 +679,12 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li>
 <p>Rewritten for Neo4j Bolt Java Driver</p>
+</li>
+<li>
+<p>Support for Multiple Data Sources (Connections)</p>
+</li>
+<li>
+<p>Multi Tenancy support for DATABASE and DISCRIMINATOR approaches</p>
 </li>
 <li>
 <p>Refactored Bootstrapping</p>
@@ -783,15 +802,67 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div class="sect3">
 <h4 id="_configuration_changes">Configuration Changes</h4>
-
+<div class="paragraph">
+<p>Since the plugin now uses the Neo4j Bolt driver the configuration has been altered.</p>
+</div>
+<div class="paragraph">
+<p>The <code>grails.neo4j.options</code> setting no longer configures the Neo4j embedded options, but instead configures the Bolt driver options.</p>
+</div>
+<div class="paragraph">
+<p>If you want to continue to configure Neo4j in embedded mode you must use <code>grails.neo4j.embedded.options</code>.</p>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_bolt_java_driver_and_api_changes">Bolt Java Driver and API Changes</h4>
-
+<div class="paragraph">
+<p>The API has changed to accommodate the Neo4j Bolt driver and all references to the Neo4j server itself have been removed.</p>
+</div>
+<div class="paragraph">
+<p>Therefore you need to replace the usages of the following interfaces with their bolt equivalents:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Neo4j Class</th>
+<th class="tableblock halign-left valign-top">Bolt Driver Replacement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.GraphDatabaseService</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.Driver</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.Transaction</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.Transaction</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.Node</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.types.Node</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.Relationship</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.types.Relationship</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.Result</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.StatementResult</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>There may be other classes that you need to replace references too. Generally the <code>org.neo4j.graphdb</code> package is considered the server-side API and only the <code>org.neo4j.driver.v1</code> package should be used in applications.</p>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_general_neo4j_3_x_changes">General Neo4j 3.x Changes</h4>
-
+<div class="paragraph">
+<p>Since GORM for Neo4j 6.0.0.BUILD-SNAPSHOT is based on Neo4j 3.x, if you are upgrading from Neo4j 2.x there will be other changes related to Neo4j 3 that you may need to make. These are described in the <a href="https://neo4j.com/guides/upgrade/">upgrade guide</a> on the Neo4j website.</p>
+</div>
 </div>
 </div>
 </div>
@@ -1564,6 +1635,279 @@ List&lt;Club&gt; clubs = result.toList(Club)</code></pre>
         name <span class="key">unique</span>:<span class="predefined-constant">true</span>
     }
 }</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="multipleDataSources">Multiple Data Sources</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>GORM for Neo4j supports the notion of multiple data sources where multiple individual Bolt <code>Driver</code> instances can be configured and switched between.</p>
+</div>
+<div class="sect2">
+<h3 id="_configuring_multiple_bolt_drivers">Configuring Multiple Bolt Drivers</h3>
+<div class="paragraph">
+<p>To configure multiple Bolt <code>Driver</code> connections you need to use the <code>grails.neo4j.connections</code> setting. For example in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">neo4j</span>:
+        <span class="key">url</span>: <span class="string"><span class="content">bolt://localhost:7687</span></span>
+        <span class="key">connections</span>:
+            <span class="key">moreBooks</span>:
+                <span class="key">url</span>: <span class="string"><span class="content">bolt://localhost:7688</span></span>
+            <span class="key">evenMoreBooks</span>:
+                <span class="key">url</span>: <span class="string"><span class="content">bolt://localhost:7689</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can configure individual settings for each Bolt driver. If a setting is not specified by default the setting is inherited from the default Neo4j driver.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_mapping_domain_classes_to_bolt_drivers">Mapping Domain Classes to Bolt Drivers</h3>
+<div class="paragraph">
+<p>If a domain class has no specified Neo4j driver connection configuration then the default is used.</p>
+</div>
+<div class="paragraph">
+<p>You can set the <code>connection</code> method in the <code>mapping</code> block to configure an alternate Neo4j Driver.</p>
+</div>
+<div class="paragraph">
+<p>For example, if you want to use the <code>ZipCode</code> domain to use a Neo4j Driver connection called <code>'lookup'</code>, configure it like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">ZipCode</span> {
+
+   <span class="predefined-type">String</span> code
+
+   <span class="directive">static</span> mapping = {
+      connection <span class="string"><span class="delimiter">'</span><span class="content">lookup</span><span class="delimiter">'</span></span>
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A domain class can also use two or more configured Neo4j Driver connections by using the <code>connections</code> method with a list of names to configure more than one, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">ZipCode</span> {
+
+   <span class="predefined-type">String</span> code
+
+   <span class="directive">static</span> mapping = {
+      connections([<span class="string"><span class="delimiter">'</span><span class="content">lookup</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">auditing</span><span class="delimiter">'</span></span>])
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a domain class uses the default connection and one or more others, you can use the <code>ConnectionSource.DEFAULT</code> constant to indicate that:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.core.connections.*</span>
+
+<span class="type">class</span> <span class="class">ZipCode</span> {
+
+   <span class="predefined-type">String</span> code
+
+   <span class="directive">static</span> mapping = {
+      connections([<span class="string"><span class="delimiter">'</span><span class="content">lookup</span><span class="delimiter">'</span></span>, ConnectionSource.DEFAULT])
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a domain class uses all configured <code>DataSource</code> instances use the value <code>ALL</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.core.connections.*</span>
+
+<span class="type">class</span> <span class="class">ZipCode</span> {
+
+   <span class="predefined-type">String</span> code
+
+   <span class="directive">static</span> mapping = {
+      connection ConnectionSource.ALL
+   }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_switching_between_bolt_drivers">Switching between Bolt Drivers</h3>
+<div class="paragraph">
+<p>You can switch to a different connection at runtime with the <code>withConnection</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.withConnection(<span class="string"><span class="delimiter">&quot;</span><span class="content">moreBooks</span><span class="delimiter">&quot;</span></span>) {
+    <span class="predefined-type">Book</span>.list()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Any logic executed within the body of the closure will use the alternate connection. Once the close finishes execution GORM will switch back to the default connection automatically.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="multiTenancy">Multi-Tenancy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>GORM for Neo4j supports the following multi-tenancy modes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>DATABASE</code> - A separate database with a separate connection pool is used to store each tenants data.</p>
+</li>
+<li>
+<p><code>DISCRIMINATOR</code> - The same database is used with a discriminator used to partition and isolate data.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_configuring_multi_tenancy">Configuring Multi Tenancy</h3>
+<div class="paragraph">
+<p>You can configure Multi-Tenancy the same way described in the <a href="../../hibernate/manual/index.html#multiTenancy">GORM for Hibernate documenation</a>, simply specify a multi tenancy mode and resolver:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">multiTenancy</span>:
+            <span class="key">mode</span>: <span class="string"><span class="content">DATABASE</span></span>
+            <span class="key">tenantResolverClass</span>: <span class="string"><span class="content">org.grails.datastore.mapping.multitenancy.web.SubDomainTenantResolver</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that if you are using Neo4j and Hibernate together the above configuration will configure both Neo4j <strong>and</strong> Hibernate to use a multi-tenancy mode of <code>DATABASE</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you only want to enable multi-tenancy for Neo4j only you can use the following configuration instead:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">neo4j</span>:
+        <span class="key">multiTenancy</span>:
+            <span class="key">mode</span>: <span class="string"><span class="content">DATABASE</span></span>
+            <span class="key">tenantResolverClass</span>: <span class="string"><span class="content">org.grails.datastore.mapping.multitenancy.web.SubDomainTenantResolver</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_multi_tenancy_modes">Multi Tenancy Modes</h3>
+<div class="paragraph">
+<p>As mentioned previously, GORM for Neo4j supports the <code>DATABASE</code> and <code>DISCRIMINATOR</code> however there are some considerations to keep in mind.</p>
+</div>
+<div class="sect3">
+<h4 id="_database_per_tenant">Database Per Tenant</h4>
+<div class="paragraph">
+<p>When using the <code>DATABASE</code> mode, only GORM methods calls are dispatched to the correct tenant. This means the following will use the tenant id:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// switches to the correct client based on the tenant id</span>
+<span class="predefined-type">Book</span>.list()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, going directly through the <code>Driver</code> will not work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Autowired</span> <span class="predefined-type">Driver</span> boltDriver
+
+<span class="comment">// uses the default connection and doesn't resolve the tenant it</span>
+boltDriver.session().run(<span class="string"><span class="delimiter">&quot;</span><span class="content">..</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are working directly with the <code>Driver</code> instance you need to make sure you obtain the correct instance. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.*</span>
+
+<span class="annotation">@Autowired</span> Neo4jDatastore neo4jDatastore
+...
+Driver boltDriver =
+        neo4jDatastore.getDatastoreForTenantId(Tenants.currentId())
+                      .getBoltDriver()</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_partitioned_multi_tenancy">Partitioned Multi-Tenancy</h4>
+<div class="paragraph">
+<p>When using the <code>DISCRIMINATOR</code> approach, GORM for Neo4j will store a <code>tenantId</code> attribute in each Neo4j node and attempt to partition the data.</p>
+</div>
+<div class="paragraph">
+<p>Once again this works only when using GORM methods and even then there are cases where it will not work if you use native Neo4j interfaces.</p>
+</div>
+<div class="paragraph">
+<p>For example the following works fine:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// correctly includes the `tenantId` in the query</span>
+<span class="predefined-type">Book</span>.list()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As does this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// works automatically if you include the tenantId in the query</span>
+<span class="predefined-type">Book</span>.find(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH (p:Book) WHERE p.title={title} AND p.publisher={tenantId} RETURN p</span><span class="delimiter">&quot;</span></span>, [<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>]<span class="string"><span class="delimiter">&quot;</span><span class="content">)</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>But this query with throw an exception due to a missing tenant id:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.find(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH (p:Book) WHERE p.title={title} RETURN p</span><span class="delimiter">&quot;</span></span>, [<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also if you obtain the driver directly the the tenant id will not be included in the query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Autowired</span> <span class="predefined-type">Driver</span> boltDriver
+
+<span class="comment">// uses the default connection and doesn't resolve the tenant it</span>
+boltDriver.session()
+          .run(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH (p:Book) WHERE p.title={title} RETURN p</span><span class="delimiter">&quot;</span></span>, [<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>]<span class="string"><span class="delimiter">&quot;</span><span class="content">)</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since you are operating directly on the Driver cannot know when you perform a query that should be multi-tenant aware.</p>
+</div>
+<div class="paragraph">
+<p>In this case you will have to ensure to include the <code>tenantId</code> manually:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">boltDriver.session()
+          .run(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH (p:Book) WHERE p.title={title} AND p.publisher={tenantId} RETURN p</span><span class="delimiter">&quot;</span></span>,
+                [<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>, <span class="key">tenantId</span>: Tenants.currentId() ])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the same is true of write operations such as inserts that are done with the native API.</p>
 </div>
 </div>
 </div>

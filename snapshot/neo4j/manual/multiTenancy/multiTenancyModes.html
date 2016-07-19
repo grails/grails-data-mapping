@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Configuration Changes</title>
+<title>Database Per Tenant</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,78 +423,113 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel3">
-<li><a href="#_configuration_changes">Configuration Changes</a></li>
-<li><a href="#_bolt_java_driver_and_api_changes">Bolt Java Driver and API Changes</a></li>
-<li><a href="#_general_neo4j_3_x_changes">General Neo4j 3.x Changes</a></li>
+<li><a href="#_database_per_tenant">Database Per Tenant</a></li>
+<li><a href="#_partitioned_multi_tenancy">Partitioned Multi-Tenancy</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div class="paragraph">
-<p>If you are upgrading from a previous version of the plugin to the 6.0.0.BUILD-SNAPSHOT, you will need to take into account the following changes.</p>
+<p>As mentioned previously, GORM for Neo4j supports the <code>DATABASE</code> and <code>DISCRIMINATOR</code> however there are some considerations to keep in mind.</p>
 </div>
 <div class="sect3">
-<h4 id="_configuration_changes">Configuration Changes</h4>
+<h4 id="_database_per_tenant">Database Per Tenant</h4>
 <div class="paragraph">
-<p>Since the plugin now uses the Neo4j Bolt driver the configuration has been altered.</p>
+<p>When using the <code>DATABASE</code> mode, only GORM methods calls are dispatched to the correct tenant. This means the following will use the tenant id:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// switches to the correct client based on the tenant id
+Book.list()</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>The <code>grails.neo4j.options</code> setting no longer configures the Neo4j embedded options, but instead configures the Bolt driver options.</p>
+<p>However, going directly through the <code>Driver</code> will not work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Autowired Driver boltDriver
+
+// uses the default connection and doesn't resolve the tenant it
+boltDriver.session().run("..")</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>If you want to continue to configure Neo4j in embedded mode you must use <code>grails.neo4j.embedded.options</code>.</p>
+<p>If you are working directly with the <code>Driver</code> instance you need to make sure you obtain the correct instance. For example:</p>
 </div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.multitenancy.*
+
+@Autowired Neo4jDatastore neo4jDatastore
+...
+Driver boltDriver =
+        neo4jDatastore.getDatastoreForTenantId(Tenants.currentId())
+                      .getBoltDriver()</code></pre>
 </div>
-<div class="sect3">
-<h4 id="_bolt_java_driver_and_api_changes">Bolt Java Driver and API Changes</h4>
-<div class="paragraph">
-<p>The API has changed to accommodate the Neo4j Bolt driver and all references to the Neo4j server itself have been removed.</p>
-</div>
-<div class="paragraph">
-<p>Therefore you need to replace the usages of the following interfaces with their bolt equivalents:</p>
-</div>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Neo4j Class</th>
-<th class="tableblock halign-left valign-top">Bolt Driver Replacement</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.GraphDatabaseService</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.Driver</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.Transaction</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.Transaction</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.Node</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.types.Node</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.Relationship</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.types.Relationship</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.Result</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.StatementResult</p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>There may be other classes that you need to replace references too. Generally the <code>org.neo4j.graphdb</code> package is considered the server-side API and only the <code>org.neo4j.driver.v1</code> package should be used in applications.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_general_neo4j_3_x_changes">General Neo4j 3.x Changes</h4>
+<h4 id="_partitioned_multi_tenancy">Partitioned Multi-Tenancy</h4>
 <div class="paragraph">
-<p>Since GORM for Neo4j 6.0.0.BUILD-SNAPSHOT is based on Neo4j 3.x, if you are upgrading from Neo4j 2.x there will be other changes related to Neo4j 3 that you may need to make. These are described in the <a href="https://neo4j.com/guides/upgrade/">upgrade guide</a> on the Neo4j website.</p>
+<p>When using the <code>DISCRIMINATOR</code> approach, GORM for Neo4j will store a <code>tenantId</code> attribute in each Neo4j node and attempt to partition the data.</p>
+</div>
+<div class="paragraph">
+<p>Once again this works only when using GORM methods and even then there are cases where it will not work if you use native Neo4j interfaces.</p>
+</div>
+<div class="paragraph">
+<p>For example the following works fine:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// correctly includes the `tenantId` in the query
+Book.list()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As does this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// works automatically if you include the tenantId in the query
+Book.find("MATCH (p:Book) WHERE p.title={title} AND p.publisher={tenantId} RETURN p", [name:"The Stand"]")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>But this query with throw an exception due to a missing tenant id:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.find("MATCH (p:Book) WHERE p.title={title} RETURN p", [name:"The Stand"])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also if you obtain the driver directly the the tenant id will not be included in the query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Autowired Driver boltDriver
+
+// uses the default connection and doesn't resolve the tenant it
+boltDriver.session()
+          .run("MATCH (p:Book) WHERE p.title={title} RETURN p", [name:"The Stand"]")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since you are operating directly on the Driver cannot know when you perform a query that should be multi-tenant aware.</p>
+</div>
+<div class="paragraph">
+<p>In this case you will have to ensure to include the <code>tenantId</code> manually:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">boltDriver.session()
+          .run("MATCH (p:Book) WHERE p.title={title} AND p.publisher={tenantId} RETURN p",
+                [name:"The Stand", tenantId: Tenants.currentId() ])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the same is true of write operations such as inserts that are done with the native API.</p>
 </div>
 </div>
 </div>
