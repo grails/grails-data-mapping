@@ -506,7 +506,7 @@ If your configuration is empty, <em>embedded</em> is used as default.
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">compile 'org.springframework.data:spring-data-neo4j:3.4.0.RELEASE'
-compile 'org.springframework.data:spring-data-neo4j-rest:3.4.0.RELEASE'
+compile 'org.springframework.data:spring-data-neo4j-rest:3.4.0.RELEASE', {
     exclude group:'org.neo4j.test', module:'neo4j-harness'
 }</code></pre>
 </div>
