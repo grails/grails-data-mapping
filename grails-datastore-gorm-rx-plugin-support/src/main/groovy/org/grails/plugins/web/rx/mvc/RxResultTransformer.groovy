@@ -3,15 +3,24 @@ package org.grails.plugins.web.rx.mvc
 import grails.artefact.Controller
 import grails.artefact.controller.RestResponder
 import grails.async.web.AsyncGrailsWebRequest
+import grails.rest.render.ContainerRenderer
+import grails.rest.render.RenderContext
+import grails.rest.render.Renderer
+import grails.rest.render.RendererRegistry
+import grails.util.GrailsWebUtil
+import grails.web.mime.MimeType
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.plugins.web.async.GrailsAsyncContext
+import org.grails.plugins.web.rest.render.ServletRenderContext
 import org.grails.web.errors.GrailsExceptionResolver
 import org.grails.web.servlet.mvc.ActionResultTransformer
 import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.grails.web.util.GrailsApplicationAttributes
 import org.grails.web.util.WebUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.async.AsyncWebRequest
 import org.springframework.web.context.request.async.WebAsyncManager
 import org.springframework.web.context.request.async.WebAsyncUtils
@@ -31,12 +40,25 @@ import javax.servlet.http.HttpServletResponse
 @CompileStatic
 @Slf4j
 class RxResultTransformer implements ActionResultTransformer, Controller, RestResponder {
+    final MimeType[] mimeTypes = [ MimeType.JSON, MimeType.HAL_JSON, MimeType.XML, MimeType.HAL_XML ] as MimeType[]
+    final Class<Observable> targetType = Observable
+    final Class componentType = Object
+    String encoding = GrailsWebUtil.DEFAULT_ENCODING
 
     @Autowired(required = false)
     GrailsExceptionResolver exceptionResolver
 
-    @Override
-    Object transformActionResult(GrailsWebRequest webRequest, String viewName, Object actionResult) {
+    @Autowired(required = false)
+    @CompileDynamic
+    void setRendererRegistry(RendererRegistry registry) {
+        registry.addContainerRenderer(Object, this as ContainerRenderer<Observable, Object>)
+    }
+
+    List<String> getResponseFormats() {
+        (List<String>)GrailsWebRequest.lookup().getControllerClass().getPropertyValue("responseFormats")
+    }
+
+    Object transformActionResult(GrailsWebRequest webRequest, String viewName, Object actionResult, boolean isRender = false) {
         if(actionResult instanceof Observable) {
             Observable observable = (Observable)actionResult
 
@@ -80,10 +102,13 @@ class RxResultTransformer implements ActionResultTransformer, Controller, RestRe
                                 }
                             }
                             def modelAndView = asyncContext.getRequest().getAttribute(GrailsApplicationAttributes.MODEL_AND_VIEW)
-                            if(modelAndView != null) {
+                            if(modelAndView != null && !isRender) {
                                 asyncContext.dispatch()
                             }
                             else {
+                                if(isRender) {
+                                    asyncContext.response.flushBuffer()
+                                }
                                 asyncContext.complete()
                             }
                         } finally {
@@ -117,8 +142,18 @@ class RxResultTransformer implements ActionResultTransformer, Controller, RestRe
                     }
                 })
             }
+            webRequest.setRenderView(false)
             return null
         }
         return actionResult
     }
+
+    void render(Observable object, RenderContext context) {
+        final mimeType = context.acceptMimeType ?: MimeType.JSON
+        context.setContentType( GrailsWebUtil.getContentType(mimeType.name, encoding) )
+
+        ServletRenderContext servletRenderContext = (ServletRenderContext) context
+        transformActionResult(servletRenderContext.webRequest, context.viewName, object, true)
+    }
+
 }
