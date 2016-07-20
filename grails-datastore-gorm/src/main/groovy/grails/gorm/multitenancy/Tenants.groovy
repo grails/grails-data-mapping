@@ -43,6 +43,8 @@ class Tenants {
 
     /**
      * @return The current tenant id
+     *
+     * @throws org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException if no current tenant is found
      */
     static Serializable currentId() {
         Datastore datastore = GormEnhancer.findSingleDatastore()
@@ -63,6 +65,8 @@ class Tenants {
 
     /**
      * @return The current tenant id for the given datastore type
+     *
+     * @throws org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException if no current tenant is found
      */
     static Serializable currentId(Class<? extends Datastore> datastoreClass) {
         Datastore datastore = GormEnhancer.findDatastoreByType(datastoreClass)
