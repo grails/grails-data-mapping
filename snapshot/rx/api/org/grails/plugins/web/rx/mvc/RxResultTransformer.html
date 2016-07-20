@@ -145,8 +145,28 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.lang.Class</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#componentType">componentType</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#encoding">encoding</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>org.grails.web.errors.GrailsExceptionResolver</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#exceptionResolver">exceptionResolver</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>grails.web.mime.MimeType[]</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#mimeTypes">mimeTypes</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.lang.Class&lt;java.util.Observable&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#targetType">targetType</a></code><br></td>
                         </tr>
                         
                     </table>
@@ -175,8 +195,23 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>java.util.List&lt;java.lang.String&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getResponseFormats()">getResponseFormats</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#render(java.util.Observable, grails.rest.render.RenderContext)">render</a></strong>(java.util.Observable object, grails.rest.render.RenderContext context)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#setRendererRegistry(grails.rest.render.RendererRegistry)">setRendererRegistry</a></strong>(grails.rest.render.RendererRegistry registry)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#transformActionResult(org.grails.web.servlet.mvc.GrailsWebRequest, java.lang.String, java.lang.Object)">transformActionResult</a></strong>(org.grails.web.servlet.mvc.GrailsWebRequest webRequest, java.lang.String viewName, java.lang.Object actionResult)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#transformActionResult(org.grails.web.servlet.mvc.GrailsWebRequest, java.lang.String, java.lang.Object, boolean)">transformActionResult</a></strong>(org.grails.web.servlet.mvc.GrailsWebRequest webRequest, java.lang.String viewName, java.lang.Object actionResult, boolean isRender = false)</code><br></td>
                         </tr>
                         
                     </table>
@@ -222,11 +257,43 @@ extends java.lang.Object
                 </a>
                     <h3>Property Detail</h3>
                     
+                        <a name="componentType"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;java.lang.Class <strong>componentType</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="encoding"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.String <strong>encoding</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="exceptionResolver"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@org.springframework.beans.factory.annotation.Autowired(required = false)
 org.grails.web.errors.GrailsExceptionResolver <strong>exceptionResolver</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="mimeTypes"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;grails.web.mime.MimeType[] <strong>mimeTypes</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="targetType"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>final&nbsp;java.lang.Class&lt;java.util.Observable&gt; <strong>targetType</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -248,11 +315,36 @@ org.grails.web.errors.GrailsExceptionResolver <strong>exceptionResolver</strong>
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="transformActionResult(org.grails.web.servlet.mvc.GrailsWebRequest, java.lang.String, java.lang.Object)"><!-- --></a>
+                        <a name="getResponseFormats()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.Override
-java.lang.Object <strong>transformActionResult</strong>(org.grails.web.servlet.mvc.GrailsWebRequest webRequest, java.lang.String viewName, java.lang.Object actionResult)</h4>
+                                <h4>java.util.List&lt;java.lang.String&gt; <strong>getResponseFormats</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="render(java.util.Observable, grails.rest.render.RenderContext)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>void <strong>render</strong>(java.util.Observable object, grails.rest.render.RenderContext context)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="setRendererRegistry(grails.rest.render.RendererRegistry)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@org.springframework.beans.factory.annotation.Autowired(required = false)
+@groovy.transform.CompileDynamic
+void <strong>setRendererRegistry</strong>(grails.rest.render.RendererRegistry registry)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="transformActionResult(org.grails.web.servlet.mvc.GrailsWebRequest, java.lang.String, java.lang.Object, boolean)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.Object <strong>transformActionResult</strong>(org.grails.web.servlet.mvc.GrailsWebRequest webRequest, java.lang.String viewName, java.lang.Object actionResult, boolean isRender = false)</h4>
                                 <p></p>
                             </li>
                         </ul>
