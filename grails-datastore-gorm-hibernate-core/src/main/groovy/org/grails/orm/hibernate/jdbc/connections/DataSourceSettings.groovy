@@ -5,6 +5,8 @@ import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
+import org.grails.orm.hibernate.jdbc.schema.DefaultSchemaHandler
+import org.grails.orm.hibernate.jdbc.schema.SchemaHandler
 import org.hibernate.dialect.H2Dialect
 
 /**
@@ -61,6 +63,12 @@ class DataSourceSettings extends ConnectionSourceSettings {
      * The dialect to use
      */
     Class dialect = H2Dialect
+
+    /**
+     * The schema handler to use
+     */
+    Class<? extends SchemaHandler> schemaHandler = DefaultSchemaHandler
+
     /**
      * Whether to log SQL
      */
