@@ -1008,15 +1008,16 @@ Using the constructor syntax <code>new Book(id:1L)</code> will not work in a Gra
         <span class="key">rest</span>:
             <span class="key">host</span>: <span class="string"><span class="content">http://localhost:8080</span></span>
             <span class="key">readTimeout</span>: <span class="string"><span class="content">2000</span></span>
-            <span class="key">logLevel</span>: <span class="string"><span class="content">TRACE</span></span></code></pre>
+            <span class="key">log</span>:
+                <span class="key">level</span>: <span class="string"><span class="content">TRACE</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Then ensure your log configuration enables logging for the <code>io.netty.handler.logging</code> package. For example in <code>logback.groovy</code>:</p>
+<p>Then ensure your log configuration enables logging for the <code>grails.gorm.rx.rest.logging</code> package. For example in <code>logback.groovy</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">logger(<span class="string"><span class="delimiter">&quot;</span><span class="content">io.netty.handler.logging</span><span class="delimiter">&quot;</span></span>, TRACE)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">logger(<span class="string"><span class="delimiter">&quot;</span><span class="content">grails.gorm.rx.rest.logging</span><span class="delimiter">&quot;</span></span>, TRACE)</code></pre>
 </div>
 </div>
 </div>

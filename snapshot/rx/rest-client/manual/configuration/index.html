@@ -492,15 +492,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
         rest:
             host: http://localhost:8080
             readTimeout: 2000
-            logLevel: TRACE</code></pre>
+            log:
+                level: TRACE</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Then ensure your log configuration enables logging for the <code>io.netty.handler.logging</code> package. For example in <code>logback.groovy</code>:</p>
+<p>Then ensure your log configuration enables logging for the <code>grails.gorm.rx.rest.logging</code> package. For example in <code>logback.groovy</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">logger("io.netty.handler.logging", TRACE)</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">logger("grails.gorm.rx.rest.logging", TRACE)</code></pre>
 </div>
 </div>
 </div>
@@ -508,7 +509,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-07-18 10:55:41 UTC
+Last updated 2016-07-20 07:30:55 UTC
 </div>
 </div>
 </body>
