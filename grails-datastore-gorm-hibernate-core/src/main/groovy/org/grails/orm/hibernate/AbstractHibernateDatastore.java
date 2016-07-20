@@ -21,17 +21,23 @@ import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.DatastoreAware;
 import org.grails.datastore.mapping.core.connections.*;
+import org.grails.datastore.mapping.core.exceptions.ConfigurationException;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.config.GormProperties;
+import org.grails.datastore.mapping.multitenancy.AllTenantsResolver;
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
 import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore;
 import org.grails.datastore.mapping.multitenancy.TenantResolver;
+import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException;
 import org.grails.datastore.mapping.multitenancy.resolvers.FixedTenantResolver;
 import org.grails.orm.hibernate.cfg.HibernateMappingContext;
 import org.grails.orm.hibernate.connections.HibernateConnectionSource;
 import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
+import org.grails.orm.hibernate.jdbc.schema.DefaultSchemaHandler;
+import org.grails.orm.hibernate.jdbc.schema.SchemaHandler;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -40,6 +46,8 @@ import org.springframework.core.env.PropertyResolver;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -57,6 +65,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     protected final ConnectionSources<SessionFactory, HibernateConnectionSourceSettings> connectionSources;
     protected final String defaultFlushModeName;
     protected final MultiTenancySettings.MultiTenancyMode multiTenantMode;
+    protected final SchemaHandler schemaHandler;
     protected AbstractEventTriggeringInterceptor eventTriggeringInterceptor;
     protected final boolean osivReadOnly;
     protected final boolean passReadOnlyToHibernate;
@@ -69,7 +78,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     protected AbstractHibernateDatastore(ConnectionSources<SessionFactory, HibernateConnectionSourceSettings> connectionSources, HibernateMappingContext mappingContext) {
         super(mappingContext, connectionSources.getBaseConfiguration(), null);
         this.connectionSources = connectionSources;
-        ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> defaultConnectionSource = connectionSources.getDefaultConnectionSource();
+        final HibernateConnectionSource defaultConnectionSource = (HibernateConnectionSource) connectionSources.getDefaultConnectionSource();
         this.dataSourceName = defaultConnectionSource.getName();
         this.sessionFactory = defaultConnectionSource.getSource();
         HibernateConnectionSourceSettings settings = defaultConnectionSource.getSettings();
@@ -83,11 +92,34 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         this.defaultFlushMode = flushMode.getLevel();
 
         MultiTenancySettings multiTenancySettings = settings.getMultiTenancy();
-        this.tenantResolver = multiTenancySettings.getTenantResolver();
-        if(tenantResolver instanceof DatastoreAware) {
-            ((DatastoreAware)tenantResolver).setDatastore(this);
-        }
+        final TenantResolver multiTenantResolver = multiTenancySettings.getTenantResolver();
+
         this.multiTenantMode = multiTenancySettings.getMode();
+        this.schemaHandler = BeanUtils.instantiate(settings.getDataSource().getSchemaHandler());
+        if(multiTenantMode == MultiTenancySettings.MultiTenancyMode.SCHEMA) {
+            this.tenantResolver = new AllTenantsResolver() {
+                @Override
+                public Iterable<Serializable> resolveTenantIds() {
+                    List<Serializable> tenantIds = new ArrayList<>();
+                    tenantIds.addAll(schemaHandler.resolveSchemaNames(defaultConnectionSource.getDataSource()));
+                    return tenantIds;
+                }
+                @Override
+                public Serializable resolveTenantIdentifier() throws TenantNotFoundException {
+                    return multiTenantResolver.resolveTenantIdentifier();
+                }
+            };
+
+            // TODO: need to wire in the remaining pieces for SCHEMA SUPPORT
+            throw new ConfigurationException("Multi-Tenancy mode of SCHEMA is not yet supported when using Hibernate");
+        }
+        else {
+            this.tenantResolver = multiTenantResolver;
+        }
+
+        if(multiTenantResolver instanceof DatastoreAware) {
+            ((DatastoreAware) multiTenantResolver).setDatastore(this);
+        }
     }
 
     protected AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config, ApplicationContext applicationContext, String dataSourceName) {
@@ -116,6 +148,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         failOnError = config.getProperty(SETTING_FAIL_ON_ERROR, Boolean.class, false);
         this.tenantResolver = new FixedTenantResolver();
         this.multiTenantMode = MultiTenancySettings.MultiTenancyMode.NONE;
+        this.schemaHandler = new DefaultSchemaHandler();
     }
 
     public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {
@@ -307,6 +340,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
                     .setParameter(GormProperties.TENANT_IDENTITY, currentId);
         }
     }
+
 
     /**
      * Disable the tenant id filter for the given datastore and entity
