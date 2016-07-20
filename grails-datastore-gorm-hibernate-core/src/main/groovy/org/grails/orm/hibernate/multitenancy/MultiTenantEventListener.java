@@ -8,7 +8,6 @@ import org.grails.datastore.mapping.engine.event.PreInsertEvent;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.TenantId;
 import org.grails.datastore.mapping.query.Query;
-import org.grails.datastore.mapping.query.event.PostQueryEvent;
 import org.grails.datastore.mapping.query.event.PreQueryEvent;
 import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
@@ -25,7 +24,7 @@ import java.io.Serializable;
 public class MultiTenantEventListener implements PersistenceEventListener {
     @Override
     public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-        return PreQueryEvent.class.isAssignableFrom(eventType) || PostQueryEvent.class.isAssignableFrom(eventType) || PreInsertEvent.class.isAssignableFrom(eventType);
+        return PreQueryEvent.class.isAssignableFrom(eventType) || PreInsertEvent.class.isAssignableFrom(eventType);
     }
 
     @Override
