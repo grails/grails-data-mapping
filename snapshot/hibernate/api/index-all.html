@@ -1507,7 +1507,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/AbstractConnectionSourceFactory.html#create(java.lang.String, org.springframework.core.env.PropertyResolver, F)" title="Method in AbstractConnectionSourceFactory">create(String, PropertyResolver, F)</a></span> - Method in <a href="org/grails/datastore/mapping/core/connections/AbstractConnectionSourceFactory.html">AbstractConnectionSourceFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/connections/AbstractHibernateConnectionSourceFactory.html#create(java.lang.String, ConnectionSource<DataSource, DataSourceSettings>, org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings)" title="Method in AbstractHibernateConnectionSourceFactory">create(String, ConnectionSource&lt;DataSource, DataSourceSettings&gt;, HibernateConnectionSourceSettings)</a></span> - Method in <a href="org/grails/orm/hibernate/connections/AbstractHibernateConnectionSourceFactory.html">AbstractHibernateConnectionSourceFactory</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">Creates a ConnectionSource for the given DataSource</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/ConnectionSourceFactory.html#create(java.lang.String, org.springframework.core.env.PropertyResolver, F)" title="Method in ConnectionSourceFactory">create(String, PropertyResolver, F)</a></span> - Method in <a href="org/grails/datastore/mapping/core/connections/ConnectionSourceFactory.html">ConnectionSourceFactory</a>
 </dt><dd> <div class="block">Creates a new <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a> for the given name and configuration</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/ConnectionSourcesInitializer.html#create(ConnectionSourceFactory<T, S>, org.springframework.core.env.PropertyResolver)" title="Method in ConnectionSourcesInitializer">create(ConnectionSourceFactory&lt;T, S&gt;, PropertyResolver)</a></span> - Method in <a href="org/grails/datastore/mapping/core/connections/ConnectionSourcesInitializer.html">ConnectionSourcesInitializer</a>
@@ -1724,6 +1724,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/ConnectionSourceFactory.html#createRuntime(java.lang.String, org.springframework.core.env.PropertyResolver, S)" title="Method in ConnectionSourceFactory">createRuntime(String, PropertyResolver, S)</a></span> - Method in <a href="org/grails/datastore/mapping/core/connections/ConnectionSourceFactory.html">ConnectionSourceFactory</a>
 </dt><dd> <div class="block">Creates a connection at runtime. </div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/jdbc/schema/DefaultSchemaHandler.html#createSchema(java.sql.Connection, java.lang.String)" title="Method in DefaultSchemaHandler">createSchema(Connection, String)</a></span> - Method in <a href="org/grails/orm/hibernate/jdbc/schema/DefaultSchemaHandler.html">DefaultSchemaHandler</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/jdbc/schema/SchemaHandler.html#createSchema(java.sql.Connection, java.lang.String)" title="Method in SchemaHandler">createSchema(Connection, String)</a></span> - Method in <a href="org/grails/orm/hibernate/jdbc/schema/SchemaHandler.html">SchemaHandler</a>
+</dt><dd> <div class="block">Creates the given schema. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractDatastore.html#createSession(org.springframework.core.env.PropertyResolver)" title="Method in AbstractDatastore">createSession(PropertyResolver)</a></span> - Method in <a href="org/grails/datastore/mapping/core/AbstractDatastore.html">AbstractDatastore</a>
 </dt><dd> <div class="block">Creates the native session</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/GrailsHibernateTemplate.html#createSessionProxy(org.hibernate.Session)" title="Method in GrailsHibernateTemplate">createSessionProxy(Session)</a></span> - Method in <a href="org/grails/orm/hibernate/GrailsHibernateTemplate.html">GrailsHibernateTemplate</a>
@@ -1920,6 +1924,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#defaultOffset" title="Field in AbstractDetachedCriteria">defaultOffset</a></span> - Field in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#defaultQualifier" title="Field in GormStaticApi">defaultQualifier</a></span> - Field in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/jdbc/schema/DefaultSchemaHandler.html" title="Class in org.grails.orm.hibernate.jdbc.schema">DefaultSchemaHandler</a></span> - Class in <a href="./org/grails/orm/hibernate/jdbc/schema/package-summary.html">org.grails.orm.hibernate.jdbc.schema</a>
+</dt><dd><div class="block">Resolves the schema names</div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/jdbc/schema/DefaultSchemaHandler.html#DefaultSchemaHandler(java.lang.String, java.lang.String, java.lang.String)" title="Constructor in DefaultSchemaHandler">DefaultSchemaHandler(String, String, String)</a></span> - Constructor in <a href="org/grails/orm/hibernate/jdbc/schema/DefaultSchemaHandler.html">DefaultSchemaHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/timestamp/DefaultTimestampProvider.html" title="Class in org.grails.datastore.gorm.timestamp">DefaultTimestampProvider</a></span> - Class in <a href="./org/grails/datastore/gorm/timestamp/package-summary.html">org.grails.datastore.gorm.timestamp</a>
 </dt><dd><div class="block">***************************************************************************
@@ -7567,6 +7575,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.html#resolveIdIfEntity(java.lang.Object)" title="Method in Query">resolveIdIfEntity(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.html">Query</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/jdbc/schema/DefaultSchemaHandler.html#resolveSchemaNames(javax.sql.DataSource)" title="Method in DefaultSchemaHandler">resolveSchemaNames(DataSource)</a></span> - Method in <a href="org/grails/orm/hibernate/jdbc/schema/DefaultSchemaHandler.html">DefaultSchemaHandler</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/jdbc/schema/SchemaHandler.html#resolveSchemaNames(javax.sql.DataSource)" title="Method in SchemaHandler">resolveSchemaNames(DataSource)</a></span> - Method in <a href="org/grails/orm/hibernate/jdbc/schema/SchemaHandler.html">SchemaHandler</a>
+</dt><dd> <div class="block">@return Resolves the schema names</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/PersistentEntityNamingStrategy.html#resolveTableName(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in PersistentEntityNamingStrategy">resolveTableName(PersistentEntity)</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/PersistentEntityNamingStrategy.html">PersistentEntityNamingStrategy</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/proxy/GroovyProxyFactory.html#resolveTargetMetaClass(T, Class<T>)" title="Method in GroovyProxyFactory">resolveTargetMetaClass(T, Class&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/proxy/GroovyProxyFactory.html">GroovyProxyFactory</a>
@@ -7738,6 +7750,8 @@ if (location.href.indexOf('is-external=true') == -1) {
  as annotated classes with this <CODE>Configuration</CODE>.</div></dd>
 <dt><span class="strong"><a href="grails/plugin/hibernate/commands/SchemaExportCommand.html" title="Class in grails.plugin.hibernate.commands">SchemaExportCommand</a></span> - Class in <a href="./grails/plugin/hibernate/commands/package-summary.html">grails.plugin.hibernate.commands</a>
 </dt><dd><div class="block">Adds a schema-export command</div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/jdbc/schema/SchemaHandler.html" title="Interface in org.grails.orm.hibernate.jdbc.schema">SchemaHandler</a></span> - Interface in <a href="./org/grails/orm/hibernate/jdbc/schema/package-summary.html">org.grails.orm.hibernate.jdbc.schema</a>
+</dt><dd><div class="block">A resolver that helps resolve information about the database schema. </div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html#scroll" title="Field in AbstractHibernateCriteriaBuilder">scroll</a></span> - Field in <a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html">AbstractHibernateCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/api/BuildableCriteria.html#scroll(groovy.lang.Closure)" title="Method in BuildableCriteria">scroll(Closure)</a></span> - Method in <a href="org/grails/datastore/mapping/query/api/BuildableCriteria.html">BuildableCriteria</a>
@@ -8889,6 +8903,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/orm/HibernateCriteriaBuilder.html#URL" title="Field in HibernateCriteriaBuilder">URL</a></span> - Field in <a href="grails/orm/HibernateCriteriaBuilder.html">HibernateCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/jdbc/schema/DefaultSchemaHandler.html#useDefaultSchema(java.sql.Connection)" title="Method in DefaultSchemaHandler">useDefaultSchema(Connection)</a></span> - Method in <a href="org/grails/orm/hibernate/jdbc/schema/DefaultSchemaHandler.html">DefaultSchemaHandler</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/jdbc/schema/SchemaHandler.html#useDefaultSchema(java.sql.Connection)" title="Method in SchemaHandler">useDefaultSchema(Connection)</a></span> - Method in <a href="org/grails/orm/hibernate/jdbc/schema/SchemaHandler.html">SchemaHandler</a>
+</dt><dd> <div class="block">Uses the given schema. </div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/jdbc/schema/DefaultSchemaHandler.html#useSchema(java.sql.Connection, java.lang.String)" title="Method in DefaultSchemaHandler">useSchema(Connection, String)</a></span> - Method in <a href="org/grails/orm/hibernate/jdbc/schema/DefaultSchemaHandler.html">DefaultSchemaHandler</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/jdbc/schema/SchemaHandler.html#useSchema(java.sql.Connection, java.lang.String)" title="Method in SchemaHandler">useSchema(Connection, String)</a></span> - Method in <a href="org/grails/orm/hibernate/jdbc/schema/SchemaHandler.html">SchemaHandler</a>
+</dt><dd> <div class="block">Uses the given schema. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/ConnectionSourcesSupport.html#usesConnectionSource(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)" title="Method in ConnectionSourcesSupport">usesConnectionSource(PersistentEntity, String)</a></span> - Method in <a href="org/grails/datastore/mapping/core/connections/ConnectionSourcesSupport.html">ConnectionSourcesSupport</a>
 </dt><dd> <div class="block">Returns whether the given entity uses the give connection source name or not</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/GrailsHibernateUtil.html#usesDatasource(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)" title="Method in GrailsHibernateUtil">usesDatasource(PersistentEntity, String)</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/GrailsHibernateUtil.html">GrailsHibernateUtil</a>
