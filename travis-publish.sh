@@ -101,9 +101,9 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
             echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties
             git add gradle.properties
-            git commit -m "Release GORM for Neo4j $TRAVIS_TAG"
-            git tag $TRAVIS_TAG
-            git push --tags
+            git commit -m "New GORM Release $TRAVIS_TAG"
+#            git tag $TRAVIS_TAG
+#            git push --tags
         else
             git commit -m "New Core Snapshot: $(date)"
         fi
@@ -118,12 +118,13 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
             echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties
             git add gradle.properties
-            git commit -m "Release GORM for MongoDB $TRAVIS_TAG"
-            git tag $TRAVIS_TAG
-            git push --tags
+            git commit -m "New GORM Release $TRAVIS_TAG"
+#            git tag $TRAVIS_TAG
+#            git push --tags
         else
             git commit -m "New Core Snapshot: $(date)"
         fi
+
         git push
         cd ..
 
@@ -135,9 +136,9 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
             echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties
             git add gradle.properties
-            git commit -m "Release GORM for Redis $TRAVIS_TAG"
-            git tag $TRAVIS_TAG
-            git push --tags
+            git commit -m "New GORM Release $TRAVIS_TAG"
+#            git tag $TRAVIS_TAG
+#            git push --tags
         else
             git commit -m "New Core Snapshot: $(date)"
         fi
@@ -152,9 +153,9 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
             echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties
             git add gradle.properties
-            git commit -m "Release GORM for Cassandra $TRAVIS_TAG"
-            git tag $TRAVIS_TAG
-            git push --tags
+            git commit -m "New GORM Release $TRAVIS_TAG"
+#            git tag $TRAVIS_TAG
+#            git push --tags
         else
             git commit -m "New Core Snapshot: $(date)"
         fi
