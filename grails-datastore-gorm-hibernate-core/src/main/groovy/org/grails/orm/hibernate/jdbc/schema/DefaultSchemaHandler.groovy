@@ -49,11 +49,16 @@ class DefaultSchemaHandler implements SchemaHandler {
 
     @Override
     Collection<String> resolveSchemaNames(DataSource dataSource) {
-        def connection = dataSource.getConnection()
-        ResultSet schemas = connection.getMetaData().getSchemas()
         Collection<String> schemaNames = []
-        while(schemas.next()) {
-            schemaNames.add(schemas.getString("TABLE_SCHEM"))
+        Connection connection
+        try {
+            connection = dataSource.getConnection()
+            ResultSet schemas = connection.getMetaData().getSchemas()
+            while(schemas.next()) {
+                schemaNames.add(schemas.getString("TABLE_SCHEM"))
+            }
+        } finally {
+            connection?.close()
         }
         return schemaNames
     }

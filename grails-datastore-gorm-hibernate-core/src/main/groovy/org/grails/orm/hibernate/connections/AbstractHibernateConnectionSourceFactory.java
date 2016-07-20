@@ -44,7 +44,15 @@ public abstract class AbstractHibernateConnectionSourceFactory extends AbstractC
         return Settings.SETTING_DATASOURCES;
     }
 
-    protected abstract ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> create(String name, ConnectionSource<DataSource, DataSourceSettings> dataSourceConnectionSource,  HibernateConnectionSourceSettings settings);
+    /**
+     * Creates a ConnectionSource for the given DataSource
+     *
+     * @param name The name
+     * @param dataSourceConnectionSource The data source connection source
+     * @param settings The settings
+     * @return The ConnectionSource
+     */
+    public abstract ConnectionSource<SessionFactory, HibernateConnectionSourceSettings> create(String name, ConnectionSource<DataSource, DataSourceSettings> dataSourceConnectionSource,  HibernateConnectionSourceSettings settings);
 
     protected <F extends ConnectionSourceSettings> HibernateConnectionSourceSettings buildSettings(String name, PropertyResolver configuration, F fallbackSettings, boolean isDefaultDataSource) {
         HibernateConnectionSourceSettingsBuilder builder;
