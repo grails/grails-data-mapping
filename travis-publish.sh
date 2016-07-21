@@ -23,13 +23,6 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         ./gradlew --stop
         ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" publish || EXIT_STATUS=$?
     fi
-
-    if [[ $EXIT_STATUS -eq 0 ]]; then
-        ./gradlew --stop
-        ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" bintrayUpload || EXIT_STATUS=$?
-    fi
-    
-
   else
     # for snapshots only to repo.grails.org
     ./gradlew --stop
