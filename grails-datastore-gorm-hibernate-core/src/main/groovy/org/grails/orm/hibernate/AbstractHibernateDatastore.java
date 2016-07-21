@@ -47,6 +47,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -56,7 +57,7 @@ import java.util.concurrent.Callable;
  * @author Graeme Rocher
  * @since 2.0
  */
-public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, MultiTenantCapableDatastore<SessionFactory, HibernateConnectionSourceSettings>, Closeable {
+public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, MultiTenantCapableDatastore<SessionFactory, HibernateConnectionSourceSettings>, Closeable, AllTenantsResolver {
 
     public static final String CONFIG_PROPERTY_CACHE_QUERIES = "grails.hibernate.cache.queries";
     public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";
@@ -94,29 +95,11 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         MultiTenancySettings multiTenancySettings = settings.getMultiTenancy();
         final TenantResolver multiTenantResolver = multiTenancySettings.getTenantResolver();
 
-        this.multiTenantMode = multiTenancySettings.getMode();
-        this.schemaHandler = BeanUtils.instantiate(settings.getDataSource().getSchemaHandler());
-        if(multiTenantMode == MultiTenancySettings.MultiTenancyMode.SCHEMA) {
-            this.tenantResolver = new AllTenantsResolver() {
-                @Override
-                public Iterable<Serializable> resolveTenantIds() {
-                    List<Serializable> tenantIds = new ArrayList<>();
-                    tenantIds.addAll(schemaHandler.resolveSchemaNames(defaultConnectionSource.getDataSource()));
-                    return tenantIds;
-                }
-                @Override
-                public Serializable resolveTenantIdentifier() throws TenantNotFoundException {
-                    return multiTenantResolver.resolveTenantIdentifier();
-                }
-            };
-
-            // TODO: need to wire in the remaining pieces for SCHEMA SUPPORT
-            throw new ConfigurationException("Multi-Tenancy mode of SCHEMA is not yet supported when using Hibernate");
-        }
-        else {
-            this.tenantResolver = multiTenantResolver;
-        }
-
+        MultiTenancySettings.MultiTenancyMode multiTenancySettingsMode = multiTenancySettings.getMode();
+        this.multiTenantMode = multiTenancySettingsMode;
+        Class<? extends SchemaHandler> schemaHandlerClass = settings.getDataSource().getSchemaHandler();
+        this.schemaHandler = BeanUtils.instantiate(schemaHandlerClass);
+        this.tenantResolver = multiTenantResolver;
         if(multiTenantResolver instanceof DatastoreAware) {
             ((DatastoreAware) multiTenantResolver).setDatastore(this);
         }
@@ -157,7 +140,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
 
     @Override
     public MultiTenancySettings.MultiTenancyMode getMultiTenancyMode() {
-        return this.multiTenantMode;
+        return this.multiTenantMode == MultiTenancySettings.MultiTenancyMode.SCHEMA ? MultiTenancySettings.MultiTenancyMode.DATABASE : this.multiTenantMode;
     }
 
     @Override
@@ -187,6 +170,30 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
      * @return The child data store
      */
     public abstract  AbstractHibernateDatastore getDatastoreForConnection(String connectionName);
+
+    @Override
+    public Iterable<Serializable> resolveTenantIds() {
+        if(this.tenantResolver instanceof AllTenantsResolver) {
+            return ((AllTenantsResolver)tenantResolver).resolveTenantIds();
+        }
+        else if(this.multiTenantMode == MultiTenancySettings.MultiTenancyMode.DATABASE) {
+            List<Serializable> tenantIds = new ArrayList<>();
+            for (ConnectionSource connectionSource : this.connectionSources.getAllConnectionSources()) {
+                if(!ConnectionSource.DEFAULT.equals(connectionSource.getName())) {
+                    tenantIds.add(connectionSource.getName());
+                }
+            }
+            return tenantIds;
+        }
+        else {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public Serializable resolveTenantIdentifier() throws TenantNotFoundException {
+        return Tenants.currentId(getClass());
+    }
 
     public boolean isAutoFlush() {
         return defaultFlushMode == FlushMode.AUTO.level;

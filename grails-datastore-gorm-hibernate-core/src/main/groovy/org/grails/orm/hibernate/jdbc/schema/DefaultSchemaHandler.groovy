@@ -17,8 +17,8 @@ class DefaultSchemaHandler implements SchemaHandler {
     final String defaultSchemaName
 
     DefaultSchemaHandler() {
-        useSchemaStatement = "SET SCHEMA {0}"
-        createSchemaStatement = "CREATE SCHEMA {0}"
+        useSchemaStatement = "SET SCHEMA %s"
+        createSchemaStatement = "CREATE SCHEMA %s"
         defaultSchemaName = "PUBLIC"
     }
 

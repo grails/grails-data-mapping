@@ -17,7 +17,7 @@ interface SchemaHandler {
     Collection<String> resolveSchemaNames(DataSource dataSource)
 
     /**
-     * Uses the given schema. Defaults to "SET SCHEMA {0}"
+     * Uses the given schema. Defaults to "SET SCHEMA %s"
      */
     void useSchema(Connection connection, String name)
 
@@ -27,7 +27,7 @@ interface SchemaHandler {
     void useDefaultSchema(Connection connection)
 
     /**
-     * Creates the given schema. Defaults to "CREATE SCHEMA {0}"
+     * Creates the given schema. Defaults to "CREATE SCHEMA %s"
      */
     void createSchema(Connection connection, String name)
 }

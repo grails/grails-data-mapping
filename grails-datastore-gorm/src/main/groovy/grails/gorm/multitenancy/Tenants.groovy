@@ -203,11 +203,19 @@ class Tenants {
             MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore) datastore
             MultiTenancySettings.MultiTenancyMode multiTenancyMode = multiTenantCapableDatastore.multiTenancyMode
             if (multiTenancyMode == MultiTenancySettings.MultiTenancyMode.DATABASE) {
-                ConnectionSources connectionSources = multiTenantCapableDatastore.connectionSources
-                for (ConnectionSource connectionSource in connectionSources.allConnectionSources) {
-                    def tenantId = connectionSource.name
-                    if (tenantId != ConnectionSource.DEFAULT) {
+                if(multiTenantCapableDatastore instanceof AllTenantsResolver) {
+                    def tenantIds = ((AllTenantsResolver) multiTenantCapableDatastore).resolveTenantIds()
+                    for(tenantId in tenantIds) {
                         withTenantIdInternal(multiTenantCapableDatastore, tenantId, callable)
+                    }
+                }
+                else {
+                    ConnectionSources connectionSources = multiTenantCapableDatastore.connectionSources
+                    for (ConnectionSource connectionSource in connectionSources.allConnectionSources) {
+                        def tenantId = connectionSource.name
+                        if (tenantId != ConnectionSource.DEFAULT) {
+                            withTenantIdInternal(multiTenantCapableDatastore, tenantId, callable)
+                        }
                     }
                 }
             }
