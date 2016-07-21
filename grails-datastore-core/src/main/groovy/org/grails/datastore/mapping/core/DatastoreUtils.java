@@ -20,15 +20,13 @@ import java.util.*;
 
 import groovy.util.ConfigObject;
 import groovy.util.ConfigSlurper;
+import org.grails.datastore.mapping.config.DatastoreEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertyResolver;
-import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.env.*;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -414,6 +412,53 @@ public abstract class DatastoreUtils {
     }
 
     /**
+     * Prepares a property resolver and ensures it is suitable for GORM configuration
+     *
+     * @param propertyResolver The property resolver
+     * @return The property resolver
+     */
+    public static PropertyResolver preparePropertyResolver(PropertyResolver propertyResolver) {
+        return preparePropertyResolver(propertyResolver, "grails");
+    }
+
+    /**
+     * Prepares a property resolver and ensures it is suitable for GORM configuration
+     *
+     * @param propertyResolver The property resolver
+     * @param keyPrefixes The configuration prefixes
+     * @return The property resolver
+     */
+    public static PropertyResolver preparePropertyResolver(PropertyResolver propertyResolver, String...keyPrefixes) {
+        // if it is a map then it is a Grails configuration object, therefore it is already prepared
+        if((propertyResolver instanceof Map) || (propertyResolver instanceof DatastoreEnvironment)) {
+            return propertyResolver;
+        }
+        else if(propertyResolver instanceof ConfigurableEnvironment) {
+            // Spring Boot Environment config
+            ConfigurableEnvironment env = (ConfigurableEnvironment) propertyResolver;
+            MutablePropertySources propertySources = env.getPropertySources();
+            Map<String, Object> configuration = new LinkedHashMap<>();
+            for (PropertySource<?> propertySource : propertySources) {
+                if(propertySource instanceof EnumerablePropertySource) {
+                    EnumerablePropertySource eps = (EnumerablePropertySource) propertySource;
+                    String[] propertyNames = eps.getPropertyNames();
+                    for (String propertyName : propertyNames) {
+                        for (String keyPrefix : keyPrefixes) {
+                            if(propertyName.startsWith(keyPrefix)) {
+                                configuration.put(propertyName, eps.getProperty(propertyName));
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return createPropertyResolver(configuration);
+        }
+        else {
+            return propertyResolver;
+        }
+    }
+    /**
      * Creates a {@link PropertyResolver} from the given configuration
      * @param configuration The configuration
      *
@@ -424,7 +469,7 @@ public abstract class DatastoreUtils {
             return (PropertyResolver)configuration;
         }
         else {
-            StandardEnvironment env = new StandardEnvironment();
+            DatastoreEnvironment env = new DatastoreEnvironment();
             env.getConversionService().addConverter(new Converter<String, Class>() {
                 @Override
                 public Class convert(String source) {
